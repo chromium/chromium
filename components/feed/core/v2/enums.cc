@@ -78,6 +78,8 @@ std::ostream& operator<<(std::ostream& out, UploadActionsStatus value) {
       return out << "kFinishedWithoutUpdatingConsistencyToken";
     case UploadActionsStatus::kAbortUploadForSignedOutUser:
       return out << "kAbortUploadForSignedOutUser";
+    case UploadActionsStatus::kAbortUploadBecauseDisabled:
+      return out << "kAbortUploadBecauseDisabled";
   }
 #else
   return out << (static_cast<int>(value));

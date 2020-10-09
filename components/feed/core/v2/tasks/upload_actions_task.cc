@@ -177,6 +177,11 @@ void UploadActionsTask::OnStorePendingActionFinished(bool write_ok) {
     return;
   }
 
+  if (!stream_->CanUploadActions()) {
+    Done(UploadActionsStatus::kAbortUploadBecauseDisabled);
+    return;
+  }
+
   // If the new action was stored and upload_now was set, load all pending
   // actions and try to upload.
   ReadActions();
@@ -202,6 +207,10 @@ void UploadActionsTask::UploadPendingActions() {
   // Can't upload actions for signed-out users, so abort.
   if (!stream_->IsSignedIn()) {
     Done(UploadActionsStatus::kAbortUploadForSignedOutUser);
+    return;
+  }
+  if (!stream_->CanUploadActions()) {
+    Done(UploadActionsStatus::kAbortUploadBecauseDisabled);
     return;
   }
   UpdateAndUploadNextBatch();

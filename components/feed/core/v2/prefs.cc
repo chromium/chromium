@@ -86,6 +86,26 @@ void ClearClientInstanceId(PrefService& pref_service) {
   pref_service.ClearPref(feed::prefs::kClientInstanceId);
 }
 
+void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value) {
+  pref_service.SetBoolean(feed::prefs::kLastFetchHadNoticeCard, value);
+}
+
+bool GetLastFetchHadNoticeCard(const PrefService& pref_service) {
+  return pref_service.GetBoolean(feed::prefs::kLastFetchHadNoticeCard);
+}
+
+void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
+                                                      bool value) {
+  pref_service.SetBoolean(
+      feed::prefs::kHasReachedClickAndViewActionsUploadConditions, value);
+}
+
+bool GetHasReachedClickAndViewActionsUploadConditions(
+    const PrefService& pref_service) {
+  return pref_service.GetBoolean(
+      feed::prefs::kHasReachedClickAndViewActionsUploadConditions);
+}
+
 }  // namespace prefs
 
 }  // namespace feed

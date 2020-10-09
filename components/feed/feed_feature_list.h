@@ -31,6 +31,7 @@ extern const base::Feature kInterestFeedFeedback;
 extern const base::Feature kReportFeedUserActions;
 
 extern const base::Feature kInterestFeedV1ClicksAndViewsConditionalUpload;
+extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 
 std::string GetFeedReferrerUrl();
 

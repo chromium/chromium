@@ -43,6 +43,9 @@ const base::Feature kReportFeedUserActions{"ReportFeedUserActions",
 const base::Feature kInterestFeedV1ClicksAndViewsConditionalUpload{
     "InterestFeedV1ClickAndViewActionsConditionalUpload",
     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload{
+    "InterestFeedV2ClickAndViewActionsConditionalUpload",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kDefaultReferrerUrl[] =
     "https://www.googleapis.com/auth/chrome-content-suggestions";
