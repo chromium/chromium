@@ -129,6 +129,7 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
 
 void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
   if (container_builder_->IsBlockFragmentationContextRoot() &&
+      !container_space_.HasBlockFragmentation() &&
       container_builder_->HasOutOfFlowFragmentainerDescendants()) {
     Vector<NGLogicalOutOfFlowPositionedNode> fragmentainer_descendants;
     container_builder_->SwapOutOfFlowFragmentainerDescendants(
