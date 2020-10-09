@@ -198,6 +198,18 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   return kDefaultHeaderFooterHeight;
 }
 
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    item.useCustomSeparator = YES;
+  }
+
+  return [super tableView:tableView cellForRowAtIndexPath:indexPath];
+}
+
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
