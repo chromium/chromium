@@ -62,13 +62,14 @@ class TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest
   TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest() {
     if (content::IsPreTest()) {
       override_features_.InitWithFeatures(
-          /*enable_features=*/{switches::kSyncUseScryptForNewCustomPassphrases},
-          /*disable_features=*/{
+          /*enabled_features=*/{switches::
+                                    kSyncUseScryptForNewCustomPassphrases},
+          /*disabled_features=*/{
               switches::kSyncForceDisableScryptForCustomPassphrase});
     } else {
       override_features_.InitWithFeatures(
-          /*enable_features=*/{},
-          /*disable_features=*/{
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
               switches::kSyncUseScryptForNewCustomPassphrases,
               switches::kSyncForceDisableScryptForCustomPassphrase});
     }
