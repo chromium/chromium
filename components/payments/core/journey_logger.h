@@ -187,7 +187,7 @@ class JourneyLogger {
   // Sets the number of suggestions shown for the specified section.
   void SetNumberOfSuggestionsShown(Section section,
                                    int number,
-                                   bool has_valid_suggestion);
+                                   bool has_complete_suggestion);
 
   // Records the fact that the merchant called CanMakePayment and records its
   // return value.
