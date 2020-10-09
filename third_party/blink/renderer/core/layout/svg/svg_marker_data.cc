@@ -27,8 +27,10 @@
 namespace blink {
 
 static double BisectingAngle(double in_angle, double out_angle) {
+  double diff = in_angle - out_angle;
   // WK193015: Prevent bugs due to angles being non-continuous.
-  if (fabs(in_angle - out_angle) > 180)
+  // Use an inclusive lower limit to not produce the same angle for both limits.
+  if (diff > 180 || diff <= -180)
     in_angle += 360;
   return (in_angle + out_angle) / 2;
 }

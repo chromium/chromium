@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -41,7 +42,14 @@
 namespace blink {
 
 float FloatPoint::SlopeAngleRadians() const {
+#if defined(OS_MAC)
+  // atan2f(...) returns less accurate results on Mac.
+  // 3.1415925 vs. 3.14159274 for atan2f(0, -50) as an example.
+  return static_cast<float>(
+      atan2(static_cast<double>(y_), static_cast<double>(x_)));
+#else
   return atan2f(y_, x_);
+#endif
 }
 
 float FloatPoint::length() const {
