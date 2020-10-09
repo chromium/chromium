@@ -1486,7 +1486,6 @@ FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;
 
 FileManagerBrowserTestBase::~FileManagerBrowserTestBase() = default;
 
-
 static bool ShouldInspect(content::DevToolsAgentHost* host) {
   // TODO(crbug.com/v8/10820): Add background_page back in once
   // coverage can be collected when a background_page and app

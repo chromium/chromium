@@ -35,7 +35,7 @@ std::string EncodedURL(const std::string& url) {
   return std::string(canonical_url.data(), canonical_url.length());
 }
 
-} // namespace
+}  // namespace
 
 DevToolsListener::DevToolsListener(content::DevToolsAgentHost* host,
                                    uint32_t uuid)
@@ -98,7 +98,7 @@ bool DevToolsListener::StartJSCoverage(content::DevToolsAgentHost* host) {
 
   std::string start_precise_coverage =
       "{\"id\":21,\"method\":\"Profiler.startPreciseCoverage\",\"params\":{"
-      "\"callCount\":false,\"detailed\":true}}";
+      "\"callCount\":true,\"detailed\":true}}";
   host->DispatchProtocolMessage(this, StringToSpan(start_precise_coverage));
 
   std::string enable_debugger = "{\"id\":22,\"method\":\"Debugger.enable\"}";
