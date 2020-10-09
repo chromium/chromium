@@ -25,7 +25,7 @@ class PredictionMetricsHandlerTest;
 // few metrics.
 class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
  public:
-  explicit PredictionMetricsHandler();
+  explicit PredictionMetricsHandler(const char* histogram_name);
   ~PredictionMetricsHandler();
 
   // Struct used to store predicted and real event information.
@@ -103,6 +103,12 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   base::Optional<gfx::PointF> last_predicted_ = base::nullopt;
   // The first real event position which time is later than the predicted time.
   gfx::PointF next_real_;
+
+  // Beginning of the full histogram name. It will have the various metrics'
+  // names (.OverPrediction, .UnderPrediction, .WrongDirection,
+  // .PredictionJitter, .VisualJitter) appended to it when counting the metric
+  // in a histogram.
+  const char* const histogram_name_;
 };
 
 }  // namespace ui

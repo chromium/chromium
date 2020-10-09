@@ -29,7 +29,8 @@ class PredictionMetricsHandlerTest : public testing::Test {
   explicit PredictionMetricsHandlerTest() {}
 
   void SetUp() override {
-    metrics_handler_ = std::make_unique<PredictionMetricsHandler>();
+    metrics_handler_ = std::make_unique<PredictionMetricsHandler>(
+        "Event.InputEventPrediction.Scroll");
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 

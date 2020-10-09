@@ -2598,7 +2598,8 @@ TEST_F(InputHandlerProxyEventQueueTest, VSyncAlignedGestureScroll) {
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 // Flaky under sanitizers and in other "slow" bot configs:
 // https://crbug.com/1029250
 #define MAYBE_VSyncAlignedGestureScrollPinchScroll \
