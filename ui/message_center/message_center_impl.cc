@@ -293,9 +293,13 @@ void MessageCenterImpl::RemoveAllNotifications(bool by_user, RemoveType type) {
 
     ids.insert(notification->id());
     scoped_refptr<NotificationDelegate> delegate = notification->delegate();
+
+    // Remove notification before calling the Close method in case it calls
+    // RemoveNotification reentrantly.
+    notification_list_->RemoveNotification(notification->id());
+
     if (delegate.get())
       delegate->Close(by_user);
-    notification_list_->RemoveNotification(notification->id());
   }
 
   if (!ids.empty()) {

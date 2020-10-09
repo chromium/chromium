@@ -208,6 +208,13 @@ class MessageCenterImplTest : public testing::Test {
         NOTIFICATION_TYPE_SIMPLE);
   }
 
+  std::unique_ptr<Notification> CreateSimpleNotificationWithDelegate(
+      const std::string& id,
+      scoped_refptr<NotificationDelegate> delegate) {
+    return CreateNotificationWithNotifierIdAndDelegate(
+        id, kDefaultAppId, NOTIFICATION_TYPE_SIMPLE, delegate);
+  }
+
   std::unique_ptr<Notification> CreateNotification(const std::string& id,
                                                    NotificationType type) {
     return CreateNotificationWithNotifierId(id, kDefaultAppId, type);
@@ -217,6 +224,15 @@ class MessageCenterImplTest : public testing::Test {
       const std::string& id,
       const std::string& notifier_id,
       NotificationType type) {
+    return CreateNotificationWithNotifierIdAndDelegate(
+        id, notifier_id, type, base::MakeRefCounted<TestDelegate>());
+  }
+
+  std::unique_ptr<Notification> CreateNotificationWithNotifierIdAndDelegate(
+      const std::string& id,
+      const std::string& notifier_id,
+      NotificationType type,
+      scoped_refptr<NotificationDelegate> delegate) {
     RichNotificationData optional_fields;
     optional_fields.buttons.emplace_back(UTF8ToUTF16("foo"));
     optional_fields.buttons.emplace_back(UTF8ToUTF16("foo"));
@@ -224,7 +240,7 @@ class MessageCenterImplTest : public testing::Test {
         type, id, UTF8ToUTF16("title"), UTF8ToUTF16(id),
         gfx::Image() /* icon */, base::string16() /* display_source */, GURL(),
         NotifierId(NotifierType::APPLICATION, notifier_id), optional_fields,
-        base::MakeRefCounted<TestDelegate>());
+        delegate);
   }
 
   TestDelegate* GetDelegate(const std::string& id) const {
@@ -998,21 +1014,40 @@ TEST_F(MessageCenterImplTest, RemoveNonVisibleNotification) {
 }
 
 TEST_F(MessageCenterImplTest, RemoveInCloseHandler) {
-  std::string id("id1");
+  const std::string id("id1");
 
   // Create a notification that calls RemoveNotification() on close.
-  auto notification = std::make_unique<Notification>(
-      NOTIFICATION_TYPE_SIMPLE, id, UTF8ToUTF16("title"), UTF8ToUTF16(id),
-      gfx::Image() /* icon */, base::string16() /* display_source */, GURL(),
-      NotifierId(NotifierType::APPLICATION, kDefaultAppId),
-      RichNotificationData(),
-      base::MakeRefCounted<DeleteOnCloseDelegate>(message_center(), id));
+  auto notification = CreateSimpleNotificationWithDelegate(
+      id, base::MakeRefCounted<DeleteOnCloseDelegate>(message_center(), id));
   message_center()->AddNotification(std::move(notification));
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(id));
 
   // Then remove the notification which calls RemoveNotification() reentrantly.
   message_center()->RemoveNotification(id, true /* by_user */);
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(id));
+}
+
+// Regression test for https://crbug.com/1135709
+TEST_F(MessageCenterImplTest, RemoveInCloseHandlerCloseAll) {
+  const std::string id1("id1");
+  const std::string id2("id2");
+
+  // Create two notifications that call RemoveNotification() on close.
+  auto notification1 = CreateSimpleNotificationWithDelegate(
+      id1, base::MakeRefCounted<DeleteOnCloseDelegate>(message_center(), id1));
+  auto notification2 = CreateSimpleNotificationWithDelegate(
+      id2, base::MakeRefCounted<DeleteOnCloseDelegate>(message_center(), id2));
+  message_center()->AddNotification(std::move(notification1));
+  message_center()->AddNotification(std::move(notification2));
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(id1));
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(id2));
+
+  // Then remove all notifications which calls RemoveNotification() reentrantly.
+  message_center()->RemoveAllNotifications(
+      true /* by_user */,
+      message_center::MessageCenter::RemoveType::NON_PINNED);
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(id1));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(id2));
 }
 
 TEST_F(MessageCenterImplTest, FindNotificationsByAppId) {
