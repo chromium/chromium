@@ -17,15 +17,33 @@ class KaleidoscopeToolbarElement extends PolymerElement {
 
   static get properties() {
     return {
-      // Controls whether the search field is shown.
-      showSearch: {type: Boolean, value: false},
-
       // Sets the tooltip text displayed on the menu button.
       menuLabel: {type: String, value: ''},
 
       // Sets the text displayed beside the menu button.
       pageName: {type: String, value: ''},
     };
+  }
+
+  constructor() {
+    super();
+
+    this.timeoutInterval_ = null;
+  }
+
+  /**
+   * @param {!CustomEvent<string>} e
+   * @private
+   */
+  onSearchChanged_(e) {
+    clearInterval(this.timeoutInterval_);
+
+    // Add a 300ms debounce so we don't fire for every character but should not
+    // be noticeable to the user.
+    this.timeoutInterval_ = setTimeout(() => {
+      const event = new CustomEvent('ks-search-updated', {detail: e.detail});
+      this.dispatchEvent(event);
+    }, 300);
   }
 }
 
