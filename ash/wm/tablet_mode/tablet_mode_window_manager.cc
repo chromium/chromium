@@ -34,6 +34,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
 #include "base/stl_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/display/screen.h"
@@ -498,12 +499,12 @@ TabletModeWindowManager::GetCarryOverWindowsInSplitView(
   // IsCarryOverCandidateForSplitView() to be carried over to splitscreen.
   MruWindowTracker::WindowList mru_windows =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  mru_windows.erase(
-      std::remove_if(mru_windows.begin(), mru_windows.end(),
-                     [](aura::Window* window) {
-                       return window->GetProperty(kIsShowingInOverviewKey);
-                     }),
-      mru_windows.end());
+  mru_windows.erase(std::remove_if(mru_windows.begin(), mru_windows.end(),
+                                   [](aura::Window* window) {
+                                     return window->GetProperty(
+                                         chromeos::kIsShowingInOverviewKey);
+                                   }),
+                    mru_windows.end());
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   if (IsCarryOverCandidateForSplitView(mru_windows, 0u, root_window)) {
     if (GetWindowStateType(mru_windows[0], clamshell_to_tablet) ==

@@ -48,6 +48,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -2964,7 +2965,7 @@ void DragToOverviewWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
   // Put the window that accociated with |target_tab_strip| in overview.
   test::GetWindowForTabStrip(target_tab_strip)
-      ->SetProperty(ash::kIsShowingInOverviewKey, true);
+      ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
   // Drag to target_tab_strip.
   ASSERT_TRUE(
@@ -3015,7 +3016,7 @@ void DragToOverviewNewWindowItemStep2(
   // Put the attached window in overview to simulate the "drop on the new
   // selector item" scenario.
   test::GetWindowForTabStrip(attached_tab_strip)
-      ->SetProperty(ash::kIsShowingInOverviewKey, true);
+      ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
   // At the same time we remove |attached_tab_strip|'s focus to simulate what
   // happens in overview (In overview, the window items in overview don't have
   // focus, it's the textfield in overview that has focus).
@@ -3047,7 +3048,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Test that the attached tabstrip doesn't restore focuas as it's currently
   // showing in overview.
   EXPECT_TRUE(test::GetWindowForTabStrip(tab_strip)->GetProperty(
-      ash::kIsShowingInOverviewKey));
+      chromeos::kIsShowingInOverviewKey));
   EXPECT_FALSE(tab_strip->HasFocus());
 }
 
@@ -3225,7 +3226,7 @@ void DeferredTargetTabStripTestStep2(DetachToBrowserTabDragControllerTest* test,
 
   // Put the window that accociated with |target_tab_strip| in overview.
   test::GetWindowForTabStrip(target_tab_strip)
-      ->SetProperty(ash::kIsShowingInOverviewKey, true);
+      ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
   // Drag to target_tab_strip.
   ASSERT_TRUE(
@@ -3344,8 +3345,8 @@ void DragToMinimizedOverviewWindowStep2(
   // has been put in overview as expected.
   aura::Window* dragged_window = test::GetWindowForTabStrip(dragged_tab_strip);
   aura::Window* target_window = test::GetWindowForTabStrip(target_tab_strip);
-  EXPECT_TRUE(target_window->GetProperty(ash::kIsShowingInOverviewKey));
-  EXPECT_FALSE(dragged_window->GetProperty(ash::kIsShowingInOverviewKey));
+  EXPECT_TRUE(target_window->GetProperty(chromeos::kIsShowingInOverviewKey));
+  EXPECT_FALSE(dragged_window->GetProperty(chromeos::kIsShowingInOverviewKey));
 
   // Now drag the tabs to a point that is contained by |target_window|.
   gfx::RectF target_window_bounds(target_window->bounds());
@@ -4281,7 +4282,7 @@ void SecondFingerPressTestStep2(DetachToBrowserTabDragControllerTest* test,
 
   // Put the window that accociated with |target_tab_strip| in overview.
   test::GetWindowForTabStrip(target_tab_strip)
-      ->SetProperty(ash::kIsShowingInOverviewKey, true);
+      ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
   // Drag to |target_tab_strip|.
   const gfx::Point target_point =

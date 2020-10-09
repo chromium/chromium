@@ -112,10 +112,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kIsDraggingTabsKey;
 
-// If true, the window is currently showing in overview mode.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kIsShowingInOverviewKey;
-
 // If true, the window will be ignored when mirroring the desk contents into
 // the desk's mini_view.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const

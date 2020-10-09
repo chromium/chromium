@@ -1,3 +1,5 @@
 include_rules = [
+  "+ui/aura/window.h",
+  "+ui/base/class_property.h",
   "+third_party/skia",
 ]

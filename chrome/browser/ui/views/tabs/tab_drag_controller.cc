@@ -55,6 +55,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "ash/public/cpp/window_state_type.h"  // nogncheck
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #endif
@@ -139,7 +140,7 @@ void StoreCurrentDraggedBrowserBoundsInTabletMode(
 // OS.
 bool IsShowingInOverview(TabDragContext* context) {
   return context && GetWindowForTabDraggingProperties(context)->GetProperty(
-                        ash::kIsShowingInOverviewKey);
+                        chromeos::kIsShowingInOverviewKey);
 }
 
 // Returns true if we should attach the dragged tabs into |target_context|

@@ -5,12 +5,12 @@
 #include "ash/public/cpp/caption_buttons/frame_size_button.h"
 
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -312,7 +312,8 @@ TEST_F(FrameSizeButtonTest, CancelSnapTest) {
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_TRUE(
       static_cast<FrameSizeButton*>(size_button())->in_snap_mode_for_testing());
-  window_state()->window()->SetProperty(kIsShowingInOverviewKey, true);
+  window_state()->window()->SetProperty(chromeos::kIsShowingInOverviewKey,
+                                        true);
   EXPECT_EQ(views::Button::STATE_NORMAL, size_button()->GetState());
   EXPECT_FALSE(
       static_cast<FrameSizeButton*>(size_button())->in_snap_mode_for_testing());

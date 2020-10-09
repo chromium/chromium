@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -487,7 +488,7 @@ void BrowserNonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
 void BrowserNonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
                                                            const void* key,
                                                            intptr_t old) {
-  if (key == ash::kIsShowingInOverviewKey) {
+  if (key == chromeos::kIsShowingInOverviewKey) {
     OnAddedToOrRemovedFromOverview();
     return;
   }
@@ -702,7 +703,7 @@ void BrowserNonClientFrameViewAsh::LayoutProfileIndicator() {
 }
 
 bool BrowserNonClientFrameViewAsh::IsInOverviewMode() const {
-  return GetFrameWindow()->GetProperty(ash::kIsShowingInOverviewKey);
+  return GetFrameWindow()->GetProperty(chromeos::kIsShowingInOverviewKey);
 }
 
 void BrowserNonClientFrameViewAsh::OnUpdateFrameColor() {

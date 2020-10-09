@@ -57,6 +57,7 @@
 #include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -4613,7 +4614,7 @@ TEST_P(SplitViewTabDraggingTestWithClamshellSupport,
                        ->target_bounds())
                    .CenterPoint());
   CompleteDrag(std::move(resizer));
-  EXPECT_TRUE(dragged_tab->GetProperty(kIsShowingInOverviewKey));
+  EXPECT_TRUE(dragged_tab->GetProperty(chromeos::kIsShowingInOverviewKey));
 
   // Switch to clamshell mode and check that |snapped_window| keeps its snapped
   // window state.

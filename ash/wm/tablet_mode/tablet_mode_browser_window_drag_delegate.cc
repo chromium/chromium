@@ -12,6 +12,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -157,7 +158,7 @@ void TabletModeBrowserWindowDragDelegate::UpdateSourceWindow(
       dragged_window_->GetProperty(kTabDraggingSourceWindowKey);
   if (!source_window || source_window == dragged_window_ ||
       split_view_controller_->IsWindowInSplitView(source_window) ||
-      source_window->GetProperty(kIsShowingInOverviewKey)) {
+      source_window->GetProperty(chromeos::kIsShowingInOverviewKey)) {
     return;
   }
 

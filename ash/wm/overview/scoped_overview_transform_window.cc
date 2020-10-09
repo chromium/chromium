@@ -27,6 +27,7 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
@@ -166,7 +167,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
     event_targeting_blocker_map_[transient] =
         std::make_unique<aura::ScopedWindowEventTargetingBlocker>(transient);
 
-    transient->SetProperty(kIsShowingInOverviewKey, true);
+    transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
     // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
     // property changes.
@@ -215,7 +216,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
   for (auto* transient : GetTransientTreeIterator(window_)) {
-    transient->ClearProperty(kIsShowingInOverviewKey);
+    transient->ClearProperty(chromeos::kIsShowingInOverviewKey);
     DCHECK(event_targeting_blocker_map_.contains(transient));
     event_targeting_blocker_map_.erase(transient);
   }
@@ -518,7 +519,7 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
   event_targeting_blocker_map_[transient_child] =
       std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
           transient_child);
-  transient_child->SetProperty(kIsShowingInOverviewKey, true);
+  transient_child->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
   // Hide transient children which have been specified to be hidden in
   // overview mode.
@@ -566,7 +567,7 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
   if (parent != window_ && !::wm::HasTransientAncestor(parent, window_))
     return;
 
-  transient_child->ClearProperty(kIsShowingInOverviewKey);
+  transient_child->ClearProperty(chromeos::kIsShowingInOverviewKey);
   DCHECK(event_targeting_blocker_map_.contains(transient_child));
   event_targeting_blocker_map_.erase(transient_child);
 

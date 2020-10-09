@@ -13,6 +13,8 @@ component("base") {
     "chromeos_ui_constants.h",
     "tablet_state.cc",
     "tablet_state.h",
+    "window_properties.cc",
+    "window_properties.h",
   ]
 
   output_name = "chromeos_ui_base"
@@ -20,5 +22,7 @@ component("base") {
   deps = [
     "//base",
     "//skia",
+    "//ui/aura",
+    "//ui/base",
   ]
 }
