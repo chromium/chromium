@@ -5,16 +5,6 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
-# Temporarily disable tcmalloc on arm64 linux to get rid of compilation errors.
-if (is_android || is_apple || is_asan || is_lsan || is_tsan || is_msan ||
-    is_win || is_fuchsia ||
-    ((is_linux || is_chromeos) && target_cpu == "arm64") ||
-    (is_cast_audio_only && target_cpu == "arm")) {
-  _default_allocator = "none"
-} else {
-  _default_allocator = "tcmalloc"
-}
-
 # The debug CRT on Windows has some debug features that are incompatible with
 # the shim. NaCl in particular does seem to link some binaries statically
 # against the debug CRT with "is_nacl=false".
@@ -26,7 +16,20 @@ if ((is_linux || is_chromeos || is_android || is_apple ||
   _default_use_allocator_shim = false
 }
 
+# Temporarily disable tcmalloc on arm64 linux to get rid of compilation errors.
+if (is_android || is_apple || is_asan || is_lsan || is_tsan || is_msan ||
+    is_win || is_fuchsia ||
+    ((is_linux || is_chromeos) && target_cpu == "arm64") ||
+    (is_cast_audio_only && target_cpu == "arm")) {
+  _default_allocator = "none"
+} else {
+  _default_allocator = "tcmalloc"
+}
+
 declare_args() {
+  # Don't ship this configuration, not ready yet.
+  assert(_default_allocator != "partition")
+
   # Memory allocator to use. Set to "none" to use default allocator.
   use_allocator = _default_allocator
 
@@ -56,9 +59,6 @@ if (!use_partition_alloc && use_allocator == "partition") {
 
 assert(use_allocator == "none" || use_allocator == "tcmalloc" ||
        use_allocator == "partition")
-
-# Don't ship this configuration, not ready yet.
-assert(!(use_allocator == "partition" && is_official_build))
 
 assert(!is_win || use_allocator != "tcmalloc",
        "Tcmalloc doesn't work on Windows.")
