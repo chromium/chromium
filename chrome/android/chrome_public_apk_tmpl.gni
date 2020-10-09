@@ -534,6 +534,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         } else {
           deps += [ "//chrome/android:base_module_java" ]
         }
+        deps += [ ":${target_name}__all_chrome_resources" ]
         deps += _chrome_module_shared_lib_deps
         _loadable_modules_32_bit = []
         _loadable_modules_64_bit = []

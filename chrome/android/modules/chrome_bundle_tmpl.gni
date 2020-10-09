@@ -41,6 +41,7 @@ template("chrome_bundle") {
   # - All //chrome-specific manifest definitions (e.g. activities, services)
   #   will be moved to the chrome DFM AndroidManifest.xml.
   if (_enable_chrome_module) {
+    _base_target_name = get_label_info(invoker.base_module_target, "name")
     _base_target_gen_dir =
         get_label_info(invoker.base_module_target, "target_gen_dir")
     _base_name = get_label_info(invoker.base_module_target, "name")
@@ -91,6 +92,13 @@ template("chrome_bundle") {
       load_native_on_get_impl = false
     }
     _module_descs += [ chrome_module_desc ]
+
+    # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
+    # access. For now, move all resources to the base module.
+    android_resources("${_base_target_name}__all_chrome_resources") {
+      recursive_resource_deps = true
+      deps = chrome_module_desc.java_deps
+    }
   } else {
     _module_descs = invoker.module_descs
   }
