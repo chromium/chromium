@@ -67,4 +67,15 @@ suite('cr-icon-button-focus-tests', function() {
     button.dispatchEvent(new PointerEvent('pointerdown'));
     assertTrue(button.hasRipple());
   });
+
+  test('when no-ripple-on-focus, no ripple on focus', () => {
+    button.noRippleOnFocus = false;
+    button.focus();
+    assertTrue(button.getRipple().holdDown);
+
+    button.blur();
+    button.noRippleOnFocus = true;
+    button.focus();
+    assertFalse(button.getRipple().holdDown);
+  });
 });

@@ -69,6 +69,11 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    noRippleOnFocus: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private */
     multipleIcons_: {
       type: Boolean,
@@ -93,7 +98,7 @@ Polymer({
     blur: 'onBlur_',
     click: 'onClick_',
     down: 'showRipple_',
-    focus: 'showRipple_',
+    focus: 'onFocus_',
     keydown: 'onKeyDown_',
     keyup: 'onKeyUp_',
     pointerdown: 'ensureRipple',
@@ -156,9 +161,19 @@ Polymer({
   },
 
   /** @private */
+  onFocus_() {
+    if (!this.noRippleOnFocus) {
+      this.showRipple_();
+    }
+  },
+
+  /** @private */
   onBlur_() {
     this.spaceKeyDown_ = false;
-    this.hideRipple_();
+
+    if (!this.noRippleOnFocus) {
+      this.hideRipple_();
+    }
   },
 
   /**
