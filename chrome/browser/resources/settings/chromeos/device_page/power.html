@@ -26,13 +26,14 @@
     </style>
     <div id="powerSourceRow" class="cr-row first"
         hidden$="[[!batteryStatus_.present]]">
-      <div class="flex cr-padded-text" id="powerSourceLabelDiv">
-        <div>[[powerSourceLabel_]]</div>
-        <div class="secondary">[[batteryStatus_.statusText]]</div>
+      <div class="flex cr-padded-text" aria-hidden="true">
+        <div id="powerSourceLabel">[[powerSourceLabel_]]</div>
+        <div id="batteryStatus" class="secondary">[[batteryStatus_.statusText]]</div>
       </div>
       <select id="powerSource" class="md-select"
           hidden$="[[!showPowerSourceDropdown_]]"
-          aria-labelledby="powerSourceLabelDiv"
+          aria-labelledby="powerSourceLabel"
+          aria-describedby="batteryStatus"
           on-change="onPowerSourceChange_"
           deep-link-focus-id$="[[Setting.kPowerSource]]">
         <option value="" selected="[[isEqual_('', selectedPowerSourceId_)]]">
@@ -45,7 +46,9 @@
           </option>
         </template>
       </select>
-      <div hidden$="[[showPowerSourceDropdown_]]">
+      <div hidden$="[[showPowerSourceDropdown_]]"
+          aria-labelledby="powerSourceLabel"
+          aria-describedby="batteryStatus">
         [[powerSourceName_]]
       </div>
     </div>
