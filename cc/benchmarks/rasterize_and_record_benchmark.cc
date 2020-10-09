@@ -125,14 +125,8 @@ void RasterizeAndRecordBenchmark::RunOnLayer(PictureLayer* layer) {
     return;
 
   ContentLayerClient* painter = layer->client();
-  RecordingSource recording_source;
-
-  scoped_refptr<DisplayItemList> display_list;
-  display_list = painter->PaintContentsToDisplayList();
-  recording_source.UpdateDisplayItemList(
-      display_list, painter->GetApproximateUnsharedMemoryUsage(),
-      layer_tree_host_->recording_scale_factor());
-
+  scoped_refptr<DisplayItemList> display_list =
+      painter->PaintContentsToDisplayList();
   record_results_.painter_memory_usage +=
       painter->GetApproximateUnsharedMemoryUsage();
   record_results_.paint_op_memory_usage += display_list->BytesUsed();
