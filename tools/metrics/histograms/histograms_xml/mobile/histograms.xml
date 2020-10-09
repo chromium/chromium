@@ -60,28 +60,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Mobile.ContextMenu.BookmarkEntry.Actions" enum="IOSMenuAction"
-    expires_after="2021-07-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks which action was selected in the context menu shown for Bookmark
-    entries. To view how often this context menu was shown, take a look at this
-    other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.ContextMenu.BookmarkFolder.Actions"
-    enum="IOSMenuAction" expires_after="2021-07-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks which action was selected in the context menu shown for Bookmark
-    folders. To view how often this context menu was shown, take a look at this
-    other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
     expires_after="2021-07-01">
   <owner>seblalancette@chromium.org</owner>
@@ -93,60 +71,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Mobile.ContextMenu.HistoryEntry.Actions" enum="IOSMenuAction"
+<histogram name="Mobile.ContextMenu.{EntryPoint}.Actions" enum="IOSMenuAction"
     expires_after="2021-07-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
-    Tracks which action was selected in the context menu shown for History
-    entries. To view how often this context menu was shown, take a look at this
-    other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
+    Tracks which action was selected in the context menu shown for a
+    {EntryPoint}. To view how often this context menu was shown, take a look at
+    this other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
   </summary>
-</histogram>
-
-<histogram name="Mobile.ContextMenu.MostVisitedEntry.Actions"
-    enum="IOSMenuAction" expires_after="2021-07-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks which action was selected in the context menu shown for Most Visited
-    entries. To view how often this context menu was shown, take a look at this
-    other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.ContextMenu.ReadingListEntry.Actions"
-    enum="IOSMenuAction" expires_after="2021-07-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks which action was selected in the context menu shown for Reading List
-    entries. To view how often this context menu was shown, take a look at this
-    other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.ContextMenu.RecentTabsEntry.Actions"
-    enum="IOSMenuAction" expires_after="2021-07-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks which action was selected in the context menu shown for Recent Tabs
-    entries. To view how often this context menu was shown, take a look at this
-    other histogram: Mobile.ContextMenu.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.ContextMenu.RecentTabsHeader.Actions"
-    enum="IOSMenuAction" expires_after="2021-07-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    Tracks which action was selected in the context menu shown for Recent Tabs
-    headers/devices. To view how often this context menu was shown, take a look
-    at this other histogram: Mobile.ContextMenu.EntryPoints. Currently only on
-    iOS.
-  </summary>
+  <token key="EntryPoint">
+    <variant name="BookmarkEntry" summary="Bookmark entry"/>
+    <variant name="BookmarkFolder" summary="Bookmark folder"/>
+    <variant name="HistoryEntry" summary="History entry"/>
+    <variant name="MostVisitedEntry" summary="Most Visited entry"/>
+    <variant name="ReadingListEntry" summary="Reading List entry"/>
+    <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
+    <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Mobile.DefaultBrowser.BrowserCount" units="units"
@@ -372,17 +314,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Mobile.Share.BookmarkEntry.Actions" enum="IOSShareAction"
-    expires_after="2021-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>
-    Tracks the sharing actions executed when the sharing scenario was initiated
-    for a bookmark entry. To view how often this sharing scenario was triggered,
-    take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
     expires_after="2021-06-01">
   <owner>seblalancette@chromium.org</owner>
@@ -394,70 +325,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Mobile.Share.HistoryEntry.Actions" enum="IOSShareAction"
+<histogram name="Mobile.Share.{EntryPoint}.Actions" enum="IOSShareAction"
     expires_after="2021-06-01">
   <owner>seblalancette@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
   <summary>
     Tracks the sharing actions executed when the sharing scenario was initiated
-    for a history entry. To view how often this sharing scenario was triggered,
+    for a {EntryPoint}. To view how often this sharing scenario was triggered,
     take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
   </summary>
-</histogram>
-
-<histogram name="Mobile.Share.MostVisitedEntry.Actions" enum="IOSShareAction"
-    expires_after="2021-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>
-    Tracks the sharing actions executed when the sharing scenario was initiated
-    for a most visited tile. To view how often this sharing scenario was
-    triggered, take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.Share.QRCodeImage.Actions" enum="IOSShareAction"
-    expires_after="2021-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>
-    Tracks the sharing actions executed when the sharing scenario was initiated
-    for the generated QR code image. To view how often this sharing scenario was
-    triggered, take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.Share.ReadingListEntry.Actions" enum="IOSShareAction"
-    expires_after="2021-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>
-    Tracks the sharing actions executed when the sharing scenario was initiated
-    for a reading list entry. To view how often this sharing scenario was
-    triggered, take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.Share.RecentTabsEntry.Actions" enum="IOSShareAction"
-    expires_after="2021-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>
-    Tracks the sharing actions executed when the sharing scenario was initiated
-    for a recent tab entry. To view how often this sharing scenario was
-    triggered, take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.Share.TabShareButton.Actions" enum="IOSShareAction"
-    expires_after="2021-06-01">
-  <owner>seblalancette@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
-  <summary>
-    Tracks the sharing actions executed when the sharing scenario was initiated
-    from the tab's share button. To view how often this sharing scenario was
-    triggered, take a look at: Mobile.Share.EntryPoints. Currently only on iOS.
-  </summary>
+  <token key="EntryPoint">
+    <variant name="BookmarkEntry" summary="Bookmark entry"/>
+    <variant name="HistoryEntry" summary="History entry"/>
+    <variant name="MostVisitedEntry" summary="Most Visited entry"/>
+    <variant name="QRCodeImage" summary="QR code image"/>
+    <variant name="ReadingListEntry" summary="Reading List entry"/>
+    <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
+    <variant name="TabShareButton" summary="current tab"/>
+  </token>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Action.Click"
