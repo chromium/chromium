@@ -225,7 +225,7 @@ void RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially(
   const RequiredField& required_field = required_fields_[required_fields_index];
 
   if (required_field.value_expression.empty()) {
-    ActionDelegateUtil::SetFieldValue(
+    action_delegate_util::SetFieldValue(
         action_delegate_, required_field.selector, "",
         required_field.fill_strategy, required_field.delay_in_millisecond,
         base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
@@ -249,7 +249,7 @@ void RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially(
       // default: TAP
       click_type = ClickType::TAP;
     }
-    ActionDelegateUtil::ClickOrTapElement(
+    action_delegate_util::ClickOrTapElement(
         action_delegate_, required_field.selector, click_type,
         base::BindOnce(
             &RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement,
@@ -374,7 +374,7 @@ void RequiredFieldsFallbackHandler::OnShortWaitForElement(
     // default: TAP
     click_type = ClickType::TAP;
   }
-  ActionDelegateUtil::ClickOrTapElement(
+  action_delegate_util::ClickOrTapElement(
       action_delegate_, selector_to_click, click_type,
       base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                      weak_ptr_factory_.GetWeakPtr(), required_fields_index,

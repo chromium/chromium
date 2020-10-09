@@ -48,7 +48,7 @@ void HighlightElementAction::OnWaitForElement(
     return;
   }
 
-  ActionDelegateUtil::FindElementAndPerform(
+  action_delegate_util::FindElementAndPerform(
       delegate_, selector,
       base::BindOnce(&ActionDelegate::HighlightElement,
                      delegate_->GetWeakPtr()),

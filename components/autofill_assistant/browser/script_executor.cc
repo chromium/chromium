@@ -1210,7 +1210,8 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
     return;
 
   if (!main_script_->last_focused_element_selector_.empty()) {
-    auto actions = std::make_unique<ActionDelegateUtil::ElementActionVector>();
+    auto actions =
+        std::make_unique<action_delegate_util::ElementActionVector>();
     actions->emplace_back(
         base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
                        main_script_->GetWeakPtr()));
@@ -1218,7 +1219,7 @@ void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {
         &ActionDelegate::FocusElement, main_script_->GetWeakPtr(),
         main_script_->last_focused_element_selector_,
         main_script_->last_focused_element_top_padding_));
-    ActionDelegateUtil::FindElementAndPerform(
+    action_delegate_util::FindElementAndPerformAll(
         main_script_, main_script_->last_focused_element_selector_,
         std::move(actions), base::DoNothing());
   }

@@ -186,7 +186,7 @@ void SetFormFieldValueAction::OnSetFieldValue(int next,
       /* next = */ next + 1);
   const auto& field_input = field_inputs_[next];
   if (field_input.keyboard_input) {
-    ActionDelegateUtil::SendKeyboardInput(
+    action_delegate_util::SendKeyboardInput(
         delegate_, selector_, *field_input.keyboard_input, delay_in_millisecond,
         std::move(next_field_callback));
   } else if (field_input.password_type != PasswordValueType::NOT_SET) {
@@ -205,11 +205,11 @@ void SetFormFieldValueAction::OnSetFieldValue(int next,
   } else {
     auto fill_strategy = proto_.set_form_value().fill_strategy();
     if (IsSimulatingKeyPresses(fill_strategy)) {
-      ActionDelegateUtil::SetFieldValue(delegate_, selector_, field_input.value,
-                                        fill_strategy, delay_in_millisecond,
-                                        std::move(next_field_callback));
+      action_delegate_util::SetFieldValue(
+          delegate_, selector_, field_input.value, fill_strategy,
+          delay_in_millisecond, std::move(next_field_callback));
     } else {
-      ActionDelegateUtil::SetFieldValue(
+      action_delegate_util::SetFieldValue(
           delegate_, selector_, field_input.value, fill_strategy,
           delay_in_millisecond,
           base::BindOnce(
@@ -256,7 +256,7 @@ void SetFormFieldValueAction::OnGetFieldValue(
 
     // Run |SetFieldValue| with keyboard simulation on and move on to next value
     // afterwards.
-    ActionDelegateUtil::SetFieldValue(
+    action_delegate_util::SetFieldValue(
         delegate_, selector_, requested_value, SIMULATE_KEY_PRESSES,
         proto_.set_form_value().delay_in_millisecond(),
         base::BindOnce(&SetFormFieldValueAction::OnSetFieldValue,
@@ -279,13 +279,13 @@ void SetFormFieldValueAction::OnGetStoredPassword(int field_index,
   auto fill_strategy = proto_.set_form_value().fill_strategy();
   int delay_in_millisecond = proto_.set_form_value().delay_in_millisecond();
   if (IsSimulatingKeyPresses(fill_strategy)) {
-    ActionDelegateUtil::SetFieldValue(
+    action_delegate_util::SetFieldValue(
         delegate_, selector_, password, fill_strategy, delay_in_millisecond,
         base::BindOnce(&SetFormFieldValueAction::OnSetFieldValue,
                        weak_ptr_factory_.GetWeakPtr(),
                        /* next = */ field_index + 1));
   } else {
-    ActionDelegateUtil::SetFieldValue(
+    action_delegate_util::SetFieldValue(
         delegate_, selector_, password, fill_strategy, delay_in_millisecond,
         base::BindOnce(
             &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,

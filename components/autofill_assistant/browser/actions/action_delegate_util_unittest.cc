@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+namespace action_delegate_util {
 namespace {
 
 using ::base::test::RunOnceCallback;
@@ -55,12 +56,11 @@ TEST_F(ActionDelegateUtilTest, FindElementFails) {
   EXPECT_CALL(*this,
               MockDone(EqualsStatus(ClientStatus(ELEMENT_RESOLUTION_FAILED))));
 
-  ActionDelegateUtil::FindElementAndPerform(
-      &mock_action_delegate_, Selector({"#nothing"}),
-      base::BindOnce(&ActionDelegateUtilTest::MockAction,
-                     base::Unretained(this)),
-      base::BindOnce(&ActionDelegateUtilTest::MockDone,
-                     base::Unretained(this)));
+  FindElementAndPerform(&mock_action_delegate_, Selector({"#nothing"}),
+                        base::BindOnce(&ActionDelegateUtilTest::MockAction,
+                                       base::Unretained(this)),
+                        base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                                       base::Unretained(this)));
 }
 
 TEST_F(ActionDelegateUtilTest, FindElementAndExecuteSingleAction) {
@@ -72,12 +72,11 @@ TEST_F(ActionDelegateUtilTest, FindElementAndExecuteSingleAction) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
   EXPECT_CALL(*this, MockDone(EqualsStatus(OkClientStatus())));
 
-  ActionDelegateUtil::FindElementAndPerform(
-      &mock_action_delegate_, expected_selector,
-      base::BindOnce(&ActionDelegateUtilTest::MockAction,
-                     base::Unretained(this)),
-      base::BindOnce(&ActionDelegateUtilTest::MockDone,
-                     base::Unretained(this)));
+  FindElementAndPerform(&mock_action_delegate_, expected_selector,
+                        base::BindOnce(&ActionDelegateUtilTest::MockAction,
+                                       base::Unretained(this)),
+                        base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                                       base::Unretained(this)));
 }
 
 TEST_F(ActionDelegateUtilTest, FindElementAndExecuteMultipleActions) {
@@ -95,7 +94,7 @@ TEST_F(ActionDelegateUtilTest, FindElementAndExecuteMultipleActions) {
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(*this, MockDone(EqualsStatus(OkClientStatus())));
 
-  auto actions = std::make_unique<ActionDelegateUtil::ElementActionVector>();
+  auto actions = std::make_unique<ElementActionVector>();
   actions->emplace_back(base::BindOnce(
       &ActionDelegateUtilTest::MockIndexedAction, base::Unretained(this), 1));
   actions->emplace_back(base::BindOnce(
@@ -103,10 +102,10 @@ TEST_F(ActionDelegateUtilTest, FindElementAndExecuteMultipleActions) {
   actions->emplace_back(base::BindOnce(
       &ActionDelegateUtilTest::MockIndexedAction, base::Unretained(this), 3));
 
-  ActionDelegateUtil::FindElementAndPerform(
-      &mock_action_delegate_, expected_selector, std::move(actions),
-      base::BindOnce(&ActionDelegateUtilTest::MockDone,
-                     base::Unretained(this)));
+  FindElementAndPerformAll(&mock_action_delegate_, expected_selector,
+                           std::move(actions),
+                           base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                                          base::Unretained(this)));
 }
 
 TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
@@ -124,7 +123,7 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   EXPECT_CALL(*mock_delegate, ScrollIntoView(_, _)).Times(0);
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
-  auto actions = std::make_unique<ActionDelegateUtil::ElementActionVector>();
+  auto actions = std::make_unique<ElementActionVector>();
   actions->emplace_back(
       base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
                      mock_delegate->GetWeakPtr()));
@@ -139,10 +138,10 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollIntoView,
                                        mock_delegate->GetWeakPtr()));
 
-  ActionDelegateUtil::FindElementAndPerform(
-      mock_delegate.get(), expected_selector, std::move(actions),
-      base::BindOnce(&ActionDelegateUtilTest::MockDone,
-                     base::Unretained(this)));
+  FindElementAndPerformAll(mock_delegate.get(), expected_selector,
+                           std::move(actions),
+                           base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                                          base::Unretained(this)));
 }
 
 TEST_F(ActionDelegateUtilTest, FindElementForGetFails) {
@@ -154,7 +153,7 @@ TEST_F(ActionDelegateUtilTest, FindElementForGetFails) {
       *this,
       MockDoneGet(EqualsStatus(ClientStatus(ELEMENT_RESOLUTION_FAILED)), ""));
 
-  ActionDelegateUtil::FindElementAndGetProperty(
+  FindElementAndGetProperty(
       &mock_action_delegate_, Selector({"#nothing"}),
       base::BindOnce(&ActionDelegateUtilTest::MockGetAction,
                      base::Unretained(this)),
@@ -171,7 +170,7 @@ TEST_F(ActionDelegateUtilTest, FindElementAndGetProperty) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
   EXPECT_CALL(*this, MockDoneGet(EqualsStatus(OkClientStatus()), "value"));
 
-  ActionDelegateUtil::FindElementAndGetProperty(
+  FindElementAndGetProperty(
       &mock_action_delegate_, expected_selector,
       base::BindOnce(&ActionDelegateUtilTest::MockGetAction,
                      base::Unretained(this)),
@@ -180,4 +179,5 @@ TEST_F(ActionDelegateUtilTest, FindElementAndGetProperty) {
 }
 
 }  // namespace
+}  // namespace action_delegate_util
 }  // namespace autofill_assistant

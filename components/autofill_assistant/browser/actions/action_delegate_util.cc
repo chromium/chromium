@@ -11,7 +11,7 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
-namespace ActionDelegateUtil {
+namespace action_delegate_util {
 namespace {
 
 void RetainElementAndExecuteCallback(
@@ -112,14 +112,15 @@ void FindElementAndPerform(ActionDelegate* delegate,
                            base::OnceCallback<void(const ClientStatus&)> done) {
   auto actions = std::make_unique<ElementActionVector>();
   actions->emplace_back(std::move(perform));
-  FindElementAndPerform(delegate, selector, std::move(actions),
-                        std::move(done));
+  FindElementAndPerformAll(delegate, selector, std::move(actions),
+                           std::move(done));
 }
 
-void FindElementAndPerform(ActionDelegate* delegate,
-                           const Selector& selector,
-                           std::unique_ptr<ElementActionVector> perform_actions,
-                           base::OnceCallback<void(const ClientStatus&)> done) {
+void FindElementAndPerformAll(
+    ActionDelegate* delegate,
+    const Selector& selector,
+    std::unique_ptr<ElementActionVector> perform_actions,
+    base::OnceCallback<void(const ClientStatus&)> done) {
   DCHECK(!selector.empty());
   VLOG(3) << __func__ << " " << selector;
   delegate->FindElement(
@@ -149,8 +150,8 @@ void ClickOrTapElement(ActionDelegate* delegate,
   actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
                                        delegate->GetWeakPtr(), click_type));
 
-  FindElementAndPerform(delegate, selector, std::move(actions),
-                        std::move(callback));
+  FindElementAndPerformAll(delegate, selector, std::move(actions),
+                           std::move(callback));
 }
 
 void SendKeyboardInput(ActionDelegate* delegate,
@@ -171,8 +172,8 @@ void SendKeyboardInput(ActionDelegate* delegate,
                                        delegate->GetWeakPtr(), codepoints,
                                        delay_in_millis));
 
-  FindElementAndPerform(delegate, selector, std::move(actions),
-                        std::move(callback));
+  FindElementAndPerformAll(delegate, selector, std::move(actions),
+                           std::move(callback));
 }
 
 void SetFieldValue(ActionDelegate* delegate,
@@ -192,5 +193,5 @@ void SetFieldValue(ActionDelegate* delegate,
       std::move(callback));
 }
 
-}  // namespace ActionDelegateUtil
+}  // namespace action_delegate_util
 }  // namespace autofill_assistant

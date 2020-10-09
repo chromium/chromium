@@ -72,7 +72,7 @@ void SelectOptionAction::OnWaitForElement(const Selector& selector,
     return;
   }
 
-  ActionDelegateUtil::FindElementAndPerform(
+  action_delegate_util::FindElementAndPerform(
       delegate_, selector,
       base::BindOnce(&ActionDelegate::SelectOption, delegate_->GetWeakPtr(),
                      value_, proto_.select_option().select_strategy()),

@@ -72,14 +72,14 @@ void FocusElementAction::OnWaitForElement(ProcessActionCallback callback,
     return;
   }
 
-  auto actions = std::make_unique<ActionDelegateUtil::ElementActionVector>();
+  auto actions = std::make_unique<action_delegate_util::ElementActionVector>();
   actions->emplace_back(
       base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
                      delegate_->GetWeakPtr()));
   actions->emplace_back(base::BindOnce(&ActionDelegate::FocusElement,
                                        delegate_->GetWeakPtr(), selector,
                                        top_padding));
-  ActionDelegateUtil::FindElementAndPerform(
+  action_delegate_util::FindElementAndPerformAll(
       delegate_, selector, std::move(actions),
       base::BindOnce(&FocusElementAction::OnFocusElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

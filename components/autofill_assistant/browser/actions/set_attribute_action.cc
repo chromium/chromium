@@ -46,7 +46,7 @@ void SetAttributeAction::OnWaitForElement(ProcessActionCallback callback,
     return;
   }
 
-  ActionDelegateUtil::FindElementAndPerform(
+  action_delegate_util::FindElementAndPerform(
       delegate_, selector,
       base::BindOnce(&ActionDelegate::SetAttribute, delegate_->GetWeakPtr(),
                      ExtractVector(proto_.set_attribute().attribute()),

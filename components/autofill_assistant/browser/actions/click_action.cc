@@ -51,7 +51,7 @@ void ClickAction::OnWaitForElement(ProcessActionCallback callback,
     return;
   }
 
-  ActionDelegateUtil::ClickOrTapElement(
+  action_delegate_util::ClickOrTapElement(
       delegate_, selector, click_type_,
       base::BindOnce(&::autofill_assistant::ClickAction::OnClick,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

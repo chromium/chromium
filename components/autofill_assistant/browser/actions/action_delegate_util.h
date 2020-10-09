@@ -11,7 +11,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
-namespace ActionDelegateUtil {
+namespace action_delegate_util {
 
 using ElementActionCallback =
     base::OnceCallback<void(const ElementFinder::Result&,
@@ -38,7 +38,7 @@ void FindElementAndPerform(
 // immediately executes the |done| callback. If the resolution succeeds, it
 // executes the |perform_actions| callbacks in sequence with the element and
 // the |done| callback as arguments, while retaining the element.
-void FindElementAndPerform(
+void FindElementAndPerformAll(
     /* const */ ActionDelegate* delegate,
     const Selector& selector,
     std::unique_ptr<ElementActionVector> perform_actions,
@@ -74,7 +74,7 @@ void SetFieldValue(/* const */ ActionDelegate* delegate,
                    int key_press_delay_in_millisecond,
                    base::OnceCallback<void(const ClientStatus&)> callback);
 
-}  // namespace ActionDelegateUtil
+}  // namespace action_delegate_util
 }  // namespace autofill_assistant
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_ACTION_DELEGATE_UTIL_H_
