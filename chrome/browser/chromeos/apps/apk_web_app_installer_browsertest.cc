@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/apps/apk_web_app_installer.h"
@@ -28,9 +27,7 @@
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
@@ -58,21 +55,11 @@ arc::mojom::RawIconPngDataPtr GetFakeIconBytes() {
 
 namespace chromeos {
 
-class ApkWebAppInstallerBrowserTest
-    : public InProcessBrowserTest,
-      public web_app::AppRegistrarObserver,
-      public ArcAppListPrefs::Observer,
-      public ::testing::WithParamInterface<web_app::ProviderType> {
+class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
+                                      public web_app::AppRegistrarObserver,
+                                      public ArcAppListPrefs::Observer {
  public:
-  ApkWebAppInstallerBrowserTest() {
-    if (GetParam() == web_app::ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == web_app::ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+  ApkWebAppInstallerBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -184,7 +171,6 @@ class ApkWebAppInstallerBrowserTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       observer_{this};
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
@@ -228,7 +214,7 @@ class ApkWebAppInstallerWithLauncherControllerBrowserTest
 };
 
 // Test the full installation and uninstallation flow.
-IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerBrowserTest, InstallAndUninstall) {
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest, InstallAndUninstall) {
   ApkWebAppService* service = apk_web_app_service();
   service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
@@ -267,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerBrowserTest, InstallAndUninstall) {
 }
 
 // Test installation via PackageListRefreshed.
-IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerBrowserTest, PackageListRefreshed) {
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest, PackageListRefreshed) {
   ApkWebAppService* service = apk_web_app_service();
   service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
@@ -287,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerBrowserTest, PackageListRefreshed) {
 }
 
 // Test uninstallation when ARC isn't running.
-IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerDelayedArcStartBrowserTest,
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
                        DelayedUninstall) {
   ApkWebAppService* service = apk_web_app_service();
 
@@ -338,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerDelayedArcStartBrowserTest,
 }
 
 // Test an upgrade that becomes a web app and then stops being a web app.
-IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
                        UpgradeToWebAppAndToArcApp) {
   ApkWebAppService* service = apk_web_app_service();
   service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
@@ -394,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerWithLauncherControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
                        CheckPinStateAfterUpdate) {
   ApkWebAppService* service = apk_web_app_service();
   service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
@@ -480,23 +466,5 @@ IN_PROC_BROWSER_TEST_P(ApkWebAppInstallerWithLauncherControllerBrowserTest,
     run_loop.Run();
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ApkWebAppInstallerBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ApkWebAppInstallerDelayedArcStartBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ApkWebAppInstallerWithLauncherControllerBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
 
 }  // namespace chromeos
