@@ -18,13 +18,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoaderWin : public CursorLoader {
   ~CursorLoaderWin() override;
 
   // Overridden from CursorLoader:
-  void LoadImageCursor(mojom::CursorType id,
-                       int resource_id,
-                       const gfx::Point& hot) override;
-  void LoadAnimatedCursor(mojom::CursorType id,
-                          int resource_id,
-                          const gfx::Point& hot,
-                          int frame_delay_ms) override;
   void UnloadAll() override;
   void SetPlatformCursor(gfx::NativeCursor* cursor) override;
 

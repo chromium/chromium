@@ -55,8 +55,6 @@ if (use_aura) {
       "cursor_util.h",
       "cursors_aura.cc",
       "cursors_aura.h",
-      "image_cursors.cc",
-      "image_cursors.h",
     ]
     defines = [ "IS_UI_BASE_CURSOR_IMPL" ]
     public_deps = [

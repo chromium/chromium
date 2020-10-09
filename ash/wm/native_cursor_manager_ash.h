@@ -11,7 +11,7 @@
 #include "ui/wm/core/native_cursor_manager.h"
 
 namespace ui {
-class ImageCursors;
+class CursorLoader;
 }
 
 namespace ash {
@@ -56,7 +56,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
 
   bool native_cursor_enabled_;
 
-  std::unique_ptr<ui::ImageCursors> image_cursors_;
+  std::unique_ptr<ui::CursorLoader> cursor_loader_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeCursorManagerAsh);
 };
