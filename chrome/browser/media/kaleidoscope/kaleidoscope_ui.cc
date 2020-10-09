@@ -324,6 +324,7 @@ content::WebUIDataSource* KaleidoscopeUI::CreateUntrustedWebUIDataSource() {
   untrusted_source->AddResourcePath("content.js", IDR_KALEIDOSCOPE_CONTENT_JS);
   untrusted_source->AddResourcePath("content-worker.js",
                                     IDR_KALEIDOSCOPE_CONTENT_WORKER_JS);
+  untrusted_source->AddResourcePath("icons.js", IDR_KALEIDOSCOPE_ICONS_JS);
   untrusted_source->AddResourcePath("messages.js",
                                     IDR_KALEIDOSCOPE_MESSAGES_JS);
   untrusted_source->AddResourcePath("toolbar.js", IDR_KALEIDOSCOPE_TOOLBAR_JS);
