@@ -131,14 +131,34 @@ bool NavigateToURLAndExpectNoCommit(Shell* window, const GURL& url) {
   return old_entry == new_entry;
 }
 
-void WaitForAppModalDialog(Shell* window) {
+AppModalDialogWaiter::AppModalDialogWaiter(Shell* shell) : shell_(shell) {
+  Restart();
+}
+
+void AppModalDialogWaiter::Restart() {
+  was_dialog_request_callback_called_ = false;
   ShellJavaScriptDialogManager* dialog_manager =
       static_cast<ShellJavaScriptDialogManager*>(
-          window->GetJavaScriptDialogManager(window->web_contents()));
+          shell_->GetJavaScriptDialogManager(shell_->web_contents()));
+  dialog_manager->set_dialog_request_callback(base::BindOnce(
+      &AppModalDialogWaiter::EarlyCallback, base::Unretained(this)));
+}
 
-  base::RunLoop runner;
-  dialog_manager->set_dialog_request_callback(runner.QuitClosure());
-  runner.Run();
+void AppModalDialogWaiter::Wait() {
+  if (!was_dialog_request_callback_called_) {
+    ShellJavaScriptDialogManager* dialog_manager =
+        static_cast<ShellJavaScriptDialogManager*>(
+            shell_->GetJavaScriptDialogManager(shell_->web_contents()));
+
+    base::RunLoop runner;
+    dialog_manager->set_dialog_request_callback(runner.QuitClosure());
+    runner.Run();
+    was_dialog_request_callback_called_ = true;
+  }
+}
+
+void AppModalDialogWaiter::EarlyCallback() {
+  was_dialog_request_callback_called_ = true;
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(Shell* shell) {

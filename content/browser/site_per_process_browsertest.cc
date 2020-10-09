@@ -15598,10 +15598,11 @@ IN_PROC_BROWSER_TEST_P(InnerWebContentsAttachTest, PrepareFrame) {
   auto* original_child_frame = child_node->current_frame_host();
   RenderFrameDeletedObserver original_child_frame_observer(
       original_child_frame);
+  AppModalDialogWaiter dialog_waiter(shell());
   PrepareFrameJob prepare_job(original_child_frame,
                               proceed_through_beforeunload);
   if (test_beforeunload)
-    WaitForAppModalDialog(shell());
+    dialog_waiter.Wait();
   prepare_job.WaitForPreparedFrame();
   auto* new_render_frame_host = prepare_job.prepared_frame();
   bool did_prepare_frame = new_render_frame_host;

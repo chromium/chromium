@@ -214,9 +214,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Now we navigate the child to about:blank, but since we do not proceed with
   // the navigation, the OOPIF should stay alive and RemoteFrameView intact.
+  AppModalDialogWaiter dialog_waiter(shell());
   ASSERT_TRUE(ExecuteScript(
       web_contents(), "document.querySelector('iframe').src = 'about:blank';"));
-  WaitForAppModalDialog(shell());
+  dialog_waiter.Wait();
 
   // Sanity check: We should still have an OOPIF and hence a RWHVCF.
   ASSERT_TRUE(static_cast<RenderWidgetHostViewBase*>(

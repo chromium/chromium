@@ -1424,8 +1424,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // clicking on the link right away would cause the ExecuteScript to never
   // return.
   SetShouldProceedOnBeforeUnload(shell(), false, false);
+  AppModalDialogWaiter dialog_waiter(shell());
   EXPECT_TRUE(ExecuteScript(shell(), "clickLinkSoon()"));
-  WaitForAppModalDialog(shell());
+  dialog_waiter.Wait();
 
   // Have the cross-site navigation commit. The main RenderFrameHost should
   // still be loading after that.

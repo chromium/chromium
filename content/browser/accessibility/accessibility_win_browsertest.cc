@@ -4480,10 +4480,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   main_frame->ExecuteJavaScriptWithUserGestureForTests(L"");
 
   // Trigger a reload here, which will get cancelled.
+  AppModalDialogWaiter dialog_waiter(shell());
   shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
 
   // Wait for the dialog to be triggered and then get cancelled.
-  WaitForAppModalDialog(shell());
+  dialog_waiter.Wait();
 
   // Now set up a listener for native Windows accessibility events.
   // The bug here was that when a page is being reloaded or navigated

@@ -126,8 +126,31 @@ void ReloadBypassingCacheBlockUntilNavigationsComplete(
     Shell* window,
     int number_of_navigations);
 
-// Wait until an application modal dialog is requested.
-void WaitForAppModalDialog(Shell* window);
+// A class to help with waiting for at least one javascript dialog to be
+// requested.
+//
+// On creation or Restart, it uses set_dialog_request_callback to
+// capture any future dialog request. Calling Wait() will
+// either return immediately because a dialog has already been called or it will
+// wait, processing events until one is requested.
+//
+// That means, object should be constructed, or Restart() called, before section
+// that could request a modal dialog.
+class AppModalDialogWaiter {
+ public:
+  explicit AppModalDialogWaiter(Shell* shell);
+  void Restart();
+  void Wait();
+
+  bool WasDialogRequestedCallbackCalled() {
+    return was_dialog_request_callback_called_;
+  }
+
+ private:
+  void EarlyCallback();
+  bool was_dialog_request_callback_called_ = false;
+  Shell* shell_;
+};
 
 // Extends the ToRenderFrameHost mechanism to content::Shells.
 RenderFrameHost* ConvertToRenderFrameHost(Shell* shell);

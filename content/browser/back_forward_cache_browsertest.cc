@@ -6410,40 +6410,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 }
 
-// A class to help with waiting for at least one javascript dialog to be
-// requested.
-//
-// On creation or RestartObserving, it uses set_dialog_request_callback to
-// capture any future dialog request. Calling WaitForAppModalDialog() will
-// either return immediately because a dialog has already been called or it will
-// wait, processing events until one is requested.
-class DialogObserver {
- public:
-  explicit DialogObserver(Shell* shell) : shell_(shell) {}
-
-  void RestartObserving() {
-    dialog_requested_ = false;
-    ShellJavaScriptDialogManager* dialog_manager =
-        static_cast<ShellJavaScriptDialogManager*>(
-            shell_->GetJavaScriptDialogManager(shell_->web_contents()));
-    dialog_manager->set_dialog_request_callback(
-        base::BindLambdaForTesting([&]() { dialog_requested_ = true; }));
-  }
-
-  bool WasDialogRequested() { return dialog_requested_; }
-
-  void WaitForAppModalDialog() {
-    if (!dialog_requested_) {
-      content::WaitForAppModalDialog(shell_);
-      dialog_requested_ = true;
-    }
-  }
-
- private:
-  bool dialog_requested_ = false;
-  Shell* shell_;
-};
-
 // Start an inifite dialogs in JS, yielding after each. The first dialog should
 // be dismissed by navigation. The later dialogs should be handled gracefully
 // and not appear while in BFCache. Finally, when the page comes out of BFCache,
@@ -6460,7 +6426,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
-  DialogObserver dialog_observer(shell());
+  AppModalDialogWaiter dialog_waiter(shell());
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     function alertLoop() {
@@ -6471,7 +6437,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     setTimeout(alertLoop, 0);
   )"));
 
-  dialog_observer.WaitForAppModalDialog();
+  dialog_waiter.Wait();
 
   // Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -6481,7 +6447,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_THAT(rfh_a, InBackForwardCache());
   ASSERT_NE(rfh_a, rfh_b);
 
-  dialog_observer.RestartObserving();
+  dialog_waiter.Restart();
 
   // Go back.
   web_contents()->GetController().GoBack();
@@ -6491,7 +6457,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // The page should still be requesting dialogs in a loop. Wait for one to be
   // requested.
-  dialog_observer.WaitForAppModalDialog();
+  dialog_waiter.Wait();
 }
 
 // UnloadOldFrame will clear all dialogs. We test that further requests for
@@ -6531,13 +6497,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rfh_a->render_view_host()->SetWillEnterBackForwardCacheCallbackForTesting(
       will_enter_back_forward_cache_callback);
 
-  DialogObserver dialog_observer(shell());
+  AppModalDialogWaiter dialog_waiter(shell());
 
   // Try show another dialog. It should work.
   ExecuteScriptAsync(rfh_a, R"(window.alert("alert");)");
-  dialog_observer.WaitForAppModalDialog();
+  dialog_waiter.Wait();
 
-  dialog_observer.RestartObserving();
+  dialog_waiter.Restart();
 
   // Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -6548,7 +6514,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_NE(rfh_a, rfh_b);
   // Test that the JS was run and that it didn't result in a dialog.
   ASSERT_TRUE(posted_dialog_js);
-  ASSERT_FALSE(dialog_observer.WasDialogRequested());
+  ASSERT_FALSE(dialog_waiter.WasDialogRequestedCallbackCalled());
 
   // Go back.
   web_contents()->GetController().GoBack();
@@ -6559,7 +6525,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Try show another dialog. It should work.
   ExecuteScriptAsync(rfh_a, R"(window.alert("alert");)");
-  dialog_observer.WaitForAppModalDialog();
+  dialog_waiter.Wait();
 }
 
 namespace {
