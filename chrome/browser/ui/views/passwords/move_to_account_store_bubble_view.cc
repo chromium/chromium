@@ -25,6 +25,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -186,12 +187,18 @@ MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets(
+              /*vertical=*/0,
+              /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   from_view = AddChildView(std::move(from_image));
 
-  auto arrow_view = std::make_unique<VectorIconView>(
-      kBookmarkbarTouchOverflowIcon, kImageSize);
+  auto arrow_view = std::make_unique<views::ColorTrackingIconView>(
+      kChevronRightIcon, gfx::kFaviconSize);
   arrow_view->EnableCanvasFlippingForRTLUI(true);
   AddChildView(std::move(arrow_view));
 
