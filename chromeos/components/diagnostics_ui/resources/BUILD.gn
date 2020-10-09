@@ -27,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":percent_bar_chart",
     ":realtime_cpu_chart",
     ":routine_result_entry",
+    ":routine_result_list",
   ]
 }
 
@@ -140,6 +141,12 @@ js_library("routine_result_entry") {
   ]
 }
 
+js_library("routine_result_list") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
@@ -154,5 +161,6 @@ html_to_js("web_components") {
     "percent_bar_chart.js",
     "realtime_cpu_chart.js",
     "routine_result_entry.js",
+    "routine_result_list.js",
   ]
 }

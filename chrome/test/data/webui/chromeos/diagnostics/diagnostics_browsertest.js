@@ -22,6 +22,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['FakeSystemDataProvider', 'diagnostics/fake_system_data_provider_test.js'],
  ['FakeMethodProvider', 'diagnostics/fake_method_provider_test.js'],
  ['RoutineResultEntry', 'diagnostics/routine_result_entry_test.js'],
+ ['RoutineResultList', 'diagnostics/routine_result_list_test.js'],
  ['PercentBarChart', 'diagnostics/percent_bar_chart_test.js'], [
    'FakeSystemRoutineController',
    'diagnostics/fake_system_routine_controller_test.js'
