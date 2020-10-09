@@ -16,8 +16,6 @@ class FakeDataTransferManagerInterop;
 // for the Share contract.
 class ScopedFakeDataTransferManagerInterop {
  public:
-  static bool IsSupportedEnvironment();
-
   ScopedFakeDataTransferManagerInterop();
   ScopedFakeDataTransferManagerInterop(
       const ScopedFakeDataTransferManagerInterop&) = delete;

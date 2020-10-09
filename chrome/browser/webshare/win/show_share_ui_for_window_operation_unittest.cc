@@ -40,7 +40,8 @@ class ShowShareUIForWindowOperationTest : public ::testing::Test {
   enum TestCallbackState { NotRun = 0, RunWithoutValue, RunWithValue };
 
   bool IsSupportedEnvironment() {
-    return ScopedFakeDataTransferManagerInterop::IsSupportedEnvironment();
+    return base::win::ResolveCoreWinRTDelayload() &&
+           base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
   }
 
   void SetUp() override {
