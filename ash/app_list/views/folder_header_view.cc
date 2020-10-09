@@ -61,7 +61,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         color_provider->GetFolderNameBackgroundColor(is_active),
         AppListConfig::instance().folder_name_border_radius()));
 
-    const SkColor text_color = color_provider->GetFolderTitleTextColor();
+    const SkColor text_color =
+        color_provider->GetFolderTitleTextColor(gfx::kGoogleGrey700);
     SetTextColor(text_color);
     SetSelectionTextColor(text_color);
     SetSelectionBackgroundColor(color_provider->GetFolderNameSelectionColor());

@@ -31,8 +31,8 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetPageSwitcherInkDropHighlightColor() const = 0;
   virtual SkColor GetSearchBoxIconColor() const = 0;
   virtual SkColor GetSearchBoxCardBackgroundColor() const = 0;
-  virtual SkColor GetFolderBackgroundColor() const = 0;
-  virtual SkColor GetFolderTitleTextColor() const = 0;
+  virtual SkColor GetFolderBackgroundColor(SkColor default_color) const = 0;
+  virtual SkColor GetFolderTitleTextColor(SkColor default_color) const = 0;
   virtual SkColor GetFolderHintTextColor() const = 0;
   virtual SkColor GetFolderNameBackgroundColor(bool active) const = 0;
   virtual SkColor GetFolderNameBorderColor(bool active) const = 0;
