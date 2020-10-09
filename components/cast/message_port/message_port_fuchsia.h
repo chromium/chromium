@@ -30,6 +30,18 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
   static std::unique_ptr<MessagePort> Create(
       fidl::InterfaceRequest<::fuchsia::web::MessagePort> port);
 
+  // Gets the implementation of |port| for callers who know its platform type.
+  static MessagePortFuchsia* FromMessagePort(MessagePort* port);
+
+  // Returns the platform-specific port resources and invalidates this object.
+  // The caller is responsible for choosing the take method which is appropriate
+  // to the underlying FIDL resource. Attempting to take the wrong resource will
+  // produce a DCHECK failure.
+  virtual fidl::InterfaceHandle<::fuchsia::web::MessagePort>
+  TakeClientHandle() = 0;
+  virtual fidl::InterfaceRequest<::fuchsia::web::MessagePort>
+  TakeServiceRequest() = 0;
+
  protected:
   // Represents whether a MessagePortFuchsia was created from an InterfaceHandle
   // (PortType::HANDLE) or InterfaceRequest (PortType::REQUEST)
@@ -38,7 +50,7 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
     REQUEST = 2,
   };
 
-  MessagePortFuchsia(PortType port_type);
+  explicit MessagePortFuchsia(PortType port_type);
 
   // Creates a fuchsia::web::WebMessage containing |message| and transferring
   // |ports|
@@ -54,10 +66,6 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
   base::Optional<fuchsia::web::FrameError> ReceiveMessageFromFidl(
       fuchsia::web::WebMessage message);
 
-  // Retrieves the platform-specific port and invalidates this object.
-  fidl::InterfaceHandle<::fuchsia::web::MessagePort> TakeHandle();
-  fidl::InterfaceRequest<::fuchsia::web::MessagePort> TakeRequest();
-
   void OnZxError(zx_status_t status);
   void ReportPipeError();
 
@@ -71,11 +79,6 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
   base::circular_deque<fuchsia::web::WebMessage> message_queue_;
 
  private:
-  // Gets the implementation of |port| for callers who know its platform type.
-  static MessagePortFuchsia* FromMessagePort(MessagePort* port);
-
-  PortType port_type() const;
-
   const PortType port_type_;
 };
 

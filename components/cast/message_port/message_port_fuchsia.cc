@@ -5,6 +5,7 @@
 #include "components/cast/message_port/message_port_fuchsia.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/notreached.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 
@@ -22,13 +23,20 @@ class MessagePortFuchsiaClient : public MessagePortFuchsia {
 
   ~MessagePortFuchsiaClient() override {}
 
-  // Invalidates the port an returns the original InterfaceHandle.
-  fidl::InterfaceHandle<::fuchsia::web::MessagePort> TakeHandle() {
+  // MessagePortFuchsia implementation.
+  fidl::InterfaceHandle<::fuchsia::web::MessagePort> TakeClientHandle() final {
     DCHECK(!receiver_);
     DCHECK(port_.is_bound());
     return port_.Unbind();
   }
 
+  fidl::InterfaceRequest<::fuchsia::web::MessagePort> TakeServiceRequest()
+      final {
+    NOTREACHED();
+    return {};
+  }
+
+  // MessagePort implementation.
   void SetReceiver(cast_api_bindings::MessagePort::Receiver* receiver) final {
     DCHECK(receiver);
     DCHECK(!receiver_);
@@ -108,13 +116,18 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
 
   ~MessagePortFuchsiaServer() override {}
 
-  // Invalidates the port an returns the original InterfaceRequest.
-  fidl::InterfaceRequest<::fuchsia::web::MessagePort> TakeRequest() {
-    DCHECK(!receiver_);
-    DCHECK(binding_.is_bound());
+  // MessagePortFuchsia implementation.
+  fidl::InterfaceHandle<::fuchsia::web::MessagePort> TakeClientHandle() final {
+    NOTREACHED();
+    return {};
+  }
+
+  fidl::InterfaceRequest<::fuchsia::web::MessagePort> TakeServiceRequest()
+      final {
     return binding_.Unbind();
   }
 
+  // MessagePort implementation.
   void SetReceiver(cast_api_bindings::MessagePort::Receiver* receiver) final {
     DCHECK(receiver);
     DCHECK(!receiver_);
@@ -218,12 +231,12 @@ fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
   message_fidl.set_data(cr_fuchsia::MemBufferFromString(message.as_string(),
                                                         message.as_string()));
   if (!ports.empty()) {
-    PortType expected_port_type = FromMessagePort(ports[0].get())->port_type();
+    PortType expected_port_type = FromMessagePort(ports[0].get())->port_type_;
     std::vector<fuchsia::web::IncomingTransferable> incoming_transferables;
     std::vector<fuchsia::web::OutgoingTransferable> receiver_transferables;
     for (auto& port : ports) {
       MessagePortFuchsia* port_fuchsia = FromMessagePort(port.get());
-      PortType port_type = port_fuchsia->port_type();
+      PortType port_type = port_fuchsia->port_type_;
 
       DCHECK_EQ(expected_port_type, port_type)
           << "Only one implementation of MessagePortFuchsia can be transmitted "
@@ -237,7 +250,7 @@ fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
           fuchsia::web::IncomingTransferable in;
           in.set_message_port(
               reinterpret_cast<MessagePortFuchsiaClient*>(port_fuchsia)
-                  ->TakeHandle());
+                  ->TakeClientHandle());
           incoming_transferables.emplace_back(std::move(in));
           break;
         }
@@ -245,7 +258,7 @@ fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
           fuchsia::web::OutgoingTransferable out;
           out.set_message_port(
               reinterpret_cast<MessagePortFuchsiaServer*>(port_fuchsia)
-                  ->TakeRequest());
+                  ->TakeServiceRequest());
           receiver_transferables.emplace_back(std::move(out));
           break;
         }
@@ -262,10 +275,6 @@ fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
 MessagePortFuchsia::MessagePortFuchsia(PortType port_type)
     : receiver_(nullptr), port_type_(port_type) {}
 MessagePortFuchsia::~MessagePortFuchsia() = default;
-
-MessagePortFuchsia::PortType MessagePortFuchsia::port_type() const {
-  return port_type_;
-}
 
 base::Optional<fuchsia::web::FrameError>
 MessagePortFuchsia::ReceiveMessageFromFidl(fuchsia::web::WebMessage message) {
@@ -331,4 +340,5 @@ bool MessagePortFuchsia::PostMessageWithTransferables(
 
   return true;
 }
+
 }  // namespace cast_api_bindings

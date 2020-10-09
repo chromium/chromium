@@ -9,19 +9,25 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/mem_buffer_util.h"
-#include "fuchsia/base/message_port.h"
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
+#include "fuchsia/runners/cast/create_web_message.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
+
+using CastMessagePort = std::unique_ptr<cast_api_bindings::MessagePort>;
+
+namespace {
 
 class NamedMessagePortConnectorFuchsiaTest
     : public cr_fuchsia::WebEngineBrowserTest {
@@ -52,13 +58,14 @@ class NamedMessagePortConnectorFuchsiaTest
           callback) {
     if (change.has_is_main_document_loaded() &&
         change.is_main_document_loaded()) {
-      frame_->PostMessage("*",
-                          std::move(*cr_fuchsia::FidlWebMessageFromBlink(
-                              connector_->GetConnectMessage(),
-                              cr_fuchsia::TransferableHostType::kRemote)),
-                          [](fuchsia::web::Frame_PostMessage_Result result) {
-                            DCHECK(result.is_response());
-                          });
+      std::string connect_message;
+      CastMessagePort connect_port;
+      connector_->GetConnectMessage(&connect_message, &connect_port);
+      frame_->PostMessage(
+          "*", CreateWebMessage(connect_message, std::move(connect_port)),
+          [](fuchsia::web::Frame_PostMessage_Result result) {
+            DCHECK(result.is_response());
+          });
     }
 
     // Allow the TestNavigationListener's usual navigation event processing flow
@@ -82,15 +89,14 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
   frame_->GetNavigationController(controller.NewRequest());
 
   std::string received_port_name;
-  fidl::InterfaceHandle<fuchsia::web::MessagePort> received_port;
+  CastMessagePort received_port;
   base::RunLoop receive_port_run_loop;
   connector_->RegisterPortHandler(base::BindRepeating(
-      [](std::string* received_port_name,
-         fidl::InterfaceHandle<fuchsia::web::MessagePort>* received_port,
+      [](std::string* received_port_name, CastMessagePort* received_port,
          base::RunLoop* receive_port_run_loop, base::StringPiece port_name,
-         blink::WebMessagePort port) -> bool {
+         CastMessagePort port) -> bool {
         *received_port_name = port_name.as_string();
-        *received_port = cr_fuchsia::FidlMessagePortFromBlink(std::move(port));
+        *received_port = std::move(port);
         receive_port_run_loop->Quit();
         return true;
       },
@@ -105,43 +111,23 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
   receive_port_run_loop.Run();
   EXPECT_EQ(received_port_name, "echo");
 
-  fuchsia::web::MessagePortPtr message_port = received_port.Bind();
+  cast_api_bindings::TestMessagePortReceiver test_receiver;
+  received_port->SetReceiver(&test_receiver);
+  received_port->PostMessage("ping");
 
-  fuchsia::web::WebMessage msg;
-  msg.set_data(cr_fuchsia::MemBufferFromString("ping", "test"));
-  cr_fuchsia::ResultReceiver<fuchsia::web::MessagePort_PostMessage_Result>
-      post_result;
-  message_port->PostMessage(
-      std::move(msg),
-      cr_fuchsia::CallbackToFitFunction(post_result.GetReceiveCallback()));
+  ASSERT_TRUE(test_receiver.RunUntilMessageCountEqual(3));
+  EXPECT_EQ(test_receiver.buffer()[0].first, "early 1");
+  EXPECT_EQ(test_receiver.buffer()[1].first, "early 2");
+  EXPECT_EQ(test_receiver.buffer()[2].first, "ack ping");
 
-  std::vector<std::string> test_messages = {"early 1", "early 2", "ack ping"};
-  for (std::string expected_msg : test_messages) {
-    base::RunLoop run_loop;
-    cr_fuchsia::ResultReceiver<fuchsia::web::WebMessage> message_receiver(
-        run_loop.QuitClosure());
-    message_port->ReceiveMessage(cr_fuchsia::CallbackToFitFunction(
-        message_receiver.GetReceiveCallback()));
-    run_loop.Run();
-
-    std::string data;
-    ASSERT_TRUE(message_receiver->has_data());
-    ASSERT_TRUE(
-        cr_fuchsia::StringFromMemBuffer(message_receiver->data(), &data));
-    EXPECT_EQ(data, expected_msg);
-  }
+  EXPECT_TRUE(received_port->CanPostMessage());
 
   // Ensure that the MessagePort is dropped when navigating away.
-  {
-    base::RunLoop run_loop;
-    message_port.set_error_handler([&run_loop](zx_status_t status) {
-      EXPECT_EQ(ZX_ERR_PEER_CLOSED, status);
-      run_loop.Quit();
-    });
-    EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        controller.get(), fuchsia::web::LoadUrlParams(), "about:blank"));
-    run_loop.Run();
-  }
+  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      controller.get(), fuchsia::web::LoadUrlParams(), "about:blank"));
+
+  test_receiver.RunUntilDisconnected();
+  EXPECT_FALSE(received_port->CanPostMessage());
 }
 
 // Tests that the NamedMessagePortConnectorFuchsia can receive more than one
@@ -156,50 +142,34 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, MultiplePorts) {
   fuchsia::web::NavigationControllerPtr controller;
   frame_->GetNavigationController(controller.NewRequest());
 
-  std::vector<fidl::InterfaceHandle<fuchsia::web::MessagePort>> received_ports;
-  base::RunLoop receive_ports_run_loop;
+  std::vector<CastMessagePort> received_ports;
+  base::RunLoop receive_port_run_loop;
   connector_->RegisterPortHandler(base::BindRepeating(
-      [](std::vector<fidl::InterfaceHandle<fuchsia::web::MessagePort>>*
-             received_ports,
-         base::RunLoop* receive_ports_run_loop, base::StringPiece,
-         blink::WebMessagePort port) -> bool {
-        received_ports->push_back(
-            cr_fuchsia::FidlMessagePortFromBlink(std::move(port)));
+      [](std::vector<CastMessagePort>* received_ports,
+         base::RunLoop* receive_port_run_loop, base::StringPiece port_name,
+         CastMessagePort port) -> bool {
+        received_ports->push_back(std::move(port));
 
         if (received_ports->size() == kExpectedPortCount)
-          receive_ports_run_loop->Quit();
+          receive_port_run_loop->Quit();
 
         return true;
       },
       base::Unretained(&received_ports),
-      base::Unretained(&receive_ports_run_loop)));
+      base::Unretained(&receive_port_run_loop)));
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
-  navigation_listener_.RunUntilUrlEquals(test_url);
-  receive_ports_run_loop.Run();
+  receive_port_run_loop.Run();
 
-  for (fidl::InterfaceHandle<fuchsia::web::MessagePort>& message_port :
-       received_ports) {
-    fuchsia::web::MessagePortPtr port = message_port.Bind();
-    fuchsia::web::WebMessage msg;
-    msg.set_data(cr_fuchsia::MemBufferFromString("ping", "test"));
-    cr_fuchsia::ResultReceiver<fuchsia::web::MessagePort_PostMessage_Result>
-        post_result;
-    port->PostMessage(std::move(msg), cr_fuchsia::CallbackToFitFunction(
-                                          post_result.GetReceiveCallback()));
-
-    base::RunLoop run_loop;
-    cr_fuchsia::ResultReceiver<fuchsia::web::WebMessage> message_receiver(
-        run_loop.QuitClosure());
-    port->ReceiveMessage(cr_fuchsia::CallbackToFitFunction(
-        message_receiver.GetReceiveCallback()));
-    run_loop.Run();
-
-    std::string data;
-    ASSERT_TRUE(message_receiver->has_data());
-    ASSERT_TRUE(
-        cr_fuchsia::StringFromMemBuffer(message_receiver->data(), &data));
-    EXPECT_EQ(data, "ack ping");
+  ASSERT_EQ(received_ports.size(), kExpectedPortCount);
+  for (CastMessagePort& message_port : received_ports) {
+    cast_api_bindings::TestMessagePortReceiver test_receiver;
+    message_port->SetReceiver(&test_receiver);
+    message_port->PostMessage("ping");
+    test_receiver.RunUntilMessageCountEqual(1);
+    EXPECT_EQ(test_receiver.buffer()[0].first, "ack ping");
   }
 }
+
+}  // namespace

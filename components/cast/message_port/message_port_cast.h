@@ -23,13 +23,13 @@ class MessagePortCast : public cast_api_bindings::MessagePort,
 
   static std::unique_ptr<MessagePort> Create(blink::WebMessagePort&& port);
 
- private:
   // Gets the implementation of |port| for callers who know its platform type.
   static MessagePortCast* FromMessagePort(MessagePort* port);
 
   // Retrieves the platform-specific port and invalidates this object.
   blink::WebMessagePort TakePort();
 
+ private:
   // cast_api_bindings::MessagePort implementation
   bool PostMessage(base::StringPiece message) final;
   bool PostMessageWithTransferables(

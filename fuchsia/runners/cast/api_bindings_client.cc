@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/message_port.h"
+#include "components/cast/message_port/message_port_fuchsia.h"
 
 namespace {
 
@@ -89,14 +89,16 @@ bool ApiBindingsClient::HasBindings() const {
   return bindings_.has_value();
 }
 
-bool ApiBindingsClient::OnPortConnected(base::StringPiece port_name,
-                                        blink::WebMessagePort port) {
+bool ApiBindingsClient::OnPortConnected(
+    base::StringPiece port_name,
+    std::unique_ptr<cast_api_bindings::MessagePort> port) {
   if (!bindings_service_)
     return false;
 
   bindings_service_->Connect(
       port_name.as_string(),
-      cr_fuchsia::FidlMessagePortFromBlink(std::move(port)));
+      cast_api_bindings::MessagePortFuchsia::FromMessagePort(port.get())
+          ->TakeClientHandle());
   return true;
 }
 

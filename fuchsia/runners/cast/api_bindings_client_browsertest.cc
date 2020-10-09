@@ -10,15 +10,16 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind_test_util.h"
+#include "components/cast/message_port/message_port_fuchsia.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/mem_buffer_util.h"
-#include "fuchsia/base/message_port.h"
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "fuchsia/runners/cast/api_bindings_client.h"
+#include "fuchsia/runners/cast/create_web_message.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia/runners/cast/test_api_bindings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,15 +102,17 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
       controller_.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
   navigation_listener_.RunUntilUrlEquals(test_url);
-  frame_->PostMessage("*",
-                      std::move(*cr_fuchsia::FidlWebMessageFromBlink(
-                          connector_->GetConnectMessage(),
-                          cr_fuchsia::TransferableHostType::kRemote)),
-                      [&post_message_response_closure](
-                          fuchsia::web::Frame_PostMessage_Result result) {
-                        ASSERT_TRUE(result.is_response());
-                        post_message_response_closure.Run();
-                      });
+
+  std::string connect_message;
+  std::unique_ptr<cast_api_bindings::MessagePort> connect_port;
+  connector_->GetConnectMessage(&connect_message, &connect_port);
+  frame_->PostMessage(
+      "*", CreateWebMessage(connect_message, std::move(connect_port)),
+      [&post_message_response_closure](
+          fuchsia::web::Frame_PostMessage_Result result) {
+        ASSERT_TRUE(result.is_response());
+        post_message_response_closure.Run();
+      });
 
   // Connect to the echo service hosted by the page and send a ping to it.
   fuchsia::web::WebMessage message;

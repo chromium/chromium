@@ -32,3 +32,15 @@ source_set("message_port") {
     deps += [ "//third_party/blink/public/common" ]
   }
 }
+
+source_set("test_message_port_receiver") {
+  testonly = true
+  sources = [
+    "test_message_port_receiver.cc",
+    "test_message_port_receiver.h",
+  ]
+  deps = [
+    ":message_port",
+    "//base",
+  ]
+}

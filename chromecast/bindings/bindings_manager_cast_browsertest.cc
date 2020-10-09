@@ -23,6 +23,7 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
+#include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
@@ -62,15 +63,6 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   return file_path.Append(GetTestDataPath()).AppendASCII(name);
 }
 
-base::Optional<std::string> ReadMessagePayloadAsUtf8(
-    blink::WebMessagePort::Message message) {
-  std::string output;
-  if (!base::UTF16ToUTF8(message.data.data(), message.data.size(), &output))
-    return base::nullopt;
-
-  return base::make_optional<std::string>(output);
-}
-
 class TitleChangeObserver : public CastWebContents::Observer {
  public:
   TitleChangeObserver() = default;
@@ -107,119 +99,6 @@ class TitleChangeObserver : public CastWebContents::Observer {
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(TitleChangeObserver);
-};
-
-// Test class for communicating with connector.html.
-class TestBindingBackend : public blink::WebMessagePort::MessageReceiver {
- public:
-  TestBindingBackend(bindings::BindingsManagerCast* bindings_manager)
-      : bindings_manager_(bindings_manager) {
-    constexpr char kPortName[] = "hello";
-    bindings_manager_->RegisterPortHandler(
-        kPortName, base::BindRepeating(&TestBindingBackend::OnPortConnected,
-                                       base::Unretained(this)));
-  }
-
-  ~TestBindingBackend() override {
-    port_.Reset();
-    constexpr char kPortName[] = "hello";
-    bindings_manager_->UnregisterPortHandler(kPortName);
-  }
-
-  // Start the RunLoop until OnPortConnected.
-  void RunUntilPortConnected() {
-    if (port_.IsValid())
-      return;
-
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  // Run the callback if there is at least one available message
-  // cached.
-  void ReceiveMessage(base::OnceCallback<void(std::string)> callback) {
-    ASSERT_TRUE(message_received_callback_.is_null())
-        << "Only one waiting event is allowed.";
-
-    // Run the callback immediately if we have cached some messages.
-    if (!message_queue_.empty()) {
-      std::move(message_received_callback_).Run(message_queue_.front());
-      message_queue_.pop_front();
-      return;
-    }
-
-    message_received_callback_ = std::move(callback);
-  }
-
-  void SendMessageToPage(base::StringPiece message) {
-    if (!port_.IsValid())
-      return;
-
-    DCHECK(!message.empty());
-
-    blink::WebMessagePort::Message blink_message(base::UTF8ToUTF16(message));
-    port_.PostMessage(std::move(blink_message));
-  }
-
-  void SetPortDisconnectedCallback(
-      base::OnceClosure port_disconnected_callback) {
-    DCHECK(!port_disconnected_callback_);
-    port_disconnected_callback_ = std::move(port_disconnected_callback);
-  }
-
- private:
-  // Called when a port was received from the page.
-  void OnPortConnected(blink::WebMessagePort port) {
-    if (!quit_closure_.is_null()) {
-      std::move(quit_closure_).Run();
-    }
-    port_ = std::move(port);
-    port_.SetReceiver(this, base::ThreadTaskRunnerHandle::Get());
-  }
-
-  // blink::WebMessagePort::MessageReceiver implementation:
-  bool OnMessage(blink::WebMessagePort::Message message) override {
-    base::Optional<std::string> message_json =
-        ReadMessagePayloadAsUtf8(std::move(message));
-    if (!message_json)
-      return false;
-
-    if (message_received_callback_) {
-      // Number of cached messages must be zero in this case.
-      DCHECK(message_queue_.empty());
-      std::move(message_received_callback_).Run(message_json.value());
-      return true;
-    }
-
-    // Cache received message until external caller access it
-    // via TestBindingBackend::ReceiveMessage
-    message_queue_.emplace_back(message_json.value());
-    return true;
-  }
-
-  // blink::WebMessagePort::MessageReceiver implementation:
-  // Called when the peer disconnected the port.
-  void OnPipeError() override {
-    LOG(INFO) << "TestBindingBackend port disconnected.";
-    port_.Reset();
-    if (port_disconnected_callback_) {
-      std::move(port_disconnected_callback_).Run();
-    }
-  }
-
-  base::OnceClosure quit_closure_;
-
-  bindings::BindingsManager* const bindings_manager_;
-
-  // Used for sending and receiving messages over the MessagePort.
-  blink::WebMessagePort port_;
-
-  base::circular_deque<std::string> message_queue_;
-  base::OnceCallback<void(std::string)> message_received_callback_;
-  base::OnceClosure port_disconnected_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBindingBackend);
 };
 
 // =============================================================================
@@ -316,6 +195,38 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
   DISALLOW_COPY_AND_ASSIGN(BindingsManagerCastBrowserTest);
 };
 
+// Handles connected ports from the NamedMessagePortConnector and
+// provides a convenience methods for waiting for and then returning the port
+// synchronously.
+class MessagePortConnectionHandler {
+ public:
+  MessagePortConnectionHandler() {}
+  ~MessagePortConnectionHandler() {}
+
+  cast_api_bindings::Manager::MessagePortConnectedHandler GetConnectCallback() {
+    return base::BindRepeating(&MessagePortConnectionHandler::OnConnect,
+                               base::Unretained(this));
+  }
+
+  std::unique_ptr<cast_api_bindings::MessagePort> RunUntilPortConnected() {
+    base::RunLoop run_loop;
+    on_port_connected_ = run_loop.QuitClosure();
+    run_loop.Run();
+    return std::move(port_);
+  }
+
+ private:
+  void OnConnect(std::unique_ptr<cast_api_bindings::MessagePort> port) {
+    DCHECK(on_port_connected_);
+
+    port_ = std::move(port);
+    std::move(on_port_connected_).Run();
+  }
+
+  base::OnceClosure on_port_connected_;
+  std::unique_ptr<cast_api_bindings::MessagePort> port_;
+};
+
 // =============================================================================
 // Test cases
 // =============================================================================
@@ -340,57 +251,32 @@ IN_PROC_BROWSER_TEST_F(BindingsManagerCastBrowserTest, EndToEnd) {
   GURL test_url =
       content::GetFileUrlWithQuery(GetTestDataFilePath("connector.html"), "");
 
-  // Register test port handler.
-  auto test_binding_backend =
-      std::make_unique<TestBindingBackend>(bindings_manager_.get());
-  // TestBindingBackend test_binding_backend(bindings_manager_.get());
+  MessagePortConnectionHandler connect_handler;
+  bindings_manager_->RegisterPortHandler("hello",
+                                         connect_handler.GetConnectCallback());
 
   // Load test page.
   constexpr char kTestPageTitle[] = "bindings";
   cast_web_contents_->LoadUrl(test_url);
   title_change_observer_.RunUntilTitleEquals(kTestPageTitle);
 
-  // Start RunLoop until TestBindingBackend receives MessagePort.
-  test_binding_backend->RunUntilPortConnected();
+  auto message_port = connect_handler.RunUntilPortConnected();
+  cast_api_bindings::TestMessagePortReceiver receiver;
+  message_port->SetReceiver(&receiver);
 
-  // Send ping message to the test page.
-  test_binding_backend->SendMessageToPage("ping");
+  message_port->PostMessage("ping");
 
   // Test that message are received in order.
-  std::vector<std::string> test_messages = {"early 1", "early 2", "ack ping"};
-  for (auto test_message : test_messages) {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    auto received_message_callback = base::BindOnce(
-        [](base::OnceClosure loop_quit_closure, std::string expected_msg,
-           std::string port_msg) {
-          EXPECT_EQ(expected_msg, port_msg);
-          std::move(loop_quit_closure).Run();
-        },
-        std::move(quit_closure), test_message);
-    test_binding_backend->ReceiveMessage(std::move(received_message_callback));
-    run_loop.Run();
-  }
+  receiver.RunUntilMessageCountEqual(3);
+  EXPECT_EQ(receiver.buffer()[0].first, "early 1");
+  EXPECT_EQ(receiver.buffer()[1].first, "early 2");
+  EXPECT_EQ(receiver.buffer()[2].first, "ack ping");
 
   // Ensure that the MessagePort is dropped when navigating away.
-  {
-    base::RunLoop run_loop;
+  cast_web_contents_->LoadUrl(GURL(url::kAboutBlankURL));
+  receiver.RunUntilDisconnected();
 
-    auto port_disconnected_callback = base::BindOnce(
-        [](base::OnceClosure loop_quit_closure) {
-          std::move(loop_quit_closure).Run();
-        },
-        run_loop.QuitClosure());
-    test_binding_backend->SetPortDisconnectedCallback(
-        std::move(port_disconnected_callback));
-
-    cast_web_contents_->LoadUrl(GURL(url::kAboutBlankURL));
-
-    run_loop.Run();
-  }
-
-  // Destruct the binding backend to unregister itself from BindingsManagerCast
-  test_binding_backend.reset();
+  bindings_manager_->UnregisterPortHandler("hello");
 }
 
 }  // namespace chromecast

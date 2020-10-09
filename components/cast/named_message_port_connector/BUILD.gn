@@ -13,12 +13,10 @@ source_set("named_message_port_connector") {
   deps = [
     "//base",
     "//components/cast:export",
+    "//components/cast/message_port",
   ]
 
-  public_deps = [
-    ":resources",
-    "//third_party/blink/public/common",
-  ]
+  public_deps = [ ":resources" ]
 }
 
 grit("resources") {

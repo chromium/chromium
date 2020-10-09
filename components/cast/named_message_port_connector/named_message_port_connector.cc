@@ -25,35 +25,32 @@ void NamedMessagePortConnector::RegisterPortHandler(
 // Receives the MessagePort and forwards ports to their corresponding binding
 // handlers.
 bool NamedMessagePortConnector::OnMessage(
-    blink::WebMessagePort::Message message) {
-  if (message.ports.size() != 1) {
+    base::StringPiece message,
+    std::vector<std::unique_ptr<MessagePort>> ports) {
+  if (ports.size() != 1) {
     DLOG(FATAL) << "Only one control port should be provided";
     return false;
   }
 
   // Read the port ID.
-  base::string16 data_utf16 = std::move(message.data);
-  std::string binding_id;
-  if (!base::UTF16ToUTF8(data_utf16.data(), data_utf16.size(), &binding_id))
+  if (message.empty()) {
+    DLOG(FATAL) << "No port ID was specified.";
     return false;
+  }
 
-  return handler_.Run(binding_id, std::move(message.ports[0]));
+  return handler_.Run(message, std::move(ports[0]));
 }
 
-blink::WebMessagePort::Message NamedMessagePortConnector::GetConnectMessage() {
+void NamedMessagePortConnector::OnPipeError() {}
+
+void NamedMessagePortConnector::GetConnectMessage(
+    std::string* message,
+    std::unique_ptr<MessagePort>* port) {
   constexpr char kControlPortConnectMessage[] = "cast.master.connect";
-
-  // Pass the control message port into the page as an HTML5 MessageChannel
-  // message.
-  auto port_pair = blink::WebMessagePort::CreatePair();
-
-  control_port_ = std::move(port_pair.first);
-  control_port_.SetReceiver(this, base::ThreadTaskRunnerHandle::Get());
-
-  blink::WebMessagePort::Message connect_message;
-  connect_message.data = base::UTF8ToUTF16(kControlPortConnectMessage);
-  connect_message.ports.push_back(std::move(port_pair.second));
-  return connect_message;
+  std::unique_ptr<MessagePort> control_port_for_web_engine;
+  MessagePort::CreatePair(&control_port_, port);
+  *message = kControlPortConnectMessage;
+  control_port_->SetReceiver(this);
 }
 
 }  // namespace cast_api_bindings

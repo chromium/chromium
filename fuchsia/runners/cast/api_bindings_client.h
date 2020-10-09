@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 
@@ -45,7 +46,8 @@ class ApiBindingsClient {
   // TODO(crbug.com/1082821): Move this method back to private once the Cast
   // Streaming Receiver component has been implemented.
   // Called when |connector_| has connected a port.
-  bool OnPortConnected(base::StringPiece port_name, blink::WebMessagePort port);
+  bool OnPortConnected(base::StringPiece port_name,
+                       std::unique_ptr<cast_api_bindings::MessagePort> port);
 
  private:
   // Called when ApiBindings::GetAll() has responded.

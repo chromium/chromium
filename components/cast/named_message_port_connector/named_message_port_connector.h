@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
-#include "third_party/blink/public/common/messaging/web_message_port.h"
+#include "components/cast/message_port/message_port.h"
 
 namespace cast_api_bindings {
 
@@ -16,15 +16,13 @@ namespace cast_api_bindings {
 // Platform specific details, such as how the script resources are injected, and
 // how the connection message is posted to the page, are delegated to the
 // caller.
-// TODO(crbug.com/1126571): Migrate off Blink::WebMessagePort to a
-// platform-agnostic MessagePort abstraction.
-class NamedMessagePortConnector
-    : public blink::WebMessagePort::MessageReceiver {
+class NamedMessagePortConnector : public MessagePort::Receiver {
  public:
   // Signature of callback to be invoked when a port is connected.
   // The callback should return true if the connection request was valid.
   using PortConnectedCallback =
-      base::RepeatingCallback<bool(base::StringPiece, blink::WebMessagePort)>;
+      base::RepeatingCallback<bool(base::StringPiece,
+                                   std::unique_ptr<MessagePort>)>;
 
   NamedMessagePortConnector();
   ~NamedMessagePortConnector() override;
@@ -36,17 +34,20 @@ class NamedMessagePortConnector
   // Sets the callback which will be invoked when a port is connected.
   void RegisterPortHandler(PortConnectedCallback handler);
 
-  // Returns a connection message which should be posted to the page on
-  // every navigation.
-  // Calling this method will drop any preexisting connections made to the page.
-  blink::WebMessagePort::Message GetConnectMessage();
+  // Returns a data payload and MessagePort which, when posted into a web
+  // content main frame, will establish a connection between |this| and the
+  // NamedMessagePortConnector JavaScript module.
+  void GetConnectMessage(std::string* message,
+                         std::unique_ptr<MessagePort>* port);
 
  private:
-  // blink::WebMessagePort::MessageReceiver implementation:
-  bool OnMessage(blink::WebMessagePort::Message message) override;
+  // MessagePort::Receiver implementation.
+  bool OnMessage(base::StringPiece message,
+                 std::vector<std::unique_ptr<MessagePort>> ports) final;
+  void OnPipeError() final;
 
   PortConnectedCallback handler_;
-  blink::WebMessagePort control_port_;
+  std::unique_ptr<MessagePort> control_port_;
 };
 
 }  // namespace cast_api_bindings

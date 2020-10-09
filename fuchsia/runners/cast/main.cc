@@ -20,7 +20,6 @@
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_runner_switches.h"
-#include "mojo/core/embedder/embedder.h"
 
 namespace {
 
@@ -67,8 +66,6 @@ int main(int argc, char** argv) {
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(
       *base::CommandLine::ForCurrentProcess()))
       << "Failed to initialize logging.";
-
-  mojo::core::Init();
 
   cr_fuchsia::RegisterFuchsiaDirScheme();
 

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "components/cast/api_bindings/manager.h"
+#include "components/cast/message_port/message_port_cast.h"
 #include "components/cast/named_message_port_connector/grit/named_message_port_connector_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -45,10 +46,16 @@ NamedMessagePortConnectorCast::~NamedMessagePortConnectorCast() = default;
 
 void NamedMessagePortConnectorCast::OnPageLoaded() {
   // Send the port connection message to the page once it is loaded.
-  blink::WebMessagePort::Message connect_message = GetConnectMessage();
-  cast_web_contents_->PostMessageToMainFrame(
-      "*", base::UTF16ToUTF8(connect_message.data),
-      std::move(connect_message.ports));
+  std::string connect_message;
+  std::unique_ptr<cast_api_bindings::MessagePort> port;
+  GetConnectMessage(&connect_message, &port);
+
+  std::vector<blink::WebMessagePort> ports;
+  ports.push_back(
+      cast_api_bindings::MessagePortCast::FromMessagePort(port.get())
+          ->TakePort());
+  cast_web_contents_->PostMessageToMainFrame("*", connect_message,
+                                             std::move(ports));
 }
 
 }  // namespace bindings

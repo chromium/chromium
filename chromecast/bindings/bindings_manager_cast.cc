@@ -25,13 +25,8 @@ BindingsManagerCast::BindingsManagerCast(
   port_connector_ =
       std::make_unique<NamedMessagePortConnectorCast>(cast_web_contents_, this);
 
-  // TODO(crbug.com/1135379): Remove static_cast with deprecated OnPortConnected
-  // overload
-  port_connector_->RegisterPortHandler(
-      base::BindRepeating(static_cast<bool (BindingsManagerCast::*)(
-                              base::StringPiece, blink::WebMessagePort)>(
-                              &BindingsManagerCast::OnPortConnected),
-                          base::Unretained(this)));
+  port_connector_->RegisterPortHandler(base::BindRepeating(
+      &BindingsManagerCast::OnPortConnected, base::Unretained(this)));
 }
 
 BindingsManagerCast::~BindingsManagerCast() = default;

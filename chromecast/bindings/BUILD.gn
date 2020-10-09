@@ -65,9 +65,9 @@ if (is_linux || is_chromeos || is_android) {
       "//base",
       "//chromecast/browser:public",
       "//components/cast/api_bindings:manager",
+      "//components/cast/message_port",
       "//components/cast/named_message_port_connector",
       "//components/on_load_script_injector/browser",
-      "//third_party/blink/public/common",
     ]
   }
 
@@ -87,6 +87,7 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/bindings:bindings_manager_cast",
       "//chromecast/browser:browser",
       "//chromecast/browser:public",
+      "//components/cast/message_port:test_message_port_receiver",
       "//components/cast/named_message_port_connector:resources",
       "//content/public/browser",
       "//content/test:test_support",

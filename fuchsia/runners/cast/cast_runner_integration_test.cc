@@ -43,7 +43,6 @@
 #include "fuchsia/runners/cast/cast_runner_switches.h"
 #include "fuchsia/runners/cast/fake_application_config_manager.h"
 #include "fuchsia/runners/cast/test_api_bindings.h"
-#include "mojo/core/embedder/embedder.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -255,8 +254,6 @@ class CastRunnerIntegrationTest : public testing::Test {
   CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
   CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
       delete;
-
-  void SetUp() override { mojo::core::Init(); }
 
   void TearDown() override {
     if (component_controller_)
