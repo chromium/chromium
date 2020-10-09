@@ -1112,6 +1112,33 @@ void GetCertificatesWithDB(std::unique_ptr<GetCertificatesState> state,
       base::BindOnce(&DidGetCertificates, std::move(state)), slot);
 }
 
+// Returns true if |public_key| is relevant as a "platform key" that should be
+// visible to chrome extensions / subsystems.
+bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
+  crypto::ScopedSECItem cka_id(SECITEM_AllocItem(/*arena=*/nullptr,
+                                                 /*item=*/nullptr,
+                                                 /*len=*/0));
+  if (PK11_ReadRawAttribute(
+          /*objType=*/PK11_TypePubKey, public_key, CKA_ID, cka_id.get()) !=
+      SECSuccess) {
+    return false;
+  }
+
+  base::StringPiece cka_id_str(reinterpret_cast<char*>(cka_id->data),
+                               cka_id->len);
+
+  // Only keys generated/stored by extensions/Chrome should be visible to
+  // extensions. Oemcrypto stores its key in the TPM, but that should not
+  // be exposed. Look at exposing additional attributes or changing the slot
+  // that Oemcrypto stores keys, so that it can be done based on properties
+  // of the key. See https://crbug/com/1136396
+  if (cka_id_str == "arc-oemcrypto") {
+    VLOG(0) << "Filtered out arc-oemcrypto public key.";
+    return false;
+  }
+  return true;
+}
+
 // Does the actual retrieval of the SubjectPublicKeyInfo string on a worker
 // thread. Used by GetAllKeysWithDb().
 void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
@@ -1123,8 +1150,8 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
   // private + public keys, so it's sufficient to get the public keys (and also
   // not necessary to check that a private key for that public key really
   // exists).
-  SECKEYPublicKeyList* public_keys =
-      PK11_ListPublicKeysInSlot(state->slot_.get(), /*nickname=*/nullptr);
+  crypto::ScopedSECKEYPublicKeyList public_keys(
+      PK11_ListPublicKeysInSlot(state->slot_.get(), /*nickname=*/nullptr));
 
   if (!public_keys) {
     state->OnSuccess(FROM_HERE, std::move(public_key_spki_der_list));
@@ -1133,6 +1160,10 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
 
   for (SECKEYPublicKeyListNode* node = PUBKEY_LIST_HEAD(public_keys);
        !PUBKEY_LIST_END(node, public_keys); node = PUBKEY_LIST_NEXT(node)) {
+    if (!ShouldIncludePublicKey(node->key)) {
+      continue;
+    }
+
     crypto::ScopedSECItem subject_public_key_info(
         SECKEY_EncodeDERSubjectPublicKeyInfo(node->key));
     if (!subject_public_key_info) {
@@ -1147,7 +1178,6 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
     }
   }
 
-  SECKEY_DestroyPublicKeyList(public_keys);
   state->OnSuccess(FROM_HERE, std::move(public_key_spki_der_list));
 }
 

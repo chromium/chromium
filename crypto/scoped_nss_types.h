@@ -17,16 +17,12 @@ namespace crypto {
 
 template <typename Type, void (*Destroyer)(Type*)>
 struct NSSDestroyer {
-  void operator()(Type* ptr) const {
-    Destroyer(ptr);
-  }
+  void operator()(Type* ptr) const { Destroyer(ptr); }
 };
 
 template <typename Type, void (*Destroyer)(Type*, PRBool), PRBool freeit>
 struct NSSDestroyer1 {
-  void operator()(Type* ptr) const {
-    Destroyer(ptr, freeit);
-  }
+  void operator()(Type* ptr) const { Destroyer(ptr, freeit); }
 };
 
 // Define some convenient scopers around NSS pointers.
@@ -39,6 +35,10 @@ typedef std::unique_ptr<PK11SlotInfo, NSSDestroyer<PK11SlotInfo, PK11_FreeSlot>>
 typedef std::unique_ptr<PK11SlotList,
                         NSSDestroyer<PK11SlotList, PK11_FreeSlotList>>
     ScopedPK11SlotList;
+typedef std::unique_ptr<
+    SECKEYPublicKeyList,
+    NSSDestroyer<SECKEYPublicKeyList, SECKEY_DestroyPublicKeyList>>
+    ScopedSECKEYPublicKeyList;
 typedef std::unique_ptr<PK11SymKey, NSSDestroyer<PK11SymKey, PK11_FreeSymKey>>
     ScopedPK11SymKey;
 typedef std::unique_ptr<SECKEYPublicKey,

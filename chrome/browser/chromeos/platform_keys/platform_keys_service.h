@@ -192,10 +192,11 @@ class PlatformKeysService : public KeyedService {
   virtual void GetCertificates(TokenId token_id,
                                const GetCertificatesCallback callback) = 0;
 
-  // Returns the list of all keys available from the given |token_id| as a list
-  // of der-encoded SubjectPublicKeyInfo strings. |callback| will be invoked on
-  // the UI thread with the list of available public keys, possibly with an
-  // error status.
+  // Returns the list of all public keys available from the given |token_id|
+  // that have corresponding private keys on the same token as a list of
+  // DER-encoded SubjectPublicKeyInfo strings. |callback| will be invoked on the
+  // UI thread with the list of available public keys, possibly with an error
+  // status.
   virtual void GetAllKeys(TokenId token_id, GetAllKeysCallback callback) = 0;
 
   // Imports |certificate| to the given token if the certified key is already

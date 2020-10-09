@@ -51,12 +51,18 @@ ImportNSSKeyFromPrivateKeyInfo(PK11SlotInfo* slot,
 // Decodes |input| as a DER-encoded X.509 SubjectPublicKeyInfo and searches for
 // the private key half in the key database. Returns the private key on success
 // or nullptr on error.
+// Note: This function assumes the CKA_ID for public/private key pairs is
+// derived from the public key. NSS does this, but this is not guaranteed by
+// PKCS#11, so keys generated outside of NSS may not be found.
 CRYPTO_EXPORT ScopedSECKEYPrivateKey
 FindNSSKeyFromPublicKeyInfo(base::span<const uint8_t> input);
 
 // Decodes |input| as a DER-encoded X.509 SubjectPublicKeyInfo and searches for
 // the private key half in the slot specified by |slot|. Returns the private key
 // on success or nullptr on error.
+// Note: This function assumes the CKA_ID for public/private key pairs is
+// derived from the public key. NSS does this, but this is not guaranteed by
+// PKCS#11, so keys generated outside of NSS may not be found.
 CRYPTO_EXPORT ScopedSECKEYPrivateKey
 FindNSSKeyFromPublicKeyInfoInSlot(base::span<const uint8_t> input,
                                   PK11SlotInfo* slot);
