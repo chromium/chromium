@@ -34,6 +34,7 @@
             android:drawablePadding="4dp"
             android:drawableStart="@drawable/ic_devui_search"
             android:imeOptions="actionDone|actionSearch"
+            android:drawableTint="?android:textColorPrimary"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <!--suppress HardcodedText -->
