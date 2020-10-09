@@ -177,19 +177,8 @@ ChromeVoxBackground = class {
    *     injected.
    */
   injectChromeVoxIntoTabs(tabs) {
-    let listOfFiles;
-
-    // These lists of files must match the content_scripts section in
-    // the manifest files.
-    if (COMPILED) {
-      listOfFiles = ['chromeVoxChromePageScript.js'];
-    } else {
-      listOfFiles = [
-        'closure/closure_preinit.js', 'closure/base.js', 'deps.js',
-        'chromevox/injected/loader.js'
-      ];
-    }
-
+    const listOfFiles =
+        chrome.runtime.getManifest()['content_scripts'][0]['js'];
     const stageTwo = function(code) {
       for (let i = 0, tab; tab = tabs[i]; i++) {
         window.console.log('Injecting into ' + tab.id, tab);
