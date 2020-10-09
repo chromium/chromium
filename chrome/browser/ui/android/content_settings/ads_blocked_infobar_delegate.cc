@@ -8,7 +8,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/android/infobars/ads_blocked_infobar.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -78,9 +77,9 @@ base::string16 AdsBlockedInfobarDelegate::GetButtonLabel(
 }
 
 bool AdsBlockedInfobarDelegate::Cancel() {
-  auto* filter_client = ChromeSubresourceFilterClient::FromWebContents(
-      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar()));
-  filter_client->OnReloadRequested();
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar()))
+      ->OnReloadRequested();
   return true;
 }
 

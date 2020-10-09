@@ -142,6 +142,10 @@ class ContentSubresourceFilterThrottleManager
   base::Optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
       const content::RenderFrameHost* frame_host) const;
 
+  // Notifies the client that the user has requested a reload of a page with
+  // blocked ads (e.g., via an infobar).
+  void OnReloadRequested();
+
   static void LogAction(SubresourceFilterAction action);
 
  protected:

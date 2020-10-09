@@ -53,6 +53,10 @@ class SubresourceFilterClient {
   // client, or null if there is no such instance.
   virtual const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() = 0;
+
+  // Invoked when the user has requested a reload of a page with blocked ads
+  // (e.g., via an infobar).
+  virtual void OnReloadRequested() = 0;
 };
 
 }  // namespace subresource_filter

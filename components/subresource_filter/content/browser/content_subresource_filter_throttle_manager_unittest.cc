@@ -196,6 +196,7 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
   GetSafeBrowsingDatabaseManager() override {
     return database_manager_;
   }
+  void OnReloadRequested() override {}
 
   void CreateSafeBrowsingDatabaseManager() {
     database_manager_ =

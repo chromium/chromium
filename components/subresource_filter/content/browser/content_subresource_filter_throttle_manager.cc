@@ -404,6 +404,10 @@ ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
   return base::nullopt;
 }
 
+void ContentSubresourceFilterThrottleManager::OnReloadRequested() {
+  client_->OnReloadRequested();
+}
+
 // static
 void ContentSubresourceFilterThrottleManager::LogAction(
     SubresourceFilterAction action) {

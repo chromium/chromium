@@ -94,6 +94,7 @@ class MockSubresourceFilterClient : public SubresourceFilterClient {
   MOCK_METHOD0(
       GetSafeBrowsingDatabaseManager,
       const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>());
+  MOCK_METHOD0(OnReloadRequested, void());
 
   void AllowlistInCurrentWebContents(const GURL& url) {
     ASSERT_TRUE(url.SchemeIsHTTPOrHTTPS());

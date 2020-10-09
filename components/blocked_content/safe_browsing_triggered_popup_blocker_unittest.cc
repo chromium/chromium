@@ -71,6 +71,7 @@ class SafeBrowsingTriggeredPopupBlockerTest
   GetSafeBrowsingDatabaseManager() override {
     return nullptr;
   }
+  void OnReloadRequested() override {}
 
   // content::RenderViewHostTestHarness:
   void SetUp() override {

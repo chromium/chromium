@@ -34,7 +34,6 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "chrome/common/chrome_features.h"
@@ -1423,8 +1422,9 @@ void ContentSettingSubresourceFilterBubbleModel::OnLearnMoreClicked() {
 
 void ContentSettingSubresourceFilterBubbleModel::CommitChanges() {
   if (is_checked_) {
-    ChromeSubresourceFilterClient::FromWebContents(web_contents())
-        ->OnReloadRequested();
+    subresource_filter::ContentSubresourceFilterThrottleManager::
+        FromWebContents(web_contents())
+            ->OnReloadRequested();
   }
 }
 

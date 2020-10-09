@@ -46,8 +46,6 @@ class ChromeSubresourceFilterClient
   static ChromeSubresourceFilterClient* FromWebContents(
       content::WebContents* web_contents);
 
-  void OnReloadRequested();
-
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -63,6 +61,7 @@ class ChromeSubresourceFilterClient
       subresource_filter::mojom::AdsViolation triggered_violation) override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override;
+  void OnReloadRequested() override;
 
   // Should be called by devtools in response to a protocol command to enable ad
   // blocking in this WebContents. Should only persist while devtools is

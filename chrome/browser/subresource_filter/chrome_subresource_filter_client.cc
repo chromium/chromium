@@ -86,6 +86,10 @@ void ChromeSubresourceFilterClient::DidStartNavigation(
 }
 
 void ChromeSubresourceFilterClient::OnReloadRequested() {
+  // TODO(crbug.com/1116095): Once ContentSubresourceFilterThrottleManager knows
+  // about content settings, this method can move entirely into
+  // ContentSubresourceFilterThrottleManager::OnReloadRequested() and
+  // SubresourceFilterClient::OnReloadRequested() can be eliminated.
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
       subresource_filter::SubresourceFilterAction::kAllowlistedSite);
   AllowlistByContentSettings(web_contents()->GetLastCommittedURL());
