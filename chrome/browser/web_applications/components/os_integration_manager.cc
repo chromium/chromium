@@ -187,6 +187,9 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
     } else {
       barrier.Run(OsHookType::kShortcuts, /*completed=*/true);
     }
+  } else {
+    barrier.Run(OsHookType::kShortcuts, /*completed=*/true);
+    barrier.Run(OsHookType::kRunOnOsLogin, /*completed=*/true);
   }
 
   // TODO(https://crbug.com/1108109) we should return the result of file handler
