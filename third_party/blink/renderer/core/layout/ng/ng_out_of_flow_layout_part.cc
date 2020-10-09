@@ -317,8 +317,8 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         To<NGPhysicalBoxFragment>(containing_block_fragment);
 
     // TODO(1079031): This should eventually include scrollbar and border.
-    NGBoxStrut border = fragment->Borders().ConvertToLogical(
-        style.GetWritingMode(), style.Direction());
+    NGBoxStrut border =
+        fragment->Borders().ConvertToLogical(style.GetWritingDirection());
     LogicalSize content_size = ShrinkLogicalSize(size, border);
     LogicalOffset container_offset =
         LogicalOffset(border.inline_start, border.block_start);
@@ -715,14 +715,15 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     const LayoutBox* only_layout,
     bool is_fragmentainer_descendant) {
   const ComputedStyle& candidate_style = node.Style();
-  const WritingMode candidate_writing_mode = candidate_style.GetWritingMode();
-  const TextDirection candidate_direction = candidate_style.Direction();
+  const WritingDirectionMode candidate_writing_direction =
+      candidate_style.GetWritingDirection();
   const TextDirection container_direction = container_info.direction;
 
   PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_content_size, default_writing_mode);
   LogicalSize container_content_size_in_candidate_writing_mode =
-      container_physical_content_size.ConvertToLogical(candidate_writing_mode);
+      container_physical_content_size.ConvertToLogical(
+          candidate_writing_direction.GetWritingMode());
   NGBoxStrut border_padding =
       ComputeBorders(candidate_constraint_space, node) +
       ComputePadding(candidate_constraint_space, candidate_style);
@@ -775,14 +776,15 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
       MinMaxSizesInput intrinsic_input(input);
       intrinsic_input.type = MinMaxSizesType::kIntrinsic;
       minmax_intrinsic_sizes_for_ar =
-          node.ComputeMinMaxSizes(candidate_writing_mode, intrinsic_input,
-                                  &candidate_constraint_space)
+          node.ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
+                                  intrinsic_input, &candidate_constraint_space)
               .sizes;
     }
 
-    min_max_sizes = node.ComputeMinMaxSizes(candidate_writing_mode, input,
-                                            &candidate_constraint_space)
-                        .sizes;
+    min_max_sizes =
+        node.ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
+                                input, &candidate_constraint_space)
+            .sizes;
   }
 
   base::Optional<LogicalSize> replaced_size;
@@ -852,7 +854,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     // TODO(layout-dev): Handle abortions caused by block fragmentation.
     DCHECK(layout_result->Status() != NGLayoutResult::kOutOfFragmentainerSpace);
 
-    NGFragment fragment(candidate_writing_mode,
+    NGFragment fragment(candidate_writing_direction,
                         layout_result->PhysicalFragment());
 
     block_estimate = fragment.BlockSize();
@@ -870,9 +872,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
 
   // Calculate the offsets.
   NGBoxStrut inset =
-      node_dimensions.inset
-          .ConvertToPhysical(candidate_writing_mode, candidate_direction)
-          .ConvertToLogical(default_writing_mode, default_direction);
+      node_dimensions.inset.ConvertToPhysical(candidate_writing_direction)
+          .ConvertToLogical({default_writing_mode, default_direction});
 
   // |inset| is relative to the container's padding-box. Convert this to being
   // relative to the default container's border-box.
@@ -982,7 +983,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
              ->Style()
              ->IsDisplayFlexibleOrGridBox()) {
       node.GetLayoutBox()->SetMargin(node_dimensions.margins.ConvertToPhysical(
-          candidate_writing_mode, candidate_direction));
+          candidate_writing_direction));
     }
 
     layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(

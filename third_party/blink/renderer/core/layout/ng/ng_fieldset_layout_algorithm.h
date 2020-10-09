@@ -54,7 +54,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
       LayoutUnit block_offset);
   bool IsFragmentainerOutOfSpace(LayoutUnit block_offset) const;
 
-  const WritingMode writing_mode_;
+  const WritingDirectionMode writing_direction_;
 
   NGBoxStrut borders_;
   NGBoxStrut padding_;

@@ -43,18 +43,19 @@ bool HasControlClip(const NGPhysicalBoxFragment& self) {
 scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
     NGBoxFragmentBuilder* builder,
     WritingMode block_or_line_writing_mode) {
+  const auto writing_direction = builder->GetWritingDirection();
   const NGPhysicalBoxStrut borders =
       builder->initial_fragment_geometry_->border.ConvertToPhysical(
-          builder->GetWritingMode(), builder->Direction());
+          writing_direction);
   bool has_borders = !borders.IsZero();
   const NGPhysicalBoxStrut padding =
       builder->initial_fragment_geometry_->padding.ConvertToPhysical(
-          builder->GetWritingMode(), builder->Direction());
+          writing_direction);
   bool has_padding = !padding.IsZero();
 
   const PhysicalSize physical_size =
       ToPhysicalSize(builder->Size(), builder->GetWritingMode());
-  WritingModeConverter converter(builder->GetWritingDirection(), physical_size);
+  WritingModeConverter converter(writing_direction, physical_size);
 
   base::Optional<PhysicalRect> inflow_bounds;
   if (builder->inflow_bounds_)
@@ -64,11 +65,11 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   if (builder->node_ && !builder->is_legacy_layout_root_) {
     const NGPhysicalBoxStrut scrollbar =
         builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
-            builder->GetWritingMode(), builder->Direction());
+            writing_direction);
     NGLayoutOverflowCalculator calculator(
         To<NGBlockNode>(builder->node_),
         /* is_css_box */ builder->box_type_ != NGBoxType::kColumnBox, borders,
-        scrollbar, padding, physical_size, builder->GetWritingDirection());
+        scrollbar, padding, physical_size, writing_direction);
 
     if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder())
       calculator.AddItems(items_builder->Items(physical_size));
@@ -79,10 +80,9 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
       if (!box_fragment)
         continue;
 
-      calculator.AddChild(
-          *box_fragment,
-          child.offset.ConvertToPhysical(builder->GetWritingDirection(),
-                                         physical_size, box_fragment->Size()));
+      calculator.AddChild(*box_fragment, child.offset.ConvertToPhysical(
+                                             writing_direction, physical_size,
+                                             box_fragment->Size()));
     }
 
     layout_overflow = calculator.Result(inflow_bounds);
@@ -503,7 +503,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
             ToLayoutBox(container.GetLayoutObject());
         padding_strut = NGBoxStrut(LayoutUnit(), layout_object->PaddingEnd(),
                                    LayoutUnit(), layout_object->PaddingAfter())
-                            .ConvertToPhysical(writing_mode, direction);
+                            .ConvertToPhysical({writing_mode, direction});
       }
     }
 

@@ -425,12 +425,12 @@ CORE_EXPORT NGBoxStrut ComputeMarginsFor(const NGConstraintSpace&,
                                          const ComputedStyle&,
                                          const NGConstraintSpace& compute_for);
 
-inline NGBoxStrut ComputeMarginsFor(const ComputedStyle& child_style,
-                                    LayoutUnit percentage_resolution_size,
-                                    WritingMode container_writing_mode,
-                                    TextDirection container_direction) {
+inline NGBoxStrut ComputeMarginsFor(
+    const ComputedStyle& child_style,
+    LayoutUnit percentage_resolution_size,
+    WritingDirectionMode container_writing_direction) {
   return ComputePhysicalMargins(child_style, percentage_resolution_size)
-      .ConvertToLogical(container_writing_mode, container_direction);
+      .ConvertToLogical(container_writing_direction);
 }
 
 // Compute margins for the style owner.
@@ -442,7 +442,7 @@ inline NGBoxStrut ComputeMarginsForSelf(
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
   return ComputePhysicalMargins(style, percentage_resolution_size)
-      .ConvertToLogical(style.GetWritingMode(), style.Direction());
+      .ConvertToLogical(style.GetWritingDirection());
 }
 
 // Compute line logical margins for the style owner.
@@ -457,7 +457,7 @@ inline NGLineBoxStrut ComputeLineMarginsForSelf(
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
   return ComputePhysicalMargins(style, percentage_resolution_size)
-      .ConvertToLineLogical(style.GetWritingMode(), style.Direction());
+      .ConvertToLineLogical(style.GetWritingDirection());
 }
 
 // Compute line logical margins for the constraint space, in the visual order
@@ -470,8 +470,8 @@ inline NGLineBoxStrut ComputeLineMarginsForVisualContainer(
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
   return ComputePhysicalMargins(style, percentage_resolution_size)
-      .ConvertToLineLogical(constraint_space.GetWritingMode(),
-                            TextDirection::kLtr);
+      .ConvertToLineLogical(
+          {constraint_space.GetWritingMode(), TextDirection::kLtr});
 }
 
 // Compute margins for a child during the min-max size calculation.

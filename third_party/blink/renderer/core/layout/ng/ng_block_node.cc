@@ -726,9 +726,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     scoped_refptr<const NGLayoutResult> layout_result =
         Layout(*constraint_space);
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
-    sizes =
-        NGFragment(container_writing_mode, layout_result->PhysicalFragment())
-            .InlineSize();
+    sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
+                       layout_result->PhysicalFragment())
+                .InlineSize();
     return {sizes, /* depends_on_percentage_block_size */ false};
   }
 
@@ -1015,8 +1015,8 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
 
-  NGBoxFragment fragment(constraint_space.GetWritingMode(),
-                         constraint_space.Direction(), physical_fragment);
+  NGBoxFragment fragment(constraint_space.GetWritingDirection(),
+                         physical_fragment);
   LogicalSize fragment_logical_size = fragment.Size();
   NGBoxStrut borders = fragment.Borders();
   NGBoxStrut scrollbars = ComputeScrollbars(constraint_space, *this);
@@ -1798,8 +1798,8 @@ void NGBlockNode::UseLegacyOutOfFlowPositioning() const {
 
 void NGBlockNode::StoreMargins(const NGConstraintSpace& constraint_space,
                                const NGBoxStrut& margins) {
-  NGPhysicalBoxStrut physical_margins = margins.ConvertToPhysical(
-      constraint_space.GetWritingMode(), constraint_space.Direction());
+  NGPhysicalBoxStrut physical_margins =
+      margins.ConvertToPhysical(constraint_space.GetWritingDirection());
   box_->SetMargin(physical_margins);
 }
 

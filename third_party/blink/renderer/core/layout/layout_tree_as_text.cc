@@ -452,7 +452,7 @@ static void WriteTextFragment(WTF::TextStream& ts,
         DynamicTo<NGPhysicalTextFragment>(paint_fragment->PhysicalFragment());
     if (!physical_text_fragment)
       return;
-    const NGFragment fragment(paint_fragment->Style().GetWritingMode(),
+    const NGFragment fragment(paint_fragment->Style().GetWritingDirection(),
                               *physical_text_fragment);
     WriteTextFragment(ts, paint_fragment->GetLayoutObject(),
                       paint_fragment->RectInContainerBlock(),

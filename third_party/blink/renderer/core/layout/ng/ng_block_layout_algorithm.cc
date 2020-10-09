@@ -1122,7 +1122,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   const NGPhysicalFragment& physical_fragment =
       positioned_float.layout_result->PhysicalFragment();
   LayoutUnit float_inline_size =
-      NGFragment(ConstraintSpace().GetWritingMode(), physical_fragment)
+      NGFragment(ConstraintSpace().GetWritingDirection(), physical_fragment)
           .InlineSize();
 
   NGBfcOffset bfc_offset = {ConstraintSpace().BfcOffset().line_offset,
@@ -1324,7 +1324,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   }
 
   const auto& physical_fragment = layout_result->PhysicalFragment();
-  NGFragment fragment(ConstraintSpace().GetWritingMode(), physical_fragment);
+  NGFragment fragment(ConstraintSpace().GetWritingDirection(),
+                      physical_fragment);
 
   LogicalOffset logical_offset = LogicalFromBfcOffsets(
       child_bfc_offset, ContainerBfcOffset(), fragment.InlineSize(),
@@ -1362,7 +1363,7 @@ NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     NGBfcOffset* out_child_bfc_offset) {
   const ComputedStyle& child_style = child.Style();
   const TextDirection direction = ConstraintSpace().Direction();
-  const WritingMode writing_mode = ConstraintSpace().GetWritingMode();
+  const auto writing_direction = ConstraintSpace().GetWritingDirection();
 
   // The origin offset is where we should start looking for layout
   // opportunities. It needs to be adjusted by the child's clearance.
@@ -1461,7 +1462,7 @@ NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
       return layout_result;
     }
 
-    NGFragment fragment(writing_mode, layout_result->PhysicalFragment());
+    NGFragment fragment(writing_direction, layout_result->PhysicalFragment());
 
     // Check if the fragment will fit in this layout opportunity, if not proceed
     // to the next opportunity.
@@ -1483,7 +1484,7 @@ NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
       LayoutUnit marker_inline_size;
       if (!marker_fragment.Children().empty()) {
         marker_inline_size =
-            NGFragment(writing_mode, *marker_fragment.Children().front())
+            NGFragment(writing_direction, *marker_fragment.Children().front())
                 .InlineSize();
       }
       auto_margins.inline_start =
@@ -1815,7 +1816,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   }
 
   const auto& physical_fragment = layout_result->PhysicalFragment();
-  NGFragment fragment(ConstraintSpace().GetWritingMode(), physical_fragment);
+  NGFragment fragment(ConstraintSpace().GetWritingDirection(),
+                      physical_fragment);
 
   LogicalOffset logical_offset = CalculateLogicalOffset(
       fragment, layout_result->BfcLineOffset(), child_bfc_block_offset);
@@ -2342,9 +2344,9 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
   if (!needs_inline_size && !child_style.MayHaveMargin())
     return {};
 
-  NGBoxStrut margins = ComputeMarginsFor(
-      child_style, child_percentage_size_.inline_size,
-      ConstraintSpace().GetWritingMode(), ConstraintSpace().Direction());
+  NGBoxStrut margins =
+      ComputeMarginsFor(child_style, child_percentage_size_.inline_size,
+                        ConstraintSpace().GetWritingDirection());
 
   // As long as the child isn't establishing a new formatting context, we need
   // to know its line-left offset before layout, to be able to position child
@@ -2547,8 +2549,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
     return;
   }
 
-  NGBoxFragment fragment(ConstraintSpace().GetWritingMode(),
-                         ConstraintSpace().Direction(),
+  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(child));
 
   if (!container_builder_.Baseline()) {

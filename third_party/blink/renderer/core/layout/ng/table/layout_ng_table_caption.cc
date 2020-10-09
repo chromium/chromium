@@ -26,16 +26,14 @@ void LayoutNGTableCaption::CalculateAndSetMargins(
     const NGPhysicalFragment& physical_fragment) {
   const ComputedStyle& containing_block_style = ContainingBlock()->StyleRef();
 
-  NGBoxFragment box_fragment(containing_block_style.GetWritingMode(),
-                             containing_block_style.Direction(),
+  NGBoxFragment box_fragment(containing_block_style.GetWritingDirection(),
                              To<NGPhysicalBoxFragment>(physical_fragment));
 
   NGPhysicalBoxStrut physical_margins =
       ComputePhysicalMargins(constraint_space, StyleRef());
 
-  NGBoxStrut logical_margins =
-      physical_margins.ConvertToLogical(containing_block_style.GetWritingMode(),
-                                        containing_block_style.Direction());
+  NGBoxStrut logical_margins = physical_margins.ConvertToLogical(
+      containing_block_style.GetWritingDirection());
 
   LayoutUnit caption_inline_size_in_cb_writing_mode = box_fragment.InlineSize();
 
@@ -49,9 +47,8 @@ void LayoutNGTableCaption::CalculateAndSetMargins(
                        available_inline_size_in_cb_writing_mode,
                        caption_inline_size_in_cb_writing_mode,
                        &logical_margins);
-  SetMargin(
-      logical_margins.ConvertToPhysical(containing_block_style.GetWritingMode(),
-                                        containing_block_style.Direction()));
+  SetMargin(logical_margins.ConvertToPhysical(
+      containing_block_style.GetWritingDirection()));
 }
 
 void LayoutNGTableCaption::InsertedIntoTree() {

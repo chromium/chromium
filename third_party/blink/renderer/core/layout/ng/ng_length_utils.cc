@@ -895,7 +895,7 @@ NGBoxStrut ComputeMarginsFor(const NGConstraintSpace& constraint_space,
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
   return ComputePhysicalMargins(style, percentage_resolution_size)
-      .ConvertToLogical(compute_for.GetWritingMode(), compute_for.Direction());
+      .ConvertToLogical(compute_for.GetWritingDirection());
 }
 
 NGBoxStrut ComputeMinMaxMargins(const ComputedStyle& parent_style,

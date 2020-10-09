@@ -164,8 +164,7 @@ LayoutUnit FlexItem::MarginBoxAscent() const {
   DCHECK(layout_result_);
   return FlowAwareMarginBefore() +
          NGBoxFragment(
-             algorithm_->StyleRef().GetWritingMode(),
-             algorithm_->StyleRef().Direction(),
+             algorithm_->StyleRef().GetWritingDirection(),
              To<NGPhysicalBoxFragment>(layout_result_->PhysicalFragment()))
              .BaselineOrSynthesize();
 }
@@ -1082,7 +1081,7 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
       LayoutUnit item_main_size = flex_item.FlexedBorderBoxSize();
 
       NGBoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
-          Style()->GetWritingMode(), Style()->Direction());
+          Style()->GetWritingDirection());
 
       // We passed 0 as the initial main_axis offset to ComputeLineItemsPosition
       // for ColumnReverse containers so here we have to add the

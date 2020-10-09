@@ -571,8 +571,7 @@ void NGInlineLayoutAlgorithm::PlaceLayoutResult(NGInlineItemResult* item_result,
   const NGInlineItem& item = *item_result->item;
   DCHECK(item.Style());
   FontHeight metrics =
-      NGBoxFragment(ConstraintSpace().GetWritingMode(),
-                    ConstraintSpace().Direction(),
+      NGBoxFragment(ConstraintSpace().GetWritingDirection(),
                     To<NGPhysicalBoxFragment>(
                         item_result->layout_result->PhysicalFragment()))
           .BaselineMetrics(item_result->margins, baseline_type_);
@@ -748,7 +747,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
 
     // We need to manually account for the flipped-lines writing mode here :(.
     if (IsFlippedLinesWritingMode(ConstraintSpace().GetWritingMode())) {
-      NGFragment fragment(ConstraintSpace().GetWritingMode(),
+      NGFragment fragment(ConstraintSpace().GetWritingDirection(),
                           child.layout_result->PhysicalFragment());
 
       block_offset = -fragment.BlockSize() - block_offset;

@@ -355,7 +355,7 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   space_builder.SetIsPaintedAtomically(true);
 
   NGBoxStrut margins = physical_margins.ConvertToLogical(
-      ConstraintSpace().GetWritingMode(), Style().Direction());
+      ConstraintSpace().GetWritingDirection());
   LogicalSize child_available_size = ChildAvailableSize();
   if (ShouldItemShrinkToFit(flex_item)) {
     space_builder.SetIsShrinkToFit(true);
@@ -553,7 +553,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
     NGPhysicalBoxStrut physical_border_padding(
         border_padding_in_child_writing_mode.ConvertToPhysical(
-            child_style.GetWritingMode(), child_style.Direction()));
+            child_style.GetWritingDirection()));
 
     LayoutUnit main_axis_border_padding =
         is_horizontal_flow_ ? physical_border_padding.HorizontalSum()
@@ -664,7 +664,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         LayoutUnit cross_size;
         if (use_container_cross_size_for_aspect_ratio) {
           NGBoxStrut margins = physical_child_margins.ConvertToLogical(
-              ConstraintSpace().GetWritingMode(), Style().Direction());
+              ConstraintSpace().GetWritingDirection());
           cross_size = CalculateFixedCrossSize(
               min_max_sizes_in_cross_axis_direction, margins);
         } else if (MainAxisIsInlineAxis(child)) {
@@ -1012,7 +1012,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
       LogicalSize available_size;
       NGBoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
-          ConstraintSpace().GetWritingMode(), Style().Direction());
+          ConstraintSpace().GetWritingDirection());
       LayoutUnit fixed_aspect_ratio_cross_size = kIndefiniteSize;
       if (RuntimeEnabledFeatures::FlexAspectRatioEnabled() &&
           flex_item.ng_input_node_.HasAspectRatio() &&
@@ -1248,8 +1248,8 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
                                  ? flex_item.desired_location_.TransposedPoint()
                                  : flex_item.desired_location_;
 
-      NGBoxFragment fragment(ConstraintSpace().GetWritingMode(),
-                             ConstraintSpace().Direction(), physical_fragment);
+      NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                             physical_fragment);
       // Only propagate baselines from children on the first flex-line.
       if (&line_context == line_contexts.begin()) {
         PropagateBaselineFromChild(flex_item, fragment, location.Y(),
@@ -1263,8 +1263,7 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
 
       LayoutUnit margin_block_end =
           flex_item.physical_margins_
-              .ConvertToLogical(ConstraintSpace().GetWritingMode(),
-                                ConstraintSpace().Direction())
+              .ConvertToLogical(ConstraintSpace().GetWritingDirection())
               .block_end;
       overflow_block_size =
           std::max(overflow_block_size,
@@ -1352,7 +1351,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   const NGContainerFragmentBuilder::ChildWithOffset& child = children[0];
   DCHECK(!child.fragment->IsLineBox());
   const NGConstraintSpace& space = ConstraintSpace();
-  NGBoxFragment fragment(space.GetWritingMode(), space.Direction(),
+  NGBoxFragment fragment(space.GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(*child.fragment));
   base::Optional<LayoutUnit> child_baseline =
       space.BaselineAlgorithmType() == NGBaselineAlgorithmType::kFirstLine

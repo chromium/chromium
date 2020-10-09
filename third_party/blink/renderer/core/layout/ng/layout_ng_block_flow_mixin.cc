@@ -353,15 +353,14 @@ void LayoutNGBlockFlowMixin<Base>::UpdateMargins() {
   // on ourselves, since that's what the legacy container expects.
   const ComputedStyle& style = Base::StyleRef();
   const ComputedStyle& cb_style = containing_block->StyleRef();
-  const auto writing_mode = cb_style.GetWritingMode();
-  const auto direction = cb_style.Direction();
+  const auto writing_direction = cb_style.GetWritingDirection();
   LayoutUnit available_logical_width =
       LayoutBoxUtils::AvailableLogicalWidth(*this, containing_block);
   NGBoxStrut margins = ComputePhysicalMargins(style, available_logical_width)
-                           .ConvertToLogical(writing_mode, direction);
+                           .ConvertToLogical(writing_direction);
   ResolveInlineMargins(style, cb_style, available_logical_width,
                        Base::LogicalWidth(), &margins);
-  Base::SetMargin(margins.ConvertToPhysical(writing_mode, direction));
+  Base::SetMargin(margins.ConvertToPhysical(writing_direction));
 }
 
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutBlockFlow>;

@@ -120,9 +120,9 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
     }
     if (layout_object->IsRubyBase()) {
       const ComputedStyle& base_style = child_fragment.Style();
-      const WritingMode writing_mode = base_style.GetWritingMode();
+      const auto writing_direction = base_style.GetWritingDirection();
       const LayoutUnit base_inline_size =
-          NGFragment(writing_mode, child_fragment).InlineSize();
+          NGFragment(writing_direction, child_fragment).InlineSize();
       // RubyBase's inline_size is always same as RubyRun's inline_size.
       // Overhang values are offsets from RubyBase's inline edges to
       // the outmost text.
@@ -130,13 +130,14 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
            To<NGPhysicalContainerFragment>(child_fragment)
                .PostLayoutChildren()) {
         const LayoutUnit line_inline_size =
-            NGFragment(writing_mode, *base_child_link).InlineSize();
+            NGFragment(writing_direction, *base_child_link).InlineSize();
         if (line_inline_size == LayoutUnit())
           continue;
         found_line = true;
         const LayoutUnit start =
             base_child_link.offset
-                .ConvertToLogical(writing_mode, base_style.Direction(),
+                .ConvertToLogical(writing_direction.GetWritingMode(),
+                                  writing_direction.Direction(),
                                   child_fragment.Size(),
                                   base_child_link.get()->Size())
                 .inline_offset;

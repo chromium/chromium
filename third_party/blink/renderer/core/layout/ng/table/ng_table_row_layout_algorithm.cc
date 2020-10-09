@@ -126,12 +126,12 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
           &cell_location_start_column);
       scoped_refptr<const NGLayoutResult> layout_result =
           cell.Layout(cell_constraint_space);
-      const NGBoxFragment fragment(
-          table_data.table_writing_direction.GetWritingMode(),
-          table_data.table_writing_direction.Direction(),
-          To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
 
-      LayoutUnit baseline = fragment.FirstBaselineOrSynthesize();
+      LayoutUnit baseline =
+          NGBoxFragment(
+              table_data.table_writing_direction,
+              To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()))
+              .FirstBaselineOrSynthesize();
       row_baseline = std::max(row_baseline, baseline);
     }
   }
@@ -154,13 +154,13 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     container_builder_.AddResult(*cell_result, cell_offset);
 
     if (NGTableAlgorithmUtils::IsBaseline(cell.Style().VerticalAlign())) {
-      const NGBoxFragment fragment(
-          table_data.table_writing_direction.GetWritingMode(),
-          table_data.table_writing_direction.Direction(),
-          To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment()));
+      LayoutUnit baseline =
+          NGBoxFragment(
+              table_data.table_writing_direction,
+              To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment()))
+              .FirstBaselineOrSynthesize();
       reported_row_baseline =
-          std::max(reported_row_baseline.value_or(LayoutUnit::Min()),
-                   fragment.FirstBaselineOrSynthesize());
+          std::max(reported_row_baseline.value_or(LayoutUnit::Min()), baseline);
     }
   }
   container_builder_.SetFragmentBlockSize(row.block_size);

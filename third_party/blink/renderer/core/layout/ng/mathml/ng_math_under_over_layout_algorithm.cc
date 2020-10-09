@@ -221,7 +221,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
       ComputeMarginsFor(base_space, base.Style(), ConstraintSpace());
 
   NGBoxFragment base_fragment(
-      ConstraintSpace().GetWritingMode(), ConstraintSpace().Direction(),
+      ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment()));
   LayoutUnit base_ascent = base_fragment.BaselineOrSynthesize();
 
@@ -235,7 +235,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
     NGBoxStrut over_margins =
         ComputeMarginsFor(over_space, over.Style(), ConstraintSpace());
     NGBoxFragment over_fragment(
-        ConstraintSpace().GetWritingMode(), ConstraintSpace().Direction(),
+        ConstraintSpace().GetWritingDirection(),
         To<NGPhysicalBoxFragment>(over_layout_result->PhysicalFragment()));
     block_offset += parameters.over_extra_ascender + over_margins.block_start;
     LogicalOffset over_offset = {
@@ -284,7 +284,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
     NGBoxStrut under_margins =
         ComputeMarginsFor(under_space, under.Style(), ConstraintSpace());
     NGBoxFragment under_fragment(
-        ConstraintSpace().GetWritingMode(), ConstraintSpace().Direction(),
+        ConstraintSpace().GetWritingDirection(),
         To<NGPhysicalBoxFragment>(under_layout_result->PhysicalFragment()));
     block_offset += under_margins.block_start;
     if (parameters.use_under_over_bar_fallback) {

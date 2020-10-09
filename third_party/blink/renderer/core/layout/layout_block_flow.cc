@@ -2625,7 +2625,7 @@ LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     if (const NGPaintFragment* paint_fragment = PaintFragment()) {
       NGBoxFragment box_fragment(
-          StyleRef().GetWritingMode(), StyleRef().Direction(),
+          StyleRef().GetWritingDirection(),
           To<NGPhysicalBoxFragment>(paint_fragment->PhysicalFragment()));
       if (const base::Optional<LayoutUnit> baseline = box_fragment.Baseline())
         return *baseline;

@@ -741,9 +741,9 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
     const NGBlockBreakToken* break_token,
     NGMarginStrut* margin_strut) {
   const ComputedStyle& spanner_style = spanner_node.Style();
-  NGBoxStrut margins = ComputeMarginsFor(
-      spanner_style, ChildAvailableSize().inline_size,
-      ConstraintSpace().GetWritingMode(), ConstraintSpace().Direction());
+  NGBoxStrut margins =
+      ComputeMarginsFor(spanner_style, ChildAvailableSize().inline_size,
+                        ConstraintSpace().GetWritingDirection());
   AdjustMarginsForFragmentation(break_token, &margins);
 
   // Collapse the block-start margin of this spanner with the block-end margin
@@ -789,7 +789,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
 
   const auto& spanner_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-  NGFragment logical_fragment(ConstraintSpace().GetWritingMode(),
+  NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
                               spanner_fragment);
 
   ResolveInlineMargins(spanner_style, Style(), ChildAvailableSize().inline_size,
@@ -831,8 +831,8 @@ void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
       NGBaselineAlgorithmType::kFirstLine)
     return;
 
-  NGBoxFragment logical_fragment(ConstraintSpace().GetWritingMode(),
-                                 ConstraintSpace().Direction(), child);
+  NGBoxFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
+                                 child);
 
   if (auto baseline = logical_fragment.FirstBaseline())
     container_builder_.SetBaseline(block_offset + *baseline);

@@ -1472,7 +1472,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       return NGBoxStrut();
     } else {
       return ComputeScrollbarsInternal().ConvertToLogical(
-          StyleRef().GetWritingMode(), StyleRef().Direction());
+          StyleRef().GetWritingDirection());
     }
   }
 

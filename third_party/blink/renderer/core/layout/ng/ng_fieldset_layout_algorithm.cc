@@ -59,7 +59,7 @@ inline LegendBlockAlignment ComputeLegendBlockAlignment(
 NGFieldsetLayoutAlgorithm::NGFieldsetLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params),
-      writing_mode_(ConstraintSpace().GetWritingMode()),
+      writing_direction_(ConstraintSpace().GetWritingDirection()),
       consumed_block_size_(BreakToken() ? BreakToken()->ConsumedBlockSize()
                                         : LayoutUnit()) {
   DCHECK(params.fragment_geometry.scrollbar.IsEmpty());
@@ -227,9 +227,9 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
   // box had the fieldset been a regular block with no weirdness.
   LogicalSize percentage_size = CalculateChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize());
-  NGBoxStrut legend_margins = ComputeMarginsFor(
-      legend.Style(), percentage_size.inline_size,
-      ConstraintSpace().GetWritingMode(), ConstraintSpace().Direction());
+  NGBoxStrut legend_margins =
+      ComputeMarginsFor(legend.Style(), percentage_size.inline_size,
+                        ConstraintSpace().GetWritingDirection());
 
   auto legend_space = CreateConstraintSpaceForLegend(
       legend, ChildAvailableSize(), percentage_size);
@@ -242,7 +242,7 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
   const auto& physical_fragment = result->PhysicalFragment();
 
   LayoutUnit legend_border_box_block_size =
-      NGFragment(writing_mode_, physical_fragment).BlockSize();
+      NGFragment(writing_direction_, physical_fragment).BlockSize();
   LayoutUnit legend_margin_box_block_size = legend_margins.block_start +
                                             legend_border_box_block_size +
                                             legend_margins.block_end;
@@ -275,7 +275,7 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
 
   LayoutUnit legend_inline_start = ComputeLegendInlineOffset(
       legend.Style(),
-      NGFragment(writing_mode_, result->PhysicalFragment()).InlineSize(),
+      NGFragment(writing_direction_, result->PhysicalFragment()).InlineSize(),
       legend_margins, Style(), BorderScrollbarPadding().inline_start,
       ChildAvailableSize().inline_size);
   LogicalOffset legend_offset = {legend_inline_start, block_offset};
@@ -335,7 +335,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     LogicalOffset offset(borders_.inline_start, intrinsic_block_size_);
     container_builder_.AddResult(*result, offset);
     intrinsic_block_size_ +=
-        NGFragment(writing_mode_, result->PhysicalFragment()).BlockSize();
+        NGFragment(writing_direction_, result->PhysicalFragment()).BlockSize();
     container_builder_.SetHasSeenAllChildren();
   }
 

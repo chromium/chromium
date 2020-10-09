@@ -121,8 +121,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetFragmentBlockSize(new_block_size);
   } else {
     LayoutUnit old_block_size =
-        NGFragment(writing_direction_.GetWritingMode(), physical_fragment)
-            .BlockSize();
+        NGFragment(writing_direction_, physical_fragment).BlockSize();
     DCHECK_EQ(old_block_size, new_block_size);
     container_builder_.SetFragmentBlockSize(old_block_size);
   }

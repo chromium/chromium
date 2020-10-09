@@ -246,7 +246,7 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
       if (child.IsCSSBox()) {
         margins =
             ComputeMarginsFor(child.Style(), child_available_size_.inline_size,
-                              GetWritingMode(), Direction());
+                              GetWritingDirection());
       }
 
       // If we are in block-flow layout we use the end *margin-strut* as the
@@ -257,7 +257,7 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
         margins.block_end = end_margin_strut.Sum();
       }
 
-      NGFragment fragment(GetWritingMode(), child);
+      NGFragment fragment(GetWritingDirection(), child);
 
       // Use the original offset (*without* relative-positioning applied), and
       // clamp any negative margins to zero.

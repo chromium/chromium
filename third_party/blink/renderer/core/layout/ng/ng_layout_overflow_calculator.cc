@@ -29,7 +29,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
   NGPhysicalBoxStrut scrollbar;
   if (fragment.IsCSSBox()) {
     scrollbar = ComputeScrollbarsForNonAnonymous(node).ConvertToPhysical(
-        writing_direction.GetWritingMode(), writing_direction.Direction());
+        writing_direction);
   }
 
   NGLayoutOverflowCalculator calculator(
@@ -129,10 +129,7 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
       LogicalOffset(converter.ToLogical(padding_rect_).offset.inline_offset,
                     converter.ToLogical(*inflow_bounds).BlockEndOffset()),
       LogicalSize(LayoutUnit(),
-                  padding_
-                      .ConvertToLogical(writing_direction_.GetWritingMode(),
-                                        writing_direction_.Direction())
-                      .block_end)};
+                  padding_.ConvertToLogical(writing_direction_).block_end)};
 
   PhysicalRect alternate_overflow = layout_overflow_;
   alternate_overflow.UniteEvenIfEmpty(AdjustOverflowForScrollOrigin(

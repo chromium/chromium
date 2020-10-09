@@ -140,8 +140,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   auto space = builder.ToConstraintSpace();
   auto result = To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
 
-  NGBoxFragment fragment(parent_space.GetWritingMode(),
-                         parent_space.Direction(),
+  NGBoxFragment fragment(parent_space.GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
   resolver_->Resolve(MakeGarbageCollected<CustomLayoutFragment>(

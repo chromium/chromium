@@ -537,7 +537,7 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
     // fragmentainer. If layout aborted, though, we can't propagate anything.
     if (layout_result.Status() != NGLayoutResult::kSuccess)
       return;
-    NGFragment fragment(space.GetWritingMode(),
+    NGFragment fragment(space.GetWritingDirection(),
                         layout_result.PhysicalFragment());
     space_shortage = fragmentainer_block_offset + fragment.BlockSize() -
                      space.FragmentainerBlockSize();
@@ -569,7 +569,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
   }
 
   const auto& physical_fragment = layout_result.PhysicalFragment();
-  NGFragment fragment(space.GetWritingMode(), physical_fragment);
+  NGFragment fragment(space.GetWritingDirection(), physical_fragment);
 
   if (!space.HasKnownFragmentainerBlockSize()) {
     if (space.IsInitialColumnBalancingPass() && builder) {

@@ -1474,7 +1474,7 @@ void NGLineBreaker::HandleAtomicInline(
             .LayoutAtomicInline(constraint_space_, node_.Style(),
                                 line_info->UseFirstLineStyle());
     item_result->inline_size =
-        NGFragment(constraint_space_.GetWritingMode(),
+        NGFragment(constraint_space_.GetWritingDirection(),
                    item_result->layout_result->PhysicalFragment())
             .InlineSize();
     item_result->inline_size += inline_margins;

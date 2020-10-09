@@ -79,8 +79,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
         To<NGBlockNode>(child).Layout(child_space, nullptr /* break token */);
     const NGPhysicalContainerFragment& physical_fragment =
         result->PhysicalFragment();
-    NGBoxFragment fragment(ConstraintSpace().GetWritingMode(),
-                           ConstraintSpace().Direction(),
+    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            To<NGPhysicalBoxFragment>(physical_fragment));
 
     NGBoxStrut margins =

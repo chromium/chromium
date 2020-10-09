@@ -211,7 +211,7 @@ NGLayoutResult::NGLayoutResult(
     DCHECK(!physical_fragment_->IsFormattingContextRoot());
 
     // Self-collapsing children must have a block-size of zero.
-    NGFragment fragment(physical_fragment_->Style().GetWritingMode(),
+    NGFragment fragment(physical_fragment_->Style().GetWritingDirection(),
                         *physical_fragment_);
     DCHECK_EQ(LayoutUnit(), fragment.BlockSize());
   }

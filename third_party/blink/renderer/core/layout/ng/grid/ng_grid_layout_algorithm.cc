@@ -250,7 +250,7 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // determine inline size.
   if (is_orthogonal_flow_root) {
     scoped_refptr<const NGLayoutResult> result = node.Layout(constraint_space);
-    grid_item.inline_size = NGFragment(ConstraintSpace().GetWritingMode(),
+    grid_item.inline_size = NGFragment(ConstraintSpace().GetWritingDirection(),
                                        result->PhysicalFragment())
                                 .InlineSize();
   } else {

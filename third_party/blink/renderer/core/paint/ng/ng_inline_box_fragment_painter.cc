@@ -218,7 +218,8 @@ void NGInlineBoxFragmentPainterBase::ComputeFragmentOffsetOnLine(
     TextDirection direction,
     LayoutUnit* offset_on_line,
     LayoutUnit* total_width) const {
-  WritingMode writing_mode = inline_box_fragment_.Style().GetWritingMode();
+  WritingDirectionMode writing_direction =
+      inline_box_fragment_.Style().GetWritingDirection();
   NGInlineCursor cursor;
   DCHECK(inline_box_fragment_.GetLayoutObject());
   cursor.MoveTo(*inline_box_fragment_.GetLayoutObject());
@@ -244,13 +245,14 @@ void NGInlineBoxFragmentPainterBase::ComputeFragmentOffsetOnLine(
     const NGPhysicalBoxFragment* box_fragment = cursor.Current().BoxFragment();
     DCHECK(box_fragment);
     if (before_self)
-      before += NGFragment(writing_mode, *box_fragment).InlineSize();
+      before += NGFragment(writing_direction, *box_fragment).InlineSize();
     else
-      after += NGFragment(writing_mode, *box_fragment).InlineSize();
+      after += NGFragment(writing_direction, *box_fragment).InlineSize();
   }
 
-  NGFragment logical_fragment(writing_mode, inline_box_fragment_);
-  *total_width = before + after + logical_fragment.InlineSize();
+  *total_width =
+      before + after +
+      NGFragment(writing_direction, inline_box_fragment_).InlineSize();
 
   // We're iterating over the fragments in physical order before so we need to
   // swap before and after for RTL.

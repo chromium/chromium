@@ -110,8 +110,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     scoped_refptr<const NGLayoutResult> layout_result =
         cell.Layout(cell_constraint_space);
     const NGBoxFragment fragment(
-        table_writing_direction.GetWritingMode(),
-        table_writing_direction.Direction(),
+        table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
     bool is_parallel =
         IsParallelWritingMode(table_writing_direction.GetWritingMode(),
