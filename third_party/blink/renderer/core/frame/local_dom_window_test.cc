@@ -168,20 +168,8 @@ TEST_F(LocalDOMWindowTest, EnforceSandboxFlags) {
       GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
 }
 
-// Test fixture parameterized on whether the "IsolatedWorldCSP" feature is
-// enabled.
-class IsolatedWorldCSPTest : public PageTestBase,
-                             public testing::WithParamInterface<bool>,
-                             private ScopedIsolatedWorldCSPForTest {
- public:
-  IsolatedWorldCSPTest() : ScopedIsolatedWorldCSPForTest(GetParam()) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedWorldCSPTest);
-};
-
 // Tests ExecutionContext::GetContentSecurityPolicyForCurrentWorld().
-TEST_P(IsolatedWorldCSPTest, CSPForWorld) {
+TEST_F(PageTestBase, CSPForWorld) {
   using ::testing::ElementsAre;
 
   // Set a CSP for the main world.
@@ -239,28 +227,13 @@ TEST_P(IsolatedWorldCSPTest, CSPForWorld) {
   }
 
   {
-    bool is_isolated_world_csp_enabled = GetParam();
-    SCOPED_TRACE(base::StringPrintf(
-        "In isolated world with csp and 'IsolatedWorldCSP' %s",
-        is_isolated_world_csp_enabled ? "enabled" : "disabled"));
+    SCOPED_TRACE("In isolated world with csp.");
     ScriptState::Scope scope(isolated_world_with_csp_script_state);
-
-    if (!is_isolated_world_csp_enabled) {
-      // With 'IsolatedWorldCSP' feature disabled, we should just bypass the
-      // main world CSP by using an empty CSP.
-      EXPECT_TRUE(get_csp_headers().IsEmpty());
-    } else {
-      // With 'IsolatedWorldCSP' feature enabled, we use the isolated world's
-      // CSP if it specified one.
-      EXPECT_THAT(
-          get_csp_headers(),
-          ElementsAre(CSPHeaderAndType(
-              {kIsolatedWorldCSP, ContentSecurityPolicyType::kEnforce})));
-    }
+    // We use the isolated world's CSP if it specified one.
+    EXPECT_THAT(get_csp_headers(),
+                ElementsAre(CSPHeaderAndType(
+                    {kIsolatedWorldCSP, ContentSecurityPolicyType::kEnforce})));
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         IsolatedWorldCSPTest,
-                         testing::Values(true, false));
 }  // namespace blink

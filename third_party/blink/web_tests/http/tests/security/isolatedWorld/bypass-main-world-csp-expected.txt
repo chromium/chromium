@@ -17,7 +17,9 @@ ALERT: LOADED
 ALERT: Running test #1
 
 ALERT: Test in isolated world with restrictive CSP
-ALERT: LOADED
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png?0' because it violates the following Content Security Policy directive: "img-src 'self'".
+
+ALERT: BLOCKED
 ALERT: Running test #0
 
  This test ensures that img-src checks respect the isolated world CSP when the IsolatedWorldCSP feature is enabled and bypass the main world CSP checks otherwise.

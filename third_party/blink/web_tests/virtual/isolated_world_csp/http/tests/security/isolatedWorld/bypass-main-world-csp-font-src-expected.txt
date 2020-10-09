@@ -1,5 +1,0 @@
-ALERT: With lax isolated world CSP
-ALERT: With strict isolated world CSP
-CONSOLE ERROR: Refused to load the font 'http://127.0.0.1:8000/resources/Ahem.ttf?num=2' because it violates the following Content Security Policy directive: "font-src 'none'".
-
-This test ensures that scripts run in isolated worlds marked with their own Content Security Policy aren't affected by the page's font-src directive.

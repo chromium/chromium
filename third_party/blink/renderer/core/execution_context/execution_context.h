@@ -174,11 +174,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   // Returns the content security policy to be used based on the current
   // JavaScript world we are in.
-  // Note: As part of crbug.com/896041, existing usages of
-  // ContentSecurityPolicy::ShouldBypassMainWorld should eventually be replaced
-  // by GetContentSecurityPolicyForCurrentWorld. However this is under active
-  // development, hence new callers should still use
-  // ContentSecurityPolicy::ShouldBypassMainWorld for now.
   ContentSecurityPolicy* GetContentSecurityPolicyForCurrentWorld();
 
   // Returns the content security policy to be used for the given |world|.

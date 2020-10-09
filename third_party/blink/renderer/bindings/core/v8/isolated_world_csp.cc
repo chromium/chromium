@@ -26,6 +26,8 @@ namespace blink {
 
 namespace {
 
+enum class CSPType { kEmpty, kNonEmpty };
+
 class IsolatedWorldCSPDelegate final
     : public GarbageCollected<IsolatedWorldCSPDelegate>,
       public ContentSecurityPolicyDelegate {
@@ -34,11 +36,11 @@ class IsolatedWorldCSPDelegate final
   IsolatedWorldCSPDelegate(LocalDOMWindow& window,
                            scoped_refptr<SecurityOrigin> security_origin,
                            int32_t world_id,
-                           bool apply_policy)
+                           CSPType type)
       : window_(&window),
         security_origin_(std::move(security_origin)),
         world_id_(world_id),
-        apply_policy_(apply_policy) {
+        csp_type_(type) {
     DCHECK(security_origin_);
   }
 
@@ -79,14 +81,16 @@ class IsolatedWorldCSPDelegate final
   String GetDocumentReferrer() override { return g_empty_string; }
   void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,
                               Element*) override {
-    DCHECK(apply_policy_);
+    // Sanity check that an empty CSP doesn't lead to a violation.
+    DCHECK(csp_type_ == CSPType::kNonEmpty);
   }
   void PostViolationReport(const SecurityPolicyViolationEventInit&,
                            const String& stringified_report,
                            bool is_frame_ancestors_violation,
                            const Vector<String>& report_endpoints,
                            bool use_reporting_api) override {
-    DCHECK(apply_policy_);
+    // Sanity check that an empty CSP doesn't lead to a violation.
+    DCHECK(csp_type_ == CSPType::kNonEmpty);
   }
 
   void Count(WebFeature feature) override {
@@ -122,10 +126,7 @@ class IsolatedWorldCSPDelegate final
   const Member<LocalDOMWindow> window_;
   const scoped_refptr<SecurityOrigin> security_origin_;
   const int32_t world_id_;
-
-  // Whether the 'IsolatedWorldCSP' feature is enabled, and we are applying the
-  // CSP provided by the isolated world.
-  const bool apply_policy_;
+  const CSPType csp_type_;
 };
 
 }  // namespace
@@ -177,20 +178,16 @@ ContentSecurityPolicy* IsolatedWorldCSP::CreateIsolatedWorldCSP(
   const String& policy = it->value.policy;
   scoped_refptr<SecurityOrigin> self_origin = it->value.self_origin;
 
-  const bool apply_policy = RuntimeEnabledFeatures::IsolatedWorldCSPEnabled();
-
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
 
   IsolatedWorldCSPDelegate* delegate =
       MakeGarbageCollected<IsolatedWorldCSPDelegate>(
-          window, std::move(self_origin), world_id, apply_policy);
+          window, std::move(self_origin), world_id,
+          policy.IsEmpty() ? CSPType::kEmpty : CSPType::kNonEmpty);
   csp->BindToDelegate(*delegate);
-
-  if (apply_policy) {
-    csp->AddPolicyFromHeaderValue(
-        policy, network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  }
+  csp->AddPolicyFromHeaderValue(
+      policy, network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP);
 
   return csp;
 }

@@ -17,18 +17,19 @@ CONSOLE MESSAGE: EXECUTED in isolated world.
 CONSOLE ERROR: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
 
 CONSOLE MESSAGE: Executed using document.write in isolated world. Is main world: true
-CONSOLE MESSAGE: line 90: Disallowing unsafe-inline for the isolated world.
-CONSOLE MESSAGE: line 91: internals.runtimeFlags.isolatedWorldCSPEnabled is false
+CONSOLE MESSAGE: line 88: Disallowing unsafe-inline for the isolated world.
+CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-weyW8ZEkQAD8it2iIcRJESCAdVG/APiGxF6JYEqMvKo='), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE ERROR: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-pB86azbmdo0Ymgsz9MvuZe0osiEViwXGte4Z0AtHPXs='), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE MESSAGE: line 94: Using an empty CSP for the isolated world. This should pass.
 CONSOLE MESSAGE: EXECUTED in isolated world.
 CONSOLE ERROR: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
 
 CONSOLE MESSAGE: Executed using document.write in isolated world. Is main world: true
-CONSOLE MESSAGE: line 100: Using an empty CSP for the isolated world. This should pass.
-CONSOLE MESSAGE: EXECUTED in isolated world.
-CONSOLE ERROR: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.
-
-CONSOLE MESSAGE: Executed using document.write in isolated world. Is main world: true
-CONSOLE MESSAGE: line 106: Injecting into main world again: this should fail.
+CONSOLE MESSAGE: line 100: Injecting into main world again: this should fail.
 CONSOLE ERROR: line 18: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-09Et/dqtUwF1zPoVDKo5ZDj2NUXqkLUxcQfh9UtQQt0='), or a nonce ('nonce-...') is required to enable inline execution.
 
 CONSOLE ERROR: line 26: Refused to execute inline event handler because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-eval'". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution.

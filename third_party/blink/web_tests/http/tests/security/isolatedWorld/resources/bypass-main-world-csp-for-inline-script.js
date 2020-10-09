@@ -85,13 +85,7 @@ function test() {
         testInlineScript(true, 1);
         break;
       case 3:
-        // This case is dependent on whether the "IsolatedWorldCSP" feature is
-        // enabled.
         console.log('Disallowing unsafe-inline for the isolated world.');
-        console.log(
-            'internals.runtimeFlags.isolatedWorldCSPEnabled is ' +
-            internals.runtimeFlags.isolatedWorldCSPEnabled);
-
         testRunner.setIsolatedWorldInfo(
             1, 'chrome-extension://123', 'script-src \'none\'');
         testInlineScript(true, 1);

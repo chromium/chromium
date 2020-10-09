@@ -25,13 +25,8 @@ struct WebIsolatedWorldInfo {
   WebSecurityOrigin security_origin;
 
   // Associates a content security policy with an isolated world. This policy
-  // should be used when evaluating script in the isolated world, and should
-  // also replace a protected resource's CSP when evaluating resources
-  // injected into the DOM.
+  // should be used when evaluating script in the isolated world.
   //
-  // TODO(crbug.com/896041): Setting this simply bypasses the protected
-  // resource's CSP. It doesn't yet restrict the isolated world to the provided
-  // policy.
   // Note: If this is null, the content security policy for the isolated world
   // is cleared. Else if this is specified, |security_origin| must also be
   // specified.

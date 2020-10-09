@@ -29,9 +29,6 @@ class CORE_EXPORT IsolatedWorldCSP {
   // world should be restricted based on the isolated world's CSP, not the
   // main world's.
   //
-  // TODO(crbug.com/896041): Right now, resource injection simply bypasses the
-  // main world's CSP. More work is necessary to allow the isolated world's
-  // policy to be applied correctly.
   // Note: If |policy| is null, the PolicyInfo for |world_id| is cleared. If
   // |policy| is specified, |self_origin| must not be null.
   void SetContentSecurityPolicy(int32_t world_id,

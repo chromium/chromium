@@ -23,7 +23,10 @@ void EnsureIsolatedWorldInitialized(int world_id) {
   }
 
   last_used_world_id = world_id;
-  constexpr char kContentSecurityPolicy[] = "script-src 'self' 'unsafe-eval'";
+
+  // Set an empty CSP so that the main world's CSP is not used in the isolated
+  // world.
+  constexpr char kContentSecurityPolicy[] = "";
 
   blink::WebIsolatedWorldInfo info;
   info.security_origin =
