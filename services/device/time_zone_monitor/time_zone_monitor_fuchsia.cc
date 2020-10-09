@@ -48,7 +48,7 @@ class TimeZoneMonitorFuchsia : public TimeZoneMonitor {
     UpdateIcuAndNotifyClients(std::move(new_zone));
   }
 
-  base::fuchsia::IntlProfileWatcher watcher_;
+  base::FuchsiaIntlProfileWatcher watcher_;
 };
 
 }  // namespace

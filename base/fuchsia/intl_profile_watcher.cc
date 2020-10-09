@@ -16,15 +16,16 @@
 using ::fuchsia::intl::Profile;
 
 namespace base {
-namespace fuchsia {
 
-IntlProfileWatcher::IntlProfileWatcher(ProfileChangeCallback on_profile_changed)
-    : IntlProfileWatcher(ComponentContextForProcess()
-                             ->svc()
-                             ->Connect<::fuchsia::intl::PropertyProvider>(),
-                         on_profile_changed) {}
+FuchsiaIntlProfileWatcher::FuchsiaIntlProfileWatcher(
+    ProfileChangeCallback on_profile_changed)
+    : FuchsiaIntlProfileWatcher(
+          ComponentContextForProcess()
+              ->svc()
+              ->Connect<::fuchsia::intl::PropertyProvider>(),
+          on_profile_changed) {}
 
-IntlProfileWatcher::IntlProfileWatcher(
+FuchsiaIntlProfileWatcher::FuchsiaIntlProfileWatcher(
     ::fuchsia::intl::PropertyProviderPtr property_provider,
     ProfileChangeCallback on_profile_changed)
     : property_provider_(std::move(property_provider)),
@@ -43,10 +44,10 @@ IntlProfileWatcher::IntlProfileWatcher(
   };
 }
 
-IntlProfileWatcher::~IntlProfileWatcher() = default;
+FuchsiaIntlProfileWatcher::~FuchsiaIntlProfileWatcher() = default;
 
 // static
-std::string IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+std::string FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
     const Profile& profile) {
   if (!profile.has_time_zones()) {
     DLOG(WARNING) << "Profile does not contain time zones.";
@@ -64,14 +65,15 @@ std::string IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
 }
 
 // static
-std::string IntlProfileWatcher::GetPrimaryTimeZoneIdForIcuInitialization() {
+std::string
+FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdForIcuInitialization() {
   ::fuchsia::intl::PropertyProviderSyncPtr provider;
   ComponentContextForProcess()->svc()->Connect(provider.NewRequest());
   return GetPrimaryTimeZoneIdFromPropertyProvider(std::move(provider));
 }
 
 // static
-std::string IntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
+std::string FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
     ::fuchsia::intl::PropertyProviderSyncPtr property_provider) {
   DCHECK(property_provider.is_bound());
   Profile profile;
@@ -84,5 +86,4 @@ std::string IntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
   return GetPrimaryTimeZoneIdFromProfile(profile);
 }
 
-}  // namespace fuchsia
 }  // namespace base

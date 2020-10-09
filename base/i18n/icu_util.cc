@@ -338,7 +338,7 @@ void InitializeIcuTimeZone() {
   // If the system time zone cannot be obtained or is not understood by ICU,
   // the "unknown" time zone will be returned by createTimeZone() and used.
   std::string zone_id =
-      fuchsia::IntlProfileWatcher::GetPrimaryTimeZoneIdForIcuInitialization();
+      FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdForIcuInitialization();
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone(icu::UnicodeString::fromUTF8(zone_id)));
 #elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && !BUILDFLAG(IS_CHROMECAST)

@@ -24,7 +24,6 @@
 using ::fuchsia::intl::Profile;
 
 namespace base {
-namespace fuchsia {
 
 namespace {
 
@@ -135,7 +134,7 @@ class GetPrimaryTimeZoneIdFromPropertyProviderTest : public testing::Test {
  protected:
   static std::string GetPrimaryTimeZoneIdFromPropertyProvider(
       ::fuchsia::intl::PropertyProviderSyncPtr property_provider) {
-    return IntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
+    return FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
         std::move(property_provider));
   }
 
@@ -155,9 +154,9 @@ class IntlProfileWatcherTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  std::unique_ptr<IntlProfileWatcher> CreateIntlProfileWatcher(
-      IntlProfileWatcher::ProfileChangeCallback on_profile_changed) {
-    return base::WrapUnique(new IntlProfileWatcher(
+  std::unique_ptr<FuchsiaIntlProfileWatcher> CreateIntlProfileWatcher(
+      FuchsiaIntlProfileWatcher::ProfileChangeCallback on_profile_changed) {
+    return base::WrapUnique(new FuchsiaIntlProfileWatcher(
         std::move(property_provider_ptr_), std::move(on_profile_changed)));
   }
 
@@ -169,15 +168,16 @@ class IntlProfileWatcherTest : public testing::Test {
 
 // Unit tests are run in an environment where intl is not provided.
 // However, this is not exposed by the API.
-TEST(IntlServiceNotAvailableTest, IntlProfileWatcher) {
+TEST(IntlServiceNotAvailableTest, FuchsiaIntlProfileWatcher) {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   base::RunLoop run_loop;
 
-  base::MockCallback<IntlProfileWatcher::ProfileChangeCallback>
+  base::MockCallback<FuchsiaIntlProfileWatcher::ProfileChangeCallback>
       on_profile_changed;
   EXPECT_CALL(on_profile_changed, Run(testing::_)).Times(0);
-  auto watcher = std::make_unique<IntlProfileWatcher>(on_profile_changed.Get());
+  auto watcher =
+      std::make_unique<FuchsiaIntlProfileWatcher>(on_profile_changed.Get());
   EXPECT_TRUE(watcher);
 
   run_loop.RunUntilIdle();
@@ -220,7 +220,7 @@ TEST_F(GetPrimaryTimeZoneIdFromPropertyProviderTest, MoreThanOneZone) {
 }
 
 TEST_F(IntlProfileWatcherTest, NoZones_NoNotification) {
-  base::MockCallback<IntlProfileWatcher::ProfileChangeCallback> callback;
+  base::MockCallback<FuchsiaIntlProfileWatcher::ProfileChangeCallback> callback;
   EXPECT_CALL(callback, Run(testing::_)).Times(0);
   auto watcher = CreateIntlProfileWatcher(callback.Get());
   run_loop_.RunUntilIdle();
@@ -230,7 +230,8 @@ TEST_F(IntlProfileWatcherTest, ChangeNotification_AfterInitialization) {
   auto watcher = CreateIntlProfileWatcher(base::BindLambdaForTesting(
       [quit_loop = run_loop_.QuitClosure()](const Profile& profile) {
         EXPECT_EQ(kPrimaryTimeZoneName,
-                  IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(profile));
+                  FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+                      profile));
         quit_loop.Run();
       }));
 
@@ -247,7 +248,8 @@ TEST_F(IntlProfileWatcherTest, ChangeNotification_BeforeInitialization) {
   auto watcher = CreateIntlProfileWatcher(base::BindLambdaForTesting(
       [quit_loop = run_loop_.QuitClosure()](const Profile& profile) {
         EXPECT_EQ(kPrimaryTimeZoneName,
-                  IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(profile));
+                  FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+                      profile));
         quit_loop.Run();
       }));
 
@@ -256,7 +258,7 @@ TEST_F(IntlProfileWatcherTest, ChangeNotification_BeforeInitialization) {
 
 // Ensure no crash when the peer service cannot be reached during creation.
 TEST_F(IntlProfileWatcherTest, ChannelClosedBeforeCreation) {
-  base::MockCallback<IntlProfileWatcher::ProfileChangeCallback> callback;
+  base::MockCallback<FuchsiaIntlProfileWatcher::ProfileChangeCallback> callback;
   EXPECT_CALL(callback, Run(testing::_)).Times(0);
 
   property_provider_.Close();
@@ -269,7 +271,7 @@ TEST_F(IntlProfileWatcherTest, ChannelClosedBeforeCreation) {
 
 // Ensure no crash when the channel is closed after creation.
 TEST_F(IntlProfileWatcherTest, ChannelClosedAfterCreation) {
-  base::MockCallback<IntlProfileWatcher::ProfileChangeCallback> callback;
+  base::MockCallback<FuchsiaIntlProfileWatcher::ProfileChangeCallback> callback;
   EXPECT_CALL(callback, Run(testing::_)).Times(0);
 
   auto watcher = CreateIntlProfileWatcher(callback.Get());
@@ -281,26 +283,26 @@ TEST_F(IntlProfileWatcherTest, ChannelClosedAfterCreation) {
 }
 
 TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, NoZones) {
-  EXPECT_EQ("", IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(Profile()));
+  EXPECT_EQ("", FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+                    Profile()));
 }
 
 TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, EmptyZonesList) {
-  EXPECT_EQ("", IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+  EXPECT_EQ("", FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
                     CreateProfileWithTimeZones({})));
 }
 
 TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, OneZone) {
   EXPECT_EQ(kPrimaryTimeZoneName,
-            IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+            FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
                 CreateProfileWithTimeZones({kPrimaryTimeZoneName})));
 }
 
 TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, TwoZones) {
   EXPECT_EQ(kPrimaryTimeZoneName,
-            IntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
+            FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
                 CreateProfileWithTimeZones(
                     {kPrimaryTimeZoneName, kSecondaryTimeZoneName})));
 }
 
-}  // namespace fuchsia
 }  // namespace base

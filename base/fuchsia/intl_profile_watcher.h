@@ -13,22 +13,22 @@
 #include "base/strings/string_piece_forward.h"
 
 namespace base {
-namespace fuchsia {
 
 // Watches fuchsia.intl.PropertyProvider for change notifications and notifies
 // the provided callback. If necessary, the caller is responsible for
 // determining whether an actual change of interest has occurred.
-class BASE_EXPORT IntlProfileWatcher {
+class BASE_EXPORT FuchsiaIntlProfileWatcher {
  public:
   using ProfileChangeCallback =
       base::RepeatingCallback<void(const ::fuchsia::intl::Profile&)>;
 
   // |on_profile_changed| will be called each time the profile may have changed.
-  explicit IntlProfileWatcher(ProfileChangeCallback on_profile_changed);
+  explicit FuchsiaIntlProfileWatcher(ProfileChangeCallback on_profile_changed);
 
-  IntlProfileWatcher(const IntlProfileWatcher&) = delete;
-  IntlProfileWatcher& operator=(const IntlProfileWatcher&) = delete;
-  ~IntlProfileWatcher();
+  FuchsiaIntlProfileWatcher(const FuchsiaIntlProfileWatcher&) = delete;
+  FuchsiaIntlProfileWatcher& operator=(const FuchsiaIntlProfileWatcher&) =
+      delete;
+  ~FuchsiaIntlProfileWatcher();
 
   // Returns the ID of the primary time zone in |profile|.
   // Returns the empty string if the ID cannot be obtained.
@@ -45,8 +45,9 @@ class BASE_EXPORT IntlProfileWatcher {
   friend class GetPrimaryTimeZoneIdFromPropertyProviderTest;
   friend class IntlProfileWatcherTest;
 
-  IntlProfileWatcher(::fuchsia::intl::PropertyProviderPtr property_provider,
-                     ProfileChangeCallback on_profile_changed);
+  FuchsiaIntlProfileWatcher(
+      ::fuchsia::intl::PropertyProviderPtr property_provider,
+      ProfileChangeCallback on_profile_changed);
 
   // Returns the ID of the primary time zone from the profile obtained from
   // |property_provider|. Returns the empty string if the ID cannot be obtained.
@@ -57,7 +58,14 @@ class BASE_EXPORT IntlProfileWatcher {
   const ProfileChangeCallback on_profile_changed_;
 };
 
+// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
+// changed to use the non-fuchsia-sub-namespace version.
+namespace fuchsia {
+
+using IntlProfileWatcher = ::base::FuchsiaIntlProfileWatcher;
+
 }  // namespace fuchsia
+
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_INTL_PROFILE_WATCHER_H_
