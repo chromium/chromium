@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -116,7 +115,6 @@ public class BrowserControlsOffsetCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "TODO(sky): enable")
     public void testTopScroll() throws Exception {
         int topViewHeight = mBrowserControlsHelper.getTopViewHeight();
         CallbackHelper callbackHelper = mBrowserControlsOffsetCallback.mCallbackHelper;
@@ -156,7 +154,6 @@ public class BrowserControlsOffsetCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "TODO(sky): enable")
     public void testBottomScroll() throws Exception {
         CallbackHelper callbackHelper = mBrowserControlsOffsetCallback.mCallbackHelper;
         int topViewHeight = mBrowserControlsHelper.getTopViewHeight();
