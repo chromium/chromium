@@ -12,7 +12,7 @@ PASS SanitizerAPI config: undefined, sanitizeToString function for undefined
 PASS SanitizerAPI config: null, sanitizeToString function for null
 PASS SanitizerAPI config: document, sanitizeToString function for document
 PASS SanitizerAPI config: html without close tag, sanitizeToString function for html without close tag
-FAIL SanitizerAPI config: scripts for default configs, sanitizeToString function for scripts for default configs assert_equals: expected "" but got "<script>alert('i am a test')</script>"
+PASS SanitizerAPI config: scripts for default configs, sanitizeToString function for scripts for default configs
 FAIL SanitizerAPI config: onclick scripts, sanitizeToString function for onclick scripts assert_equals: expected "<p>Click.</p>" but got "<p onclick=\"a= 123\">Click.</p>"
 PASS SanitizerAPI config: invalid config_input, sanitizeToString function for invalid config_input
 PASS SanitizerAPI config: empty dropElements list, sanitizeToString function for empty dropElements list
@@ -22,10 +22,12 @@ PASS SanitizerAPI config: dropElements list ["test", "i"]}, sanitizeToString fun
 PASS SanitizerAPI config: dropElements list ["I", "AM"]}, sanitizeToString function for dropElements list ["I", "AM"]}
 PASS SanitizerAPI config: dropElements list ["am", "p"]}, sanitizeToString function for dropElements list ["am", "p"]}
 PASS SanitizerAPI config: dropElements list with invalid values}, sanitizeToString function for dropElements list with invalid values}
+PASS SanitizerAPI config: allowElements list ["p"]., sanitizeToString function for allowElements list ["p"].
+PASS SanitizerAPI config: allowElements list has no influence to dropElements., sanitizeToString function for allowElements list has no influence to dropElements.
 PASS SanitizerAPI config: dropAttributes list ["onclick"] with onclick scripts, sanitizeToString function for dropAttributes list ["onclick"] with onclick scripts
 PASS SanitizerAPI config: empty dropAttributes list with onclick scripts, sanitizeToString function for empty dropAttributes list with onclick scripts
 PASS SanitizerAPI config: dropAttributes list ["id"] with onclick scripts, sanitizeToString function for dropAttributes list ["id"] with onclick scripts
 PASS SanitizerAPI config: dropAttributes list ["ONCLICK"] with onclick scripts, sanitizeToString function for dropAttributes list ["ONCLICK"] with onclick scripts
-FAIL SanitizerAPI config: dropAttributes list ["data-attribute-with-dashes"] with dom dataset js access., sanitizeToString function for dropAttributes list ["data-attribute-with-dashes"] with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p><script>document.getElementById('p').dataset.attributeWithDashes=123;</script>"
+FAIL SanitizerAPI config: dropAttributes list ["data-attribute-with-dashes"] with dom dataset js access., sanitizeToString function for dropAttributes list ["data-attribute-with-dashes"] with dom dataset js access. assert_equals: expected "<p id=\"p\">Click.</p><script></script>" but got "<p id=\"p\">Click.</p>"
 Harness: the test ran to completion.
 

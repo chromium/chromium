@@ -5,6 +5,7 @@
 // https://wicg.github.io/sanitizer-api/#sanitizer-api
 
 dictionary SanitizerConfig {
+  sequence<DOMString> allowElements;
   sequence<DOMString> dropElements;
   sequence<DOMString> dropAttributes;
 };

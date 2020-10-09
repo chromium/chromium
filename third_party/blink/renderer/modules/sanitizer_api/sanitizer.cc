@@ -28,12 +28,24 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* config,
 Sanitizer::Sanitizer(const SanitizerConfig* config)
     : config_(const_cast<SanitizerConfig*>(config)) {
   // Format dropElements to uppercases.
+  Vector<String> drop_elements = default_drop_elements_;
   if (config->hasDropElements()) {
-    Vector<String> l;
     for (const String& s : config->dropElements()) {
-      l.push_back(s.UpperASCII());
+      if (!drop_elements.Contains(s.UpperASCII())) {
+        drop_elements.push_back(s.UpperASCII());
+      }
     }
-    config_->setDropElements(l);
+  }
+  config_->setDropElements(drop_elements);
+
+  // Format allowElements to uppercases.
+  if (config->hasAllowElements()) {
+    Vector<String> l;
+    for (const String& s : config->allowElements()) {
+      if (!config_->dropElements().Contains(s))
+        l.push_back(s.UpperASCII());
+    }
+    config_->setAllowElements(l);
   }
 
   // Format dropAttributes to lowercases.
@@ -70,37 +82,56 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
   DCHECK(document->QuerySelector("body"));
   fragment->ParseHTML(input, document->QuerySelector("body"));
 
-  // Remove all the elements in the dropElements list.
-  if (config_->hasDropElements() || config_->hasDropAttributes()) {
-    Node* node = fragment->firstChild();
+  Node* node = fragment->firstChild();
 
-    while (node) {
-      // Skip non-Element nodes.
-      if (node->getNodeType() != Node::NodeType::kElementNode) {
-        node = NodeTraversal::Next(*node, fragment);
-        continue;
-      }
+  while (node) {
+    // Skip non-Element nodes.
+    if (node->getNodeType() != Node::NodeType::kElementNode) {
+      node = NodeTraversal::Next(*node, fragment);
+      continue;
+    }
 
-      // TODO(crbug.com/1126936): Review the sanitising algorithm for non-HTMLs.
-      String node_name = node->nodeName();
-      // If the current element is dropped, remove current element entirely and
-      // proceed to its next sibling.
-      if (config_->hasDropElements() &&
-          config_->dropElements().Contains(node_name.UpperASCII())) {
-        Node* tmp = node;
-        node = NodeTraversal::NextSkippingChildren(*node, fragment);
-        tmp->remove();
-      } else {
-        // Otherwise, remove any attributes to be dropped from the current
-        // element, and proceed to the next node (preorder, depth-first
-        // traversal).
-        if (config_->hasDropAttributes()) {
-          for (auto attr : drop_attributes_) {
-            To<Element>(node)->removeAttribute(attr);
-          }
+    // TODO(crbug.com/1126936): Review the sanitising algorithm for non-HTMLs.
+    String node_name = node->nodeName().UpperASCII();
+    // If the current element is dropped, remove current element entirely and
+    // proceed to its next sibling.
+    if (config_->dropElements().Contains(node_name)) {
+      Node* tmp = node;
+      node = NodeTraversal::NextSkippingChildren(*node, fragment);
+      tmp->remove();
+    } else if (config_->hasAllowElements() &&
+               !config_->allowElements().Contains(node_name)) {
+      // If the current element is blocked, append its children after current
+      // node to parent node, remove current element and proceed to the next
+      // node.
+      Node* parent = node->parentNode();
+      Node* next_sibling = node->nextSibling();
+      while (node->hasChildren()) {
+        Node* n = node->firstChild();
+        if (next_sibling) {
+          parent->insertBefore(n, next_sibling, exception_state);
+        } else {
+          parent->appendChild(n, exception_state);
         }
-        node = NodeTraversal::Next(*node, fragment);
+        // TODO(lyf): review and make a proper decision for exceptions may
+        // happened here.
+        if (exception_state.HadException()) {
+          return nullptr;
+        }
       }
+      Node* tmp = node;
+      node = NodeTraversal::Next(*node, fragment);
+      tmp->remove();
+    } else {
+      // Otherwise, remove any attributes to be dropped from the current
+      // element, and proceed to the next node (preorder, depth-first
+      // traversal).
+      if (config_->hasDropAttributes()) {
+        for (auto attr : drop_attributes_) {
+          To<Element>(node)->removeAttribute(attr);
+        }
+      }
+      node = NodeTraversal::Next(*node, fragment);
     }
   }
 

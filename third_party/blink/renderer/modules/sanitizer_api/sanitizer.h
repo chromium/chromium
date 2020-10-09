@@ -36,6 +36,18 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   // Vector<QualifiedName> for drop_elements.
   Member<SanitizerConfig> config_ = {};
   Vector<AtomicString> drop_attributes_ = {};
+  const Vector<String> default_drop_elements_ = {"SCRIPT",    "ANNOTATION-XML",
+                                                 "AUDIO",     "COLGROUP",
+                                                 "DESC",      "FOREIGNOBJECT",
+                                                 "HEAD",      "IFRAME",
+                                                 "MATH",      "MI",
+                                                 "MN",        "MO",
+                                                 "MS",        "MTEXT",
+                                                 "NOEMBED",   "NOFRAMES",
+                                                 "PLAINTEXT", "STYLE",
+                                                 "SVG",       "TEMPLATE",
+                                                 "THEAD",     "TITLE",
+                                                 "VIDEO",     "XMP"};
 };
 
 }  // namespace blink
