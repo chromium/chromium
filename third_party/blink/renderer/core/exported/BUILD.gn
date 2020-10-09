@@ -5,6 +5,8 @@ import("//build/config/dcheck_always_on.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("exported") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "local_frame_client_impl.cc",
     "local_frame_client_impl.h",

@@ -598,9 +598,9 @@ void LocalFrameClientImpl::BeginNavigation(
   } else {
     navigation_info->initiator_frame = nullptr;
   }
-  for (auto& policy : initiator_csp) {
+  for (auto& csp_policy : initiator_csp) {
     navigation_info->initiator_csp.emplace_back(
-        ConvertToPublic(std::move(policy)));
+        ConvertToPublic(std::move(csp_policy)));
   }
   if (initiator_self_source) {
     navigation_info->initiator_self_source =
