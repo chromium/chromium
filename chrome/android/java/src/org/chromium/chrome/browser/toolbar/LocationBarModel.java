@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewPlayer;
+import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -345,7 +345,7 @@ public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPrope
 
     @Override
     public boolean isPaintPreview() {
-        return hasTab() && TabbedPaintPreviewPlayer.get(mTab).isShowingAndNeedsBadge();
+        return hasTab() && TabbedPaintPreview.get(mTab).isShowing();
     }
 
     @Override

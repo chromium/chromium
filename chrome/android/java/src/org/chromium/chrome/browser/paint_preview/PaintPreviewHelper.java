@@ -9,6 +9,7 @@ import android.os.SystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -108,37 +109,31 @@ public class PaintPreviewHelper {
         if (windowAndroidHelper == null) return;
 
         sShouldShowOnRestore = false;
-        TabbedPaintPreviewPlayer player = TabbedPaintPreviewPlayer.get(tab);
-        player.setBrowserVisibilityDelegate(
-                windowAndroidHelper.getBrowserControlsManager().getBrowserVisibilityDelegate());
-        player.setProgressSimulatorNeededCallback(
-                () -> {
-                    if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
-                    windowAndroidHelper.getLoadProgressCoordinator()
-                            .simulateLoadProgressCompletion();
-                });
-        player.setProgressbarUpdatePreventionCallback(
-                (preventProgressbar) -> {
-                    if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
-                    windowAndroidHelper.getLoadProgressCoordinator().setPreventUpdates(
-                            preventProgressbar);
-                });
+        Runnable progressSimulatorCallback = () -> {
+            if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
+            windowAndroidHelper.getLoadProgressCoordinator().simulateLoadProgressCompletion();
+        };
+        Callback<Boolean> progressPreventionCallback = (preventProgressbar) -> {
+            if (windowAndroidHelper.getLoadProgressCoordinator() == null) return;
+            windowAndroidHelper.getLoadProgressCoordinator().setPreventUpdates(preventProgressbar);
+        };
+
+        StartupPaintPreview startupPaintPreview = new StartupPaintPreview(tab,
+                windowAndroidHelper.getBrowserControlsManager().getBrowserVisibilityDelegate(),
+                progressSimulatorCallback, progressPreventionCallback);
+        startupPaintPreview.setActivityCreationTimestampMs(
+                windowAndroidHelper.getActivityCreationTime());
+        startupPaintPreview.setShouldRecordFirstPaint(
+                () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground());
         PageLoadMetrics.Observer observer = new PageLoadMetrics.Observer() {
             @Override
             public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
                     long navigationStartTick, long firstMeaningfulPaintMs) {
-                player.onFirstMeaningfulPaint(webContents);
+                startupPaintPreview.onWebContentsFirstMeaningfulPaint(webContents);
             }
         };
-
-        if (!player.maybeShow(()
-                        -> PageLoadMetrics.removeObserver(observer),
-                windowAndroidHelper.getActivityCreationTime(),
-                () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground())) {
-            return;
-        }
-
         PageLoadMetrics.addObserver(observer);
+        startupPaintPreview.show(() -> PageLoadMetrics.removeObserver(observer));
     }
 
     /**

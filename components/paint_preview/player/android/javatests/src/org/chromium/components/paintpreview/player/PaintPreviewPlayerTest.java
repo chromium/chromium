@@ -198,13 +198,36 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                     new PaintPreviewTestService(mTempFolder.getRoot().getPath());
             // Use the wrong URL to simulate a failure.
             mPlayerManager = new PlayerManager(new GURL("about:blank"), getActivity(), service,
-                    TEST_DIRECTORY_KEY, mLinkClickHandler,
-                    () -> { Assert.fail("Unexpected overscroll refresh attempted."); },
-                    () -> {
-                        Assert.fail("View Ready callback occurred, but expected a failure.");
-                    },
-                    null, null, 0xffffffff,
-                    (status) -> { compositorErrorCallback.notifyCalled(); }, false);
+                    TEST_DIRECTORY_KEY, new PlayerManager.Listener() {
+                        @Override
+                        public void onCompositorError(int status) {
+                            compositorErrorCallback.notifyCalled();
+                        }
+
+                        @Override
+                        public void onViewReady() {
+                            Assert.fail("View Ready callback occurred, but expected a failure.");
+                        }
+
+                        @Override
+                        public void onFirstPaint() {}
+
+                        @Override
+                        public void onUserInteraction() {}
+
+                        @Override
+                        public void onUserFrustration() {}
+
+                        @Override
+                        public void onPullToRefresh() {
+                            Assert.fail("Unexpected overscroll refresh attempted.");
+                        }
+
+                        @Override
+                        public void onLinkClick(GURL url) {
+                            mLinkClickHandler.onLinkClicked(url);
+                        }
+                    }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
         });
         compositorErrorCallback.waitForFirst();
@@ -354,9 +377,36 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
             }
 
             mPlayerManager = new PlayerManager(new GURL(TEST_URL), getActivity(), service,
-                    TEST_DIRECTORY_KEY, mLinkClickHandler, mRefreshedCallback::notifyCalled,
-                    viewReady::notifyCalled, null, null, 0xffffffff,
-                    (status) -> { mInitializationFailed = true; }, false);
+                    TEST_DIRECTORY_KEY, new PlayerManager.Listener() {
+                        @Override
+                        public void onCompositorError(int status) {
+                            mInitializationFailed = true;
+                        }
+
+                        @Override
+                        public void onViewReady() {
+                            viewReady.notifyCalled();
+                        }
+
+                        @Override
+                        public void onFirstPaint() {}
+
+                        @Override
+                        public void onUserInteraction() {}
+
+                        @Override
+                        public void onUserFrustration() {}
+
+                        @Override
+                        public void onPullToRefresh() {
+                            mRefreshedCallback.notifyCalled();
+                        }
+
+                        @Override
+                        public void onLinkClick(GURL url) {
+                            mLinkClickHandler.onLinkClicked(url);
+                        }
+                    }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
             getActivity().setContentView(mPlayerManager.getView());
         });

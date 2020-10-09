@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /** Helper class for recording metrics related to TabbedPaintPreview. */
-public class TabbedPaintPreviewMetricsHelper {
+public class StartupPaintPreviewMetrics {
     /** Used for recording the cause for exiting the Paint Preview player. */
     @IntDef({ExitCause.PULL_TO_REFRESH, ExitCause.SNACK_BAR_ACTION, ExitCause.COMPOSITOR_FAILURE,
             ExitCause.TAB_FINISHED_LOADING, ExitCause.LINK_CLICKED, ExitCause.NAVIGATION_STARTED,
@@ -61,11 +61,11 @@ public class TabbedPaintPreviewMetricsHelper {
         mShownTime = System.currentTimeMillis();
     }
 
-    void onFirstPaint(long activityOnCreateTimestamp, Callable<Boolean> recordFirstPaint) {
+    void onFirstPaint(long activityOnCreateTimestamp, Callable<Boolean> shouldRecordFirstPaint) {
         mFirstPaintHappened = true;
         boolean shouldRecordHistogram = false;
         try {
-            shouldRecordHistogram = recordFirstPaint.call();
+            shouldRecordHistogram = shouldRecordFirstPaint.call();
         } catch (Exception e) {
             // no-op just proceed.
         }
