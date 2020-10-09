@@ -1484,6 +1484,12 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
 
+        Assert.assertEquals("Wrong number of top level folders.", 2, getAdapter().getItemCount());
+        Assert.assertEquals("The first view should be reading list.", BookmarkType.READING_LIST,
+                getIdByPosition(0).getType());
+        Assert.assertEquals("The second view should be a normal folder.", BookmarkType.NORMAL,
+                getIdByPosition(1).getType());
+
         // Reading list should show in the root folder.
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }

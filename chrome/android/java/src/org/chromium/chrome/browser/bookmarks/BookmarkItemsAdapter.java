@@ -425,6 +425,24 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkItem>
         BookmarkId mobileNodeId = mDelegate.getModel().getMobileFolderId();
         BookmarkId othersNodeId = mDelegate.getModel().getOtherFolderId();
 
+        List<BookmarkId> specialFoldersIds =
+                mDelegate.getModel().getTopLevelFolderIDs(/*getSpecial=*/true, /*getNormal=*/false);
+        BookmarkId rootFolder = mDelegate.getModel().getRootFolderId();
+
+        // managed and partner bookmark folders will be put to the bottom.
+        List<BookmarkId> managedAndPartnerFolderIds = new ArrayList<>();
+
+        for (BookmarkId bookmarkId : specialFoldersIds) {
+            // Adds reading list as the first top level folder.
+            if (bookmarkId.getType() == BookmarkType.READING_LIST) {
+                mTopLevelFolders.add(bookmarkId);
+                continue;
+            }
+            BookmarkId parent = mDelegate.getModel().getBookmarkById(bookmarkId).getParentId();
+            if (parent.equals(rootFolder)) managedAndPartnerFolderIds.add(bookmarkId);
+        }
+
+        // Adds normal bookmark top level folders.
         if (mDelegate.getModel().isFolderVisible(mobileNodeId)) {
             mTopLevelFolders.add(mobileNodeId);
         }
@@ -437,13 +455,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkItem>
 
         // Add any top-level managed and partner bookmark folders that are children of the root
         // folder.
-        List<BookmarkId> managedAndPartnerFolderIds =
-                mDelegate.getModel().getTopLevelFolderIDs(true, false);
-        BookmarkId rootFolder = mDelegate.getModel().getRootFolderId();
-        for (BookmarkId bookmarkId : managedAndPartnerFolderIds) {
-            BookmarkId parent = mDelegate.getModel().getBookmarkById(bookmarkId).getParentId();
-            if (parent.equals(rootFolder)) mTopLevelFolders.add(bookmarkId);
-        }
+        mTopLevelFolders.addAll(managedAndPartnerFolderIds);
     }
 
     @VisibleForTesting
