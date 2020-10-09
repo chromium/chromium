@@ -9,7 +9,7 @@ import 'chrome://scanning/scanning_app.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
-import {getSourceTypeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getColorModeString, getSourceTypeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -245,6 +245,8 @@ suite('ScanningAppTest', () => {
               tokenToString(firstScannerId), scanningApp.selectedScannerId);
           assertEquals(
               firstCapabilities.sources[0].name, scanningApp.selectedSource);
+          assertEquals(
+              firstCapabilities.colorModes[0], scanningApp.selectedColorMode);
 
           // Before the scan button is clicked, the settings and scan button
           // should be enabled, and there should be no scan status.
@@ -252,6 +254,9 @@ suite('ScanningAppTest', () => {
           assertFalse(scannerSelect.disabled);
           const sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
           assertFalse(sourceSelect.disabled);
+          const colorModeSelect =
+              scanningApp.$$('#colorModeSelect').$$('select');
+          assertFalse(colorModeSelect.disabled);
           const scanButton = scanningApp.$$('#scanButton');
           assertFalse(scanButton.disabled);
           const statusText = scanningApp.$$('#statusText');
@@ -263,6 +268,7 @@ suite('ScanningAppTest', () => {
           // scanning is in progress.
           assertTrue(scannerSelect.disabled);
           assertTrue(sourceSelect.disabled);
+          assertTrue(colorModeSelect.disabled);
           assertTrue(scanButton.disabled);
           assertEquals('Scanning...', statusText.textContent.trim());
           return fakeScanService_.whenCalled('scan');
@@ -273,6 +279,7 @@ suite('ScanningAppTest', () => {
           // complete.
           assertFalse(scanningApp.$$('#scannerSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#sourceSelect').$$('select').disabled);
+          assertFalse(scanningApp.$$('#colorModeSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#scanButton').disabled);
           assertEquals(
               'Scan complete! File(s) saved to My files.',
@@ -424,6 +431,68 @@ suite('SourceSelectTest', () => {
     sourceArr =
         sourceArr.concat([createSource(SourceType.ADF_DUPLEX, 'adf duplex')]);
     sourceSelect.sources = sourceArr;
+    flush();
+
+    // Verify the dropdown is enabled when there's more than one option.
+    assertEquals(2, select.length);
+    assertFalse(select.disabled);
+  });
+});
+
+suite('ColorModeSelectTest', () => {
+  /** @type {!ColorModeSelectElement} */
+  let colorModeSelect;
+
+  setup(() => {
+    colorModeSelect = document.createElement('color-mode-select');
+    assertTrue(!!colorModeSelect);
+    document.body.appendChild(colorModeSelect);
+  });
+
+  teardown(() => {
+    colorModeSelect.remove();
+    colorModeSelect = null;
+  });
+
+  test('initializeColorModeSelect', () => {
+    // Before options are added, the dropdown should be disabled and empty.
+    const select = colorModeSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+    assertEquals(0, select.length);
+
+    const firstColorMode = ColorMode.COLOR;
+    const secondColorMode = ColorMode.GRAYSCALE;
+    colorModeSelect.colorModes = [firstColorMode, secondColorMode];
+    flush();
+
+    // Verify that adding more than one color mode results in the dropdown
+    // becoming enabled with the correct options.
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
+    assertEquals(
+        getColorModeString(firstColorMode),
+        select.options[0].textContent.trim());
+    assertEquals(
+        getColorModeString(secondColorMode),
+        select.options[1].textContent.trim());
+    assertEquals(firstColorMode.toString(), select.value);
+  });
+
+  test('colorModeSelectDisabled', () => {
+    const select = colorModeSelect.$$('select');
+    assertTrue(!!select);
+
+    let colorModeArr = [ColorMode.BLACK_AND_WHITE];
+    colorModeSelect.colorModes = colorModeArr;
+    flush();
+
+    // Verify the dropdown is disabled when there's only one option.
+    assertEquals(1, select.length);
+    assertTrue(select.disabled);
+
+    colorModeArr = colorModeArr.concat([ColorMode.GRAYSCALE]);
+    colorModeSelect.colorModes = colorModeArr;
     flush();
 
     // Verify the dropdown is enabled when there's more than one option.

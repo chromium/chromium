@@ -5,6 +5,27 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
+ * Converts a chromeos.scanning.mojom.ColorMode to a string that can be
+ * displayed in the color mode dropdown.
+ * @param {number} mojoColorMode
+ * @return {!string}
+ */
+export function getColorModeString(mojoColorMode) {
+  // TODO(jschettler): Replace with finalized i18n strings.
+  switch (mojoColorMode) {
+    case chromeos.scanning.mojom.ColorMode.kBlackAndWhite:
+      return 'Black and White';
+    case chromeos.scanning.mojom.ColorMode.kGrayscale:
+      return 'Grayscale';
+    case chromeos.scanning.mojom.ColorMode.kColor:
+      return 'Color';
+    default:
+      assertNotReached();
+      return 'Unknown';
+  }
+}
+
+/**
  * Converts a chromeos.scanning.mojom.SourceType to a string that can be
  * displayed in the source dropdown.
  * @param {number} mojoSourceType

@@ -51,7 +51,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"appTitle", IDS_SCANNING_APP_TITLE},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
-      {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL}};
+      {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
+      {"colorModeDropdownLabel", IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL}};
 
   for (const auto& str : kLocalizedStrings)
     html_source->AddLocalizedString(str.name, str.id);

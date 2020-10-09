@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import './color_mode_select.js';
 import './scanner_select.js';
 import './source_select.js';
 
@@ -50,6 +51,9 @@ Polymer({
 
     /** @type {?string} */
     selectedSource: String,
+
+    /** @type {chromeos.scanning.mojom.ColorMode|undefined} */
+    selectedColorMode: chromeos.scanning.mojom.ColorMode,
 
     /**
      * @type {?string}
@@ -99,9 +103,10 @@ Polymer({
   onCapabilitiesReceived_(response) {
     this.capabilities_ = response.capabilities;
 
-    // Set the first source as the selected source since it will be the first
-    // option in the dropdown.
+    // Set the first options as the selected options since they will be the
+    // first options in the dropdowns.
     this.selectedSource = this.capabilities_.sources[0].name;
+    this.selectedColorMode = this.capabilities_.colorModes[0];
 
     this.scanButtonDisabled_ = false;
   },
@@ -150,7 +155,8 @@ Polymer({
 
   /** @private */
   onScanClick_() {
-    if (!this.selectedScannerId || !this.selectedSource) {
+    if (!this.selectedScannerId || !this.selectedSource ||
+        this.selectedColorMode === undefined) {
       // TODO(jschettler): Replace status text with finalized i18n strings.
       this.statusText_ = 'Failed to start scan.';
       return;
@@ -160,11 +166,11 @@ Polymer({
     this.settingsDisabled_ = true;
     this.scanButtonDisabled_ = true;
 
-    // TODO(jschettler): Set color mode and resolution using the selected values
-    // when the corresponding dropdowns are added.
+    // TODO(jschettler): Set resolution using the selected value when the
+    // corresponding dropdowns are added.
     const settings = {
       'sourceName': this.selectedSource,
-      'colorMode': chromeos.scanning.mojom.ColorMode.kColor,
+      'colorMode': this.selectedColorMode,
       'resolutionDpi': 100,
     };
     this.scanService_

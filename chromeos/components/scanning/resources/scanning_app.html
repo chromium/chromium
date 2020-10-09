@@ -9,6 +9,12 @@
       settings-disabled="[[settingsDisabled_]]"
       selected-source="{{selectedSource}}"></source-select>
 </div>
+<div>
+  <color-mode-select id="colorModeSelect"
+      color-modes="[[capabilities_.colorModes]]"
+      settings-disabled="[[settingsDisabled_]]"
+      selected-color-mode="{{selectedColorMode}}"></color-mode-select>
+</div>
 <!-- TODO(jschettler): Replace button label with finalized i18n string. -->
 <cr-button id="scanButton" on-click="onScanClick_"
     disabled$="[[scanButtonDisabled_]]">

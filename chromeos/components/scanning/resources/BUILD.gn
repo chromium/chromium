@@ -10,12 +10,22 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":color_mode_select",
     ":mojo_interface_provider",
     ":scanner_select",
     ":scanning_app",
     ":scanning_app_types",
     ":scanning_app_util",
     ":source_select",
+  ]
+}
+
+js_library("color_mode_select") {
+  deps = [
+    ":scanning_app_util",
+    "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -31,6 +41,7 @@ js_library("scanner_select") {
 
 js_library("scanning_app") {
   deps = [
+    ":color_mode_select",
     ":mojo_interface_provider",
     ":scanner_select",
     ":scanning_app_types",
@@ -64,6 +75,7 @@ js_library("mojo_interface_provider") {
 
 html_to_js("web_components") {
   js_files = [
+    "color_mode_select.js",
     "scanner_select.js",
     "scanning_app.js",
     "source_select.js",
