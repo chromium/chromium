@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -146,7 +147,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Confirms acceptance of the records up to |seq_number| (inclusively).
   // All records with sequencing numbers <= this one can be removed from
   // the StorageQueue, and can no longer be uploaded.
-  // Helper methods: RemoveUnusedFiles.
+  // Helper methods: RemoveConfirmedData.
   void Confirm(uint64_t seq_number,
                base::OnceCallback<void(Status)> completion_cb);
 
@@ -256,6 +257,13 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // as the last one for the next record.
   void UpdateRecordDigest(WrappedRecord* wrapped_record);
 
+  // Helper method for Init(): process single data file.
+  // Return seq_number from <prefix>.<seq_number> file name, or Status
+  // in case there is any error.
+  StatusOr<uint64_t> AddDataFile(
+      const base::FilePath& full_name,
+      const base::FileEnumerator::FileInfo& file_info);
+
   // Helper method for Init(): enumerates all data files in the directory.
   // Valid file names are <prefix>.<seq_number>, any other names are ignored.
   Status EnumerateDataFiles();
@@ -312,9 +320,10 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
       uint64_t seq_number,
       std::vector<scoped_refptr<SingleFile>>* files) const;
 
-  // Helper method for Confirm: Removes files that only have records with seq
-  // numbers below or equal to |seq_number|.
-  Status RemoveUnusedFiles(uint64_t seq_number);
+  // Helper method for Confirm: Moves |first_seq_number_| to (|seq_number|+1)
+  // and removes files that only have records with seq numbers below or equal to
+  // |seq_number| (below |first_seq_number_|).
+  Status RemoveConfirmedData(uint64_t seq_number);
 
   // Immutable options, stored at the time of creation.
   const Options options_;
@@ -332,8 +341,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Next sequencing number to store (not assigned yet).
   uint64_t next_seq_number_ = 0;
 
-  // First unconfirmed sequencing number (no records with lower
-  // sequencing number are guaranteed to exist in store).
+  // First sequencing number store still has (no records with lower
+  // sequencing number exist in store).
   uint64_t first_seq_number_ = 0;
 
   // Ordered map of the files by ascending sequence number.

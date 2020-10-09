@@ -90,10 +90,16 @@ message SequencingInformation {
 
 // |WrappedRecord| as it is stored on disc, and sent to the server.
 message EncryptedRecord {
-  // Encrypted Wrapped Record (required)
+  // Encrypted Wrapped Record
   // |WrappedRecord| encrypted with the |encryption_key| in |encryption_info|.
+  // When absent, indicates gap - respective record is irreparably corrupt or
+  // missing from Storage, and server side should log it as such and no longer
+  // expect client to deliver it.
   optional bytes encrypted_wrapped_record = 1;
 
+  // Must be present to facilitate decryption of encrypted record.
+  // If missing, the record is either not encrypted or missing.
+  // TODO(b/153651358): Disable an option to send record not encrypted.
   optional EncryptionInfo encryption_info = 2;
 
   optional SequencingInformation sequencing_information = 3;

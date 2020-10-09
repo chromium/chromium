@@ -1012,7 +1012,7 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
 
   void OnStart() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(confirm_sequence_checker_);
-    Response(storage_queue_->RemoveUnusedFiles(seq_number_));
+    Response(storage_queue_->RemoveConfirmedData(seq_number_));
   }
 
   // Confirmed sequencing number.
@@ -1028,7 +1028,7 @@ void StorageQueue::Confirm(uint64_t seq_number,
   Start<ConfirmContext>(seq_number, std::move(completion_cb), this);
 }
 
-Status StorageQueue::RemoveUnusedFiles(uint64_t seq_number) {
+Status StorageQueue::RemoveConfirmedData(uint64_t seq_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   if (first_seq_number_ <= seq_number) {
     first_seq_number_ = seq_number + 1;
