@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
+#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -47,13 +48,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
-  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGrey closeAllExtraWindows];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
@@ -198,21 +197,23 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // bookmarks entry.
-- (void)testContextMenuOpenInNewWindow {
+// TODO(crbug.com/1126893): reenable this test once EG multiwindow support is
+// available.
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   // TODO(crbug.com/1035764): EG1 Test fails on iOS 12.
   if (!base::ios::IsRunningOnIOS13OrLater()) {
     EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
   }
 
-  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  if (!IsMultipleScenesSupported()) {
+    EARL_GREY_TEST_DISABLED(@"Multiple scenes can't be opened.");
   }
 
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [ChromeEarlGrey waitForBrowserCount:1];
 
   // Open a bookmark in a new window (through a long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
@@ -223,7 +224,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           GetFirstUrl().GetContent())]
       assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey waitForBrowserCount:2];
+
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey waitForBrowserCount:1];
 }
 
 // Verify Edit Text functionality on single URL selection.

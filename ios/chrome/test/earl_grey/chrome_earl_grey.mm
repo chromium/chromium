@@ -483,6 +483,30 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
 }
 
+- (void)waitForBrowserCount:(NSUInteger)count {
+  __block NSUInteger actualCount = [ChromeEarlGreyAppInterface browserCount];
+  NSString* conditionName = [NSString
+      stringWithFormat:@"Waiting for window count to become %" PRIuNS, count];
+
+  // Allow the UI to become idle, in case any tabs are being opened or closed.
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  GREYCondition* browserCountCheck = [GREYCondition
+      conditionWithName:conditionName
+                  block:^{
+                    actualCount = [ChromeEarlGreyAppInterface browserCount];
+                    return actualCount == count;
+                  }];
+  bool browserCountEqual =
+      [browserCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for window count to become %" PRIuNS
+                        "; actual count: %" PRIuNS,
+                       count, actualCount];
+  EG_TEST_HELPER_ASSERT_TRUE(browserCountEqual, errorString);
+}
+
 - (NSUInteger)indexOfActiveNormalTab {
   return [ChromeEarlGreyAppInterface indexOfActiveNormalTab];
 }
@@ -764,53 +788,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
-#pragma mark - Window utilities (EG2)
-
-// Returns the number of windows, including background and disconnected or
-// archived windows.
-- (NSUInteger)windowCount WARN_UNUSED_RESULT {
-  return [ChromeEarlGreyAppInterface windowCount];
-}
-
-// Returns the number of foreground (visible on screen) windows.
-- (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT {
-  return [ChromeEarlGreyAppInterface foregroundWindowCount];
-}
-
-// Closes all but one window, including all non-foreground windows.
-- (void)closeAllExtraWindows {
-  [ChromeEarlGreyAppInterface closeAllExtraWindows];
-  // Tab changes are initiated through |WebStateList|. Need to wait its
-  // obeservers to complete UI changes at app.
-  GREYWaitForAppToIdle(@"App failed to idle");
-}
-
-- (void)waitForForegroundWindowCount:(NSUInteger)count {
-  __block NSUInteger actualCount =
-      [ChromeEarlGreyAppInterface foregroundWindowCount];
-  NSString* conditionName = [NSString
-      stringWithFormat:@"Waiting for window count to become %" PRIuNS, count];
-
-  // Allow the UI to become idle, in case any tabs are being opened or closed.
-  GREYWaitForAppToIdle(@"App failed to idle");
-
-  GREYCondition* browserCountCheck = [GREYCondition
-      conditionWithName:conditionName
-                  block:^{
-                    actualCount =
-                        [ChromeEarlGreyAppInterface foregroundWindowCount];
-                    return actualCount == count;
-                  }];
-  bool browserCountEqual =
-      [browserCountCheck waitWithTimeout:kWaitForUIElementTimeout];
-
-  NSString* errorString = [NSString
-      stringWithFormat:@"Failed waiting for window count to become %" PRIuNS
-                        "; actual count: %" PRIuNS,
-                       count, actualCount];
-  EG_TEST_HELPER_ASSERT_TRUE(browserCountEqual, errorString);
-}
-
 #pragma mark - SignIn Utilities (EG2)
 
 - (void)signOutAndClearIdentities {
@@ -919,10 +896,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (BOOL)isNativeContextMenusEnabled {
   return [ChromeEarlGreyAppInterface isNativeContextMenusEnabled];
-}
-
-- (BOOL)areMultipleWindowsSupported {
-  return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
 }
 
 #pragma mark - ScopedBlockPopupsPref

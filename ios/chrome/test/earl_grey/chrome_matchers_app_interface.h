@@ -315,9 +315,6 @@
 // Returns matcher for the payment request search bar.
 + (id<GREYMatcher>)paymentRequestPickerSearchBar;
 
-// Returns matcher for the New Window button on the Tools menu.
-+ (id<GREYMatcher>)openNewWindowMenuButton;
-
 // Returns matcher for the reading list button on the Tools menu.
 + (id<GREYMatcher>)readingListMenuButton;
 

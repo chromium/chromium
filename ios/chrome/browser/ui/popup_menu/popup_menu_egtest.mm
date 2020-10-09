@@ -147,18 +147,6 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)testNewWindowFromToolsMenu {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::OpenNewWindowMenuButton()];
-
-  // Verify the second window.
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-}
-
 // Navigates to a pdf page and verifies that the "Find in Page..." tool
 // is not enabled
 - (void)testNoSearchForPDF {
