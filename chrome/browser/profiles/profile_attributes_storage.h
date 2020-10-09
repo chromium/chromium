@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
 
@@ -95,6 +96,13 @@ class ProfileAttributesStorage
   // is not used.
   bool IsDefaultProfileName(const base::string16& name,
                             bool include_check_for_legacy_profile_name) const;
+
+#if !defined(OS_ANDROID)
+  // Records statistics about a profile `entry` that is being deleted. If the
+  // profile has opened browser window(s) in the moment of deletion, this
+  // function must be called before these windows get closed.
+  void RecordDeletedProfileState(ProfileAttributesEntry* entry);
+#endif
 
   // Records statistics about profiles as would be visible in the profile picker
   // (if we would display it in this moment).
