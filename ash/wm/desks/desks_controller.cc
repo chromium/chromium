@@ -432,6 +432,16 @@ void DesksController::OnRootWindowClosing(aura::Window* root_window) {
     desk->OnRootWindowClosing(root_window);
 }
 
+int DesksController::GetDeskIndex(const Desk* desk) const {
+  for (size_t i = 0; i < desks_.size(); ++i) {
+    if (desk == desks_[i].get())
+      return i;
+  }
+
+  NOTREACHED();
+  return -1;
+}
+
 bool DesksController::BelongsToActiveDesk(aura::Window* window) {
   return desks_util::BelongsToActiveDesk(window);
 }
@@ -493,6 +503,11 @@ void DesksController::OnFirstSessionStarted() {
   desks_restore_util::RestorePrimaryUserDesks();
 }
 
+DeskAnimationBase* DesksController::GetAnimationForTesting() const {
+  DCHECK(animation_);
+  return animation_.get();
+}
+
 void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
   DCHECK_EQ(animation_.get(), animation);
   animation_.reset();
@@ -503,16 +518,6 @@ bool DesksController::HasDesk(const Desk* desk) const {
       desks_.begin(), desks_.end(),
       [desk](const std::unique_ptr<Desk>& d) { return d.get() == desk; });
   return iter != desks_.end();
-}
-
-int DesksController::GetDeskIndex(const Desk* desk) const {
-  for (size_t i = 0; i < desks_.size(); ++i) {
-    if (desk == desks_[i].get())
-      return i;
-  }
-
-  NOTREACHED();
-  return -1;
 }
 
 void DesksController::ActivateDeskInternal(const Desk* desk,

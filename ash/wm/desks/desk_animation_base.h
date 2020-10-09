@@ -54,6 +54,8 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   void OnEndingDeskScreenshotTaken() override;
   void OnDeskSwitchAnimationFinished() override;
 
+  RootWindowDeskSwitchAnimator* GetFirstDeskSwitchAnimatorForTesting() const;
+
  protected:
   // Abstract functions that can be overridden by child classes to do different
   // things when phase (1), and phase (3) completes. Note that

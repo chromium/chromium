@@ -249,6 +249,8 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  ui::Layer* GetAnimationLayerForTesting() const;
+
  private:
   friend class RootWindowDeskSwitchAnimatorTestApi;
 

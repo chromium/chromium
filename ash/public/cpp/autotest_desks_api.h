@@ -15,10 +15,9 @@ namespace ash {
 class ASH_EXPORT AutotestDesksApi {
  public:
   AutotestDesksApi();
-  ~AutotestDesksApi();
-
   AutotestDesksApi(const AutotestDesksApi& other) = delete;
   AutotestDesksApi& operator=(const AutotestDesksApi& rhs) = delete;
+  ~AutotestDesksApi();
 
   // Creates a new desk if the maximum number of desks has not been reached, and
   // returns true if succeeded, false otherwise.
@@ -34,6 +33,15 @@ class ASH_EXPORT AutotestDesksApi {
   // Returns false if the active desk is the last available desk which cannot be
   // removed; true otherwise.
   bool RemoveActiveDesk(base::OnceClosure on_complete);
+
+  // Activates the desk at the given |index| by activating all the desks between
+  // the current desk and the desk at |index| in succession. This mimics
+  // pressing the activate adjacent desk accelerator rapidly. |on_complete| will
+  // be invoked when the the final animation to |index| completes. Returns false
+  // if |index| is invalid, or the desk at |index| is already the active desk;
+  // true otherwise.
+  bool ActivateAdjacentDesksToTargetIndex(int index,
+                                          base::OnceClosure on_complete);
 };
 
 }  // namespace ash

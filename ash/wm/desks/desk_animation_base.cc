@@ -132,4 +132,10 @@ void DeskAnimationBase::OnDeskSwitchAnimationFinished() {
   // `this` is now deleted.
 }
 
+RootWindowDeskSwitchAnimator*
+DeskAnimationBase::GetFirstDeskSwitchAnimatorForTesting() const {
+  DCHECK(!desk_switch_animators_.empty());
+  return desk_switch_animators_.front().get();
+}
+
 }  // namespace ash

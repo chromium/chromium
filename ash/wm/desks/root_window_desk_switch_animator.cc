@@ -339,6 +339,10 @@ void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
   delegate_->OnDeskSwitchAnimationFinished();
 }
 
+ui::Layer* RootWindowDeskSwitchAnimator::GetAnimationLayerForTesting() const {
+  return animation_layer_owner_->root();
+}
+
 void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
     std::unique_ptr<ui::Layer> layer) {
   DCHECK(layer);

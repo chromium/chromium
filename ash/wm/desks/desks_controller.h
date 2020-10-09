@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/autotest_desks_api.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
@@ -160,6 +161,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void OnRootWindowAdded(aura::Window* root_window);
   void OnRootWindowClosing(aura::Window* root_window);
 
+  int GetDeskIndex(const Desk* desk) const;
+
   // DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
 
@@ -175,6 +178,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnFirstSessionStarted() override;
 
+  DeskAnimationBase* GetAnimationForTesting() const;
+
  private:
   friend class DeskAnimationBase;
   friend class DeskActivationAnimation;
@@ -183,8 +188,6 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void OnAnimationFinished(DeskAnimationBase* animation);
 
   bool HasDesk(const Desk* desk) const;
-
-  int GetDeskIndex(const Desk* desk) const;
 
   // Activates the given |desk| and deactivates the currently active one. |desk|
   // has to be an existing desk. If |update_window_activation| is true,
