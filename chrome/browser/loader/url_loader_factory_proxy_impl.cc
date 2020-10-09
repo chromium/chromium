@@ -45,7 +45,7 @@ void UrlLoaderFactoryProxyImpl::GetProxiedURLLoaderFactory(
       /*navigation_id=*/base::nullopt,
       base::UkmSourceId::FromInt64(frame_host->GetPageUkmSourceId()),
       &proxied_factory,
-      /*headber_client=*/nullptr);
+      /*header_client=*/nullptr);
 
   mojo::FusePipes(std::move(proxied_factory), std::move(original_factory));
 }
