@@ -5916,7 +5916,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HIDDetection.OOBEDevicesDetectedOnContinuePressed"
-    enum="HIDContinueScenarioType" expires_after="M87">
+    enum="HIDContinueScenarioType" expires_after="M94">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -5926,7 +5926,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HIDDetection.OOBEDialogShown" units="units"
-    expires_after="M87">
+    expires_after="M94">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
