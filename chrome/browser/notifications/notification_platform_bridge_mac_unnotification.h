@@ -50,6 +50,8 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
 
   // Request permission to send notifications
   void RequestPermission();
+  // Create default categories for banners and alerts
+  void CreateDefaultCategories();
 
  private:
   // Cocoa class that receives callbacks from the UNUserNotificationCenter.

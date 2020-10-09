@@ -16,11 +16,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 @class UNMutableNotificationContent;
 @class UNUserNotificationCenter;
+
+namespace {
+
+NSString* const kCloseAndSettingsCategory = @"CLOSE_AND_SETTINGS";
+NSString* const kCloseCategory = @"CLOSE";
+
+}  // namespace
 
 // A Cocoa class that represents the delegate of UNUserNotificationCenter and
 // can forward commands to C++.
@@ -44,6 +53,7 @@ NotificationPlatformBridgeMacUNNotification::
 
   // TODO(crbug/1129366): Determine when to request permission
   NotificationPlatformBridgeMacUNNotification::RequestPermission();
+  NotificationPlatformBridgeMacUNNotification::CreateDefaultCategories();
 }
 
 NotificationPlatformBridgeMacUNNotification::
@@ -90,7 +100,13 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 
   UNMutableNotificationContent* content = [builder buildUserNotification];
 
-  // TODO(crbug/1129398): Add close button to banners
+  // TODO(crbug/1136061): Add support for complex categories and move setting
+  // the categories to the place that will be building the complex categories
+  if (notification.should_show_settings_button())
+    [content setCategoryIdentifier:kCloseAndSettingsCategory];
+  else
+    [content setCategoryIdentifier:kCloseCategory];
+
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:base::SysUTF8ToNSString(notification.id())
                     content:content
@@ -189,6 +205,38 @@ void NotificationPlatformBridgeMacUNNotification::RequestPermission() {
                         LOG(WARNING) << "Requesting permission did not succeed";
                       }
                     }];
+}
+
+void NotificationPlatformBridgeMacUNNotification::CreateDefaultCategories() {
+  UNNotificationAction* closeButton = [UNNotificationAction
+      actionWithIdentifier:notification_constants::kNotificationCloseButtonTag
+                     title:l10n_util::GetNSString(IDS_NOTIFICATION_BUTTON_CLOSE)
+                   options:UNNotificationActionOptionNone];
+
+  UNNotificationAction* settingsButton = [UNNotificationAction
+      actionWithIdentifier:notification_constants::
+                               kNotificationSettingsButtonTag
+                     title:l10n_util::GetNSString(
+                               IDS_NOTIFICATION_BUTTON_SETTINGS)
+                   options:UNNotificationActionOptionForeground];
+
+  // The actions in categories are ordered by LIFO. So having closeButton at the
+  // end ensures that it is always the button on top.
+  UNNotificationCategory* closeAndSettingsCategory = [UNNotificationCategory
+      categoryWithIdentifier:kCloseAndSettingsCategory
+                     actions:@[ settingsButton, closeButton ]
+           intentIdentifiers:@[]
+                     options:UNNotificationCategoryOptionCustomDismissAction];
+
+  UNNotificationCategory* closeCategory = [UNNotificationCategory
+      categoryWithIdentifier:kCloseCategory
+                     actions:@[ closeButton ]
+           intentIdentifiers:@[]
+                     options:UNNotificationCategoryOptionCustomDismissAction];
+
+  [notification_center_
+      setNotificationCategories:[NSSet setWithObjects:closeAndSettingsCategory,
+                                                      closeCategory, nil]];
 }
 
 // /////////////////////////////////////////////////////////////////////////////

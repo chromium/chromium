@@ -7,6 +7,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_operation.h"
 
@@ -39,13 +40,27 @@
   NSNumber* notificationType =
       [userInfo objectForKey:notification_constants::kNotificationType];
 
-  NotificationOperation operation =
-      [[response actionIdentifier]
-          isEqual:UNNotificationDismissActionIdentifier]
-          ? NotificationOperation::NOTIFICATION_CLOSE
-          : NotificationOperation::NOTIFICATION_CLICK;
-
   int buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
+
+  NotificationOperation operation = NotificationOperation::NOTIFICATION_CLICK;
+
+  if ([[response actionIdentifier]
+          isEqual:UNNotificationDismissActionIdentifier]) {
+    operation = NotificationOperation::NOTIFICATION_CLOSE;
+  } else if ([[response actionIdentifier]
+                 isEqual:UNNotificationDefaultActionIdentifier]) {
+    operation = NotificationOperation::NOTIFICATION_CLICK;
+  } else if ([[response actionIdentifier]
+                 isEqualToString:notification_constants::
+                                     kNotificationCloseButtonTag]) {
+    operation = NotificationOperation::NOTIFICATION_CLOSE;
+  } else if ([[response actionIdentifier]
+                 isEqualToString:notification_constants::
+                                     kNotificationSettingsButtonTag]) {
+    operation = NotificationOperation::NOTIFICATION_SETTINGS;
+  } else {
+    NOTREACHED();
+  }
 
   return @{
     notification_constants::kNotificationOrigin : origin,

@@ -156,3 +156,57 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationClose) {
               buttonIndex.intValue);
   }
 }
+
+TEST(UNNotificationResponseBuilderMacTest, TestNotificationCloseButton) {
+  if (@available(macOS 10.14, *)) {
+    base::scoped_nsobject<UNNotificationBuilder> builder =
+        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
+    UNMutableNotificationContent* content = [builder buildUserNotification];
+    base::scoped_nsobject<NSMutableDictionary> userInfo(
+        [[content userInfo] mutableCopy]);
+
+    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
+    fakeResponse.actionIdentifier =
+        notification_constants::kNotificationCloseButtonTag;
+
+    NSDictionary* response = [UNNotificationResponseBuilder
+        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+
+    NSNumber* operation =
+        [response objectForKey:notification_constants::kNotificationOperation];
+    NSNumber* buttonIndex = [response
+        objectForKey:notification_constants::kNotificationButtonIndex];
+
+    EXPECT_EQ(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE),
+              operation.intValue);
+    EXPECT_EQ(notification_constants::kNotificationInvalidButtonIndex,
+              buttonIndex.intValue);
+  }
+}
+
+TEST(UNNotificationResponseBuilderMacTest, TestNotificationSettingsButton) {
+  if (@available(macOS 10.14, *)) {
+    base::scoped_nsobject<UNNotificationBuilder> builder =
+        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
+    UNMutableNotificationContent* content = [builder buildUserNotification];
+    base::scoped_nsobject<NSMutableDictionary> userInfo(
+        [[content userInfo] mutableCopy]);
+
+    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
+    fakeResponse.actionIdentifier =
+        notification_constants::kNotificationSettingsButtonTag;
+
+    NSDictionary* response = [UNNotificationResponseBuilder
+        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
+
+    NSNumber* operation =
+        [response objectForKey:notification_constants::kNotificationOperation];
+    NSNumber* buttonIndex = [response
+        objectForKey:notification_constants::kNotificationButtonIndex];
+
+    EXPECT_EQ(static_cast<int>(NotificationOperation::NOTIFICATION_SETTINGS),
+              operation.intValue);
+    EXPECT_EQ(notification_constants::kNotificationInvalidButtonIndex,
+              buttonIndex.intValue);
+  }
+}
