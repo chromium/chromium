@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/stl_util.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -378,7 +379,13 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangularEmptyShape) {
 }
 
 // Test that setting a Null shape removes the shape.
-TEST_F(X11TopmostWindowFinderTest, NonRectangularNullShape) {
+// crbug.com/955316: flaky on Linux
+#if defined(OS_LINUX)
+#define MAYBE_NonRectangularNullShape DISABLED_NonRectangularNullShape
+#else
+#define MAYBE_NonRectangularNullShape NonRectangularNullShape
+#endif
+TEST_F(X11TopmostWindowFinderTest, MAYBE_NonRectangularNullShape) {
   if (!ui::IsShapeExtensionAvailable())
     return;
 
