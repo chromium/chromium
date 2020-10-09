@@ -501,7 +501,7 @@ void FeedStore::RemoveActions(std::vector<LocalActionId> ids,
   database_->UpdateEntries(
       /*entries_to_save=*/std::make_unique<
           std::vector<std::pair<std::string, feedstore::Record>>>(),
-      /*key_to_remove=*/std::move(keys), std::move(callback));
+      /*keys_to_remove=*/std::move(keys), std::move(callback));
 }
 
 void FeedStore::Write(std::vector<feedstore::Record> records,
