@@ -126,7 +126,10 @@ class Executive(object):
                 NtSuspendProcess(process_handle)
                 CloseHandle(process_handle)
 
-            command = ['taskkill.exe', '/f', '/t', '/pid', pid]
+            command = ['taskkill.exe', '/f']
+            if kill_tree:
+                command.append('/t')
+            command += ['/pid', pid]
             # taskkill will exit 128 if the process is not found. We should log.
             self.run_command(command, error_handler=self.log_error)
             return
