@@ -122,6 +122,15 @@ int ClipboardHistoryMenuModelAdapter::GetMenuItemsCount() const {
   return root_view_->GetSubmenu()->GetRowCount();
 }
 
+void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
+    int command_id) {
+  views::MenuItemView* selected_menu_item =
+      root_view_->GetMenuItemByID(command_id);
+  DCHECK(IsRunning());
+  views::MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(
+      selected_menu_item);
+}
+
 void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
     int command_id) {
   model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id));
@@ -133,23 +142,37 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
   item_snapshots_.erase(item_to_delete);
 }
 
-ClipboardHistoryMenuModelAdapter::SelectionMoveDirection
-ClipboardHistoryMenuModelAdapter::CalculateSelectionMoveAfterDeletion(
-    int command_id) const {
-  auto item_to_delete = item_snapshots_.find(command_id);
-  DCHECK(item_to_delete != item_snapshots_.end());
-
-  // The menu item to be deleted should be selected.
-  DCHECK(root_view_->GetMenuItemByID(command_id)->IsSelected());
+base::Optional<int>
+ClipboardHistoryMenuModelAdapter::CalculateSelectedCommandIdAfterDeletion()
+    const {
+  base::Optional<int> command_id = GetSelectedMenuItemCommand();
+  DCHECK(command_id.has_value());
 
   // If the menu item view to be deleted is the last one, Cancel()
   // should be called so this function should not be hit.
   DCHECK_GT(item_snapshots_.size(), 1u);
 
-  // select the next menu item if any or the previous one.
-  return std::next(item_to_delete, 1) == item_snapshots_.end()
-             ? SelectionMoveDirection::kPrevious
-             : SelectionMoveDirection::kNext;
+  auto start_item = item_snapshots_.find(*command_id);
+  DCHECK(start_item != item_snapshots_.cend());
+
+  // Search in the forward direction.
+  auto check_function = [this](const auto& key_value) -> bool {
+    return model_->IsEnabledAt(model_->GetIndexOfCommandId(key_value.first));
+  };
+  auto selectable_iter_forward = std::find_if(
+      std::next(start_item, 1), item_snapshots_.cend(), check_function);
+  if (selectable_iter_forward != item_snapshots_.cend())
+    return selectable_iter_forward->first;
+
+  // If no selectable item is found, then search in the reverse direction.
+  auto selectable_iter_reverse =
+      std::find_if(std::make_reverse_iterator(start_item),
+                   item_snapshots_.crend(), check_function);
+  if (selectable_iter_reverse != item_snapshots_.crend())
+    return selectable_iter_reverse->first;
+
+  // No other selectable item, then returns the invalid id.
+  return base::nullopt;
 }
 
 gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()

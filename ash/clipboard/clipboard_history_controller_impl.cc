@@ -218,11 +218,10 @@ void ClipboardHistoryControllerImpl::ShowMenu(
   DCHECK(IsMenuShowing());
   accelerator_target_->OnMenuShown();
 
-  // Send the synthetic key event to let the menu controller select the first
-  // menu item after showing the clipboard history menu. Note that calling
-  // `MenuItemView::SetSelected()` directly cannot update the menu controller
-  // so it does not work here.
-  SendSyntheticKeyEvent(ui::VKEY_DOWN, ui::EF_NONE);
+  // The first menu item should be selected as default after the clipboard
+  // history menu shows.
+  context_menu_->SelectMenuItemWithCommandId(
+      ClipboardHistoryUtil::kFirstItemCommandId);
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
@@ -343,21 +342,11 @@ void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {
     return;
   }
 
-  using SelectionMoveDirection =
-      ClipboardHistoryMenuModelAdapter::SelectionMoveDirection;
-  SelectionMoveDirection move_direction =
-      context_menu_->CalculateSelectionMoveAfterDeletion(*selected_command);
-
+  base::Optional<int> new_selected_command_id =
+      context_menu_->CalculateSelectedCommandIdAfterDeletion();
   context_menu_->RemoveMenuItemWithCommandId(*selected_command);
-
-  // Select a new menu item.
-  switch (move_direction) {
-    case SelectionMoveDirection::kPrevious:
-      SendSyntheticKeyEvent(ui::VKEY_UP, ui::EF_NONE);
-      break;
-    case SelectionMoveDirection::kNext:
-      SendSyntheticKeyEvent(ui::VKEY_DOWN, ui::EF_NONE);
-  }
+  if (new_selected_command_id.has_value())
+    context_menu_->SelectMenuItemWithCommandId(*new_selected_command_id);
 }
 
 gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {
