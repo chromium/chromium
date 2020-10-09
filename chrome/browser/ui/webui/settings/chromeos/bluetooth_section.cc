@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/bluetooth_section.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_dialog_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -209,8 +210,15 @@ std::string BluetoothSection::GetSectionPath() const {
 
 bool BluetoothSection::LogMetric(mojom::Setting setting,
                                  base::Value& value) const {
-  // Unimplemented.
-  return false;
+  switch (setting) {
+    case mojom::Setting::kBluetoothOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.Bluetooth.BluetoothOnOff",
+                                value.GetBool());
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {

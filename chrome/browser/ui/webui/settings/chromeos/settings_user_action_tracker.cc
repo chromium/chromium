@@ -8,11 +8,17 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
+#include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
 
 namespace chromeos {
 namespace settings {
 
-SettingsUserActionTracker::SettingsUserActionTracker() = default;
+SettingsUserActionTracker::SettingsUserActionTracker(
+    Hierarchy* hierarchy,
+    OsSettingsSections* sections)
+    : hierarchy_(hierarchy), sections_(sections) {}
 
 SettingsUserActionTracker::~SettingsUserActionTracker() = default;
 
@@ -60,8 +66,34 @@ void SettingsUserActionTracker::RecordSearch() {
   per_session_tracker_->RecordSearch();
 }
 
+// TODO(https://crbug.com/1133553): remove this once migration is complete.
 void SettingsUserActionTracker::RecordSettingChange() {
   per_session_tracker_->RecordSettingChange();
+}
+
+void SettingsUserActionTracker::RecordSettingChangeWithDetails(
+    mojom::Setting setting,
+    mojom::SettingChangeValuePtr value) {
+  per_session_tracker_->RecordSettingChange();
+
+  // Get the primary section location of the changed setting and log the metric.
+  mojom::Section section_id =
+      hierarchy_->GetSettingMetadata(setting).primary.first;
+  const OsSettingsSection* section = sections_->GetSection(section_id);
+  // new_value is initialized as null. Null value is used in cases that don't
+  // require extra metadata.
+  base::Value new_value;
+  if (value->is_bool_value()) {
+    new_value = base::Value(value->get_bool_value());
+  } else if (value->is_int_value()) {
+    new_value = base::Value(value->get_int_value());
+  } else if (value->is_string_value()) {
+    new_value = base::Value(value->get_string_value());
+  }
+  section->LogMetric(setting, new_value);
+
+  base::UmaHistogramSparse("ChromeOS.Settings.SettingChanged",
+                           static_cast<int>(setting));
 }
 
 }  // namespace settings

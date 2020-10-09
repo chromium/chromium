@@ -238,6 +238,18 @@ Polymer({
     }
   },
 
+  /**
+   * Listens for toggle change events (rather than state changes) to handle
+   * just user-triggered changes to the bluetoothToggleState_.
+   * @private
+   */
+  onBluetoothToggledByUser_() {
+    // Record that the user manually enabled/disabled Bluetooth.
+    settings.recordSettingChange(
+        chromeos.settings.mojom.Setting.kBluetoothOnOff,
+        {boolValue: this.bluetoothToggleState_});
+  },
+
   /** @private */
   onTap_() {
     if (!this.isToggleEnabled_()) {

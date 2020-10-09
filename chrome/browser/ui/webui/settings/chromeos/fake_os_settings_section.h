@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_FAKE_OS_SETTINGS_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_FAKE_OS_SETTINGS_SECTION_H_
 
+#include <utility>
+#include <vector>
+
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
@@ -21,6 +24,9 @@ class FakeOsSettingsSection : public OsSettingsSection {
   FakeOsSettingsSection& operator=(const FakeOsSettingsSection& other) = delete;
 
   mojom::Section section() { return section_; }
+  const std::vector<mojom::Setting>& logged_metrics() const {
+    return logged_metrics_;
+  }
 
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override {}
@@ -50,6 +56,8 @@ class FakeOsSettingsSection : public OsSettingsSection {
 
  private:
   const mojom::Section section_;
+  // Use mutable to modify this vector within the overridden const LogMetric.
+  mutable std::vector<mojom::Setting> logged_metrics_;
 };
 
 }  // namespace settings

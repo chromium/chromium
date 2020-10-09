@@ -57,8 +57,22 @@ cr.define('settings', function() {
     getRecorder().recordSearch();
   }
 
-  /* #export */ function recordSettingChange() {
-    getRecorder().recordSettingChange();
+  /**
+   * All new code should pass a value for |opt_setting| and, if applicable,
+   * |opt_value|. The zero-parameter version of this function is reserved for
+   * legacy code which has not yet been converted.
+   * TODO(https://crbug.com/1133553): make |opt_setting| non-optional when
+   * migration is complete.
+   * @param {!chromeos.settings.mojom.Setting=} opt_setting
+   * @param {!chromeos.settings.mojom.SettingChangeValue=} opt_value
+   */
+  /* #export */ function recordSettingChange(opt_setting, opt_value) {
+    if (opt_setting === undefined) {
+      getRecorder().recordSettingChange();
+    } else {
+      getRecorder().recordSettingChangeWithDetails(
+          opt_setting, opt_value || null);
+    }
   }
 
   // #cr_define_end

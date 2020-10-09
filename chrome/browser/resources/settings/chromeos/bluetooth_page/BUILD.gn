@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
 js_library("bluetooth_page") {
   deps = [
     "..:deep_linking_behavior",
+    "..:metrics_recorder",
     "..:os_route",
     "../..:router",
     "../../prefs:prefs_behavior",
@@ -94,6 +95,7 @@ js_library("bluetooth_page.m") {
   deps = [
     ":bluetooth_subpage.m",
     "..:deep_linking_behavior.m",
+    "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:router.m",
     "../../prefs:prefs_behavior.m",

@@ -124,8 +124,8 @@ class OsSettingsManager : public KeyedService {
 
   std::unique_ptr<SearchTagRegistry> search_tag_registry_;
   std::unique_ptr<OsSettingsSections> sections_;
-  std::unique_ptr<SettingsUserActionTracker> settings_user_action_tracker_;
   std::unique_ptr<Hierarchy> hierarchy_;
+  std::unique_ptr<SettingsUserActionTracker> settings_user_action_tracker_;
   std::unique_ptr<SearchHandler> search_handler_;
 };
 

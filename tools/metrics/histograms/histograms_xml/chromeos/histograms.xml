@@ -528,6 +528,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
+    enum="BooleanToggled" expires_after="2021-09-30">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    Records when users change the kBluetoothOnOff setting on the Bluetooth page.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.BlurredWindowDuration" units="ms"
     expires_after="2020-12-01">
   <owner>khorimoto@chromium.org</owner>
@@ -775,6 +785,19 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-customization@google.com</owner>
   <summary>
     Type of search results clicked by user in the OS settings search box.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SettingChanged" enum="OsSetting"
+    expires_after="2021-09-29">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    Records the the setting id when the user changes a setting. Note that some
+    of the values of the OsSetting enum aren't strictly settings (such as
+    kKeyboardShortcuts, which is just a hyperlink). All of the recorded values
+    appear in the settings page.
   </summary>
 </histogram>
 

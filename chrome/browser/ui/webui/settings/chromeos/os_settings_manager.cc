@@ -45,9 +45,10 @@ OsSettingsManager::OsSettingsManager(
                                                identity_manager,
                                                android_sms_service,
                                                printers_manager)),
-      settings_user_action_tracker_(
-          std::make_unique<SettingsUserActionTracker>()),
       hierarchy_(std::make_unique<Hierarchy>(sections_.get())),
+      settings_user_action_tracker_(
+          std::make_unique<SettingsUserActionTracker>(hierarchy_.get(),
+                                                      sections_.get())),
       search_handler_(
           std::make_unique<SearchHandler>(search_tag_registry_.get(),
                                           sections_.get(),
@@ -71,6 +72,7 @@ void OsSettingsManager::Shutdown() {
   // Note: These must be deleted in the opposite order of their creation to
   // prevent against UAF violations.
   search_handler_.reset();
+  settings_user_action_tracker_.reset();
   hierarchy_.reset();
   sections_.reset();
   search_tag_registry_.reset();

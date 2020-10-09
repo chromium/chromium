@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/optional.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/per_session_settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -15,12 +17,15 @@
 namespace chromeos {
 namespace settings {
 
+class Hierarchy;
+class OsSettingsSections;
+
 // Records user actions within Settings. Utilizes a per session tracker that
 // measures the user's effort required to change a setting. Eventually uses
 // a per section tracker to record metrics in each section.
 class SettingsUserActionTracker : public mojom::UserActionRecorder {
  public:
-  SettingsUserActionTracker();
+  SettingsUserActionTracker(Hierarchy* hierarchy, OsSettingsSections* sections);
   SettingsUserActionTracker(const SettingsUserActionTracker& other) = delete;
   SettingsUserActionTracker& operator=(const SettingsUserActionTracker& other) =
       delete;
@@ -30,6 +35,12 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
       mojo::PendingReceiver<mojom::UserActionRecorder> pending_receiver);
 
  private:
+  // For unit tests.
+  // SettingsUserActionTracker();
+  friend class SettingsUserActionTrackerTest;
+  FRIEND_TEST_ALL_PREFIXES(SettingsUserActionTrackerTest,
+                           TestRecordSettingChanged);
+
   // mojom::UserActionRecorder:
   void RecordPageFocus() override;
   void RecordPageBlur() override;
@@ -37,12 +48,17 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   void RecordNavigation() override;
   void RecordSearch() override;
   void RecordSettingChange() override;
+  void RecordSettingChangeWithDetails(
+      mojom::Setting setting,
+      mojom::SettingChangeValuePtr value) override;
 
   void EndCurrentSession();
   void OnBindingDisconnected();
 
-  std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;
+  Hierarchy* hierarchy_;
+  OsSettingsSections* sections_;
 
+  std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;
   mojo::Receiver<mojom::UserActionRecorder> receiver_{this};
 };
 
