@@ -351,9 +351,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateSwapChainForComposition"
-    enum="Hresult" expires_after="M85">
+    enum="Hresult" expires_after="2021-01-10">
+  <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
-  <owner>rafael.cintron@microsoft.com</owner>
   <summary>
     HRESULT return value of IDXGIFactory2::CreateSwapChainForComposition.
   </summary>
