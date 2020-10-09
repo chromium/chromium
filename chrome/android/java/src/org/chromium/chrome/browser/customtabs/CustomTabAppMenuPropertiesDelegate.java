@@ -241,11 +241,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
     @Override
     public @Nullable Bundle getBundleForMenuItem(MenuItem item) {
+        Bundle itemBundle = super.getBundleForMenuItem(item);
+
         if (!mItemToIndexMap.containsKey(item)) {
-            return null;
+            return itemBundle;
         }
 
-        Bundle itemBundle = super.getBundleForMenuItem(item);
         if (itemBundle == null) {
             itemBundle = new Bundle();
         }
