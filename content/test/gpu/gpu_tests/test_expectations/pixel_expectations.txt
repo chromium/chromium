@@ -75,6 +75,7 @@ crbug.com/1115673 [ fuchsia no-use-skia-dawn ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLDrawImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLRoundedCorners [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLOccluded [ Skip ]
+crbug.com/1136742 [ fuchsia no-use-skia-dawn ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_ImplicitClear [ RetryOnFailure ]
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
