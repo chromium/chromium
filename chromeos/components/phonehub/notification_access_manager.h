@@ -66,8 +66,7 @@ class NotificationAccessManager {
 
   bool IsSetupOperationInProgress() const;
 
-  virtual void OnSetupAttemptStarted() {}
-  virtual void OnSetupAttemptEnded() {}
+  virtual void OnSetupRequested() {}
 
  private:
   friend class NotificationAccessManagerImplTest;

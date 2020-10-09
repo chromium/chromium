@@ -58,7 +58,11 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           do_not_disturb_controller_.get(),
           message_sender_.get())),
       notification_access_manager_(
-          std::make_unique<NotificationAccessManagerImpl>(pref_service)),
+          std::make_unique<NotificationAccessManagerImpl>(
+              pref_service,
+              feature_status_provider_.get(),
+              message_sender_.get(),
+              connection_scheduler_.get())),
       notification_manager_(std::make_unique<NotificationManagerImpl>()),
       onboarding_ui_tracker_(std::make_unique<OnboardingUiTrackerImpl>(
           pref_service,

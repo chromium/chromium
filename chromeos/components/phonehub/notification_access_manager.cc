@@ -30,7 +30,7 @@ NotificationAccessManager::AttemptNotificationSetup(
                      weak_ptr_factory_.GetWeakPtr(), operation_id)));
   id_to_operation_map_.emplace(operation_id, operation.get());
 
-  OnSetupAttemptStarted();
+  OnSetupRequested();
   return operation;
 }
 
@@ -70,8 +70,9 @@ void NotificationAccessManager::OnSetupOperationDeleted(int operation_id) {
     return;
 
   id_to_operation_map_.erase(it);
+
   if (id_to_operation_map_.empty())
-    OnSetupAttemptEnded();
+    PA_LOG(INFO) << "Notification access setup operation has ended.";
 }
 
 }  // namespace phonehub
