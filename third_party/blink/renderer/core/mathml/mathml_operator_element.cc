@@ -197,7 +197,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
            fallback_form++) {
         if (fallback_form == form)
           continue;
-        auto category = FindCategory(
+        category = FindCategory(
             GetOperatorContent().characters,
             static_cast<MathMLOperatorDictionaryForm>(fallback_form));
         if (category != MathMLOperatorDictionaryCategory::kNone) {
