@@ -141,15 +141,21 @@ bool ProcessAcceleratorIfReserved(Surface* surface, ui::KeyEvent* event) {
   return IsReservedAccelerator(event) && ProcessAccelerator(surface, event);
 }
 
-// Returns true if surface belongs to an ARC application.
+// Returns true if the surface needs to support IME.
 // TODO(yhanada, https://crbug.com/847500): Remove this when we find a way
-// to fix https://crbug.com/847500 without breaking ARC++ apps.
-bool IsArcSurface(Surface* surface) {
+// to fix https://crbug.com/847500 without breaking ARC apps/Lacros browser.
+bool IsImeSupportedSurface(Surface* surface) {
   aura::Window* window = surface->window();
   for (; window; window = window->parent()) {
-    if (window->GetProperty(aura::client::kAppType) ==
-        static_cast<int>(ash::AppType::ARC_APP)) {
-      return true;
+    const auto app_type =
+        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    switch (app_type) {
+      case ash::AppType::ARC_APP:
+      case ash::AppType::LACROS:
+        return true;
+      default:
+        // Do nothing.
+        break;
     }
   }
   return false;
@@ -284,12 +290,18 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   // Ensured by the observer registration order.
   delegate_->OnKeyboardModifiers(seat_->xkb_tracker()->GetModifiers());
 
+  // Currently, physical keycode is tracked in Seat, assuming that the
+  // Keyboard::OnKeyEvent is called between Seat::WillProcessEvent and
+  // Seat::DidProcessEvent. However, if IME is enabled, it is no longer true,
+  // because IME work in async approach, and on its dispatching, call stack
+  // is split so actually Keyboard::OnKeyEvent is called after
+  // Seat::DidProcessEvent.
   // TODO(yhanada): This is a quick fix for https://crbug.com/859071. Remove
-  // ARC-specific code path once we can find a way to manage press/release
-  // events pair for synthetic events.
+  // ARC-/Lacros-specific code path once we can find a way to manage
+  // press/release events pair for synthetic events.
   ui::DomCode physical_code =
       seat_->physical_code_for_currently_processing_event();
-  if (physical_code == ui::DomCode::NONE && focus_belongs_to_arc_app_) {
+  if (physical_code == ui::DomCode::NONE && focused_on_ime_supported_surface_) {
     // This key event is a synthetic event.
     // Consider DomCode field of the event as a physical code
     // for synthetic events when focus surface belongs to an ARC application.
@@ -426,7 +438,7 @@ void Keyboard::SetFocus(Surface* surface) {
     delegate_->OnKeyboardEnter(surface, pressed_keys_);
     focus_ = surface;
     focus_->AddSurfaceObserver(this);
-    focus_belongs_to_arc_app_ = IsArcSurface(surface);
+    focused_on_ime_supported_surface_ = IsImeSupportedSurface(surface);
   }
 }
 

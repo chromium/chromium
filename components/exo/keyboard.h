@@ -130,7 +130,7 @@ class Keyboard : public ui::EventHandler,
   // True when the ARC app window is focused.
   // TODO(yhanada, https://crbug.com/847500): Remove this when we find a way to
   // fix https://crbug.com/847500 without breaking ARC++ apps.
-  bool focus_belongs_to_arc_app_ = false;
+  bool focused_on_ime_supported_surface_ = false;
 
   base::ObserverList<KeyboardObserver>::Unchecked observer_list_;
 
