@@ -190,6 +190,24 @@ TEST_F(CrostiniDiskTest, DefaultIsCurrentValue) {
   EXPECT_GT(disk_info->ticks.at(disk_info->default_index + 1)->value, 3 * kGiB);
 }
 
+// Numbers taken from crbug/1126705.
+TEST_F(CrostiniDiskTest, AllocatedAboveMax) {
+  vm_tools::concierge::ListVmDisksResponse response;
+  auto* image = response.add_images();
+  response.set_success(true);
+  image->set_name("vm_name");
+  image->set_image_type(vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW);
+  image->set_min_size(3260022784);
+  image->set_size(459561652224);
+  auto disk_info = OnListVmDisksWithResult("vm_name", 1120739328, response);
+  ASSERT_TRUE(disk_info);
+
+  ASSERT_TRUE(disk_info->ticks.size() > 3);
+  EXPECT_EQ(disk_info->default_index, disk_info->ticks.size() - 1);
+  EXPECT_EQ(disk_info->ticks.at(disk_info->default_index)->value,
+            image->size());
+}
+
 TEST_F(CrostiniDiskTest, AmountOfFreeDiskSpaceFailureIsHandled) {
   std::unique_ptr<CrostiniDiskInfo> disk_info;
   auto store_info =
@@ -346,6 +364,7 @@ TEST_F(CrostiniDiskTest, GetTicksForDiskSizeSmallRangeNonZeroStart) {
     EXPECT_FLOAT_EQ(ticks[n], expected[n]);
   }
 }
+
 TEST_F(CrostiniDiskTest, GetTicksForDiskSizeLargeRange) {
   // 5 ticks for 7 GiB, largest interval is 1GiB so we should end up with 8
   // 0.1 GiB ticks. For bonus coverage, start at non-zero non-round.
