@@ -28,6 +28,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/test/ax_event_counter.h"
 
 namespace translate {
 
@@ -129,6 +130,18 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   chrome::CloseWebContents(browser(),
                            browser()->tab_strip_model()->GetActiveWebContents(),
                            false);
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest, AlertAccessibleEvent) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  GURL french_url = ui_test_utils::GetTestUrl(
+      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
+  NavigateAndWaitForLanguageDetection(french_url, "fr");
+
+  // TODO(crbug.com/1082217): This should produce one event instead of two.
+  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 }  // namespace translate

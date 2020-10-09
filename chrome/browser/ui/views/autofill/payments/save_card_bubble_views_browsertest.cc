@@ -966,6 +966,17 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       AlertAccessibleEvent) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  FillForm();
+  SubmitFormAndWaitForCardLocalSaveBubble();
+
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
 // Tests the sign in promo bubble. Ensures that signin action is recorded when
 // user accepts promo.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
