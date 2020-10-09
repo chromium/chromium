@@ -7,7 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "base/timer/timer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
 class PrefService;
@@ -15,6 +17,7 @@ class PrefRegistrySimple;
 class ClipboardHistoryItem;
 
 namespace ash {
+class ClipboardNudge;
 
 // The clipboard contextual nudge will be shown after 4 user actions that must
 // happen in sequence. The user must perform copy, paste, copy and paste in
@@ -38,7 +41,7 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // ui::ClipboardHistoryObserver:
+  // ui::ClipboardHistory::Observer:
   void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item) override;
 
   // ui::ClipboardObserver:
@@ -52,6 +55,7 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
   void ClearClockOverrideForTesting();
 
   const ClipboardState& GetClipboardStateForTesting();
+  ClipboardNudge* GetClipboardNudgeForTesting() { return nudge_.get(); }
 
  private:
   // Gets the number of times the nudge has been shown.
@@ -63,6 +67,12 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
   // Gets the current time. Can be overridden for testing.
   base::Time GetTime();
 
+  // Shows the nudge widget.
+  void ShowNudge();
+
+  // Hides the nudge widget.
+  void HideNudge();
+
   // Owned by ClipboardHistoryController.
   const ClipboardHistory* clipboard_history_;
 
@@ -72,6 +82,14 @@ class ASH_EXPORT ClipboardNudgeController : public ClipboardHistory::Observer,
   base::Time last_paste_timestamp_;
   // Clock that can be overridden for testing.
   base::Clock* g_clock_override = nullptr;
+
+  // Contextual nudge which shows a view to inform the user on multipaste usage.
+  std::unique_ptr<ClipboardNudge> nudge_;
+
+  // Timer to hide the clipboard nudge.
+  base::OneShotTimer hide_nudge_timer_;
+
+  base::WeakPtrFactory<ClipboardNudgeController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

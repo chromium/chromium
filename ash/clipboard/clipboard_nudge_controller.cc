@@ -5,6 +5,7 @@
 #include "ash/clipboard/clipboard_nudge_controller.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -15,6 +16,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 
 namespace {
 
@@ -30,10 +32,12 @@ ClipboardNudgeController::ClipboardNudgeController(
     ClipboardHistory* clipboard_history)
     : clipboard_history_(clipboard_history) {
   clipboard_history_->AddObserver(this);
+  ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 }
 
 ClipboardNudgeController::~ClipboardNudgeController() {
   clipboard_history_->RemoveObserver(this);
+  ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
 }
 
 // static
@@ -80,8 +84,8 @@ void ClipboardNudgeController::OnClipboardDataRead() {
       return;
     case ClipboardState::kSecondCopy:
       if (GetTime() - last_paste_timestamp_ < kMaxTimeBetweenPaste) {
-        clipboard_state_ = ClipboardState::kShouldShowNudge;
-        // TODO(crbug/1105541): Show clipboard nudge.
+        ShowNudge();
+        HandleNudgeShown();
       } else {
         // ClipboardState should be reset to kFirstPaste when timed out.
         clipboard_state_ = ClipboardState::kFirstPaste;
@@ -92,6 +96,21 @@ void ClipboardNudgeController::OnClipboardDataRead() {
     case ClipboardState::kShouldShowNudge:
       return;
   }
+}
+
+void ClipboardNudgeController::ShowNudge() {
+  // Create and show the nudge.
+  nudge_ = std::make_unique<ClipboardNudge>();
+
+  // Start a timer to close the nudge after a set amount of time.
+  hide_nudge_timer_.Start(FROM_HERE, kNudgeShowTime,
+                          base::BindOnce(&ClipboardNudgeController::HideNudge,
+                                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ClipboardNudgeController::HideNudge() {
+  nudge_->Close();
+  nudge_.reset();
 }
 
 void ClipboardNudgeController::HandleNudgeShown() {
