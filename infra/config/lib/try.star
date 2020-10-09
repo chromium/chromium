@@ -39,7 +39,7 @@ defaults = args.defaults(
     subproject_list_view = None,
 )
 
-def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN_ONLY):
+def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
     if not branches.matches(branch_selector):
         return
 
@@ -152,7 +152,7 @@ def _sort_console_entries(ctx):
 
 lucicfg.generator(_sort_console_entries)
 
-def list_view(*, name, branch_selector = branches.MAIN_ONLY, **kwargs):
+def list_view(*, name, branch_selector = branches.MAIN, **kwargs):
     if not branches.matches(branch_selector):
         return
 
@@ -201,7 +201,7 @@ def tryjob(
 def try_builder(
         *,
         name,
-        branch_selector = branches.MAIN_ONLY,
+        branch_selector = branches.MAIN,
         add_to_list_view = args.DEFAULT,
         cq_group = args.DEFAULT,
         list_view = args.DEFAULT,
