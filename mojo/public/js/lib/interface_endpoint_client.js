@@ -33,12 +33,17 @@
   }
 
   InterfaceEndpointClient.prototype.initControllerIfNecessary_ = function() {
+    if (!this.handle_) {
+      return false;
+    }
+
     if (this.controller_ || this.handle_.pendingAssociation()) {
-      return;
+      return true;
     }
 
     this.controller_ = this.handle_.groupController().attachEndpointClient(
         this.handle_, this);
+    return true;
   };
 
   InterfaceEndpointClient.prototype.onAssociationEvent = function(
@@ -84,7 +89,9 @@
       return false;
     }
 
-    this.initControllerIfNecessary_();
+    if (!this.initControllerIfNecessary_()) {
+      return false;
+    }
     return this.controller_.sendMessage(message);
   };
 
@@ -99,7 +106,9 @@
       return Promise.reject();
     }
 
-    this.initControllerIfNecessary_();
+    if (!this.initControllerIfNecessary_()) {
+      return Promise.reject(Error('Endpoint has been closed'));
+    }
 
     // Reserve 0 in case we want it to convey special meaning in the future.
     var requestID = this.nextRequestID_++;
