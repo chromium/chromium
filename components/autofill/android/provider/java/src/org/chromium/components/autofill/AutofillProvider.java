@@ -262,6 +262,7 @@ public class AutofillProvider {
     private long mAutofillTriggeredTimeMillis;
     private Context mContext;
     private AutofillPopup mDatalistPopup;
+    private AutofillSuggestion[] mDatalistSuggestions;
     private WebContentsAccessibility mWebContentsAccessibility;
     private View mAnchorView;
 
@@ -533,6 +534,7 @@ public class AutofillProvider {
         if (mDatalistPopup != null) {
             mDatalistPopup.dismiss();
             mDatalistPopup = null;
+            mDatalistSuggestions = null;
         }
         if (mWebContentsAccessibility != null) {
             mWebContentsAccessibility.onAutofillPopupDismissed();
@@ -600,9 +602,9 @@ public class AutofillProvider {
      */
     private void showDatalistPopup(
             String[] datalistValues, String[] datalistLabels, RectF bounds, boolean isRtl) {
-        final AutofillSuggestion[] suggestions = new AutofillSuggestion[datalistValues.length];
-        for (int i = 0; i < suggestions.length; i++) {
-            suggestions[i] = new AutofillSuggestion(datalistValues[i], datalistLabels[i],
+        mDatalistSuggestions = new AutofillSuggestion[datalistValues.length];
+        for (int i = 0; i < mDatalistSuggestions.length; i++) {
+            mDatalistSuggestions[i] = new AutofillSuggestion(datalistValues[i], datalistLabels[i],
                     /* itemTag= */ "", DropdownItem.NO_ICON, false /* isIconAtLeft */, i,
                     false /* isDeletable */, false /* isMultilineLabel */, false /* isBoldLabel */);
         }
@@ -623,7 +625,7 @@ public class AutofillProvider {
 
                     @Override
                     public void suggestionSelected(int listIndex) {
-                        onSuggestionSelected(suggestions[listIndex].getLabel());
+                        onSuggestionSelected(mDatalistSuggestions[listIndex].getLabel());
                     }
 
                     @Override
@@ -641,7 +643,7 @@ public class AutofillProvider {
                 return;
             }
         }
-        mDatalistPopup.filterAndShow(suggestions, isRtl, false);
+        mDatalistPopup.filterAndShow(mDatalistSuggestions, isRtl, false);
         if (mWebContentsAccessibility != null) {
             mWebContentsAccessibility.onAutofillPopupDisplayed(mDatalistPopup.getListView());
         }
