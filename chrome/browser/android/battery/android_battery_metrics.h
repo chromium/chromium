@@ -24,8 +24,9 @@ class AndroidBatteryMetrics : public base::PowerObserver {
   // Called by base::android::ApplicationStatusListener.
   void OnAppStateChanged(base::android::ApplicationState);
 
-  void UpdateDrainMetricsEnabled();
-  void CaptureAndReportDrain();
+  void UpdateMetricsEnabled();
+  void CaptureAndReportMetrics();
+  void UpdateAndReportRadio();
 
   // Whether or not we've seen at least two consecutive capacity drops while
   // Chrome was the foreground app. Battery drain reported prior to this could
@@ -34,14 +35,16 @@ class AndroidBatteryMetrics : public base::PowerObserver {
 
   // Battery drain is captured and reported periodically in this interval while
   // the device is on battery power and Chrome is the foreground activity.
-  static constexpr base::TimeDelta kDrainMetricsInterval =
+  static constexpr base::TimeDelta kMetricsInterval =
       base::TimeDelta::FromSeconds(30);
 
   std::unique_ptr<base::android::ApplicationStatusListener> app_state_listener_;
   base::android::ApplicationState app_state_;
   bool on_battery_power_;
   int last_remaining_capacity_uah_ = 0;
-  base::RepeatingTimer drain_metrics_timer_;
+  int64_t last_tx_bytes_ = -1;
+  int64_t last_rx_bytes_ = -1;
+  base::RepeatingTimer metrics_timer_;
   int skipped_timers_ = 0;
 
   // Number of consecutive charge drops seen while the app has been in the

@@ -498,6 +498,52 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Power.ForegroundRadio.SignalLevel.{NetworkType}"
+    enum="RadioSignalLevel" expires_after="2021-07-03">
+  <owner>eseckler@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Periodically samples the radio (cellular/wifi) signal strength level while
+    Chrome is the foreground app and the device is on battery power. Sampled
+    every 30 seconds and when Chrome is backgrounded or the device connects to a
+    charger.
+
+    Only supported on Android.
+  </summary>
+  <token key="NetworkType">
+    <variant name="Cell"/>
+    <variant name="Wifi"/>
+  </token>
+</histogram>
+
+<histogram name="Power.ForegroundRadio.{Direction}KiB.{NetworkType}.30Seconds"
+    enum="RadioSignalLevel" expires_after="2021-07-03">
+  <owner>eseckler@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Periodically samples the number of kibibytes received over network while
+    Chrome is the foreground app and the device is on battery power. Sampled
+    every 30 seconds and when Chrome is backgrounded or the device connects to a
+    charger. Values are distributed across buckets according to the radio signal
+    quality.
+
+    Caveat: signal quality is measured at the end of 30-sec period, so it might
+    not reflect the quality during the entire period.
+
+    Only supported on Android.
+  </summary>
+  <token key="Direction">
+    <variant name="Received"/>
+    <variant name="Sent"/>
+  </token>
+  <token key="NetworkType">
+    <variant name="Cell"/>
+    <variant name="Wifi"/>
+  </token>
+</histogram>
+
 <histogram name="Power.IdleScreenDimCountDaily" units="count"
     expires_after="M100">
   <owner>tbroch@chromium.org</owner>
