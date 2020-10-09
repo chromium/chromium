@@ -58,8 +58,11 @@ class NotificationDisplayQueue : public NotificationBlocker::Observer {
   // Returns a set of the currently queued notification ids.
   std::set<std::string> GetQueuedNotificationIds() const;
 
-  // Sets the list of |blockers| to be used and observers their state.
+  // Sets the list of |blockers| to be used and observes their state.
   void SetNotificationBlockers(NotificationBlockers blockers);
+
+  // Adds |blocker| to the list of blockers to be used and observes its state.
+  void AddNotificationBlocker(std::unique_ptr<NotificationBlocker> blocker);
 
  private:
   // Called when the state of a notification blocker changes. Will display and

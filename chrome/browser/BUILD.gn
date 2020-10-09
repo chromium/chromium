@@ -3569,6 +3569,8 @@ static_library("browser") {
       "notifications/notification_system_observer.h",
       "notifications/profile_notification.cc",
       "notifications/profile_notification.h",
+      "notifications/screen_capture_notification_blocker.cc",
+      "notifications/screen_capture_notification_blocker.h",
       "obsolete_system/obsolete_system.h",
       "page_load_metrics/observers/session_restore_page_load_metrics_observer.cc",
       "page_load_metrics/observers/session_restore_page_load_metrics_observer.h",

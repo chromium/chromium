@@ -39,6 +39,10 @@
 #include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
 #endif
 
+#if !defined(OS_ANDROID)
+#include "chrome/browser/notifications/screen_capture_notification_blocker.h"
+#endif
+
 namespace {
 
 void OperationCompleted() {
@@ -91,6 +95,12 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
                            std::make_unique<SharingNotificationHandler>());
     AddNotificationHandler(NotificationHandler::Type::ANNOUNCEMENT,
                            std::make_unique<AnnouncementNotificationHandler>());
+
+    if (base::FeatureList::IsEnabled(
+            features::kMuteNotificationsDuringScreenShare)) {
+      notification_queue_.AddNotificationBlocker(
+          std::make_unique<ScreenCaptureNotificationBlocker>());
+    }
 
 #endif
 
