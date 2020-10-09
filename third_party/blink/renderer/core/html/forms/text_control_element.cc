@@ -952,8 +952,6 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
       if (IsA<HTMLBRElement>(node)) {
         DCHECK_EQ(&node, inner_text->lastChild());
-        if (&node != inner_text->lastChild())
-          result.Append(kNewlineCharacter);
       } else if (auto* text_node = DynamicTo<Text>(node)) {
         String data = text_node->data();
         unsigned length = data.length();
@@ -989,8 +987,6 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
     if (IsA<HTMLBRElement>(node)) {
       DCHECK_EQ(&node, inner_text->lastChild());
-      if (&node != inner_text->lastChild())
-        result.Append(kNewlineCharacter);
     } else if (auto* text_node = DynamicTo<Text>(node)) {
       String data = text_node->data();
       unsigned length = data.length();
