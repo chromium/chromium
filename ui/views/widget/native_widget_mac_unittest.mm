@@ -401,56 +401,6 @@ class PaintCountView : public View {
   DISALLOW_COPY_AND_ASSIGN(PaintCountView);
 };
 
-// Test for correct child window restore when parent window is minimized
-// and restored using -makeKeyAndOrderFront:.
-// Parent-child window relationships in AppKit are not supported when window
-// visibility changes.
-// Disabled because it relies on cocoa occlusion APIs
-// and state changes that are unavoidably flaky.
-TEST_F(NativeWidgetMacTest, DISABLED_OrderFrontAfterMiniaturize) {
-  Widget* widget = CreateTopLevelPlatformWidget();
-  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
-
-  Widget* child_widget = CreateChildPlatformWidget(widget->GetNativeView());
-  NSWindow* child_ns_window =
-      child_widget->GetNativeWindow().GetNativeNSWindow();
-
-  // Set parent bounds that overlap child.
-  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
-  child_widget->SetBounds(gfx::Rect(110, 110, 100, 100));
-
-  widget->Show();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(widget->IsMinimized());
-
-  // Minimize parent.
-  [ns_window performMiniaturize:nil];
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(widget->IsMinimized());
-  EXPECT_FALSE(widget->IsVisible());
-  EXPECT_FALSE(child_widget->IsVisible());
-
-  // Restore parent window as AppController does.
-  [ns_window makeKeyAndOrderFront:nil];
-
-  // Wait and check that child is really visible.
-  // TODO(kirr): remove the fixed delay.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitWhenIdleClosure(),
-      base::TimeDelta::FromSeconds(2));
-  run_loop.Run();
-
-  EXPECT_FALSE(widget->IsMinimized());
-  EXPECT_TRUE(widget->IsVisible());
-  EXPECT_TRUE(child_widget->IsVisible());
-  // Check that child window is visible.
-  EXPECT_TRUE([child_ns_window occlusionState] & NSWindowOcclusionStateVisible);
-  EXPECT_TRUE(IsWindowStackedAbove(child_widget, widget));
-  widget->Close();
-}
 
 // Test that a child widget is only added to its parent NSWindow when the
 // parent is on the active space. Otherwise, it may cause a space transition.
@@ -877,26 +827,6 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
   // with NSWindows less likely.
   EXPECT_TRUE(child_dealloced);
   EXPECT_TRUE(native_parent_dealloced);
-}
-
-// Tests visibility for child of native NSWindow, reshowing after -[NSApp hide].
-// Occasionally flaky (maybe due to [NSApp hide]). See https://crbug.com/777247.
-TEST_F(NativeWidgetMacTest, DISABLED_VisibleAfterNativeParentShow) {
-  NSWindow* native_parent = MakeBorderlessNativeParent();
-  Widget* child = AttachPopupToNativeParent(native_parent);
-  child->Show();
-  EXPECT_TRUE(child->IsVisible());
-
-  WidgetChangeObserver child_observer(child);
-  [NSApp hide:nil];
-  child_observer.WaitForVisibleCounts(0, 1);
-  EXPECT_FALSE(child->IsVisible());
-
-  [native_parent makeKeyAndOrderFront:nil];
-  child_observer.WaitForVisibleCounts(1, 1);
-  EXPECT_TRUE(child->IsVisible());
-
-  [native_parent close];
 }
 
 // Tests visibility for a child of a native NSWindow, reshowing after a
