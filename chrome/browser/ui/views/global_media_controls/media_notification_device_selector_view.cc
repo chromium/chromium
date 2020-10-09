@@ -361,6 +361,8 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));
   }
+  device_entry_views_container_->Layout();
+
   UpdateVisibility();
 }
 
