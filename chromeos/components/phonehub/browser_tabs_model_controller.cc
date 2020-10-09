@@ -6,16 +6,25 @@
 
 namespace chromeos {
 namespace phonehub {
+namespace {
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+}  // namespace
 
 BrowserTabsModelController::BrowserTabsModelController(
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     BrowserTabsModelProvider* browser_tabs_model_provider,
     MutablePhoneModel* mutable_phone_model)
-    : browser_tabs_model_provider_(browser_tabs_model_provider),
+    : multidevice_setup_client_(multidevice_setup_client),
+      cached_model_(/*is_tab_sync_enabled=*/false),
+      browser_tabs_model_provider_(browser_tabs_model_provider),
       mutable_phone_model_(mutable_phone_model) {
+  multidevice_setup_client_->AddObserver(this);
   browser_tabs_model_provider_->AddObserver(this);
 }
 
 BrowserTabsModelController::~BrowserTabsModelController() {
+  multidevice_setup_client_->RemoveObserver(this);
   browser_tabs_model_provider_->RemoveObserver(this);
 }
 
@@ -23,8 +32,23 @@ void BrowserTabsModelController::OnBrowserTabsUpdated(
     bool is_sync_enabled,
     const std::vector<BrowserTabsModel::BrowserTabMetadata>&
         browser_tabs_metadata) {
-  mutable_phone_model_->SetBrowserTabsModel(BrowserTabsModel(
-      /*is_tab_sync_enabled=*/is_sync_enabled, browser_tabs_metadata));
+  cached_model_ = BrowserTabsModel(is_sync_enabled, browser_tabs_metadata);
+  UpdateBrowserTabsModel();
+}
+
+void BrowserTabsModelController::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  UpdateBrowserTabsModel();
+}
+
+void BrowserTabsModelController::UpdateBrowserTabsModel() {
+  FeatureState feature_state = multidevice_setup_client_->GetFeatureState(
+      Feature::kPhoneHubTaskContinuation);
+  if (feature_state == FeatureState::kEnabledByUser)
+    mutable_phone_model_->SetBrowserTabsModel(cached_model_);
+  else
+    mutable_phone_model_->SetBrowserTabsModel(base::nullopt);
 }
 
 }  // namespace phonehub

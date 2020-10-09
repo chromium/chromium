@@ -84,6 +84,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       browser_tabs_model_provider_(std::move(browser_tabs_model_provider)),
       browser_tabs_model_controller_(
           std::make_unique<BrowserTabsModelController>(
+              multidevice_setup_client,
               browser_tabs_model_provider_.get(),
               phone_model_.get())) {}
 

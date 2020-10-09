@@ -134,6 +134,8 @@ static_library("test_support") {
   sources = [
     "fake_browser_tabs_metadata_fetcher.cc",
     "fake_browser_tabs_metadata_fetcher.h",
+    "fake_browser_tabs_model_provider.cc",
+    "fake_browser_tabs_model_provider.h",
     "fake_connection_manager.cc",
     "fake_connection_manager.h",
     "fake_message_receiver.h",
@@ -158,6 +160,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "browser_tabs_model_controller_unittest.cc",
     "browser_tabs_model_unittest.cc",
     "connection_manager_impl_unittest.cc",
     "connection_scheduler_impl_unittest.cc",
