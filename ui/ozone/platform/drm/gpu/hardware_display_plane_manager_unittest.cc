@@ -619,6 +619,72 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, UnusedPlanesAreReleased) {
   EXPECT_EQ(0u, GetPlanePropertyValue(kPlaneOffset + 1, "FB_ID"));
 }
 
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, AssignPlanesRestoresInUse) {
+  InitializeDrmState(/*crtc_count=*/2, /*planes_per_crtc=*/2);
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_, use_atomic_);
+
+  ui::DrmOverlayPlaneList assigns;
+  scoped_refptr<ui::DrmFramebuffer> primary_buffer =
+      CreateBuffer(kDefaultBufferSize);
+  scoped_refptr<ui::DrmFramebuffer> overlay_buffer =
+      CreateBuffer(gfx::Size(1, 1));
+  assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
+  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  ui::HardwareDisplayPlaneList hdpl;
+
+  scoped_refptr<ui::PageFlipRequest> page_flip_request =
+      base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
+  fake_drm_->plane_manager()->BeginFrame(&hdpl);
+  EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &hdpl, assigns, crtc_properties_[0].id));
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      &hdpl, /*should_modeset*/ false, page_flip_request, nullptr));
+  EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
+  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+
+  fake_drm_->plane_manager()->BeginFrame(&hdpl);
+  // Assign overlay planes will fail since there aren't enough planes.
+  EXPECT_FALSE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &hdpl, assigns, crtc_properties_[0].id));
+
+  // The primary plane should still be in use since we failed to assign
+  // planes and did not commit a new configuration.
+  EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, PageflipTestRestoresInUse) {
+  InitializeDrmState(/*crtc_count=*/2, /*planes_per_crtc=*/2);
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_, use_atomic_);
+
+  ui::DrmOverlayPlaneList assigns;
+  scoped_refptr<ui::DrmFramebuffer> primary_buffer =
+      CreateBuffer(kDefaultBufferSize);
+  scoped_refptr<ui::DrmFramebuffer> overlay_buffer =
+      CreateBuffer(gfx::Size(1, 1));
+  assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
+  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  ui::HardwareDisplayPlaneList hdpl;
+
+  scoped_refptr<ui::PageFlipRequest> page_flip_request =
+      base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
+  fake_drm_->plane_manager()->BeginFrame(&hdpl);
+  EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &hdpl, assigns, crtc_properties_[0].id));
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      &hdpl, /*should_modeset*/ false, page_flip_request, nullptr));
+  assigns.clear();
+  fake_drm_->plane_manager()->BeginFrame(&hdpl);
+  EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+      &hdpl, assigns, crtc_properties_[0].id));
+  EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+      &hdpl, /*should_modeset*/ false, nullptr, nullptr));
+  // The primary plane should still be in use since the commit was
+  // a pageflip test and did not change any KMS state.
+  EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
+}
+
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFrames) {
   ui::DrmOverlayPlaneList assigns;
   assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));

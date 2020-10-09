@@ -152,6 +152,19 @@ void HardwareDisplayPlaneManager::ResetCurrentPlaneList(
   plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
 }
 
+void HardwareDisplayPlaneManager::RestoreCurrentPlaneList(
+    HardwareDisplayPlaneList* plane_list) const {
+  for (auto* plane : plane_list->plane_list) {
+    plane->set_in_use(false);
+  }
+  for (auto* plane : plane_list->old_plane_list) {
+    plane->set_in_use(true);
+  }
+  plane_list->plane_list.clear();
+  plane_list->legacy_page_flips.clear();
+  plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
+}
+
 void HardwareDisplayPlaneManager::BeginFrame(
     HardwareDisplayPlaneList* plane_list) {
   for (auto* plane : plane_list->old_plane_list) {
@@ -174,8 +187,7 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlane* hw_plane =
         FindNextUnusedPlane(&plane_idx, crtc_index, plane);
     if (!hw_plane) {
-      LOG(ERROR) << "Failed to find a free plane for crtc " << crtc_id;
-      ResetCurrentPlaneList(plane_list);
+      RestoreCurrentPlaneList(plane_list);
       return false;
     }
 
@@ -191,7 +203,7 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
                   crop_rect.width() << 16, crop_rect.height() << 16);
 
     if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, fixed_point_rect)) {
-      ResetCurrentPlaneList(plane_list);
+      RestoreCurrentPlaneList(plane_list);
       return false;
     }
 
