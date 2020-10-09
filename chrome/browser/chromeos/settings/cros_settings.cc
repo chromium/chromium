@@ -76,20 +76,6 @@ void CrosSettings::ShutdownForTesting() {
   g_using_cros_settings_for_testing = false;
 }
 
-bool CrosSettings::IsUserAllowlisted(const std::string& username,
-                                     bool* wildcard_match) const {
-  // Skip allowlist check for tests.
-  if (chromeos::switches::ShouldSkipOobePostLogin()) {
-    return true;
-  }
-
-  bool allow_new_user = false;
-  GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
-  if (allow_new_user)
-    return true;
-  return FindEmailInList(kAccountsPrefUsers, username, wildcard_match);
-}
-
 CrosSettings::CrosSettings() = default;
 
 CrosSettings::CrosSettings(DeviceSettingsService* device_settings_service,
@@ -192,6 +178,28 @@ bool CrosSettings::GetDictionary(
   if (value)
     return value->GetAsDictionary(out_value);
   return false;
+}
+
+bool CrosSettings::IsUserAllowlisted(
+    const std::string& username,
+    bool* wildcard_match,
+    const base::Optional<user_manager::UserType>& user_type) const {
+  // Skip allowlist check for tests.
+  if (chromeos::switches::ShouldSkipOobePostLogin()) {
+    return true;
+  }
+
+  bool allow_new_user = false;
+  GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
+  if (allow_new_user)
+    return true;
+
+  if (FindEmailInList(kAccountsPrefUsers, username, wildcard_match))
+    return true;
+
+  bool family_link_allowed = false;
+  GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed, &family_link_allowed);
+  return family_link_allowed && user_type == user_manager::USER_TYPE_CHILD;
 }
 
 bool CrosSettings::FindEmailInList(const std::string& path,

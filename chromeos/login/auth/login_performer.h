@@ -13,10 +13,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
+#include "components/user_manager/user_type.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 class AccountId;
@@ -129,9 +131,13 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 
   // Check if user is allowed to sign in on device. |wildcard_match| will
   // contain additional information whether this user is explicitly listed or
-  // not (may be relevant for external-based sign-in).
-  virtual bool IsUserAllowlisted(const AccountId& account_id,
-                                 bool* wildcard_match) = 0;
+  // not (may be relevant for external-based sign-in). |user_type| will be used
+  // to check if the user is allowed because of the user type, pass
+  // base::nullopt if user type is not known.
+  virtual bool IsUserAllowlisted(
+      const AccountId& account_id,
+      bool* wildcard_match,
+      const base::Optional<user_manager::UserType>& user_type) = 0;
 
  protected:
   // Platform-dependant methods to be implemented by concrete class.

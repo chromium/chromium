@@ -13,9 +13,11 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "components/user_manager/user_type.h"
 
 class PrefService;
 
@@ -44,12 +46,6 @@ class CrosSettings {
   // test is finished and before the instance is deleted.
   static void SetForTesting(CrosSettings* test_instance);
   static void ShutdownForTesting();
-
-  // Checks if the given username is on the list of users allowed to sign-in to
-  // this device. |wildcard_match| may be NULL. If it's present, it'll be set to
-  // true if the list check was satisfied via a wildcard.
-  bool IsUserAllowlisted(const std::string& username,
-                         bool* wildcard_match) const;
 
   // Creates an instance with no providers as yet. This is meant for unit tests,
   // production code uses the singleton returned by Get() above.
@@ -94,6 +90,16 @@ class CrosSettings {
                const base::ListValue** out_value) const;
   bool GetDictionary(const std::string& path,
                      const base::DictionaryValue** out_value) const;
+
+  // Checks if the given username is on the list of users allowed to sign-in to
+  // this device. |wildcard_match| may be nullptr. If it's present, it'll be set
+  // to true if the list check was satisfied via a wildcard. In some
+  // configurations user can be allowed based on the |user_type|. See
+  // |DeviceFamilyLinkAccountsAllowed| policy.
+  bool IsUserAllowlisted(
+      const std::string& username,
+      bool* wildcard_match,
+      const base::Optional<user_manager::UserType>& user_type) const;
 
   // Helper function for the allowlist op. Implemented here because we will need
   // this in a few places. The functions searches for |email| in the pref |path|

@@ -142,7 +142,8 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
   bool wildcard_match = false;
 
   const AccountId& account_id = user_context.GetAccountId();
-  if (!IsUserAllowlisted(account_id, &wildcard_match)) {
+  if (!IsUserAllowlisted(account_id, &wildcard_match,
+                         user_context.GetUserType())) {
     NotifyAllowlistCheckFailure();
     return;
   }

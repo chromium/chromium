@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -418,6 +420,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     em::DeviceFamilyLinkAccountsAllowedProto* proto =
         device_policy_->payload().mutable_family_link_accounts_allowed();
     proto->set_family_link_accounts_allowed(allow);
+    BuildAndInstallDevicePolicy();
+  }
+
+  void AddUserToAllowlist(const std::string& user_id) {
+    em::UserAllowlistProto* proto =
+        device_policy_->payload().mutable_user_allowlist();
+    proto->add_user_allowlist(user_id);
     BuildAndInstallDevicePolicy();
   }
 
@@ -1177,14 +1186,43 @@ TEST_F(DeviceSettingsProviderTestEnterprise,
   VerifyDeviceShowLowDiskSpaceNotification(false);
 }
 
-TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowed) {
+// Tests DeviceFamilyLinkAccountsAllowed policy with the feature disabled.
+// The policy should have no effect.
+TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      chromeos::features::kFamilyLinkOnSchoolDevice);
+
   base::Value default_value(false);
   VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
 
+  // Family Link allowed with allowlist set, but the feature is disabled.
   SetDeviceFamilyLinkAccountsAllowed(true);
+  AddUserToAllowlist("*@managedchrome.com");
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
+}
+
+// Tests DeviceFamilyLinkAccountsAllowed policy with the feature enabled.
+TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chromeos::features::kFamilyLinkOnSchoolDevice);
+
+  base::Value default_value(false);
+  VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
+
+  // Family Link allowed, but no allowlist set.
+  SetDeviceFamilyLinkAccountsAllowed(true);
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
+
+  // Family Link allowed with allowlist set.
+  AddUserToAllowlist("*@managedchrome.com");
   EXPECT_EQ(base::Value(true),
             *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
 
+  // Family Link disallowed with allowlist set.
   SetDeviceFamilyLinkAccountsAllowed(false);
   EXPECT_EQ(base::Value(false),
             *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));

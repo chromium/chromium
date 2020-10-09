@@ -848,13 +848,17 @@ void ExistingUserController::SetDisplayAndGivenName(
   given_name_ = base::UTF8ToUTF16(given_name);
 }
 
-bool ExistingUserController::IsUserAllowlisted(const AccountId& account_id) {
+bool ExistingUserController::IsUserAllowlisted(
+    const AccountId& account_id,
+    const base::Optional<user_manager::UserType>& user_type) {
   bool wildcard_match = false;
-  if (login_performer_.get())
-    return login_performer_->IsUserAllowlisted(account_id, &wildcard_match);
+  if (login_performer_.get()) {
+    return login_performer_->IsUserAllowlisted(account_id, &wildcard_match,
+                                               user_type);
+  }
 
   return cros_settings_->IsUserAllowlisted(account_id.GetUserEmail(),
-                                           &wildcard_match);
+                                           &wildcard_match, user_type);
 }
 
 void ExistingUserController::LocalStateChanged(

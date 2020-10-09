@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -50,7 +52,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                               const std::string& given_name) final;
   void LoadWallpaper(const AccountId& account_id) final;
   void LoadSigninWallpaper() final;
-  bool IsUserAllowlisted(const AccountId& account_id) final;
+  bool IsUserAllowlisted(
+      const AccountId& account_id,
+      const base::Optional<user_manager::UserType>& user_type) final;
   void CancelPasswordChangedFlow() final;
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;

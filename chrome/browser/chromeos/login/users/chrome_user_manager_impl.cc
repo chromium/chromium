@@ -1227,7 +1227,7 @@ bool ChromeUserManagerImpl::IsGaiaUserAllowed(
     const user_manager::User& user) const {
   DCHECK(user.HasGaiaAccount());
   return cros_settings_->IsUserAllowlisted(user.GetAccountId().GetUserEmail(),
-                                           nullptr);
+                                           nullptr, user.GetType());
 }
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {

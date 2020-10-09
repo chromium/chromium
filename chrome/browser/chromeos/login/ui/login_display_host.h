@@ -16,6 +16,8 @@
 #include "chrome/browser/chromeos/login/auth/auth_prewarmer.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
+#include "components/user_manager/user_type.h"
+
 #include "ui/gfx/native_widget_types.h"
 
 class AccountId;
@@ -166,7 +168,9 @@ class LoginDisplayHost {
   virtual void LoadSigninWallpaper() = 0;
 
   // Returns true if user is allowed to log in by domain policy.
-  virtual bool IsUserAllowlisted(const AccountId& account_id) = 0;
+  virtual bool IsUserAllowlisted(
+      const AccountId& account_id,
+      const base::Optional<user_manager::UserType>& user_type) = 0;
 
   // ----- Password change flow methods -----
   // Cancels current password changed flow.
