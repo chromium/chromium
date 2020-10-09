@@ -33,6 +33,7 @@
       <include name="IDR_DIAGNOSTICS_REALTIME_CPU_CHART_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/realtime_cpu_chart.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ROUTINE_RESULT_ENTRY_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/routine_result_entry.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ROUTINE_RESULT_LIST_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/routine_result_list.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_ROUTINE_SECTION_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/routine_section.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_SHARED_CSS_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_shared_css.js" use_base_dir="false" type="BINDDATA"/>
       <include name="IDR_DIAGNOSTICS_TYPES_JS" file="diagnostics_types.js" type="BINDATA"/>
     </includes>
