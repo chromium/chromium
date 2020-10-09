@@ -93,9 +93,8 @@ class NET_EXPORT ProxyResolutionService {
   virtual const ProxyRetryInfoMap& proxy_retry_info() const = 0;
 
   // Returns proxy related debug information to be included in the NetLog. The
-  // data should be appropriate for any capture mode. |info_sources| is a bit
-  // field of NET_INFO_SOURCE.
-  virtual base::Value GetProxyNetLogValues(int info_sources) = 0;
+  // data should be appropriate for any capture mode (sensitivity level).
+  virtual base::Value GetProxyNetLogValues() = 0;
 
   // Returns true if |this| is an instance of ConfiguredProxyResolutionService
   // and assigns |this| to the out parameter. Otherwise returns false and sets

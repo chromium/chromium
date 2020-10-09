@@ -15,30 +15,16 @@ namespace net {
 
 class URLRequestContext;
 
-// A set of flags that can be OR'd together to request specific information
-// about the current state of the URLRequestContext.  See GetNetInfo, below.
-enum NetInfoSource {
-#define NET_INFO_SOURCE(label, string, value) NET_INFO_##label = value,
-#include "net/base/net_info_source_list.h"
-#undef NET_INFO_SOURCE
-  NET_INFO_ALL_SOURCES = -1,
-};
-
 // Utility methods for creating NetLog dumps.
-
-// Returns a friendly string to use for a given NetInfoSource in the net log.
-NET_EXPORT const char* NetInfoSourceToString(NetInfoSource source);
 
 // Creates a dictionary containing a legend for net/ constants.
 NET_EXPORT base::Value GetNetConstants();
 
 // Retrieves a dictionary containing information about the current state of
-// |context|.  |info_sources| is a set of NetInfoSources OR'd together,
-// indicating just what information is being requested.  Each NetInfoSource adds
-// one top-level entry to the returned dictionary.
+// |context|.
 //
 // May only be called on |context|'s thread.
-NET_EXPORT base::Value GetNetInfo(URLRequestContext* context, int info_sources);
+NET_EXPORT base::Value GetNetInfo(URLRequestContext* context);
 
 // Takes in a set of contexts and a NetLog::Observer, and passes in
 // NetLog::Entries to the observer for certain NetLogSources with pending

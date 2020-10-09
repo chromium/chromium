@@ -139,8 +139,7 @@ const ProxyRetryInfoMap& WindowsSystemProxyResolutionService::proxy_retry_info()
   return proxy_retry_info_;
 }
 
-base::Value WindowsSystemProxyResolutionService::GetProxyNetLogValues(
-    int info_sources) {
+base::Value WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
   // TODO (https://crbug.com/1032820): Implement net logs.
   base::Value net_info_dict(base::Value::Type::DICTIONARY);
   return net_info_dict;

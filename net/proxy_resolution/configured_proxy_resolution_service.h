@@ -171,7 +171,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   void ForceReloadProxyConfig();
 
   // ProxyResolutionService
-  base::Value GetProxyNetLogValues(int info_sources) override;
+  base::Value GetProxyNetLogValues() override;
 
   // ProxyResolutionService
   bool CastToConfiguredProxyResolutionService(

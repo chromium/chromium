@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_info_source_list.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/url_util.h"
@@ -1347,22 +1348,22 @@ void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
   ApplyProxyConfigIfAvailable();
 }
 
-base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues(
-    int info_sources) {
+base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues() {
   base::Value net_info_dict(base::Value::Type::DICTIONARY);
 
-  if (info_sources & NET_INFO_PROXY_SETTINGS) {
+  // Log Proxy Settings.
+  {
     base::Value dict(base::Value::Type::DICTIONARY);
     if (fetched_config_)
       dict.SetKey("original", fetched_config_->value().ToValue());
     if (config_)
       dict.SetKey("effective", config_->value().ToValue());
 
-    net_info_dict.SetKey(NetInfoSourceToString(NET_INFO_PROXY_SETTINGS),
-                         std::move(dict));
+    net_info_dict.SetKey(kNetInfoProxySettings, std::move(dict));
   }
 
-  if (info_sources & NET_INFO_BAD_PROXIES) {
+  // Log Bad Proxies.
+  {
     base::Value list(base::Value::Type::LIST);
 
     for (const auto& it : proxy_retry_info_) {
@@ -1377,8 +1378,7 @@ base::Value ConfiguredProxyResolutionService::GetProxyNetLogValues(
       list.Append(std::move(dict));
     }
 
-    net_info_dict.SetKey(NetInfoSourceToString(NET_INFO_BAD_PROXIES),
-                         std::move(list));
+    net_info_dict.SetKey(kNetInfoBadProxies, std::move(list));
   }
 
   return net_info_dict;

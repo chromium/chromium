@@ -90,8 +90,8 @@ void NetLogExporter::Stop(base::Value polled_data_value,
     return;
   }
 
-  base::Value net_info = net::GetNetInfo(
-      network_context_->url_request_context(), net::NET_INFO_ALL_SOURCES);
+  base::Value net_info =
+      net::GetNetInfo(network_context_->url_request_context());
   if (polled_data)
     net_info.MergeDictionary(polled_data);
 

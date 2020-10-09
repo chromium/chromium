@@ -689,8 +689,7 @@ void CronetURLRequestContext::NetworkTasks::StopNetLogCompleted() {
 }
 
 base::Value CronetURLRequestContext::NetworkTasks::GetNetLogInfo() const {
-  base::Value net_info =
-      net::GetNetInfo(context_.get(), net::NET_INFO_ALL_SOURCES);
+  base::Value net_info = net::GetNetInfo(context_.get());
   if (effective_experimental_options_) {
     net_info.SetKey("cronetExperimentalParams",
                     effective_experimental_options_->Clone());
