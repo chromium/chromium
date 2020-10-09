@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//project.star", "ACTIVE_BRANCHES")
+load("//project.star", "ACTIVE_MILESTONES")
 
 # Declare a CQ group that watches all branch heads, excluding the active
 # branches. We won't add any builders, but SUBMIT TO CQ fails on Gerrit if there
@@ -14,8 +14,8 @@ luci.cq_group(
         repo = "https://chromium.googlesource.com/chromium/src",
         refs = ["refs/branch-heads/.*"],
         refs_exclude = [
-            "refs/branch-heads/{}".format(branch_name)
-            for _, branch_name in ACTIVE_BRANCHES
+            details.ref
+            for details in ACTIVE_MILESTONES.values()
         ],
     ),
     acls = [
