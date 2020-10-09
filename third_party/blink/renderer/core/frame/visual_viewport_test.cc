@@ -2717,7 +2717,6 @@ TEST_P(VisualViewportTest, InSubtreeOfPageScale) {
 }
 
 TEST_F(VisualViewportSimTest, UsedColorSchemeFromRootElement) {
-  ScopedCSSColorSchemeForTest color_scheme_enabled(true);
   ScopedCSSColorSchemeUARenderingForTest color_scheme_ua_enabled(true);
 
   ColorSchemeHelper color_scheme_helper(*(WebView().GetPage()));

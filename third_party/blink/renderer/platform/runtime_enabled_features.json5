@@ -422,12 +422,6 @@
       status: "test",
     },
     {
-      // Support for the CSS color-scheme property from the css-color-adjust spec.
-      // https://drafts.csswg.org/css-color-adjust/#color-scheme-prop
-      name: "CSSColorScheme",
-      status: "stable",
-    },
-    {
       // When the color-scheme is supported via the CSS color-scheme property
       // (CSSColorScheme) or the meta tag (MetaColorScheme), the only UA
       // rendering change is for the canvas background and the :root element
@@ -1181,13 +1175,6 @@
       // constructor where exposure of the constructor in Window vs other
       // contexts can vary in stable vs experimental.
       name: "MediaSourceStable",
-      status: "stable",
-    },
-    // Support for META tag for setting color-scheme used for opting into dark
-    // UA theming and opting out of forced dark mode.
-    // https://drafts.csswg.org/css-color-adjust/#color-scheme-meta
-    {
-      name: "MetaColorScheme",
       status: "stable",
     },
     // This is enabled by default on Windows only. The only part that's

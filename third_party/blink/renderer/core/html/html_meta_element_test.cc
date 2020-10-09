@@ -28,14 +28,9 @@
 namespace blink {
 
 class HTMLMetaElementTest : public PageTestBase,
-                            private ScopedDisplayCutoutAPIForTest,
-                            private ScopedMetaColorSchemeForTest,
-                            private ScopedCSSColorSchemeForTest {
+                            private ScopedDisplayCutoutAPIForTest {
  public:
-  HTMLMetaElementTest()
-      : ScopedDisplayCutoutAPIForTest(true),
-        ScopedMetaColorSchemeForTest(true),
-        ScopedCSSColorSchemeForTest(true) {}
+  HTMLMetaElementTest() : ScopedDisplayCutoutAPIForTest(true) {}
   void SetUp() override {
     PageTestBase::SetUp();
     GetDocument().GetSettings()->SetViewportMetaEnabled(true);

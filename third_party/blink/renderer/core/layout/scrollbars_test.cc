@@ -2990,7 +2990,6 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
 
 TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
   ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
-  ScopedCSSColorSchemeForTest color_scheme_scope(true);
   ScopedCSSColorSchemeUARenderingForTest color_scheme_ua_scope(true);
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));

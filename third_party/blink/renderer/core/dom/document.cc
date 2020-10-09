@@ -7102,9 +7102,6 @@ base::Optional<Color> Document::ThemeColor() const {
 }
 
 void Document::ColorSchemeMetaChanged() {
-  if (!RuntimeEnabledFeatures::MetaColorSchemeEnabled())
-    return;
-
   const CSSValue* color_scheme = nullptr;
   if (auto* root_element = documentElement()) {
     for (HTMLMetaElement& meta_element :

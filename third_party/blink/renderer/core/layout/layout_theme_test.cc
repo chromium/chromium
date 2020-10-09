@@ -24,12 +24,9 @@
 namespace blink {
 
 class LayoutThemeTest : public PageTestBase,
-                        private ScopedCSSColorSchemeForTest,
                         private ScopedCSSColorSchemeUARenderingForTest {
  protected:
-  LayoutThemeTest()
-      : ScopedCSSColorSchemeForTest(true),
-        ScopedCSSColorSchemeUARenderingForTest(true) {}
+  LayoutThemeTest() : ScopedCSSColorSchemeUARenderingForTest(true) {}
   void SetHtmlInnerHTML(const char* html_content);
 };
 

@@ -2199,7 +2199,6 @@ TEST_F(StyleEngineTest, NoCrashWhenMarkingPartiallyRemovedSubtree) {
 }
 
 TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
-  ScopedCSSColorSchemeForTest enable_color_scheme(true);
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
@@ -2224,7 +2223,6 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
 }
 
 TEST_F(StyleEngineTest, ColorSchemeOverride) {
-  ScopedCSSColorSchemeForTest enable_color_scheme(true);
   ScopedCSSColorSchemeUARenderingForTest enable_color_scheme_ua(true);
 
   ColorSchemeHelper color_scheme_helper(GetDocument());
@@ -3283,8 +3281,6 @@ TEST_F(StyleEngineSimTest, OwnerColorScheme) {
 }
 
 TEST_F(StyleEngineSimTest, OwnerColorSchemeBaseBackground) {
-  ScopedCSSColorSchemeForTest enable_color_scheme(true);
-
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest dark_frame_resource("https://example.com/dark.html", "text/html");
   SimRequest light_frame_resource("https://example.com/light.html",

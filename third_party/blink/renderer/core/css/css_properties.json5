@@ -1808,7 +1808,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       inherited: true,
-      runtime_flag: "CSSColorScheme",
       include_paths: ["third_party/blink/public/common/css/color_scheme.h"],
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",

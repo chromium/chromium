@@ -566,8 +566,6 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
 }
 
 TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {
-  ScopedCSSColorSchemeForTest enable_color_scheme(true);
-
   WebViewImpl* web_view = web_view_helper_.Initialize();
   ColorSchemeHelper color_scheme_helper(*(web_view->GetPage()));
   color_scheme_helper.SetPreferredColorScheme(
