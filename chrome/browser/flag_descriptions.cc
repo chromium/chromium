@@ -1330,6 +1330,11 @@ const char kJavascriptHarmonyShippingDescription[] =
     "conflict with the latest JavaScript features. This flag allows disabling "
     "support of those features for compatibility with such pages.";
 
+const char kKaleidoscopeModuleName[] = "Enforce Kaleidoscope NTP module";
+const char kKaleidoscopeModuleDescription[] =
+    "Enable the Kaleidoscope NTP module to display Kaleidoscope content on the "
+    " New Tab Page.";
+
 const char kLauncherSettingsSearchName[] = "Launcher settings search";
 const char kLauncherSettingsSearchDescription[] =
     "Enable search results for OS settings in the launcher.";
