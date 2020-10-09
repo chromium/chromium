@@ -618,7 +618,10 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       for (const auto* member : stats.Members()) {
         if (!member->is_defined())
           continue;
-        name_value_pairs->AppendString(member->name());
+        // Non-standardized / provisional stats which are not exposed
+        // to Javascript are postfixed with an asterisk.
+        std::string postfix = member->is_standardized() ? "" : "*";
+        name_value_pairs->AppendString(member->name() + postfix);
         name_value_pairs->Append(MemberToValue(*member));
       }
       stats_subdictionary->Set("values", std::move(name_value_pairs));

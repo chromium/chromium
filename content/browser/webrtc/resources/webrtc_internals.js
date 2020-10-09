@@ -146,6 +146,13 @@ function createStatsSelectionOptionElements() {
 
   p.appendChild(document.createTextNode('Read Stats From: '));
   p.appendChild(selectElement);
+
+  const statsDocumentation = document.createElement('p');
+  statsDocumentation.appendChild(
+    document.createTextNode('Note: computed stats are in []. ' +
+      'Experimental stats are marked with an * at the end.'));
+  p.appendChild(statsDocumentation);
+
   return p;
 }
 
