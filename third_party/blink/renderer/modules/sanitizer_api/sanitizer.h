@@ -48,6 +48,7 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
                                                  "SVG",       "TEMPLATE",
                                                  "THEAD",     "TITLE",
                                                  "VIDEO",     "XMP"};
+  const Vector<AtomicString> default_drop_attributes_ = {"onclick", "onsubmit"};
 };
 
 }  // namespace blink

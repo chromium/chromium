@@ -27,7 +27,7 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* config,
 
 Sanitizer::Sanitizer(const SanitizerConfig* config)
     : config_(const_cast<SanitizerConfig*>(config)) {
-  // Format dropElements to uppercases.
+  // Format dropElements to uppercase.
   Vector<String> drop_elements = default_drop_elements_;
   if (config->hasDropElements()) {
     for (const String& s : config->dropElements()) {
@@ -38,7 +38,7 @@ Sanitizer::Sanitizer(const SanitizerConfig* config)
   }
   config_->setDropElements(drop_elements);
 
-  // Format allowElements to uppercases.
+  // Format allowElements to uppercase.
   if (config->hasAllowElements()) {
     Vector<String> l;
     for (const String& s : config->allowElements()) {
@@ -48,14 +48,21 @@ Sanitizer::Sanitizer(const SanitizerConfig* config)
     config_->setAllowElements(l);
   }
 
-  // Format dropAttributes to lowercases.
+  // Format dropAttributes to lowercase.
   if (config->hasDropAttributes()) {
-    Vector<String> l;
+    drop_attributes_ = default_drop_attributes_;
     for (const String& s : config->dropAttributes()) {
-      l.push_back(s.LowerASCII());
       drop_attributes_.push_back(WTF::AtomicString(s.LowerASCII()));
     }
-    config_->setDropAttributes(l);
+  } else if (config->hasAllowAttributes()) {
+    Vector<String> l;
+    for (const String& s : config->allowAttributes()) {
+      if (!default_drop_attributes_.Contains(s))
+        l.push_back(s.LowerASCII());
+    }
+    config_->setAllowAttributes(l);
+  } else {
+    drop_attributes_ = default_drop_attributes_;
   }
 }
 
@@ -113,8 +120,6 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
         } else {
           parent->appendChild(n, exception_state);
         }
-        // TODO(lyf): review and make a proper decision for exceptions may
-        // happened here.
         if (exception_state.HadException()) {
           return nullptr;
         }
@@ -126,10 +131,13 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
       // Otherwise, remove any attributes to be dropped from the current
       // element, and proceed to the next node (preorder, depth-first
       // traversal).
-      if (config_->hasDropAttributes()) {
-        for (auto attr : drop_attributes_) {
-          To<Element>(node)->removeAttribute(attr);
-        }
+      Element* element = To<Element>(node);
+      for (const auto& name : element->getAttributeNames()) {
+        bool drop = drop_attributes_.Contains(name) ||
+                    (config_->hasAllowAttributes() &&
+                     !config_->allowAttributes().Contains(name));
+        if (drop)
+          element->removeAttribute(name);
       }
       node = NodeTraversal::Next(*node, fragment);
     }
