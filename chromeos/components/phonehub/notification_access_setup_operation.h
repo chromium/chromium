@@ -27,26 +27,27 @@ namespace phonehub {
 class NotificationAccessSetupOperation {
  public:
   // Note: Numerical values should not be changed because they must stay in
-  // sync with multidevice_notification_access_setup_dialog.js.
+  // sync with multidevice_notification_access_setup_dialog.js, with the
+  // exception of NOT_STARTED, which has a value of 0.
   enum class Status {
     // Connecting to the phone in order to set up notification access.
-    kConnecting = 0,
+    kConnecting = 1,
 
     // No connection was able to be made to the phone within the expected time
     // period.
-    kTimedOutConnecting = 1,
+    kTimedOutConnecting = 2,
 
     // A connection to the phone was successful, but it unexpectedly became
     // disconnected before the setup flow could complete.
-    kConnectionDisconnected = 2,
+    kConnectionDisconnected = 3,
 
     // A connection to the phone has succeeded, and a message has been sent to
     // the phone to start the notification access opt-in flow. However, the user
     // has not yet completed the flow phone-side.
-    kSentMessageToPhoneAndWaitingForResponse = 3,
+    kSentMessageToPhoneAndWaitingForResponse = 4,
 
     // The user has completed the phone-side opt-in flow.
-    kCompletedSuccessfully = 4,
+    kCompletedSuccessfully = 5,
   };
 
   // Returns true if the provided status is the final one for this operation,
