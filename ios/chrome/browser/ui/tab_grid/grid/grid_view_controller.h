@@ -27,6 +27,10 @@
 // |gridViewController|.
 - (void)gridViewController:(GridViewController*)gridViewController
         didCloseItemWithID:(NSString*)itemID;
+// Tells the delegate that the plus sign was tapped in |gridViewController|,
+// i.e., there was an intention to create a new item.
+- (void)didTapPlusSignInGridViewController:
+    (GridViewController*)gridViewController;
 // Tells the delegate that the item at |sourceIndex| was moved to
 // |destinationIndex|.
 - (void)gridViewController:(GridViewController*)gridViewController

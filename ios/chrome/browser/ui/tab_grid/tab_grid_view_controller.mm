@@ -1191,6 +1191,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+- (void)didTapPlusSignInGridViewController:
+    (GridViewController*)gridViewController {
+  if (gridViewController == self.regularTabsViewController) {
+    [self.regularTabsDelegate addNewItem];
+    // TODO(crbug.com/1135329): Record when a new regular tab is opened.
+  } else if (gridViewController == self.incognitoTabsViewController) {
+    [self.incognitoTabsDelegate addNewItem];
+    // TODO(crbug.com/1135329): Record when a new incognito tab is opened.
+  }
+}
+
 - (void)gridViewController:(GridViewController*)gridViewController
          didMoveItemWithID:(NSString*)itemID
                    toIndex:(NSUInteger)destinationIndex {
