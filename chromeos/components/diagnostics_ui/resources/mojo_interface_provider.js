@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from './fake_data.js'
-import {FakeSystemDataProvider} from './fake_system_data_provider.js'
+import {SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo} from './fake_data.js';
+import {FakeSystemDataProvider} from './fake_system_data_provider.js';
+import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
 
 /**
  * @fileoverview
@@ -37,9 +38,26 @@ function setupFakeSystemDataProvider_() {
 }
 
 /**
+ * Sets up a FakeSystemRoutineController to be used at runtime.
+ * TODO(zentaro): Remove once mojo bindings are implemented.
+ */
+function setupFakeSystemRoutineController_() {
+  // Create controller.
+  let controller = new FakeSystemRoutineController();
+
+  // Set the fake controller.
+  setSystemRoutineControllerForTesting(controller);
+}
+
+/**
  * @type {?SystemDataProviderInterface}
  */
 let systemDataProvider = null;
+
+/**
+ * @type {?SystemRoutineControllerInterface}
+ */
+let systemRoutineController = null;
 
 /**
  * @param {!SystemDataProviderInterface} testProvider
@@ -59,4 +77,24 @@ export function getSystemDataProvider() {
 
   assert(!!systemDataProvider);
   return systemDataProvider;
+}
+
+/**
+ * @param {!SystemRoutineControllerInterface} testController
+ */
+export function setSystemRoutineControllerForTesting(testController) {
+  systemRoutineController = testController;
+}
+
+/**
+ * @return {!SystemRoutineControllerInterface}
+ */
+export function getSystemRoutineController() {
+  if (!systemRoutineController) {
+    // TODO(zentaro): Instantiate a real mojo interface here.
+    setupFakeSystemRoutineController_();
+  }
+
+  assert(!!systemRoutineController);
+  return systemRoutineController;
 }
