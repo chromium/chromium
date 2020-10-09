@@ -6623,6 +6623,9 @@ crbug.com/1045599 fast/css-grid-layout/flex-content-sized-columns-resize.html [ 
 
 # TODO(michaelludwig) - Remove after Skia roll and rebaseline
 crbug.com/1135225 fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Pass Failure ]
+# TODO(michaelludwig) - Remove after Skia roll and rebaseline
+crbug.com/1136863 svg/W3C-SVG-1.1/filters-morph-01-f.svg [ Pass Failure ]
+crbug.com/1136863 svg/batik/text/smallFonts.svg [ Pass Failure ]
 
 # Sheriff 2020-09-29
 crbug.com/1133342 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Failure Timeout ]
