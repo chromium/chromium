@@ -586,7 +586,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   histogram_tester.ExpectBucketCount(
       "Sync.ProblematicServerSideBookmarks",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kInvalidSpecifics,
-      /*count=*/1);
+      /*expected_count=*/1);
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -620,7 +620,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   histogram_tester.ExpectBucketCount(
       "Sync.ProblematicServerSideBookmarks",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kUnexpectedGuid,
-      /*count=*/1);
+      /*expected_count=*/1);
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -675,7 +675,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   histogram_tester.ExpectBucketCount(
       "Sync.ProblematicServerSideBookmarks",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kUnexpectedGuid,
-      /*count=*/0);
+      /*expected_count=*/0);
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -1015,7 +1015,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   histogram_tester.ExpectBucketCount(
       "Sync.ProblematicServerSideBookmarks",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kParentNotFolder,
-      /*count=*/1);
+      /*expected_count=*/1);
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
@@ -1896,7 +1896,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*sample=*/
       BookmarkRemoteUpdatesHandler::
           DuplicateBookmarkEntityOnRemoteUpdateCondition::kServerIdTombstone,
-      /*count=*/1);
+      /*expected_count=*/1);
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
