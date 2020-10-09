@@ -482,8 +482,8 @@ void NetworkService::StartNetLog(base::File file,
   constants->MergeDictionary(&client_constants);
 
   file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
-      std::move(file), std::move(constants));
-  file_net_log_observer_->StartObserving(net_log_, capture_mode);
+      std::move(file), capture_mode, std::move(constants));
+  file_net_log_observer_->StartObserving(net_log_);
 }
 
 void NetworkService::AttachNetLogProxy(

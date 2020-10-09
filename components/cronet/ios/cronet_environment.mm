@@ -178,9 +178,8 @@ void CronetEnvironment::StartNetLogOnNetworkThread(const base::FilePath& path,
                 : net::NetLogCaptureMode::kDefault;
 
   file_net_log_observer_ =
-      net::FileNetLogObserver::CreateUnbounded(path, nullptr);
-  file_net_log_observer_->StartObserving(main_context_->net_log(),
-                                         capture_mode);
+      net::FileNetLogObserver::CreateUnbounded(path, capture_mode, nullptr);
+  file_net_log_observer_->StartObserving(main_context_->net_log());
   LOG(WARNING) << "Started NetLog";
 }
 

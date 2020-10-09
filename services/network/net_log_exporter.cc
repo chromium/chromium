@@ -185,12 +185,12 @@ void NetLogExporter::StartWithScratchDir(
 
   if (max_file_size != kUnlimitedFileSize) {
     file_net_observer_ = net::FileNetLogObserver::CreateBoundedPreExisting(
-        scratch_dir_path, std::move(destination_), max_file_size,
+        scratch_dir_path, std::move(destination_), max_file_size, capture_mode,
         std::move(constants));
   } else {
     DCHECK(scratch_dir_path.empty());
     file_net_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
-        std::move(destination_), std::move(constants));
+        std::move(destination_), capture_mode, std::move(constants));
   }
 
   // There might not be a NetworkService object e.g. on iOS; in that case
@@ -206,7 +206,7 @@ void NetLogExporter::StartWithScratchDir(
   }
 
   file_net_observer_->StartObserving(
-      network_context_->url_request_context()->net_log(), capture_mode);
+      network_context_->url_request_context()->net_log());
   std::move(callback).Run(net::OK);
 }
 

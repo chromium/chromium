@@ -620,15 +620,15 @@ void CronetURLRequestContext::NetworkTasks::StartNetLog(
   // Do nothing if already logging to a file.
   if (net_log_file_observer_)
     return;
-  net_log_file_observer_ = net::FileNetLogObserver::CreateUnbounded(
-      file_path, /*constants=*/nullptr);
-  CreateNetLogEntriesForActiveObjects({context_.get()},
-                                      net_log_file_observer_.get());
+
   net::NetLogCaptureMode capture_mode =
       include_socket_bytes ? net::NetLogCaptureMode::kEverything
                            : net::NetLogCaptureMode::kDefault;
-  net_log_file_observer_->StartObserving(g_net_log.Get().net_log(),
-                                         capture_mode);
+  net_log_file_observer_ = net::FileNetLogObserver::CreateUnbounded(
+      file_path, capture_mode, /*constants=*/nullptr);
+  CreateNetLogEntriesForActiveObjects({context_.get()},
+                                      net_log_file_observer_.get());
+  net_log_file_observer_->StartObserving(g_net_log.Get().net_log());
 }
 
 void CronetURLRequestContext::NetworkTasks::StartNetLogToBoundedFile(
@@ -657,17 +657,16 @@ void CronetURLRequestContext::NetworkTasks::StartNetLogToBoundedFile(
     }
   }
 
+  net::NetLogCaptureMode capture_mode =
+      include_socket_bytes ? net::NetLogCaptureMode::kEverything
+                           : net::NetLogCaptureMode::kDefault;
   net_log_file_observer_ = net::FileNetLogObserver::CreateBounded(
-      file_path, size, /*constants=*/nullptr);
+      file_path, size, capture_mode, /*constants=*/nullptr);
 
   CreateNetLogEntriesForActiveObjects({context_.get()},
                                       net_log_file_observer_.get());
 
-  net::NetLogCaptureMode capture_mode =
-      include_socket_bytes ? net::NetLogCaptureMode::kEverything
-                           : net::NetLogCaptureMode::kDefault;
-  net_log_file_observer_->StartObserving(g_net_log.Get().net_log(),
-                                         capture_mode);
+  net_log_file_observer_->StartObserving(g_net_log.Get().net_log());
 }
 
 void CronetURLRequestContext::NetworkTasks::StopNetLog() {

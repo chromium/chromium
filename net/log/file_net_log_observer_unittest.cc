@@ -234,16 +234,19 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
 
   bool IsBounded() const { return GetParam(); }
 
-  void CreateAndStartObserving(std::unique_ptr<base::Value> constants) {
+  void CreateAndStartObserving(
+      std::unique_ptr<base::Value> constants,
+      NetLogCaptureMode capture_mode = NetLogCaptureMode::kDefault) {
     if (IsBounded()) {
       logger_ = FileNetLogObserver::CreateBoundedForTests(
-          log_path_, kLargeFileSize, kTotalNumFiles, std::move(constants));
+          log_path_, kLargeFileSize, kTotalNumFiles, capture_mode,
+          std::move(constants));
     } else {
-      logger_ =
-          FileNetLogObserver::CreateUnbounded(log_path_, std::move(constants));
+      logger_ = FileNetLogObserver::CreateUnbounded(log_path_, capture_mode,
+                                                    std::move(constants));
     }
 
-    logger_->StartObserving(&net_log_, NetLogCaptureMode::kDefault);
+    logger_->StartObserving(&net_log_);
   }
 
   void CreateAndStartObservingPreExisting(
@@ -259,13 +262,13 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
     if (IsBounded()) {
       logger_ = FileNetLogObserver::CreateBoundedPreExisting(
           scratch_dir_.GetPath(), std::move(file), kLargeFileSize,
-          std::move(constants));
+          NetLogCaptureMode::kDefault, std::move(constants));
     } else {
       logger_ = FileNetLogObserver::CreateUnboundedPreExisting(
-          std::move(file), std::move(constants));
+          std::move(file), NetLogCaptureMode::kDefault, std::move(constants));
     }
 
-    logger_->StartObserving(&net_log_, NetLogCaptureMode::kDefault);
+    logger_->StartObserving(&net_log_);
   }
 
   bool LogFileExists() {
@@ -303,8 +306,9 @@ class FileNetLogObserverBoundedTest : public ::testing::Test,
                                uint64_t total_file_size,
                                int num_files) {
     logger_ = FileNetLogObserver::CreateBoundedForTests(
-        log_path_, total_file_size, num_files, std::move(constants));
-    logger_->StartObserving(&net_log_, NetLogCaptureMode::kDefault);
+        log_path_, total_file_size, num_files, NetLogCaptureMode::kDefault,
+        std::move(constants));
+    logger_->StartObserving(&net_log_);
   }
 
   // Returns the path for an internally directory created for bounded logs (this
@@ -486,11 +490,12 @@ TEST_P(FileNetLogObserverTest, PreExistingFileBroken) {
   EXPECT_FALSE(file.IsValid());
   if (IsBounded())
     logger_ = FileNetLogObserver::CreateBoundedPreExisting(
-        scratch_dir_.GetPath(), std::move(file), kLargeFileSize, nullptr);
+        scratch_dir_.GetPath(), std::move(file), kLargeFileSize,
+        NetLogCaptureMode::kDefault, nullptr);
   else
-    logger_ = FileNetLogObserver::CreateUnboundedPreExisting(std::move(file),
-                                                             nullptr);
-  logger_->StartObserving(&net_log_, NetLogCaptureMode::kDefault);
+    logger_ = FileNetLogObserver::CreateUnboundedPreExisting(
+        std::move(file), NetLogCaptureMode::kDefault, nullptr);
+  logger_->StartObserving(&net_log_);
 
   // Send dummy event.
   AddEntries(logger_.get(), 1, kDummyEventSize);
@@ -549,6 +554,28 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithPolledData) {
   ASSERT_TRUE(log->polled_data);
   ExpectDictionaryContainsProperty(log->polled_data, kDummyPolledDataPath,
                                    kDummyPolledDataString);
+}
+
+// Ensure that the Capture Mode is recorded as a constant in the NetLog.
+TEST_P(FileNetLogObserverTest, LogModeRecorded) {
+  struct TestCase {
+    NetLogCaptureMode capture_mode;
+    const char* expected_value;
+  } test_cases[] = {// Challenges that result in success results.
+                    {NetLogCaptureMode::kEverything, "Everything"},
+                    {NetLogCaptureMode::kIncludeSensitive, "IncludeSensitive"},
+                    {NetLogCaptureMode::kDefault, "Default"}};
+
+  TestClosure closure;
+  for (const auto& test_case : test_cases) {
+    CreateAndStartObserving(nullptr, test_case.capture_mode);
+    logger_->StopObserving(nullptr, closure.closure());
+    closure.WaitForResult();
+    std::unique_ptr<ParsedNetLog> log = ReadNetLogFromDisk(log_path_);
+    ASSERT_TRUE(log);
+    ExpectDictionaryContainsProperty(log->constants, "logCaptureMode",
+                                     test_case.expected_value);
+  }
 }
 
 // Adds events concurrently from several different threads. The exact order of
@@ -946,8 +973,9 @@ TEST_F(FileNetLogObserverBoundedTest, PreExistingUsesSpecifiedDir) {
   file.Write(0, "not json", 8);
 
   logger_ = FileNetLogObserver::CreateBoundedPreExisting(
-      scratch_dir.GetPath(), std::move(file), kLargeFileSize, nullptr);
-  logger_->StartObserving(&net_log_, NetLogCaptureMode::kDefault);
+      scratch_dir.GetPath(), std::move(file), kLargeFileSize,
+      NetLogCaptureMode::kDefault, nullptr);
+  logger_->StartObserving(&net_log_);
 
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_TRUE(base::PathExists(log_path_));

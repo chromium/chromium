@@ -42,8 +42,8 @@ WebEngineNetLogObserver::WebEngineNetLogObserver(
   if (!log_path.empty()) {
     net::NetLogCaptureMode capture_mode = net::NetLogCaptureMode::kDefault;
     file_net_log_observer_ = net::FileNetLogObserver::CreateUnbounded(
-        log_path, GetWebEngineConstants());
-    file_net_log_observer_->StartObserving(net::NetLog::Get(), capture_mode);
+        log_path, capture_mode, GetWebEngineConstants());
+    file_net_log_observer_->StartObserving(net::NetLog::Get());
   }
 }
 

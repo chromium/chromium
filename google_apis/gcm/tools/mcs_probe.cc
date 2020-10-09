@@ -338,10 +338,11 @@ void MCSProbe::UpdateCallback(bool success) {
 void MCSProbe::InitializeNetworkState() {
   if (command_line_.HasSwitch(kLogFileSwitch)) {
     base::FilePath log_path = command_line_.GetSwitchValuePath(kLogFileSwitch);
-    logger_ = net::FileNetLogObserver::CreateUnbounded(log_path, nullptr);
     net::NetLogCaptureMode capture_mode =
         net::NetLogCaptureMode::kIncludeSensitive;
-    logger_->StartObserving(net_log_, capture_mode);
+    logger_ = net::FileNetLogObserver::CreateUnbounded(log_path, capture_mode,
+                                                       nullptr);
+    logger_->StartObserving(net_log_);
   }
 
   net::URLRequestContextBuilder builder;
