@@ -27,15 +27,17 @@ constexpr char kNormalizedPortNumber[] = "456";
 class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
  protected:
   WebEngineIntegrationLoggingTest()
-      : WebEngineIntegrationTestBase(), binding_(&test_log_listener_) {}
+      : WebEngineIntegrationTestBase(),
+        isolated_archivist_service_dir_(
+            StartIsolatedArchivist(archivist_controller_.NewRequest())),
+        binding_(&test_log_listener_) {}
+
   void SetUp() override {
     WebEngineIntegrationTestBase::SetUp();
     StartWebEngineForLoggingTest(
         base::CommandLine(base::CommandLine::NO_PROGRAM));
 
-    logger_ = base::ComponentContextForProcess()
-                  ->svc()
-                  ->Connect<fuchsia::logger::Log>();
+    logger_ = isolated_archivist_service_dir_.Connect<fuchsia::logger::Log>();
     logger_.set_error_handler([&](zx_status_t status) {
       ZX_LOG(ERROR, status) << "fuchsia.logger.Log disconnected";
       ADD_FAILURE();
@@ -49,6 +51,55 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
         web_engine_controller_.NewRequest(), std::move(command_line));
     web_context_provider_.set_error_handler(
         [](zx_status_t status) { ADD_FAILURE(); });
+  }
+
+  // Starts an isolated instance of Archivist to receive and dump log statements
+  // via the fuchsia.logger.Log* APIs.
+  fidl::InterfaceHandle<fuchsia::io::Directory> StartIsolatedArchivist(
+      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+          component_controller_request) {
+    const char kArchivistUrl[] =
+        "fuchsia-pkg://fuchsia.com/archivist-for-embedding#meta/"
+        "archivist-for-embedding.cmx";
+
+    fuchsia::sys::LaunchInfo launch_info;
+    launch_info.url = kArchivistUrl;
+
+    fidl::InterfaceHandle<fuchsia::io::Directory> archivist_services_dir;
+    launch_info.directory_request =
+        archivist_services_dir.NewRequest().TakeChannel();
+
+    auto launcher = base::ComponentContextForProcess()
+                        ->svc()
+                        ->Connect<fuchsia::sys::Launcher>();
+    launcher->CreateComponent(std::move(launch_info),
+                              std::move(component_controller_request));
+
+    return archivist_services_dir;
+  }
+
+  // Returns a CreateContextParams that has an isolated LogSink service from
+  // |isolated_archivist_service_dir_|.
+  fuchsia::web::CreateContextParams ContextParamsWithIsolatedLogSink() {
+    // Use a FilteredServiceDirectory in order to inject an isolated service.
+    fuchsia::web::CreateContextParams create_params =
+        ContextParamsWithFilteredServiceDirectory();
+
+    EXPECT_EQ(filtered_service_directory_->outgoing_directory()
+                  ->RemovePublicService<fuchsia::logger::LogSink>(),
+              ZX_OK);
+
+    EXPECT_EQ(
+        filtered_service_directory_->outgoing_directory()->AddPublicService(
+            std::make_unique<vfs::Service>(
+                [this](zx::channel channel, async_dispatcher_t* dispatcher) {
+                  isolated_archivist_service_dir_.Connect(
+                      fuchsia::logger::LogSink::Name_, std::move(channel));
+                }),
+            fuchsia::logger::LogSink::Name_),
+        ZX_OK);
+
+    return create_params;
   }
 
   // Checks whether the expected log line has been received yet,
@@ -99,6 +150,9 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
         .replace(port_begin, path_begin - port_begin, kNormalizedPortNumber);
   }
 
+  fuchsia::sys::ComponentControllerPtr archivist_controller_;
+  sys::ServiceDirectory isolated_archivist_service_dir_;
+
   fuchsia::logger::LogPtr logger_;
   base::TestLogListenerSafe test_log_listener_;
   fidl::Binding<fuchsia::logger::LogListenerSafe> binding_;
@@ -111,7 +165,7 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
 // Verifies that calling messages from console.debug() calls go to the Fuchsia
 // system log when the script log level is set to DEBUG.
 TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
-  CreateContextAndFrame(DefaultContextParams());
+  CreateContextAndFrame(ContextParamsWithIsolatedLogSink());
 
   // Enable all logging.
   frame_->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);

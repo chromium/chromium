@@ -42,8 +42,8 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
  protected:
   WebEngineIntegrationMediaTest() : WebEngineIntegrationTest() {}
 
-  // Returns CreateContextParams that has AUDIO feature enabled with an injected
-  // FakeAudioConsumerService.
+  // Returns a CreateContextParams that has AUDIO feature enabled with an
+  // injected FakeAudioConsumerService.
   fuchsia::web::CreateContextParams ContextParamsWithAudio() {
     // Use a FilteredServiceDirectory in order to inject a fake AudioConsumer
     // service.
@@ -299,12 +299,14 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
   CreateContextAndFrame(std::move(create_params));
 
   bool is_requested = false;
-  filtered_service_directory_->outgoing_directory()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [&is_requested](zx::channel channel, async_dispatcher_t* dispatcher) {
-            is_requested = true;
-          }),
-      fuchsia::media::SessionAudioConsumerFactory::Name_);
+  ASSERT_EQ(filtered_service_directory_->outgoing_directory()->AddPublicService(
+                std::make_unique<vfs::Service>(
+                    [&is_requested](zx::channel channel,
+                                    async_dispatcher_t* dispatcher) {
+                      is_requested = true;
+                    }),
+                fuchsia::media::SessionAudioConsumerFactory::Name_),
+            ZX_OK);
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_audio.html");
 
@@ -517,12 +519,14 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
 
   // Check that the CodecFactory service is requested.
   bool is_requested = false;
-  filtered_service_directory_->outgoing_directory()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [&is_requested](zx::channel channel, async_dispatcher_t* dispatcher) {
-            is_requested = true;
-          }),
-      fuchsia::mediacodec::CodecFactory::Name_);
+  ASSERT_EQ(filtered_service_directory_->outgoing_directory()->AddPublicService(
+                std::make_unique<vfs::Service>(
+                    [&is_requested](zx::channel channel,
+                                    async_dispatcher_t* dispatcher) {
+                      is_requested = true;
+                    }),
+                fuchsia::mediacodec::CodecFactory::Name_),
+            ZX_OK);
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
   navigation_listener_->RunUntilTitleEquals("ended");
@@ -539,12 +543,14 @@ TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
   CreateContextAndFrame(std::move(create_params));
 
   bool is_requested = false;
-  filtered_service_directory_->outgoing_directory()->AddPublicService(
-      std::make_unique<vfs::Service>(
-          [&is_requested](zx::channel channel, async_dispatcher_t* dispatcher) {
-            is_requested = true;
-          }),
-      fuchsia::mediacodec::CodecFactory::Name_);
+  ASSERT_EQ(filtered_service_directory_->outgoing_directory()->AddPublicService(
+                std::make_unique<vfs::Service>(
+                    [&is_requested](zx::channel channel,
+                                    async_dispatcher_t* dispatcher) {
+                      is_requested = true;
+                    }),
+                fuchsia::mediacodec::CodecFactory::Name_),
+            ZX_OK);
 
   LoadUrlWithUserActivation("fuchsia-dir://testdata/play_video.html?autoplay");
 
