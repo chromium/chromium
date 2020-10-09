@@ -34,7 +34,7 @@
     for (var i = 0; i < messages.length; i++) {
       // Ordering is important here, as accessing the element the first time around
       // triggers live location creation and updates which we need to await properly.
-      const element = messages[i].toMessageElement();
+      const element = messages[i].element();
       await TestRunner.waitForPendingLiveLocationUpdates();
       TestRunner.addResult('>' + element.deepTextContent());
     }

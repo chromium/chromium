@@ -68,7 +68,7 @@
 
   for (var i = 0; i < messages.length; ++i) {
     var consoleMessage = messages[i].consoleMessage();
-    var element = messages[i].toMessageElement();
+    var element = messages[i].element();
     var node = element.traverseNextNode(element);
 
     while (node) {

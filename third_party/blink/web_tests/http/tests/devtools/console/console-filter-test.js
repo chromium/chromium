@@ -70,7 +70,7 @@
 
       // Ordering is important here, as accessing the element the first time around
       // triggers live location creation and updates which we need to await properly.
-      const element = viewMessage.toMessageElement();
+      const element = viewMessage.element();
       await TestRunner.waitForPendingLiveLocationUpdates();
       TestRunner.addResult(indent + delimeter + element.deepTextContent());
     }

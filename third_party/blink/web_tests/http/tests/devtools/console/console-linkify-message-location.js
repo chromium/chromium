@@ -56,7 +56,7 @@
     for (var i = 0; i < messages.length; ++i) {
       // Ordering is important here. Retrieveing the message element the first time triggers
       // live location creation and updates, which we need to await for correct locations.
-      var element = messages[i].toMessageElement();
+      var element = messages[i].element();
       await TestRunner.waitForPendingLiveLocationUpdates();
       var anchor = element.querySelector('.console-message-anchor');
       TestRunner.addResult(anchor.textContent.replace(/VM\d+/g, 'VM'));
