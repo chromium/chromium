@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task_runner.h"
 #include "base/task_runner_util.h"
 #include "net/base/file_stream.h"
@@ -62,9 +63,24 @@ std::unique_ptr<FileStreamReader> FileStreamReader::CreateForFilesystemProxy(
     int64_t initial_offset,
     const base::Time& expected_modification_time) {
   DCHECK(filesystem_proxy);
+  constexpr bool emit_metrics = false;
   return base::WrapUnique(new FilesystemProxyFileStreamReader(
       std::move(task_runner), file_path, std::move(filesystem_proxy),
-      initial_offset, expected_modification_time));
+      initial_offset, expected_modification_time, emit_metrics));
+}
+
+std::unique_ptr<FileStreamReader>
+FileStreamReader::CreateForIndexedDBDataItemReader(
+    scoped_refptr<base::TaskRunner> task_runner,
+    const base::FilePath& file_path,
+    std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
+    int64_t initial_offset,
+    const base::Time& expected_modification_time) {
+  DCHECK(filesystem_proxy);
+  constexpr bool emit_metrics = true;
+  return base::WrapUnique(new FilesystemProxyFileStreamReader(
+      std::move(task_runner), file_path, std::move(filesystem_proxy),
+      initial_offset, expected_modification_time, emit_metrics));
 }
 
 FilesystemProxyFileStreamReader::~FilesystemProxyFileStreamReader() = default;
@@ -101,13 +117,15 @@ FilesystemProxyFileStreamReader::FilesystemProxyFileStreamReader(
     const base::FilePath& file_path,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     int64_t initial_offset,
-    const base::Time& expected_modification_time)
+    const base::Time& expected_modification_time,
+    bool emit_metrics)
     : task_runner_(std::move(task_runner)),
       shared_filesystem_proxy_(base::MakeRefCounted<SharedFilesystemProxy>(
           std::move(filesystem_proxy))),
       file_path_(file_path),
       initial_offset_(initial_offset),
-      expected_modification_time_(expected_modification_time) {}
+      expected_modification_time_(expected_modification_time),
+      emit_metrics_(emit_metrics) {}
 
 void FilesystemProxyFileStreamReader::Open(
     net::CompletionOnceCallback callback) {
@@ -195,6 +213,14 @@ void FilesystemProxyFileStreamReader::DidOpenForRead(
 void FilesystemProxyFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
     FileErrorOr<base::File::Info> result) {
+  // TODO(enne): track rate of missing blobs for http://crbug.com/1131151
+  if (emit_metrics_) {
+    bool file_was_found = !result.is_error() ||
+                          result.error() != base::File::FILE_ERROR_NOT_FOUND;
+    UMA_HISTOGRAM_BOOLEAN("WebCore.IndexedDB.FoundBlobFileForValue",
+                          file_was_found);
+  }
+
   if (result.is_error()) {
     std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;
