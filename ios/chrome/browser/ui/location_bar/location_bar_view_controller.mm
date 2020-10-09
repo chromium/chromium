@@ -596,7 +596,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
         initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
                action:@selector(searchCopiedText:)]);
 
-    DCHECK([self updateCachedClipboardStateWithCompletion:^() {
+    BOOL updateSuccessful = [self updateCachedClipboardStateWithCompletion:^() {
       if (@available(iOS 13, *)) {
         [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
       } else {
@@ -608,7 +608,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       // presented menu.
       UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                       menu);
-    }]);
+    }];
+    DCHECK(updateSuccessful);
   }
 }
 
