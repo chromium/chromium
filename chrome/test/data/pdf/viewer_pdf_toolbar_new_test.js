@@ -141,6 +141,7 @@ const tests = [
   function testZoomField() {
     const toolbar = createToolbar();
     toolbar.viewportZoom = .8;
+    toolbar.zoomBounds = {min: 25, max: 500};
     const zoomField = toolbar.shadowRoot.querySelector('#zoom-controls input');
     chrome.test.assertEq('80%', zoomField.value);
 
@@ -148,15 +149,50 @@ const tests = [
     toolbar.viewportZoom = .533;
     chrome.test.assertEq('53%', zoomField.value);
 
-    // Setting a new value sends the value in a zoom-changed event.
-    let sentValue = -1;
-    toolbar.addEventListener('zoom-changed', e => {
-      sentValue = e.detail;
-      chrome.test.assertEq(110, sentValue);
-      chrome.test.succeed();
-    });
-    zoomField.value = '110%';
-    zoomField.dispatchEvent(new CustomEvent('input'));
+    // Setting a non-number value resets to viewport zoom.
+    zoomField.value = 'abc';
+    zoomField.dispatchEvent(new CustomEvent('change'));
+    chrome.test.assertEq('53%', zoomField.value);
+
+    // Setting a value that is over the max zoom clips to the max value.
+    const whenSent = eventToPromise('zoom-changed', toolbar);
+    zoomField.value = '90000%';
+    zoomField.dispatchEvent(new CustomEvent('change'));
+    whenSent
+        .then(e => {
+          chrome.test.assertEq(500, e.detail);
+
+          // This happens in the parent.
+          toolbar.viewportZoom = 5;
+          chrome.test.assertEq('500%', zoomField.value);
+
+          // Setting a value that is over the maximum again restores the max
+          // value, even though no event is sent.
+          zoomField.value = '80000%';
+          zoomField.dispatchEvent(new CustomEvent('change'));
+          chrome.test.assertEq('500%', zoomField.value);
+
+          // Setting a new value sends the value in a zoom-changed event.
+          const whenSentNew = eventToPromise('zoom-changed', toolbar);
+          zoomField.value = '110%';
+          zoomField.dispatchEvent(new CustomEvent('change'));
+          return whenSentNew;
+        })
+        .then(e => {
+          chrome.test.assertEq(110, e.detail);
+
+          // Setting a new value and blurring sends the value in a zoom-changed
+          // event. If the value is below the minimum, this sends the minimum
+          // zoom.
+          const whenSentFromBlur = eventToPromise('zoom-changed', toolbar);
+          zoomField.value = '18%';
+          zoomField.dispatchEvent(new CustomEvent('blur'));
+          return whenSentFromBlur;
+        })
+        .then(e => {
+          chrome.test.assertEq(25, e.detail);
+          chrome.test.succeed();
+        });
   },
 
   // Test that the overflow menu closes when an action is triggered.
