@@ -607,6 +607,12 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
           base::GetFieldTrialParamByFeatureAsInt(
               features::kWebRtcHybridAgc,
               "gain_applier_speech_frames_threshold", 1);
+      agc2_properties->max_gain_change_db_per_second =
+          base::GetFieldTrialParamByFeatureAsInt(
+              features::kWebRtcHybridAgc, "max_gain_change_db_per_second", 3);
+      agc2_properties->max_output_noise_level_dbfs =
+          base::GetFieldTrialParamByFeatureAsInt(
+              features::kWebRtcHybridAgc, "max_output_noise_level_dbfs", -50);
     }
     blink::ConfigAutomaticGainControl(
         properties.goog_auto_gain_control,

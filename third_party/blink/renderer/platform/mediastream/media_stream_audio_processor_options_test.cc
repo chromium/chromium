@@ -49,6 +49,8 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
   agc2_properties.initial_saturation_margin_db = 10;
   agc2_properties.extra_saturation_margin_db = 10;
   agc2_properties.gain_applier_speech_frames_threshold = 5;
+  agc2_properties.max_gain_change_db_per_second = 4;
+  agc2_properties.max_output_noise_level_dbfs = -22;
   const double compression_gain_db = 10.0;
 
   ConfigAutomaticGainControl(
@@ -82,6 +84,10 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
                   agc2_properties.extra_saturation_margin_db);
   EXPECT_EQ(adaptive_digital.gain_applier_adjacent_speech_frames_threshold,
             agc2_properties.gain_applier_speech_frames_threshold);
+  EXPECT_FLOAT_EQ(adaptive_digital.max_gain_change_db_per_second,
+                  agc2_properties.max_gain_change_db_per_second);
+  EXPECT_FLOAT_EQ(adaptive_digital.max_output_noise_level_dbfs,
+                  agc2_properties.max_output_noise_level_dbfs);
 }
 
 TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {

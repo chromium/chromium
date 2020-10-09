@@ -240,6 +240,12 @@ void ConfigAutomaticGainControl(
 
       adaptive_digital.gain_applier_adjacent_speech_frames_threshold =
           agc2_properties->gain_applier_speech_frames_threshold;
+
+      adaptive_digital.max_gain_change_db_per_second =
+          agc2_properties->max_gain_change_db_per_second;
+
+      adaptive_digital.max_output_noise_level_dbfs =
+          agc2_properties->max_output_noise_level_dbfs;
     }
   } else if (use_fixed_digital_agc2) {
     // Experimental AGC is disabled, thus hybrid AGC is disabled. Config AGC2
