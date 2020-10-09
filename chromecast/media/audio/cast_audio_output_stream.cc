@@ -53,8 +53,10 @@
 namespace {
 // Below are settings for MixerService and the DirectAudio it uses.
 constexpr base::TimeDelta kFadeTime = base::TimeDelta::FromMilliseconds(5);
-constexpr base::TimeDelta kMixerStartThreshold =
-    base::TimeDelta::FromMilliseconds(60);
+constexpr base::TimeDelta kCommunicationsMaxBufferedFrames =
+    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kMediaMaxBufferedFrames =
+    base::TimeDelta::FromMilliseconds(70);
 }  // namespace
 
 namespace chromecast {
@@ -99,6 +101,7 @@ class CastAudioOutputStream::MixerServiceWrapper
   void Stop(base::WaitableEvent* finished);
   void Close(base::OnceClosure closure);
   void SetVolume(double volume);
+  int64_t GetMaxBufferedFrames();
   void Flush();
 
   base::SingleThreadTaskRunner* io_task_runner() {
@@ -119,6 +122,7 @@ class CastAudioOutputStream::MixerServiceWrapper
   AudioSourceCallback* source_callback_;
   std::unique_ptr<mixer_service::OutputStreamConnection> mixer_connection_;
   double volume_;
+  int64_t max_buffered_frames_;
 
   base::Lock running_lock_;
   bool running_ = true;
@@ -138,6 +142,7 @@ CastAudioOutputStream::MixerServiceWrapper::MixerServiceWrapper(
       device_id_(device_id),
       source_callback_(nullptr),
       volume_(1.0f),
+      max_buffered_frames_(GetMaxBufferedFrames()),
       io_thread_("CastAudioOutputStream IO") {
   DETACH_FROM_THREAD(io_thread_checker_);
 
@@ -167,11 +172,11 @@ void CastAudioOutputStream::MixerServiceWrapper::Start(
   params.set_sample_format(mixer_service::SAMPLE_FORMAT_FLOAT_P);
   params.set_sample_rate(audio_params_.sample_rate());
   params.set_num_channels(audio_params_.channels());
-  int64_t start_threshold_frames = ::media::AudioTimestampHelper::TimeToFrames(
-      kMixerStartThreshold, audio_params_.sample_rate());
-  params.set_start_threshold_frames(start_threshold_frames);
 
+  params.set_start_threshold_frames(max_buffered_frames_);
+  params.set_max_buffered_frames(max_buffered_frames_);
   params.set_fill_size_frames(audio_params_.frames_per_buffer());
+
   params.set_fade_frames(::media::AudioTimestampHelper::TimeToFrames(
       kFadeTime, audio_params_.sample_rate()));
   params.set_use_start_timestamp(false);
@@ -204,6 +209,37 @@ void CastAudioOutputStream::MixerServiceWrapper::Close(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   Stop(nullptr);
   std::move(closure).Run();
+}
+
+int64_t CastAudioOutputStream::MixerServiceWrapper::GetMaxBufferedFrames() {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  int fill_size_frames = audio_params_.frames_per_buffer();
+  base::TimeDelta target_max_buffered_ms = kMediaMaxBufferedFrames;
+  if (GetContentType(device_id_) == AudioContentType::kCommunication) {
+    target_max_buffered_ms = kCommunicationsMaxBufferedFrames;
+  }
+
+  int64_t target_max_buffered_frames =
+      ::media::AudioTimestampHelper::TimeToFrames(target_max_buffered_ms,
+                                                  audio_params_.sample_rate());
+
+  // Calculate the buffer size necessary to achieve at least the desired buffer
+  // duration, while minimizing latency.
+  int64_t max_buffered_frames = 0;
+  if (fill_size_frames > target_max_buffered_frames) {
+    max_buffered_frames = target_max_buffered_frames;
+  } else {
+    // Find the largest multiple of |fill_size_frames| that is still no larger
+    // than |target_max_buffered_frames|.
+    max_buffered_frames =
+        (target_max_buffered_frames / fill_size_frames) * fill_size_frames;
+  }
+
+  if (max_buffered_frames != target_max_buffered_frames) {
+    max_buffered_frames += 1;
+  }
+
+  return max_buffered_frames;
 }
 
 void CastAudioOutputStream::MixerServiceWrapper::SetVolume(double volume) {
@@ -247,7 +283,8 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   }
   audio_bus_->set_frames(frames);
 
-  base::TimeDelta delay = kMixerStartThreshold;
+  base::TimeDelta delay = ::media::AudioTimestampHelper::FramesToTime(
+      max_buffered_frames_, audio_params_.sample_rate());
   base::TimeTicks delay_timestamp =
       base::TimeTicks() + base::TimeDelta::FromMicroseconds(playout_timestamp);
 
