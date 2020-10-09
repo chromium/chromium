@@ -36,9 +36,7 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/crx_file/id_util.h"
@@ -60,8 +58,6 @@
 #include "extensions/common/extension_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using web_app::ProviderType;
 
 namespace app_list {
 namespace test {
@@ -711,20 +707,7 @@ TEST_F(AppSearchProviderTest, FetchInternalApp) {
   EXPECT_EQ(kKeyboardShortcutHelperInternalName, RunQuery("Helper"));
 }
 
-class AppSearchProviderWebAppTest : public AppSearchProviderTest {
- public:
-  AppSearchProviderWebAppTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsWithoutExtensions);
-  }
-
-  ~AppSearchProviderWebAppTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AppSearchProviderWebAppTest, WebApp) {
+TEST_F(AppSearchProviderTest, WebApp) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(testing_profile());
   proxy->FlushMojoCallsForTesting();
@@ -739,27 +722,9 @@ TEST_F(AppSearchProviderWebAppTest, WebApp) {
   EXPECT_EQ("WebApp1", RunQuery("WebA"));
 }
 
-class AppSearchProviderCrostiniTest
-    : public AppSearchProviderTest,
-      public ::testing::WithParamInterface<ProviderType> {
- protected:
-  AppSearchProviderCrostiniTest() {
-    if (GetParam() == ProviderType::kWebApps) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (GetParam() == ProviderType::kBookmarkApps) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
+using AppSearchProviderCrostiniTest = AppSearchProviderTest;
 
-  ~AppSearchProviderCrostiniTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(AppSearchProviderCrostiniTest, CrostiniTerminal) {
+TEST_F(AppSearchProviderCrostiniTest, CrostiniTerminal) {
   CreateSearch();
 
   // Crostini UI is not allowed yet.
@@ -792,7 +757,7 @@ TEST_P(AppSearchProviderCrostiniTest, CrostiniTerminal) {
   EXPECT_EQ("Terminal", RunQuery("cros"));
 }
 
-TEST_P(AppSearchProviderCrostiniTest, CrostiniApp) {
+TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
   // This both allows Crostini UI and enables Crostini.
   crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
@@ -1105,12 +1070,6 @@ INSTANTIATE_TEST_SUITE_P(
     AppSearchProviderWithArcAppInstallType,
     ::testing::ValuesIn({TestArcAppInstallType::CONTROLLED_BY_POLICY,
                          TestArcAppInstallType::INSTALLED_BY_DEFAULT}));
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppSearchProviderCrostiniTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
 
 }  // namespace test
 }  // namespace app_list
