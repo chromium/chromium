@@ -2597,6 +2597,9 @@
   <message name="IDS_ENTERPRISE_LOGIN_ERROR_ALLOWLIST" desc="Couldn't sign in because user is not authorized by the administrator.">
     You are not authorized to use this device. Please contact the administrator for sign-in permission.
   </message>
+  <message name="IDS_ENTERPRISE_AND_FAMILY_LINK_LOGIN_ERROR_ALLOWLIST" desc="Couldn't sign in because user is not authorized by the administrator.">
+    You are not authorized to use this device. Please contact the administrator for sign-in permission or sign in with a Google account supervised by Family Link.
+  </message>
   <message name="IDS_LOCK_SCREEN_VERIFY_ACCOUNT" desc="Title of online account verification on the lock screen">
     Verify account
   </message>
