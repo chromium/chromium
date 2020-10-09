@@ -6623,6 +6623,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     "SCTAuditingVariations")},
 #endif  // !defined(OS_ANDROID)
 
+    {"kaleidoscope-ntp-module", flag_descriptions::kKaleidoscopeModuleName,
+     flag_descriptions::kKaleidoscopeModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kKaleidoscopeModule)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
