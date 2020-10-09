@@ -661,13 +661,6 @@ const char kDesktopPWAsTabStripLinkCapturingDescription[] =
     "navigations within the app scope and bring them into the app's tabbed "
     "window.";
 
-const char kDesktopPWAsWithoutExtensionsName[] =
-    "Desktop PWAs without Extensions";
-const char kDesktopPWAsWithoutExtensionsDescription[] =
-    "New platform to manage Web Applications metadata. Warning: this feature "
-    "is incomplete and may corrupt your synced Chrome profile. Test accounts "
-    "only are advised.";
-
 const char kDesktopPWAsRunOnOsLoginName[] = "Desktop PWAs run on OS login";
 const char kDesktopPWAsRunOnOsLoginDescription[] =
     "Enable installed PWAs to be configured to automatically start when the OS "
