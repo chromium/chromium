@@ -82,4 +82,18 @@ TEST_F(WebviewAccessibleResourcesManifestTest, InvalidManifest) {
       "webview_accessible_resources_invalid8.json",
       ErrorUtils::FormatErrorMessage(errors::kInvalidWebviewAccessibleResource,
                                      base::NumberToString(0)));
+
+  {
+    // Specifying non-relative paths as accessible resources should fail. We
+    // raise a warning rather than a hard-error because existing apps do this
+    // and we don't want to break them for all existing users.
+    // https://crbug.com/856948.
+    scoped_refptr<const Extension> extension = LoadAndExpectWarning(
+        "webview_accessible_resources_non_relative_path.json",
+        ErrorUtils::FormatErrorMessage(
+            errors::kInvalidWebviewAccessibleResource,
+            base::NumberToString(0)));
+    EXPECT_FALSE(WebviewInfo::IsResourceWebviewAccessible(
+        extension.get(), "nonrelative", "a.html"));
+  }
 }

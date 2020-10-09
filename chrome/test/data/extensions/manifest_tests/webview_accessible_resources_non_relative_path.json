@@ -1,0 +1,21 @@
+{
+  "name": "test",
+  "version": "2",
+  "manifest_version": 2,
+  "permissions": [
+    "webview"
+  ],
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  },
+  "webview": {
+    "partitions": [
+      {
+        "name": "nonrelative",
+        "accessible_resources": ["http://*/*"]
+      }
+    ]
+  }
+}
