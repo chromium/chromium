@@ -3372,11 +3372,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "omnibox-disable-instant-extended-limit",
-    "owners": [ "pnoland", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "omnibox-display-title-for-current-url",
     "owners": [ "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 76

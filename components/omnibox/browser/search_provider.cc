@@ -1089,11 +1089,11 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
 
   // Now add the most relevant matches to |matches_|.  We take up to
   // provider_max_matches_ suggest/navsuggest matches, regardless of origin.  We
-  // always include in that set a legal default match if possible.  If Instant
-  // Extended is enabled and we have server-provided (and thus hopefully more
-  // accurate) scores for some suggestions, we allow more of those, until we
-  // reach AutocompleteResult::GetDynamicMaxMatches() total matches (that is,
-  // enough to fill the whole popup).
+  // always include in that set a legal default match if possible. If we have
+  // server-provided (and thus hopefully more accurate) scores for some
+  // suggestions, we allow more of those, until we reach
+  // AutocompleteResult::GetDynamicMaxMatches() total matches (that is, enough
+  // to fill the whole popup).
   //
   // We will always return any verbatim matches, no matter how we obtained their
   // scores, unless we have already accepted
@@ -1127,19 +1127,10 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     // suggestion of some sort".
     if ((i->type != AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED) &&
         (i->type != AutocompleteMatchType::SEARCH_OTHER_ENGINE)) {
-      // IsInstantExtendedAPIEnabled is a legacy function that we no longer want
-      // to affect the number of search suggestions we provide, but we want to
-      // understand the effect of removing this check, so its impotence is
-      // controlled experimentally.
-      bool instant_check_disabled = base::FeatureList::IsEnabled(
-          omnibox::kOmniboxDisableInstantExtendedLimit);
-      bool skip_suggestion_for_instant_disabled =
-          !(instant_check_disabled || search::IsInstantExtendedAPIEnabled());
       // If we've already hit the limit on non-server-scored suggestions, and
       // this isn't a server-scored suggestion we can add, skip it.
       if ((num_suggestions >= provider_max_matches_) &&
-          (skip_suggestion_for_instant_disabled ||
-           (i->GetAdditionalInfo(kRelevanceFromServerKey) != kTrue))) {
+          (i->GetAdditionalInfo(kRelevanceFromServerKey) != kTrue)) {
         continue;
       }
 

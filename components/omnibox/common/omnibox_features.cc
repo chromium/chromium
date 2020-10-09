@@ -116,11 +116,6 @@ const base::Feature kSpeculativeServiceWorkerStartOnQueryInput{
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Returns whether IsInstantExtendedAPIEnabled should be ignored when deciding
-// the number of Google-provided search suggestions.
-const base::Feature kOmniboxDisableInstantExtendedLimit{
-    "OmniboxDisableInstantExtendedLimit", enabled_by_default_android_ios};
-
 // Show the search engine logo in the omnibox on Android (desktop already does
 // this).
 const base::Feature kOmniboxSearchEngineLogo{"OmniboxSearchEngineLogo",

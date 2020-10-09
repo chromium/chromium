@@ -4147,11 +4147,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxUISwapTitleAndUrlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kUIExperimentSwapTitleAndUrl)},
 
-    {"omnibox-disable-instant-extended-limit",
-     flag_descriptions::kOmniboxDisableInstantExtendedLimitName,
-     flag_descriptions::kOmniboxDisableInstantExtendedLimitDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxDisableInstantExtendedLimit)},
-
 #if defined(OS_CHROMEOS)
     {"handwriting-gesture", flag_descriptions::kHandwritingGestureName,
      flag_descriptions::kHandwritingGestureDescription, kOsCrOS,
