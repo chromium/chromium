@@ -87,7 +87,7 @@ fuchsia::accessibility::semantics::States ConvertStates(
   }
 
   // Indicates if the node is hidden.
-  states.set_hidden(node.HasState(ax::mojom::State::kInvisible));
+  states.set_hidden(node.IsIgnored());
 
   // The user entered value of the node, if applicable.
   if (node.HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
