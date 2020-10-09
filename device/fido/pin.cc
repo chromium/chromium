@@ -264,8 +264,28 @@ base::Optional<TokenResponse> TokenResponse::Parse(
     return base::nullopt;
   }
 
+  std::vector<uint8_t> token =
+      ProtocolVersion(protocol).Decrypt(shared_key, encrypted_token);
+
+  // The token must have the correct size for the given protocol.
+  switch (protocol) {
+    case PINUVAuthProtocol::kV1:
+      // In CTAP2.1, V1 tokens are fixed at 16 or 32 bytes. But in CTAP2.0 they
+      // may be any multiple of 16 bytes. We don't know the CTAP version, so
+      // only enforce the latter.
+      if (token.empty() || token.size() % AES_BLOCK_SIZE != 0) {
+        return base::nullopt;
+      }
+      break;
+    case PINUVAuthProtocol::kV2:
+      if (token.size() != 32u) {
+        return base::nullopt;
+      }
+      break;
+  }
+
   TokenResponse ret(protocol);
-  ret.token_ = ProtocolVersion(protocol).Decrypt(shared_key, encrypted_token);
+  ret.token_ = std::move(token);
   return ret;
 }
 

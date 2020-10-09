@@ -114,7 +114,12 @@ class ProtocolV1 : public Protocol {
   std::vector<uint8_t> Authenticate(
       base::span<const uint8_t> key,
       base::span<const uint8_t> data) const override {
-    DCHECK_EQ(key.size(), kSharedKeySize);
+    // Authenticate can be invoked with the shared secret or with a PIN/UV Auth
+    // Token. In CTAP2.1, V1 tokens are fixed at 16 or 32 bytes. But in CTAP2.0
+    // they may be any multiple of 16 bytes. We don't know the CTAP version, so
+    // only enforce the latter.
+    static_assert(kSharedKeySize == 32u, "");
+    DCHECK_EQ(key.size() % AES_BLOCK_SIZE, 0u);
 
     std::vector<uint8_t> pin_auth(SHA256_DIGEST_LENGTH);
     unsigned hmac_bytes;
@@ -165,6 +170,7 @@ class ProtocolV2 : public ProtocolV1 {
   static constexpr size_t kAESKeyLength = 32;
   static constexpr size_t kHMACKeyLength = 32;
   static constexpr size_t kSharedKeyLength = kAESKeyLength + kHMACKeyLength;
+  static constexpr size_t kPINUVAuthTokenLength = 32;
   static constexpr size_t kSignatureSize = SHA256_DIGEST_LENGTH;
 
   // GetHMACSubKey returns the HMAC-key portion of the shared secret.
@@ -236,12 +242,13 @@ class ProtocolV2 : public ProtocolV1 {
       base::span<const uint8_t> key,
       base::span<const uint8_t> data) const override {
     // Authenticate can be invoked with the shared secret or with a PIN/UV Auth
-    // Token, which is fixed at 32 bytes in this protocol version.
-    CHECK(key.size() == kSharedKeyLength || key.size() == kHMACKeyLength);
+    // Token, which is fixed at 32 bytes in V2.
+    DCHECK(key.size() == kSharedKeyLength ||
+           key.size() == kPINUVAuthTokenLength);
     const base::span<const uint8_t, kHMACKeyLength> hmac_key =
         (key.size() == kSharedKeyLength
              ? GetHMACSubKey(base::make_span<kSharedKeyLength>(key))
-             : base::make_span<kHMACKeyLength>(key));
+             : base::make_span<kPINUVAuthTokenLength>(key));
 
     std::vector<uint8_t> pin_auth(SHA256_DIGEST_LENGTH);
     unsigned hmac_bytes;
