@@ -420,7 +420,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     // the first time, we draw the glyphs outside the selection area, with
     // the original style.
     {
-      GraphicsContextStateSaver state_saver(context);
+      GraphicsContextStateSaver inner_state_saver(context);
       context.ClipOut(FloatRect(selection_rect));
       text_painter.Paint(selection_start, selection_end, length, text_style,
                          node_id);
@@ -428,7 +428,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     // the second time, we draw the glyphs inside the selection area, with
     // the selection style.
     {
-      GraphicsContextStateSaver state_saver(context);
+      GraphicsContextStateSaver inner_state_saver(context);
       context.Clip(FloatRect(selection_rect));
       text_painter.Paint(selection_start, selection_end, length,
                          selection_style, node_id);

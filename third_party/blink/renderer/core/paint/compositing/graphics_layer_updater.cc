@@ -165,9 +165,9 @@ void GraphicsLayerUpdater::UpdateRecursive(
     // If we have a forced update, we notify the display lock to ensure that the
     // forced update resumes after the lock has been removed.
     if (update_type == kForceUpdate) {
-      auto* context = layer.GetLayoutObject().GetDisplayLockContext();
-      DCHECK(context);
-      context->NotifyForcedGraphicsLayerUpdateBlocked();
+      auto* child_context = layer.GetLayoutObject().GetDisplayLockContext();
+      DCHECK(child_context);
+      child_context->NotifyForcedGraphicsLayerUpdateBlocked();
     }
   }
 
