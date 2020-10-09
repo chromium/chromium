@@ -159,6 +159,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records how a tab preview image was generated.</summary>
 </histogram>
 
+<histogram name="Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB"
+    units="KB" expires_after="M92">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Memory used by compressed thumbnails. Recorded once per thumbnail every 5
+    minutes.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.MemoryUsage.CompressedData.TotalKiB" units="KB"
+    expires_after="M92">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Memory used by compressed thumbnails. Recorded once every 5 minutes at the
+    same time as Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB. Each
+    sample is the sum of the corresponding samples in PerThumbnailKiB.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Preview.TimeToFirstUsableFrameAfterStartCapture"
     units="ms" expires_after="2020-12-15">
   <owner>dfried@chromium.org</owner>
