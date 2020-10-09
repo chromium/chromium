@@ -22,6 +22,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "media/base/cdm_context.h"
 #include "media/base/status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -57,6 +58,7 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   // DecoderInterface implementation.
   void Initialize(const VideoDecoderConfig& config,
+                  CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;

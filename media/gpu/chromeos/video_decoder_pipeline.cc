@@ -22,6 +22,7 @@
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 namespace {
@@ -198,6 +199,13 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(StatusCode::kDecoderUnsupportedConfig);
     return;
   }
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  if (config.is_encrypted() && !cdm_context) {
+    VLOGF(1) << "Encrypted streams require a CdmContext";
+    std::move(init_cb).Run(StatusCode::kDecoderUnsupportedConfig);
+    return;
+  }
+#else   // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (config.is_encrypted()) {
     VLOGF(1) << "Encrypted streams are not supported for this VD";
     std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
@@ -208,16 +216,18 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
   }
+#endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   needs_bitstream_conversion_ = (config.codec() == kCodecH264);
 
   decoder_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoDecoderPipeline::InitializeTask, decoder_weak_this_,
-                     config, std::move(init_cb), std::move(output_cb)));
+      FROM_HERE, base::BindOnce(&VideoDecoderPipeline::InitializeTask,
+                                decoder_weak_this_, config, cdm_context,
+                                std::move(init_cb), std::move(output_cb)));
 }
 
 void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
+                                          CdmContext* cdm_context,
                                           InitCB init_cb,
                                           const OutputCB& output_cb) {
   DVLOGF(3);
@@ -232,18 +242,19 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   // resolution. Subsequent initializations are marked by |decoder_| already
   // existing.
   if (!decoder_) {
-    CreateAndInitializeVD(config, Status());
+    CreateAndInitializeVD(config, cdm_context, Status());
   } else {
     decoder_->Initialize(
-        config,
+        config, cdm_context,
         base::BindOnce(&VideoDecoderPipeline::OnInitializeDone,
-                       decoder_weak_this_, config, Status()),
+                       decoder_weak_this_, config, cdm_context, Status()),
         base::BindRepeating(&VideoDecoderPipeline::OnFrameDecoded,
                             decoder_weak_this_));
   }
 }
 
 void VideoDecoderPipeline::CreateAndInitializeVD(VideoDecoderConfig config,
+                                                 CdmContext* cdm_context,
                                                  Status parent_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(init_cb_);
@@ -269,19 +280,22 @@ void VideoDecoderPipeline::CreateAndInitializeVD(VideoDecoderConfig config,
     DVLOGF(2) << "|decoder_| creation failed, trying again with the next "
                  "available create function.";
     return CreateAndInitializeVD(
-        config, AppendOrForwardStatus(parent_error,
-                                      StatusCode::kDecoderFailedCreation));
+        config, cdm_context,
+        AppendOrForwardStatus(parent_error,
+                              StatusCode::kDecoderFailedCreation));
   }
 
   decoder_->Initialize(
-      config,
+      config, cdm_context,
       base::BindOnce(&VideoDecoderPipeline::OnInitializeDone,
-                     decoder_weak_this_, config, std::move(parent_error)),
+                     decoder_weak_this_, config, cdm_context,
+                     std::move(parent_error)),
       base::BindRepeating(&VideoDecoderPipeline::OnFrameDecoded,
                           decoder_weak_this_));
 }
 
 void VideoDecoderPipeline::OnInitializeDone(VideoDecoderConfig config,
+                                            CdmContext* cdm_context,
                                             Status parent_error,
                                             Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
@@ -300,7 +314,7 @@ void VideoDecoderPipeline::OnInitializeDone(VideoDecoderConfig config,
   DVLOGF(3) << "|decoder_| initialization failed, trying again with the next "
                "available create function.";
   decoder_ = nullptr;
-  CreateAndInitializeVD(config,
+  CreateAndInitializeVD(config, cdm_context,
                         AppendOrForwardStatus(parent_error, std::move(status)));
 }
 

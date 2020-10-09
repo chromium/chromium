@@ -17,4 +17,9 @@ declare_args() {
   # Indicates if VA-API-based hardware acceleration is to be used. This
   # is typically the case on x86-based ChromeOS devices.
   use_vaapi = false
+
+  # Indicates if ChromeOS protected media support exists. This is used
+  # to enable the CDM daemon in Chrome OS as well as support for
+  # encrypted content with HW video decoders.
+  use_chromeos_protected_media = false
 }

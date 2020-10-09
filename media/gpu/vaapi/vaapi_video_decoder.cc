@@ -26,6 +26,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp8_vaapi_video_decoder_delegate.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -76,7 +77,12 @@ std::unique_ptr<DecoderInterface> VaapiVideoDecoder::Create(
 SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
   return ConvertFromSupportedProfiles(
-      VaapiWrapper::GetSupportedDecodeProfiles(workarounds), false);
+      VaapiWrapper::GetSupportedDecodeProfiles(workarounds),
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+      true /* allow_encrypted */);
+#else
+      false /* allow_encrypted */);
+#endif
 }
 
 VaapiVideoDecoder::VaapiVideoDecoder(
@@ -121,6 +127,7 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
 }
 
 void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
+                                   CdmContext* cdm_context,
                                    InitCB init_cb,
                                    const OutputCB& output_cb) {
   DVLOGF(2) << config.AsHumanReadableString();
@@ -135,6 +142,17 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     std::move(init_cb).Run(StatusCode::kVaapiReinitializedDuringDecode);
     return;
   }
+
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  // TODO(jkardatzke): Implement protected media handling.
+  NOTREACHED();
+#else
+  if (cdm_context || config.is_encrypted()) {
+    VLOGF(1) << "Vaapi decoder does not support encrypted stream";
+    std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    return;
+  }
+#endif
 
   // We expect the decoder to have released all output buffers (by the client
   // triggering a flush or reset), even if the

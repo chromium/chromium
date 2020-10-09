@@ -113,12 +113,19 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
 }
 
 void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
+                                  CdmContext* cdm_context,
                                   InitCB init_cb,
                                   const OutputCB& output_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
   DCHECK(state_ == State::kUninitialized || state_ == State::kDecoding);
   DVLOGF(3);
+
+  if (cdm_context || config.is_encrypted()) {
+    VLOGF(1) << "V4L2 decoder does not support encrypted stream";
+    std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    return;
+  }
 
   // Reset V4L2 device and queue if reinitializing decoder.
   if (state_ != State::kUninitialized) {

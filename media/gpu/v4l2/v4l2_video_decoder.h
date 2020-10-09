@@ -23,6 +23,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "media/base/cdm_context.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
@@ -51,6 +52,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   // DecoderInterface implementation.
   void Initialize(const VideoDecoderConfig& config,
+                  CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb) override;
   void Reset(base::OnceClosure closure) override;

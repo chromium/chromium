@@ -85,6 +85,7 @@ class MEDIA_GPU_EXPORT DecoderInterface {
   // TODO(akahuang): Add an error notification method to handle misused case.
   // 4) |init_cb| may be called before this returns.
   virtual void Initialize(const VideoDecoderConfig& config,
+                          CdmContext* cdm_context,
                           InitCB init_cb,
                           const OutputCB& output_cb) = 0;
 
@@ -180,13 +181,17 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       GetCreateDecoderFunctionsCB get_create_decoder_functions_cb);
 
   void InitializeTask(const VideoDecoderConfig& config,
+                      CdmContext* cdm_context,
                       InitCB init_cb,
                       const OutputCB& output_cb);
   void ResetTask(base::OnceClosure closure);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
-  void CreateAndInitializeVD(VideoDecoderConfig config, Status parent_error);
+  void CreateAndInitializeVD(VideoDecoderConfig config,
+                             CdmContext* cdm_context,
+                             Status parent_error);
   void OnInitializeDone(VideoDecoderConfig config,
+                        CdmContext* cdm_context,
                         Status parent_error,
                         Status status);
 

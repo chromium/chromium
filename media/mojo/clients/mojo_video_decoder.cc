@@ -25,6 +25,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_frame.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -133,8 +134,9 @@ bool MojoVideoDecoder::IsPlatformDecoder() const {
 }
 
 bool MojoVideoDecoder::SupportsDecryption() const {
-  // Currently only the android backends support decryption
-#if defined(OS_ANDROID)
+  // Currently only the Android backends and specific ChromeOS configurations
+  // support decryption.
+#if defined(OS_ANDROID) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   return true;
 #else
   return false;
