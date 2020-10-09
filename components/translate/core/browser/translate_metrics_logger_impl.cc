@@ -4,9 +4,21 @@
 
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 
+#include "components/translate/core/browser/translate_manager.h"
+
 namespace translate {
 
+TranslateMetricsLoggerImpl::TranslateMetricsLoggerImpl(
+    base::WeakPtr<TranslateManager> translate_manager)
+    : translate_manager_(translate_manager) {}
+
+TranslateMetricsLoggerImpl::~TranslateMetricsLoggerImpl() = default;
+
 void TranslateMetricsLoggerImpl::OnPageLoadStart(bool is_foreground) {
+  if (translate_manager_)
+    translate_manager_->RegisterTranslateMetricsLogger(
+        weak_method_factory_.GetWeakPtr());
+
   is_foreground_ = is_foreground;
 }
 

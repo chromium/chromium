@@ -24,7 +24,8 @@ class NavigationHandle;
 class TranslatePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  static std::unique_ptr<TranslatePageLoadMetricsObserver> CreateIfNeeded();
+  static std::unique_ptr<TranslatePageLoadMetricsObserver> CreateIfNeeded(
+      content::WebContents* web_contents);
 
   explicit TranslatePageLoadMetricsObserver(
       std::unique_ptr<translate::TranslateMetricsLogger>

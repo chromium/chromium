@@ -32,9 +32,12 @@ namespace translate {
 
 class TranslateClient;
 class TranslateDriver;
+class TranslateMetricsLogger;
 class TranslatePrefs;
 class TranslateRanker;
 struct TranslateTriggerDecision;
+
+class NullTranslateMetricsLogger;
 
 namespace testing {
 class TranslateManagerTest;
@@ -197,6 +200,17 @@ class TranslateManager {
   // Sets target language.
   void SetPredefinedTargetLanguage(const std::string& language_code);
 
+  // Returns a reference to |active_translate_metrics_logger_|. In the event
+  // that this value is null, a |NullTranslateMetricsLogger| (a null
+  // implementation) will be returned. This guarantees that the returned value
+  // is always non-null.
+  TranslateMetricsLogger* GetActiveTranslateMetricsLogger();
+
+  // Sets |active_translate_metrics_logger_| to the given
+  // |translate_metrics_logger|.
+  void RegisterTranslateMetricsLogger(
+      base::WeakPtr<TranslateMetricsLogger> translate_metrics_logger);
+
  private:
   friend class translate::testing::TranslateManagerTest;
 
@@ -305,6 +319,9 @@ class TranslateManager {
   TranslateDriver* translate_driver_;        // Weak.
   TranslateRanker* translate_ranker_;        // Weak.
   language::LanguageModel* language_model_;  // Weak.
+
+  base::WeakPtr<TranslateMetricsLogger> active_translate_metrics_logger_;
+  std::unique_ptr<NullTranslateMetricsLogger> null_translate_metrics_logger_;
 
   LanguageState language_state_;
 

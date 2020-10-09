@@ -26,6 +26,7 @@
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -178,6 +179,10 @@ class TranslateManagerTest : public ::testing::Test {
                           const std::string& dst_lang) {
     translate_manager_->InitTranslateEvent(src_lang, dst_lang,
                                            translate_prefs_);
+  }
+
+  NullTranslateMetricsLogger* null_translate_metrics_logger() {
+    return translate_manager_->null_translate_metrics_logger_.get();
   }
 
   // Required to instantiate a net::test::MockNetworkChangeNotifier, because it
@@ -1079,6 +1084,42 @@ TEST_F(TranslateManagerTest, InitiateManualTranslation) {
 
   // InitiateManualTranslation should only ShowTranslateUI (not do translation).
   histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
+}
+
+TEST_F(TranslateManagerTest, GetActiveTranslateMetricsLogger) {
+  PrepareTranslateManager();
+  std::unique_ptr<TranslateMetricsLogger> translate_metrics_logger_a =
+      std::make_unique<TranslateMetricsLoggerImpl>(
+          translate_manager_->GetWeakPtr());
+  std::unique_ptr<TranslateMetricsLogger> translate_metrics_logger_b =
+      std::make_unique<TranslateMetricsLoggerImpl>(
+          translate_manager_->GetWeakPtr());
+
+  // Before either |TranslateMetricsLogger| begins, we expect
+  // |GetActiveTranslateMetricsLogger| to return the null implementation.
+  EXPECT_EQ(translate_manager_->GetActiveTranslateMetricsLogger(),
+            null_translate_metrics_logger());
+
+  // Now that the page load has begun for |translate_metrics_logger_a|, we
+  // expect |GetActiveTranslateMetricsLogger| to return
+  // |translate_metrics_logger_a|.
+  translate_metrics_logger_a->OnPageLoadStart(true);
+  EXPECT_EQ(translate_manager_->GetActiveTranslateMetricsLogger(),
+            translate_metrics_logger_a.get());
+
+  // Once the page load starts for |translate_metrics_logger_b|, we
+  // expect |GetActiveTranslateMetricsLogger| to return
+  // |translate_metrics_logger_b|, even if |translate_metrics_logger_a| hasn't
+  // been destroyed yet.
+  translate_metrics_logger_b->OnPageLoadStart(true);
+  EXPECT_EQ(translate_manager_->GetActiveTranslateMetricsLogger(),
+            translate_metrics_logger_b.get());
+
+  // Once |translate_metrics_logger_b| is destroyed, we expect that
+  // |GetActiveTranslateMetricsLogger| to return the null implementation.
+  translate_metrics_logger_b.reset();
+  EXPECT_EQ(translate_manager_->GetActiveTranslateMetricsLogger(),
+            null_translate_metrics_logger());
 }
 
 }  // namespace testing

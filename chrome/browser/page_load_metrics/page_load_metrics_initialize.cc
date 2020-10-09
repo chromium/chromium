@@ -167,8 +167,9 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
           web_contents()->GetBrowserContext()));
   tracker->AddObserver(std::make_unique<DataUseMetricsObserver>());
   std::unique_ptr<TranslatePageLoadMetricsObserver> translate_observer =
-      TranslatePageLoadMetricsObserver::CreateIfNeeded();
-  if (translate_observer != nullptr)
+      TranslatePageLoadMetricsObserver::CreateIfNeeded(
+          tracker->GetWebContents());
+  if (translate_observer)
     tracker->AddObserver(std::move(translate_observer));
 }
 

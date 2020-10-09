@@ -7,6 +7,8 @@
 
 namespace translate {
 
+class TranslateManager;
+
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome
 // Translate over the course of a page load.
 class TranslateMetricsLogger {
@@ -24,6 +26,11 @@ class TranslateMetricsLogger {
   // Logs all stored page load metrics. If is_final is |true| then RecordMetrics
   // won't be called again.
   virtual void RecordMetrics(bool is_final) = 0;
+
+  // TODO(curranmax): Split this into two interfaces. One for the interaction
+  // with the |TranslatePageLoadMetricsObserver|, and the other for the
+  // interaction with |TranslateManager| and the rest of the Translate code.
+  // https://crbug.com/1114868.
 };
 
 }  // namespace translate

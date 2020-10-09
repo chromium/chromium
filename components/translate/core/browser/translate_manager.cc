@@ -36,6 +36,8 @@
 #include "components/translate/core/browser/translate_error_details.h"
 #include "components/translate/core/browser/translate_init_details.h"
 #include "components/translate/core/browser/translate_language_list.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ranker.h"
 #include "components/translate/core/browser/translate_script.h"
@@ -137,6 +139,8 @@ TranslateManager::TranslateManager(TranslateClient* translate_client,
       translate_driver_(translate_client_->GetTranslateDriver()),
       translate_ranker_(translate_ranker),
       language_model_(language_model),
+      null_translate_metrics_logger_(
+          std::make_unique<NullTranslateMetricsLogger>()),
       language_state_(translate_driver_),
       translate_event_(std::make_unique<metrics::TranslateEventProto>()) {}
 
@@ -1144,6 +1148,20 @@ void TranslateManager::RecordDecisionRankerEvent(
 void TranslateManager::SetPredefinedTargetLanguage(
     const std::string& language_code) {
   language_state_.SetPredefinedTargetLanguage(language_code);
+}
+
+TranslateMetricsLogger* TranslateManager::GetActiveTranslateMetricsLogger() {
+  // If |active_translate_metrics_logger_| is not null, return that. Otherwise
+  // return |null_translate_metrics_logger_|. This way the callee doesn't have
+  // to check if the returned value is null.
+  return active_translate_metrics_logger_
+             ? active_translate_metrics_logger_.get()
+             : null_translate_metrics_logger_.get();
+}
+
+void TranslateManager::RegisterTranslateMetricsLogger(
+    base::WeakPtr<TranslateMetricsLogger> translate_metrics_logger) {
+  active_translate_metrics_logger_ = translate_metrics_logger;
 }
 
 }  // namespace translate
