@@ -48,7 +48,8 @@ suite('UserManagerTest', function() {
     const localDestinations = [];
     const destinations = getDestinations(localDestinations);
     destinationStore.init(
-        false /* isInAppKioskMode */, 'FooDevice' /* printerName */,
+        false /* pdfPrinterDisabled */, true /* isDriveMounted */,
+        'FooDevice' /* printerName */,
         '' /* serializedDefaultDestinationSelectionRulesStr */, []);
     nativeLayer.setLocalDestinations(localDestinations);
 

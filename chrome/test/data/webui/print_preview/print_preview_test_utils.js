@@ -31,6 +31,7 @@ export function getDefaultInitialSettings() {
     syncAvailable: false,
     uiLocale: 'en-us',
     unitType: MeasurementSystemUnitType.IMPERIAL,
+    isDriveMounted: true,
   };
 }
 

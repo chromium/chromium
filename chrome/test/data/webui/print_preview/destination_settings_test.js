@@ -125,6 +125,7 @@ suite(destination_settings_test.suiteName, function() {
         // still not loaded.
         destinationSettings.init(
             'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
+            true /* isDriveMounted */,
             '' /* serializedDefaultDestinationSelectionRulesStr */,
             [] /* userAccounts */, true /* syncAvailable */);
         assertFalse(dropdown.loaded);
@@ -198,7 +199,7 @@ suite(destination_settings_test.suiteName, function() {
     destinationSettings.setSetting('recentDestinations', recentDestinations);
     destinationSettings.appKioskMode = false;
     destinationSettings.init(
-        '' /* printerName */, pdfPrinterDisabled,
+        '' /* printerName */, pdfPrinterDisabled, true /* isDriveMounted */,
         '' /* serializedDefaultDestinationSelectionRulesStr */, initialAccounts,
         true /* syncAvailable */);
     destinationSettings.state = State.READY;
