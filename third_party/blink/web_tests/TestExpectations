@@ -6645,5 +6645,5 @@ crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Pass Timeout 
 crbug.com/1134237 virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/beforematch-origin-trial-interfaces.html [ Failure ]
 
 # Sheriff 2020-10-09
-crbug.com/1136687 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
+crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
 crbug.com/1136726 [ Linux ] virtual/gpu-rasterization/images/imagemap-focus-ring-outline-color-not-inherited-from-map.html [ Failure ]
