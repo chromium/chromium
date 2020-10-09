@@ -10,10 +10,10 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -62,6 +62,8 @@ class BASE_EXPORT MemoryAllocatorDump {
     Entry(std::string name, std::string units, uint64_t value);
     Entry(std::string name, std::string units, std::string value);
     Entry(Entry&& other) noexcept;
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
     Entry& operator=(Entry&& other);
     bool operator==(const Entry& rhs) const;
 
@@ -72,13 +74,13 @@ class BASE_EXPORT MemoryAllocatorDump {
 
     uint64_t value_uint64;
     std::string value_string;
-
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
   MemoryAllocatorDump(const std::string& absolute_name,
                       MemoryDumpLevelOfDetail,
                       const MemoryAllocatorDumpGuid&);
+  MemoryAllocatorDump(const MemoryAllocatorDump&) = delete;
+  MemoryAllocatorDump& operator=(const MemoryAllocatorDump&) = delete;
   ~MemoryAllocatorDump();
 
   // Standard attribute |name|s for the AddScalar and AddString() methods.
@@ -151,8 +153,6 @@ class BASE_EXPORT MemoryAllocatorDump {
   int flags_;  // See enum Flags.
   mutable Optional<uint64_t> cached_size_;  // Lazy, for GetSizeInternal().
   std::vector<Entry> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryAllocatorDump);
 };
 
 // This is required by gtest to print a readable output on test failures.

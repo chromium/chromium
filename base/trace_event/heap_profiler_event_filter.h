@@ -6,7 +6,6 @@
 #define BASE_TRACE_EVENT_HEAP_PROFILER_EVENT_FILTER_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_event_filter.h"
 
 namespace base {
@@ -22,16 +21,15 @@ class BASE_EXPORT HeapProfilerEventFilter : public TraceEventFilter {
  public:
   static const char kName[];
 
-  HeapProfilerEventFilter();
-  ~HeapProfilerEventFilter() override;
+  HeapProfilerEventFilter() = default;
+  HeapProfilerEventFilter(const HeapProfilerEventFilter&) = delete;
+  HeapProfilerEventFilter& operator=(const HeapProfilerEventFilter&) = delete;
+  ~HeapProfilerEventFilter() override = default;
 
   // TraceEventFilter implementation.
   bool FilterTraceEvent(const TraceEvent& trace_event) const override;
   void EndEvent(const char* category_name,
                 const char* event_name) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeapProfilerEventFilter);
 };
 
 }  // namespace trace_event

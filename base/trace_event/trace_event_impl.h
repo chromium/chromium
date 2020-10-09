@@ -15,7 +15,6 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -71,6 +70,8 @@ class BASE_EXPORT TraceEvent {
              TraceArguments* args,
              unsigned int flags);
 
+  TraceEvent(const TraceEvent&) = delete;
+  TraceEvent& operator=(const TraceEvent&) = delete;
   ~TraceEvent();
 
   // Allow move operations.
@@ -189,8 +190,6 @@ class BASE_EXPORT TraceEvent {
   unsigned int flags_ = 0;
   unsigned long long bind_id_ = 0;
   char phase_ = TRACE_EVENT_PHASE_BEGIN;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEvent);
 };
 
 }  // namespace trace_event

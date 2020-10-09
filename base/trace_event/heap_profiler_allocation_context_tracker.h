@@ -9,7 +9,6 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
 
 namespace base {
@@ -84,6 +83,9 @@ class BASE_EXPORT AllocationContextTracker {
   // if capture is enabled.
   static void SetCurrentThreadName(const char* name);
 
+  AllocationContextTracker(const AllocationContextTracker&) = delete;
+  AllocationContextTracker& operator=(const AllocationContextTracker&) = delete;
+
   // Starts and ends a new ignore scope between which the allocations are
   // ignored by the heap profiler. GetContextSnapshot() returns false when
   // allocations are ignored.
@@ -128,15 +130,13 @@ class BASE_EXPORT AllocationContextTracker {
   std::vector<StackFrame> tracked_stack_;
 
   // The thread name is used as the first entry in the pseudo stack.
-  const char* thread_name_;
+  const char* thread_name_ = nullptr;
 
   // Stack of tasks' contexts. Context serves as a different dimension than
   // pseudo stack to cluster allocations.
   std::vector<const char*> task_contexts_;
 
-  uint32_t ignore_scope_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllocationContextTracker);
+  uint32_t ignore_scope_depth_ = 0;
 };
 
 }  // namespace trace_event

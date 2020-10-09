@@ -97,8 +97,7 @@ AllocationContextTracker::GetInstanceForCurrentThread() {
   return tracker;
 }
 
-AllocationContextTracker::AllocationContextTracker()
-    : thread_name_(nullptr), ignore_scope_depth_(0) {
+AllocationContextTracker::AllocationContextTracker() {
   tracked_stack_.reserve(kMaxStackDepth);
   task_contexts_.reserve(kMaxTaskDepth);
   task_contexts_.push_back("UntrackedTask");

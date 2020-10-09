@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_logging_minimal_win.h"
@@ -27,6 +26,8 @@ namespace trace_event {
 
 class BASE_EXPORT TraceEventETWExport {
  public:
+  TraceEventETWExport(const TraceEventETWExport&) = delete;
+  TraceEventETWExport& operator=(const TraceEventETWExport&) = delete;
   ~TraceEventETWExport();
 
   // Retrieves the singleton.
@@ -90,8 +91,6 @@ class BASE_EXPORT TraceEventETWExport {
 
   // Maps category names to their keyword.
   std::map<StringPiece, uint64_t> categories_keyword_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventETWExport);
 };
 
 }  // namespace trace_event

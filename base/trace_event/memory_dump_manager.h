@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
@@ -50,6 +49,9 @@ class BASE_EXPORT MemoryDumpManager {
 
   static MemoryDumpManager* GetInstance();
   static std::unique_ptr<MemoryDumpManager> CreateInstanceForTesting();
+
+  MemoryDumpManager(const MemoryDumpManager&) = delete;
+  MemoryDumpManager& operator=(const MemoryDumpManager&) = delete;
 
   // Invoked once per process to listen to trace begin / end events.
   // Initialization can happen after (Un)RegisterMemoryDumpProvider() calls
@@ -162,6 +164,9 @@ class BASE_EXPORT MemoryDumpManager {
         const MemoryDumpProviderInfo::OrderedSet& dump_providers,
         ProcessMemoryDumpCallback callback,
         scoped_refptr<SequencedTaskRunner> dump_thread_task_runner);
+    ProcessMemoryDumpAsyncState(const ProcessMemoryDumpAsyncState&) = delete;
+    ProcessMemoryDumpAsyncState& operator=(const ProcessMemoryDumpAsyncState&) =
+        delete;
     ~ProcessMemoryDumpAsyncState();
 
     // A ProcessMemoryDump to collect data from MemoryDumpProviders.
@@ -189,9 +194,6 @@ class BASE_EXPORT MemoryDumpManager {
     // threads outside of the lock_ to avoid races when disabling tracing.
     // It is immutable for all the duration of a tracing session.
     const scoped_refptr<SequencedTaskRunner> dump_thread_task_runner;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ProcessMemoryDumpAsyncState);
   };
 
   static const int kMaxConsecutiveFailuresCount;
@@ -244,7 +246,7 @@ class BASE_EXPORT MemoryDumpManager {
   RequestGlobalDumpFunction request_dump_function_;
 
   // True when current process coordinates the periodic dump triggering.
-  bool is_coordinator_ GUARDED_BY(lock_);
+  bool is_coordinator_ GUARDED_BY(lock_) = false;
 
   // Protects from concurrent accesses to the local state, eg: to guard against
   // disabling logging while dumping on another thread.
@@ -256,12 +258,10 @@ class BASE_EXPORT MemoryDumpManager {
 
   // The unique id of the child process. This is created only for tracing and is
   // expected to be valid only when tracing is enabled.
-  uint64_t tracing_process_id_;
+  uint64_t tracing_process_id_ = kInvalidTracingProcessId;
 
   // When true, calling |RegisterMemoryDumpProvider| is a no-op.
-  bool dumper_registrations_ignored_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManager);
+  bool dumper_registrations_ignored_for_testing_ = false;
 };
 
 }  // namespace trace_event

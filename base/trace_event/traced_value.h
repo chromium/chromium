@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -28,6 +27,8 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // TODO(oysteine): |capacity| is not used in any production code. Consider
   // removing it.
   explicit TracedValue(size_t capacity = 0);
+  TracedValue(const TracedValue&) = delete;
+  TracedValue& operator=(const TracedValue&) = delete;
   ~TracedValue() override;
 
   void EndDictionary();
@@ -393,8 +394,6 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // In debug builds checks the pairings of {Start,End}{Dictionary,Array}
   std::vector<bool> nesting_stack_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TracedValue);
 };
 
 // TracedValue that is convertable to JSON format. This has lower performance

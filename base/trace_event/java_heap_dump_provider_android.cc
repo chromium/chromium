@@ -16,12 +16,6 @@ JavaHeapDumpProvider* JavaHeapDumpProvider::GetInstance() {
                    LeakySingletonTraits<JavaHeapDumpProvider>>::get();
 }
 
-JavaHeapDumpProvider::JavaHeapDumpProvider() {
-}
-
-JavaHeapDumpProvider::~JavaHeapDumpProvider() {
-}
-
 // Called at trace dump point time. Creates a snapshot with the memory counters
 // for the current process.
 bool JavaHeapDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,

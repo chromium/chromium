@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 
@@ -24,6 +23,8 @@ namespace trace_event {
 class BASE_EXPORT LogMessage : public ConvertableToTraceFormat {
  public:
   LogMessage(const char* file, base::StringPiece message, int line);
+  LogMessage(const LogMessage&) = delete;
+  LogMessage& operator=(const LogMessage&) = delete;
   ~LogMessage() override;
 
   // ConvertableToTraceFormat class implementation.
@@ -40,7 +41,6 @@ class BASE_EXPORT LogMessage : public ConvertableToTraceFormat {
   const char* file_;
   std::string message_;
   int line_number_;
-  DISALLOW_COPY_AND_ASSIGN(LogMessage);
 };
 
 }  // namespace trace_event

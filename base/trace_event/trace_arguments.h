@@ -11,9 +11,9 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 
 // Trace macro can have one or two optional arguments, each one of them
@@ -139,6 +139,8 @@ class TraceEventMemoryOverhead;
 class BASE_EXPORT ConvertableToTraceFormat {
  public:
   ConvertableToTraceFormat() = default;
+  ConvertableToTraceFormat(const ConvertableToTraceFormat&) = delete;
+  ConvertableToTraceFormat& operator=(const ConvertableToTraceFormat&) = delete;
   virtual ~ConvertableToTraceFormat() = default;
 
   // Append the class info to the provided |out| string. The appended
@@ -163,9 +165,6 @@ class BASE_EXPORT ConvertableToTraceFormat {
   virtual bool AppendToProto(ProtoAppender* appender);
 
   virtual void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConvertableToTraceFormat);
 };
 
 const int kTraceMaxNumArgs = 2;

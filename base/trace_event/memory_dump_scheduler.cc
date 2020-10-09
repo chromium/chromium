@@ -20,7 +20,7 @@ MemoryDumpScheduler* MemoryDumpScheduler::GetInstance() {
   return instance;
 }
 
-MemoryDumpScheduler::MemoryDumpScheduler() : period_ms_(0), generation_(0) {}
+MemoryDumpScheduler::MemoryDumpScheduler() = default;
 MemoryDumpScheduler::~MemoryDumpScheduler() {
   // Hit only in tests. Check that tests don't leave without stopping.
   DCHECK(!is_enabled_for_testing());

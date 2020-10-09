@@ -12,11 +12,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/atomicops.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/builtin_categories.h"
@@ -181,10 +182,8 @@
 // Implementation detail: trace event macros create temporary variables
 // to keep instrumentation overhead low. These macros give each temporary
 // variable a unique name based on the line number to prevent name collisions.
-#define INTERNAL_TRACE_EVENT_UID3(a,b) \
-    trace_event_unique_##a##b
-#define INTERNAL_TRACE_EVENT_UID2(a,b) \
-    INTERNAL_TRACE_EVENT_UID3(a,b)
+#define INTERNAL_TRACE_EVENT_UID3(a, b) trace_event_unique_##a##b
+#define INTERNAL_TRACE_EVENT_UID2(a, b) INTERNAL_TRACE_EVENT_UID3(a, b)
 #define INTERNAL_TRACE_EVENT_UID(name_prefix) \
     INTERNAL_TRACE_EVENT_UID2(name_prefix, __LINE__)
 
@@ -811,6 +810,9 @@ class TraceScopedTrackableObject {
       : name_(name), id_(id) {
     TRACE_EVENT_OBJECT_CREATED_WITH_ID(category, name_, id_);
   }
+  TraceScopedTrackableObject(const TraceScopedTrackableObject&) = delete;
+  TraceScopedTrackableObject& operator=(const TraceScopedTrackableObject&) =
+      delete;
 
   template <typename ArgType> void snapshot(ArgType snapshot) {
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(category, name_, id_, snapshot);
@@ -823,8 +825,6 @@ class TraceScopedTrackableObject {
  private:
   const char* name_;
   IDType id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceScopedTrackableObject);
 };
 
 }  // namespace trace_event
