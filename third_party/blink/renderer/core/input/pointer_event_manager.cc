@@ -602,15 +602,16 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
                  event_handling_util::ShouldDiscardEventTargetingFrame(
                      event, *pointer_event_target.target_frame);
   if (discard) {
-    PointerEvent* pointer_event = pointer_event_factory_.Create(
+    PointerEvent* core_pointer_event = pointer_event_factory_.Create(
         event, coalesced_events, predicted_events,
         pointer_event_target.target_element
             ? pointer_event_target.target_element->GetDocument().domWindow()
             : nullptr);
-    SendTouchPointerEvent(pointer_event_target.target_element,
-                          pointer_event_factory_.CreatePointerCancelEvent(
-                              pointer_event->pointerId(), event.TimeStamp()),
-                          event.hovering);
+    SendTouchPointerEvent(
+        pointer_event_target.target_element,
+        pointer_event_factory_.CreatePointerCancelEvent(
+            core_pointer_event->pointerId(), event.TimeStamp()),
+        event.hovering);
 
     WebPointerEvent pointer_cancel_event;
     pointer_cancel_event.pointer_type = event.pointer_type;
