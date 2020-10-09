@@ -40,6 +40,12 @@ bool CanBeInlineContentsContainer(const LayoutObject& layout_object) {
     return false;
   if (!block_flow->ChildrenInline() || block_flow->IsAtomicInlineLevel())
     return false;
+  if (block_flow->IsRuby()) {
+    // We should not make |LayoutRubyAsBlock| as inline contents container,
+    // because ruby base text comes after ruby text in layout tree.
+    // See ParameterizedTextOffsetMappingTest.RangeOfBlockWithRubyAsBlock
+    return false;
+  }
   if (block_flow->NonPseudoNode()) {
     // It is OK as long as |block_flow| is associated to non-pseudo |Node| even
     // if it is empty block or containing only anonymous objects.

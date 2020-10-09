@@ -196,6 +196,39 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeOfBlockWithRUBY) {
             GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
 }
 
+// http://crbug.com/1124584
+TEST_P(ParameterizedTextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
+  // We should not make <ruby> as |InlineContent| container because "XYZ" comes
+  // before "abc" but in DOM tree, order is "abc" then "XYZ".
+  // Layout tree:
+  //  LayoutNGBlockFlow {BODY} at (8,8) size 784x27
+  //   LayoutNGRubyAsBlock {RUBY} at (0,0) size 784x27
+  //     LayoutNGRubyRun (anonymous) at (0,7) size 22x20
+  //       LayoutNGRubyText {RT} at (0,-10) size 22x12
+  //         LayoutText {#text} at (2,0) size 18x12
+  //           text run at (2,0) width 18: "XYZ"
+  //       LayoutNGRubyBase (anonymous) at (0,0) size 22x20
+  //         LayoutText {#text} at (0,0) size 22x19
+  //           text run at (0,0) width 22: "abc"
+  InsertStyleElement("ruby { display: block; }");
+  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+            GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+            GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ("<ruby>abc<rt>^XYZ|</rt></ruby>",
+            GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
+}
+
+TEST_P(ParameterizedTextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
+  InsertStyleElement("ruby { display: inline-block; }");
+  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+            GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+            GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
+  EXPECT_EQ("<ruby>abc<rt>^XYZ|</rt></ruby>",
+            GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
+}
+
 TEST_P(ParameterizedTextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
   EXPECT_EQ("<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
