@@ -258,8 +258,6 @@ class DCLayerOverlayTest : public testing::Test {
 };
 
 TEST_F(DCLayerOverlayTest, Occluded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDirectCompositionUnderlays);
   {
     auto pass = CreateRenderPass();
     SharedQuadState* first_shared_state = pass->shared_quad_state_list.back();
@@ -365,8 +363,6 @@ TEST_F(DCLayerOverlayTest, Occluded) {
 }
 
 TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDirectCompositionUnderlays);
   {
     auto pass = CreateRenderPass();
     SharedQuadState* shared_quad_state = pass->shared_quad_state_list.back();
@@ -486,9 +482,6 @@ TEST_F(DCLayerOverlayTest, DamageRect) {
 }
 
 TEST_F(DCLayerOverlayTest, ClipRect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDirectCompositionUnderlays);
-
   // Process twice. The second time through the overlay list shouldn't change,
   // which will allow the damage rect to reflect just the changes in that
   // frame.
@@ -567,9 +560,6 @@ TEST_F(DCLayerOverlayTest, TransparentOnTop) {
 }
 
 TEST_F(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDirectCompositionUnderlays);
-
   for (int i = 0; i < 3; i++) {
     auto pass = CreateRenderPass();
     // Add a solid color quad on top

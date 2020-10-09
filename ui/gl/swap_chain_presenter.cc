@@ -498,10 +498,6 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     GLImageDXGI* nv12_image,
     const gfx::Rect& content_rect,
     const gfx::Size& swap_chain_size) {
-  if (!base::FeatureList::IsEnabled(
-          features::kDirectCompositionUseNV12DecodeSwapChain))
-    return false;
-
   if (ShouldUseVideoProcessorScaling())
     return false;
 

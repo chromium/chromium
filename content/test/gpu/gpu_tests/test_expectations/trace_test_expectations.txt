@@ -78,29 +78,42 @@ crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_NV12 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
+
+# Zero copy also needs scaling to work.
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_DXVA [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_VP_SCALING [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_DXVA [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
+crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
 
 # Using YUY2 instead of NV12 on Windows 10 HD 630 GPUs due to NV12 support
-# showing up as SOFTWARE.
+# showing up as SOFTWARE which causes zero copy to fail.
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Underlay [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Underlay_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Rot_180 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Rot_270 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Rot_90 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
+crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_VP9_DXVA [ Failure ]
+crbug.com/1079393 [ win10 intel-0x5912 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 
 # Fuchsia Flakes.
 crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Skip ]
@@ -121,3 +134,7 @@ crbug.com/1058255 [ fuchsia ] TraceTest_WebGLGreenTriangle_AA_Alpha [ Skip ]
 # or ChromeOS.
 crbug.com/1129879 [ android ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
 crbug.com/1129879 [ chromeos ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+
+# BGRA swap chains don't consistently get promoted to overlays.
+crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Skip ]
+crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ Skip ]
