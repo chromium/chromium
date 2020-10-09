@@ -48,6 +48,8 @@ class IncludeNode(base.Node):
     """Attributes:
        translateable:         False if the node has contents that should not be
                               translated.
+       resource_path:         If provided, is used to populate the |name|
+                              property of the generated GritResourceMap struct.
        preprocess:            Takes the same code path as flattenhtml, but it
                               disables any  processing/inlining outside of <if>
                               and <include>.
@@ -69,6 +71,7 @@ class IncludeNode(base.Node):
         'use_base_dir': 'true',
         'skip_minify': 'false',
         'skip_in_resource_map': 'false',
+        'resource_path': '',
     }
 
   def GetInputPath(self):

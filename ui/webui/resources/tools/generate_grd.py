@@ -57,7 +57,8 @@ GRD_BEGIN_TEMPLATE = '<?xml version="1.0" encoding="UTF-8"?>\n'\
 
 GRD_INCLUDE_TEMPLATE = '      <include name="{name}" ' \
                        'file="${{root_gen_dir}}/{path_from_gen}" ' \
-                       'use_base_dir="false" type="BINDATA" />\n'
+                       'resource_path="{path}" use_base_dir="false" ' \
+                       'type="BINDATA" />\n'
 
 GRD_END_TEMPLATE = '    </includes>\n'\
                    '  </release>\n'\
@@ -85,6 +86,7 @@ def main(argv):
         filepath = os.path.join(base_dir, filename).replace('\\', '/')
         rebased_path = os.path.relpath(filepath, args.root_gen_dir)
         grd_file.write(GRD_INCLUDE_TEMPLATE.format(name=name,
+                                                   path=filename,
                                                    path_from_gen=rebased_path))
 
   grd_file.write(GRD_END_TEMPLATE)

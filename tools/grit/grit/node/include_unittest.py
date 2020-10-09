@@ -15,6 +15,7 @@ import zlib
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
+import grit.format.resource_map
 from grit.node import misc
 from grit.node import include
 from grit.node import empty
@@ -129,6 +130,37 @@ class IncludeNodeUnittest(unittest.TestCase):
     self.assertIn(b'in the middle...', result)
     self.assertNotIn(b'should be removed', result)
 
+  def testAcceptsResourcePath(self):
+    root = util.ParseGrdForUnittest(
+        '''
+        <outputs>
+          <output filename="grit/test1_resources.h" type="rc_header">
+            <emit emit_type='prepend'></emit>
+          </output>
+          <output filename="grit/test1_resources_map.cc"
+              type="resource_file_map_source" />
+          <output filename="grit/test1_resources_map.h"
+              type="resource_map_header" />
+        </outputs>
+        <release seq="3">
+          <includes>
+            <include name="TEST1_TEXT" file="test1_text.txt"
+                     resource_path="foo/renamed1_text.txt"
+                     compress="false" type="BINDATA"/>
+          </includes>
+        </release>''',
+        base_dir=util.PathFromRoot('grit/testdata'))
+    inc, = root.GetChildrenOfType(include.IncludeNode)
+    formatter = grit.format.resource_map.GetFormatter(
+        'resource_file_map_source')
+    formatted = formatter(root,
+                          lang='en',
+                          output_dir=util.PathFromRoot('grit/testdata'))
+    found = False
+    for segment in formatted:
+      found = found or 'foo/renamed1_text.txt' in segment
+      self.assertNotIn('test1_text.txt', segment)
+    self.assertTrue(found)
 
 if __name__ == '__main__':
   unittest.main()

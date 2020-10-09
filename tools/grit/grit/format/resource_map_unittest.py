@@ -33,6 +33,8 @@ class FormatResourceMapUnittest(unittest.TestCase):
           </structures>
           <includes first_id="10000">
             <include type="foo" file="abc" name="IDS_FIRSTPRESENT" />
+            <include type="foo" file="rst" resource_path="new_path/rst_resource"
+                     name="IDS_WITHRESOURCEPATH" />
             <if expr="False">
               <include type="foo" file="def" name="IDS_MISSING" />
             </if>
@@ -44,7 +46,7 @@ class FormatResourceMapUnittest(unittest.TestCase):
             </if>
             <include type="foo" file="mno" name="IDS_THIRDPRESENT" />
             <include type="foo" file="opq" name="IDS_FOURTHPRESENT"
-                                   skip_in_resource_map="true" />
+                     skip_in_resource_map="true" />
          </includes>
        </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
@@ -70,6 +72,7 @@ extern const size_t kTheRcHeaderSize;''', output)
 const GritResourceMap kTheRcHeader[] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
   {"IDS_FIRSTPRESENT", IDS_FIRSTPRESENT},
+  {"IDS_WITHRESOURCEPATH", IDS_WITHRESOURCEPATH},
   {"IDS_LANGUAGESPECIFIC", IDS_LANGUAGESPECIFIC},
   {"IDS_THIRDPRESENT", IDS_THIRDPRESENT},
 };
@@ -84,6 +87,7 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
 const GritResourceMap kTheRcHeader[] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
   {"abc", IDS_FIRSTPRESENT},
+  {"new_path/rst_resource", IDS_WITHRESOURCEPATH},
   {"ghi", IDS_LANGUAGESPECIFIC},
   {"mno", IDS_THIRDPRESENT},
 };

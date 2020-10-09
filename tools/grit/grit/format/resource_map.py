@@ -137,6 +137,10 @@ def _IsSubpath(path1, path2):
   return path1_abs == common
 
 def _GetItemPath(item):
+  resource_path = item.attrs.get('resource_path', '')
+  if resource_path:
+    return resource_path
+
   path = item.GetInputPath().replace("\\", "/")
 
   # Handle the case where the file resides within the output folder,

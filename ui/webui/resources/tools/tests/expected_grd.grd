@@ -12,12 +12,12 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_TEST_TEST_HTML" file="${root_gen_dir}/preprocessed/test.html" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_TEST_TEST_JS" file="${root_gen_dir}/preprocessed/test.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_TEST_DIR_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/element_in_dir.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_TEST_TEST_UI_JS" file="${root_gen_dir}/preprocessed/test_ui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_TEST_TEST_PROXY_JS" file="${root_gen_dir}/preprocessed/test_proxy.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_TEST_DIR_ANOTHER_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/another_element_in_dir.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_TEST_HTML" file="${root_gen_dir}/preprocessed/test.html" resource_path="test.html" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_TEST_JS" file="${root_gen_dir}/preprocessed/test.js" resource_path="test.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_DIR_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/element_in_dir.js" resource_path="dir/element_in_dir.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_TEST_UI_JS" file="${root_gen_dir}/preprocessed/test_ui.js" resource_path="test_ui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_TEST_PROXY_JS" file="${root_gen_dir}/preprocessed/test_proxy.js" resource_path="test_proxy.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_DIR_ANOTHER_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/another_element_in_dir.js" resource_path="dir/another_element_in_dir.js" use_base_dir="false" type="BINDATA" />
     </includes>
   </release>
 </grit>
