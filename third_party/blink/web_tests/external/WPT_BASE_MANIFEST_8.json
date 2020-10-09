@@ -207336,14 +207336,6 @@
        []
       ]
      },
-     "is-where-error-recovery.tentative-expected.txt": [
-      "11ae1aa95b57a00cf9bfe71b099bde1cf76a86e4",
-      []
-     ],
-     "is-where-parsing-expected.txt": [
-      "82bb39be28ff89e78cffe9c1cccb36bf6e789634",
-      []
-     ],
      "not-links-ref.html": [
       "1efe5943f4e33eb0046fa89dfac8a97eeff3da85",
       []
@@ -226262,10 +226254,6 @@
         "92c9981a1123454af8462cea7840a099721109a0",
         []
        ],
-       "hidden-charset-case-sensitive-expected.txt": [
-        "8b2c792e1a95e93bf6ebaf4b926b0257836bbce7",
-        []
-       ],
        "image01-ref.html": [
         "62c141d960d27dc59666538b2ec0f185f59c9468",
         []
@@ -230602,7 +230590,7 @@
      []
     ],
     "webmidi.idl": [
-     "cf08897e99e8f493bc7e44d301dc7cdee75656a3",
+     "89847c3d4597b06c59924f64d71a2555b68359a8",
      []
     ],
     "webrtc-identity.idl": [
@@ -230622,7 +230610,7 @@
      []
     ],
     "webrtc.idl": [
-     "9c438f31093d55bbf08ca29a11c0f617d37481b2",
+     "d82cde768f7b5f65e78570227510f2e4f0d4b7c1",
      []
     ],
     "webusb.idl": [
@@ -242553,7 +242541,7 @@
       []
      ],
      "serve.py": [
-      "b1b9e931317f4e99c7110b2096a0318a8f9edf4e",
+      "3a1c782794a32b92869e67ab07903c209558fb7a",
       []
      ],
      "test_functional.py": [
@@ -248802,7 +248790,7 @@
        []
       ],
       "response.py": [
-       "b7bfcebd10b6af40bc1f26278cf29557381fff3d",
+       "1519ed78f397646559c42fa6322a8c145a14d094",
        []
       ],
       "router.py": [
@@ -248814,7 +248802,7 @@
        []
       ],
       "server.py": [
-       "d6718df3f525d21ce848f75eb91d0741d857e5cb",
+       "d6c61965d96de90ed747f1afaea703219f9e5074",
        []
       ],
       "sslutils": {
@@ -248840,7 +248828,7 @@
        []
       ],
       "utils.py": [
-       "b005b417d743f20f065c195e743d8abcfb04adfc",
+       "f9ed3eaebd67f3fe3bab1961ff93f4053dfc58e4",
        []
       ],
       "wptserve.py": [
@@ -359022,7 +359010,7 @@
         ]
        ],
        "hidden-charset-case-sensitive.html": [
-        "a6df6bcb6d7861e68426f5f0c78c9975f5d8a99c",
+        "537500c91f1391ac99b30d23664fd6ea3288c0b2",
         [
          null,
          {}
