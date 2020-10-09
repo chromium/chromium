@@ -1946,6 +1946,7 @@ static_library("browser") {
     "//components/assist_ranker",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
+    "//components/autofill_assistant/browser/public:public",
     "//components/background_sync",
     "//components/background_task_scheduler",
     "//components/blocked_content",

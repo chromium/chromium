@@ -284,6 +284,10 @@ WebViewPasswordManagerClient::GetFieldInfoManager() const {
   return nullptr;
 }
 
+bool WebViewPasswordManagerClient::IsAutofillAssistantUIVisible() const {
+  return false;
+}
+
 const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService() {
   return sync_service_;
 }

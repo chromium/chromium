@@ -54,19 +54,6 @@ class PasswordFormManager;
 class PasswordManagerMetricsRecorder;
 struct PossibleUsernameData;
 
-// Define the modes of collaboration between Password Manager and Autofill
-// Assistant (who handles form submissions, whether to show prompts or not).
-enum class AutofillAssistantMode {
-  // Autofill Assistant UI is not being shown. Password Manager operates in the
-  // regular
-  // mode - it handles submissions and shows prompts.
-  kUINotShown = 0,
-  // Autofill Assistant UI is being shown. The password manager
-  // is basically off - it does not handle submissions and therefore does not
-  // show prompts. The script does all the work instead.
-  kUIShown
-};
-
 // Per-tab password manager. Handles creation and management of UI elements,
 // receiving password form data from the renderer and managing the password
 // database through the PasswordStore.
@@ -219,12 +206,8 @@ class PasswordManager : public PasswordManagerInterface {
   // Notifies that Credential Management API function store() is called.
   void NotifyStorePasswordCalled();
 
-  // Sets the Autofill Assistant mode to disable prompts while |mode=kRunning|.
-  // A script finish will clear pending credentials in all form managers.
-  void SetAutofillAssistantMode(AutofillAssistantMode mode);
-
-  // Returns the currently set autofill-assistant mode.
-  AutofillAssistantMode GetAutofillAssistantMode() const;
+  // Resets pending credentials.
+  void ResetPendingCredentials();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -326,9 +309,6 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
 
-  // Resets |autofill_assistant_mode_| to the default.
-  void ResetAutofillAssistantMode();
-
 #if defined(OS_IOS)
   // Even though the formal submission might not happen, the manager
   // could still be provisionally saved on user input or have autofilled data,
@@ -390,11 +370,6 @@ class PasswordManager : public PasswordManagerInterface {
   LeakDetectionDelegate leak_delegate_;
 
   base::Optional<PossibleUsernameData> possible_username_;
-
-  // By default Autofill Assistant is not running. Password Manager handles
-  // submissions and shows prompts.
-  AutofillAssistantMode autofill_assistant_mode_ =
-      AutofillAssistantMode::kUINotShown;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordManager);
 };

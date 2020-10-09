@@ -142,6 +142,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(false));
     ON_CALL(filter_, IsSyncAccountEmail(_)).WillByDefault(Return(false));
     ON_CALL(*this, IsNewTabPage()).WillByDefault(Return(false));
+    ON_CALL(*this, IsAutofillAssistantUIVisible()).WillByDefault(Return(false));
   }
 
   MOCK_METHOD(bool,
@@ -184,6 +185,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (override));
   MOCK_METHOD(bool, IsNewTabPage, (), (const, override));
+  MOCK_METHOD(bool, IsAutofillAssistantUIVisible, (), (const, override));
   MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
 
@@ -3585,8 +3587,8 @@ TEST_P(PasswordManagerTest, FormSubmittedOnIFrameMainFrameLoaded) {
 }
 
 TEST_P(PasswordManagerTest, NoPromptAutofillAssistantManuallyCuratedScript) {
-  manager()->SetAutofillAssistantMode(AutofillAssistantMode::kUIShown);
-
+  EXPECT_CALL(client_, IsAutofillAssistantUIVisible)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*store_, GetLogins)
@@ -3623,7 +3625,6 @@ TEST_P(PasswordManagerTest,
     EXPECT_CALL(client_, IsSavingAndFillingEnabled)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
-    manager()->SetAutofillAssistantMode(AutofillAssistantMode::kUIShown);
 
     // Make several forms ready for saving.
     PasswordForm form1(MakeFormWithOnlyNewPasswordField());
@@ -3634,20 +3635,25 @@ TEST_P(PasswordManagerTest,
     manager()->OnInformAboutUserInput(&driver_, form2.form_data);
 
     // Simulate submission in different ways depending on whether
-    // |owned_submitted_form_manager_| should be set and |form_managers_| should
+    // |owned_submitted_form_manager_| should be set and |form_managers_|should
     // be cleared OR the submitted form manager should be in |form_managers_|.
     if (set_owned_form_manager)
       manager()->DidNavigateMainFrame(true /* form_may_be_submitted */);
     else
       OnPasswordFormSubmitted(form2.form_data);
 
-    manager()->SetAutofillAssistantMode(AutofillAssistantMode::kUINotShown);
-
+    // Test that Autofill Assistant has finished a script before Password
+    // Manager detected a successful submission. As a script has finished,
+    // pending credentials have reset.
+    manager()->ResetPendingCredentials();
     manager()->OnPasswordFormsRendered(&driver_, {} /* observed */,
                                        true /* did stop loading */);
+
     // No form manager is ready for saving.
     EXPECT_FALSE(manager()->GetSubmittedManagerForTest());
+
     Mock::VerifyAndClearExpectations(&client_);
+    EXPECT_CALL(client_, IsAutofillAssistantUIVisible).WillOnce(Return(false));
 
     // A form reappears again and a user submits it manually. Now expect a
     // prompt.

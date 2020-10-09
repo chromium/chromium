@@ -890,8 +890,8 @@ void PasswordManager::OnPasswordFormsRendered(
 }
 
 void PasswordManager::OnLoginSuccessful() {
-  if (autofill_assistant_mode_ == AutofillAssistantMode::kUIShown) {
-    // Suppress prompts while Autofill Assistant is running.
+  if (client_->IsAutofillAssistantUIVisible()) {
+    // Suppress prompts while Autofill Assistant UI is shown.
     return;
   }
 
@@ -1223,23 +1223,10 @@ void PasswordManager::ShowManualFallbackForSaving(
   }
 }
 
-void PasswordManager::SetAutofillAssistantMode(AutofillAssistantMode mode) {
-  if (autofill_assistant_mode_ == mode) {
-    return;
-  }
-  autofill_assistant_mode_ = mode;
-
-  if (autofill_assistant_mode_ == AutofillAssistantMode::kUINotShown) {
-    // Reset pending credentials as Autofill Assistant has handled the pending
-    // submission.
-    for (auto& form_manager : form_managers_)
-      form_manager->ResetState();
-    owned_submitted_form_manager_.reset();
-  }
-}
-
-AutofillAssistantMode PasswordManager::GetAutofillAssistantMode() const {
-  return autofill_assistant_mode_;
+void PasswordManager::ResetPendingCredentials() {
+  for (auto& form_manager : form_managers_)
+    form_manager->ResetState();
+  owned_submitted_form_manager_.reset();
 }
 
 #if defined(OS_IOS)

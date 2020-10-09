@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -443,6 +444,13 @@ void ChromePasswordManagerClient::ShowTouchToFill(
           .GetCredentials(),
       driver->AsWeakPtr());
 #endif
+}
+
+bool ChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
+  auto* autofill_assistant_manager =
+      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
+  return autofill_assistant_manager && autofill_assistant_manager->GetState() ==
+                                           autofill_assistant::UIState::kShown;
 }
 
 password_manager::BiometricAuthenticator*
@@ -1172,6 +1180,11 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       this, GetSyncService(profile_), GetIdentityManager(), GetPrefs());
   driver_factory_->RequestSendLoggingAvailability();
 
+  auto* autofill_assistant_manager =
+      autofill_assistant::RuntimeManager::GetOrCreateForWebContents(
+          web_contents);
+  autofill_assistant_manager->AddObserver(this);
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(https://crbug.com/1104919): Remove this logging.
   VLOG(1) << __FUNCTION__ << ": this: " << this;
@@ -1247,6 +1260,12 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
 #endif
   RemoveFromWidgetInputEventObservers(
       web_contents()->GetRenderViewHost()->GetWidget(), this);
+
+  auto* autofill_assistant_manager =
+      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
+  if (autofill_assistant_manager) {
+    autofill_assistant_manager->RemoveObserver(this);
+  }
 }
 
 #if !defined(OS_ANDROID)
@@ -1457,6 +1476,12 @@ gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(
   return gfx::RectF(rwhv->TransformPointToRootCoordSpaceF(
                         bounds_in_frame_coordinates.origin()),
                     bounds_in_frame_coordinates.size());
+}
+
+void ChromePasswordManagerClient::OnStateChanged(
+    autofill_assistant::UIState state) {
+  if (state == autofill_assistant::UIState::kNotShown)
+    password_manager_.ResetPendingCredentials();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromePasswordManagerClient)

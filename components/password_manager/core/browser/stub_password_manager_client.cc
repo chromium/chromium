@@ -161,4 +161,8 @@ FieldInfoManager* StubPasswordManagerClient::GetFieldInfoManager() const {
   return nullptr;
 }
 
+bool StubPasswordManagerClient::IsAutofillAssistantUIVisible() const {
+  return false;
+}
+
 }  // namespace password_manager

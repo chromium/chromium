@@ -62,6 +62,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   const autofill::LogManager* GetLogManager() const override;
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
+  bool IsAutofillAssistantUIVisible() const override;
 
 #if defined(ON_FOCUS_PING_ENABLED) || defined(PASSWORD_REUSE_DETECTION_ENABLED)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()

@@ -102,8 +102,6 @@ class ClientAndroid : public Client,
   std::string GetChromeSignedInEmailAddress() const override;
   AccessTokenFetcher* GetAccessTokenFetcher() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
-  password_manager::PasswordManagerClient* GetPasswordManagerClient()
-      const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
   std::string GetLocale() const override;
   std::string GetCountryCode() const override;
@@ -144,10 +142,6 @@ class ClientAndroid : public Client,
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   content::WebContents* web_contents_;
-  // Once initialized, the |password_manager_client_| is available while
-  // |web_contents_| is available.
-  mutable password_manager::PasswordManagerClient* password_manager_client_ =
-      nullptr;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   std::unique_ptr<Controller> controller_;

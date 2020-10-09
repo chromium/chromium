@@ -115,6 +115,7 @@ class IOSChromePasswordManagerClient
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
+  bool IsAutofillAssistantUIVisible() const override;
 
  private:
   __weak id<IOSChromePasswordManagerClientBridge> bridge_;

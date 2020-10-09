@@ -294,3 +294,7 @@ password_manager::FieldInfoManager*
 IOSChromePasswordManagerClient::GetFieldInfoManager() const {
   return nullptr;
 }
+
+bool IOSChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
+  return false;
+}

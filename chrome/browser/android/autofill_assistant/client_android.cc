@@ -104,12 +104,6 @@ ClientAndroid::~ClientAndroid() {
     Metrics::RecordDropOut(Metrics::DropOutReason::CONTENT_DESTROYED);
   }
 
-  auto* password_manager_client = GetPasswordManagerClient();
-  if (password_manager_client) {
-    password_manager_client->GetPasswordManager()->SetAutofillAssistantMode(
-        password_manager::AutofillAssistantMode::kUINotShown);
-  }
-
   Java_AutofillAssistantClient_clearNativePtr(AttachCurrentThread(),
                                               java_object_);
 }
@@ -189,12 +183,6 @@ void ClientAndroid::TransferUITo(
   auto ui_ptr = std::move(ui_controller_android_);
   // From this point on, the UIController, in ui_ptr, is either transferred or
   // deleted.
-
-  auto* password_manager_client = GetPasswordManagerClient();
-  if (password_manager_client) {
-    password_manager_client->GetPasswordManager()->SetAutofillAssistantMode(
-        password_manager::AutofillAssistantMode::kUINotShown);
-  }
 
   if (!jother_web_contents)
     return;
@@ -429,13 +417,6 @@ void ClientAndroid::AttachUI(
     if (!controller_)
       CreateController(nullptr);
     ui_controller_android_->Attach(web_contents_, this, controller_.get());
-
-    // Suppress password manager's prompts.
-    auto* password_manager_client = GetPasswordManagerClient();
-    if (password_manager_client) {
-      password_manager_client->GetPasswordManager()->SetAutofillAssistantMode(
-          password_manager::AutofillAssistantMode::kUIShown);
-    }
   }
 }
 
@@ -471,20 +452,11 @@ autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
       ProfileManager::GetLastUsedProfile());
 }
 
-password_manager::PasswordManagerClient*
-ClientAndroid::GetPasswordManagerClient() const {
-  if (!password_manager_client_) {
-    password_manager_client_ =
-        ChromePasswordManagerClient::FromWebContents(web_contents_);
-  }
-  return password_manager_client_;
-}
-
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
   if (!website_login_manager_) {
-    auto* client = GetPasswordManagerClient();
-    website_login_manager_ =
-        std::make_unique<WebsiteLoginManagerImpl>(client, web_contents_);
+    website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
+        ChromePasswordManagerClient::FromWebContents(web_contents_),
+        web_contents_);
   }
   return website_login_manager_.get();
 }
@@ -541,12 +513,6 @@ bool ClientAndroid::HasHadUI() const {
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;
-
-  auto* password_manager_client = GetPasswordManagerClient();
-  if (password_manager_client) {
-    password_manager_client->GetPasswordManager()->SetAutofillAssistantMode(
-        password_manager::AutofillAssistantMode::kUINotShown);
-  }
 
   if (ui_controller_android_ && ui_controller_android_->IsAttached())
     DestroyUI();

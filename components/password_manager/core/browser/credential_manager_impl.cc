@@ -132,7 +132,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
     return;
   }
   // Return an empty credential while autofill-assistant is running.
-  if (client_->GetAutofillAssistantMode() == AutofillAssistantMode::kUIShown) {
+  if (client_->IsAutofillAssistantUIVisible()) {
     // Callback with empty credential info.
     std::move(callback).Run(CredentialManagerError::SUCCESS, CredentialInfo());
     LogCredentialManagerGetResult(

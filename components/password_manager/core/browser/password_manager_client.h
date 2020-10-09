@@ -408,8 +408,8 @@ class PasswordManagerClient {
   // Returns a FieldInfoManager associated with the current profile.
   virtual FieldInfoManager* GetFieldInfoManager() const = 0;
 
-  // Returns the currently set autofill-assistant mode.
-  virtual AutofillAssistantMode GetAutofillAssistantMode() const;
+  // Returns if the Autofill Assistant UI is shown.
+  virtual bool IsAutofillAssistantUIVisible() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PasswordManagerClient);
