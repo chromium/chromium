@@ -43,6 +43,7 @@
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/navigation_params.h"
+#include "content/common/navigation_params.mojom.h"
 #include "content/common/web_package/signed_exchange_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1611,6 +1612,48 @@ Maybe<String> GetBlockedReasonFor(
   return blockedReason(static_cast<blink::ResourceRequestBlockedReason>(
       status.extended_error_code));
 }
+
+String GetTrustTokenOperationType(
+    network::mojom::TrustTokenOperationType type) {
+  switch (type) {
+    case network::mojom::TrustTokenOperationType::kIssuance:
+      return protocol::Network::TrustTokenOperationTypeEnum::Issuance;
+    case network::mojom::TrustTokenOperationType::kRedemption:
+      return protocol::Network::TrustTokenOperationTypeEnum::Redemption;
+    case network::mojom::TrustTokenOperationType::kSigning:
+      return protocol::Network::TrustTokenOperationTypeEnum::Signing;
+  }
+}
+
+String GetTrustTokenRefreshPolicy(
+    network::mojom::TrustTokenRefreshPolicy policy) {
+  switch (policy) {
+    case network::mojom::TrustTokenRefreshPolicy::kUseCached:
+      return protocol::Network::TrustTokenParams::RefreshPolicyEnum::UseCached;
+    case network::mojom::TrustTokenRefreshPolicy::kRefresh:
+      return protocol::Network::TrustTokenParams::RefreshPolicyEnum::Refresh;
+  }
+}
+
+std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
+    const network::mojom::TrustTokenParams& params) {
+  auto protocol_params =
+      protocol::Network::TrustTokenParams::Create()
+          .SetType(GetTrustTokenOperationType(params.type))
+          .SetRefreshPolicy(GetTrustTokenRefreshPolicy(params.refresh_policy))
+          .Build();
+
+  if (!params.issuers.empty()) {
+    auto issuers = std::make_unique<protocol::Array<protocol::String>>();
+    for (const auto& issuer : params.issuers) {
+      issuers->push_back(issuer.Serialize());
+    }
+    protocol_params->SetIssuers(std::move(issuers));
+  }
+
+  return protocol_params;
+}
+
 }  // namespace
 
 void NetworkHandler::NavigationRequestWillBeSent(
@@ -1685,6 +1728,13 @@ void NetworkHandler::NavigationRequestWillBeSent(
   double current_wall_time = base::Time::Now().ToDoubleT();
   std::string frame_token =
       nav_request.frame_tree_node()->devtools_frame_token().ToString();
+
+  const mojom::BeginNavigationParams* begin_params = nav_request.begin_params();
+  if (begin_params->trust_token_params) {
+    request->SetTrustTokenParams(
+        BuildTrustTokenParams(*begin_params->trust_token_params));
+  }
+
   frontend_->RequestWillBeSent(
       id, id, url_without_fragment, std::move(request), current_ticks,
       current_wall_time, std::move(initiator), std::move(redirect_response),
@@ -1720,6 +1770,10 @@ void NetworkHandler::RequestSent(const std::string& request_id,
           .Build();
   if (!url_fragment.empty())
     request_object->SetUrlFragment(url_fragment);
+  if (request.trust_token_params.has_value()) {
+    request_object->SetTrustTokenParams(
+        BuildTrustTokenParams(request.trust_token_params.value()));
+  }
   frontend_->RequestWillBeSent(
       request_id, loader_id, url_without_fragment, std::move(request_object),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),

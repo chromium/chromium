@@ -1,0 +1,4 @@
+Check that TrustTokenParams are included when an iframe requests a trust token'
+Main frame navigation not expected to contain trustTokenParams.
+Included trustTokenParams in request: {"type":"Issuance","refreshPolicy":"UseCached"}
+

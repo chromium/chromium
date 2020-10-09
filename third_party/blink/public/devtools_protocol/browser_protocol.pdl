@@ -4374,6 +4374,9 @@ domain Network
         strict-origin-when-cross-origin
       # Whether is loaded via link preload.
       optional boolean isLinkPreload
+      # Set for requests when the TrustToken API is used. Contains the parameters
+      # passed by the developer (e.g. via "fetch") as understood by the backend.
+      experimental optional TrustTokenParams trustTokenParams
 
   # Details of a signed certificate timestamp (SCT).
   type SignedCertificateTimestamp extends object
@@ -4456,6 +4459,31 @@ domain Network
       http-cache
       fallback-code
       network
+
+  # Determines what type of Trust Token operation is executed and
+  # depending on the type, some additional parameters.
+  experimental type TrustTokenParams extends object
+    properties
+      TrustTokenOperationType type
+
+      # Only set for "srr-token-redemption" type and determine whether
+      # to request a fresh SRR or use a still valid cached SRR.
+      enum refreshPolicy
+        UseCached
+        Refresh
+
+      # Origins of issuers from whom to request tokens or redemption
+      # records.
+      optional array of string issuers
+
+  experimental type TrustTokenOperationType extends string
+    enum
+      # Type "token-request" in the Trust Token API.
+      Issuance
+      # Type "srr-token-redemption" in the Trust Token API.
+      Redemption
+      # Type "send-srr" in the Trust Token API.
+      Signing
 
   # HTTP response data.
   type Response extends object

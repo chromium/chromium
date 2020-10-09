@@ -41,6 +41,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/websocket.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
@@ -60,6 +61,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/network_resources_data.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Network.h"
 #include "third_party/blink/renderer/core/inspector/request_debug_header_scope.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -478,6 +480,47 @@ std::unique_ptr<protocol::Network::WebSocketFrame> WebSocketMessageToProtocol(
       .build();
 }
 
+String GetTrustTokenOperationType(
+    network::mojom::TrustTokenOperationType type) {
+  switch (type) {
+    case network::mojom::TrustTokenOperationType::kIssuance:
+      return protocol::Network::TrustTokenOperationTypeEnum::Issuance;
+    case network::mojom::TrustTokenOperationType::kRedemption:
+      return protocol::Network::TrustTokenOperationTypeEnum::Redemption;
+    case network::mojom::TrustTokenOperationType::kSigning:
+      return protocol::Network::TrustTokenOperationTypeEnum::Signing;
+  }
+}
+
+String GetTrustTokenRefreshPolicy(
+    network::mojom::TrustTokenRefreshPolicy policy) {
+  switch (policy) {
+    case network::mojom::TrustTokenRefreshPolicy::kUseCached:
+      return protocol::Network::TrustTokenParams::RefreshPolicyEnum::UseCached;
+    case network::mojom::TrustTokenRefreshPolicy::kRefresh:
+      return protocol::Network::TrustTokenParams::RefreshPolicyEnum::Refresh;
+  }
+}
+
+std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
+    const network::mojom::blink::TrustTokenParams& params) {
+  auto protocol_params =
+      protocol::Network::TrustTokenParams::create()
+          .setType(GetTrustTokenOperationType(params.type))
+          .setRefreshPolicy(GetTrustTokenRefreshPolicy(params.refresh_policy))
+          .build();
+
+  if (!params.issuers.IsEmpty()) {
+    auto issuers = std::make_unique<protocol::Array<protocol::String>>();
+    for (const auto& issuer : params.issuers) {
+      issuers->push_back(issuer->ToString());
+    }
+    protocol_params->setIssuers(std::move(issuers));
+  }
+
+  return protocol_params;
+}
+
 void SetNetworkStateOverride(bool offline,
                              double latency,
                              double download_throughput,
@@ -606,6 +649,10 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
     result->setPostDataEntries(std::move(data_entries));
   if (has_post_data)
     result->setHasPostData(true);
+  if (request.TrustTokenParams()) {
+    result->setTrustTokenParams(
+        BuildTrustTokenParams(*request.TrustTokenParams()));
+  }
   return result;
 }
 
