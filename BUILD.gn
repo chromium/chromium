@@ -1039,13 +1039,6 @@ if (!is_ios) {
     }
   }
 
-  group("devtools_web_tests") {
-    testonly = true
-    deps = [ ":blink_web_tests" ]
-    data_deps = [ ":blink_web_tests" ]
-    data = [ "//third_party/devtools-frontend/src/test/webtests/" ]
-  }
-
   group("blink_web_tests_support_data") {
     testonly = true
     data_deps = [
@@ -1145,38 +1138,41 @@ if (!is_ios) {
     }
   }
 
+  _common_web_test_script = "//testing/scripts/run_isolated_script_test.py"
+
+  _common_web_test_args = [ "@WrappedPath(" + rebase_path(
+                                "//third_party/blink/tools/run_web_tests.py",
+                                root_build_dir) + ")" ]
+  if (is_debug) {
+    _common_web_test_args += [ "--debug" ]
+  } else {
+    _common_web_test_args += [ "--release" ]
+  }
+
+  if (is_android) {
+    _common_web_test_args += [
+      "--platform",
+      "android",
+    ]
+  }
+
+  _common_web_test_args += [
+    "--seed",
+    "4",
+    "--no-show-results",
+    "--zero-tests-executed-ok",
+    "--clobber-old-results",
+    "--exit-after-n-failures",
+    "5000",
+    "--exit-after-n-crashes-or-timeouts",
+    "100",
+  ]
+
   # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_tests.md
   script_test("blink_web_tests") {
-    script = "//testing/scripts/run_isolated_script_test.py"
+    script = _common_web_test_script
 
-    args = [ "@WrappedPath(" +
-             rebase_path("//third_party/blink/tools/run_web_tests.py",
-                         root_build_dir) + ")" ]
-
-    if (is_debug) {
-      args += [ "--debug" ]
-    } else {
-      args += [ "--release" ]
-    }
-
-    if (is_android) {
-      args += [
-        "--platform",
-        "android",
-      ]
-    }
-
-    args += [
-      "--seed",
-      "4",
-      "--no-show-results",
-      "--zero-tests-executed-ok",
-      "--clobber-old-results",
-      "--exit-after-n-failures",
-      "5000",
-      "--exit-after-n-crashes-or-timeouts",
-      "100",
-    ]
+    args = _common_web_test_args
 
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [
@@ -1185,30 +1181,37 @@ if (!is_ios) {
     ]
   }
 
-  generate_wrapper("webgpu_blink_web_tests") {
-    testonly = true
-    wrapper_script = "${root_build_dir}/bin/run_webgpu_blink_web_tests"
-    executable = "//third_party/blink/tools/run_web_tests.py"
-    executable_args = [
-      "--additional-driver-flag=--enable-unsafe-webgpu",
-      "--ignore-default-expectations",
-      "--additional-expectations",
-      "@WrappedPath(../../third_party/blink/web_tests/WebGPUExpectations)",
-      "--isolated-script-test-filter=wpt_internal/webgpu/*",
-    ]
+  script_test("devtools_web_tests") {
+    # This target differs from :blink_web_tests in that it uses the
+    # same test harness but runs an entirely different set of tests
+    # and doesn't have a dependency on the web_test directory at all.
+    script = _common_web_test_script
 
-    if (is_debug) {
-      executable_args += [ "--debug" ]
-    } else {
-      executable_args += [ "--release" ]
-    }
+    args = _common_web_test_args + [
+             "--layout-test-directory=@WrappedPath(" + rebase_path(
+                     "//third_party/devtools-frontend/src/test/webtests",
+                     root_out_dir) + ")",
+             "http/tests/devtools",
+           ]
 
-    if (is_android) {
-      executable_args += [
-        "--platform",
-        "android",
-      ]
-    }
+    data_deps = [ ":blink_web_tests_support_data" ]
+    data = [ "//third_party/devtools-frontend/src/test/webtests/" ]
+  }
+
+  script_test("webgpu_blink_web_tests") {
+    # This target differs from :blink_web_tests in that it uses the same
+    # test harness and a few additional flags but, more importantly, only runs
+    # the web_tests/wpt_internal/webgpu tests, so it doesn't have a data
+    # dependency on the whole web_test directory.
+    script = _common_web_test_script
+    args =
+        _common_web_test_args + [
+          "--additional-driver-flag=--enable-unsafe-webgpu",
+          "--ignore-default-expectations",
+          "--additional-expectations",
+          "@WrappedPath(../../third_party/blink/web_tests/WebGPUExpectations)",
+          "--isolated-script-test-filter=wpt_internal/webgpu/*",
+        ]
 
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [

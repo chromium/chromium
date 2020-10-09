@@ -1250,6 +1250,7 @@
         }
       },
       'webkit_layout_from_devtools': {
+        # TODO(crbug.com/816629) - Move these args into //BUILD.gn .
         # layout test failures are retried 3 times when '--test-list' is not
         # passed, but 0 times when '--test-list' is passed. We want to always
         # retry 3 times, so we explicitly specify it.
@@ -3121,6 +3122,7 @@
 
     'gpu_webgpu_integration_extra_isolated_scripts': {
       'webgpu_blink_web_tests_with_backend_validation': {
+        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests_with_backend_validation',
         'args': [
           '--driver-logging',
@@ -3161,6 +3163,7 @@
 
     'gpu_webgpu_integration_isolated_scripts': {
       'webgpu_blink_web_tests': {
+        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
         'name': 'webgpu_blink_web_tests',
         'args': [
           '--driver-logging',
