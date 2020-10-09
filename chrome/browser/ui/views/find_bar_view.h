@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -45,8 +46,12 @@ class FindBarView : public views::View,
                     public views::ButtonListener,
                     public views::TextfieldController {
  public:
-  explicit FindBarView(FindBarHost* host);
+  METADATA_HEADER(FindBarView);
+
+  explicit FindBarView(FindBarHost* host = nullptr);
   ~FindBarView() override;
+
+  void SetHost(FindBarHost* host);
 
   // Accessors for the text and selection displayed in the text box.
   void SetFindTextAndSelectedRange(const base::string16& find_text,
@@ -69,7 +74,6 @@ class FindBarView : public views::View,
   void ClearMatchCount();
 
   // views::View:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
@@ -115,5 +119,9 @@ class FindBarView : public views::View,
 
   DISALLOW_COPY_AND_ASSIGN(FindBarView);
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::View)
+VIEW_BUILDER_PROPERTY(FindBarHost*, Host)
+END_VIEW_BUILDER(/* no export */, FindBarView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FIND_BAR_VIEW_H_

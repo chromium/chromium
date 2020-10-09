@@ -61,8 +61,10 @@ void SetCommonButtonAttributes(views::ImageButton* button) {
 
 class FindBarMatchCountLabel : public views::Label {
  public:
-  FindBarMatchCountLabel() {}
-  ~FindBarMatchCountLabel() override {}
+  METADATA_HEADER(FindBarMatchCountLabel);
+
+  FindBarMatchCountLabel() = default;
+  ~FindBarMatchCountLabel() override = default;
 
   gfx::Size CalculatePreferredSize() const override {
     // We need to return at least 1dip so that box layout adds padding on either
@@ -118,10 +120,13 @@ class FindBarMatchCountLabel : public views::Label {
 BEGIN_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel, views::Label)
 END_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel)
 
+BEGIN_METADATA(FindBarMatchCountLabel, views::Label)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarView, public:
 
-FindBarView::FindBarView(FindBarHost* host) : find_bar_host_(host) {
+FindBarView::FindBarView(FindBarHost* host) {
   auto find_text = std::make_unique<views::Textfield>();
   find_text->SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD);
   find_text->SetDefaultWidthInChars(30);
@@ -129,9 +134,9 @@ FindBarView::FindBarView(FindBarHost* host) : find_bar_host_(host) {
   find_text->set_controller(this);
   find_text->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND));
   find_text->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
-  find_text->SetShouldDoLearning(
-      !host->browser_view()->GetProfile()->IsOffTheRecord());
   find_text_ = AddChildView(std::move(find_text));
+
+  SetHost(host);
 
   auto match_count_text = std::make_unique<FindBarMatchCountLabel>();
   match_count_text->SetCanProcessEventsWithinSubtree(false);
@@ -222,6 +227,12 @@ FindBarView::FindBarView(FindBarHost* host) : find_bar_host_(host) {
 FindBarView::~FindBarView() {
 }
 
+void FindBarView::SetHost(FindBarHost* host) {
+  find_bar_host_ = host;
+  find_text_->SetShouldDoLearning(
+      host && !host->browser_view()->GetProfile()->IsOffTheRecord());
+}
+
 void FindBarView::SetFindTextAndSelectedRange(
     const base::string16& find_text,
     const gfx::Range& selected_range) {
@@ -260,7 +271,8 @@ void FindBarView::UpdateForResult(
   // find text contents after clearing the find results as the normal
   // prepopulation code does not run.
   if (find_text_->GetText() != find_text && !find_text_->IsIMEComposing() &&
-      (!find_bar_host_->HasGlobalFindPasteboard() || !find_text.empty())) {
+      (!find_bar_host_ || !find_bar_host_->HasGlobalFindPasteboard() ||
+       !find_text.empty())) {
     find_text_->SetText(find_text);
     find_text_->SelectAll(true);
   }
@@ -336,6 +348,9 @@ void FindBarView::FocusAndSelectAll() {
 
 void FindBarView::ButtonPressed(
     views::Button* sender, const ui::Event& event) {
+  if (!find_bar_host_)
+    return;
+
   switch (sender->GetID()) {
     case VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON:
     case VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON:
@@ -368,7 +383,7 @@ void FindBarView::ButtonPressed(
 bool FindBarView::HandleKeyEvent(views::Textfield* sender,
                                  const ui::KeyEvent& key_event) {
   // If the dialog is not visible, there is no reason to process keyboard input.
-  if (!find_bar_host_->IsVisible())
+  if (!find_bar_host_ || !find_bar_host_->IsVisible())
     return false;
 
   if (find_bar_host_->MaybeForwardKeyEventToWebpage(key_event))
@@ -410,6 +425,7 @@ void FindBarView::OnAfterPaste() {
 }
 
 void FindBarView::Find(const base::string16& search_text) {
+  DCHECK(find_bar_host_);
   FindBarController* controller = find_bar_host_->GetFindBarController();
   DCHECK(controller);
   content::WebContents* web_contents = controller->web_contents();
@@ -454,10 +470,6 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
   find_next_button_->SetEnabled(enable_buttons);
 }
 
-const char* FindBarView::GetClassName() const {
-  return "FindBarView";
-}
-
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ui::NativeTheme* theme = GetNativeTheme();
@@ -494,3 +506,6 @@ void FindBarView::OnThemeChanged() {
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
                                 base_foreground_color);
 }
+
+BEGIN_METADATA(FindBarView, views::View)
+END_METADATA
