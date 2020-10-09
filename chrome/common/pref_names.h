@@ -583,6 +583,7 @@ extern const char kProtocolHandlerPerOriginAllowedProtocols[];
 
 extern const char kLastKnownIntranetRedirectOrigin[];
 extern const char kDNSInterceptionChecksEnabled[];
+extern const char kIntranetRedirectBehavior[];
 
 extern const char kShutdownType[];
 extern const char kShutdownNumProcesses[];

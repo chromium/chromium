@@ -3862,6 +3862,22 @@
     ]
   },
 
+  "IntranetRedirectBehavior": {
+    "os": ["chromeos", "linux", "mac", "win"],
+    "test_policy": { "IntranetRedirectBehavior": 0 },
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "IntranetRedirectBehavior": 0 },
+        "prefs": {
+          "browser.intranet_redirect_behavior": {
+            "local_state": true,
+            "value": 0
+          }
+        }
+      }
+    ]
+  },
+
   "----- Chrome OS policies ------------------------------------------------": {},
 
   "ChromeOsLockOnIdleSuspend": {

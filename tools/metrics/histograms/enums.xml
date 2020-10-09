@@ -22236,6 +22236,7 @@ Called by update_document_policy_enum.py.-->
   <int value="789" label="DeviceFamilyLinkAccountsAllowed"/>
   <int value="790" label="EduCoexistenceToSVersion"/>
   <int value="791" label="BrowsingDataLifetime"/>
+  <int value="792" label="IntranetRedirectBehavior"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
