@@ -197,6 +197,12 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     std::unique_ptr<LacrosChromeServiceDelegate> delegate)
     : delegate_(std::move(delegate)),
       sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+  if (g_disable_all_crosapi_for_tests) {
+    // Tests don't call LacrosChromeService::Init(), so provide LacrosInitParams
+    // with default values.
+    init_params_ = crosapi::mojom::LacrosInitParams::New();
+  }
+
   // The sequence on which this object was constructed, and thus affine to.
   scoped_refptr<base::SequencedTaskRunner> affine_sequence =
       base::SequencedTaskRunnerHandle::Get();
@@ -316,6 +322,7 @@ void LacrosChromeServiceImpl::BindReceiver(
   }
 }
 
+// static
 void LacrosChromeServiceImpl::DisableCrosapiForTests() {
   g_disable_all_crosapi_for_tests = true;
 }
