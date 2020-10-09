@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
-import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialIPHUtils;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -59,7 +59,7 @@ public class TutorialListMediator {
                 new PropertyModel.Builder(TutorialCardProperties.ALL_KEYS)
                         .with(TutorialCardProperties.TITLE, tutorial.displayTitle)
                         .with(TutorialCardProperties.VIDEO_LENGTH,
-                                VideoTutorialIPHUtils.getVideoLengthString(tutorial.videoLength))
+                                VideoTutorialUtils.getVideoLengthString(tutorial.videoLength))
                         .with(TutorialCardProperties.CLICK_CALLBACK,
                                 () -> mClickCallback.onResult(tutorial));
 

@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.chrome.browser.video_tutorials.test.TestImageFetcher;
 import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -81,7 +82,8 @@ public class TutorialListCoordinatorTest {
     public void testShowList() {
         Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
         onView(withText(tutorial.displayTitle)).check(matches(isDisplayed()));
-        onView(withText("0:35")).check(matches(isDisplayed()));
+        onView(withText(VideoTutorialUtils.getVideoLengthString(tutorial.videoLength)))
+                .check(matches(isDisplayed()));
         onView(withText(tutorial.displayTitle)).perform(ViewActions.click());
         Mockito.verify(mClickCallback).onResult(tutorial);
     }

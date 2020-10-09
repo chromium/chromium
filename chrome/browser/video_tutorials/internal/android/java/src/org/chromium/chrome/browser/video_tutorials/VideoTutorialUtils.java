@@ -7,11 +7,29 @@ package org.chromium.chrome.browser.video_tutorials;
 import org.chromium.base.Callback;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Handles various feature utility functions associated with video tutorials UI.
  */
 public class VideoTutorialUtils {
+    /**
+     * Converts a duration string in ms to a human-readable form.
+     * @param videoLengthSeconds The video length in seconds.
+     * @return The video length in human-readable form.
+     */
+    public static String getVideoLengthString(int videoLengthSeconds) {
+        int hours = videoLengthSeconds / 3600;
+        int minutes = (videoLengthSeconds / 60) % 60;
+        int seconds = videoLengthSeconds % 60;
+
+        if (hours > 0) {
+            return String.format(Locale.US, "%d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format(Locale.US, "%d:%02d", minutes, seconds);
+        }
+    }
+
     /**
      * Finds the next video tutorial to be presented to the user after the user has completed one.
      */

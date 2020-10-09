@@ -81,15 +81,4 @@ public class VideoTutorialIPHUtils {
         }
     }
 
-    /** @return The text used to show the video length on the IPH card. */
-    public static String getVideoLengthString(int videoLength) {
-        int minutes = videoLength / 60;
-        int seconds = videoLength % 60;
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(minutes);
-        builder.append(":");
-        builder.append(seconds);
-        return builder.toString();
-    }
 }

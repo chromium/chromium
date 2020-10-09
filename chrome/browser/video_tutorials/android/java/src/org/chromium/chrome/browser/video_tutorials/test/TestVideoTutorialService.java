@@ -65,6 +65,11 @@ public class TestVideoTutorialService implements VideoTutorialService {
     }
 
     private void initializeTutorialList() {
+        mTutorials.add(new Tutorial(FeatureType.CHROME_INTRO, "Introduction to chrome",
+                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
+                "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",
+                "caption url", "share url", 25));
+
         mTutorials.add(new Tutorial(FeatureType.DOWNLOAD,
                 "How to use Google Chrome's download functionality",
                 "https://storage.googleapis.com/stock-wizard.appspot.com/portrait.jpg",

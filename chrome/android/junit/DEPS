@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/thumbnail/generator/android/java",
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPropertiesDelegate.java",
   "+chrome/browser/ui/messages/android/java",
+  "+chrome/browser/video_tutorials",
   "+chrome/browser/xsurface/android",
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android",

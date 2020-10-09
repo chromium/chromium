@@ -12,6 +12,7 @@ import android.view.ViewStub;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -51,7 +52,7 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
         mModel.set(VideoIPHProperties.VISIBILITY, true);
         mModel.set(VideoIPHProperties.DISPLAY_TITLE, tutorial.displayTitle);
         mModel.set(VideoIPHProperties.VIDEO_LENGTH,
-                VideoTutorialIPHUtils.getVideoLengthString(tutorial.videoLength));
+                VideoTutorialUtils.getVideoLengthString(tutorial.videoLength));
         mModel.set(VideoIPHProperties.CLICK_LISTENER, () -> mOnClickListener.onResult(tutorial));
         mModel.set(
                 VideoIPHProperties.DISMISS_LISTENER, () -> mOnDismissListener.onResult(tutorial));

@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.chrome.browser.video_tutorials.languages.LanguagePickerCoordinator;
 import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService;
 import org.chromium.content_public.browser.NavigationController;
@@ -131,5 +132,15 @@ public class VideoPlayerMediatorUnitTest {
         mMediator.onEnded();
         assertThat(mModel.get(VideoPlayerProperties.SHOW_WATCH_NEXT), equalTo(true));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE), equalTo(true));
+    }
+
+    @Test
+    public void testVideoLengthString() {
+        assertThat(VideoTutorialUtils.getVideoLengthString(0), equalTo("0:00"));
+        assertThat(VideoTutorialUtils.getVideoLengthString(5), equalTo("0:05"));
+        assertThat(VideoTutorialUtils.getVideoLengthString(55), equalTo("0:55"));
+        assertThat(VideoTutorialUtils.getVideoLengthString(70), equalTo("1:10"));
+        assertThat(VideoTutorialUtils.getVideoLengthString(1200), equalTo("20:00"));
+        assertThat(VideoTutorialUtils.getVideoLengthString(3615), equalTo("1:00:15"));
     }
 }

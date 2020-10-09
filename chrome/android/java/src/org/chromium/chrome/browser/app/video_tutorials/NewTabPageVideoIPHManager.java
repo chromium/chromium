@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.view.ViewStub;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -58,14 +60,10 @@ public class NewTabPageVideoIPHManager {
 
         mContext = viewStub.getContext();
         mTracker = TrackerFactory.getTrackerForProfile(profile);
-        ImageFetcher imageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile, GlobalDiscardableReferencePool.getReferencePool());
         Callback<Tutorial> clickListener = this::onClickIPH;
         Callback<Tutorial> dismissListener = this::onDismissIPH;
-        mVideoIPHCoordinator = VideoTutorialServiceFactory.createVideoIPHCoordinator(
-                viewStub, imageFetcher, clickListener, dismissListener);
-
+        mVideoIPHCoordinator = createVideoIPHCoordinator(
+                viewStub, createImageFetcher(profile), clickListener, dismissListener);
         mVideoTutorialService = VideoTutorialServiceFactory.getForProfile(profile);
         mVideoTutorialService.getTutorials(this::onFetchTutorials);
     }
@@ -101,7 +99,7 @@ public class NewTabPageVideoIPHManager {
         if (tutorial.featureType == FeatureType.SUMMARY) {
             launchTutorialListActivity();
         } else {
-            VideoPlayerActivity.playVideoTutorial(mContext, tutorial);
+            launchVideoPlayer(tutorial);
         }
 
         mHandler.postDelayed(mVideoIPHCoordinator::hideVideoIPH, CARD_HIDE_ANIMATION_DURATION_MS);
@@ -115,15 +113,35 @@ public class NewTabPageVideoIPHManager {
     }
 
     private void addSyntheticSummaryTutorial(List<Tutorial> tutorials) {
-        Tutorial summary = new Tutorial(FeatureType.INVALID,
+        Tutorial summary = new Tutorial(FeatureType.SUMMARY,
                 mContext.getString(R.string.video_tutorials_card_all_videos), null, null, null,
                 null, 0);
         tutorials.add(summary);
     }
 
-    private void launchTutorialListActivity() {
+    @VisibleForTesting
+    protected void launchVideoPlayer(Tutorial tutorial) {
+        VideoPlayerActivity.playVideoTutorial(mContext, tutorial);
+    }
+
+    @VisibleForTesting
+    protected void launchTutorialListActivity() {
         Intent intent = new Intent();
         intent.setClass(mContext, VideoTutorialListActivity.class);
         mContext.startActivity(intent);
+    }
+
+    @VisibleForTesting
+    protected ImageFetcher createImageFetcher(Profile profile) {
+        return ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                profile, GlobalDiscardableReferencePool.getReferencePool());
+    }
+
+    @VisibleForTesting
+    protected VideoIPHCoordinator createVideoIPHCoordinator(ViewStub viewStub,
+            ImageFetcher imageFetcher, Callback<Tutorial> clickListener,
+            Callback<Tutorial> dismissListener) {
+        return VideoTutorialServiceFactory.createVideoIPHCoordinator(
+                viewStub, imageFetcher, clickListener, dismissListener);
     }
 }
