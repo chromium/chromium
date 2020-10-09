@@ -193,6 +193,7 @@ public class FeedNewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
+    @DisabledTest(message = "Flaky -- crbug.com/1136923")
     public void testSignInPromo() {
         openNewTabPage();
         SignInPromo.SigninObserver signinObserver = mNtp.getCoordinatorForTesting()
