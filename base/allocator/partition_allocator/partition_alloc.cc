@@ -278,6 +278,11 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // the beginning of the slot.
   allow_extras = (opts.alignment != PartitionOptions::Alignment::kAlignedAlloc);
 
+  // Concurrent freeing in PCScan can only safely work on thread-safe
+  // partitions.
+  if (thread_safe && opts.pcscan == PartitionOptions::PCScan::kEnabled)
+    pcscan.emplace(this);
+
   // We mark the sentinel bucket/page as free to make sure it is skipped by our
   // logic to find a new active page.
   memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
@@ -875,6 +880,18 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 
 template struct BASE_EXPORT PartitionRoot<internal::ThreadSafe>;
 template struct BASE_EXPORT PartitionRoot<internal::NotThreadSafe>;
+
+static_assert(sizeof(PartitionRoot<internal::ThreadSafe>) ==
+                  sizeof(PartitionRoot<internal::NotThreadSafe>),
+              "Layouts should match");
+static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, buckets) ==
+                  offsetof(PartitionRoot<internal::NotThreadSafe>, buckets),
+              "Layouts should match");
+static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
+                  offsetof(PartitionRoot<internal::ThreadSafe>, buckets) +
+                      kNumBuckets *
+                          sizeof(PartitionRoot<internal::ThreadSafe>::Bucket),
+              "sentinel_bucket must be just after the regular buckets.");
 
 namespace internal {
 

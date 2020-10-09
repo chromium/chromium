@@ -7,12 +7,16 @@
 
 #include <string.h>
 
+#include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/object_bitmap.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
+#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "base/check_op.h"
 #include "base/thread_annotations.h"
@@ -47,6 +51,9 @@ struct DeferredUnmap {
  private:
   BASE_EXPORT NOINLINE void Unmap();
 };
+
+using QuarantineBitmap =
+    ObjectBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 
 // Some notes on page states. A page can be in one of four major states:
 // 1) Active.
@@ -178,6 +185,18 @@ ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
   // The metadata area is exactly one system page (the guard page) into the
   // super page.
   return reinterpret_cast<char*>(pointer_as_uint + SystemPageSize());
+}
+
+ALWAYS_INLINE bool IsWithinSuperPagePayload(bool with_pcscan, void* ptr) {
+  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
+  const auto ptr_as_uint = reinterpret_cast<uintptr_t>(ptr);
+  const auto super_page_base = ptr_as_uint & kSuperPageBaseMask;
+  const uintptr_t payload_start =
+      super_page_base + PartitionPageSize() + kReservedTagBitmapSize +
+      (with_pcscan ? 2 * sizeof(QuarantineBitmap) : 0);
+  const uintptr_t payload_end =
+      super_page_base + kSuperPageSize - PartitionPageSize();
+  return ptr_as_uint >= payload_start && ptr_as_uint < payload_end;
 }
 
 // See the comment for |FromPointer|.
@@ -363,6 +382,25 @@ ALWAYS_INLINE void DeferredUnmap::Run() {
   if (UNLIKELY(ptr)) {
     Unmap();
   }
+}
+
+enum class QuarantineBitmapType { kMutator, kScanner };
+
+ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
+    QuarantineBitmapType type,
+    size_t pcscan_epoch,
+    void* ptr) {
+  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
+  auto* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
+                                             kSuperPageBaseMask);
+  auto* first_bitmap = reinterpret_cast<QuarantineBitmap*>(
+      super_page + PartitionPageSize() + kReservedTagBitmapSize);
+  auto* second_bitmap = first_bitmap + 1;
+
+  if (type == QuarantineBitmapType::kScanner)
+    std::swap(first_bitmap, second_bitmap);
+
+  return (pcscan_epoch & 1) ? second_bitmap : first_bitmap;
 }
 
 }  // namespace internal

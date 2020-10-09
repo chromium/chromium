@@ -115,6 +115,7 @@
   X("omnibox")                                                           \
   X("oobe")                                                              \
   X("ozone")                                                             \
+  X("partition_alloc")                                                   \
   X("passwords")                                                         \
   X("p2p")                                                               \
   X("page-serialization")                                                \

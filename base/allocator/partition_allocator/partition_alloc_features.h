@@ -26,6 +26,7 @@ struct Feature;
 namespace features {
 
 extern const BASE_EXPORT Feature kPartitionAllocGigaCage;
+extern const BASE_EXPORT Feature kPartitionAllocPCScan;
 
 ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 #if defined(PA_HAS_64_BITS_POINTERS) && defined(OS_WIN)
@@ -57,6 +58,15 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 #else
   return FeatureList::IsEnabled(kPartitionAllocGigaCage);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
+ALWAYS_INLINE bool IsPartitionAllocPCScanEnabled() {
+#if !defined(PA_HAS_64_BITS_POINTERS)
+  return false;
+#endif
+  // TODO(bikineev): Calling this function can allocate which can cause
+  // reentrancy for the 'PA as malloc' configuration.
+  return FeatureList::IsEnabled(kPartitionAllocPCScan);
 }
 
 }  // namespace features

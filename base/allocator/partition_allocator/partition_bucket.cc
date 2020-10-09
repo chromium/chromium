@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -286,7 +287,11 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // TODO(tasak): Consider starting the bitmap right after metadata to save
   // space.
   char* tag_bitmap = super_page + PartitionPageSize();
-  char* ret = tag_bitmap + kReservedTagBitmapSize;
+  char* quarantine_bitmaps = tag_bitmap + kReservedTagBitmapSize;
+  const size_t quarantine_bitmaps_size =
+      root->pcscan ? 2 * sizeof(QuarantineBitmap) : 0;
+  PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
+  char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
   root->next_partition_page = ret + total_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
 
@@ -335,9 +340,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // TODO(ajwong): Refactor Page Allocator API so the SuperPage comes in
   // decommited initially.
   SetSystemPagesAccess(
-      super_page + PartitionPageSize() + kReservedTagBitmapSize + total_size,
+      super_page + PartitionPageSize() + kReservedTagBitmapSize +
+          quarantine_bitmaps_size + total_size,
       (kSuperPageSize - PartitionPageSize() - kReservedTagBitmapSize -
-       total_size),
+       quarantine_bitmaps_size - total_size),
       PageInaccessible);
 
   // If we were after a specific address, but didn't get it, assume that

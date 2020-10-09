@@ -117,12 +117,17 @@ MaxSystemPagesPerSlotSpan() {
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
+//     | TagBitmap             |
+//     | QuarantineBitmaps     |
 //     | Slot span             |
 //     | Slot span             |
 //     | ...                   |
 //     | Slot span             |
 //     | Guard pages (16 KiB)  |
 //     +-----------------------+
+//
+// TagBitmap is only present when ENABLE_TAG_FOR_MTE_CHECKED_PTR is defined.
+// QuarantineBitmaps are inserted for partitions that have PCScan enabled.
 //
 // Each slot span is a contiguous range of one or more `PartitionPage`s. Note
 // that slot spans of different sizes may co-exist with one super page. Even

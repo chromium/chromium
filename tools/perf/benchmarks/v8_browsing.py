@@ -14,21 +14,22 @@ import page_sets
 
 def AugmentOptionsForV8BrowsingMetrics(options, enable_runtime_call_stats=True):
   categories = [
-    # Disable all categories by default.
-    '-*',
-    # Memory categories.
-    'disabled-by-default-memory-infra',
-    'toplevel',
-    # V8 categories.
-    'disabled-by-default-v8.gc',
-    'v8',
-    'v8.wasm',
-    'v8.console',
-    'webkit.console',
-    # Blink categories.
-    'blink_gc',
-    # Needed for the metric reported by page.
-    'blink.user_timing'
+      # Disable all categories by default.
+      '-*',
+      # Memory categories.
+      'disabled-by-default-memory-infra',
+      'toplevel',
+      # V8 categories.
+      'disabled-by-default-v8.gc',
+      'v8',
+      'v8.wasm',
+      'v8.console',
+      'webkit.console',
+      # Blink categories.
+      'blink_gc',
+      'partition_alloc',
+      # Needed for the metric reported by page.
+      'blink.user_timing'
   ]
 
   options.ExtendTraceCategoryFilter(categories)

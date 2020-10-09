@@ -155,7 +155,6 @@ std::pair<size_t, size_t>
 ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectIndexAndBit(
     uintptr_t address) const {
   const uintptr_t offset_in_page = address & kPageOffsetMask;
-  PA_DCHECK(!(offset_in_page % kObjectAlignment));
   const size_t object_number = offset_in_page / kObjectAlignment;
   const size_t cell_index = object_number / kBitsPerCell;
   PA_DCHECK(kBitmapSize > cell_index);

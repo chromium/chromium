@@ -62,6 +62,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -71,6 +72,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
+#include "base/allocator/partition_allocator/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
 #include "base/bits.h"
@@ -78,6 +80,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/notreached.h"
+#include "base/optional.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
@@ -389,8 +392,14 @@ struct PartitionOptions {
     kEnabled,
   };
 
+  enum class PCScan {
+    kDisabled,
+    kEnabled,
+  };
+
   Alignment alignment = Alignment::kRegular;
   ThreadCache thread_cache = ThreadCache::kDisabled;
+  PCScan pcscan = PCScan::kDisabled;
 };
 
 // Never instantiate a PartitionRoot directly, instead use
@@ -403,6 +412,7 @@ struct BASE_EXPORT PartitionRoot {
       internal::PartitionSuperPageExtentEntry<thread_safe>;
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
+  using PCScan = base::Optional<internal::PCScan<thread_safe>>;
 
   internal::MaybeSpinLock<thread_safe> lock_;
 
@@ -441,6 +451,7 @@ struct BASE_EXPORT PartitionRoot {
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
+  PCScan pcscan;
 
   // The bucket lookup table lets us map a size_t to a bucket quickly.
   // The trailing +1 caters for the overflow case for very large allocation
@@ -521,6 +532,8 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static void Free(void* ptr);
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
+  // Immediately frees the pointer bypassing the quarantine.
+  ALWAYS_INLINE void FreeNoHooksImmediate(void* ptr, Page* page);
 
   ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
   ALWAYS_INLINE size_t GetSize(void* ptr) const;
@@ -584,18 +597,6 @@ struct BASE_EXPORT PartitionRoot {
 
   friend class internal::ThreadCache;
 };
-
-static_assert(sizeof(PartitionRoot<internal::ThreadSafe>) ==
-                  sizeof(PartitionRoot<internal::NotThreadSafe>),
-              "Layouts should match");
-static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, buckets) ==
-                  offsetof(PartitionRoot<internal::NotThreadSafe>, buckets),
-              "Layouts should match");
-static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
-                  offsetof(PartitionRoot<internal::ThreadSafe>, buckets) +
-                      kNumBuckets *
-                          sizeof(PartitionRoot<internal::ThreadSafe>::Bucket),
-              "sentinel_bucket must be just after the regular buckets.");
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
@@ -669,15 +670,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::Free(void* ptr) {
 // static
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
-  // The thread cache is added "in the middle" of the main allocator, that is:
-  // - After all the cookie/tag management
-  // - Before the "raw" allocator.
-  //
-  // On the deallocation side:
-  // 1. Check cookies / tags, adjust the pointer
-  // 2. Deallocation
-  //   a. Return to the thread cache of possible. If it succeeds, return.
-  //   b. Otherwise, call the "raw" allocator <-- Locking
   if (UNLIKELY(!ptr))
     return;
 
@@ -687,7 +679,34 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   PA_DCHECK(IsValidPage(page));
   auto* root = PartitionRoot<thread_safe>::FromPage(page);
 
-  if (root->allow_extras) {
+  // TODO(bikineev): Change the first condition to LIKELY once PCScan is enabled
+  // by default.
+  if (UNLIKELY(root->pcscan) && LIKELY(!page->bucket->is_direct_mapped())) {
+    root->pcscan->MoveToQuarantine(ptr, page);
+    return;
+  }
+
+  root->FreeNoHooksImmediate(ptr, page);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
+    void* ptr,
+    Page* page) {
+  // The thread cache is added "in the middle" of the main allocator, that is:
+  // - After all the cookie/tag/ref-count management
+  // - Before the "raw" allocator.
+  //
+  // On the deallocation side:
+  // 1. Check cookies/tags/ref-count, adjust the pointer
+  // 2. Deallocation
+  //   a. Return to the thread cache if possible. If it succeeds, return.
+  //   b. Otherwise, call the "raw" allocator <-- Locking
+  PA_DCHECK(ptr);
+  PA_DCHECK(page);
+  PA_DCHECK(IsValidPage(page));
+
+  if (allow_extras) {
     size_t allocated_size = page->GetAllocatedSize();
 
     // |ptr| points after the tag and the cookie.
@@ -748,17 +767,16 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   //
   // Also the thread-unsafe variant doesn't have a use for a thread cache, so
   // make it statically known to the compiler.
-  if (thread_safe && root->with_thread_cache &&
-      !page->bucket->is_direct_mapped()) {
-    PA_DCHECK(page->bucket >= root->buckets &&
-              page->bucket <= &root->sentinel_bucket);
-    size_t bucket_index = page->bucket - root->buckets;
+  if (thread_safe && with_thread_cache && !page->bucket->is_direct_mapped()) {
+    PA_DCHECK(page->bucket >= this->buckets &&
+              page->bucket <= &this->sentinel_bucket);
+    size_t bucket_index = page->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
     if (thread_cache && thread_cache->MaybePutInCache(ptr, bucket_index))
       return;
   }
 
-  root->RawFree(ptr, page);
+  RawFree(ptr, page);
 }
 
 template <bool thread_safe>
@@ -1189,7 +1207,11 @@ struct BASE_EXPORT PartitionAllocator {
   ~PartitionAllocator();
 
   void init(PartitionOptions = {});
+
   ALWAYS_INLINE PartitionRoot<thread_safe>* root() { return &partition_root_; }
+  ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {
+    return &partition_root_;
+  }
 
  private:
   PartitionRoot<thread_safe> partition_root_;

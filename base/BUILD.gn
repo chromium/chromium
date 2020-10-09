@@ -1776,6 +1776,8 @@ component("base") {
         "allocator/partition_allocator/partition_tag.h",
         "allocator/partition_allocator/partition_tag_bitmap.h",
         "allocator/partition_allocator/partition_tls.h",
+        "allocator/partition_allocator/pcscan.cc",
+        "allocator/partition_allocator/pcscan.h",
         "allocator/partition_allocator/random.cc",
         "allocator/partition_allocator/random.h",
         "allocator/partition_allocator/thread_cache.cc",
@@ -3244,6 +3246,7 @@ test("base_unittests") {
       "allocator/partition_allocator/page_allocator_unittest.cc",
       "allocator/partition_allocator/partition_alloc_unittest.cc",
       "allocator/partition_allocator/partition_lock_unittest.cc",
+      "allocator/partition_allocator/pcscan_unittest.cc",
       "allocator/partition_allocator/thread_cache_unittest.cc",
     ]
   }
