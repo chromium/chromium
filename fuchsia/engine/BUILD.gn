@@ -349,7 +349,10 @@ test("web_engine_integration_tests") {
     "test_debug_listener.cc",
     "test_debug_listener.h",
     "web_engine_debug_integration_test.cc",
+    "web_engine_integration_logging_test.cc",
     "web_engine_integration_test.cc",
+    "web_engine_integration_test_base.cc",
+    "web_engine_integration_test_base.h",
   ]
   data = [ "test/data" ]
   deps = [
