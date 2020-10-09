@@ -92,6 +92,7 @@ const char kQuicEnableSocketRecvOptimization[] =
 const char kQuicVersion[] = "quic_version";
 const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed";
 const char kQuicFlags[] = "set_quic_flags";
+const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
 
 // AsyncDNS experiment dictionary name.
 const char kAsyncDnsFieldTrialName[] = "AsyncDNS";
@@ -545,6 +546,12 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
             continue;
           SetQuicFlagByName(tokens[0], tokens[1]);
         }
+      }
+
+      int quic_ios_network_service_type;
+      if (quic_args->GetInteger(kQuicIOSNetworkServiceType,
+                                &quic_ios_network_service_type)) {
+        quic_params->ios_network_service_type = quic_ios_network_service_type;
       }
 
     } else if (it.key() == kAsyncDnsFieldTrialName) {

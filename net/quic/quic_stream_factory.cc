@@ -1462,6 +1462,9 @@ std::unique_ptr<DatagramClientSocket> QuicStreamFactory::CreateSocket(
       DatagramSocket::DEFAULT_BIND, net_log, source);
   if (params_.enable_socket_recv_optimization)
     socket->EnableRecvOptimization();
+  if (params_.ios_network_service_type > 0) {
+    socket->SetIOSNetworkServiceType(params_.ios_network_service_type);
+  }
   return socket;
 }
 

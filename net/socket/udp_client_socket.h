@@ -73,6 +73,7 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   void SetSendmmsgEnabled(bool enabled) override;
   void SetWriteBatchingActive(bool active) override;
   int SetMulticastInterface(uint32_t interface_index) override;
+  void SetIOSNetworkServiceType(int ios_network_service_type) override;
 
  private:
   UDPSocket socket_;

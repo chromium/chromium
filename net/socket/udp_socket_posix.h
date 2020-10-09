@@ -388,6 +388,9 @@ class NET_EXPORT UDPSocketPosix {
     experimental_recv_optimization_enabled_ = true;
   }
 
+  // Sets iOS Network Service Type for option SO_NET_SERVICE_TYPE.
+  int SetIOSNetworkServiceType(int ios_network_service_type);
+
  protected:
   // WriteAsync batching etc. are to improve throughput of large high
   // bandwidth uploads.

@@ -189,4 +189,10 @@ void UDPClientSocket::EnableRecvOptimization() {
 #endif
 }
 
+void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
+#if defined(OS_POSIX)
+  socket_.SetIOSNetworkServiceType(ios_network_service_type);
+#endif
+}
+
 }  // namespace net

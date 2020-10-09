@@ -1450,4 +1450,17 @@ int UDPSocketPosix::ResetWrittenBytes() {
   return bytes;
 }
 
+int UDPSocketPosix::SetIOSNetworkServiceType(int ios_network_service_type) {
+  if (ios_network_service_type == 0) {
+    return OK;
+  }
+#if defined(OS_IOS)
+  if (setsockopt(socket_, SOL_SOCKET, SO_NET_SERVICE_TYPE,
+                 &ios_network_service_type, sizeof(ios_network_service_type))) {
+    return MapSystemError(errno);
+  }
+#endif  // defined(OS_IOS)
+  return OK;
+}
+
 }  // namespace net

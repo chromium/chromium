@@ -174,6 +174,9 @@ struct NET_EXPORT QuicParams {
   bool disable_tls_zero_rtt = false;
   // If true, gQUIC requests will always require confirmation.
   bool disable_gquic_zero_rtt = false;
+  // Network Service Type of the socket for iOS. Default is NET_SERVICE_TYPE_BE
+  // (best effort).
+  int ios_network_service_type = 0;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the

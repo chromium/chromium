@@ -137,6 +137,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
                   base::Value("MAP * 127.0.0.1"));
   // See http://crbug.com/696569.
   options.SetKey("disable_ipv6_on_wifi", base::Value(true));
+  options.SetPath({"QUIC", "ios_network_service_type"}, base::Value(2));
   std::string options_json;
   EXPECT_TRUE(base::JSONWriter::Write(options, &options_json));
 
@@ -215,6 +216,9 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_FALSE(quic_params->retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params->race_stale_dns_on_connection);
   EXPECT_FALSE(quic_params->go_away_on_path_degrading);
+
+  // Check network_service_type for iOS.
+  EXPECT_EQ(2, quic_params->ios_network_service_type);
 
 #if defined(ENABLE_BUILT_IN_DNS)
   // Check AsyncDNS resolver is enabled (not supported on iOS).
