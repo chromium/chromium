@@ -185,23 +185,22 @@ void StopEchoCancellationDump(AudioProcessing* audio_processing) {
 }
 
 void ConfigAutomaticGainControl(
-    AudioProcessing::Config* apm_config,
     bool agc_enabled,
     bool experimental_agc_enabled,
-    bool use_hybrid_agc,
-    base::Optional<bool> hybrid_agc_use_peaks_not_rms,
-    base::Optional<int> hybrid_agc_saturation_margin,
-    base::Optional<double> compression_gain_db) {
+    base::Optional<AdaptiveGainController2Properties> agc2_properties,
+    base::Optional<double> compression_gain_db,
+    AudioProcessing::Config& apm_config) {
   const bool use_fixed_digital_agc2 = agc_enabled &&
                                       !experimental_agc_enabled &&
                                       compression_gain_db.has_value();
+  const bool use_hybrid_agc = agc2_properties.has_value();
   const bool agc1_enabled =
       agc_enabled && (use_hybrid_agc || !use_fixed_digital_agc2);
 
   // Configure AGC1.
   if (agc1_enabled) {
-    apm_config->gain_controller1.enabled = true;
-    apm_config->gain_controller1.mode =
+    apm_config.gain_controller1.enabled = true;
+    apm_config.gain_controller1.mode =
 #if defined(OS_ANDROID)
         AudioProcessing::Config::GainController1::Mode::kFixedDigital;
 #else
@@ -211,32 +210,44 @@ void ConfigAutomaticGainControl(
 
   // Configure AGC2.
   if (experimental_agc_enabled) {
-    DCHECK(hybrid_agc_use_peaks_not_rms.has_value() &&
-           hybrid_agc_saturation_margin.has_value());
     // Experimental AGC is enabled. Hybrid AGC may or may not be enabled. Config
     // AGC2 with adaptive mode and the given options, while ignoring
     // |use_fixed_digital_agc2|.
-    apm_config->gain_controller2.enabled = use_hybrid_agc;
-    apm_config->gain_controller2.fixed_digital.gain_db = 0.f;
-    apm_config->gain_controller2.adaptive_digital.enabled = true;
+    apm_config.gain_controller2.enabled = use_hybrid_agc;
+    apm_config.gain_controller2.fixed_digital.gain_db = 0.f;
+    apm_config.gain_controller2.adaptive_digital.enabled = true;
 
-    using LevelEstimator =
-        AudioProcessing::Config::GainController2::LevelEstimator;
-    apm_config->gain_controller2.adaptive_digital.level_estimator =
-        hybrid_agc_use_peaks_not_rms.value() ? LevelEstimator::kPeak
+    if (use_hybrid_agc) {
+      auto& adaptive_digital = apm_config.gain_controller2.adaptive_digital;
+
+      adaptive_digital.vad_probability_attack =
+          agc2_properties->vad_probability_attack;
+
+      using LevelEstimator =
+          AudioProcessing::Config::GainController2::LevelEstimator;
+      adaptive_digital.level_estimator = agc2_properties->use_peaks_not_rms
+                                             ? LevelEstimator::kPeak
                                              : LevelEstimator::kRms;
 
-    if (hybrid_agc_saturation_margin.value() != -1) {
-      apm_config->gain_controller2.adaptive_digital.extra_saturation_margin_db =
-          hybrid_agc_saturation_margin.value();
+      adaptive_digital.level_estimator_adjacent_speech_frames_threshold =
+          agc2_properties->level_estimator_speech_frames_threshold;
+
+      adaptive_digital.initial_saturation_margin_db =
+          agc2_properties->initial_saturation_margin_db;
+
+      adaptive_digital.extra_saturation_margin_db =
+          agc2_properties->extra_saturation_margin_db;
+
+      adaptive_digital.gain_applier_adjacent_speech_frames_threshold =
+          agc2_properties->gain_applier_speech_frames_threshold;
     }
   } else if (use_fixed_digital_agc2) {
     // Experimental AGC is disabled, thus hybrid AGC is disabled. Config AGC2
     // with fixed gain mode.
-    apm_config->gain_controller2.enabled = true;
-    apm_config->gain_controller2.fixed_digital.gain_db =
+    apm_config.gain_controller2.enabled = true;
+    apm_config.gain_controller2.fixed_digital.gain_db =
         compression_gain_db.value();
-    apm_config->gain_controller2.adaptive_digital.enabled = false;
+    apm_config.gain_controller2.adaptive_digital.enabled = false;
   }
 }
 
