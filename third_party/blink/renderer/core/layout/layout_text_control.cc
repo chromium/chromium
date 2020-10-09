@@ -90,19 +90,20 @@ int LayoutTextControl::ScrollbarThickness(const LayoutBox& box) {
 }
 
 void LayoutTextControl::HitInnerEditorElement(
+    const LayoutBox& box,
+    HTMLElement& inner_editor,
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset) {
   NOT_DESTROYED();
-  HTMLElement* inner_editor = InnerEditorElement();
-  if (!inner_editor->GetLayoutObject())
+  if (!inner_editor.GetLayoutObject())
     return;
 
   PhysicalOffset local_point =
       hit_test_location.Point() - accumulated_offset -
-      inner_editor->GetLayoutObject()->LocalToAncestorPoint(PhysicalOffset(),
-                                                            this);
-  result.SetNodeAndPosition(inner_editor, local_point);
+      inner_editor.GetLayoutObject()->LocalToAncestorPoint(PhysicalOffset(),
+                                                           &box);
+  result.SetNodeAndPosition(&inner_editor, local_point);
 }
 
 static const char* const kFontFamiliesWithInvalidCharWidth[] = {

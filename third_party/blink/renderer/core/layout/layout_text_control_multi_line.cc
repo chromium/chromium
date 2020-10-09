@@ -50,9 +50,10 @@ bool LayoutTextControlMultiLine::NodeAtPoint(
     return true;
 
   if (result.InnerNode() == GetNode() ||
-      result.InnerNode() == InnerEditorElement())
-    HitInnerEditorElement(result, hit_test_location, accumulated_offset);
-
+      result.InnerNode() == InnerEditorElement()) {
+    HitInnerEditorElement(*this, *InnerEditorElement(), result,
+                          hit_test_location, accumulated_offset);
+  }
   return true;
 }
 

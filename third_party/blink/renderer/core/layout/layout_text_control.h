@@ -53,6 +53,12 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   static float GetAvgCharWidth(const ComputedStyle& style);
   static bool HasValidAvgCharWidth(const Font& font);
 
+  static void HitInnerEditorElement(const LayoutBox& box,
+                                    HTMLElement& inner_editor,
+                                    HitTestResult&,
+                                    const HitTestLocation&,
+                                    const PhysicalOffset& accumulated_offset);
+
  protected:
   LayoutTextControl(TextControlElement*);
 
@@ -61,10 +67,6 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   TextControlInnerEditorElement* InnerEditorElement() const;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-
-  void HitInnerEditorElement(HitTestResult&,
-                             const HitTestLocation&,
-                             const PhysicalOffset& accumulated_offset);
 
   LayoutObject* LayoutSpecialExcludedChild(bool relayout_children,
                                            SubtreeLayoutScope&) override;

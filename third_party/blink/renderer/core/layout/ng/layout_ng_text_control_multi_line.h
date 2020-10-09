@@ -26,6 +26,11 @@ class LayoutNGTextControlMultiLine final : public LayoutNGBlockFlow {
     NOT_DESTROYED();
     return true;
   }
+
+  bool NodeAtPoint(HitTestResult& result,
+                   const HitTestLocation& hit_test_location,
+                   const PhysicalOffset& accumulated_offset,
+                   HitTestAction hit_test_action) override;
 };
 
 }  // namespace blink

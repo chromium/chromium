@@ -171,7 +171,8 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
             container->GetLayoutBox()->PhysicalLocation();
       }
     }
-    HitInnerEditorElement(result, hit_test_location, accumulated_offset);
+    HitInnerEditorElement(*this, *InnerEditorElement(), result,
+                          hit_test_location, accumulated_offset);
   }
   return true;
 }
