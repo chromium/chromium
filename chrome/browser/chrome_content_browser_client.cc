@@ -2223,8 +2223,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       bool client_side_detection_enabled =
           safe_browsing::IsSafeBrowsingEnabled(*prefs) &&
-          safe_browsing::ClientSideDetectionServiceFactory::GetForProfile(
-              profile);
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ::switches::kDisableClientSidePhishingDetection);
 #if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
       client_side_detection_enabled &= base::FeatureList::IsEnabled(
           safe_browsing::kClientSideDetectionForAndroid);
