@@ -100,9 +100,10 @@ SkColor AppListColorProviderImpl::GetPageSwitcherInkDropHighlightColor() const {
                      ripple_attributes.highlight_opacity * 255);
 }
 
-SkColor AppListColorProviderImpl::GetSearchBoxIconColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
+    SkColor default_color) const {
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor, default_color);
 }
 
 SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
