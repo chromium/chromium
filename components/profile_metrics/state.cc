@@ -46,6 +46,11 @@ void LogProfileAccountType(UnconsentedPrimaryAccountType account_type,
       account_type);
 }
 
+void LogProfileSyncEnabled(bool sync_enabled, StateSuffix suffix) {
+  base::UmaHistogramBoolean(
+      "Profile.State.SyncEnabled" + GetStateSuffix(suffix), sync_enabled);
+}
+
 void LogProfileDaysSinceLastUse(int days_since_last_use, StateSuffix suffix) {
   base::UmaHistogramCounts1000(
       "Profile.State.LastUsed" + GetStateSuffix(suffix), days_since_last_use);
