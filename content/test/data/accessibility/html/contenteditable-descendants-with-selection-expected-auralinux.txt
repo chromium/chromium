@@ -15,5 +15,6 @@
 ++++++++++[static] name='Always expose editable tables as tables.' editable selection_start=0 selection_end=3
 ++++[list] editable selection_start=0 selection_end=3
 ++++++[list item] editable selection_start=0 selection_end=3
-++++++++[static] name='1. ' editable selection_start=0 selection_end=3
+++++++++[panel] editable selection_start=0 selection_end=3
+++++++++++[static] name='1. ' selection_start=0 selection_end=3
 ++++++++[static] name='Editable list item.' editable selection_start=0 selection_end=3
