@@ -79,7 +79,7 @@ void AccountFetcherService::Initialize(
       signin_client_->GetPrefs(), AccountFetcherService::kLastUpdatePref,
       kRefreshFromTokenServiceDelay,
       base::Bind(&AccountFetcherService::RefreshAllAccountInfo,
-                 base::Unretained(this), false));
+                 base::Unretained(this), /*only_fetch_if_invalid=*/false));
 
   // Tokens may have already been loaded and we will not receive a
   // notification-on-registration for |token_service_->AddObserver(this)| few
@@ -105,7 +105,7 @@ bool AccountFetcherService::IsAllUserInfoFetched() const {
 void AccountFetcherService::ForceRefreshOfAccountInfo(
     const CoreAccountId& account_id) {
   DCHECK(network_fetches_enabled_);
-  RefreshAccountInfo(account_id, false);
+  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/false);
 }
 
 void AccountFetcherService::OnNetworkInitialized() {
@@ -167,7 +167,7 @@ void AccountFetcherService::MaybeEnableNetworkFetches() {
     network_fetches_enabled_ = true;
     repeating_timer_->Start();
   }
-  RefreshAllAccountInfo(true);
+  RefreshAllAccountInfo(/*only_fetch_if_invalid=*/true);
 #if defined(OS_ANDROID)
   UpdateChildInfo();
 #endif
@@ -221,15 +221,21 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
   const AccountInfo& info =
       account_tracker_service_->GetAccountInfo(account_id);
 
-// |only_fetch_if_invalid| is false when the service is due for a timed update.
-#if defined(OS_ANDROID)
-  // TODO(mlerman): Change this condition back to info.IsValid() and ensure the
-  // Fetch doesn't occur until after ProfileImpl::OnPrefsLoaded().
-  if (!only_fetch_if_invalid || info.gaia.empty())
-#else
-  if (!only_fetch_if_invalid || !info.IsValid())
-#endif
+  // |only_fetch_if_invalid| is false when the service is due for a timed
+  // update.
+  if (!only_fetch_if_invalid || !info.IsValid()) {
+    // Fetching the user info will also fetch the account image.
     StartFetchingUserInfo(account_id);
+    return;
+  }
+
+  // User info is already valid and does not need to be downloaded again.
+  // Fetch the account image in case it was not fetched previously.
+  //
+  // Note: |FetchAccountImage()| does not fetch the account image if the
+  // account image was already downloaded. So it is fine to call this method
+  // even when |only_fetch_if_invalid| is true.
+  FetchAccountImage(account_id);
 }
 
 void AccountFetcherService::OnUserInfoFetchSuccess(
@@ -323,7 +329,7 @@ void AccountFetcherService::OnRefreshTokenAvailable(
 
   if (!network_fetches_enabled_)
     return;
-  RefreshAccountInfo(account_id, true);
+  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
 #if defined(OS_ANDROID)
   UpdateChildInfo();
 #endif
