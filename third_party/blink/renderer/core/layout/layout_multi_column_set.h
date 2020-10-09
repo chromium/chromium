@@ -77,6 +77,10 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return fragmentainer_groups_.Last();
   }
+  MultiColumnFragmentainerGroup& LastFragmentainerGroup() {
+    NOT_DESTROYED();
+    return fragmentainer_groups_.Last();
+  }
   unsigned FragmentainerGroupIndexAtFlowThreadOffset(LayoutUnit,
                                                      PageBoundaryRule) const;
   MultiColumnFragmentainerGroup& FragmentainerGroupAtFlowThreadOffset(
@@ -264,7 +268,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   bool ComputeColumnRuleBounds(const LayoutPoint& paint_offset,
                                Vector<LayoutRect>& column_rule_bounds) const;
 
-  void UpdateFromNG();
+  void FinishLayoutFromNG();
 
  protected:
   LayoutMultiColumnSet(LayoutFlowThread*);

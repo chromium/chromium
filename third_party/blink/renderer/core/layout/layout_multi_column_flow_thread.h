@@ -255,7 +255,8 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   // out inside the flow thread, since the flow thread is not in a spanner's
   // containing block chain (since the containing block is the multicol
   // container).
-  void SkipColumnSpanner(LayoutBox*, LayoutUnit logical_top_in_flow_thread);
+  void SkipColumnSpanner(const LayoutBox*,
+                         LayoutUnit logical_top_in_flow_thread);
 
   // Returns true if at least one column got a new height after flow thread
   // layout (during column set layout), in which case we need another layout
@@ -303,7 +304,11 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   void AppendNewFragmentainerGroupIfNeeded(LayoutUnit offset_in_flow_thread,
                                            PageBoundaryRule);
 
-  void UpdateFromNG();
+  void StartLayoutFromNG(unsigned column_count);
+  LayoutMultiColumnSet* PendingColumnSetForNG() const;
+  void AppendNewFragmentainerGroupFromNG();
+  void SetCurrentColumnBlockSizeFromNG(LayoutUnit);
+  void FinishLayoutFromNG(LayoutUnit flow_thread_offset);
 
   // Implementing FragmentationContext:
   bool IsFragmentainerLogicalHeightKnown() final;

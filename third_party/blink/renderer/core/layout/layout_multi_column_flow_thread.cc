@@ -717,16 +717,67 @@ void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupIfNeeded(
   }
 }
 
-void LayoutMultiColumnFlowThread::UpdateFromNG() {
+void LayoutMultiColumnFlowThread::StartLayoutFromNG(unsigned column_count) {
+  NOT_DESTROYED();
+  column_count_ = column_count;
+  last_set_worked_on_ = ToLayoutMultiColumnSetOrNull(FirstMultiColumnBox());
+}
+
+LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
+    const {
+  NOT_DESTROYED();
+  if (last_set_worked_on_ &&
+      !last_set_worked_on_->FirstFragmentainerGroup().IsLogicalHeightKnown()) {
+    DCHECK_EQ(last_set_worked_on_->FragmentainerGroups().size(), 1u);
+    return last_set_worked_on_;
+  }
+  return nullptr;
+}
+
+void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
+  NOT_DESTROYED();
+  // TODO(mstensho): This nullptr check shouldn't be here, but we need it for
+  // now. If we have no column set at this point, something has gone wrong, but
+  // NG nested column balancing sometimes acts up when doubly nested (or more),
+  // making the legacy write-back machinery call FinishLayoutFromNG()
+  // prematurely. See e.g. fast/multicol/client-rect-nested.html
+  if (last_set_worked_on_)
+    last_set_worked_on_->AppendNewFragmentainerGroup();
+}
+
+void LayoutMultiColumnFlowThread::SetCurrentColumnBlockSizeFromNG(
+    LayoutUnit block_size) {
+  NOT_DESTROYED();
+  // There are cases where NG creates an empty column even if we don't create a
+  // column set.
+  if (!last_set_worked_on_)
+    return;
+  last_set_worked_on_->LastFragmentainerGroup().SetColumnBlockSizeFromNG(
+      block_size);
+}
+
+void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
+    LayoutUnit flow_thread_offset) {
   NOT_DESTROYED();
   all_columns_have_known_height_ = true;
   for (LayoutBox* column_box = FirstMultiColumnBox(); column_box;
        column_box = column_box->NextSiblingMultiColumnBox()) {
-    if (column_box->IsLayoutMultiColumnSet())
-      ToLayoutMultiColumnSet(column_box)->UpdateFromNG();
     column_box->ClearNeedsLayout();
     column_box->UpdateAfterLayout();
   }
+
+  // If we have a trailing column set, finish it.
+  if (LayoutMultiColumnSet* last_column_set =
+          ToLayoutMultiColumnSetOrNull(LastMultiColumnBox())) {
+    last_column_set->EndFlow(flow_thread_offset);
+    last_column_set->FinishLayoutFromNG();
+  }
+
+  ValidateColumnSets();
+  SetLogicalHeight(flow_thread_offset);
+  UpdateAfterLayout();
+  ClearNeedsLayout();
+  last_set_worked_on_ = nullptr;
 }
 
 bool LayoutMultiColumnFlowThread::IsFragmentainerLogicalHeightKnown() {
@@ -991,10 +1042,19 @@ void LayoutMultiColumnFlowThread::WillBeRemovedFromTree() {
 }
 
 void LayoutMultiColumnFlowThread::SkipColumnSpanner(
-    LayoutBox* layout_object,
+    const LayoutBox* layout_object,
     LayoutUnit logical_top_in_flow_thread) {
   NOT_DESTROYED();
   DCHECK(layout_object->IsColumnSpanAll());
+
+  // In legacy layout, |last_set_worked_on_| is only updated if we find a column
+  // set after the spanner. We don't want this in NG, since NG may have created
+  // empty columns after the spanner, without a column set being created, and
+  // then we want to leave the column set alone.
+  bool is_ng_layout = MultiColumnBlockFlow()->IsLayoutNGObject();
+  if (is_ng_layout)
+    last_set_worked_on_ = nullptr;
+
   LayoutMultiColumnSpannerPlaceholder* placeholder =
       layout_object->SpannerPlaceholder();
   LayoutBox* previous_column_box = placeholder->PreviousSiblingMultiColumnBox();
@@ -1007,6 +1067,9 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
     last_set_worked_on_ = next_set;
     next_set->BeginFlow(logical_top_in_flow_thread);
   }
+
+  if (is_ng_layout)
+    return;
 
   // We'll lay out of spanners after flow thread layout has finished (during
   // layout of the spanner placeholders). There may be containing blocks for

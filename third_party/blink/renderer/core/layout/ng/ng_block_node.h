@@ -233,7 +233,11 @@ class CORE_EXPORT NGBlockNode final : public NGLayoutInputNode {
   void PlaceChildrenInLayoutBox(
       const NGPhysicalBoxFragment&,
       const NGBlockBreakToken* previous_break_token) const;
-  void PlaceChildrenInFlowThread(const NGPhysicalBoxFragment&) const;
+  void PlaceChildrenInFlowThread(
+      LayoutMultiColumnFlowThread*,
+      const NGConstraintSpace&,
+      const NGPhysicalBoxFragment&,
+      const NGBlockBreakToken* previous_container_break_token) const;
   void CopyChildFragmentPosition(
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalOffset,
