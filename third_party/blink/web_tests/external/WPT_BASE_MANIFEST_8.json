@@ -53062,6 +53062,227 @@
        {}
       ]
      ],
+     "predefined-001.html": [
+      "65cf808556b03e305431e4bf292b02a4a0295be3",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-002.html": [
+      "4e125f96b571e932843065411a456620223c883e",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-003.html": [
+      "1d014cb0483553d273c702985531c381bf1b6b01",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-004.html": [
+      "f1bf6ddea30fd7db0c92f6e644ec53b76c8843b7",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-005.html": [
+      "780b929d8565f33241a701ddb83a16687100c6b6",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-006.html": [
+      "f53fb79a021358e9856b379c5c189201e20bfbd2",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-007.html": [
+      "d67979318270449c331da4f76a73b9184e8c1372",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-008.html": [
+      "57bbe3a51e790258bd968e54ff15975c5d8a66a3",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-009.html": [
+      "e29305ec981eaf3cc050e761149823dd8edfe812",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-010.html": [
+      "a0eb9952e1e912f7a6878364f32ace1672d54ad2",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-011.html": [
+      "37a16f1b9f232a8925bc3c161d98780a0c0e0e0f",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-012.html": [
+      "a4ead24196971458cb5809a6aeb9849d1b04bb04",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-013.html": [
+      "ed4a48f90b0882fa7426564d6d5a81c0dd31b355",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-014.html": [
+      "51f72650bd71e0531ac779cfb07a4368ee412cc1",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-015.html": [
+      "27641397fa49f353b921a831a8a31be7eaaa8ae2",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-016.html": [
+      "7b7c653010c9fe691dc357bfcd7b74bfb0a0c98b",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "predefined-017.html": [
+      "ee1ebb6711f347807d8f6372032f3cdcf5cd11ef",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "rgb-001.html": [
       "30603faa9c5b70956d97139d7bb86cc9cb2fd9e3",
       [
@@ -226882,7 +227103,7 @@
          []
         ],
         "non-object.tentative.any.serviceworker-expected.txt": [
-         "36e95c63965d55fa21929e2d5d3a7fe09c46876c",
+         "25ca5d904d39e41d639846334c840117510cc58f",
          []
         ],
         "non-object.tentative.any.sharedworker-expected.txt": [
@@ -229986,7 +230207,7 @@
      []
     ],
     "badging.idl": [
-     "0b011a92f003a46df4219e528696003b40559fa3",
+     "28578621c9a4b1586798403a9c4ebc60cb5310ef",
      []
     ],
     "battery-status.idl": [
@@ -230871,7 +231092,7 @@
     ]
    },
    "lint.ignore": [
-    "8431077e6a677d6f0eeb2c05ab024fd073a5f490",
+    "5bcb811df36051225f60efa903f7f1e4cd7eda29",
     []
    ],
    "loading": {
@@ -238463,7 +238684,7 @@
       []
      ],
      "import-module-scripts.https-expected.txt": [
-      "c45166005be52bde9ecde3129e595cac691744a8",
+      "6bac8b097c273a972583a8d4c453f22915975bb7",
       []
      ],
      "import-scripts-redirect.https-expected.txt": [
@@ -250339,7 +250560,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "247b9c781835357a12382ef7d7774c15b6555bc6",
+      "64a54bca3a408c5af751a59daf8664db62ea7d28",
       []
      ],
      "location": {
@@ -250353,16 +250574,38 @@
       ]
      },
      "path-restriction": {
-      "resource1.js": [
-       "7bd437364a24b6e94493c2acca939991b15cd41c",
+      "other": {
+       "resource.js": [
+        "a4967d2285ae3a87b6da6e41f786cf65527184b6",
+        []
+       ]
+      },
+      "resource.js": [
+       "a4967d2285ae3a87b6da6e41f786cf65527184b6",
        []
-      ]
-     },
-     "path-restriction1": {
-      "resource1.js": [
-       "e2da7e63c008ef405ee3a43595a940216a59d320",
+      ],
+      "wbn": {
+       "resource.js": [
+        "a4967d2285ae3a87b6da6e41f786cf65527184b6",
+        []
+       ],
+       "sub": {
+        "resource.js": [
+         "a4967d2285ae3a87b6da6e41f786cf65527184b6",
+         []
+        ]
+       }
+      },
+      "wbn-resource.js": [
+       "a4967d2285ae3a87b6da6e41f786cf65527184b6",
        []
-      ]
+      ],
+      "wbn1": {
+       "resource.js": [
+        "a4967d2285ae3a87b6da6e41f786cf65527184b6",
+        []
+       ]
+      }
      },
      "subresource": {
       "root.js": [
@@ -250422,7 +250665,7 @@
        []
       ],
       "path-restriction.wbn": [
-       "7255de59c107acd2a4f9c377f0b6bafdb878b131",
+       "e861469e122afd141bcec8d394a0d4504898208c",
        []
       ],
       "subresource.wbn": [
@@ -273345,7 +273588,7 @@
      ]
     ],
     "async-platform-specific-write-read.tentative.https.html": [
-     "685b5a58a809f43e7c1379055743d5536258681c",
+     "f8af468bff7885eeb6fca5493e85bc68b42bf615",
      [
       null,
       {
@@ -273354,7 +273597,7 @@
      ]
     ],
     "async-raw-write-read.tentative.https.html": [
-     "e6882b344f86de62af5c31f17719a4de6f94b2bb",
+     "480593dcd715eacefbdaa8f7f4da305992a80c65",
      [
       null,
       {
@@ -413924,7 +414167,14 @@
       ]
      ],
      "subresource-loading-from-web-bundle.tentative.html": [
-      "1d59e11e568cb8bdf0d7d58e7d22704ea4c1af14",
+      "c2de0eb0994f54c65a342b501aa3e9107949faf7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "subresource-loading-path-restriction.tentative.html": [
+      "706bfb97b1142833380024c3f969b1b3b2756ec1",
       [
        null,
        {}
