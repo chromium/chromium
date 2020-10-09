@@ -869,5 +869,5 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuClickKeyAcceleratorTest, FocusOtherProfile) {
   histogram_tester_.ExpectUniqueSample(
       "Profile.Menu.ClickedActionableItem",
       ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-      /*count=*/1);
+      /*expected_count=*/1);
 }
