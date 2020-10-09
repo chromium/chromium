@@ -85,7 +85,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     // Called when a same-page link is followed or the url fragment changes.
     this.addListener_(EventType.SCROLLED_TO_ANCHOR, this.onScrolledToAnchor);
     this.addListener_(EventType.SELECTION, this.onSelection);
-    this.addListener_(EventType.TEXT_CHANGED, this.onEditableChanged_);
     this.addListener_(
         EventType.TEXT_SELECTION_CHANGED, this.onEditableChanged_);
     this.addListener_(EventType.VALUE_CHANGED, this.onValueChanged);
@@ -370,7 +369,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     const isContentEditable = evt.target.state[StateType.RICHLY_EDITABLE];
 
     switch (evt.type) {
-      case EventType.TEXT_CHANGED:
       case EventType.TEXT_SELECTION_CHANGED:
       case EventType.VALUE_CHANGED:
         // Known to be duplicated by document selection changes for content
