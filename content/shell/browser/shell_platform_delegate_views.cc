@@ -70,18 +70,15 @@ struct ShellPlatformDelegate::PlatformData {
 namespace {
 
 // Maintain the UI controls and web view for content shell
-class ShellWindowDelegateView : public views::WidgetDelegateView,
-                                public views::TextfieldController,
-                                public views::ButtonListener {
+class ShellView : public views::View,
+                  public views::TextfieldController,
+                  public views::ButtonListener {
  public:
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
-  explicit ShellWindowDelegateView(Shell* shell) : shell_(shell) {
-    SetHasWindowSizeControls(true);
-    InitShellWindow();
-  }
+  explicit ShellView(Shell* shell) : shell_(shell) { InitShellWindow(); }
 
-  ~ShellWindowDelegateView() override {}
+  ~ShellView() override {}
 
   // Update the state of UI controls
   void SetAddressBarURL(const GURL& url) {
@@ -116,7 +113,6 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
 #endif
   }
 
-  void SetWindowTitle(const base::string16& title) { title_ = title; }
   void EnableUIControl(UIControl control, bool is_enabled) {
     if (control == BACK_BUTTON) {
       back_button_->SetState(is_enabled ? views::Button::STATE_NORMAL
@@ -266,9 +262,6 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
       shell_->Stop();
   }
 
-  // Overridden from WidgetDelegateView
-  base::string16 GetWindowTitle() const override { return title_; }
-
   // Overridden from View
   gfx::Size GetMinimumSize() const override {
     // We want to be able to make the window smaller than its initial
@@ -290,7 +283,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
         shell_->GoBackOrForward(1);
         return true;
       default:
-        return views::WidgetDelegateView::AcceleratorPressed(accelerator);
+        return views::View::AcceleratorPressed(accelerator);
     }
   }
 
@@ -312,8 +305,12 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   View* contents_view_ = nullptr;
   views::WebView* web_view_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(ShellWindowDelegateView);
+  DISALLOW_COPY_AND_ASSIGN(ShellView);
 };
+
+ShellView* ShellViewForWidget(views::Widget* widget) {
+  return static_cast<ShellView*>(widget->widget_delegate()->GetContentsView());
+}
 
 }  // namespace
 
@@ -349,16 +346,21 @@ void ShellPlatformDelegate::CreatePlatformWindow(
 
   shell_data.content_size = initial_size;
 
+  auto delegate = std::make_unique<views::WidgetDelegate>();
+  delegate->SetContentsView(std::make_unique<ShellView>(shell));
+  delegate->SetHasWindowSizeControls(true);
+  delegate->SetOwnedByWidget(true);
+
 #if defined(OS_CHROMEOS)
   shell_data.window_widget = views::Widget::CreateWindowWithContext(
-      new ShellWindowDelegateView(shell),
+      std::move(delegate),
       platform_->wm_test_helper->GetDefaultParent(nullptr, gfx::Rect()),
       gfx::Rect(initial_size));
 #else
   shell_data.window_widget = new views::Widget();
   views::Widget::InitParams params;
   params.bounds = gfx::Rect(initial_size);
-  params.delegate = new ShellWindowDelegateView(shell);
+  params.delegate = delegate.release();
   params.wm_class_class = "chromium-content_shell";
   params.wm_class_name = params.wm_class_class;
   shell_data.window_widget->Init(std::move(params));
@@ -384,10 +386,8 @@ void ShellPlatformDelegate::SetContents(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  views::WidgetDelegate* widget_delegate =
-      shell_data.window_widget->widget_delegate();
-  auto* delegate_view = static_cast<ShellWindowDelegateView*>(widget_delegate);
-  delegate_view->SetWebContents(shell->web_contents(), shell_data.content_size);
+  ShellViewForWidget(shell_data.window_widget)
+      ->SetWebContents(shell->web_contents(), shell_data.content_size);
   shell_data.window_widget->GetNativeWindow()->GetHost()->Show();
   shell_data.window_widget->Show();
 }
@@ -406,17 +406,13 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  auto* delegate_view = static_cast<ShellWindowDelegateView*>(
-      shell_data.window_widget->widget_delegate());
+  auto* view = ShellViewForWidget(shell_data.window_widget);
   if (control == BACK_BUTTON) {
-    delegate_view->EnableUIControl(ShellWindowDelegateView::BACK_BUTTON,
-                                   is_enabled);
+    view->EnableUIControl(ShellView::BACK_BUTTON, is_enabled);
   } else if (control == FORWARD_BUTTON) {
-    delegate_view->EnableUIControl(ShellWindowDelegateView::FORWARD_BUTTON,
-                                   is_enabled);
+    view->EnableUIControl(ShellView::FORWARD_BUTTON, is_enabled);
   } else if (control == STOP_BUTTON) {
-    delegate_view->EnableUIControl(ShellWindowDelegateView::STOP_BUTTON,
-                                   is_enabled);
+    view->EnableUIControl(ShellView::STOP_BUTTON, is_enabled);
   }
 }
 
@@ -427,9 +423,7 @@ void ShellPlatformDelegate::SetAddressBarURL(Shell* shell, const GURL& url) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  auto* delegate_view = static_cast<ShellWindowDelegateView*>(
-      shell_data.window_widget->widget_delegate());
-  delegate_view->SetAddressBarURL(url);
+  ShellViewForWidget(shell_data.window_widget)->SetAddressBarURL(url);
 }
 
 void ShellPlatformDelegate::SetIsLoading(Shell* shell, bool loading) {}
@@ -439,10 +433,7 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  auto* delegate_view = static_cast<ShellWindowDelegateView*>(
-      shell_data.window_widget->widget_delegate());
-  delegate_view->SetWindowTitle(title);
-  shell_data.window_widget->UpdateWindowTitle();
+  shell_data.window_widget->widget_delegate()->SetTitle(title);
 }
 
 void ShellPlatformDelegate::RenderViewReady(Shell* shell) {}
