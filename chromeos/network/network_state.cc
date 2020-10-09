@@ -182,13 +182,12 @@ bool NetworkState::PropertyChanged(const std::string& key,
       proxy_config_ = base::Value();
       return true;
     }
-    std::unique_ptr<base::Value> proxy_config_dict(
-        onc::ReadDictionaryFromJson(proxy_config_str));
-    if (proxy_config_dict) {
-      proxy_config_ = std::move(*proxy_config_dict);
-    } else {
-      proxy_config_ = base::Value();
+    base::Value proxy_config = onc::ReadDictionaryFromJson(proxy_config_str);
+    if (!proxy_config.is_dict()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
+      proxy_config_ = base::Value();
+    } else {
+      proxy_config_ = std::move(proxy_config);
     }
     return true;
   } else if (key == shill::kProviderProperty) {

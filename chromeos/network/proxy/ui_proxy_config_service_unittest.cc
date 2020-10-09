@@ -121,12 +121,11 @@ class UIProxyConfigServiceTest : public testing::Test {
   ~UIProxyConfigServiceTest() override = default;
 
   void ConfigureService(const std::string& shill_json_string) {
-    std::unique_ptr<base::DictionaryValue> shill_json_dict =
-        base::DictionaryValue::From(
-            onc::ReadDictionaryFromJson(shill_json_string));
-    ASSERT_TRUE(shill_json_dict);
+    base::Value shill_json_dict =
+        onc::ReadDictionaryFromJson(shill_json_string);
+    ASSERT_TRUE(shill_json_dict.is_dict());
     ShillManagerClient::Get()->ConfigureService(
-        *shill_json_dict, base::DoNothing(),
+        shill_json_dict, base::DoNothing(),
         base::BindOnce([](const std::string& name, const std::string& msg) {}));
     base::RunLoop().RunUntilIdle();
   }

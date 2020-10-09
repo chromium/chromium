@@ -192,9 +192,9 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
 
-  std::unique_ptr<base::Value> root_dict =
+  base::Value root_dict =
       chromeos::onc::ReadDictionaryFromJson(value->GetString());
-  if (!root_dict) {
+  if (!root_dict.is_dict()) {
     errors->AddError(policy_name(), IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED);
     errors->SetDebugInfo(policy_name(), "ERROR: JSON parse error");
     return false;
@@ -212,8 +212,8 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
 
   // ONC policies are always unencrypted.
   chromeos::onc::Validator::Result validation_result;
-  root_dict = validator.ValidateAndRepairObject(
-      &chromeos::onc::kToplevelConfigurationSignature, *root_dict,
+  validator.ValidateAndRepairObject(
+      &chromeos::onc::kToplevelConfigurationSignature, root_dict,
       &validation_result);
 
   // Pass error/warning message and non-localized debug_info to PolicyErrorMap.
@@ -291,23 +291,21 @@ NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
   if (!config->is_string())
     return base::nullopt;
 
-  std::unique_ptr<base::DictionaryValue> toplevel_dict =
-      base::DictionaryValue::From(
-          chromeos::onc::ReadDictionaryFromJson(config->GetString()));
-  if (!toplevel_dict)
+  base::Value toplevel_dict =
+      chromeos::onc::ReadDictionaryFromJson(config->GetString());
+  if (!toplevel_dict.is_dict())
     return base::nullopt;
 
   // Placeholder to insert in place of the filtered setting.
   const char kPlaceholder[] = "********";
 
   toplevel_dict = chromeos::onc::MaskCredentialsInOncObject(
-      chromeos::onc::kToplevelConfigurationSignature,
-      *toplevel_dict,
+      chromeos::onc::kToplevelConfigurationSignature, toplevel_dict,
       kPlaceholder);
 
   std::string json_string;
   base::JSONWriter::WriteWithOptions(
-      *toplevel_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
+      toplevel_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
   return base::Value(json_string);
 }
 

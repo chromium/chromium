@@ -131,15 +131,14 @@ class CrosNetworkConfigTest : public testing::Test {
         /*global_network_config=*/base::DictionaryValue());
 
     const std::string user_policy_ssid = "wifi2";
-    base::Value wifi2_onc = base::Value::FromUniquePtrValue(
-        onc::ReadDictionaryFromJson(base::StringPrintf(
-            R"({"GUID": "wifi2_guid", "Type": "WiFi",
+    base::Value wifi2_onc = onc::ReadDictionaryFromJson(base::StringPrintf(
+        R"({"GUID": "wifi2_guid", "Type": "WiFi",
                 "Name": "wifi2", "Priority": 0,
                 "WiFi": { "Passphrase": "fake", "SSID": "%s", "HexSSID": "%s",
                           "Security": "WPA-PSK", "AutoConnect": true}})",
-            user_policy_ssid.c_str(),
-            base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
-                .c_str())));
+        user_policy_ssid.c_str(),
+        base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
+            .c_str()));
     base::ListValue user_policy_onc;
     user_policy_onc.Append(std::move(wifi2_onc));
     managed_network_configuration_handler_->SetPolicy(

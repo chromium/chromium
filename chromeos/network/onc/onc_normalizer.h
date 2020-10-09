@@ -32,13 +32,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   // created and stored in the field "HexSSID".
   std::unique_ptr<base::DictionaryValue> NormalizeObject(
       const OncValueSignature* object_signature,
-      const base::DictionaryValue& onc_object);
+      const base::Value& onc_object);
 
  private:
   // Dispatch to the right normalization function according to |signature|.
   std::unique_ptr<base::DictionaryValue> MapObject(
       const OncValueSignature& signature,
-      const base::DictionaryValue& onc_object,
+      const base::Value& onc_object,
       bool* error) override;
 
   void NormalizeCertificate(base::DictionaryValue* cert);

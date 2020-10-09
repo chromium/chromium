@@ -46,39 +46,35 @@ std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
 namespace onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
-  std::unique_ptr<base::Value> encrypted_onc =
-      test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
+  base::Value encrypted_onc =
+      test_utils::ReadTestDictionaryValue("broken-encrypted-iterations.onc");
 
-  std::unique_ptr<base::Value> decrypted_onc =
-      Decrypt("test0000", *encrypted_onc);
+  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
 
-  EXPECT_EQ(nullptr, decrypted_onc.get());
+  EXPECT_TRUE(decrypted_onc.is_none());
 }
 
 TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
-  std::unique_ptr<base::Value> encrypted_onc =
-      test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
+  base::Value encrypted_onc = test_utils::ReadTestDictionaryValue(
+      "broken-encrypted-zero-iterations.onc");
 
-  std::string error;
-  std::unique_ptr<base::Value> decrypted_onc =
-      Decrypt("test0000", *encrypted_onc);
+  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
 
-  EXPECT_EQ(nullptr, decrypted_onc.get());
+  EXPECT_TRUE(decrypted_onc.is_none());
 }
 
 TEST(ONCDecrypterTest, LoadEncryptedOnc) {
-  std::unique_ptr<base::Value> encrypted_onc =
-      test_utils::ReadTestDictionary("encrypted.onc");
-  std::unique_ptr<base::Value> expected_decrypted_onc =
-      test_utils::ReadTestDictionary("decrypted.onc");
+  base::Value encrypted_onc =
+      test_utils::ReadTestDictionaryValue("encrypted.onc");
+  base::Value expected_decrypted_onc =
+      test_utils::ReadTestDictionaryValue("decrypted.onc");
 
   std::string error;
-  std::unique_ptr<base::Value> actual_decrypted_onc =
-      Decrypt("test0000", *encrypted_onc);
+  base::Value actual_decrypted_onc = Decrypt("test0000", encrypted_onc);
 
   base::Value emptyDict;
-  EXPECT_TRUE(test_utils::Equals(expected_decrypted_onc.get(),
-                                 actual_decrypted_onc.get()));
+  EXPECT_TRUE(
+      test_utils::Equals(&expected_decrypted_onc, &actual_decrypted_onc));
 }
 
 namespace {

@@ -32,8 +32,7 @@ std::string ReadTestData(const std::string& filename) {
   base::ScopedAllowBlockingForTesting allow_io;
   base::FilePath path;
   if (!chromeos::test_utils::GetTestDataPath(kNetworkComponentDirectory,
-                                             filename,
-                                             &path)) {
+                                             filename, &path)) {
     LOG(FATAL) << "Unable to get test data path for "
                << kNetworkComponentDirectory << "/" << filename;
     return "";
@@ -45,14 +44,17 @@ std::string ReadTestData(const std::string& filename) {
 
 std::unique_ptr<base::DictionaryValue> ReadTestDictionary(
     const std::string& filename) {
-  std::unique_ptr<base::DictionaryValue> dict;
+  return base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(ReadTestDictionaryValue(filename)));
+}
+
+base::Value ReadTestDictionaryValue(const std::string& filename) {
   base::FilePath path;
   if (!chromeos::test_utils::GetTestDataPath(kNetworkComponentDirectory,
-                                             filename,
-                                             &path)) {
+                                             filename, &path)) {
     LOG(FATAL) << "Unable to get test dictionary path for "
                << kNetworkComponentDirectory << "/" << filename;
-    return dict;
+    return base::Value();
   }
 
   JSONFileValueDeserializer deserializer(path,
@@ -60,29 +62,30 @@ std::unique_ptr<base::DictionaryValue> ReadTestDictionary(
 
   std::string error_message;
   std::unique_ptr<base::Value> content =
-      deserializer.Deserialize(NULL, &error_message);
-  CHECK(content != NULL) << "Couldn't json-deserialize file '"
-                         << filename << "': " << error_message;
+      deserializer.Deserialize(nullptr, &error_message);
+  CHECK(content != nullptr) << "Couldn't json-deserialize file '" << filename
+                            << "': " << error_message;
 
-  dict = base::DictionaryValue::From(std::move(content));
-  CHECK(dict) << "File '" << filename
-              << "' does not contain a dictionary as expected, but type "
-              << content->type();
-  return dict;
+  CHECK(content->is_dict())
+      << "File '" << filename
+      << "' does not contain a dictionary as expected, but type "
+      << content->type();
+  return std::move(*content);
 }
 
 ::testing::AssertionResult Equals(const base::Value* expected,
                                   const base::Value* actual) {
-  CHECK(expected != NULL);
-  if (actual == NULL)
-    return ::testing::AssertionFailure() << "Actual value pointer is NULL";
+  CHECK(expected != nullptr);
+  if (actual == nullptr)
+    return ::testing::AssertionFailure() << "Actual value pointer is nullptr";
 
   if (*expected == *actual)
     return ::testing::AssertionSuccess() << "Values are equal";
 
   return ::testing::AssertionFailure() << "Values are unequal.\n"
-                                       << "Expected value:\n" << *expected
-                                       << "Actual value:\n" << *actual;
+                                       << "Expected value:\n"
+                                       << *expected << "Actual value:\n"
+                                       << *actual;
 }
 
 }  // namespace test_utils

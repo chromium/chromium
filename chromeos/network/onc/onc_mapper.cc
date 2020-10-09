@@ -47,7 +47,7 @@ std::unique_ptr<base::Value> Mapper::MapValue(
 
 std::unique_ptr<base::DictionaryValue> Mapper::MapObject(
     const OncValueSignature& signature,
-    const base::DictionaryValue& onc_object,
+    const base::Value& onc_object,
     bool* error) {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
 
@@ -66,21 +66,21 @@ std::unique_ptr<base::Value> Mapper::MapPrimitive(
 }
 
 void Mapper::MapFields(const OncValueSignature& object_signature,
-                       const base::DictionaryValue& onc_object,
+                       const base::Value& onc_object,
                        bool* found_unknown_field,
                        bool* nested_error,
                        base::DictionaryValue* result) {
-  for (base::DictionaryValue::Iterator it(onc_object); !it.IsAtEnd();
-       it.Advance()) {
+  DCHECK(onc_object.is_dict());
+  for (auto it : onc_object.DictItems()) {
     bool current_field_unknown = false;
     std::unique_ptr<base::Value> result_value =
-        MapField(it.key(), object_signature, it.value(), &current_field_unknown,
+        MapField(it.first, object_signature, it.second, &current_field_unknown,
                  nested_error);
 
     if (current_field_unknown)
       *found_unknown_field = true;
     else if (result_value.get() != NULL)
-      result->SetWithoutPathExpansion(it.key(), std::move(result_value));
+      result->SetWithoutPathExpansion(it.first, std::move(result_value));
     else
       DCHECK(*nested_error);
   }

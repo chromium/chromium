@@ -197,11 +197,10 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(
     return std::unique_ptr<NetworkUIData>();
   if (ui_data_str.empty())
     return std::make_unique<NetworkUIData>();
-  std::unique_ptr<base::Value> ui_data_dict(
-      chromeos::onc::ReadDictionaryFromJson(ui_data_str));
-  if (!ui_data_dict)
+  base::Value ui_data_dict = chromeos::onc::ReadDictionaryFromJson(ui_data_str);
+  if (!ui_data_dict.is_dict())
     return std::unique_ptr<NetworkUIData>();
-  return std::make_unique<NetworkUIData>(*ui_data_dict);
+  return std::make_unique<NetworkUIData>(ui_data_dict);
 }
 
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(

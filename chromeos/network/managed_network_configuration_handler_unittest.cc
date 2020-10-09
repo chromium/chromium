@@ -175,11 +175,10 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
                  const std::string& path_to_onc) {
-    std::unique_ptr<base::DictionaryValue> policy =
+    base::Value policy =
         path_to_onc.empty()
-            ? base::DictionaryValue::From(onc::ReadDictionaryFromJson(
-                  onc::kEmptyUnencryptedConfiguration))
-            : test_utils::ReadTestDictionary(path_to_onc);
+            ? onc::ReadDictionaryFromJson(onc::kEmptyUnencryptedConfiguration)
+            : test_utils::ReadTestDictionaryValue(path_to_onc);
 
     onc::Validator validator(true,   // error_on_unknown_field
                              true,   // error_on_wrong_recommended
@@ -188,17 +187,18 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
                              true);  // log_warnings
     validator.SetOncSource(onc_source);
     onc::Validator::Result validation_result;
-    policy = validator.ValidateAndRepairObject(
-        &onc::kToplevelConfigurationSignature, *policy, &validation_result);
+    std::unique_ptr<base::DictionaryValue> validated_policy =
+        validator.ValidateAndRepairObject(&onc::kToplevelConfigurationSignature,
+                                          policy, &validation_result);
     if (validation_result == onc::Validator::INVALID) {
       ADD_FAILURE() << "Network configuration invalid.";
       return;
     }
 
     base::ListValue network_configs;
-    const base::Value* found_network_configs =
-        policy->FindKeyOfType(::onc::toplevel_config::kNetworkConfigurations,
-                              base::Value::Type::LIST);
+    const base::Value* found_network_configs = validated_policy->FindKeyOfType(
+        ::onc::toplevel_config::kNetworkConfigurations,
+        base::Value::Type::LIST);
     if (found_network_configs) {
       for (const auto& network_config : found_network_configs->GetList()) {
         network_configs.Append(network_config.Clone());
@@ -206,7 +206,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     }
 
     base::DictionaryValue global_config;
-    const base::Value* found_global_config = policy->FindKeyOfType(
+    const base::Value* found_global_config = validated_policy->FindKeyOfType(
         ::onc::toplevel_config::kGlobalNetworkConfiguration,
         base::Value::Type::DICTIONARY);
     if (found_global_config) {

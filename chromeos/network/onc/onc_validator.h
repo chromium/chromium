@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   // repaired dictionary. Only on error returns NULL.
   std::unique_ptr<base::DictionaryValue> MapObject(
       const OncValueSignature& signature,
-      const base::DictionaryValue& onc_object,
+      const base::Value& onc_object,
       bool* error) override;
 
   // Pushes/pops the |field_name| to |path_|, otherwise like |Mapper::MapField|.
@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   // |onc_object| according to |object_signature|. |result| must point to a
   // dictionary into which the repaired fields are written.
   bool ValidateObjectDefault(const OncValueSignature& object_signature,
-                             const base::DictionaryValue& onc_object,
+                             const base::Value& onc_object,
                              base::DictionaryValue* result);
 
   // Validates/repairs the kRecommended array in |result| according to
@@ -207,7 +207,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
       const std::vector<const char*>& valid_values);
 
   bool FieldExistsAndIsNotInRange(const base::DictionaryValue& object,
-                                  const std::string &field_name,
+                                  const std::string& field_name,
                                   int lower_bound,
                                   int upper_bound);
 
@@ -245,11 +245,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   // order to identify duplicates.
   bool CheckGuidIsUniqueAndAddToSet(const base::DictionaryValue& dict,
                                     const std::string& kGUID,
-                                    std::set<std::string> *guids);
+                                    std::set<std::string>* guids);
 
   // Prohibit global network configuration in user ONC imports.
-  bool IsGlobalNetworkConfigInUserImport(
-      const base::DictionaryValue& onc_object);
+  bool IsGlobalNetworkConfigInUserImport(const base::Value& onc_object);
 
   void AddValidationIssue(bool is_error, const std::string& debug_info);
 

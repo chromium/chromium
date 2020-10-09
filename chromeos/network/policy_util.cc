@@ -374,9 +374,10 @@ std::unique_ptr<base::DictionaryValue> CreateShillConfiguration(
     // Shill's GetProperties doesn't return credentials. Masking credentials
     // instead of just removing them, allows remembering if a credential is set
     // or not.
-    std::unique_ptr<base::DictionaryValue> sanitized_user_settings(
-        onc::MaskCredentialsInOncObject(onc::kNetworkConfigurationSignature,
-                                        *user_settings, kFakeCredential));
+    std::unique_ptr<base::Value> sanitized_user_settings =
+        base::Value::ToUniquePtrValue(
+            onc::MaskCredentialsInOncObject(onc::kNetworkConfigurationSignature,
+                                            *user_settings, kFakeCredential));
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 

@@ -35,9 +35,9 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
     if (!onc_string.has_value())
       return true;
 
-    std::unique_ptr<base::Value> root_dict =
+    base::Value root_dict =
         chromeos::onc::ReadDictionaryFromJson(onc_string.value());
-    if (!root_dict.get()) {
+    if (!root_dict.is_dict()) {
       out_validation_issues->push_back({policy_name_,
                                         ValueValidationIssue::Severity::kError,
                                         "JSON parse error."});
@@ -52,8 +52,8 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
         true);  // Log warnings.
     validator.SetOncSource(source_);
     chromeos::onc::Validator::Result validation_result;
-    root_dict = validator.ValidateAndRepairObject(
-        &chromeos::onc::kToplevelConfigurationSignature, *root_dict,
+    validator.ValidateAndRepairObject(
+        &chromeos::onc::kToplevelConfigurationSignature, root_dict,
         &validation_result);
 
     bool error_found = false;

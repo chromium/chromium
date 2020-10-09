@@ -45,16 +45,15 @@ typedef std::map<std::string, std::string> CertPEMsByGUIDMap;
 
 // Parses |json| according to the JSON format. If |json| is a JSON formatted
 // dictionary, the function returns the dictionary value, otherwise returns
-// null.
+// an empty Value.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::Value> ReadDictionaryFromJson(const std::string& json);
+base::Value ReadDictionaryFromJson(const std::string& json);
 
 // Decrypts the given EncryptedConfiguration |onc| (see the ONC specification)
 // using |passphrase|. The resulting UnencryptedConfiguration is returned. If an
-// error occurs, returns null.
+// error occurs, returns an empty Value.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::Value> Decrypt(const std::string& passphrase,
-                                     const base::Value& onc);
+base::Value Decrypt(const std::string& passphrase, const base::Value& onc);
 
 // For logging only: strings not user facing.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -91,10 +90,9 @@ void FillInHexSSIDField(base::Value* wifi_fields);
 // by |mask|. To find sensitive fields, signature and field name are checked
 // with the function FieldIsCredential().
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> MaskCredentialsInOncObject(
-    const OncValueSignature& signature,
-    const base::DictionaryValue& onc_object,
-    const std::string& mask);
+base::Value MaskCredentialsInOncObject(const OncValueSignature& signature,
+                                       const base::Value& onc_object,
+                                       const std::string& mask);
 
 // Decrypts |onc_blob| with |passphrase| if necessary. Clears |network_configs|,
 // |global_network_config| and |certificates| and fills them with the validated

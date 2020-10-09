@@ -120,7 +120,7 @@ std::unique_ptr<base::Value> Validator::MapValue(
 
 std::unique_ptr<base::DictionaryValue> Validator::MapObject(
     const OncValueSignature& signature,
-    const base::DictionaryValue& onc_object,
+    const base::Value& onc_object,
     bool* error) {
   std::unique_ptr<base::DictionaryValue> repaired(new base::DictionaryValue);
 
@@ -246,7 +246,7 @@ std::unique_ptr<base::Value> Validator::MapEntry(
 }
 
 bool Validator::ValidateObjectDefault(const OncValueSignature& signature,
-                                      const base::DictionaryValue& onc_object,
+                                      const base::Value& onc_object,
                                       base::DictionaryValue* result) {
   bool found_unknown_field = false;
   bool nested_error_occured = false;
@@ -604,9 +604,9 @@ bool Validator::CheckGuidIsUniqueAndAddToSet(const base::DictionaryValue& dict,
 }
 
 bool Validator::IsGlobalNetworkConfigInUserImport(
-    const base::DictionaryValue& onc_object) {
+    const base::Value& onc_object) {
   if (onc_source_ == ::onc::ONC_SOURCE_USER_IMPORT &&
-      onc_object.HasKey(::onc::toplevel_config::kGlobalNetworkConfiguration)) {
+      onc_object.FindKey(::onc::toplevel_config::kGlobalNetworkConfiguration)) {
     std::ostringstream msg;
     msg << "Field '" << ::onc::toplevel_config::kGlobalNetworkConfiguration
         << "' is prohibited in ONC user imports";
