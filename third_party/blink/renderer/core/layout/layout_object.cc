@@ -2326,7 +2326,9 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
   }
 
   if (diff.NeedsRecomputeVisualOverflow()) {
-    if (!IsLayoutNGObject() && !IsLayoutBlock() && !NeedsLayout()) {
+    if (!(IsInLayoutNGInlineFormattingContext() &&
+          RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) &&
+        !IsLayoutNGObject() && !IsLayoutBlock() && !NeedsLayout()) {
       // TODO(crbug.com/1128199): This is still needed because
       // RecalcVisualOverflow() does not actually compute the visual overflow
       // for inline elements (legacy layout). However in LayoutNG
