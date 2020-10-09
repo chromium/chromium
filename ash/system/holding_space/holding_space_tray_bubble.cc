@@ -83,11 +83,13 @@ class HoldingSpaceBubbleContainer : public views::View {
  private:
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override {
-    PreferredSizeChanged();
+    if (GetWidget())
+      PreferredSizeChanged();
   }
 
   void ChildVisibilityChanged(views::View* child) override {
-    PreferredSizeChanged();
+    if (GetWidget())
+      PreferredSizeChanged();
   }
 
   views::BoxLayout* layout_ = nullptr;
@@ -132,6 +134,13 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   recent_files_container_ = bubble_container->AddChildView(
       std::make_unique<RecentFilesContainer>(&delegate_));
   SetupViewLayer(recent_files_container_);
+
+  // Populate both containers if holding space model has already been attached.
+  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+  if (model) {
+    pinned_files_container_->OnHoldingSpaceModelAttached(model);
+    recent_files_container_->OnHoldingSpaceModelAttached(model);
+  }
 
   // Show the bubble.
   bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(

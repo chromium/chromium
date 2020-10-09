@@ -122,9 +122,6 @@ RecentFilesContainer::RecentFilesContainer(
   downloads_container_ =
       AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
   downloads_container_->SetVisible(false);
-
-  if (HoldingSpaceController::Get()->model())
-    OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
 }
 
 RecentFilesContainer::~RecentFilesContainer() = default;

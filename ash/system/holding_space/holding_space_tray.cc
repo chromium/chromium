@@ -52,36 +52,14 @@ void HoldingSpaceTray::HandleLocaleChange() {
 
 void HoldingSpaceTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 
-base::string16 HoldingSpaceTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
-}
-
-bool HoldingSpaceTray::ShouldEnableExtraKeyboardAccessibility() {
-  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
-}
-
-void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
-  CloseBubble();
-}
-
-void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
-  // The holding space bubble should be closed while dragging holding space
-  // items so as not to obstruct drop targets. Post the task to close the bubble
-  // so that we don't attempt to destroy the bubble widget before the associated
-  // drag event has been fully initialized.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&HoldingSpaceTray::CloseBubble,
-                                weak_factory_.GetWeakPtr()));
-}
-
-void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
-  widget->RemoveObserver(this);
-  CloseBubble();
-}
-
 void HoldingSpaceTray::AnchorUpdated() {
   if (bubble_)
     bubble_->AnchorUpdated();
+}
+
+void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
+  SetVisiblePreferred(shelf()->GetStatusAreaWidget()->login_status() ==
+                      LoginStatus::USER);
 }
 
 bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
@@ -104,11 +82,6 @@ bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
   }
 
   return true;
-}
-
-void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
-  SetVisiblePreferred(shelf()->GetStatusAreaWidget()->login_status() ==
-                      LoginStatus::USER);
 }
 
 void HoldingSpaceTray::CloseBubble() {
@@ -148,6 +121,33 @@ TrayBubbleView* HoldingSpaceTray::GetBubbleView() {
 
 const char* HoldingSpaceTray::GetClassName() const {
   return "HoldingSpaceTray";
+}
+
+base::string16 HoldingSpaceTray::GetAccessibleNameForBubble() {
+  return GetAccessibleNameForTray();
+}
+
+bool HoldingSpaceTray::ShouldEnableExtraKeyboardAccessibility() {
+  return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
+}
+
+void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
+  CloseBubble();
+}
+
+void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
+  // The holding space bubble should be closed while dragging holding space
+  // items so as not to obstruct drop targets. Post the task to close the bubble
+  // so that we don't attempt to destroy the bubble widget before the associated
+  // drag event has been fully initialized.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&HoldingSpaceTray::CloseBubble,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
+  widget->RemoveObserver(this);
+  CloseBubble();
 }
 
 }  // namespace ash
