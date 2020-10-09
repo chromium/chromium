@@ -148,23 +148,27 @@ def _GetComponentUri(package_name):
                                                        package_name)
 
 
-class RunPackageArgs:
-  """RunPackage() configuration arguments structure.
+class RunTestPackageArgs:
+  """RunTestPackage() configuration arguments structure.
 
-  symbolizer_config: A newline delimited list of source files contained
-      in the package. Omitting this parameter will disable symbolization.
   system_logging: If set, connects a system log reader to the target.
+  test_realm_label: Specifies the realm name that run-test-component should use.
+      This must be specified if a filter file is to be set, or a results summary
+      file fetched after the test suite has run.
+  use_run_test_component: If True then the test package will be run hermetically
+                          via 'run-test-component', rather than using 'run'.
   """
 
   def __init__(self):
-    self.symbolizer_config = None
     self.system_logging = False
+    self.test_realm_label = None
+    self.use_run_test_component = False
 
   @staticmethod
   def FromCommonArgs(args):
-    run_package_args = RunPackageArgs()
-    run_package_args.system_logging = args.include_system_logs
-    return run_package_args
+    run_test_package_args = RunTestPackageArgs()
+    run_test_package_args.system_logging = args.include_system_logs
+    return run_test_package_args
 
 
 def _DrainStreamToStdout(stream, quit_event):
@@ -179,8 +183,8 @@ def _DrainStreamToStdout(stream, quit_event):
       print(line.rstrip())
 
 
-def RunPackage(output_dir, target, package_paths, package_name, package_args,
-               args):
+def RunTestPackage(output_dir, target, package_paths, package_name,
+                   package_args, args):
   """Installs the Fuchsia package at |package_path| on the target,
   executes it with |package_args|, and symbolizes its output.
 
@@ -189,7 +193,7 @@ def RunPackage(output_dir, target, package_paths, package_name, package_args,
   package_paths: The paths to the .far packages to be installed.
   package_name: The name of the primary package to run.
   package_args: The arguments which will be passed to the Fuchsia process.
-  args: Structure of arguments to configure how the package will be run.
+  args: RunTestPackageArgs instance configuring how the package will be run.
 
   Returns the exit code of the remote package process."""
 
@@ -213,7 +217,14 @@ def RunPackage(output_dir, target, package_paths, package_name, package_args,
         log_output_thread.join(timeout=_JOIN_TIMEOUT_SECS)
 
       logging.info('Running application.')
-      command = ['run', _GetComponentUri(package_name)] + package_args
+      if args.use_run_test_component:
+        command = ['run-test-component']
+        if args.test_realm_label:
+          command += ['--realm-label=%s' % args.test_realm_label]
+      else:
+        command = ['run']
+      command += [_GetComponentUri(package_name)] + package_args
+
       process = target.RunCommandPiped(command,
                                        stdin=open(os.devnull, 'r'),
                                        stdout=subprocess.PIPE,
