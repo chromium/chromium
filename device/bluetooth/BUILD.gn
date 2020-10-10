@@ -59,8 +59,9 @@ source_set("deprecated_experimental_mojo") {
     # Experimental implementation not ready for production use yet. See
     # public/mojom/README.md
 
-    # Single approved client:
+    # Approved clients:
     "//chrome/browser/ui/webui/bluetooth_internals:*",
+    "//chrome/browser/chromeos/nearby:bluetooth_adapter_util",
 
     # Implementation tests
     # Ideally only device_unittests, however android & fushia generate
