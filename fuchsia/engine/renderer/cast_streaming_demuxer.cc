@@ -63,7 +63,7 @@ class CastStreamingDemuxerStream : public media::DemuxerStream,
       return;
 
     if (current_buffer_->end_of_stream()) {
-      std::move(pending_read_cb_).Run(Status::kAborted, nullptr);
+      std::move(pending_read_cb_).Run(Status::kError, nullptr);
       return;
     }
 
@@ -198,7 +198,6 @@ CastStreamingDemuxer::CastStreamingDemuxer(
 
 CastStreamingDemuxer::~CastStreamingDemuxer() {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   if (was_initialization_successful_) {
     original_task_runner_->PostTask(

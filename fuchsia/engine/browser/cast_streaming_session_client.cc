@@ -89,6 +89,13 @@ void CastStreamingSessionClient::OnReceiverSessionEnded() {
 
   // Tear down the Mojo connection.
   cast_streaming_receiver_.reset();
+
+  // Tear down all remaining Mojo objects if needed. This is necessary if the
+  // Cast Streaming Session ending was initiated by the receiver component.
+  if (audio_remote_)
+    audio_remote_.reset();
+  if (video_remote_)
+    video_remote_.reset();
 }
 
 void CastStreamingSessionClient::OnMojoDisconnect() {

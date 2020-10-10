@@ -10,9 +10,17 @@
 
 namespace cast_streaming {
 
+namespace {
+
+// Timeout to stop the Session when no data is received.
+constexpr base::TimeDelta kNoDataTimeout = base::TimeDelta::FromSeconds(10);
+
+}  // namespace
+
 StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
                                mojo::ScopedDataPipeProducerHandle data_pipe,
-                               FrameReceivedCB frame_received_cb)
+                               FrameReceivedCB frame_received_cb,
+                               base::OnceClosure on_timeout)
     : receiver_(receiver),
       data_pipe_(std::move(data_pipe)),
       frame_received_cb_(std::move(frame_received_cb)),
@@ -27,7 +35,10 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
                                               base::Unretained(this)));
   if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
+    return;
   }
+
+  data_timeout_timer_.Start(FROM_HERE, kNoDataTimeout, std::move(on_timeout));
 }
 
 StreamConsumer::~StreamConsumer() {
@@ -39,6 +50,7 @@ void StreamConsumer::CloseDataPipeOnError() {
   receiver_->SetConsumer(nullptr);
   pipe_watcher_.Cancel();
   data_pipe_.reset();
+  data_timeout_timer_.Stop();
 }
 
 void StreamConsumer::OnPipeWritable(MojoResult result) {
@@ -72,6 +84,7 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
 
 void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
   DCHECK(data_pipe_);
+  data_timeout_timer_.Reset();
 
   if (pending_buffer_remaining_bytes_ != 0) {
     // There already is a pending frame. Ignore this one for now.
