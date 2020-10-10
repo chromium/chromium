@@ -667,30 +667,7 @@ TEST_F(SearchBoxViewTest, NavigatePrivacyNotice) {
   EXPECT_TRUE(selection->is_default_result());
   EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
 
-  // The privacy view should have two additional non-default actions.
-  KeyPress(ui::VKEY_TAB);
-  selection = selection_controller->selected_result();
-  EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
-
-  KeyPress(ui::VKEY_TAB);
-  selection = selection_controller->selected_result();
-  EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
-
-  KeyPress(ui::VKEY_TAB);
-  selection = selection_controller->selected_result();
-  ASSERT_TRUE(selection->result());
-  EXPECT_EQ(selection->result()->title(), base::ASCIIToUTF16("test"));
-
-  // Move focus forward to the close button and then the privacy view again.
-  // The privacy view should now have only two actions.
-  KeyPress(ui::VKEY_TAB);
-  selection = selection_controller->selected_result();
-  EXPECT_FALSE(selection);
-
-  KeyPress(ui::VKEY_TAB);
-  selection = selection_controller->selected_result();
-  EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
-
+  // The privacy view should have one additional action.
   KeyPress(ui::VKEY_TAB);
   selection = selection_controller->selected_result();
   EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
@@ -700,7 +677,7 @@ TEST_F(SearchBoxViewTest, NavigatePrivacyNotice) {
   ASSERT_TRUE(selection->result());
   EXPECT_EQ(selection->result()->title(), base::ASCIIToUTF16("test"));
 
-  // When navigating backwards, the privacy notice should have two actions.
+  // The privacy notice should also have two actions when navigating backwards.
   KeyPress(ui::VKEY_TAB, /*is_shift_down=*/true);
   selection = selection_controller->selected_result();
   EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
@@ -740,7 +717,6 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesPrivacyNotice) {
   // Navigate to the close button and press enter. The privacy info should no
   // longer be shown.
   KeyPress(ui::VKEY_TAB);
-  KeyPress(ui::VKEY_TAB);
   KeyPress(ui::VKEY_RETURN);
   EXPECT_FALSE(view_delegate()->ShouldShowAssistantPrivacyInfo());
 }
@@ -769,21 +745,17 @@ TEST_F(SearchBoxViewTest, PrivacyViewActionNotOverriddenByNewResults) {
       selection_controller->selected_result();
   EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
 
-  // The privacy view should have two additional actions. Tab to the next
-  // privacy view action.
+  // The privacy view should have one additional action. Tab to the next privacy
+  // view action.
   KeyPress(ui::VKEY_TAB);
   selection = selection_controller->selected_result();
   EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
 
-  // Create a new search result. The privacy view should only have one action
+  // Create a new search result. The privacy view should have no actions
   // remaining.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
                      base::ASCIIToUTF16("testing"), base::string16());
   base::RunLoop().RunUntilIdle();
-
-  KeyPress(ui::VKEY_TAB);
-  selection = selection_controller->selected_result();
-  EXPECT_EQ(selection, privacy_container_view->GetResultViewAt(0));
 
   KeyPress(ui::VKEY_TAB);
   selection = selection_controller->selected_result();
