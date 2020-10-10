@@ -241,4 +241,42 @@ TEST_P(TablePainterTest, DontPaintEmptyDecorationBackground) {
           IsSameId(table_2_descendant, DisplayItem::kTableCollapsedBorders)));
 }
 
+TEST_P(TablePainterTest, TouchActionOnTable) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      table {
+        width: 100px;
+        height: 100px;
+        touch-action: none;
+      }
+    </style>
+    <table></table>
+  )HTML");
+  const auto& paint_chunk = RootPaintController().PaintChunks().back();
+  EXPECT_EQ(paint_chunk.hit_test_data->touch_action_rects[0].rect,
+            IntRect(0, 0, 100, 100));
+}
+
+TEST_P(TablePainterTest, TouchActionOnTableCell) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        width: 100px;
+        height: 100px;
+        touch-action: none;
+        padding: 0;
+      }
+    </style>
+    <table><tr><td></td></tr></table>
+  )HTML");
+  const auto& paint_chunk = RootPaintController().PaintChunks().back();
+  EXPECT_EQ(paint_chunk.hit_test_data->touch_action_rects[0].rect,
+            IntRect(0, 0, 100, 100));
+}
+
 }  // namespace blink
