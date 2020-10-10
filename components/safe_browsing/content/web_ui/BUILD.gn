@@ -26,7 +26,6 @@ static_library("web_ui") {
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/db:v4_local_database_manager",
-    "//components/safe_browsing/core/realtime:policy_engine",
     "//components/safe_browsing/core/web_ui:constants",
     "//components/strings:components_strings_grit",
     "//components/sync/protocol:protocol",

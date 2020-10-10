@@ -111,9 +111,6 @@ cr.define('safe_browsing', function() {
       addRTLookupResponse(result);
     });
 
-    cr.sendWithPromise('getRTLookupExperimentEnabled', [])
-        .then((enabled) => addRTLookupExperimentEnabled(enabled));
-
     cr.sendWithPromise('getLogMessages', []).then((logMessages) => {
       logMessages.forEach(function(message) {
         addLogMessage(message);
@@ -321,12 +318,6 @@ cr.define('safe_browsing', function() {
         addResultToTable('deep-scan-list', result['token'], resultFormatted, 1);
       }
     }
-  }
-
-  function addRTLookupExperimentEnabled(enabled) {
-    const enabledFormatted = $('rt-lookup-template').content.cloneNode(true);
-    enabledFormatted.querySelector('#experiment-bool').textContent = enabled;
-    $('rt-lookup-experiment-enabled').appendChild(enabledFormatted);
   }
 
   function addLogMessage(result) {

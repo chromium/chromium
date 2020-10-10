@@ -128,10 +128,6 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // currently open chrome://safe-browsing tab was opened.
   void GetRTLookupResponses(const base::ListValue* args);
 
-  // Show whether real time lookup experiment is enabled. This is useful for
-  // testing on Android, because it also takes memory threshold into account.
-  void GetRTLookupExperimentEnabled(const base::ListValue* args);
-
   // Get the current referrer chain for a given URL.
   void GetReferrerChain(const base::ListValue* args);
 

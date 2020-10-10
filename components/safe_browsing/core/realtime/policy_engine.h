@@ -74,7 +74,6 @@ class RealTimePolicyEngine {
                                                 bool is_off_the_record);
 
   friend class SafeBrowsingService;
-  friend class SafeBrowsingUIHandler;
 
  private:
   static bool IsInExcludedCountry(const std::string& country_code);
