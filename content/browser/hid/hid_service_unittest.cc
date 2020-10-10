@@ -388,4 +388,19 @@ TEST_F(HidServiceTest, RevokeDevicePermission) {
   EXPECT_FALSE(connection.is_connected());
 }
 
+TEST_F(HidServiceTest, RevokeDevicePermissionWithoutConnection) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::HidService> service;
+  contents()->GetMainFrame()->GetHidService(
+      service.BindNewPipeAndPassReceiver());
+
+  // Simulate user revoking permission.
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  hid_delegate().OnPermissionRevoked(origin, origin);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+}
+
 }  // namespace content
