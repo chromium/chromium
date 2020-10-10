@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.app.video_tutorials;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.WindowManager;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinator;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.WebContents;
@@ -44,7 +47,7 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
                 VideoTutorialServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         mWindowAndroid = new ActivityWindowAndroid(this);
         mCoordinator = VideoTutorialServiceFactory.createVideoPlayerCoordinator(
-                this, videoTutorialService, this::createWebContents, this::finish);
+                this, videoTutorialService, this::createWebContents, this::tryNow, this::finish);
         setContentView(mCoordinator.getView());
 
         int featureType = IntentUtils.safeGetIntExtra(getIntent(), EXTRA_VIDEO_TUTORIAL, 0);
@@ -80,5 +83,14 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
         intent.setClass(context, VideoPlayerActivity.class);
         intent.putExtra(VideoPlayerActivity.EXTRA_VIDEO_TUTORIAL, tutorial.featureType);
         context.startActivity(intent);
+    }
+
+    private void tryNow(Tutorial tutorial) {
+        VideoTutorialServiceFactory.getTryNowTracker().recordTryNowButtonClicked(
+                tutorial.featureType);
+        Intent intent = new Intent();
+        intent.setData(Uri.parse(UrlConstants.NTP_URL));
+        intent.setClass(this, ChromeTabbedActivity.class);
+        startActivity(intent);
     }
 }

@@ -15,6 +15,11 @@ import org.chromium.ui.widget.ViewRectProvider;
  * Class encapsulating the data needed to show in-product help (IPH).
  */
 public class IPHCommand {
+    /**
+     * Feature name associated with the IPH. If null, the IPH will be always shown and any calls to
+     * the {@link Tracker} will be avoided.
+     */
+    @Nullable
     public final String featureName;
     public final String contentString;
     public final String accessibilityText;
@@ -30,7 +35,7 @@ public class IPHCommand {
     public final long autoDismissTimeout;
     public final ViewRectProvider viewRectProvider;
 
-    IPHCommand(String featureName, String contentString, String accessibilityText,
+    IPHCommand(@Nullable String featureName, String contentString, String accessibilityText,
             boolean circleHighlight, boolean shouldHighlight, boolean dismissOnTouch,
             View anchorView, Runnable onDismissCallback, Runnable onShowCallback, Rect insetRect,
             long autoDismissTimeout, ViewRectProvider viewRectProvider) {

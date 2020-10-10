@@ -41,6 +41,10 @@ public class SearchBoxCoordinator {
         return mView;
     }
 
+    public View getVoiceSearchButton() {
+        return mView.findViewById(R.id.voice_search_button);
+    }
+
     public void destroy() {
         mMediator.destroy();
     }

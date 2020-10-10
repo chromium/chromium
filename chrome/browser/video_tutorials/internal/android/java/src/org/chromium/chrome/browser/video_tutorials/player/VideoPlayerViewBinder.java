@@ -24,6 +24,11 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
             view.showMediaControls(model.get(VideoPlayerProperties.SHOW_MEDIA_CONTROLS));
         } else if (propertyKey == VideoPlayerProperties.SHOW_LANGUAGE_PICKER) {
             view.showLanguagePicker(model.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER));
+        } else if (propertyKey == VideoPlayerProperties.SHOW_TRY_NOW) {
+            view.getView()
+                    .findViewById(R.id.try_now)
+                    .setVisibility(model.get(VideoPlayerProperties.SHOW_TRY_NOW) ? View.VISIBLE
+                                                                                 : View.GONE);
         } else if (propertyKey == VideoPlayerProperties.SHOW_WATCH_NEXT) {
             view.getView()
                     .findViewById(R.id.watch_next)

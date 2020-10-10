@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.Pair;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.R;
@@ -42,10 +43,12 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
      * @param context The activity context.
      * @param videoTutorialService The backend for serving video tutorials.
      * @param webContentsFactory A supplier to supply WebContents and ContentView.
+     * @param tryNowCallback Callback to be invoked when try now button is clicked.
      * @param closeCallback Callback to be invoked when this UI is closed.
      */
     public VideoPlayerCoordinatorImpl(Context context, VideoTutorialService videoTutorialService,
-            Supplier<Pair<WebContents, ContentView>> webContentsFactory, Runnable closeCallback) {
+            Supplier<Pair<WebContents, ContentView>> webContentsFactory,
+            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
         mContext = context;
         mVideoTutorialService = videoTutorialService;
         mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
@@ -55,7 +58,7 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
         mLanguagePicker = new LanguagePickerCoordinator(
                 mView.getView().findViewById(R.id.language_picker), mVideoTutorialService);
         mMediator = new VideoPlayerMediator(mContext, mModel, videoTutorialService, mLanguagePicker,
-                mWebContents, closeCallback);
+                mWebContents, tryNowCallback, closeCallback);
         PropertyModelChangeProcessor.create(mModel, mView, new VideoPlayerViewBinder());
     }
 

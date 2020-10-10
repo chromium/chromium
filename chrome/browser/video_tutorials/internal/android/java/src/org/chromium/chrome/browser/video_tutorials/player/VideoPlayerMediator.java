@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.video_tutorials.player;
 import android.content.Context;
 import android.text.TextUtils;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.R;
@@ -32,18 +33,20 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     private final LanguagePickerCoordinator mLanguagePicker;
     private final WebContents mWebContents;
     private Tutorial mTutorial;
+    private final Callback<Tutorial> mTryNowCallback;
     private final Runnable mCloseCallback;
     private long mVideoStartTime;
 
     /** Constructor. */
     public VideoPlayerMediator(Context context, PropertyModel model,
             VideoTutorialService videoTutorialService, LanguagePickerCoordinator languagePicker,
-            WebContents webContents, Runnable closeCallback) {
+            WebContents webContents, Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
         mContext = context;
         mModel = model;
         mVideoTutorialService = videoTutorialService;
         mLanguagePicker = languagePicker;
         mWebContents = webContents;
+        mTryNowCallback = tryNowCallback;
         mCloseCallback = closeCallback;
 
         mModel.set(VideoPlayerProperties.SHOW_LOADING_SCREEN, false);
@@ -104,6 +107,8 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
         mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, false);
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, false);
+        mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
+                VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
     }
 
     @Override
@@ -112,11 +117,9 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, true);
         maybeShowWatchNextVideoButton();
+        mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
+                VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
         updateChangeLanguageButtonText();
-
-        VideoTutorialUtils.getNextTutorial(mVideoTutorialService, mTutorial, nextTutorial -> {
-            mModel.set(VideoPlayerProperties.SHOW_WATCH_NEXT, nextTutorial != null);
-        });
     }
 
     private void changeLanguage() {
@@ -144,6 +147,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
 
     private void tryNow() {
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.TRY_NOW);
+        mTryNowCallback.onResult(mTutorial);
     }
 
     private void share() {

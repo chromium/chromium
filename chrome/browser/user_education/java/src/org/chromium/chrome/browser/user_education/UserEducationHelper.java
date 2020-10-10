@@ -72,7 +72,7 @@ public class UserEducationHelper {
         if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
 
         String featureName = iphCommand.featureName;
-        if (!tracker.shouldTriggerHelpUI(featureName)) return;
+        if (featureName != null && !tracker.shouldTriggerHelpUI(featureName)) return;
         String contentString = iphCommand.contentString;
         String accessibilityString = iphCommand.accessibilityText;
         assert (!contentString.isEmpty());
@@ -86,7 +86,7 @@ public class UserEducationHelper {
                         rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
         textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
-            tracker.dismissed(featureName);
+            if (featureName != null) tracker.dismissed(featureName);
             iphCommand.onDismissCallback.run();
             if (iphCommand.shouldHighlight) {
                 ViewHighlighter.turnOffHighlight(anchorView);

@@ -41,6 +41,19 @@ public class VideoTutorialUtils {
         });
     }
 
+    /** @return Whether or not to show the Try Now button on the video player. */
+    public static boolean shouldShowTryNow(@FeatureType int featureType) {
+        switch (featureType) {
+            case FeatureType.DOWNLOAD:
+            case FeatureType.SEARCH:
+            case FeatureType.VOICE_SEARCH:
+                return true;
+            case FeatureType.CHROME_INTRO:
+            default:
+                return false;
+        }
+    }
+
     private static Tutorial getNextTutorial(List<Tutorial> tutorials, Tutorial currentTutorial) {
         int currentIndex = 0;
         for (int i = 0; i < tutorials.size(); i++) {

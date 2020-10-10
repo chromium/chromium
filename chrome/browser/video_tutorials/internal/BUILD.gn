@@ -62,6 +62,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialUtils.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/TutorialConversionBridge.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/VideoTutorialServiceBridge.java",
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/TryNowTrackerImpl.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHCoordinatorImpl.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHProperties.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/iph/VideoIPHView.java",

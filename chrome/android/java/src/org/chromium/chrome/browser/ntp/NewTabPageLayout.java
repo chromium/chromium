@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
@@ -32,6 +34,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareT
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
@@ -50,8 +53,14 @@ import org.chromium.chrome.browser.suggestions.tile.TileGridLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.video_tutorials.FeatureType;
+import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
+import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.vr.VrModeObserver;
 
@@ -271,7 +280,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         if (VrModuleProvider.getDelegate().isInVr()) onEnterVr();
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
-
         mInitialized = true;
 
         TraceEvent.end(TAG + ".initialize()");
@@ -755,6 +763,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
         if (visibility == VISIBLE) {
             updateVoiceSearchButtonVisibility();
+            maybeShowVideoTutorialTryNowIPH();
         }
     }
 
@@ -885,6 +894,49 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
 
         mSearchBoxCoordinator.destroy();
+    }
+
+    private void maybeShowVideoTutorialTryNowIPH() {
+        VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
+        UserEducationHelper userEducationHelper = new UserEducationHelper(
+                mActivity, new Handler(), TrackerFactory::getTrackerForProfile);
+        // TODO(shaktisahu): Pass correct y-inset.
+        // TODO(shaktisahu): Determine if there is conflict with another IPH.
+        if (tryNowTracker.didClickTryNowButton(FeatureType.SEARCH)) {
+            IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
+                    R.string.video_tutorials_iph_tap_here_to_start,
+                    R.string.video_tutorials_iph_tap_here_to_start, mSearchBoxCoordinator.getView(),
+                    false);
+            userEducationHelper.requestShowIPH(iphCommandBuilder.build());
+            tryNowTracker.tryNowUIShown(FeatureType.SEARCH);
+        }
+
+        if (tryNowTracker.didClickTryNowButton(FeatureType.VOICE_SEARCH)) {
+            // TODO(shaktisahu): Pass voice search button.
+            IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
+                    R.string.video_tutorials_iph_tap_voice_icon_to_start,
+                    R.string.video_tutorials_iph_tap_voice_icon_to_start,
+                    mSearchBoxCoordinator.getVoiceSearchButton(), true);
+            userEducationHelper.requestShowIPH(iphCommandBuilder.build());
+            tryNowTracker.tryNowUIShown(FeatureType.VOICE_SEARCH);
+        }
+    }
+
+    private static IPHCommandBuilder createIPHCommandBuilder(Resources resources,
+            @StringRes int stringId, @StringRes int accessibilityStringId, View anchorView,
+            boolean showHighlight) {
+        IPHCommandBuilder iphCommandBuilder =
+                new IPHCommandBuilder(resources, null, stringId, accessibilityStringId);
+        iphCommandBuilder.setAnchorView(anchorView).setCircleHighlight(showHighlight);
+        if (showHighlight) {
+            iphCommandBuilder.setOnShowCallback(
+                    () -> ViewHighlighter.turnOnHighlight(anchorView, true /*circular*/));
+            iphCommandBuilder.setOnDismissCallback(() -> new Handler().postDelayed(() -> {
+                ViewHighlighter.turnOffHighlight(anchorView);
+            }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
+        }
+
+        return iphCommandBuilder;
     }
 
     /**

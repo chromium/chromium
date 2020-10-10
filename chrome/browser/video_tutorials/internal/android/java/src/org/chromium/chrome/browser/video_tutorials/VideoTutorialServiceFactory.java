@@ -15,8 +15,10 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.video_tutorials.iph.TryNowTrackerImpl;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinator;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinatorImpl;
+import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
 import org.chromium.chrome.browser.video_tutorials.list.TutorialListCoordinator;
 import org.chromium.chrome.browser.video_tutorials.list.TutorialListCoordinatorImpl;
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinator;
@@ -51,9 +53,10 @@ public class VideoTutorialServiceFactory {
     /** See {@link VideoPlayerCoordinator}.*/
     public static VideoPlayerCoordinator createVideoPlayerCoordinator(Context context,
             VideoTutorialService videoTutorialService,
-            Supplier<Pair<WebContents, ContentView>> webContentsFactory, Runnable closeCallback) {
+            Supplier<Pair<WebContents, ContentView>> webContentsFactory,
+            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
         return new VideoPlayerCoordinatorImpl(
-                context, videoTutorialService, webContentsFactory, closeCallback);
+                context, videoTutorialService, webContentsFactory, tryNowCallback, closeCallback);
     }
 
     /** See {@link TutorialListCoordinator}.*/
@@ -64,8 +67,17 @@ public class VideoTutorialServiceFactory {
                 recyclerView, videoTutorialService, imageFetcher, clickCallback);
     }
 
+    /** @return The tracker to track Try Now button clicks. */
+    public static VideoTutorialTryNowTracker getTryNowTracker() {
+        return LazyHolder.TRY_NOW_TRACKER;
+    }
+
     public static void setVideoTutorialServiceForTesting(VideoTutorialService provider) {
         sVideoTutorialServiceForTesting = provider;
+    }
+
+    private static final class LazyHolder {
+        private static final VideoTutorialTryNowTracker TRY_NOW_TRACKER = new TryNowTrackerImpl();
     }
 
     @NativeMethods
