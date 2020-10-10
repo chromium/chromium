@@ -4,6 +4,7 @@ Version: 3.23 RTM
 Security Critical: Yes
 License: MPL 2
 License File: LICENSE
+CPEPrefix: cpe:/a:mozilla:nss:3.23
 
 This directory includes a file derived from NSS's libssl, from the hg repo at:
   https://hg.mozilla.org/projects/nss
