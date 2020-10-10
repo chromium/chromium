@@ -38,21 +38,16 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--package', action='append', required=True,
                       help='Paths to packages to install.')
-  parser.add_argument('--fuchsia-out-dir', nargs='+',
+  parser.add_argument('--fuchsia-out-dir',
+                      required=True,
                       help='Path to a Fuchsia build output directory. '
-                           'If more than one outdir is supplied, the last one '
-                           'in the sequence will be used.')
+                      'Setting the GN arg '
+                      '"default_fuchsia_build_dir_for_installation" '
+                      'will cause it to be passed here.')
   args = parser.parse_args()
   assert args.package
 
-  if not args.fuchsia_out_dir or len(args.fuchsia_out_dir) == 0:
-    sys.stderr.write('No Fuchsia build output directory was specified.\n' +
-                     'To resolve this, Use the commandline argument ' +
-                     '--fuchsia-out-dir\nor set the GN arg ' +
-                     '"default_fuchsia_build_dir_for_installation".\n')
-    return 1
-
-  fuchsia_out_dir = os.path.expanduser(args.fuchsia_out_dir.pop())
+  fuchsia_out_dir = os.path.expanduser(args.fuchsia_out_dir)
   repo = amber_repo.ExternalAmberRepo(
       os.path.join(fuchsia_out_dir, 'amber-files'))
   print('Installing packages and symbols in Amber repo %s...' % repo.GetPath())

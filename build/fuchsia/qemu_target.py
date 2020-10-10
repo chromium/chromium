@@ -40,9 +40,16 @@ def GetTargetType():
 class QemuTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'qemu'
 
-  def __init__(self, out_dir, target_cpu, system_log_file, cpu_cores,
-               require_kvm, ram_size_mb):
-    super(QemuTarget, self).__init__(out_dir, target_cpu, system_log_file)
+  def __init__(self,
+               out_dir,
+               target_cpu,
+               system_log_file,
+               cpu_cores,
+               require_kvm,
+               ram_size_mb,
+               fuchsia_out_dir=None):
+    super(QemuTarget, self).__init__(out_dir, target_cpu, system_log_file,
+                                     fuchsia_out_dir)
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
