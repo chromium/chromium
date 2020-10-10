@@ -656,6 +656,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   void CallCurrentRecord(uint64_t generation_id,
                          uint64_t seq_number,
                          base::StringPiece blob) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
     google::protobuf::io::ArrayInputStream stream(  // Zero-copy stream.
         blob.data(), blob.size());
     EncryptedRecord encrypted_record;
@@ -1030,6 +1031,7 @@ void StorageQueue::Confirm(uint64_t seq_number,
 
 Status StorageQueue::RemoveConfirmedData(uint64_t seq_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+  // Update first available number, if new one is higher.
   if (first_seq_number_ <= seq_number) {
     first_seq_number_ = seq_number + 1;
   }

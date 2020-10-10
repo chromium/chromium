@@ -157,6 +157,12 @@ class MockUploadClient : public Storage::UploaderInterface {
                           wrapped_record.record().data()));
   }
 
+  void ProcessGap(SequencingInformation start,
+                  uint64_t count,
+                  base::OnceCallback<void(bool)> processed_cb) override {
+    LOG(FATAL) << "Gap not implemented yet";
+  }
+
   void Completed(Status status) override { UploadComplete(status); }
 
   MOCK_METHOD(bool,

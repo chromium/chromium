@@ -138,6 +138,13 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
                                       std::move(processed_cb));
   }
 
+  void ProcessGap(SequencingInformation start,
+                  uint64_t count,
+                  base::OnceCallback<void(bool)> processed_cb) override {
+    storage_interface_->ProcessGap(std::move(start), count,
+                                   std::move(processed_cb));
+  }
+
   void Completed(Status final_status) override {
     storage_interface_->Completed(final_status);
   }

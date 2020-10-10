@@ -113,6 +113,14 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
     virtual void ProcessRecord(StatusOr<EncryptedRecord> record,
                                base::OnceCallback<void(bool)> processed_cb) = 0;
 
+    // Makes a note of a gap [start, start + count). Expects |processed_cb| to
+    // be called after the record or error status has been processed, with true
+    // if next record needs to be delivered and false if the Uploader should
+    // stop.
+    virtual void ProcessGap(SequencingInformation start,
+                            uint64_t count,
+                            base::OnceCallback<void(bool)> processed_cb) = 0;
+
     // Finalizes the upload (e.g. sends the message to server and gets
     // response). Called always, regardless of whether there were errors.
     virtual void Completed(Status final_status) = 0;
@@ -161,14 +169,15 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // |uploader|->ProcessRecord (keeping ownership of the buffer) and resuming
   // after result callback returns 'true'. Only files that have been closed are
   // included in reading; |Upload| makes sure to close the last writeable file
-  // and create a new one before starting to send records to the |uploader|. If
-  // the monotonic order of sequencing is broken, INTERNAL error Status is
-  // reported. |Upload| can be stopped after any record by returning 'false' to
-  // |processed_cb| callback - in that case |Upload| will behave as if the end
-  // of data has been reached. While one or more |Upload|s are active, files can
-  // be added to the StorageQueue but cannot be deleted. If processing of the
-  // record takes significant time, |uploader| implementation should be offset
-  // to another thread to avoid locking StorageQueue.
+  // and create a new one before starting to send records to the |uploader|.
+  // If some records are not available or corrupt, |uploader|->ProcessGap is
+  // called. If the monotonic order of sequencing is broken, INTERNAL error
+  // Status is reported. |Upload| can be stopped after any record by returning
+  // 'false' to |processed_cb| callback - in that case |Upload| will behave as
+  // if the end of data has been reached. While one or more |Upload|s are
+  // active, files can be added to the StorageQueue but cannot be deleted. If
+  // processing of the record takes significant time, |uploader| implementation
+  // should be offset to another thread to avoid locking StorageQueue.
   // Helper methods: SwitchLastFileIfNotEmpty, CollectFilesForUpload.
   void Flush();
 

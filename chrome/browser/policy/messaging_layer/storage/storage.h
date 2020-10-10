@@ -28,28 +28,8 @@ namespace reporting {
 // according to the priority.
 class Storage : public base::RefCountedThreadSafe<Storage> {
  public:
-  // Interface for Upload, which must be implemented by an object returned by
-  // |StartUpload| callback (see below).
-  // Every time Storage starts an upload (by timer or immediately after Write)
-  // it uses this interface to hand available records over to the actual
-  // uploader. Storage takes ownership of it and automatically discards after
-  // |Completed| returns. Similar to StorageQueue::UploaderInterface, but with
-  // added priority parameter.
-  class UploaderInterface {
-   public:
-    virtual ~UploaderInterface() = default;
-
-    // Unserializes every record and hands ownership over for processing (e.g.
-    // to add to the network message). Expects |processed_cb| to be called after
-    // the record or error status has been processed, with true if next record
-    // needs to be delivered and false if the Uploader should stop.
-    virtual void ProcessRecord(StatusOr<EncryptedRecord> record,
-                               base::OnceCallback<void(bool)> processed_cb) = 0;
-
-    // Finalizes the upload (e.g. sends the message to the server and gets
-    // response).
-    virtual void Completed(Status final_status) = 0;
-  };
+  // Interface for Upload, forwarding to StorageQueue::UploaderInterface.
+  using UploaderInterface = StorageQueue::UploaderInterface;
 
   // Callback type for UploadInterface provider for specified queue.
   using StartUploadCb =

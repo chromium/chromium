@@ -168,32 +168,23 @@ void ReportingClient::Uploader::ProcessRecord(
     return;
   }
 
-  class ProcessRecordContext : public TaskRunnerContext<bool> {
-   public:
-    ProcessRecordContext(
-        EncryptedRecord record,
-        std::vector<EncryptedRecord>* records,
-        base::OnceCallback<void(bool)> processed_callback,
-        scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
-        : TaskRunnerContext<bool>(std::move(processed_callback),
-                                  sequenced_task_runner),
-          records_(records),
-          record_(std::move(record)) {}
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<EncryptedRecord>* records, EncryptedRecord record,
+             base::OnceCallback<void(bool)> processed_cb) {
+            records->emplace_back(std::move(record));
+            std::move(processed_cb).Run(true);
+          },
+          base::Unretained(encrypted_records_.get()),
+          std::move(data.ValueOrDie()), std::move(processed_cb)));
+}
 
-   private:
-    ~ProcessRecordContext() override = default;
-
-    void OnStart() override {
-      records_->emplace_back(std::move(record_));
-      Response(true);
-    }
-
-    std::vector<EncryptedRecord>* const records_;
-    const EncryptedRecord record_;
-  };
-
-  Start<ProcessRecordContext>(data.ValueOrDie(), encrypted_records_.get(),
-                              std::move(processed_cb), sequenced_task_runner_);
+void ReportingClient::Uploader::ProcessGap(
+    SequencingInformation start,
+    uint64_t count,
+    base::OnceCallback<void(bool)> processed_cb) {
+  LOG(FATAL) << "Gap not implemented yet";
 }
 
 void ReportingClient::Uploader::Completed(Status final_status) {

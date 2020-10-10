@@ -227,6 +227,9 @@ class ReportingClient {
 
     void ProcessRecord(StatusOr<EncryptedRecord> data,
                        base::OnceCallback<void(bool)> processed_cb) override;
+    void ProcessGap(SequencingInformation start,
+                    uint64_t count,
+                    base::OnceCallback<void(bool)> processed_cb) override;
 
     void Completed(Status final_status) override;
 
