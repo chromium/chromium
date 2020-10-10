@@ -98,6 +98,7 @@ class URLPattern {
 
   // Convenience to construct a URLPattern from a string. If the string is not
   // known ahead of time, use Parse() instead, which returns success or failure.
+  // This method will DCHECK if parsing fails.
   URLPattern(int valid_schemes, base::StringPiece pattern);
 
   URLPattern();

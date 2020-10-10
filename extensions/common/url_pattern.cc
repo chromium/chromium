@@ -160,15 +160,9 @@ URLPattern::URLPattern(int valid_schemes, base::StringPiece pattern)
       match_subdomains_(false),
       port_("*") {
   ParseResult result = Parse(pattern);
-  if (result != ParseResult::kSuccess) {
-    const char* error_string = GetParseResultString(result);
-    // Temporarily add more logging to investigate why this code path is
-    // reached. For http://crbug.com/856948
-    LOG(ERROR) << "Invalid pattern was given " << pattern << " result "
-               << error_string;
-    NOTREACHED() << "URLPattern invalid: '" << pattern
-                 << "'; error: " << error_string;
-  }
+  DCHECK_EQ(ParseResult::kSuccess, result)
+      << "Parsing unexpectedly failed for pattern: " << pattern << ": "
+      << GetParseResultString(result);
 }
 
 URLPattern::URLPattern(const URLPattern& other) = default;
