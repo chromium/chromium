@@ -350,7 +350,7 @@ class MockRuntime {
     this.bounds_ = null;
     this.send_mojo_space_reset_ = false;
     this.stageParameters_ = null;
-    this.stageParametersUpdated_ = false;
+    this.stageParametersId_ = 1;
 
     this.service_ = service;
 
@@ -552,11 +552,7 @@ class MockRuntime {
 
   onStageParametersUpdated() {
     // Indicate for the frame loop that the stage parameters have been updated.
-    this.stageParametersUpdated_ = true;
-    this.displayInfo_.stageParameters = this.stageParameters_;
-    if (this.sessionClient_.ptr.isBound()) {
-      this.sessionClient_.onChanged(this.displayInfo_);
-    }
+    this.stageParametersId_++;
   }
 
   simulateResetPose() {
@@ -723,8 +719,6 @@ class MockRuntime {
         const mojo_space_reset = this.send_mojo_space_reset_;
         this.send_mojo_space_reset_ = false;
 
-        const stage_parameters_updated = this.stageParametersUpdated_;
-        this.stageParametersUpdated_ = false;
         if (this.pose_) {
           this.pose_.poseIndex++;
         }
@@ -753,7 +747,7 @@ class MockRuntime {
           bufferHolder: null,
           bufferSize: {},
           stageParameters: this.stageParameters_,
-          stageParametersUpdated: stage_parameters_updated,
+          stageParametersId: this.stageParametersId_,
         };
 
         this.next_frame_id_++;

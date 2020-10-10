@@ -80,6 +80,7 @@ class XRCompositorCommon : public base::Thread,
  protected:
   virtual bool UsesInputEventing();
   void SetVisibilityState(mojom::XRVisibilityState visibility_state);
+  void SetStageParameters(mojom::VRStageParametersPtr stage_parameters);
 #if defined(OS_WIN)
   D3D11TextureHelper texture_helper_;
 #endif
@@ -185,6 +186,8 @@ class XRCompositorCommon : public base::Thread,
   mojo::Receiver<mojom::ImmersiveOverlay> overlay_receiver_{this};
   mojom::XRVisibilityState visibility_state_ =
       mojom::XRVisibilityState::VISIBLE;
+  mojom::VRStageParametersPtr current_stage_parameters_;
+  uint32_t stage_parameters_id_;
 
   DISALLOW_COPY_AND_ASSIGN(XRCompositorCommon);
 };

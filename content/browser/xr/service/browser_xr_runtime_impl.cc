@@ -117,14 +117,6 @@ device::mojom::VRDisplayInfoPtr ValidateVRDisplayInfo(
 
   device::mojom::VRDisplayInfoPtr ret = device::mojom::VRDisplayInfo::New();
 
-  // Maximum 1000km translation.
-  if (info->stage_parameters &&
-      IsValidTransform(info->stage_parameters->mojo_from_floor, 1000000)) {
-    ret->stage_parameters = device::mojom::VRStageParameters::New(
-        info->stage_parameters->mojo_from_floor,
-        info->stage_parameters->bounds);
-  }
-
   ret->left_eye = ValidateEyeParameters(info->left_eye.get());
   ret->right_eye = ValidateEyeParameters(info->right_eye.get());
   return ret;

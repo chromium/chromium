@@ -394,11 +394,21 @@ void ArCoreGl::GetFrameData(
       *floor_height_estimate_ != new_floor_height_estimate) {
     floor_height_estimate_ = new_floor_height_estimate;
 
-    frame_data->stage_parameters_updated = true;
-    frame_data->stage_parameters = mojom::VRStageParameters::New();
-    frame_data->stage_parameters->mojo_from_floor = gfx::Transform();
-    frame_data->stage_parameters->mojo_from_floor.Translate3d(
+    if (!stage_parameters_) {
+      stage_parameters_ = mojom::VRStageParameters::New();
+    }
+    stage_parameters_->mojo_from_floor = gfx::Transform();
+    stage_parameters_->mojo_from_floor.Translate3d(
         0, (-1 * *floor_height_estimate_), 0);
+
+    stage_parameters_id_++;
+  }
+
+  // Only send updates to the stage parameters if the session's stage parameters
+  // id is different.
+  frame_data->stage_parameters_id = stage_parameters_id_;
+  if (!options || options->stage_parameters_id != stage_parameters_id_) {
+    frame_data->stage_parameters = stage_parameters_.Clone();
   }
 
   frame_data->frame_id = webxr_->StartFrameAnimating();
