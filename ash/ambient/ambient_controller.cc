@@ -423,6 +423,11 @@ void AmbientController::ShowUi() {
 void AmbientController::ShowHiddenUi() {
   DVLOG(1) << __func__;
 
+  if (!IsAmbientModeEnabled()) {
+    LOG(WARNING) << "Ambient mode is not allowed.";
+    return;
+  }
+
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kHidden);
 }
 
@@ -504,10 +509,17 @@ void AmbientController::RequestAccessToken(
 }
 
 void AmbientController::DismissUI() {
-  if (LockScreen::HasInstance())
-    ShowHiddenUi();
-  else
+  if (!IsAmbientModeEnabled()) {
     CloseUi();
+    return;
+  }
+
+  if (LockScreen::HasInstance()) {
+    ShowHiddenUi();
+    return;
+  }
+
+  CloseUi();
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
