@@ -3669,9 +3669,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"arc-usb-host", flag_descriptions::kArcUsbHostName,
      flag_descriptions::kArcUsbHostDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUsbHostFeature)},
-    {"arc-usb-storage-ui", flag_descriptions::kArcUsbStorageUIName,
-     flag_descriptions::kArcUsbStorageUIDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kUsbStorageUIFeature)},
 #endif  // OS_CHROMEOS
 #if defined(OS_WIN)
     {"enable-winrt-sensor-implementation",

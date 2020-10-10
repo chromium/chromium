@@ -2077,9 +2077,6 @@ extern const char kArcNativeBridge64BitSupportExperimentDescription[];
 extern const char kArcUsbHostName[];
 extern const char kArcUsbHostDescription[];
 
-extern const char kArcUsbStorageUIName[];
-extern const char kArcUsbStorageUIDescription[];
-
 extern const char kAshEnablePipRoundedCornersName[];
 extern const char kAshEnablePipRoundedCornersDescription[];
 

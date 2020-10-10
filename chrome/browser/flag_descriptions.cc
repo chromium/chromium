@@ -3602,10 +3602,6 @@ const char kArcUsbHostName[] = "Enable ARC USB host integration";
 const char kArcUsbHostDescription[] =
     "Allow Android apps to use USB host feature on ChromeOS devices.";
 
-const char kArcUsbStorageUIName[] = "Enable ARC USB Storage UI";
-const char kArcUsbStorageUIDescription[] =
-    "Enable experimental UI for controlling ARC access to USB storage devices.";
-
 const char kAshEnablePipRoundedCornersName[] =
     "Enable Picture-in-Picture rounded corners.";
 const char kAshEnablePipRoundedCornersDescription[] =
