@@ -34,6 +34,7 @@ js_type_check("closure_compile") {
 js_library("account_manager") {
   deps = [
     "..:deep_linking_behavior",
+    "..:metrics_recorder",
     "..:os_route",
     "../..:router",
     "../../people_page:account_manager_browser_proxy",
@@ -259,6 +260,7 @@ js_library("account_manager.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/account_manager.m.js" ]
   deps = [
     "..:deep_linking_behavior.m",
+    "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:router.m",
     "../../people_page:account_manager_browser_proxy.m",

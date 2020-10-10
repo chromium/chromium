@@ -161,6 +161,9 @@ Polymer({
    * @private
    */
   addAccount_(event) {
+    settings.recordSettingChange(
+        chromeos.settings.mojom.Setting.kAddAccount,
+        {intValue: this.accounts_.length + 1});
     this.browserProxy_.addAccount();
   },
 

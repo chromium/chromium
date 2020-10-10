@@ -712,6 +712,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.People.AddAccountCount" units="accounts"
+    expires_after="2021-09-30">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    Records when users click the Add Account button on the People page. The
+    number of the account that would be added is saved, e.g. a sample of 2 means
+    the user entered the add account dialog for a 2nd account.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.SearchLatency" units="ms"
     expires_after="2021-04-04">
   <owner>khorimoto@chromium.org</owner>

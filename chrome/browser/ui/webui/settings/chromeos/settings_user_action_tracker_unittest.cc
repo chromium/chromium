@@ -33,6 +33,8 @@ class SettingsUserActionTrackerTest : public testing::Test {
   void SetUp() override {
     fake_hierarchy_.AddSettingMetadata(mojom::Section::kBluetooth,
                                        mojom::Setting::kBluetoothOnOff);
+    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPeople,
+                                       mojom::Setting::kAddAccount);
   }
 
   base::HistogramTester histogram_tester_;
@@ -41,7 +43,7 @@ class SettingsUserActionTrackerTest : public testing::Test {
   SettingsUserActionTracker tracker_;
 };
 
-TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChanged) {
+TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBool) {
   // Record that the bluetooth enabled setting was toggled off.
   tracker_.RecordSettingChangeWithDetails(
       mojom::Setting::kBluetoothOnOff,
@@ -61,6 +63,27 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChanged) {
           fake_sections_.GetSection(mojom::Section::kBluetooth));
   EXPECT_TRUE(bluetooth_section->logged_metrics().back() ==
               mojom::Setting::kBluetoothOnOff);
+}
+
+TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedInt) {
+  // Record that the user tried to add a 3rd account.
+  tracker_.RecordSettingChangeWithDetails(
+      mojom::Setting::kAddAccount, mojom::SettingChangeValue::NewIntValue(3));
+
+  // The umbrella metric for which setting was changed should be updated. Note
+  // that kAddAccount has enum value of 300.
+  histogram_tester_.ExpectTotalCount("ChromeOS.Settings.SettingChanged",
+                                     /*count=*/1);
+  histogram_tester_.ExpectBucketCount("ChromeOS.Settings.SettingChanged",
+                                      /*sample=*/300,
+                                      /*count=*/1);
+
+  // The LogMetric fn in the People section should have been called.
+  const FakeOsSettingsSection* people_section =
+      static_cast<const FakeOsSettingsSection*>(
+          fake_sections_.GetSection(mojom::Section::kPeople));
+  EXPECT_TRUE(people_section->logged_metrics().back() ==
+              mojom::Setting::kAddAccount);
 }
 
 }  // namespace settings.

@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -920,8 +921,15 @@ std::string PeopleSection::GetSectionPath() const {
 
 bool PeopleSection::LogMetric(mojom::Setting setting,
                               base::Value& value) const {
-  // Unimplemented.
-  return false;
+  switch (setting) {
+    case mojom::Setting::kAddAccount:
+      base::UmaHistogramCounts1000("ChromeOS.Settings.People.AddAccountCount",
+                                   value.GetInt());
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
