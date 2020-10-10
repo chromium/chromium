@@ -285,41 +285,42 @@ void AmbientController::OnAutoShowTimeOut() {
 }
 
 void AmbientController::OnLockStateChanged(bool locked) {
+  if (!locked) {
+    // Ambient screen will be destroyed along with the lock screen when user
+    // logs in.
+    CloseUi();
+    return;
+  }
+
   if (!IsAmbientModeEnabled()) {
     VLOG(1) << "Ambient mode is not allowed.";
     return;
   }
 
-  if (locked) {
-    // We have 3 options to manage the token for lock screen. Here use option 1.
-    // 1. Request only one time after entering lock screen. We will use it once
-    //    to request all the image links and no more requests.
-    // 2. Request one time before entering lock screen. This will introduce
-    //    extra latency.
-    // 3. Request and refresh the token in the background (even the ambient mode
-    //    is not started) with extra buffer time to use. When entering
-    //    lock screen, it will be most likely to have the token already and
-    //    enough time to use. More specifically,
-    //    3a. We will leave enough buffer time (e.g. 10 mins before expire) to
-    //        start to refresh the token.
-    //    3b. When lock screen is triggered, most likely we will have >10 mins
-    //        of token which can be used on lock screen.
-    //    3c. There is a corner case that we may not have the token fetched when
-    //        locking screen, we probably can use PrepareForLock(callback) when
-    //        locking screen. We can add the refresh token into it. If the token
-    //        has already been fetched, then there is not additional time to
-    //        wait.
-    RequestAccessToken(base::DoNothing(), /*may_refresh_token_on_lock=*/true);
+  // We have 3 options to manage the token for lock screen. Here use option 1.
+  // 1. Request only one time after entering lock screen. We will use it once
+  //    to request all the image links and no more requests.
+  // 2. Request one time before entering lock screen. This will introduce
+  //    extra latency.
+  // 3. Request and refresh the token in the background (even the ambient mode
+  //    is not started) with extra buffer time to use. When entering
+  //    lock screen, it will be most likely to have the token already and
+  //    enough time to use. More specifically,
+  //    3a. We will leave enough buffer time (e.g. 10 mins before expire) to
+  //        start to refresh the token.
+  //    3b. When lock screen is triggered, most likely we will have >10 mins
+  //        of token which can be used on lock screen.
+  //    3c. There is a corner case that we may not have the token fetched when
+  //        locking screen, we probably can use PrepareForLock(callback) when
+  //        locking screen. We can add the refresh token into it. If the token
+  //        has already been fetched, then there is not additional time to
+  //        wait.
+  RequestAccessToken(base::DoNothing(), /*may_refresh_token_on_lock=*/true);
 
-    if (!IsShown()) {
-      // When lock screen starts, we don't immediately show the UI. The Ui is
-      // hidden and will show after a delay.
-      ShowHiddenUi();
-    }
-  } else {
-    // Ambient screen will be destroyed along with the lock screen when user
-    // logs in.
-    CloseUi();
+  if (!IsShown()) {
+    // When lock screen starts, we don't immediately show the UI. The Ui is
+    // hidden and will show after a delay.
+    ShowHiddenUi();
   }
 }
 

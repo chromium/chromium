@@ -23,6 +23,9 @@
 
 namespace ash {
 
+constexpr char kUser1[] = "user1@gmail.com";
+constexpr char kUser2[] = "user2@gmail.com";
+
 class AmbientControllerTest : public AmbientAshTestBase {
  public:
   AmbientControllerTest() : AmbientAshTestBase() {}
@@ -109,6 +112,70 @@ TEST_F(AmbientControllerTest, CloseAmbientScreenUponUnlock) {
   EXPECT_TRUE(ambient_controller()->IsShown());
 
   UnlockScreen();
+
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  // The view should be destroyed along the widget.
+  EXPECT_FALSE(container_view());
+}
+
+TEST_F(AmbientControllerTest, CloseAmbientScreenUponUnlockSecondaryUser) {
+  // Simulate the login screen.
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+  SetAmbientModeEnabled(true);
+
+  LockScreen();
+  FastForwardToInactivity();
+  FastForwardTiny();
+
+  EXPECT_TRUE(container_view());
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kShown);
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  SimulateUserLogin(kUser2);
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  // The view should be destroyed along the widget.
+  EXPECT_FALSE(container_view());
+
+  FastForwardToInactivity();
+  FastForwardTiny();
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  // The view should be destroyed along the widget.
+  EXPECT_FALSE(container_view());
+}
+
+TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
+  // Simulate the login screen.
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+  SetAmbientModeEnabled(true);
+
+  LockScreen();
+  FastForwardToInactivity();
+  FastForwardTiny();
+
+  EXPECT_TRUE(container_view());
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kShown);
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  SimulateUserLogin(kUser2);
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  // The view should be destroyed along the widget.
+  EXPECT_FALSE(container_view());
+
+  LockScreen();
+  FastForwardToInactivity();
+  FastForwardTiny();
 
   EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
             AmbientUiVisibility::kClosed);
