@@ -159,6 +159,15 @@ class AccessibilityPrivateUpdateSwitchAccessBubbleFunction
                              ACCESSIBILITY_PRIVATE_UPDATESWITCHACCESSBUBBLE)
 };
 
+// API function that is called to start or end point scanning of the
+// Switch Access extension.
+class AccessibilityPrivateEnablePointScanFunction : public ExtensionFunction {
+  ~AccessibilityPrivateEnablePointScanFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.enablePointScan",
+                             ACCESSIBILITY_PRIVATE_ENABLEPOINTSCAN)
+};
+
 // API function that is called to get the device's battery status as a string.
 class AccessibilityPrivateGetBatteryDescriptionFunction
     : public ExtensionFunction {

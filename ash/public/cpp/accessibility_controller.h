@@ -80,6 +80,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
       const gfx::Rect& bounds,
       std::vector<std::string> actions_to_show) = 0;
 
+  // Start Switch Access point scanning
+  virtual void StartPointScan() = 0;
+
   // Set whether dictation is active.
   virtual void SetDictationActive(bool is_active) = 0;
 

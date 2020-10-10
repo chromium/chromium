@@ -1060,16 +1060,18 @@ void AccessibilityControllerImpl::ShowSwitchAccessMenu(
   switch_access_bubble_controller_->ShowMenu(anchor, actions_to_show);
 }
 
+void AccessibilityControllerImpl::StartPointScan() {
+  if (::switches::IsSwitchAccessPointScanningEnabled()) {
+    if (!point_scan_controller_)
+      point_scan_controller_.reset(new PointScanController());
+
+    point_scan_controller_->Start();
+  }
+}
+
 void AccessibilityControllerImpl::
     DisablePolicyRecommendationRestorerForTesting() {
   Shell::Get()->policy_recommendation_restorer()->DisableForTesting();
-}
-
-void AccessibilityControllerImpl::StartPointScanning() {
-  if (!point_scan_controller_)
-    point_scan_controller_.reset(new PointScanController());
-
-  point_scan_controller_->Start();
 }
 
 bool AccessibilityControllerImpl::IsStickyKeysSettingVisibleInTray() {
@@ -1724,8 +1726,6 @@ void AccessibilityControllerImpl::ActivateSwitchAccess() {
   switch_access_bubble_controller_ =
       std::make_unique<SwitchAccessMenuBubbleController>();
   UpdateKeyCodesAfterSwitchAccessEnabled();
-  if (::switches::IsSwitchAccessPointScanningEnabled())
-    StartPointScanning();
   if (skip_switch_access_notification_) {
     skip_switch_access_notification_ = false;
     return;

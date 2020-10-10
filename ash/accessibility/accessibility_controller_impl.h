@@ -351,6 +351,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;
   void ShowSwitchAccessMenu(const gfx::Rect& anchor,
                             std::vector<std::string> actions_to_show) override;
+  void StartPointScan() override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(

@@ -152,6 +152,7 @@ class ActionManager {
    * @private
    */
   addGlobalActions_(actions) {
+    actions.push(SwitchAccessMenuAction.POINT_SCAN);
     actions.push(SwitchAccessMenuAction.SETTINGS);
     return actions;
   }
@@ -193,6 +194,8 @@ class ActionManager {
       case SwitchAccessMenuAction.SETTINGS:
         chrome.accessibilityPrivate.openSettingsSubpage(
             'manageAccessibility/switchAccess');
+      case SwitchAccessMenuAction.POINT_SCAN:
+        chrome.accessibilityPrivate.enablePointScan(true);
         return true;
       default:
         return false;

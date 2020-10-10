@@ -332,6 +332,19 @@
         "platforms": ["chromeos"]
       },
       {
+        "name": "enablePointScan",
+        "type": "function",
+        "description": "Enables or disables point scanning in Switch Access.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True for start point scanning, false for end point scanning."
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
         "name": "setNativeChromeVoxArcSupportForCurrentApp",
         "type": "function",
         "description": "Sets current ARC app to use native ARC support.",

@@ -274,6 +274,13 @@ chrome.accessibilityPrivate.forwardKeyEventsToSwitchAccess = function(shouldForw
 chrome.accessibilityPrivate.updateSwitchAccessBubble = function(bubble, show, anchor, actions) {};
 
 /**
+ * Enable point scanning in Switch Access.
+ * @param {boolean} enabled True for start point scanning, false for end point
+ *     scanning.
+ */
+chrome.accessibilityPrivate.enablePointScan = function(enabled) {};
+
+/**
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
  */
