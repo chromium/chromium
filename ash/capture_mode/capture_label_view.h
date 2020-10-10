@@ -24,6 +24,8 @@ class CaptureModeSession;
 class ASH_EXPORT CaptureLabelView : public views::View,
                                     public views::ButtonListener {
  public:
+  METADATA_HEADER(CaptureLabelView);
+
   explicit CaptureLabelView(CaptureModeSession* capture_mode_session);
   CaptureLabelView(const CaptureLabelView&) = delete;
   CaptureLabelView& operator=(const CaptureLabelView&) = delete;

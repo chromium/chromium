@@ -71,6 +71,11 @@ constexpr gfx::ShadowValue kRegionAffordanceCircleShadow2(
     6,
     SkColorSetARGB(38, 0, 0, 0));
 
+// The minimum padding on each side of the capture region. If the capture button
+// cannot be placed in the center of the capture region and maintain this
+// padding, it will be placed below or above the capture region.
+constexpr int kCaptureRegionMinimumPaddingDp = 16;
+
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
 bool SetMouseWarpEnabled(bool enable) {
@@ -137,8 +142,9 @@ gfx::Rect GetRectEnclosingPoints(const std::vector<gfx::Point>& points) {
 views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
                                              const gfx::Rect& bounds,
                                              const std::string& name) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  // Use a popup widget to get transient properties, such as not needing to
+  // click on the widget first to get capture before receiving events.
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent;
@@ -363,8 +369,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
 
   gfx::Point location = event->location();
-  aura::Window* source = static_cast<aura::Window*>(event->target());
-  aura::Window::ConvertPointToTarget(source, current_root_, &location);
+  aura::Window* event_target = static_cast<aura::Window*>(event->target());
+  aura::Window::ConvertPointToTarget(event_target, current_root_, &location);
   const bool is_event_on_capture_bar =
       CaptureModeBarView::GetBounds(current_root_).Contains(location);
 
@@ -381,7 +387,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_TOUCH_PRESSED:
       case ui::ET_TOUCH_MOVED: {
         gfx::Point screen_location(event->location());
-        ::wm::ConvertPointToScreen(source, &screen_location);
+        ::wm::ConvertPointToScreen(event_target, &screen_location);
         capture_window_observer_->UpdateSelectedWindowAtPosition(
             screen_location);
         break;
@@ -398,7 +404,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   // Let the capture button handle any events it can handle first.
-  if (ShouldCaptureLabelHandleEvent(location))
+  if (ShouldCaptureLabelHandleEvent(event_target))
     return;
 
   // Allow events that are located on the capture mode bar to pass through so we
@@ -687,24 +693,57 @@ void CaptureModeSession::UpdateCaptureLabelWidgetBounds() {
   // For fullscreen and window capture mode, the capture label is placed in the
   // middle of the screen. For region capture mode, if it's in select phase, the
   // capture label is also placed in the middle of the screen, and if it's in
-  // fine tune phase, the capture label is placed in middle of the capture
-  // region.
+  // fine tune phase, the capture label is ideally placed in the middle of the
+  // capture region. If it cannot fit, then it will be placed slightly above or
+  // below the capture region.
   gfx::Rect bounds(current_root_->bounds());
   const gfx::Rect capture_region = controller_->user_capture_region();
+  const gfx::Size preferred_size =
+      capture_label_widget_->GetContentsView()->GetPreferredSize();
   if (controller_->source() == CaptureModeSource::kRegion &&
       !is_selecting_region_ && !capture_region.IsEmpty()) {
     bounds = capture_region;
+
+    // The capture region must be at least the size of |preferred_size| plus
+    // some padding for the capture label to be centered inside it.
+    gfx::Size capture_region_min_size = preferred_size;
+    capture_region_min_size.Enlarge(kCaptureRegionMinimumPaddingDp,
+                                    kCaptureRegionMinimumPaddingDp);
+    if (bounds.width() > capture_region_min_size.width() &&
+        bounds.height() > capture_region_min_size.height()) {
+      bounds.ClampToCenteredSize(preferred_size);
+    } else {
+      // The capture region is too small for the capture label to be inside it.
+      // Align |bounds| so that its horizontal centerpoint aligns with the
+      // capture regions centerpoint.
+      bounds.set_size(preferred_size);
+      bounds.set_x(capture_region.CenterPoint().x() -
+                   preferred_size.width() / 2);
+
+      // Try to put the capture label slightly below the capture region. If it
+      // does not fully fit in the root window bounds, place the capture label
+      // slightly above.
+      const int under_region_label_y =
+          capture_region.bottom() + kCaptureButtonDistanceFromRegionDp;
+      if (under_region_label_y + preferred_size.height() <
+          current_root_->bounds().bottom()) {
+        bounds.set_y(under_region_label_y);
+      } else {
+        bounds.set_y(capture_region.y() - kCaptureButtonDistanceFromRegionDp -
+                     preferred_size.height());
+      }
+    }
+  } else {
+    bounds.ClampToCenteredSize(preferred_size);
   }
-  bounds.ClampToCenteredSize(
-      capture_label_widget_->GetContentsView()->GetPreferredSize());
+
   capture_label_widget_->SetBounds(bounds);
 }
 
 bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
-    const gfx::Point& location_in_root) {
+    aura::Window* event_target) {
   if (!capture_label_widget_ ||
-      !capture_label_widget_->GetNativeWindow()->bounds().Contains(
-          location_in_root)) {
+      capture_label_widget_->GetNativeWindow() != event_target) {
     return false;
   }
 

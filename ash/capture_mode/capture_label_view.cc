@@ -13,6 +13,7 @@
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -52,6 +53,14 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   label_button_->SetPaintToLayer();
   label_button_->layer()->SetFillsBoundsOpaquely(false);
   label_button_->SetEnabledTextColors(text_color);
+  label_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  label_button_->SetNotifyEnterExitOnChild(true);
+
+  label_button_->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  const auto ripple_attributes =
+      color_provider->GetRippleAttributes(background_color);
+  label_button_->SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  label_button_->SetInkDropBaseColor(ripple_attributes.base_color);
 
   label_ = AddChildView(std::make_unique<views::Label>(base::string16()));
   label_->SetPaintToLayer();
@@ -157,9 +166,7 @@ void CaptureLabelView::StartCountDown(
 }
 
 void CaptureLabelView::Layout() {
-  gfx::Rect label_button_bounds = GetLocalBounds();
-  label_button_bounds.ClampToCenteredSize(label_button_->GetPreferredSize());
-  label_button_->SetBoundsRect(label_button_bounds);
+  label_button_->SetBoundsRect(GetLocalBounds());
 
   gfx::Rect label_bounds = GetLocalBounds();
   label_bounds.ClampToCenteredSize(label_->GetPreferredSize());
@@ -202,5 +209,8 @@ void CaptureLabelView::CountDown() {
 
   label_->SetText(base::FormatNumber(timeout_count_down_--));
 }
+
+BEGIN_METADATA(CaptureLabelView, views::View)
+END_METADATA
 
 }  // namespace ash

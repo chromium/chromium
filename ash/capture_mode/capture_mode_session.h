@@ -48,6 +48,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // The vertical distance from the size label to the custom capture region.
   static constexpr int kSizeLabelYDistanceFromRegionDp = 8;
 
+  // The vertical distance of the capture button from the capture region, if the
+  // capture button does not fit inside the capture region.
+  static constexpr int kCaptureButtonDistanceFromRegionDp = 24;
+
   aura::Window* current_root() const { return current_root_; }
   CaptureModeBarView* capture_mode_bar_view() const {
     return capture_mode_bar_view_;
@@ -81,6 +85,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  views::Widget* capture_label_widget_for_testing() const {
+    return capture_label_widget_.get();
+  }
 
  private:
   // Gets the bounds of current window selected for |kWindow| capture source.
@@ -132,8 +140,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Updates the capture label widget.
   void UpdateCaptureLabelWidget();
   void UpdateCaptureLabelWidgetBounds();
-  // Returns true if the capture label should handle the event.
-  bool ShouldCaptureLabelHandleEvent(const gfx::Point& location_in_root);
+
+  // Returns true if the capture label should handle the event. |event_target|
+  // is the window which is receiving the event. The capture label should handle
+  // the event if its associated window is |event_target| and its capture button
+  // child is visible.
+  bool ShouldCaptureLabelHandleEvent(aura::Window* event_target);
 
   CaptureModeController* const controller_;
 

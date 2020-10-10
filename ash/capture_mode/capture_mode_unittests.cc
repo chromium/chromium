@@ -536,6 +536,44 @@ TEST_F(CaptureModeTest, DimensionsLabelLocation) {
   EXPECT_EQ(nullptr, GetDimensionsLabelWindow());
 }
 
+TEST_F(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
+  UpdateDisplay("800x800");
+
+  auto* controller = StartImageRegionCapture();
+
+  // Select a large region. Verify that the capture button widget is centered.
+  SelectRegion(gfx::Rect(100, 100, 600, 600));
+
+  views::Widget* capture_button_widget =
+      controller->capture_mode_session()->capture_label_widget_for_testing();
+  ASSERT_TRUE(capture_button_widget);
+  aura::Window* capture_button_window =
+      capture_button_widget->GetNativeWindow();
+  EXPECT_EQ(gfx::Point(400, 400),
+            capture_button_window->bounds().CenterPoint());
+
+  // Drag the bottom corner so that the region is too small to fit the capture
+  // button. Verify that the button is aligned horizontally and placed below the
+  // region.
+  auto* event_generator = GetEventGenerator();
+  event_generator->DragMouseTo(gfx::Point(120, 120));
+  EXPECT_EQ(gfx::Rect(100, 100, 20, 20), controller->user_capture_region());
+  EXPECT_EQ(110, capture_button_window->bounds().CenterPoint().x());
+  const int distance_from_region =
+      CaptureModeSession::kCaptureButtonDistanceFromRegionDp;
+  EXPECT_EQ(120 + distance_from_region, capture_button_window->bounds().y());
+
+  // Click inside the region to drag the entire region to the bottom of the
+  // screen. Verify that the button is aligned horizontally and placed above the
+  // region.
+  event_generator->set_current_screen_location(gfx::Point(110, 110));
+  event_generator->DragMouseTo(gfx::Point(110, 790));
+  EXPECT_EQ(gfx::Rect(100, 780, 20, 20), controller->user_capture_region());
+  EXPECT_EQ(110, capture_button_window->bounds().CenterPoint().x());
+  EXPECT_EQ(780 - distance_from_region,
+            capture_button_window->bounds().bottom());
+}
+
 TEST_F(CaptureModeTest, WindowCapture) {
   // Create 2 windows that overlap with each other.
   const gfx::Rect bounds1(0, 0, 200, 200);
