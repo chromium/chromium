@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.ntp;
 
 import android.accounts.Account;
-import android.support.test.InstrumentationRegistry;
+import android.app.Activity;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -35,7 +34,6 @@ import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -86,7 +84,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @FlakyTest(message = "crbug.com/1075804")
     public void testRecentlyClosedTabs() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed tab and confirm a view is rendered for it.
@@ -96,7 +93,8 @@ public class RecentTabsPageTest {
         View view = waitForView(title);
 
         // Clear the recently closed tabs with the context menu and confirm the view is gone.
-        invokeContextMenu(view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        openContextMenuAndInvokeItem(mActivityTestRule.getActivity(), view,
+                RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         Assert.assertEquals(0, mManager.getRecentlyClosedTabs(1).size());
         waitForViewToDisappear(title);
     }
@@ -193,10 +191,13 @@ public class RecentTabsPageTest {
         });
     }
 
-    private void invokeContextMenu(View view, int contextMenuItemId) throws ExecutionException {
-        TestTouchUtils.performLongClickOnMainSync(
-                InstrumentationRegistry.getInstrumentation(), view);
-        Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mActivityTestRule.getActivity(), contextMenuItemId, 0));
+    private static void openContextMenuAndInvokeItem(
+            final Activity activity, final View view, final int itemId) {
+        // IMPLEMENTATION NOTE: Instrumentation.invokeContextMenuAction would've been much simpler,
+        // but it requires the View to be focused which is hard to achieve in touch mode.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            view.performLongClick();
+            activity.getWindow().performContextMenuIdentifierAction(itemId, 0);
+        });
     }
 }
