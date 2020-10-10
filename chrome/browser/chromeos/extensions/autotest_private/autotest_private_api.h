@@ -1109,6 +1109,21 @@ class AutotestPrivateRemoveActiveDeskFunction : public ExtensionFunction {
   void OnAnimationComplete();
 };
 
+class AutotestPrivateActivateAdjacentDesksToTargetIndexFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateActivateAdjacentDesksToTargetIndexFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "autotestPrivate.activateAdjacentDesksToTargetIndex",
+      AUTOTESTPRIVATE_ACTIVATEADJACENTDESKSTOTARGETINDEX)
+
+ private:
+  ~AutotestPrivateActivateAdjacentDesksToTargetIndexFunction() override;
+  ResponseAction Run() override;
+
+  void OnAnimationComplete();
+};
+
 class AutotestPrivateMouseClickFunction : public ExtensionFunction {
  public:
   AutotestPrivateMouseClickFunction();

@@ -986,6 +986,14 @@ namespace autotestPrivate {
     // cannot be removed.
     static void removeActiveDesk(DesksCallback callback);
 
+    // Activates the desk at the given |index| by chaining multiple
+    // activate-desk animations.
+    // |index|: the zero-based index of the desk desired to be activated.
+    // |callback|: called indicating success when the animation completes, or
+    // failure when the desk at |index| is already the active desk.
+    static void activateAdjacentDesksToTargetIndex(long index,
+                                                   DesksCallback callback);
+
     // Create mouse events to cause a mouse click.
     // |button|: the mouse button for the click event.
     // |callback|: called after the mouse click finishes.

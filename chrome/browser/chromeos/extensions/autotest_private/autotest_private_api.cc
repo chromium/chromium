@@ -4081,6 +4081,40 @@ void AutotestPrivateRemoveActiveDeskFunction::OnAnimationComplete() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateActivateAdjacentDesksToTargetIndexFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
+    AutotestPrivateActivateAdjacentDesksToTargetIndexFunction() = default;
+AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
+    ~AutotestPrivateActivateAdjacentDesksToTargetIndexFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::Run() {
+  std::unique_ptr<
+      api::autotest_private::ActivateAdjacentDesksToTargetIndex::Params>
+      params(api::autotest_private::ActivateAdjacentDesksToTargetIndex::Params::
+                 Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!ash::AutotestDesksApi().ActivateAdjacentDesksToTargetIndex(
+          params->index,
+          base::BindOnce(
+              &AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
+                  OnAnimationComplete,
+              this))) {
+    return RespondNow(OneArgument(std::make_unique<base::Value>(false)));
+  }
+
+  return RespondLater();
+}
+
+void AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
+    OnAnimationComplete() {
+  Respond(OneArgument(std::make_unique<base::Value>(true)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateMouseClickFunction
 ///////////////////////////////////////////////////////////////////////////////
 
