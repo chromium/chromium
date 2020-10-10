@@ -3036,7 +3036,6 @@ crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-circle-004.htm
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-polygon-010.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-circle-006.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path-svg-content/clip-path-shape-circle-003.svg [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/test-mask.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-polygon-006.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path-svg-content/clip-path-shape-circle-004.svg [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-polygon-008.html [ Failure ]

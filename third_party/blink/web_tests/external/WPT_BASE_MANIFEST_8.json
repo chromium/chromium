@@ -45529,7 +45529,7 @@
       ]
      ],
      "background-attachment-350.html": [
-      "2323293a96b18e373e26ec3f4406c4a5fb1f7417",
+      "fa63370a43cd575f54fd0004d4436d551144026c",
       [
        null,
        [
@@ -82067,20 +82067,7 @@
         {}
        ]
       ]
-     },
-     "test-mask.html": [
-      "b1e21566e3f2072251f0093a4d08e9688991b73f",
-      [
-       null,
-       [
-        [
-         "/css/css-masking/test-mask-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ]
+     }
     },
     "css-multicol": {
      "always-balancing-before-column-span.html": [
@@ -192087,11 +192074,7 @@
        "de30887ea358ece8e0c1cd593d3d7c66bc744bd4",
        []
       ]
-     },
-     "test-mask-ref.html": [
-      "938235acbd36309fb969c55f161239bcd5ab969e",
-      []
-     ]
+     }
     },
     "css-multicol": {
      "META.yml": [
