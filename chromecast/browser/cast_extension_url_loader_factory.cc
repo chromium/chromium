@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "chromecast/browser/extensions/cast_extension_system_factory.h"
 #include "chromecast/common/cast_redirect_manifest_handler.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -181,6 +183,16 @@ CastExtensionURLLoaderFactory::CastExtensionURLLoaderFactory(
           content::BrowserContext::GetDefaultStoragePartition(browser_context)
               ->GetURLLoaderFactoryForBrowserProcess()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // base::Unretained is safe below, because lifetime of
+  // |browser_context_shutdown_subscription_| guarantees that
+  // OnBrowserContextDestroyed won't be called after |this| is destroyed.
+  browser_context_shutdown_subscription_ =
+      BrowserContextShutdownNotifierFactory::GetInstance()
+          ->Get(browser_context)
+          ->Subscribe(base::BindRepeating(
+              &CastExtensionURLLoaderFactory::OnBrowserContextDestroyed,
+              base::Unretained(this)));
 }
 
 CastExtensionURLLoaderFactory::~CastExtensionURLLoaderFactory() = default;
@@ -234,12 +246,42 @@ void CastExtensionURLLoaderFactory::CreateLoaderAndStart(
       network_factory_);
 }
 
+void CastExtensionURLLoaderFactory::OnBrowserContextDestroyed() {
+  // When the BrowserContext gets destroyed, |this| factory is not able to serve
+  // any more requests.
+  DisconnectReceiversAndDestroy();
+}
+
+// static
+CastExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory*
+CastExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory::
+    GetInstance() {
+  static base::NoDestructor<BrowserContextShutdownNotifierFactory> s_factory;
+  return s_factory.get();
+}
+
+CastExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory::
+    BrowserContextShutdownNotifierFactory()
+    : BrowserContextKeyedServiceShutdownNotifierFactory(
+          "CastExtensionURLLoaderFactory::"
+          "BrowserContextShutdownNotifierFactory") {
+  DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+  DependsOn(extensions::CastExtensionSystemFactory::GetInstance());
+}
+
 // static
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CastExtensionURLLoaderFactory::Create(
     content::BrowserContext* browser_context,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory) {
+  DCHECK(browser_context);
+
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+  // Return an unbound |pending_remote| if the |browser_context| has already
+  // started shutting down.
+  if (browser_context->ShutdownStarted())
+    return pending_remote;
 
   // The CastExtensionURLLoaderFactory will delete itself when there are no more
   // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
@@ -248,6 +290,11 @@ CastExtensionURLLoaderFactory::Create(
       pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
+}
+
+// static
+void CastExtensionURLLoaderFactory::EnsureShutdownNotifierFactoryBuilt() {
+  BrowserContextShutdownNotifierFactory::GetInstance();
 }
 
 }  // namespace shell

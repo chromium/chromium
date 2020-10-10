@@ -39,6 +39,18 @@ class CONTENT_EXPORT NonNetworkURLLoaderFactoryBase
 
   ~NonNetworkURLLoaderFactoryBase() override;
 
+  // Sometimes a derived class can no longer function, even when the set of
+  // |receivers_| is still non-empty.  This should be rare (typically the
+  // lifetime of users of mojo::Remote<network::mojom::URLLoaderFactory> should
+  // be shorter than whatever the factory depends on), but may happen in some
+  // corner cases (e.g. in a race between 1) BrowserContext destruction and 2)
+  // CreateLoaderAndStart mojo call).
+  //
+  // When a derived class gets notified that its dependencies got destroyed, it
+  // should call DisconnectReceiversAndDestroy to prevent any future calls to
+  // CreateLoaderAndStart.
+  void DisconnectReceiversAndDestroy();
+
   THREAD_CHECKER(thread_checker_);
 
  private:

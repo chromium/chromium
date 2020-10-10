@@ -77,6 +77,8 @@ CreateExtensionServiceWorkerScriptURLLoaderFactory(
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id);
 
+void EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PROTOCOLS_H_
