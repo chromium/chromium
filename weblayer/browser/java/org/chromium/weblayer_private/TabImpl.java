@@ -101,7 +101,9 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     private FullscreenCallbackProxy mFullscreenCallbackProxy;
     private TabViewAndroidDelegate mViewAndroidDelegate;
     private GoogleAccountsCallbackProxy mGoogleAccountsCallbackProxy;
-    // BrowserImpl this TabImpl is in. This is only null during creation.
+    // BrowserImpl this TabImpl is in. This is null before attached to a Browser. While this is null
+    // before attached, there are code paths that may trigger calling methods before set.
+    @Nullable
     private BrowserImpl mBrowser;
     private LoginPrompt mLoginPrompt;
     /**
@@ -451,9 +453,13 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
      * Returns whether this Tab is visible.
      */
     public boolean isVisible() {
-        return mBrowser.getActiveTab() == this
+        return isActiveTab()
                 && ((mBrowser.isStarted() && mBrowser.isViewAttachedToWindow())
                         || mBrowser.isFragmentStoppedForConfigurationChange());
+    }
+
+    private boolean isActiveTab() {
+        return mBrowser != null && mBrowser.getActiveTab() == this;
     }
 
     private void updateWebContentsVisibility() {
@@ -1037,6 +1043,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     }
 
     private void onBrowserControlsConstraintUpdated(int constraint) {
+        // WARNING: this may be called before attached. This means |mBrowser| may be null.
+
         // If something has overridden the FIP's SHOWN constraint, cancel FIP. This causes FIP to
         // dismiss when entering fullscreen.
         if (constraint != BrowserControlsState.SHOWN) {
@@ -1055,7 +1063,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         // happen). For js dialogs, the renderer's update will come when the dialog is hidden, and
         // since that animates from 0 height, it causes a flicker since the override is already set
         // to fully show. Thus, disable animation.
-        if (constraint == BrowserControlsState.SHOWN && mBrowser.getActiveTab() == this
+        if (constraint == BrowserControlsState.SHOWN && isActiveTab()
                 && !TabImplJni.get().isRendererControllingBrowserControlsOffsets(mNativeTab)) {
             mViewAndroidDelegate.setIgnoreRendererUpdates(true);
             if (viewController != null) viewController.showControls();
@@ -1102,7 +1110,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
      */
     @Nullable
     private BrowserViewController getViewController() {
-        return (mBrowser.getActiveTab() == this) ? mBrowser.getPossiblyNullViewController() : null;
+        if (!isActiveTab()) return null;
+        return mBrowser.getPossiblyNullViewController();
     }
 
     @VisibleForTesting
