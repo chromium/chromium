@@ -532,13 +532,8 @@ class CORE_EXPORT NGInlineCursor {
    public:
     CulledInlineTraversal() = default;
 
-    const LayoutInline* GetLayoutInline() const { return layout_inline_; }
-
-    explicit operator bool() const { return layout_inline_; }
-    void Reset() { layout_inline_ = nullptr; }
-
-    bool UseFragmentTree() const { return use_fragment_tree_; }
-    void SetUseFragmentTree(const LayoutInline& layout_inline);
+    explicit operator bool() const { return current_object_; }
+    void Reset() { current_object_ = nullptr; }
 
     // Returns first/next |LayoutObject| that contribute to |layout_inline|.
     const LayoutObject* MoveToFirstFor(const LayoutInline& layout_inline);
@@ -549,7 +544,6 @@ class CORE_EXPORT NGInlineCursor {
 
     const LayoutObject* current_object_ = nullptr;
     const LayoutInline* layout_inline_ = nullptr;
-    bool use_fragment_tree_ = false;
   };
 
   void MoveToFirstForCulledInline(const LayoutInline& layout_inline);
