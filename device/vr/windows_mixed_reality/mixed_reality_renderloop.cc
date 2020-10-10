@@ -727,12 +727,16 @@ bool MixedRealityRenderLoop::UpdateStageParameters() {
   // SpatialStageFrameOfReference.CurrentChanged to also re-calculate this.
   bool changed = false;
   if (stage_transform_needs_updating_) {
-    if (!(stage_origin_ && anchor_origin_) && current_stage_parameters_) {
+    if (!(stage_origin_ && anchor_origin_) &&
+        current_display_info_->stage_parameters) {
       changed = true;
-      current_stage_parameters_ = nullptr;
+      current_display_info_->stage_parameters = nullptr;
     } else if (stage_origin_ && anchor_origin_) {
       changed = true;
-      current_stage_parameters_ = nullptr;
+      current_display_info_->stage_parameters = nullptr;
+
+      mojom::VRStageParametersPtr stage_parameters =
+          mojom::VRStageParameters::New();
 
       Matrix4x4 stage_to_origin;
       if (!stage_origin_->TryGetTransformTo(anchor_origin_.get(),
@@ -744,17 +748,18 @@ bool MixedRealityRenderLoop::UpdateStageParameters() {
         return changed;
       }
 
-      current_stage_parameters_ = mojom::VRStageParameters::New();
-      current_stage_parameters_->mojo_from_floor =
+      stage_parameters->mojo_from_floor =
           ConvertToGfxTransform(stage_to_origin);
+
+      current_display_info_->stage_parameters = std::move(stage_parameters);
     }
 
     stage_transform_needs_updating_ = false;
   }
 
   EnsureStageBounds();
-  if (bounds_updated_ && current_stage_parameters_) {
-    current_stage_parameters_->bounds = bounds_;
+  if (bounds_updated_ && current_display_info_->stage_parameters) {
+    current_display_info_->stage_parameters->bounds = bounds_;
     changed = true;
     bounds_updated_ = false;
   }
@@ -855,7 +860,8 @@ mojom::XRFrameDataPtr MixedRealityRenderLoop::GetNextFrameData() {
 
   bool stage_parameters_updated = UpdateStageParameters();
   if (stage_parameters_updated) {
-    SetStageParameters(current_stage_parameters_.Clone());
+    ret->stage_parameters_updated = true;
+    ret->stage_parameters = current_display_info_->stage_parameters.Clone();
   }
 
   if (send_new_display_info || stage_parameters_updated) {

@@ -36,7 +36,7 @@ class XRBoundedReferenceSpace final : public XRReferenceSpace {
 
   HeapVector<Member<DOMPointReadOnly>> offset_bounds_geometry_;
   std::unique_ptr<TransformationMatrix> mojo_from_bounded_native_;
-  uint32_t stage_parameters_id_ = 0;
+  unsigned int stage_parameters_id_ = 0;
 };
 
 }  // namespace blink

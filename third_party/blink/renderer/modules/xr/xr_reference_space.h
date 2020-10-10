@@ -64,7 +64,7 @@ class XRReferenceSpace : public XRSpace {
   // latest display parameters of a session.
   void SetMojoFromFloor();
 
-  uint32_t stage_parameters_id_ = 0;
+  unsigned int stage_parameters_id_ = 0;
 
   // Floor from mojo (aka local-floor_from_mojo) transform.
   std::unique_ptr<TransformationMatrix> mojo_from_floor_;
