@@ -54474,7 +54474,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="304" label="Security And Sign In"/>
   <int value="305" label="Fingerprint"/>
   <int value="306" label="Manage Other People"/>
-  <int value="307" label="Kerberos"/>
+  <int value="307" label="Kerberos Accounts"/>
   <int value="400" label="Pointers"/>
   <int value="401" label="Keyboard"/>
   <int value="402" label="Stylus"/>

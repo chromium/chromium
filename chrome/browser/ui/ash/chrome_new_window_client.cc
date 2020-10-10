@@ -122,7 +122,7 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
      {ChromePage::HELP, chromeos::settings::mojom::kAboutChromeOsSectionPath},
      {ChromePage::INTERNET, chromeos::settings::mojom::kNetworkSectionPath},
      {ChromePage::KERBEROSACCOUNTS,
-      chromeos::settings::mojom::kKerberosSubpagePath},
+      chromeos::settings::mojom::kKerberosAccountsSubpagePath},
      {ChromePage::KEYBOARDOVERLAY,
       chromeos::settings::mojom::kKeyboardSubpagePath},
      {ChromePage::KNOWNNETWORKS,

@@ -935,7 +935,7 @@ void KerberosCredentialsManager::OnTicketExpiryNotificationClick(
   // settings. Consider creating a standalone reauth dialog.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       primary_profile_,
-      chromeos::settings::mojom::kKerberosSubpagePath +
+      chromeos::settings::mojom::kKerberosAccountsSubpagePath +
           std::string("?kerberos_reauth=") +
           net::EscapeQueryParamValue(principal_name, false /* use_plus */));
 

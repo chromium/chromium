@@ -236,25 +236,25 @@ const std::vector<SearchConcept>& GetSplitSyncOffSearchConcepts() {
 const std::vector<SearchConcept>& GetKerberosSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_KERBEROS_ADD,
-       mojom::kKerberosSubpagePath,
+       mojom::kKerberosAccountsSubpagePath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddKerberosTicket}},
       {IDS_OS_SETTINGS_TAG_KERBEROS_REMOVE,
-       mojom::kKerberosSubpagePath,
+       mojom::kKerberosAccountsSubpagePath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kRemoveKerberosTicket}},
       {IDS_OS_SETTINGS_TAG_KERBEROS,
-       mojom::kKerberosSubpagePath,
+       mojom::kKerberosAccountsSubpagePath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kKerberos}},
+       {.subpage = mojom::Subpage::kKerberosAccounts}},
       {IDS_OS_SETTINGS_TAG_KERBEROS_ACTIVE,
-       mojom::kKerberosSubpagePath,
+       mojom::kKerberosAccountsSubpagePath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -1018,17 +1018,18 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             kManageOtherPeopleSettings, generator);
 
   // Kerberos.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_KERBEROS_ACCOUNTS_PAGE_TITLE, mojom::Subpage::kKerberos,
-      mojom::SearchResultIcon::kAvatar, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kKerberosSubpagePath);
+  generator->RegisterTopLevelSubpage(IDS_SETTINGS_KERBEROS_ACCOUNTS_PAGE_TITLE,
+                                     mojom::Subpage::kKerberosAccounts,
+                                     mojom::SearchResultIcon::kAvatar,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kKerberosAccountsSubpagePath);
   static constexpr mojom::Setting kKerberosSettings[] = {
       mojom::Setting::kAddKerberosTicket,
       mojom::Setting::kRemoveKerberosTicket,
       mojom::Setting::kSetActiveKerberosTicket,
   };
-  RegisterNestedSettingBulk(mojom::Subpage::kKerberos, kKerberosSettings,
-                            generator);
+  RegisterNestedSettingBulk(mojom::Subpage::kKerberosAccounts,
+                            kKerberosSettings, generator);
 }
 
 void PeopleSection::FetchAccounts() {

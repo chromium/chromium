@@ -383,7 +383,8 @@ void TestAllOSSettingPages(const GURL& base_url) {
       base_url.Resolve(chromeos::settings::mojom::kNetworkSectionPath));
   TestOpenChromePage(
       ChromePage::KERBEROSACCOUNTS,
-      base_url.Resolve(chromeos::settings::mojom::kKerberosSubpagePath));
+      base_url.Resolve(
+          chromeos::settings::mojom::kKerberosAccountsSubpagePath));
   TestOpenChromePage(
       ChromePage::KNOWNNETWORKS,
       base_url.Resolve(chromeos::settings::mojom::kKnownNetworksSubpagePath));
