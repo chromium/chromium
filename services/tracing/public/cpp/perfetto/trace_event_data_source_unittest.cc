@@ -26,6 +26,7 @@
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/task_execution_macros.h"
 #include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
@@ -1018,20 +1019,17 @@ TEST_F(TraceEventDataSourceTest, EventWithConvertableArgs) {
 TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
   CreateTraceEventDataSource();
 
-  INTERNAL_TRACE_EVENT_ADD(
-      TRACE_EVENT_PHASE_INSTANT, "toplevel", "ThreadControllerImpl::RunTask",
-      TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_TYPED_PROTO_ARGS, "src_file",
-      "my_file", "src_func", "my_func");
-  INTERNAL_TRACE_EVENT_ADD(
-      TRACE_EVENT_PHASE_INSTANT, "toplevel", "ThreadControllerImpl::RunTask",
-      TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_TYPED_PROTO_ARGS, "src_file",
-      "my_file", "src_func", "my_func");
+  base::PendingTask task;
+  task.posted_from =
+      base::Location("my_func", "my_file", 0, /*program_counter=*/&task);
+  { TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask1", task); }
+  { TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask1", task); }
 
   size_t packet_index = ExpectStandardPreamble();
 
   auto* e_packet = producer_client()->GetFinalizedPacket(packet_index++);
   ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/1u,
-                   TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
+                   TRACE_EVENT_PHASE_BEGIN);
 
   const auto& annotations = e_packet->track_event().debug_annotations();
   EXPECT_EQ(annotations.size(), 0);
@@ -1043,9 +1041,9 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
   EXPECT_EQ(locations[0].function_name(), "my_func");
 
   // Second event should refer to the same interning entries.
-  auto* e_packet2 = producer_client()->GetFinalizedPacket(packet_index++);
+  auto* e_packet2 = producer_client()->GetFinalizedPacket(++packet_index);
   ExpectTraceEvent(e_packet2, /*category_iid=*/1u, /*name_iid=*/1u,
-                   TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
+                   TRACE_EVENT_PHASE_BEGIN);
 
   EXPECT_EQ(e_packet2->track_event().task_execution().posted_from_iid(), 1u);
   EXPECT_EQ(e_packet2->interned_data().source_locations().size(), 0);
@@ -1054,16 +1052,16 @@ TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {
 TEST_F(TraceEventDataSourceTest, TaskExecutionEventWithoutFunction) {
   CreateTraceEventDataSource();
 
-  INTERNAL_TRACE_EVENT_ADD(
-      TRACE_EVENT_PHASE_INSTANT, "toplevel", "ThreadControllerImpl::RunTask",
-      TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_TYPED_PROTO_ARGS, "src",
-      "my_file");
+  base::PendingTask task;
+  task.posted_from = base::Location(/*function_name=*/nullptr, "my_file", 0,
+                                    /*program_counter=*/&task);
+  { TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask", task); }
 
   size_t packet_index = ExpectStandardPreamble();
 
   auto* e_packet = producer_client()->GetFinalizedPacket(packet_index++);
   ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/1u,
-                   TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_SCOPE_THREAD);
+                   TRACE_EVENT_PHASE_BEGIN, TRACE_EVENT_SCOPE_THREAD);
 
   const auto& annotations = e_packet->track_event().debug_annotations();
   EXPECT_EQ(annotations.size(), 0);

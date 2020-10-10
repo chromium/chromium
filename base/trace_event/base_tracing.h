@@ -16,8 +16,10 @@
 // Update the check in //base/PRESUBMIT.py when adding new headers here.
 // TODO(crbug/1006541): Switch to perfetto for trace event implementation.
 #include "base/trace_event/blame_context.h"
+#include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/task_execution_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
