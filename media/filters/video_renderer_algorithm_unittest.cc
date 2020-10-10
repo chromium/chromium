@@ -1245,12 +1245,12 @@ TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFrames) {
   tg.step(2);
   // Two frames are removed, one displayed frame (which should not be counted as
   // dropped) and one undisplayed one.
-  ASSERT_EQ(1u, algorithm_.RemoveExpiredFrames(tg.current()));
+  ASSERT_EQ(2u, algorithm_.RemoveExpiredFrames(tg.current()));
   // Since we just removed the last rendered frame, OnLastFrameDropped() should
   // be ignored.
   algorithm_.OnLastFrameDropped();
   frame = RenderAndStep(&tg, &frames_dropped);
-  EXPECT_EQ(1u, frames_dropped);
+  EXPECT_EQ(0u, frames_dropped);
   EXPECT_EQ(2u, frames_queued());
   EXPECT_EQ(1u, EffectiveFramesQueued());
   ASSERT_TRUE(frame);

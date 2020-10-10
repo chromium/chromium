@@ -243,42 +243,32 @@ size_t VideoRendererAlgorithm::RemoveExpiredFrames(base::TimeTicks deadline) {
   // Even though we may not be able to remove anything due to having only one
   // frame, correct any estimates which may have been set during EnqueueFrame().
   UpdateFrameStatistics();
+  UpdateEffectiveFramesQueued();
 
   // We always leave at least one frame in the queue, so if there's only one
   // frame there's nothing we can expire.
-  if (frame_queue_.size() == 1) {
-    UpdateEffectiveFramesQueued();
+  if (frame_queue_.size() == 1)
     return 0;
-  }
 
   DCHECK_GT(average_frame_duration_, base::TimeDelta());
 
-  // Finds and removes all frames which are too old to be used; I.e., the end of
-  // their render interval is further than |max_acceptable_drift_| from the
-  // given |deadline|.  We also always expire anything inserted before the last
-  // rendered frame.
+  // Finds and removes all frames which are too old to be used.
   size_t frames_dropped_without_rendering = 0;
-  size_t frames_to_expire = 0;
-  const base::TimeTicks minimum_start_time =
-      deadline - max_acceptable_drift_ - average_frame_duration_;
-  for (; frames_to_expire < frame_queue_.size() - 1; ++frames_to_expire) {
-    const ReadyFrame& frame = frame_queue_[frames_to_expire];
-    if (frame.start_time >= minimum_start_time)
-      break;
+  size_t frames_to_expire = std::min(
+      frame_queue_.size() - 1, frame_queue_.size() - effective_frames_queued_);
+
+  if (!frames_to_expire)
+    return 0;
+
+  for (size_t i = 0; i < frames_to_expire; ++i) {
+    const ReadyFrame& frame = frame_queue_[i];
     if (frame.render_count == frame.drop_count)
       ++frames_dropped_without_rendering;
-  }
-
-  if (!frames_to_expire) {
-    UpdateEffectiveFramesQueued();
-    return 0;
   }
 
   cadence_frame_counter_ += frames_to_expire;
   frame_queue_.erase(frame_queue_.begin(),
                      frame_queue_.begin() + frames_to_expire);
-
-  UpdateEffectiveFramesQueued();
   return frames_dropped_without_rendering;
 }
 
