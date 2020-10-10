@@ -552,8 +552,7 @@ void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
         kNotificationCenterDoNotDisturbOnIcon, kMenuIconSize, icon_color));
   } else {
     quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
-        kNotificationCenterDoNotDisturbOffIcon, kMenuIconSize,
-        AshColorProvider::GetDisabledColor(icon_color)));
+        kNotificationCenterDoNotDisturbOffIcon, kMenuIconSize, icon_color));
   }
 }
 
