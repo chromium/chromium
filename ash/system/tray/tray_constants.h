@@ -107,7 +107,7 @@ constexpr gfx::Insets kUnifiedManagedDeviceViewPadding(0, 16, 11, 16);
 constexpr gfx::Insets kUnifiedSliderRowPadding(0, 16, 8, 16);
 constexpr gfx::Insets kUnifiedSliderBubblePadding(12, 0, 4, 0);
 constexpr gfx::Insets kUnifiedSliderPadding(0, 16);
-constexpr gfx::Insets kMicGainSliderViewPadding(0, 52, 0, 0);
+constexpr gfx::Insets kMicGainSliderViewPadding(0, 52, 8, 0);
 constexpr gfx::Insets kMicGainSliderPadding(0, 8, 0, 48);
 constexpr int kMicGainSliderViewSpacing = 8;
 
@@ -213,7 +213,8 @@ constexpr int kUnifiedUserChooserRowHeight = 64;
 constexpr int kUnifiedTopShortcutButtonDefaultSpacing = 16;
 constexpr int kUnifiedTopShortcutButtonMinSpacing = 4;
 
-// Constants used in the title row of a detailed view in UnifiedSystemTray.
+// Constants used in the detailed view in UnifiedSystemTray.
+constexpr gfx::Insets kUnifiedDetailedViewPadding(0, 0, 8, 0);
 constexpr gfx::Insets kUnifiedDetailedViewTitlePadding(0, 0, 0, 16);
 constexpr int kUnifiedDetailedViewTitleRowHeight = 64;
 
