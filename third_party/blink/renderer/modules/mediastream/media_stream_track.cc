@@ -181,8 +181,7 @@ void CloneNativeVideoMediaStreamTrack(MediaStreamComponent* original,
   MediaStreamVideoSource* native_source =
       MediaStreamVideoSource::GetVideoSource(source);
   DCHECK(native_source);
-  MediaStreamVideoTrack* original_track =
-      MediaStreamVideoTrack::GetVideoTrack(WebMediaStreamTrack(original));
+  MediaStreamVideoTrack* original_track = MediaStreamVideoTrack::From(original);
   DCHECK(original_track);
   clone->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
       native_source, original_track->adapter_settings(),
@@ -250,7 +249,7 @@ MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
   component_->SetMuted(ready_state_ == MediaStreamSource::kReadyStateMuted);
 
   MediaStreamVideoTrack* const video_track =
-      MediaStreamVideoTrack::GetVideoTrack(WebMediaStreamTrack(Component()));
+      MediaStreamVideoTrack::From(Component());
   if (video_track && component_->Source() &&
       component_->Source()->GetType() == MediaStreamSource::kTypeVideo) {
     bool pan_tilt_zoom_allowed =

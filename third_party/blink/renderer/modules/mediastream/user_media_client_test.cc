@@ -129,8 +129,7 @@ void CheckVideoSourceAndTrack(blink::MediaStreamVideoSource* source,
                    expected_source_frame_rate);
   EXPECT_EQ(component->Source()->GetReadyState(),
             MediaStreamSource::kReadyStateLive);
-  MediaStreamVideoTrack* track =
-      MediaStreamVideoTrack::GetVideoTrack(WebMediaStreamTrack(component));
+  MediaStreamVideoTrack* track = MediaStreamVideoTrack::From(component);
   EXPECT_EQ(track->source(), source);
 
   MediaStreamTrackPlatform::Settings settings;
@@ -1182,8 +1181,7 @@ TEST_F(UserMediaClientTest, CreateWithFacingModeEnvironment) {
 TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
   EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
   MediaStreamComponent* component = RequestLocalVideoTrack();
-  MediaStreamVideoTrack* track =
-      MediaStreamVideoTrack::GetVideoTrack(WebMediaStreamTrack(component));
+  MediaStreamVideoTrack* track = MediaStreamVideoTrack::From(component);
   blink::MediaStreamVideoSource* source = track->source();
   CheckVideoSource(source, 0, 0, 0.0);
 

@@ -161,8 +161,7 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
     MediaStreamComponent* component,
     PeerConnectionDependencyFactory* factory,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  MediaStreamVideoTrack* video_track =
-      MediaStreamVideoTrack::GetVideoTrack(WebMediaStreamTrack(component));
+  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(component);
   DCHECK(video_track);
 
   absl::optional<bool> needs_denoising =

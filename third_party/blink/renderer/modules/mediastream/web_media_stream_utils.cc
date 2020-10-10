@@ -21,16 +21,14 @@ void AddSinkToMediaStreamTrack(const WebMediaStreamTrack& track,
                                WebMediaStreamSink* sink,
                                const VideoCaptureDeliverFrameCB& callback,
                                bool is_sink_secure) {
-  MediaStreamVideoTrack* const video_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
   DCHECK(video_track);
   video_track->AddSink(sink, callback, is_sink_secure);
 }
 
 void RemoveSinkFromMediaStreamTrack(const WebMediaStreamTrack& track,
                                     WebMediaStreamSink* sink) {
-  MediaStreamVideoTrack* const video_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
   if (video_track)
     video_track->RemoveSink(sink);
 }

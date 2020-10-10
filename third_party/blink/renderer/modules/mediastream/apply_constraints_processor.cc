@@ -286,8 +286,8 @@ ApplyConstraintsProcessor::GetCurrentAudioSource() {
 blink::MediaStreamVideoTrack*
 ApplyConstraintsProcessor::GetCurrentVideoTrack() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  MediaStreamVideoTrack* track = MediaStreamVideoTrack::GetVideoTrack(
-      WebMediaStreamTrack(current_request_->Track()));
+  MediaStreamVideoTrack* track =
+      MediaStreamVideoTrack::From(current_request_->Track());
   DCHECK(track);
   return track;
 }

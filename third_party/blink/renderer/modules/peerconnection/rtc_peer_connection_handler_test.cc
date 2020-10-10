@@ -395,11 +395,10 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
 
   void StopAllTracks(MediaStreamDescriptor* descriptor) {
     for (auto component : descriptor->AudioComponents())
-      MediaStreamAudioTrack::From(WebMediaStreamTrack(component.Get()))->Stop();
+      MediaStreamAudioTrack::From(component.Get())->Stop();
 
     for (auto component : descriptor->VideoComponents()) {
-      MediaStreamVideoTrack::GetVideoTrack(WebMediaStreamTrack(component.Get()))
-          ->Stop();
+      MediaStreamVideoTrack::From(component.Get())->Stop();
     }
   }
 

@@ -55,7 +55,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
       MediaStreamVideoSource::ConstraintsOnceCallback callback,
       bool enabled);
 
-  static MediaStreamVideoTrack* GetVideoTrack(const WebMediaStreamTrack& track);
+  static MediaStreamVideoTrack* From(const MediaStreamComponent* track);
 
   // Constructors for video tracks.
   MediaStreamVideoTrack(

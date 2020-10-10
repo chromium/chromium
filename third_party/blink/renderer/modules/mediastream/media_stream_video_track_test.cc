@@ -238,8 +238,7 @@ TEST_F(MediaStreamVideoTrackTest, SetEnabled) {
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
 
-  MediaStreamVideoTrack* video_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(track);
 
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(1, sink.number_of_frames());
@@ -264,7 +263,7 @@ TEST_F(MediaStreamVideoTrackTest, SourceDetached) {
   InitializeSource();
   WebMediaStreamTrack track = CreateTrack();
   MockMediaStreamVideoSink sink;
-  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  auto* video_track = MediaStreamVideoTrack::From(track);
   video_track->StopAndNotify(base::BindOnce([] {}));
   sink.ConnectToTrack(track);
   sink.ConnectEncodedToTrack(track);
@@ -304,7 +303,7 @@ TEST_F(MediaStreamVideoTrackTest, StopLastTrack) {
   EXPECT_EQ(WebMediaStreamSource::kReadyStateLive, sink2.state());
 
   MediaStreamVideoTrack* const native_track1 =
-      MediaStreamVideoTrack::GetVideoTrack(track1);
+      MediaStreamVideoTrack::From(track1);
   native_track1->Stop();
   EXPECT_EQ(WebMediaStreamSource::kReadyStateEnded, sink1.state());
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
@@ -312,7 +311,7 @@ TEST_F(MediaStreamVideoTrackTest, StopLastTrack) {
   sink1.DisconnectFromTrack();
 
   MediaStreamVideoTrack* const native_track2 =
-      MediaStreamVideoTrack::GetVideoTrack(track2);
+      MediaStreamVideoTrack::From(track2);
   native_track2->Stop();
   EXPECT_EQ(WebMediaStreamSource::kReadyStateEnded, sink2.state());
   EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
@@ -342,7 +341,7 @@ TEST_F(MediaStreamVideoTrackTest, GetSettings) {
   InitializeSource();
   WebMediaStreamTrack track = CreateTrack();
   MediaStreamVideoTrack* const native_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+      MediaStreamVideoTrack::From(track);
   MediaStreamTrackPlatform::Settings settings;
   native_track->GetSettings(settings);
   // These values come straight from the mock video track implementation.
@@ -362,7 +361,7 @@ TEST_F(MediaStreamVideoTrackTest, GetSettingsWithAdjustment) {
       kAdjustedFrameRate);
   WebMediaStreamTrack track = CreateTrackWithSettings(adapter_settings);
   MediaStreamVideoTrack* const native_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+      MediaStreamVideoTrack::From(track);
   MediaStreamTrackPlatform::Settings settings;
   native_track->GetSettings(settings);
   EXPECT_EQ(kAdjustedWidth, settings.width);
@@ -375,7 +374,7 @@ TEST_F(MediaStreamVideoTrackTest, GetSettingsStopped) {
   InitializeSource();
   WebMediaStreamTrack track = CreateTrack();
   MediaStreamVideoTrack* const native_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+      MediaStreamVideoTrack::From(track);
   native_track->Stop();
   MediaStreamTrackPlatform::Settings settings;
   native_track->GetSettings(settings);
@@ -392,7 +391,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
   MediaStreamVideoTrack* const native_track =
-      MediaStreamVideoTrack::GetVideoTrack(track);
+      MediaStreamVideoTrack::From(track);
   MediaStreamTrackPlatform::Settings settings;
 
   auto frame1 = media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
@@ -415,7 +414,7 @@ TEST_P(MediaStreamVideoTrackTest, PropagatesContentHintType) {
   MockMediaStreamVideoSink sink;
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetContentHint(GetParam());
+  MediaStreamVideoTrack::From(track)->SetContentHint(GetParam());
   EXPECT_EQ(sink.content_hint(), GetParam());
   sink.DisconnectFromTrack();
 }
@@ -500,7 +499,7 @@ TEST_F(MediaStreamVideoTrackEncodedTest, SupportsEncodedDisableEnable) {
   DeliverEncodedVideoFrameAndWait(key_frame, &sink);
 
   // Key frame when disabled -> shouldn't get dispatched
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetEnabled(false);
+  MediaStreamVideoTrack::From(track)->SetEnabled(false);
   EXPECT_FALSE(sink.enabled());
   {
     EXPECT_CALL(sink, OnEncodedVideoFrame).Times(0);
@@ -511,7 +510,7 @@ TEST_F(MediaStreamVideoTrackEncodedTest, SupportsEncodedDisableEnable) {
   // Delta frame when disabled -> shouldn't get dispatched until key frame
   // appears.
   EXPECT_CALL(*mock_source(), OnRequestRefreshFrame);
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetEnabled(true);
+  MediaStreamVideoTrack::From(track)->SetEnabled(true);
   EXPECT_TRUE(sink.enabled());
   {
     EXPECT_CALL(sink, OnEncodedVideoFrame).Times(0);
@@ -532,7 +531,7 @@ TEST_P(MediaStreamVideoTrackEncodedTest, PropagatesContentHintType) {
   MockMediaStreamVideoSink sink;
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectEncodedToTrack(track);
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetContentHint(GetParam());
+  MediaStreamVideoTrack::From(track)->SetContentHint(GetParam());
   EXPECT_EQ(sink.content_hint(), GetParam());
   sink.DisconnectEncodedFromTrack();
 }
@@ -575,7 +574,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   MockMediaStreamVideoSink sink;
   WebMediaStreamTrack track =
       CreateTrackWithSettings(VideoTrackAdapterSettings());
-  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  auto* video_track = MediaStreamVideoTrack::From(track);
   video_track->SetMinimumFrameRate(kMinFrameRate);
   video_track->SetIsScreencastForTesting(true);
 
@@ -596,7 +595,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   WebMediaStreamTrack track =
       CreateTrackWithSettings(VideoTrackAdapterSettings());
 
-  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  auto* video_track = MediaStreamVideoTrack::From(track);
   video_track->SetMinimumFrameRate(kMinFrameRate);
   // Refresh frame timer will not be run when |is_screencast_| is false.
   video_track->SetIsScreencastForTesting(false);
@@ -617,7 +616,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest, RequiredRefreshRate) {
 
   WebMediaStreamTrack track =
       CreateTrackWithSettings(VideoTrackAdapterSettings());
-  auto* video_track = MediaStreamVideoTrack::GetVideoTrack(track);
+  auto* video_track = MediaStreamVideoTrack::From(track);
   video_track->SetIsScreencastForTesting(true);
 
   sink.ConnectToTrack(track);
@@ -634,7 +633,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
       mock_source(), WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
       true);
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetIsScreencastForTesting(true);
+  MediaStreamVideoTrack::From(track)->SetIsScreencastForTesting(true);
 
   Persistent<MediaStreamComponent> media_stream_component = *track;
   blink::MediaStreamVideoWebRtcSink webrtc_sink(
@@ -655,7 +654,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
       mock_source(), WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
       true);
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetIsScreencastForTesting(true);
+  MediaStreamVideoTrack::From(track)->SetIsScreencastForTesting(true);
 
   // First sink.
   MockMediaStreamVideoSink sink;
@@ -682,7 +681,7 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
       mock_source(), WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
       true);
-  MediaStreamVideoTrack::GetVideoTrack(track)->SetIsScreencastForTesting(true);
+  MediaStreamVideoTrack::From(track)->SetIsScreencastForTesting(true);
 
   // First sink.
   MockMediaStreamVideoSink sink;

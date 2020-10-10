@@ -771,8 +771,7 @@ void ImageCapture::SetPanTiltZoomSettingsFromTrack(
     media::mojom::blink::PhotoStatePtr photo_state) {
   UpdateMediaTrackCapabilities(base::DoNothing(), std::move(photo_state));
 
-  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::GetVideoTrack(
-      WebMediaStreamTrack(stream_track_->Component()));
+  auto* video_track = MediaStreamVideoTrack::From(stream_track_->Component());
   DCHECK(video_track);
 
   base::Optional<double> pan = video_track->pan();
