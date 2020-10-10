@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitor;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitorDelegate;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
@@ -270,12 +272,17 @@ public class ToolbarButtonInProductHelpController
             return;
         }
 
+        final Integer offlinePageId =
+                CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)
+                ? R.id.offline_page_chip_id
+                : R.id.offline_page_id;
+
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mActivity.getResources(), featureName,
                         R.string.iph_download_page_for_offline_usage_text,
                         R.string.iph_download_page_for_offline_usage_accessibility_text)
-                        .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.offline_page_id, true))
+                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(offlinePageId, true))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mActivity.getToolbarManager().getMenuButtonView())
                         .build());

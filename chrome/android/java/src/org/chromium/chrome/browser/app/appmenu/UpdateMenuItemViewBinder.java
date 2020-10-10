@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -41,8 +42,9 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater,
-            AppMenuClickHandler appMenuClickHandler) {
+    public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
+            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
+            @Nullable Integer highlightedItemId) {
         assert item.getItemId() == R.id.update_menu_id;
         UpdateMenuItemViewHolder holder;
         if (convertView == null || !(convertView.getTag() instanceof UpdateMenuItemViewHolder)) {

@@ -538,7 +538,8 @@ public class AppMenuAdapterTest extends DummyUiActivityTestCase {
 
         @Override
         public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-                LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler) {
+                LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
+                @Nullable Integer highlightedItemId) {
             int itemId = item.getItemId();
             Assert.assertTrue("getView called for incorrect item",
                     itemId == supportedId1 || itemId == supportedId2 || itemId == supportedId3);
@@ -586,7 +587,8 @@ public class AppMenuAdapterTest extends DummyUiActivityTestCase {
 
         @Override
         public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-                LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler) {
+                LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
+                @Nullable Integer highlightedItemId) {
             int itemId = item.getItemId();
             Assert.assertTrue("getView called for incorrect item", itemId == supportedId1);
 

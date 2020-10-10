@@ -49,10 +49,15 @@ public interface CustomViewBinder {
      * @param parent The parent that this view will eventually be attached to.
      * @param inflater A {@link LayoutInflater} to use when inflating new views.
      * @param appMenuClickHandler A {@link AppMenuClickHandler} to handle click events in the view.
+     * @param highlightedItemId     The resource id of the menu item that should be highlighted.
+     *                              Can be {@code null} if no item should be highlighted. Note that
+     *                              the custom view binder is responsible for highlighting the
+     *                              appropriate sub-view based on this id.
      * @return A View corresponding to the provided menu item.
      */
     View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler);
+            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
+            @Nullable Integer highlightedItemId);
 
     /**
      * Determines whether the enter animation should be applied to the menu item matching the

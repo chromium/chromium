@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
@@ -36,8 +38,9 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(MenuItem item, View convertView, ViewGroup parent, LayoutInflater inflater,
-            AppMenuClickHandler appMenuClickHandler) {
+    public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
+            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
+            @Nullable Integer highlightedItemId) {
         assert item.getItemId() == R.id.new_incognito_tab_menu_id;
 
         IncognitoMenuItemViewHolder holder;
