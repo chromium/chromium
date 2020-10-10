@@ -101,7 +101,7 @@ bool IsSnapped(const TabDragContext* context) {
   DCHECK(context);
   chromeos::WindowStateType type =
       GetWindowForTabDraggingProperties(context)->GetProperty(
-          ash::kWindowStateTypeKey);
+          chromeos::kWindowStateTypeKey);
   return type == chromeos::WindowStateType::kLeftSnapped ||
          type == chromeos::WindowStateType::kRightSnapped;
 }

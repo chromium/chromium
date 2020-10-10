@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/ash/ash_test_util.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -30,14 +30,14 @@ class SnapWaiter : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key == ash::kWindowStateTypeKey && IsSnapped())
+    if (key == chromeos::kWindowStateTypeKey && IsSnapped())
       run_loop_.Quit();
   }
 
   void Wait() { run_loop_.Run(); }
 
   bool IsSnapped() const {
-    return window_->GetProperty(ash::kWindowStateTypeKey) == type_;
+    return window_->GetProperty(chromeos::kWindowStateTypeKey) == type_;
   }
 
  private:

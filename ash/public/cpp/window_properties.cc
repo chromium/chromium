@@ -84,9 +84,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(WindowPinType,
                              kWindowPinTypeKey,
                              WindowPinType::kNone)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
-                             kWindowStateTypeKey,
-                             chromeos::WindowStateType::kDefault)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)
 

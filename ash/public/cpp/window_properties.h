@@ -239,10 +239,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowPinType>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kWindowPositionManagedTypeKey;
 
-// A property key to indicate ash's extended window state.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<
-    chromeos::WindowStateType>* const kWindowStateTypeKey;
-
 // A property key to indicate pip window state.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kWindowPipTypeKey;

@@ -30,6 +30,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
@@ -621,9 +622,9 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
     window_->SetProperty(aura::client::kShowStateKey, new_window_state);
   }
 
-  if (GetStateType() != window_->GetProperty(kWindowStateTypeKey)) {
+  if (GetStateType() != window_->GetProperty(chromeos::kWindowStateTypeKey)) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
-    window_->SetProperty(kWindowStateTypeKey, GetStateType());
+    window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
   }
 
   // sync up current window show state with PinType property.
@@ -898,10 +899,10 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == kWindowStateTypeKey) {
+  if (key == chromeos::kWindowStateTypeKey) {
     if (!ignore_property_change_) {
       // This change came from somewhere else. Revert it.
-      window->SetProperty(kWindowStateTypeKey, GetStateType());
+      window->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
     }
     return;
   }

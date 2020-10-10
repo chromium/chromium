@@ -123,6 +123,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -812,7 +813,8 @@ class WindowStateChangeObserver : public aura::WindowObserver {
                             chromeos::WindowStateType expected_type,
                             base::OnceCallback<void(bool)> callback)
       : expected_type_(expected_type), callback_(std::move(callback)) {
-    DCHECK_NE(window->GetProperty(ash::kWindowStateTypeKey), expected_type_);
+    DCHECK_NE(window->GetProperty(chromeos::kWindowStateTypeKey),
+              expected_type_);
     scoped_observer_.Add(window);
   }
   ~WindowStateChangeObserver() override {}
@@ -822,8 +824,8 @@ class WindowStateChangeObserver : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override {
     DCHECK(scoped_observer_.IsObserving(window));
-    if (key == ash::kWindowStateTypeKey &&
-        window->GetProperty(ash::kWindowStateTypeKey) == expected_type_) {
+    if (key == chromeos::kWindowStateTypeKey &&
+        window->GetProperty(chromeos::kWindowStateTypeKey) == expected_type_) {
       scoped_observer_.RemoveAll();
       std::move(callback_).Run(/*success=*/true);
     }
@@ -3584,7 +3586,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     window_info.window_type = GetAppWindowType(
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)));
     window_info.state_type =
-        ToWindowStateType(window->GetProperty(ash::kWindowStateTypeKey));
+        ToWindowStateType(window->GetProperty(chromeos::kWindowStateTypeKey));
     window_info.bounds_in_root =
         ToBoundsDictionary(window->GetBoundsInRootWindow());
     window_info.target_bounds = ToBoundsDictionary(window->GetTargetBounds());
@@ -3715,7 +3717,7 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
 
   chromeos::WindowStateType expected_state =
       GetExpectedWindowState(params->change.event_type);
-  if (window->GetProperty(ash::kWindowStateTypeKey) == expected_state) {
+  if (window->GetProperty(chromeos::kWindowStateTypeKey) == expected_state) {
     if (params->change.fail_if_no_change &&
         *(params->change.fail_if_no_change)) {
       return RespondNow(

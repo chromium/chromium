@@ -15,6 +15,8 @@ using WindowProperty = ui::ClassProperty<T>;
 
 namespace chromeos {
 
+enum class WindowStateType;
+
 // Shell-specific window property keys for use by ash and lacros clients.
 
 // Alphabetical sort.
@@ -22,6 +24,10 @@ namespace chromeos {
 // If true, the window is currently showing in overview mode.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const aura::WindowProperty<bool>* const kIsShowingInOverviewKey;
+
+// A property key to indicate ash's extended window state.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const aura::WindowProperty<WindowStateType>* const kWindowStateTypeKey;
 
 // Alphabetical sort.
 

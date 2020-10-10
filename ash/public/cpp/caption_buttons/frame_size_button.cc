@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/caption_buttons/snap_controller.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -91,7 +90,7 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
     DCHECK_EQ(window_, window);
     if ((key == chromeos::kIsShowingInOverviewKey &&
          window_->GetProperty(chromeos::kIsShowingInOverviewKey)) ||
-        key == kWindowStateTypeKey) {
+        key == chromeos::kWindowStateTypeKey) {
       // If the window is put in overview while we're in waiting-for-snapping
       // mode, or the window's window state has changed, cancel the snap.
       size_button_->CancelSnap();

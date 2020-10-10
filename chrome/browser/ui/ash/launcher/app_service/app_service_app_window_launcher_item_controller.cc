@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/arc/pip/arc_pip_bridge.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -45,7 +45,7 @@ void AppServiceAppWindowLauncherItemController::ItemSelected(
     // showing the menu on the shelf icon.
     for (ui::BaseWindow* window : windows()) {
       aura::Window* native_window = window->GetNativeWindow();
-      if (native_window->GetProperty(ash::kWindowStateTypeKey) ==
+      if (native_window->GetProperty(chromeos::kWindowStateTypeKey) ==
           chromeos::WindowStateType::kPip) {
         Profile* profile = ChromeLauncherController::instance()->profile();
         arc::ArcPipBridge* pip_bridge =
