@@ -35,7 +35,7 @@ WebEngineIntegrationTestBase::CreateTestDataDirectoryProvider() {
   provider.set_name("testdata");
   base::FilePath pkg_path;
   CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
-  provider.set_directory(base::fuchsia::OpenDirectory(
+  provider.set_directory(base::OpenDirectoryHandle(
       pkg_path.AppendASCII("fuchsia/engine/test/data")));
   return provider;
 }
@@ -51,8 +51,8 @@ void WebEngineIntegrationTestBase::StartWebEngine(
 fuchsia::web::CreateContextParams
 WebEngineIntegrationTestBase::DefaultContextParams() const {
   fuchsia::web::CreateContextParams create_params;
-  auto directory = base::fuchsia::OpenDirectory(
-      base::FilePath(base::fuchsia::kServiceDirectoryPath));
+  auto directory =
+      base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath));
   EXPECT_TRUE(directory.is_valid());
   create_params.set_service_directory(std::move(directory));
   return create_params;
@@ -66,7 +66,7 @@ WebEngineIntegrationTestBase::DefaultContextParamsWithTestData() const {
   provider.set_name("testdata");
   base::FilePath pkg_path;
   CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
-  provider.set_directory(base::fuchsia::OpenDirectory(
+  provider.set_directory(base::OpenDirectoryHandle(
       pkg_path.AppendASCII("fuchsia/engine/test/data")));
 
   create_params.mutable_content_directories()->emplace_back(

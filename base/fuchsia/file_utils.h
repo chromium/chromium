@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 
 namespace base {
-namespace fuchsia {
 
 // Persisted data directory, i.e. /data . Returned as DIR_APP_DATA from
 // PathService.
@@ -28,10 +27,22 @@ BASE_EXPORT extern const char kPackageRootDirectoryPath[];
 
 // Returns fuchsia.io.Directory for the specified |path| or null InterfaceHandle
 // if the path doesn't exist or it's not a directory.
+BASE_EXPORT fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
+    const base::FilePath& path);
+
+// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
+// changed to use the non-fuchsia-sub-namespace version.
+namespace fuchsia {
+
+BASE_EXPORT extern const char kPersistedDataDirectoryPath[];
+BASE_EXPORT extern const char kPersistedCacheDirectoryPath[];
+BASE_EXPORT extern const char kServiceDirectoryPath[];
+BASE_EXPORT extern const char kPackageRootDirectoryPath[];
 BASE_EXPORT fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
     const base::FilePath& path);
 
 }  // namespace fuchsia
+
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_FILE_UTILS_H_

@@ -83,13 +83,13 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
     provider.set_name("testdata");
     base::FilePath pkg_path;
     base::PathService::Get(base::DIR_ASSETS, &pkg_path);
-    provider.set_directory(base::fuchsia::OpenDirectory(
+    provider.set_directory(base::OpenDirectoryHandle(
         pkg_path.AppendASCII("fuchsia/engine/test/data")));
     providers.emplace_back(std::move(provider));
 
     provider = {};
     provider.set_name("alternate");
-    provider.set_directory(base::fuchsia::OpenDirectory(
+    provider.set_directory(base::OpenDirectoryHandle(
         pkg_path.AppendASCII("fuchsia/engine/test/data")));
     providers.emplace_back(std::move(provider));
 

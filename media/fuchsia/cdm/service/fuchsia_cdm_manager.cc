@@ -93,7 +93,7 @@ class FuchsiaCdmManager::KeySystemClient {
     }
 
     fidl::InterfaceHandle<fuchsia::io::Directory> data_directory =
-        base::fuchsia::OpenDirectory(storage_path);
+        base::OpenDirectoryHandle(storage_path);
     if (!data_directory.is_valid()) {
       DLOG(ERROR) << "Unable to OpenDirectory " << storage_path;
       return base::nullopt;

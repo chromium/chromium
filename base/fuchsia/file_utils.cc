@@ -17,14 +17,13 @@
 #include "base/macros.h"
 
 namespace base {
-namespace fuchsia {
 
 const char kPersistedDataDirectoryPath[] = "/data";
 const char kPersistedCacheDirectoryPath[] = "/cache";
 const char kServiceDirectoryPath[] = "/svc";
 const char kPackageRootDirectoryPath[] = "/pkg";
 
-fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
     const base::FilePath& path) {
   ScopedFD fd(open(path.value().c_str(), O_DIRECTORY | O_RDONLY));
   if (!fd.is_valid()) {
@@ -45,5 +44,20 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
   return fidl::InterfaceHandle<::fuchsia::io::Directory>(std::move(channel));
 }
 
+// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
+// changed to use the non-fuchsia-sub-namespace version.
+namespace fuchsia {
+
+const char kPersistedDataDirectoryPath[] = "/data";
+const char kPersistedCacheDirectoryPath[] = "/cache";
+const char kServiceDirectoryPath[] = "/svc";
+const char kPackageRootDirectoryPath[] = "/pkg";
+
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
+    const base::FilePath& path) {
+  return ::base::OpenDirectoryHandle(path);
+}
+
 }  // namespace fuchsia
+
 }  // namespace base

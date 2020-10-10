@@ -332,7 +332,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   // that we can install a different /data.
   new_options.spawn_flags = FDIO_SPAWN_CLONE_STDIO | FDIO_SPAWN_CLONE_JOB;
 
-  const base::FilePath kDataPath(base::fuchsia::kPersistedDataDirectoryPath);
+  const base::FilePath kDataPath(base::kPersistedDataDirectoryPath);
 
   // Clone all namespace entries from the current process, except /data, which
   // is overridden below.
@@ -375,7 +375,7 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   // Bind the new test subdirectory to /data in the child process' namespace.
   new_options.paths_to_transfer.push_back(
       {kDataPath,
-       base::fuchsia::OpenDirectory(nested_data_path).TakeChannel().release()});
+       base::OpenDirectoryHandle(nested_data_path).TakeChannel().release()});
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

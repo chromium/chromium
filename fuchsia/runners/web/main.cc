@@ -29,23 +29,22 @@ fuchsia::web::CreateContextParams GetContextParams() {
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
       fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
 
-  create_context_params.set_service_directory(base::fuchsia::OpenDirectory(
-      base::FilePath(base::fuchsia::kServiceDirectoryPath)));
+  create_context_params.set_service_directory(
+      base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath)));
   CHECK(create_context_params.service_directory());
 
-  create_context_params.set_data_directory(base::fuchsia::OpenDirectory(
-      base::FilePath(base::fuchsia::kPersistedDataDirectoryPath)));
+  create_context_params.set_data_directory(base::OpenDirectoryHandle(
+      base::FilePath(base::kPersistedDataDirectoryPath)));
   CHECK(create_context_params.data_directory());
 
   // DRM services require cdm_data_directory to be populated, so create a
   // directory under /data and use that as the cdm_data_directory.
   base::FilePath cdm_data_path =
-      base::FilePath(base::fuchsia::kPersistedDataDirectoryPath)
-          .Append("cdm_data");
+      base::FilePath(base::kPersistedDataDirectoryPath).Append("cdm_data");
   base::File::Error error;
   CHECK(base::CreateDirectoryAndGetError(cdm_data_path, &error)) << error;
   create_context_params.set_cdm_data_directory(
-      base::fuchsia::OpenDirectory(cdm_data_path));
+      base::OpenDirectoryHandle(cdm_data_path));
   CHECK(create_context_params.cdm_data_directory());
 
 #if BUILDFLAG(WEB_RUNNER_REMOTE_DEBUGGING_PORT) != 0

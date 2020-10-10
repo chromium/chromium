@@ -38,7 +38,7 @@ fuchsia::fonts::ProviderSyncPtr RunTestProviderWithTestFonts(
   if (!base::PathService::Get(base::DIR_ASSETS, &assets_path))
     LOG(FATAL) << "Can't get DIR_ASSETS";
   launch_info.flat_namespace->directories.push_back(
-      base::fuchsia::OpenDirectory(assets_path.AppendASCII("test_fonts"))
+      base::OpenDirectoryHandle(assets_path.AppendASCII("test_fonts"))
           .TakeChannel());
 
   fidl::InterfaceHandle<fuchsia::io::Directory> font_provider_services_dir;

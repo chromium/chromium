@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
   fuchsia::web::ContentDirectoryProvider content_directory;
   base::FilePath pkg_path;
   base::PathService::Get(base::DIR_ASSETS, &pkg_path);
-  content_directory.set_directory(base::fuchsia::OpenDirectory(
+  content_directory.set_directory(base::OpenDirectoryHandle(
       pkg_path.AppendASCII("fuchsia/engine/test/shell_data")));
   content_directory.set_name("shell-data");
   std::vector<fuchsia::web::ContentDirectoryProvider> content_directories;
@@ -168,8 +168,8 @@ int main(int argc, char** argv) {
   // embedder application. By passing a handle to this process' service
   // directory to the ContextProvider, we are allowing the Context access to the
   // same set of services available to this application.
-  create_context_params.set_service_directory(base::fuchsia::OpenDirectory(
-      base::FilePath(base::fuchsia::kServiceDirectoryPath)));
+  create_context_params.set_service_directory(
+      base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath)));
 
   // Enable other WebEngine features.
   fuchsia::web::ContextFeatureFlags features =
@@ -188,12 +188,11 @@ int main(int argc, char** argv) {
   // DRM services require cdm_data_directory to be populated, so create a
   // directory under /data and use that as the cdm_data_directory.
   base::FilePath cdm_data_path =
-      base::FilePath(base::fuchsia::kPersistedDataDirectoryPath)
-          .Append("cdm_data");
+      base::FilePath(base::kPersistedDataDirectoryPath).Append("cdm_data");
   base::File::Error error;
   CHECK(base::CreateDirectoryAndGetError(cdm_data_path, &error)) << error;
   create_context_params.set_cdm_data_directory(
-      base::fuchsia::OpenDirectory(cdm_data_path));
+      base::OpenDirectoryHandle(cdm_data_path));
   CHECK(create_context_params.cdm_data_directory());
 
   base::RunLoop run_loop;

@@ -349,7 +349,7 @@ class CastRunnerIntegrationTest : public testing::Test {
     provider.set_name("testdata");
     base::FilePath pkg_path;
     CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
-    provider.set_directory(base::fuchsia::OpenDirectory(
+    provider.set_directory(base::OpenDirectoryHandle(
         pkg_path.AppendASCII("fuchsia/runners/cast/testdata")));
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;
     providers.emplace_back(std::move(provider));
@@ -405,8 +405,7 @@ class CastRunnerIntegrationTest : public testing::Test {
         std::make_unique<sys::ServiceDirectory>(std::move(svc_directory));
 
     // Place the ServiceDirectory in the |flat_namespace|.
-    startup_info.flat_namespace.paths.emplace_back(
-        base::fuchsia::kServiceDirectoryPath);
+    startup_info.flat_namespace.paths.emplace_back(base::kServiceDirectoryPath);
     startup_info.flat_namespace.directories.emplace_back(
         directory.TakeChannel());
 

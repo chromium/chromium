@@ -22,7 +22,7 @@ GetCastStreamingContentDirectories() {
 
   fuchsia::web::ContentDirectoryProvider content_directory;
   content_directory.set_directory(
-      base::fuchsia::OpenDirectory(pkg_path.AppendASCII(kCastDataDirectory)));
+      base::OpenDirectoryHandle(pkg_path.AppendASCII(kCastDataDirectory)));
   content_directory.set_name(kCastStreamingContentDirectoryName);
   std::vector<fuchsia::web::ContentDirectoryProvider> content_directories;
   content_directories.emplace_back(std::move(content_directory));

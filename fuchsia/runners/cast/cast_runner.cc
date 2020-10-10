@@ -218,8 +218,8 @@ fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
 
   // TODO(b/154204041) Migrate to using persistent data, and specifying an
   // explicit quota for CDM storage.
-  params.set_cdm_data_directory(base::fuchsia::OpenDirectory(
-      base::FilePath(base::fuchsia::kPersistedCacheDirectoryPath)));
+  params.set_cdm_data_directory(base::OpenDirectoryHandle(
+      base::FilePath(base::kPersistedCacheDirectoryPath)));
   CHECK(params.cdm_data_directory());
 
   const char kCastPlayreadyKeySystem[] = "com.chromecast.playready";

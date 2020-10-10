@@ -165,7 +165,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     environ_modifications["PWD"] = cwd.value();
   }
 
-  std::unique_ptr<char* []> new_environ;
+  std::unique_ptr<char*[]> new_environ;
   if (!environ_modifications.empty()) {
     char* const empty_environ = nullptr;
     char* const* old_environ =
@@ -193,7 +193,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
     for (const auto& path_to_clone : options.paths_to_clone) {
       fidl::InterfaceHandle<::fuchsia::io::Directory> directory =
-          base::fuchsia::OpenDirectory(path_to_clone);
+          base::OpenDirectoryHandle(path_to_clone);
       if (!directory) {
         LOG(WARNING) << "Could not open handle for path: " << path_to_clone;
         return base::Process();

@@ -88,7 +88,7 @@ class WebEngineDebugIntegrationTest : public testing::Test {
     ASSERT_FALSE(web_engine_path.empty());
 
     debug_dir_ = std::make_unique<sys::ServiceDirectory>(
-        base::fuchsia::OpenDirectory(web_engine_path.Append("out/debug")));
+        base::OpenDirectoryHandle(web_engine_path.Append("out/debug")));
     debug_dir_->Connect(debug_.NewRequest());
 
     // Attach the DevToolsListener. EnableDevTools has an acknowledgement
@@ -126,8 +126,8 @@ struct TestContextAndFrame {
                                UserModeDebugging user_mode_debugging,
                                std::string url) {
     // Create a Context, a Frame and navigate it to |url|.
-    auto directory = base::fuchsia::OpenDirectory(
-        base::FilePath(base::fuchsia::kServiceDirectoryPath));
+    auto directory =
+        base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath));
     if (!directory.is_valid())
       return;
 
