@@ -500,7 +500,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
       return ChromeVoxState.instance.getCurrentRange().start.node;
     };
     const simulateKeyPress = (keyCode, opt_modifiers) => {
-      const keyEvent = this.createMockKeyEvent(keyCode, opt_modifiers);
+      const keyEvent = TestUtils.createMockKeyEvent(keyCode, opt_modifiers);
       keyboardHandler.onKeyDown(keyEvent);
       keyboardHandler.onKeyUp(keyEvent);
     };
