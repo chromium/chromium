@@ -10,6 +10,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/render_surface_filters.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/chunk_to_layer_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/property_tree_manager.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -809,9 +810,8 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
 //   - The same color is used for the layer's safe opaque background color, but
 //     without the size requirement, as safe opaque background color should
 //     always get a value if possible.
-void PaintChunksToCcLayer::UpdateBackgroundColor(
-    cc::Layer& layer,
-    const PaintChunkSubset& paint_chunks) {
+static void UpdateBackgroundColor(cc::Layer& layer,
+                                  const PaintChunkSubset& paint_chunks) {
   SkColor color = SK_ColorTRANSPARENT;
   uint64_t area = 0;
   for (const auto& chunk : paint_chunks) {
@@ -829,6 +829,100 @@ void PaintChunksToCcLayer::UpdateBackgroundColor(
   if (area < layer_area / 2)
     color = SK_ColorTRANSPARENT;
   layer.SetBackgroundColor(color);
+}
+
+static void UpdateTouchActionRegion(
+    const HitTestData& hit_test_data,
+    const PropertyTreeState& layer_state,
+    const PropertyTreeState& chunk_state,
+    const FloatPoint& layer_offset,
+    cc::TouchActionRegion& touch_action_region) {
+  for (const auto& touch_action_rect : hit_test_data.touch_action_rects) {
+    auto rect = FloatClipRect(FloatRect(touch_action_rect.rect));
+    if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
+                                                   rect)) {
+      continue;
+    }
+    rect.MoveBy(-layer_offset);
+    touch_action_region.Union(touch_action_rect.allowed_touch_action,
+                              gfx::Rect(EnclosingIntRect(rect.Rect())));
+  }
+}
+
+static void UpdateNonFastScrollableRegion(
+    cc::Layer& layer,
+    const HitTestData& hit_test_data,
+    const PropertyTreeState& layer_state,
+    const PropertyTreeState& chunk_state,
+    const FloatPoint& layer_offset,
+    PropertyTreeManager* property_tree_manager,
+    cc::Region& non_fast_scrollable_region) {
+  if (hit_test_data.scroll_hit_test_rect.IsEmpty())
+    return;
+
+  // Skip the scroll hit test rect if it is for scrolling this cc::Layer.
+  // This is only needed for CompositeAfterPaint because
+  // pre-CompositeAfterPaint does not paint scroll hit test data for
+  // composited scrollers.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    if (const auto* scroll_translation = hit_test_data.scroll_translation) {
+      const auto& scroll_node = *scroll_translation->ScrollNode();
+      auto scroll_element_id = scroll_node.GetCompositorElementId();
+      if (layer.element_id() == scroll_element_id)
+        return;
+      // Ensure the cc scroll node to prepare for possible descendant nodes
+      // referenced by later composited layers. This can't be done by ensuring
+      // parent transform node in EnsureCompositorTransformNode() if the
+      // transform tree and the scroll tree have different topologies.
+      // This is not necessary with ScrollUnification which ensures the
+      // complete scroll tree.
+      if (!RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+        DCHECK(property_tree_manager);
+        property_tree_manager->EnsureCompositorScrollNode(*scroll_translation);
+      }
+    }
+  }
+
+  FloatClipRect rect(FloatRect(hit_test_data.scroll_hit_test_rect));
+  if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
+                                                 rect))
+    return;
+
+  rect.MoveBy(-layer_offset);
+  non_fast_scrollable_region.Union(EnclosingIntRect(rect.Rect()));
+}
+
+static void UpdateTouchActionAndNonFastScrollableRegions(
+    cc::Layer& layer,
+    const PropertyTreeState& layer_state,
+    const PaintChunkSubset& chunks,
+    PropertyTreeManager* property_tree_manager) {
+  gfx::Vector2dF cc_layer_offset = layer.offset_to_transform_parent();
+  FloatPoint layer_offset(cc_layer_offset.x(), cc_layer_offset.y());
+  cc::TouchActionRegion touch_action_region;
+  cc::Region non_fast_scrollable_region;
+  for (const auto& chunk : chunks) {
+    if (!chunk.hit_test_data)
+      continue;
+    auto chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
+    UpdateTouchActionRegion(*chunk.hit_test_data, layer_state, chunk_state,
+                            layer_offset, touch_action_region);
+    UpdateNonFastScrollableRegion(
+        layer, *chunk.hit_test_data, layer_state, chunk_state, layer_offset,
+        property_tree_manager, non_fast_scrollable_region);
+  }
+  layer.SetTouchActionRegion(std::move(touch_action_region));
+  layer.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region));
+}
+
+void PaintChunksToCcLayer::UpdateLayerProperties(
+    cc::Layer& layer,
+    const PropertyTreeState& layer_state,
+    const PaintChunkSubset& chunks,
+    PropertyTreeManager* property_tree_manager) {
+  UpdateBackgroundColor(layer, chunks);
+  UpdateTouchActionAndNonFastScrollableRegions(layer, layer_state, chunks,
+                                               property_tree_manager);
 }
 
 }  // namespace blink

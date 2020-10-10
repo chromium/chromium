@@ -677,10 +677,6 @@ class CORE_EXPORT LocalFrameView final
 
   const cc::Layer* RootCcLayer() const;
 
-  // Should be called whenever this LocalFrameView adds or removes a
-  // scrollable area, or gains/loses a composited layer.
-  void ScrollableAreasDidChange();
-
   ScrollingCoordinatorContext* GetScrollingContext() const;
   cc::AnimationHost* GetCompositorAnimationHost() const;
   CompositorAnimationTimeline* GetCompositorAnimationTimeline() const;

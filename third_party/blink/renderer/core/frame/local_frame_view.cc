@@ -2007,12 +2007,6 @@ void LocalFrameView::PerformPostLayoutTasks() {
     return;
 
   ScheduleUpdatePluginsIfNecessary();
-
-  if (ScrollingCoordinator* scrolling_coordinator =
-          this->GetScrollingCoordinator()) {
-    scrolling_coordinator->NotifyGeometryChanged(this);
-  }
-
   SendResizeEventIfNeeded();
 }
 
@@ -2761,12 +2755,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   if (!is_capturing_layout)
     repainted = PaintTree(benchmark_mode);
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (GetLayoutView()->Compositor()->InCompositingMode()) {
-      GetScrollingCoordinator()->UpdateAfterPaint(this);
-    }
-  }
-
   if (benchmark_mode ==
           PaintBenchmarkMode::kForcePaintArtifactCompositorUpdate ||
       // TODO(paint-dev): Separate requirement for update for repaint and full
@@ -3011,10 +2999,6 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     if (GraphicsLayer* root_graphics_layer =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
       repainted = root_graphics_layer->PaintRecursively(benchmark_mode);
-      // If the painted result changed, the recorded hit test data may have
-      // changed which will affect the mapped hit test geometry.
-      if (repainted && GetScrollingCoordinator())
-        GetScrollingCoordinator()->NotifyGeometryChanged(this);
     } else {
       needs_clear_repaint_flags = true;
     }
@@ -3614,30 +3598,12 @@ void LocalFrameView::ScheduleAnimation(base::TimeDelta delay) {
     client->ScheduleAnimation(this, delay);
 }
 
-void LocalFrameView::ScrollableAreasDidChange() {
-  // Layout may update scrollable area bounding boxes. It also sets the same
-  // dirty flag making this one redundant (See
-  // |ScrollingCoordinator::notifyGeometryChanged|).
-  // So if layout is expected, ignore this call allowing scrolling coordinator
-  // to be notified post-layout to recompute gesture regions.
-  // TODO(wjmaclean): It would be nice to move the !NeedsLayout() check from
-  // here to SetScrollGestureRegionIsDirty(), but at present doing so breaks
-  // web tests. This suggests that there is something that wants to set the
-  // dirty bit when layout is needed, and won't re-try setting the bit after
-  // layout has completed - it would be nice to find that and fix it.
-  if (!NeedsLayout())
-    GetScrollingContext()->SetScrollGestureRegionIsDirty(true);
-}
-
 void LocalFrameView::AddScrollableArea(
     PaintLayerScrollableArea* scrollable_area) {
   DCHECK(scrollable_area);
   if (!scrollable_areas_)
     scrollable_areas_ = MakeGarbageCollected<ScrollableAreaSet>();
   scrollable_areas_->insert(scrollable_area);
-
-  if (GetScrollingCoordinator())
-    ScrollableAreasDidChange();
 }
 
 void LocalFrameView::RemoveScrollableArea(
@@ -3645,9 +3611,6 @@ void LocalFrameView::RemoveScrollableArea(
   if (!scrollable_areas_)
     return;
   scrollable_areas_->erase(scrollable_area);
-
-  if (GetScrollingCoordinator())
-    ScrollableAreasDidChange();
 }
 
 void LocalFrameView::AddAnimatingScrollableArea(
@@ -4131,8 +4094,6 @@ void LocalFrameView::SelfVisibleChanged() {
 void LocalFrameView::Show() {
   if (!IsSelfVisible()) {
     SetSelfVisible(true);
-    if (GetScrollingCoordinator())
-      GetScrollingContext()->SetScrollGestureRegionIsDirty(true);
     SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
     if (IsParentVisible()) {
       ForAllChildViewsAndPlugins(
@@ -4152,8 +4113,6 @@ void LocalFrameView::Hide() {
           });
     }
     SetSelfVisible(false);
-    if (GetScrollingCoordinator())
-      GetScrollingContext()->SetScrollGestureRegionIsDirty(true);
     SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
   }
 }
@@ -4314,10 +4273,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
 }
 
 void LocalFrameView::InvalidateForThrottlingChange() {
-  // ScrollingCoordinator needs to update according to the new throttling
-  // status.
-  if (ScrollingCoordinator* coordinator = this->GetScrollingCoordinator())
-    coordinator->NotifyGeometryChanged(this);
   // Start ticking animation frames again if necessary.
   if (GetPage())
     GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());

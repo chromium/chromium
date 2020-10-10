@@ -31,16 +31,11 @@ namespace cc {
 class ScrollbarLayerBase;
 }
 
-namespace gfx {
-class Vector2dF;
-}
-
 namespace blink {
 
 class ContentLayerClientImpl;
 class GraphicsLayer;
 class JSONObject;
-class PropertyTreeManager;
 class SynthesizedClip;
 
 using CompositorScrollCallbacks = cc::ScrollCallbacks;
@@ -199,22 +194,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     return content_layer_clients_;
   }
 
-  // Update the cc::Layer's touch action region from the touch action rects of
-  // the paint chunks.
-  static void UpdateTouchActionRects(cc::Layer&,
-                                     const gfx::Vector2dF& layer_offset,
-                                     const PropertyTreeState& layer_state,
-                                     const PaintChunkSubset& paint_chunks);
-
-  // Update the cc::Layer's non-fast scrollable region from the non-fast regions
-  // in the paint chunks.
-  static void UpdateNonFastScrollableRegions(
-      cc::Layer&,
-      const gfx::Vector2dF& layer_offset,
-      const PropertyTreeState& layer_state,
-      const PaintChunkSubset& paint_chunks,
-      PropertyTreeManager* = nullptr);
-
   void SetNeedsUpdate() { needs_update_ = true; }
   bool NeedsUpdate() const { return needs_update_; }
   void ClearNeedsUpdateForTesting() { needs_update_ = false; }
@@ -298,8 +277,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     CompositingType compositing_type;
   };
 
-  void UpdateRepaintedLayerProperties(
-      const HashSet<const GraphicsLayer*>& repainted_layers) const;
+  static void UpdateLayerProperties(cc::Layer&,
+                                    const PendingLayer&,
+                                    PropertyTreeManager* = nullptr);
 
   void DecompositeTransforms();
 

@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/page/named_pages_mapper.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -936,13 +935,6 @@ RecalcLayoutOverflowResult LayoutView::RecalcLayoutOverflow() {
 
   auto result = LayoutBlockFlow::RecalcLayoutOverflow();
   if (result.layout_overflow_changed) {
-    // Changing overflow should notify scrolling coordinator to ensures that it
-    // updates non-fast scroll rects even if there is no layout.
-    if (ScrollingCoordinator* scrolling_coordinator =
-            GetDocument().GetPage()->GetScrollingCoordinator()) {
-      GetFrameView()->GetScrollingContext()->SetScrollGestureRegionIsDirty(
-          true);
-    }
     if (NeedsLayout())
       return result;
     if (GetFrameView()->VisualViewportSuppliesScrollbars())

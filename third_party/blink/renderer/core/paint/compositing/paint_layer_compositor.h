@@ -42,7 +42,6 @@ class LayoutEmbeddedContent;
 class LayoutView;
 class Page;
 class Scrollbar;
-class ScrollingCoordinator;
 
 enum CompositingStateTransitionType {
   kNoCompositingStateChange,
@@ -169,8 +168,6 @@ class CORE_EXPORT PaintLayerCompositor {
   void SetOwnerNeedsCompositingInputsUpdate();
 
   Page* GetPage() const;
-
-  ScrollingCoordinator* GetScrollingCoordinator() const;
 
   // Checks the given graphics layer against the compositor's horizontal and
   // vertical scrollbar graphics layers, returning the associated Scrollbar

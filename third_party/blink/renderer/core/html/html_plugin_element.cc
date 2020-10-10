@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -675,15 +674,6 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
   // TODO(esprehn): WebPluginContainerImpl::SetCcLayer() also schedules a
   // compositing update, do we need both?
   SetNeedsCompositingUpdate();
-  // Make sure any input event handlers introduced by the plugin are taken into
-  // account.
-  if (Page* page = GetDocument().GetFrame()->GetPage()) {
-    if (ScrollingCoordinator* scrolling_coordinator =
-            page->GetScrollingCoordinator()) {
-      LocalFrameView* frame_view = GetDocument().GetFrame()->View();
-      scrolling_coordinator->NotifyGeometryChanged(frame_view);
-    }
-  }
   return true;
 }
 

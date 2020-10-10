@@ -89,7 +89,6 @@
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
@@ -664,11 +663,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
         old_style->Direction() != new_style.Direction()) {
       SetNeedsCollectInlines();
     }
-  }
-
-  if (diff.TransformChanged()) {
-    if (auto* coordinator = GetFrame()->GetPage()->GetScrollingCoordinator())
-      coordinator->NotifyGeometryChanged(GetFrameView());
   }
 
   // Update the script style map, from the new computed style.

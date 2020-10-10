@@ -1258,9 +1258,6 @@ bool CompositedLayerMapping::UpdateScrollingContentsLayer(
       if (scrolling_coordinator) {
         scrolling_coordinator->ScrollableAreaScrollLayerDidChange(
             scrollable_area);
-        const auto& object = GetLayoutObject();
-        if (auto* layout_view = DynamicTo<LayoutView>(object))
-          layout_view->GetFrameView()->ScrollableAreasDidChange();
       }
     }
   } else if (scrolling_contents_layer_) {
@@ -1269,9 +1266,6 @@ bool CompositedLayerMapping::UpdateScrollingContentsLayer(
     if (scrolling_coordinator && scrollable_area) {
       scrolling_coordinator->ScrollableAreaScrollLayerDidChange(
           scrollable_area);
-      const auto& object = GetLayoutObject();
-      if (auto* layout_view = DynamicTo<LayoutView>(object))
-        layout_view->GetFrameView()->ScrollableAreasDidChange();
     }
   }
 

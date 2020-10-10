@@ -36,29 +36,9 @@ class CORE_EXPORT ScrollingCoordinatorContext final {
   }
   cc::AnimationHost* GetCompositorAnimationHost() { return animation_host_; }
 
-  // Non-fast scrollable regions need updating by ScrollingCoordinator.
-  bool ScrollGestureRegionIsDirty() const {
-    return scroll_gesture_region_is_dirty_;
-  }
-  // Touch event target rects need updating by ScrollingCoordinator.
-  bool TouchEventTargetRectsAreDirty() const {
-    return touch_event_target_rects_are_dirty_;
-  }
-
-  // Only ScrollingCoordinator should ever set |dirty| to |false|.
-  void SetScrollGestureRegionIsDirty(bool dirty) {
-    scroll_gesture_region_is_dirty_ = dirty;
-  }
-  void SetTouchEventTargetRectsAreDirty(bool dirty) {
-    touch_event_target_rects_are_dirty_ = dirty;
-  }
-
  private:
   std::unique_ptr<CompositorAnimationTimeline> animation_timeline_;
   cc::AnimationHost* animation_host_ = nullptr;
-
-  bool scroll_gesture_region_is_dirty_ = false;
-  bool touch_event_target_rects_are_dirty_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollingCoordinatorContext);
 };

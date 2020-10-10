@@ -91,7 +91,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
@@ -649,20 +648,11 @@ void WebPluginContainerImpl::SetWantsWheelEvents(bool wants_wheel_events) {
   }
 
   wants_wheel_events_ = wants_wheel_events;
-  if (auto* page = element_->GetDocument().GetPage()) {
-    if (ScrollingCoordinator* scrolling_coordinator =
-            page->GetScrollingCoordinator()) {
-      // Only call scrolling_coordinator if attached.  SetWantsWheelEvents can
-      // be called from Plugin Initialization when it is not yet attached.
-      if (IsAttached()) {
-        LocalFrameView* frame_view = element_->GetDocument().GetFrame()->View();
-        scrolling_coordinator->NotifyGeometryChanged(frame_view);
 
-        // Scroll hit test data depend on wheel events. They are painted in the
-        // background phase.
-        GetLayoutEmbeddedContent()->SetBackgroundNeedsFullPaintInvalidation();
-      }
-    }
+  if (IsAttached()) {
+    // Scroll hit test data depend on wheel events. They are painted in the
+    // background phase.
+    GetLayoutEmbeddedContent()->SetBackgroundNeedsFullPaintInvalidation();
   }
 }
 

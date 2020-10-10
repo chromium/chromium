@@ -25,6 +25,7 @@ class Vector2dF;
 namespace blink {
 
 class PaintChunkSubset;
+class PropertyTreeManager;
 class PropertyTreeState;
 class RasterInvalidationTracking;
 
@@ -71,8 +72,10 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
       cc::DisplayItemList::UsageHint,
       RasterUnderInvalidationCheckingParams* = nullptr);
 
-  static void UpdateBackgroundColor(cc::Layer& layer,
-                                    const PaintChunkSubset& paint_chunks);
+  static void UpdateLayerProperties(cc::Layer& layer,
+                                    const PropertyTreeState& layer_state,
+                                    const PaintChunkSubset&,
+                                    PropertyTreeManager* = nullptr);
 };
 
 }  // namespace blink

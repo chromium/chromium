@@ -118,13 +118,6 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
   return layers_as_json.Finalize();
 }
 
-static void UpdateLayerProperties(const GraphicsLayer& graphics_layer) {
-  PaintChunksToCcLayer::UpdateBackgroundColor(
-      graphics_layer.CcLayer(),
-      PaintChunkSubset(
-          graphics_layer.GetPaintController().GetPaintArtifactShared()));
-}
-
 scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     const PendingLayer& pending_layer) {
   if (pending_layer.compositing_type != PendingLayer::kForeignLayer &&
@@ -139,8 +132,6 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     layer = &pending_layer.graphics_layer->CcLayer();
     layer_offset =
         FloatPoint(pending_layer.graphics_layer->GetOffsetFromTransformNode());
-    if (pending_layer.graphics_layer->Repainted())
-      UpdateLayerProperties(*pending_layer.graphics_layer);
   } else {
     DCHECK_EQ(pending_layer.compositing_type, PendingLayer::kForeignLayer);
     // UpdateTouchActionRects() depends on the layer's offset, but when the
@@ -312,83 +303,6 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
       FloatRect(cc_combined_bounds)));
 
   return cc_layer;
-}
-
-void PaintArtifactCompositor::UpdateTouchActionRects(
-    cc::Layer& layer,
-    const gfx::Vector2dF& layer_offset,
-    const PropertyTreeState& layer_state,
-    const PaintChunkSubset& paint_chunks) {
-  cc::TouchActionRegion touch_action_in_layer_space;
-  for (const auto& chunk : paint_chunks) {
-    const auto* hit_test_data = chunk.hit_test_data.get();
-    if (!hit_test_data || hit_test_data->touch_action_rects.IsEmpty())
-      continue;
-
-    const auto& chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
-    for (const auto& touch_action_rect : hit_test_data->touch_action_rects) {
-      auto rect = FloatClipRect(FloatRect(touch_action_rect.rect));
-      if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
-                                                     rect)) {
-        continue;
-      }
-      rect.MoveBy(FloatPoint(-layer_offset.x(), -layer_offset.y()));
-      touch_action_in_layer_space.Union(
-          touch_action_rect.allowed_touch_action,
-          (gfx::Rect)EnclosingIntRect(rect.Rect()));
-    }
-  }
-  layer.SetTouchActionRegion(std::move(touch_action_in_layer_space));
-}
-
-void PaintArtifactCompositor::UpdateNonFastScrollableRegions(
-    cc::Layer& layer,
-    const gfx::Vector2dF& layer_offset,
-    const PropertyTreeState& layer_state,
-    const PaintChunkSubset& paint_chunks,
-    PropertyTreeManager* property_tree_manager) {
-  cc::Region non_fast_scrollable_regions_in_layer_space;
-  for (const auto& chunk : paint_chunks) {
-    // Add any non-fast scrollable hit test data from the paint chunk.
-    const auto* hit_test_data = chunk.hit_test_data.get();
-    if (!hit_test_data || hit_test_data->scroll_hit_test_rect.IsEmpty())
-      continue;
-
-    // Skip the scroll hit test rect if it is for scrolling this cc::Layer.
-    // This is only needed for CompositeAfterPaint because
-    // pre-CompositeAfterPaint does not paint scroll hit test data for
-    // composited scrollers.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (const auto* scroll_translation = hit_test_data->scroll_translation) {
-        const auto& scroll_node = *scroll_translation->ScrollNode();
-        auto scroll_element_id = scroll_node.GetCompositorElementId();
-        if (layer.element_id() == scroll_element_id)
-          continue;
-        // Ensure the cc scroll node to prepare for possible descendant nodes
-        // referenced by later composited layers. This can't be done by ensuring
-        // parent transform node in EnsureCompositorTransformNode() if the
-        // transform tree and the scroll tree have different topologies.
-        // This is not necessary with ScrollUnification which ensures the
-        // complete scroll tree.
-        if (!RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
-          DCHECK(property_tree_manager);
-          property_tree_manager->EnsureCompositorScrollNode(
-              *scroll_translation);
-        }
-      }
-    }
-
-    FloatClipRect rect(FloatRect(chunk.hit_test_data->scroll_hit_test_rect));
-    const auto& chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
-    if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
-                                                   rect)) {
-      continue;
-    }
-    rect.MoveBy(FloatPoint(-layer_offset.x(), -layer_offset.y()));
-    non_fast_scrollable_regions_in_layer_space.Union(
-        EnclosingIntRect(rect.Rect()));
-  }
-  layer.SetNonFastScrollableRegion(non_fast_scrollable_regions_in_layer_space);
 }
 
 bool PaintArtifactCompositor::HasComposited(
@@ -1256,15 +1170,7 @@ void PaintArtifactCompositor::Update(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,
         new_scrollbar_layers);
 
-    // In Pre-CompositeAfterPaint, touch action rects and non-fast scrollable
-    // regions are updated through ScrollingCoordinator.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      UpdateTouchActionRects(*layer, layer->offset_to_transform_parent(),
-                             property_state, pending_layer.chunks);
-      UpdateNonFastScrollableRegions(
-          *layer, layer->offset_to_transform_parent(), property_state,
-          pending_layer.chunks, &property_tree_manager);
-    }
+    UpdateLayerProperties(*layer, pending_layer, &property_tree_manager);
 
     layer->SetLayerTreeHost(root_layer_->layer_tree_host());
 
@@ -1347,6 +1253,24 @@ void PaintArtifactCompositor::Update(
                   .Utf8();
 }
 
+void PaintArtifactCompositor::UpdateLayerProperties(
+    cc::Layer& layer,
+    const PendingLayer& pending_layer,
+    PropertyTreeManager* property_tree_manager) {
+  // Properties of foreign layers are managed by their owners.
+  if (pending_layer.compositing_type == PendingLayer::kForeignLayer)
+    return;
+
+  PaintChunkSubset chunks = pending_layer.chunks;
+  if (pending_layer.graphics_layer &&
+      pending_layer.graphics_layer->PaintsContentOrHitTest()) {
+    chunks = PaintChunkSubset(pending_layer.graphics_layer->GetPaintController()
+                                  .GetPaintArtifactShared());
+  }
+  PaintChunksToCcLayer::UpdateLayerProperties(
+      layer, pending_layer.property_tree_state, chunks, property_tree_manager);
+}
+
 void PaintArtifactCompositor::UpdateRepaintedLayerProperties() const {
   // TODO(paint-dev): Implement repaint-only update for CompositeAfterPaint.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -1356,8 +1280,10 @@ void PaintArtifactCompositor::UpdateRepaintedLayerProperties() const {
     if (pending_layer.compositing_type != PendingLayer::kPreCompositedLayer)
       continue;
     DCHECK(pending_layer.graphics_layer);
-    if (pending_layer.graphics_layer->Repainted())
-      UpdateLayerProperties(*pending_layer.graphics_layer);
+    if (pending_layer.graphics_layer->Repainted()) {
+      UpdateLayerProperties(pending_layer.graphics_layer->CcLayer(),
+                            pending_layer);
+    }
   }
 
   UpdateDebugInfo();

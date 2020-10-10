@@ -131,8 +131,6 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
       layer_state.Effect().HasBackdropEffect() ||
       !layer_state.Effect().Filter().IsEmpty());
 
-  PaintChunksToCcLayer::UpdateBackgroundColor(*cc_picture_layer_, paint_chunks);
-
   return cc_picture_layer_;
 }
 

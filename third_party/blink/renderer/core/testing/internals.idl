@@ -206,7 +206,6 @@
     DOMString scrollingStateTreeAsText(Document document);
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
     [RaisesException] DOMRectList nonFastScrollableRects(Document document);
-    [RaisesException] void markGestureScrollRegionDirty(Document document);
 
     void evictAllResources();
 

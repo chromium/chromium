@@ -126,7 +126,6 @@
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
-#include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -2195,16 +2194,6 @@ String Internals::mainThreadScrollingReasons(
       DocumentUpdateReason::kTest);
 
   return document->GetFrame()->View()->MainThreadScrollingReasonsAsText();
-}
-
-void Internals::markGestureScrollRegionDirty(
-    Document* document,
-    ExceptionState& exception_state) const {
-  FrameView* frame_view = document->View();
-  if (!frame_view || !frame_view->IsLocalFrameView())
-    return;
-  LocalFrameView* lfv = static_cast<LocalFrameView*>(frame_view);
-  lfv->GetScrollingContext()->SetScrollGestureRegionIsDirty(true);
 }
 
 DOMRectList* Internals::nonFastScrollableRects(

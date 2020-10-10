@@ -210,11 +210,6 @@ TEST_P(ScrollingTest, fastScrollingByDefault) {
   LocalFrameView* frame_view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   ASSERT_TRUE(page->GetScrollingCoordinator());
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_TRUE(
-        page->GetScrollingCoordinator()->CoordinatesScrollingForFrameView(
-            frame_view));
-  }
 
   // Fast scrolling should be enabled by default.
   const auto* outer_scroll_node =
@@ -1452,91 +1447,6 @@ TEST_P(ScrollingTest, UpdateVisualViewportScrollLayer) {
   ForceFullCompositingUpdate();
   EXPECT_EQ(gfx::ScrollOffset(10, 20),
             CurrentScrollOffset(inner_viewport_scroll_node));
-}
-
-TEST_P(ScrollingTest, UpdateUMAMetricUpdated) {
-  // The metrics are recorced in ScrollingCoordinator::UpdateAfterPaint() which
-  // is not called in CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  HistogramTester histogram_tester;
-  LoadHTML(R"HTML(
-    <div id='bg' style='background: blue;'></div>
-    <div id='scroller' style='overflow: scroll; width: 10px; height: 10px; background: blue'>
-      <div id='forcescroll' style='height: 1000px;'></div>
-    </div>
-  )HTML");
-
-  // The initial counts should be zero.
-  histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PreFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PostFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.AggregatedPreFCP", 0);
-
-  // After an initial compositing update, we should have one scrolling update
-  // recorded as PreFCP.
-  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
-  ForceFullCompositingUpdate();
-  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
-      base::TimeTicks(), 0);
-  histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PreFCP", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PostFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.AggregatedPreFCP", 0);
-
-  // An update with no scrolling changes should not cause a scrolling update.
-  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
-  ForceFullCompositingUpdate();
-  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
-      base::TimeTicks(), 0);
-  histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PreFCP", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PostFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.AggregatedPreFCP", 0);
-
-  // A change to background color does not need to cause a scrolling update but,
-  // because we record hit test data, we also cause a scrolling coordinator
-  // update when the background paints. Also render some text to get past FCP.
-  // Note that this frame is still considered pre-FCP.
-  auto* background = GetFrame()->GetDocument()->getElementById("bg");
-  background->removeAttribute(html_names::kStyleAttr);
-  background->setInnerHTML("Some Text");
-  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
-  ForceFullCompositingUpdate();
-  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
-      base::TimeTicks(), 0);
-  histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 2);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PreFCP", 2);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PostFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.AggregatedPreFCP", 1);
-
-  // Removing a scrollable area should cause a scrolling update.
-  auto* scroller = GetFrame()->GetDocument()->getElementById("scroller");
-  scroller->removeAttribute(html_names::kStyleAttr);
-  GetWebView()->MainFrameViewWidget()->RecordStartOfFrameMetrics();
-  ForceFullCompositingUpdate();
-  GetWebView()->MainFrameViewWidget()->RecordEndOfFrameMetrics(
-      base::TimeTicks(), 0);
-  histogram_tester.ExpectTotalCount("Blink.ScrollingCoordinator.UpdateTime", 3);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PreFCP", 2);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.PostFCP", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.ScrollingCoordinator.UpdateTime.AggregatedPreFCP", 1);
 }
 
 TEST_P(ScrollingTest, NonCompositedNonFastScrollableRegion) {
