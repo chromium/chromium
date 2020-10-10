@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include "base/stl_util.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
@@ -51,6 +53,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
@@ -69,10 +72,12 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -1492,17 +1497,81 @@ int HTMLElement::offsetTopForBinding() {
   return 0;
 }
 
+void HTMLElement::RecordScrollbarSizeForStudy(int offset_measurement,
+                                              bool is_width) {
+  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          IdentifiableSurface::Type::kScrollbarSize))
+    return;
+
+  // Check for presence of a scrollbar.
+  PaintLayerScrollableArea* area;
+  if (this == GetDocument().ScrollingElementNoLayout()) {
+    auto* view = GetDocument().View();
+    if (!view)
+      return;
+    area = view->LayoutViewport();
+  } else {
+    auto* layout = GetLayoutBox();
+    if (!layout)
+      return;
+    area = layout->GetScrollableArea();
+  }
+  if (!area || area->HasOverlayOverflowControls())
+    return;
+
+  Scrollbar* scrollbar =
+      is_width ? area->VerticalScrollbar() : area->HorizontalScrollbar();
+  // We intentionally exclude platform overlay scrollbars since their size
+  // cannot be detected in JavaScript using the methods below.
+  if (!scrollbar)
+    return;
+
+  IdentifiableSurface::ScrollbarSurface surface;
+  int scrollbar_size;
+
+  // There are two common ways to detect the size of a scrollbar in a DOM
+  // window. They are:
+  // 1. Compute the difference of the window.inner[Width|Height] and the
+  //    corresponding document.scrollingElement.offset[Width|Height].
+  // 2. Any HTML element that insets the layout to fit a scrollbar, so it is
+  //    measurable by a JavaScript program on a site.
+  if (this == GetDocument().scrollingElement()) {
+    LocalDOMWindow* dom_window = GetDocument().domWindow();
+    scrollbar_size =
+        (is_width ? dom_window->innerWidth() : dom_window->innerHeight()) -
+        offset_measurement;
+    surface = is_width
+                  ? IdentifiableSurface::ScrollbarSurface::kBodyOffsetWidth
+                  : IdentifiableSurface::ScrollbarSurface::kBodyOffsetHeight;
+  } else {
+    scrollbar_size =
+        offset_measurement - (is_width ? clientWidth() : clientHeight());
+    surface = is_width
+                  ? IdentifiableSurface::ScrollbarSurface::kElemScrollbarWidth
+                  : IdentifiableSurface::ScrollbarSurface::kElemScrollbarHeight;
+  }
+
+  blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
+      .Set(blink::IdentifiableSurface::FromTypeAndToken(
+               blink::IdentifiableSurface::Type::kScrollbarSize, surface),
+           scrollbar_size)
+      .Record(GetDocument().UkmRecorder());
+}
+
 int HTMLElement::offsetWidthForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   Element* offset_parent = unclosedOffsetParent();
-  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject())
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               LayoutUnit(
-                   layout_object->PixelSnappedOffsetWidth(offset_parent)),
-               layout_object->StyleRef())
-        .Round();
-  return 0;
+  int result = 0;
+  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject()) {
+    result =
+        AdjustForAbsoluteZoom::AdjustLayoutUnit(
+            LayoutUnit(layout_object->PixelSnappedOffsetWidth(offset_parent)),
+            layout_object->StyleRef())
+            .Round();
+    RecordScrollbarSizeForStudy(result, /* isWidth= */ true);
+  }
+  return result;
 }
 
 DISABLE_CFI_PERF
@@ -1510,13 +1579,16 @@ int HTMLElement::offsetHeightForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   Element* offset_parent = unclosedOffsetParent();
-  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject())
-    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               LayoutUnit(
-                   layout_object->PixelSnappedOffsetHeight(offset_parent)),
-               layout_object->StyleRef())
-        .Round();
-  return 0;
+  int result = 0;
+  if (LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject()) {
+    result =
+        AdjustForAbsoluteZoom::AdjustLayoutUnit(
+            LayoutUnit(layout_object->PixelSnappedOffsetHeight(offset_parent)),
+            layout_object->StyleRef())
+            .Round();
+    RecordScrollbarSizeForStudy(result, /* isWidth= */ false);
+  }
+  return result;
 }
 
 Element* HTMLElement::unclosedOffsetParent() {

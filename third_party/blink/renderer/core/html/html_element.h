@@ -212,6 +212,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void HandleKeypressEvent(KeyboardEvent&);
 
+  void RecordScrollbarSizeForStudy(int, bool);
+
   static AttributeTriggers* TriggersForAttributeName(
       const QualifiedName& attr_name);
 
