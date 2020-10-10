@@ -1,32 +1,28 @@
 <style include="mwb-shared-style">
   #header {
     align-items: center;
-    font-size: 15px;
+    display: flex;
+    font-size: var(--mwb-primary-text-font-size);
+    height: var(--mwb-item-height);
     margin: 0;
-    padding: var(--mwb-list-item-vertical-margin)
-             var(--mwb-list-item-horizontal-margin);
+    padding-inline-start: var(--mwb-list-item-horizontal-margin);
   }
 
   #read-later-list {
-    max-height: 458px;
+    max-height: 444px;
     overflow-x: hidden;
     overflow-y: auto;
   }
 
   .sub-heading {
+    align-items: center;
+    border-bottom: 1px solid #dbdbdb;
     color: var(--cr-secondary-text-color);
-    font-size: var(--mwb-secondary-text-font-size);
-    padding: var(--mwb-list-item-vertical-margin)
-             0
-             calc(var(--mwb-list-item-vertical-margin) / 2)
-             var(--mwb-list-item-horizontal-margin);
-  }
-
-  .sub-heading::after {
-    border-bottom: 1px solid var(--cr-secondary-text-color);
-    content: '';
-    display: block;
-    margin-top: calc(var(--mwb-list-item-vertical-margin) / 2);
+    display: flex;
+    font-size: 11px;
+    height: 24px;
+    margin-inline-start: var(--mwb-list-item-horizontal-margin);
+    margin-top: 4px;
   }
 </style>
 
