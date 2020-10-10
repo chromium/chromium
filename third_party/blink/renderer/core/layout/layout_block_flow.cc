@@ -693,12 +693,10 @@ void LayoutBlockFlow::DetermineLogicalLeftPositionForChild(LayoutBox& child) {
   LayoutUnit total_available_logical_width =
       BorderAndPaddingLogicalWidth() + AvailableLogicalWidth();
 
-  if (StyleRef().IsHorizontalWritingMode() &&
-      !StyleRef().IsLeftToRightDirection()) {
+  if (ShouldPlaceBlockDirectionScrollbarOnLogicalLeft())
     start_position -= LogicalLeftScrollbarWidth();
-  } else {
+  else
     start_position += LogicalLeftScrollbarWidth();
-  }
 
   LayoutUnit child_margin_start = MarginStartForChild(child);
   LayoutUnit new_position = start_position + child_margin_start;

@@ -1668,7 +1668,7 @@
     },
     {
       name: "ScrollbarGutter",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "ScrollCustomization",
