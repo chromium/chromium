@@ -379,6 +379,22 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mAllowedMenuItems = allowedMenuItems;
     }
 
+    @Override
+    public int getAllowedMenuItemIfAny(ActionMode mode, MenuItem item) {
+        if (!isActionModeValid()) return 0;
+
+        int id = item.getItemId();
+        int groupId = item.getGroupId();
+        if (id == R.id.select_action_menu_share) {
+            return MENU_ITEM_SHARE;
+        } else if (id == R.id.select_action_menu_web_search) {
+            return MENU_ITEM_WEB_SEARCH;
+        } else if (groupId == R.id.select_action_menu_text_processing_menus) {
+            return MENU_ITEM_PROCESS_TEXT;
+        }
+        return 0;
+    }
+
     @VisibleForTesting
     @CalledByNative
     public void showSelectionMenu(int left, int top, int right, int bottom, int handleHeight,

@@ -46,4 +46,8 @@ interface ITabClient {
 
   // Added in M87
   void onVerticalScrollOffsetChanged(in int offset) = 11;
+
+  // Added in M88
+  void onActionItemClicked(
+          in int actionModeItemType, in IObjectWrapper selectedString) = 12;
 }

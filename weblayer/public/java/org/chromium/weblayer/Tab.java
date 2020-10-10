@@ -56,6 +56,7 @@ public class Tab {
     private FullscreenCallbackClientImpl mFullscreenCallbackClient;
     private NewTabCallback mNewTabCallback;
     private final ObserverList<ScrollOffsetCallback> mScrollOffsetCallbacks;
+    private @Nullable ActionModeCallback mActionModeCallback;
     // Id from the remote side.
     private final int mId;
 
@@ -740,6 +741,29 @@ public class Tab {
         }
     }
 
+    /**
+     * Allow controlling and overriding custom items in the floating seleciton menu.
+     * Note floating action mode is available on M and up.
+     * @param actionModeItemTypes a bit field of values in ActionModeItemType.
+     * @param callback can be null if actionModeItemTypes is 0.
+     *
+     * @since 88
+     */
+    public void setFloatingActionModeOverride(
+            int actionModeItemTypes, @Nullable ActionModeCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        mActionModeCallback = callback;
+        try {
+            mImpl.setFloatingActionModeOverride(actionModeItemTypes);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     // Called by Browser when removed.
     void onRemovedFromBrowser() {
         if (mDestroyOnRemove) {
@@ -902,6 +926,16 @@ public class Tab {
             StrictModeWorkaround.apply();
             for (ScrollOffsetCallback callback : mScrollOffsetCallbacks) {
                 callback.onVerticalScrollOffsetChanged(value);
+            }
+        }
+
+        @Override
+        public void onActionItemClicked(
+                int actionModeItemType, IObjectWrapper selectedStringWrapper) {
+            StrictModeWorkaround.apply();
+            String selectedString = ObjectWrapper.unwrap(selectedStringWrapper, String.class);
+            if (mActionModeCallback != null) {
+                mActionModeCallback.onActionItemClicked(actionModeItemType, selectedString);
             }
         }
     }

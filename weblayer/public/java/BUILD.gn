@@ -35,6 +35,8 @@ android_resources("client_resources") {
 
 android_library("java") {
   sources = [
+    "org/chromium/weblayer/ActionModeCallback.java",
+    "org/chromium/weblayer/ActionModeItemType.java",
     "org/chromium/weblayer/BroadcastReceiver.java",
     "org/chromium/weblayer/Browser.java",
     "org/chromium/weblayer/BrowserControlsOffsetCallback.java",

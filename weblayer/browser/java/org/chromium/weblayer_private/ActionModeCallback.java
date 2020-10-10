@@ -7,31 +7,68 @@ package org.chromium.weblayer_private;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.RemoteException;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.ActionModeItemType;
+import org.chromium.weblayer_private.interfaces.ITabClient;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
  * A class that handles selection action mode for WebLayer.
  */
 public final class ActionModeCallback implements ActionMode.Callback {
     private final ActionModeCallbackHelper mHelper;
+    // Can be null during init.
+    private @Nullable ITabClient mTabClient;
+
+    // Bitfield of @ActionModeItemType values.
+    private int mActionModeOverride;
+
+    // Convert from content ActionModeCallbackHelper.MENU_ITEM_* values to
+    // @ActionModeItemType values.
+    private static int contentToWebLayerType(int contentType) {
+        switch (contentType) {
+            case ActionModeCallbackHelper.MENU_ITEM_SHARE:
+                return ActionModeItemType.SHARE;
+            case ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH:
+                return ActionModeItemType.WEB_SEARCH;
+            case ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT:
+            case 0:
+                return 0;
+            default:
+                assert false;
+                return 0;
+        }
+    }
 
     public ActionModeCallback(WebContents webContents) {
         mHelper =
                 SelectionPopupController.fromWebContents(webContents).getActionModeCallbackHelper();
     }
 
+    public void setTabClient(ITabClient tabClient) {
+        mTabClient = tabClient;
+    }
+
+    public void setOverride(int actionModeItemTypes) {
+        mActionModeOverride = actionModeItemTypes;
+    }
+
     @Override
     public final boolean onCreateActionMode(ActionMode mode, Menu menu) {
         int allowedActionModes = ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
                 | ActionModeCallbackHelper.MENU_ITEM_SHARE;
-        if (isWebSearchAvailable()) {
+        if ((mActionModeOverride & ActionModeItemType.WEB_SEARCH) != 0 || isWebSearchAvailable()) {
             allowedActionModes |= ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH;
         }
         mHelper.setAllowedMenuItems(allowedActionModes);
@@ -53,7 +90,19 @@ public final class ActionModeCallback implements ActionMode.Callback {
 
     @Override
     public final boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        return mHelper.onActionItemClicked(mode, item);
+        int menuItemType = contentToWebLayerType(mHelper.getAllowedMenuItemIfAny(mode, item));
+        if ((menuItemType & mActionModeOverride) == 0) {
+            return mHelper.onActionItemClicked(mode, item);
+        }
+        assert WebLayerFactoryImpl.getClientMajorVersion() >= 88;
+        try {
+            mTabClient.onActionItemClicked(
+                    menuItemType, ObjectWrapper.wrap(mHelper.getSelectedText()));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+        mode.finish();
+        return true;
     }
 
     @Override

@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.ActionModeCallback;
+import org.chromium.weblayer.ActionModeItemType;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabListCallback;
@@ -286,5 +288,22 @@ public class TabTest {
 
         // The WebContents should not have been hidden as a result of the rotation.
         Assert.assertFalse(mActivityTestRule.executeScriptAndExtractBoolean("gotHide", false));
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(88)
+    public void setFloatingActionModeOverride() throws Exception {
+        mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity.getBrowser().getActiveTab().setFloatingActionModeOverride(
+                    ActionModeItemType.SHARE, new ActionModeCallback() {
+                        @Override
+                        public void onActionItemClicked(
+                                @ActionModeItemType int item, String selectedText) {}
+                    });
+        });
+
+        // Smoke test. It's not possible to trigger an action mode click in a test.
     }
 }

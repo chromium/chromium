@@ -140,6 +140,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     private DisplayCutoutController mDisplayCutoutController;
 
     private boolean mPostContainerViewInitDone;
+    private ActionModeCallback mActionModeCallback;
 
     private WebLayerAccessibilityUtil.Observer mAccessibilityObserver;
 
@@ -323,7 +324,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         mPostContainerViewInitDone = true;
         SelectionPopupController controller =
                 SelectionPopupController.fromWebContents(mWebContents);
-        controller.setActionModeCallback(new ActionModeCallback(mWebContents));
+        mActionModeCallback = new ActionModeCallback(mWebContents);
+        controller.setActionModeCallback(mActionModeCallback);
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(mWebContents));
     }
 
@@ -524,6 +526,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         StrictModeWorkaround.apply();
         mClient = client;
         mTabCallbackProxy = new TabCallbackProxy(mNativeTab, client);
+        mActionModeCallback.setTabClient(mClient);
     }
 
     @Override
@@ -591,11 +594,13 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
 
     @Override
     public void setTranslateTargetLanguage(String targetLanguage) {
+        StrictModeWorkaround.apply();
         TabImplJni.get().setTranslateTargetLanguage(mNativeTab, targetLanguage);
     }
 
     @Override
     public void setScrollOffsetsEnabled(boolean enabled) {
+        StrictModeWorkaround.apply();
         if (enabled) {
             if (mGestureStateListenerWithScroll == null) {
                 mGestureStateListenerWithScroll = new GestureStateListenerWithScroll() {
@@ -617,6 +622,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
                     .removeListener(mGestureStateListenerWithScroll);
             mGestureStateListenerWithScroll = null;
         }
+    }
+
+    @Override
+    public void setFloatingActionModeOverride(int actionModeItemTypes) {
+        StrictModeWorkaround.apply();
+        mActionModeCallback.setOverride(actionModeItemTypes);
     }
 
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {
