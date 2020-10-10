@@ -4087,83 +4087,95 @@ void Document::DispatchUnloadEvents(
   if (parser_)
     parser_->StopParsing();
 
-  if (load_event_progress_ == kLoadEventNotRun)
+  if (load_event_progress_ == kLoadEventNotRun ||
+      load_event_progress_ > kUnloadEventInProgress) {
+    return;
+  }
+
+  Element* current_focused_element = FocusedElement();
+  if (auto* input = DynamicTo<HTMLInputElement>(current_focused_element))
+    input->EndEditing();
+
+  // If we've dispatched the pagehide event with 'persisted' set to true, it
+  // means we've dispatched the visibilitychange event before too. Also, we
+  // shouldn't dispatch the unload event because that event should only be
+  // fired when the pagehide event's 'persisted' bit is set to false.
+  bool dispatched_pagehide_persisted =
+      GetPage() && GetPage()->DispatchedPagehidePersistedAndStillHidden();
+
+  if (load_event_progress_ >= kPageHideInProgress ||
+      dispatched_pagehide_persisted) {
+    load_event_progress_ = kUnloadEventHandled;
+    return;
+  }
+
+  load_event_progress_ = kPageHideInProgress;
+  LocalDOMWindow* window = domWindow();
+  // We check for DispatchedPagehideAndStillHidden() here because it's possible
+  // to dispath pagehide with 'persisted' set to false before this and pass the
+  // |dispatched_pagehide_persisted| above, if we enable same-site
+  // ProactivelySwapBrowsingInstance but not BackForwardCache.
+  if (window && !GetPage()->DispatchedPagehideAndStillHidden()) {
+    const base::TimeTicks pagehide_event_start = base::TimeTicks::Now();
+    window->DispatchEvent(
+        *PageTransitionEvent::Create(event_type_names::kPagehide, false), this);
+    const base::TimeTicks pagehide_event_end = base::TimeTicks::Now();
+    DEFINE_STATIC_LOCAL(
+        CustomCountHistogram, pagehide_histogram,
+        ("DocumentEventTiming.PageHideDuration", 0, 10000000, 50));
+    pagehide_histogram.CountMicroseconds(pagehide_event_end -
+                                         pagehide_event_start);
+  }
+  if (!dom_window_)
     return;
 
-  if (load_event_progress_ <= kUnloadEventInProgress) {
-    Element* current_focused_element = FocusedElement();
-    if (auto* input = DynamicTo<HTMLInputElement>(current_focused_element))
-      input->EndEditing();
-    if (load_event_progress_ < kPageHideInProgress) {
-      load_event_progress_ = kPageHideInProgress;
-      LocalDOMWindow* window = domWindow();
-      if (window && !GetPage()->DispatchedPagehideAndStillHidden()) {
-        const base::TimeTicks pagehide_event_start = base::TimeTicks::Now();
-        window->DispatchEvent(
-            *PageTransitionEvent::Create(event_type_names::kPagehide, false),
-            this);
-        const base::TimeTicks pagehide_event_end = base::TimeTicks::Now();
-        DEFINE_STATIC_LOCAL(
-            CustomCountHistogram, pagehide_histogram,
-            ("DocumentEventTiming.PageHideDuration", 0, 10000000, 50));
-        pagehide_histogram.CountMicroseconds(pagehide_event_end -
-                                             pagehide_event_start);
-      }
-      if (!dom_window_)
-        return;
-
-      // This must be queried before |load_event_progress_| is changed to
-      // kUnloadVisibilityChangeInProgress because that would change the result.
-      bool page_visible = IsPageVisible();
-      load_event_progress_ = kUnloadVisibilityChangeInProgress;
-      if (page_visible) {
-        // Dispatch visibilitychange event, but don't bother doing
-        // other notifications as we're about to be unloaded.
-        const base::TimeTicks pagevisibility_hidden_event_start =
-            base::TimeTicks::Now();
-        DispatchEvent(
-            *Event::CreateBubble(event_type_names::kVisibilitychange));
-        const base::TimeTicks pagevisibility_hidden_event_end =
-            base::TimeTicks::Now();
-        DEFINE_STATIC_LOCAL(CustomCountHistogram, pagevisibility_histogram,
-                            ("DocumentEventTiming.PageVibilityHiddenDuration",
-                             0, 10000000, 50));
-        pagevisibility_histogram.CountMicroseconds(
-            pagevisibility_hidden_event_end -
-            pagevisibility_hidden_event_start);
-        DispatchEvent(
-            *Event::CreateBubble(event_type_names::kWebkitvisibilitychange));
-      }
-      if (!dom_window_)
-        return;
-
-      GetFrame()->Loader().SaveScrollAnchor();
-
-      load_event_progress_ = kUnloadEventInProgress;
-      Event& unload_event = *Event::Create(event_type_names::kUnload);
-      const base::TimeTicks unload_event_start = base::TimeTicks::Now();
-      dom_window_->DispatchEvent(unload_event, this);
-      const base::TimeTicks unload_event_end = base::TimeTicks::Now();
-
-      if (unload_timing) {
-        // Record unload event timing when navigating cross-document.
-        DEFINE_STATIC_LOCAL(
-            CustomCountHistogram, unload_histogram,
-            ("DocumentEventTiming.UnloadDuration", 0, 10000000, 50));
-        unload_histogram.CountMicroseconds(unload_event_end -
-                                           unload_event_start);
-
-        // Fill in the unload timing if the new document origin has access to
-        // them.
-        if (committing_origin->CanRequest(Url())) {
-          auto& timing = unload_timing->emplace();
-          timing.unload_event_start = unload_event_start;
-          timing.unload_event_end = unload_event_end;
-        }
-      }
-    }
-    load_event_progress_ = kUnloadEventHandled;
+  // This must be queried before |load_event_progress_| is changed to
+  // kUnloadVisibilityChangeInProgress because that would change the result.
+  bool page_visible = IsPageVisible();
+  load_event_progress_ = kUnloadVisibilityChangeInProgress;
+  if (page_visible) {
+    // Dispatch visibilitychange event, but don't bother doing
+    // other notifications as we're about to be unloaded.
+    const base::TimeTicks pagevisibility_hidden_event_start =
+        base::TimeTicks::Now();
+    DispatchEvent(*Event::CreateBubble(event_type_names::kVisibilitychange));
+    const base::TimeTicks pagevisibility_hidden_event_end =
+        base::TimeTicks::Now();
+    DEFINE_STATIC_LOCAL(
+        CustomCountHistogram, pagevisibility_histogram,
+        ("DocumentEventTiming.PageVibilityHiddenDuration", 0, 10000000, 50));
+    pagevisibility_histogram.CountMicroseconds(
+        pagevisibility_hidden_event_end - pagevisibility_hidden_event_start);
+    DispatchEvent(
+        *Event::CreateBubble(event_type_names::kWebkitvisibilitychange));
   }
+  if (!dom_window_)
+    return;
+
+  GetFrame()->Loader().SaveScrollAnchor();
+
+  load_event_progress_ = kUnloadEventInProgress;
+  Event& unload_event = *Event::Create(event_type_names::kUnload);
+  const base::TimeTicks unload_event_start = base::TimeTicks::Now();
+  dom_window_->DispatchEvent(unload_event, this);
+  const base::TimeTicks unload_event_end = base::TimeTicks::Now();
+
+  if (unload_timing) {
+    // Record unload event timing when navigating cross-document.
+    DEFINE_STATIC_LOCAL(
+        CustomCountHistogram, unload_histogram,
+        ("DocumentEventTiming.UnloadDuration", 0, 10000000, 50));
+    unload_histogram.CountMicroseconds(unload_event_end - unload_event_start);
+
+    // Fill in the unload timing if the new document origin has access to
+    // them.
+    if (committing_origin->CanRequest(Url())) {
+      auto& timing = unload_timing->emplace();
+      timing.unload_event_start = unload_event_start;
+      timing.unload_event_end = unload_event_end;
+    }
+  }
+  load_event_progress_ = kUnloadEventHandled;
 }
 
 void Document::DispatchFreezeEvent() {

@@ -374,6 +374,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // still hidden (possibly preserved in the back-forward cache, or unloaded).
   bool DispatchedPagehideAndStillHidden();
 
+  // Similar to above, but will only return true if we've dispatched 'pagehide'
+  // with the 'persisted' property set to 'true'.
+  bool DispatchedPagehidePersistedAndStillHidden();
+
   static void PrepareForLeakDetection();
 
  private:

@@ -558,6 +558,11 @@ bool Page::DispatchedPagehideAndStillHidden() {
          mojom::blink::PagehideDispatch::kNotDispatched;
 }
 
+bool Page::DispatchedPagehidePersistedAndStillHidden() {
+  return lifecycle_state_->pagehide_dispatch ==
+         mojom::blink::PagehideDispatch::kDispatchedPersisted;
+}
+
 void Page::OnSetPageFrozen(bool frozen) {
   if (frozen_ == frozen)
     return;
