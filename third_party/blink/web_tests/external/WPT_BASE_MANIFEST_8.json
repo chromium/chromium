@@ -76137,6 +76137,64 @@
         }
        ]
       ],
+      "image-orientation-none-cross-origin-canvas.html": [
+       "4d370e8e189667368035ecb7e65ba9cc03ba982f",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-none-cross-origin-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             10,
+             10
+            ],
+            [
+             100,
+             100
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "image-orientation-none-cross-origin.html": [
+       "6629f78e5b2923a41e49b4236a4c8b7d17abb2f1",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-none-cross-origin-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             10,
+             10
+            ],
+            [
+             100,
+             100
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "image-orientation-none-image-document.html": [
        "d333b5f4f578a17915c234d905a4978729d55c8e",
        [
@@ -190610,6 +190668,14 @@
        ],
        "image-orientation-none-content-images-ref.html": [
         "5192f5c35aa6c0055594b662bc18f12feb453e87",
+        []
+       ],
+       "image-orientation-none-cross-origin-canvas-ref.html": [
+        "4f9bc74620d8be7d94b8639a51764e04c2c5e685",
+        []
+       ],
+       "image-orientation-none-cross-origin-ref.html": [
+        "3e6962184ec3dcb75cd08a440017ed84161fdb4a",
         []
        ],
        "image-orientation-none-image-document-ref.html": [
