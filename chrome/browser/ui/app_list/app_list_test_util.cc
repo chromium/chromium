@@ -44,8 +44,7 @@ void AppListTestBase::SetUp() {
   InitializeInstalledExtensionService(pref_path, source_install_dir);
   service_->Init();
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions))
-    ConfigureWebAppProvider();
+  ConfigureWebAppProvider();
 
   // Let any async services complete their set-up.
   base::RunLoop().RunUntilIdle();
