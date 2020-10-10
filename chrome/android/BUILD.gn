@@ -418,6 +418,7 @@ android_library("chrome_java") {
     "//components/media_router/browser/android:java",
     "//components/messages/android:factory_java",
     "//components/messages/android:java",
+    "//components/messages/android:manager_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",

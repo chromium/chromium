@@ -81,7 +81,7 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.messages.MessageQueueManager;
+import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -158,7 +158,7 @@ public class RootUiCoordinator
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
-    private MessageQueueManager mMessageQueueManager;
+    private ManagedMessageDispatcher mMessageDispatcher;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -215,11 +215,6 @@ public class RootUiCoordinator
         mOverviewModeBehaviorSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setOverviewModeBehavior));
         mStartSurfaceSupplier = startSurfaceSupplier;
-
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-            mMessageQueueManager =
-                    MessagesFactory.createMessageQueueManager(mActivity.getWindowAndroid());
-        }
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -234,9 +229,9 @@ public class RootUiCoordinator
 
         mActivity.getLayoutManagerSupplier().removeObserver(mLayoutManagerSupplierCallback);
 
-        if (mMessageQueueManager != null) {
-            mMessageQueueManager.destroy();
-            mMessageQueueManager = null;
+        if (mMessageDispatcher != null) {
+            MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+            mMessageDispatcher = null;
         }
 
         if (mOverlayPanelManager != null) {
@@ -321,6 +316,12 @@ public class RootUiCoordinator
 
         initFindToolbarManager();
         initializeToolbar();
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
+            mMessageDispatcher = MessagesFactory.createMessageDispatcher(
+                    mActivity.findViewById(R.id.message_container));
+            MessagesFactory.attachMessageDispatcher(
+                    mActivity.getWindowAndroid(), mMessageDispatcher);
+        }
     }
 
     @Override

@@ -6,12 +6,14 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/messages/MessageQueueManagerImpl.java",
+    "java/src/org/chromium/components/messages/MessageDispatcherImpl.java",
+    "java/src/org/chromium/components/messages/MessageQueueManager.java",
     "java/src/org/chromium/components/messages/MessagesFactory.java",
   ]
 
   deps = [
     "..:java",
+    "..:manager_java",
     "//base:base_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
@@ -22,7 +24,9 @@ java_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
   testonly = true
-  sources = [ "java/src/org/chromium/components/messages/MessageQueueManagerImplTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/messages/MessageQueueManagerTest.java",
+  ]
   deps = [
     ":java",
     "..:java",

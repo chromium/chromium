@@ -11,7 +11,8 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageBannerView.java",
     "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
     "java/src/org/chromium/components/messages/MessageContainer.java",
-    "java/src/org/chromium/components/messages/MessageQueueManager.java",
+    "java/src/org/chromium/components/messages/MessageDispatcher.java",
+    "java/src/org/chromium/components/messages/MessageDispatcherProvider.java",
     "java/src/org/chromium/components/messages/MessageStateHandler.java",
     "java/src/org/chromium/components/messages/SingleActionMessage.java",
   ]
@@ -36,6 +37,15 @@ android_resources("java_resources") {
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
+}
+
+# Build target for Messages manager code, that owns and initializes
+# MessageDispatcher.
+android_library("manager_java") {
+  sources = [
+    "java/src/org/chromium/components/messages/ManagedMessageDispatcher.java",
+  ]
+  deps = [ ":java" ]
 }
 
 static_library("feature_flags") {
@@ -79,6 +89,7 @@ android_library_factory("factory_java") {
 
   deps = [
     ":java",
+    ":manager_java",
     "//ui/android:ui_full_java",
   ]
 }

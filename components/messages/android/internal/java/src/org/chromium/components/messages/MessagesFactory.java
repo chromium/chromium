@@ -9,13 +9,29 @@ import org.chromium.ui.base.WindowAndroid;
 /** A factory for constructing different Messages related objects. */
 public class MessagesFactory {
     /**
-     * Creates an instance of MessageQueueManager and attaches it to WindowAndroid.
-     * @param windowAndroid The WindowAndroid to attach MessageQueueManager to.
-     * @return The constructed MessageQueueManager.
+     * Creates an instance of ManagedMessageDispatcher.
+     * @return The constructed ManagedMessageDispatcher.
      */
-    public static MessageQueueManager createMessageQueueManager(WindowAndroid windowAndroid) {
-        MessageQueueManagerImpl messageQueueManager = new MessageQueueManagerImpl();
-        messageQueueManager.attachToWindowAndroid(windowAndroid);
-        return messageQueueManager;
+    public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container) {
+        return new MessageDispatcherImpl(container);
+    }
+
+    /**
+     * Attaches MessageDispatcher as UnownedUserData to WindowAndroid making it accessible to
+     * components outside of chrome/android.
+     * @param windowAndroid The WindowAndroid to attach ManagedMessageDispatcher to.
+     * @param messageDispatcher The MessageDispatcher to attach.
+     */
+    public static void attachMessageDispatcher(
+            WindowAndroid windowAndroid, ManagedMessageDispatcher messageDispatcher) {
+        MessageDispatcherProvider.attach(windowAndroid, messageDispatcher);
+    }
+
+    /**
+     * Detaches MessageDispatcher from WindowAndroid.
+     * @param messageDispatcher The MessageDispatcher to detach from WindowAndroid.
+     */
+    public static void detachMessageDispatcher(ManagedMessageDispatcher messageDispatcher) {
+        MessageDispatcherProvider.detach(messageDispatcher);
     }
 }

@@ -6,10 +6,6 @@ package org.chromium.components.messages;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.UnownedUserData;
-import org.chromium.base.UnownedUserDataKey;
-import org.chromium.ui.base.WindowAndroid;
-
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,42 +15,13 @@ import java.util.Queue;
  * A class managing the queue of messages. Its primary role is to decide when to show/hide current
  * message and which message to show next.
  */
-class MessageQueueManagerImpl implements MessageQueueManager, UnownedUserData {
-    private static final UnownedUserDataKey<MessageQueueManagerImpl> KEY =
-            new UnownedUserDataKey<>(MessageQueueManagerImpl.class);
-
+class MessageQueueManager {
     private final Queue<MessageStateHandler> mMessageQueue = new ArrayDeque<>();
     private final Map<Object, MessageStateHandler> mMessageMap = new HashMap<>();
     @Nullable
     private MessageStateHandler mCurrentDisplayedMessage;
 
-    /**
-     * Get the activity's MessageQueueManager from the provided WindowAndroid.
-     * @param window The window to get the manager from.
-     * @return The activity's MessageQueueManager.
-     */
-    public static MessageQueueManagerImpl from(WindowAndroid window) {
-        return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
-    }
-
-    public MessageQueueManagerImpl() {}
-
-    /**
-     * Attaches MessageQueueManager to a given window. This window will be used later to retrieve
-     * activity's MessageQueueManager.
-     * @param window The window to attach to.
-     */
-    public void attachToWindowAndroid(WindowAndroid window) {
-        KEY.attachToHost(window.getUnownedUserDataHost(), this);
-    }
-
-    /**
-     * Destroys MessageQueueManager, detaching it from the WindowAndroid it was attached to.
-     */
-    @Override
-    public void destroy() {
-        KEY.detachFromAllHosts(this);
-    }
+    public MessageQueueManager() {}
 
     /**
      * Enqueues a message. Associates the message with its key; the key is used later to dismiss the
