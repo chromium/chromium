@@ -93,6 +93,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoveryFilter {
   // Returns true if all fields in filter are empty
   bool IsDefault() const;
 
+  void ClearDeviceFilters();
+
   // Returns result of merging two filters together. If at least one of the
   // filters is NULL this will return an empty filter
   static std::unique_ptr<device::BluetoothDiscoveryFilter> Merge(

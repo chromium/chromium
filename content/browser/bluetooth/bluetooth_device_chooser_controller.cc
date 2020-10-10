@@ -157,38 +157,6 @@ bool MatchesFilters(
   return false;
 }
 
-std::unique_ptr<device::BluetoothDiscoveryFilter> ComputeScanFilter(
-    const base::Optional<
-        std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters) {
-  // There isn't much support for GATT over BR/EDR from neither platforms nor
-  // devices so performing a Dual scan will find devices that the API is not
-  // able to interact with. To avoid wasting power and confusing users with
-  // devices they are not able to interact with, we only perform an LE Scan.
-  auto discovery_filter = std::make_unique<device::BluetoothDiscoveryFilter>(
-      device::BLUETOOTH_TRANSPORT_LE);
-
-  if (filters) {
-    for (const auto& filter : filters.value()) {
-      device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
-      bool useful_filter = false;
-      if (filter->services) {
-        device_filter.uuids =
-            base::flat_set<device::BluetoothUUID>(filter->services.value());
-        useful_filter = true;
-      }
-      if (filter->name) {
-        device_filter.name = filter->name.value();
-        useful_filter = true;
-      }
-      if (useful_filter) {
-        discovery_filter->AddDeviceFilter(device_filter);
-      }
-    }
-  }
-
-  return discovery_filter;
-}
-
 void StopDiscoverySession(
     std::unique_ptr<device::BluetoothDiscoverySession> discovery_session) {
   // Nothing goes wrong if the discovery session fails to stop, and we don't
@@ -566,6 +534,47 @@ void BluetoothDeviceChooserController::PostErrorCallback(
           FROM_HERE, base::BindOnce(std::move(error_callback_), error))) {
     DLOG(WARNING) << "No TaskRunner.";
   }
+}
+
+// static
+std::unique_ptr<device::BluetoothDiscoveryFilter>
+BluetoothDeviceChooserController::ComputeScanFilter(
+    const base::Optional<
+        std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters) {
+  // There isn't much support for GATT over BR/EDR from neither platforms nor
+  // devices so performing a Dual scan will find devices that the API is not
+  // able to interact with. To avoid wasting power and confusing users with
+  // devices they are not able to interact with, we only perform an LE Scan.
+  auto discovery_filter = std::make_unique<device::BluetoothDiscoveryFilter>(
+      device::BLUETOOTH_TRANSPORT_LE);
+
+  if (filters) {
+    for (const auto& filter : filters.value()) {
+      device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
+      // Keep track of whether this filter can be converted accurately.
+      bool has_supported_fields = false;
+      if (filter->services) {
+        device_filter.uuids =
+            base::flat_set<device::BluetoothUUID>(filter->services.value());
+        has_supported_fields = true;
+      }
+      if (filter->name) {
+        device_filter.name = filter->name.value();
+        has_supported_fields = true;
+      }
+
+      // If we don't have any supported fields in this filter then we cannot
+      // filter any devices as we don't want to filter out devices which would
+      // have passed these unsupported filter criteria.
+      if (!has_supported_fields) {
+        discovery_filter->ClearDeviceFilters();
+        return discovery_filter;
+      }
+      discovery_filter->AddDeviceFilter(device_filter);
+    }
+  }
+
+  return discovery_filter;
 }
 
 }  // namespace content

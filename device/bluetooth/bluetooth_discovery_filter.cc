@@ -95,6 +95,10 @@ BluetoothDiscoveryFilter::GetDeviceFilters() const {
   return &device_filters_;
 }
 
+void BluetoothDiscoveryFilter::ClearDeviceFilters() {
+  device_filters_.clear();
+}
+
 void BluetoothDiscoveryFilter::CopyFrom(
     const BluetoothDiscoveryFilter& filter) {
   transport_ = filter.transport_;

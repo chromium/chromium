@@ -20,6 +20,7 @@ namespace device {
 class BluetoothAdapter;
 class BluetoothDevice;
 class BluetoothDiscoverySession;
+class BluetoothDiscoveryFilter;
 }
 
 namespace content {
@@ -93,6 +94,10 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   static void SetTestScanDurationForTesting(
       TestScanDurationSetting setting =
           TestScanDurationSetting::IMMEDIATE_TIMEOUT);
+
+  static std::unique_ptr<device::BluetoothDiscoveryFilter> ComputeScanFilter(
+      const base::Optional<
+          std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters);
 
  private:
   // Populates the chooser with the GATT connected devices.
