@@ -421,6 +421,8 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     return true;
   }
 #endif
+  
+  DCHECK(settings.log_file_path) << "LOG_TO_FILE set but no log_file_path!";
 
   if (!g_log_file_name)
     g_log_file_name = new PathString();
