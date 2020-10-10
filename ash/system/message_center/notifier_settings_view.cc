@@ -482,12 +482,12 @@ NotifierSettingsView::NotifierSettingsView() {
     app_badging_view->SetBorder(
         views::CreateSolidSidedBorder(0, 0, 0, 1, kTopBorderColor));
     header_view->AddChildView(std::move(app_badging_view));
-  }
 
-  // Separator between toggle button rows.
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(separator_color);
-  header_view->AddChildView(std::move(separator));
+    // Separator between toggle button rows.
+    auto separator = std::make_unique<views::Separator>();
+    separator->SetColor(separator_color);
+    header_view->AddChildView(std::move(separator));
+  }
 
   // Row for the quiet mode toggle button.
   auto quiet_mode_icon = std::make_unique<views::ImageView>();
