@@ -336,8 +336,6 @@ ImageData* ImageData::Create(scoped_refptr<StaticBitmapImage> image,
   if (!image_data)
     return nullptr;
 
-  // TODO(crbug.com/1115317): Verify if the color type uint16 needs to be
-  // considered separately.
   ImageDataArray data = image_data->data();
   SkColorType color_type = image_info.colorType();
   bool create_f32_image_data = (color_type == kRGBA_1010102_SkColorType ||
@@ -346,9 +344,15 @@ ImageData* ImageData::Create(scoped_refptr<StaticBitmapImage> image,
                                 color_type == kRGBA_F32_SkColorType);
 
   if (!create_f32_image_data) {
-    image_info = image_info.makeColorType(kRGBA_8888_SkColorType);
-    paint_image.readPixels(image_info, data.GetAsUint8ClampedArray()->Data(),
-                           image_info.minRowBytes(), 0, 0);
+    if (color_type == kR16G16B16A16_unorm_SkColorType) {
+      image_info = image_info.makeColorType(kR16G16B16A16_unorm_SkColorType);
+      paint_image.readPixels(image_info, data.GetAsUint16Array()->Data(),
+                             image_info.minRowBytes(), 0, 0);
+    } else {
+      image_info = image_info.makeColorType(kRGBA_8888_SkColorType);
+      paint_image.readPixels(image_info, data.GetAsUint8ClampedArray()->Data(),
+                             image_info.minRowBytes(), 0, 0);
+    }
   } else {
     image_info = image_info.makeColorType(kRGBA_F32_SkColorType);
     paint_image.readPixels(image_info, data.GetAsFloat32Array()->Data(),
@@ -620,13 +624,11 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
       ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type, wrapper);
 
   if (!wrapper.IsEmpty() && data_.IsUint8ClampedArray()) {
-    // Create a V8 Uint8ClampedArray object and set the "data" property
+    // Create a V8 object with |data_| and set the "data" property
     // of the ImageData object to the created v8 object, eliminating the
     // C++ callback when accessing the "data" property.
-    // TODO(crbug.com/1115317): |pixel_array| should be compatible with uint_8,
-    // float16 and float32.
-    v8::Local<v8::Value> pixel_array =
-        ToV8(data_.GetAsUint8ClampedArray().Get(), wrapper, isolate);
+
+    v8::Local<v8::Value> pixel_array = ToV8(data_, wrapper, isolate);
     bool defined_property;
     if (pixel_array.IsEmpty() ||
         !wrapper
@@ -791,6 +793,17 @@ CanvasColorParams ImageData::GetCanvasColorParams() {
           ? CanvasPixelFormat::kF16
           : CanvasColorParams::GetNativeCanvasPixelFormat(),
       kNonOpaque);
+}
+
+SkImageInfo ImageData::GetSkImageInfo() {
+  SkColorType color_type = kN32_SkColorType;
+  if (data_u16_) {
+    color_type = kR16G16B16A16_unorm_SkColorType;
+  } else if (data_f32_) {
+    color_type = kRGBA_F32_SkColorType;
+  }
+  return SkImageInfo::Make(width(), height(), color_type,
+                           GetCanvasColorParams().GetSkAlphaType());
 }
 
 bool ImageData::ImageDataInCanvasColorSettings(

@@ -149,6 +149,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
   DOMArrayBufferBase* BufferBase() const;
   CanvasColorParams GetCanvasColorParams();
+  SkImageInfo GetSkImageInfo();
 
   // DataU8ColorType param specifies if the converted pixels in uint8 pixel
   // format should respect the "native" 32bit ARGB format of Skia's blitters.

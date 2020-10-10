@@ -120,24 +120,17 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
   }
 
   SkBitmap sk_bitmap;
-  if (!sk_bitmap.tryAllocPixels(
-          SkImageInfo::Make(image_data->width(), image_data->height(),
-                            kN32_SkColorType, kOpaque_SkAlphaType),
-          image_data->width() * 4 /* bytes per pixel */)) {
+  SkImageInfo sk_image_info = image_data->GetSkImageInfo();
+  if (!sk_bitmap.tryAllocPixels(sk_image_info, sk_image_info.minRowBytes())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to allocate pixels for current frame."));
     return promise;
   }
 
-  base::CheckedNumeric<int> allocation_size = image_data->Size().Area() * 4;
-  CHECK_EQ(allocation_size.ValueOrDefault(0), sk_bitmap.computeByteSize());
-
-  // TODO(crbug.com/1115317): Should be compatible with uint_8, float16 and
-  // float32.
-  memcpy(sk_bitmap.getPixels(),
-         image_data->data().GetAsUint8ClampedArray()->Data(),
-         sk_bitmap.computeByteSize());
+  size_t byte_size = sk_bitmap.computeByteSize();
+  CHECK_EQ(byte_size, image_data->BufferBase()->ByteLengthAsSizeT());
+  memcpy(sk_bitmap.getPixels(), image_data->BufferBase()->Data(), byte_size);
 
   return DoDetect(resolver, std::move(sk_bitmap));
 }
