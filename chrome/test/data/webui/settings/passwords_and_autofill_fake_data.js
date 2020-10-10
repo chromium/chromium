@@ -379,12 +379,14 @@ export class PasswordSectionElementFactory {
   /**
    * Helper method used to create a password editing dialog.
    * @param {!MultiStorePasswordUiEntry} passwordEntry
+   * @param {!Array<!MultiStorePasswordUiEntry>} passwords
    * @return {!Object}
    */
-  createPasswordEditDialog(passwordEntry) {
+  createPasswordEditDialog(passwordEntry, passwords) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
     passwordDialog.entry = passwordEntry;
     passwordDialog.password = '';
+    passwordDialog.savedPasswords = passwords ? passwords : [];
     this.document.body.appendChild(passwordDialog);
     flush();
     return passwordDialog;

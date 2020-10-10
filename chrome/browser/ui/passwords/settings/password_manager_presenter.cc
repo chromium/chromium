@@ -348,11 +348,12 @@ bool PasswordManagerPresenter::ChangeSavedPassword(
     // credential with the same signon_realm and username.
     auto has_conflicting_username = [&old_forms,
                                      &new_username](const auto& form) {
-      return base::ranges::any_of(
-          old_forms, [&form, &new_username](const auto& old_form) {
-            return form->signon_realm == old_form->signon_realm &&
-                   form->username_value == new_username;
-          });
+      return new_username == form->username_value &&
+             base::ranges::any_of(old_forms, [&form](const auto& old_form) {
+               return form->signon_realm == old_form->signon_realm &&
+                      form->IsUsingAccountStore() ==
+                          old_form->IsUsingAccountStore();
+             });
     };
 
     const base::string16& old_username = old_forms[0]->username_value;

@@ -200,9 +200,12 @@ class PasswordManagerPresenterTest : public testing::Test {
               AccountPasswordStoreFactory::GetInstance()
                   ->SetTestingFactoryAndUse(
                       &profile_,
-                      base::BindRepeating(&password_manager::BuildPasswordStore<
-                                          content::BrowserContext,
-                                          password_manager::TestPasswordStore>))
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithArgs<
+                              content::BrowserContext,
+                              password_manager::TestPasswordStore,
+                              password_manager::IsAccountStore>,
+                          password_manager::IsAccountStore(true)))
                   .get()));
 
       SetUpSyncInTransportMode(&profile_);
@@ -728,6 +731,27 @@ TEST_F(PasswordManagerPresenterTestWithAccountStore,
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings,
       1);
+}
+
+// This test changes the username of a credentials stored in the profile store
+// to be equal to a username of a credential stored in the account store for the
+// same domain.
+TEST_F(PasswordManagerPresenterTestWithAccountStore,
+       ChangeSavedPasswordBySortKey_EditUsername) {
+  AddPasswordToStore(profile_store(), GURL(kExampleCom), kUsername, kPassword);
+  AddPasswordToStore(account_store(), GURL(kExampleCom), kUsername2, kPassword);
+
+  UpdatePasswordLists();
+
+  EXPECT_THAT(GetUsernamesAndPasswords(
+                  GetPasswordsInStoreForRealm(*profile_store(), kExampleCom)),
+              ElementsAre(Pair(kUsername, kPassword)));
+  ChangeSavedPasswordBySortKey(kExampleCom, kUsername, kPassword, kUsername2,
+                               kPassword);
+
+  EXPECT_THAT(GetUsernamesAndPasswords(
+                  GetPasswordsInStoreForRealm(*profile_store(), kExampleCom)),
+              ElementsAre(Pair(kUsername2, kPassword)));
 }
 
 }  // namespace
