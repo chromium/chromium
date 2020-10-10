@@ -119,7 +119,7 @@ Polymer({
       // reasons (timeout, user cancel, etc). During a receive transfer, it
       // happens before we start connecting (because we need to stop
       // advertising) so we need to wait a bit to see if we see an
-      // onIncomingShare event within a reasonable timeout. This is the normal
+      // onTransferUpdate event within a reasonable timeout. This is the normal
       // case and it should happen quickly when it is a real connection. In the
       // timeout case, we are just exiting high visibility normally and can
       // close for now, and the small timeout won't impact UX. Ideally we should
@@ -129,16 +129,19 @@ Polymer({
   },
 
   /**
-   * Mojo callback called when a shareTarget is requesting an incoming share
-   * and the user must manually confirm.
+   * Mojo callback when transfer status changes.
    * @param {!nearbyShare.mojom.ShareTarget} shareTarget
-   * @param {?string} connectionToken
+   * @param {!nearbyShare.mojom.TransferMetadata} metadata
    */
-  onIncomingShare(shareTarget, connectionToken) {
-    clearTimeout(this.closeTimeoutId_);
-    this.shareTarget = shareTarget;
-    this.connectionToken = connectionToken;
-    this.showConfirmPage();
+  onTransferUpdate(shareTarget, metadata) {
+    if (metadata.status ===
+        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation) {
+      clearTimeout(this.closeTimeoutId_);
+      this.shareTarget = shareTarget;
+      this.connectionToken =
+          (metadata && metadata.token) ? metadata.token : null;
+      this.showConfirmPage();
+    }
   },
 
   /**

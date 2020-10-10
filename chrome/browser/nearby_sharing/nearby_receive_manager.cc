@@ -29,9 +29,9 @@ void NearbyReceiveManager::OnTransferUpdate(
                   << TransferMetadata::StatusToString(
                          transfer_metadata.status());
 
+  NotifyOnTransferUpdate(share_target, transfer_metadata);
   if (TransferMetadata::Status::kAwaitingLocalConfirmation == status) {
     share_targets_map_.insert_or_assign(share_target.id, share_target);
-    NotifyOnIncomingShare(share_target, transfer_metadata.token());
   } else if (transfer_metadata.is_final_status()) {
     share_targets_map_.erase(share_target.id);
   }
@@ -109,10 +109,10 @@ void NearbyReceiveManager::OnHighVisibilityChanged(bool in_high_visibility) {
   }
 }
 
-void NearbyReceiveManager::NotifyOnIncomingShare(
+void NearbyReceiveManager::NotifyOnTransferUpdate(
     const ShareTarget& share_target,
-    const base::Optional<std::string>& connection_token) {
+    const TransferMetadata& metadata) {
   for (auto& remote : observers_set_) {
-    remote->OnIncomingShare(share_target, connection_token);
+    remote->OnTransferUpdate(share_target, metadata.ToMojo());
   }
 }

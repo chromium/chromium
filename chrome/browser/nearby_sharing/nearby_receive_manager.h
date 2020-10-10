@@ -50,9 +50,8 @@ class NearbyReceiveManager : public nearby_share::mojom::ReceiveManager,
   void OnShutdown() override {}
 
  private:
-  void NotifyOnIncomingShare(
-      const ShareTarget& share_target,
-      const base::Optional<std::string>& connection_token);
+  void NotifyOnTransferUpdate(const ShareTarget& share_target,
+                              const TransferMetadata& metadata);
 
   NearbySharingService* nearby_sharing_service_;
 

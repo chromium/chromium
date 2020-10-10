@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "url/gurl.h"
 
 // Metadata about an ongoing transfer. Wraps transient data like status and
@@ -38,6 +39,8 @@ class TransferMetadata {
 
   static std::string StatusToString(TransferMetadata::Status status);
 
+  static nearby_share::mojom::TransferStatus StatusToMojo(Status status);
+
   TransferMetadata(Status status,
                    float progress,
                    base::Optional<std::string> token,
@@ -61,6 +64,8 @@ class TransferMetadata {
 
   // True if this |TransferMetadata| is the last status for this transfer.
   bool is_final_status() const { return is_final_status_; }
+
+  nearby_share::mojom::TransferMetadataPtr ToMojo() const;
 
  private:
   Status status_;

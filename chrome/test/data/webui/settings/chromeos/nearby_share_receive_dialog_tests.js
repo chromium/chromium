@@ -128,7 +128,7 @@ suite('NearbyShare', function() {
         });
 
     test(
-        'unregister surface, onIncomingShare, does not close dialog',
+        'unregister surface, OnTransferUpdate, does not close dialog',
         async function() {
           // When attached we enter high visibility mode by default
           assertTrue(isVisible('nearby-share-high-visibility-page'));

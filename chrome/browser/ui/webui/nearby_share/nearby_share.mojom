@@ -40,17 +40,55 @@ interface ShareTargetListener {
   OnShareTargetLost(ShareTarget share_target);
 };
 
-// Status of the current transfer.
+// Status of the current transfer. This mirrors the Status enum at
+// chrome/browser/nearby_sharing/transfer_metadata.h, but drops the unused
+// statuses kMediaDownloading and kExternalProviderLaunched.
 enum TransferStatus {
+  kUnknown,
+  // A remote device is connecting.
+  kConnecting,
   // The user of the local device needs to accept or reject the transfer. This
   // involves showing a token on both devices to be compared by the user.
   kAwaitingLocalConfirmation,
   // The remote device needs to accept the transfer. We still need to show the
   // token on this device so the other user can compare it.
   kAwaitingRemoteAcceptance,
+  // The connection was lost before the remote accepted/rejected.
+  kAwaitingRemoteAcceptanceFailed,
   // The current transfer is now in progress after both users accepted the
   // transfer on their devices.
   kInProgress,
+  // The current transfer is complete and successful.
+  kComplete,
+  // The current transfer failed.
+  kFailed,
+  // The remote device rejected the transfer.
+  kRejected,
+  // The remote device cancelled the transfer.
+  kCancelled,
+  // The connection to a remote device timed out.
+  kTimedOut,
+  // The attachment could not be found, or the payload could not be created.
+  kMediaUnavailable,
+  // Not enough disk space to store the payload.
+  kNotEnoughSpace,
+  // The file type is not supported for sharing.
+  kUnsupportedAttachmentType,
+};
+
+// Metadata associated with the current transfer.
+struct TransferMetadata {
+  // Status of the current transfer.
+  TransferStatus status;
+  // Represents transfer progress as a percentage.
+  float progress;
+  // Represents the UKey2 token from Nearby Connections. Null if no
+  // UKey2 comparison is needed for this transfer.
+  string? token;
+  // Indicates whether this metadata has been seen before.
+  bool is_original;
+  // Indicates whether this is the last status for this transfer.
+  bool is_final_status;
 };
 
 // Interface to be notified about transfer updates. Includes an optional token
@@ -141,11 +179,8 @@ interface ReceiveObserver {
   // changed and the new value is provided.
   OnHighVisibilityChanged(bool in_high_visibility);
 
-  // Called when a share request has arrived and the user must be asked to
-  // accept or reject the call. This will only trigger when the receive manager
-  // is in high visibility, otherwise the notification manager (background
-  // receive surface) will handle the events.
-  OnIncomingShare(ShareTarget share_target, string? connection_token);
+  // Called when the status of the current transfer changes.
+  OnTransferUpdate(ShareTarget share_target, TransferMetadata metadata);
 };
 
 // Allows the caller to observe changes to or query high visibility, or

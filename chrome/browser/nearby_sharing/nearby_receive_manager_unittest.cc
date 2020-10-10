@@ -23,14 +23,14 @@ class FakeReceiveObserver : public nearby_share::mojom::ReceiveObserver {
     in_high_visibility_ = in_high_visibility;
   }
 
-  void OnIncomingShare(
+  void OnTransferUpdate(
       const ShareTarget& share_target,
-      const base::Optional<std::string>& connection_token) override {
+      nearby_share::mojom::TransferMetadataPtr metadata) override {
     last_share_target_ = share_target;
-    last_connection_token_ = connection_token;
+    last_metadata_ = *metadata;
   }
 
-  base::Optional<std::string> last_connection_token_;
+  base::Optional<nearby_share::mojom::TransferMetadata> last_metadata_;
   base::Optional<bool> in_high_visibility_;
   ShareTarget last_share_target_;
   mojo::Receiver<nearby_share::mojom::ReceiveObserver> receiver_{this};
@@ -164,8 +164,8 @@ TEST_F(NearbyReceiveManagerTest, ShareTargetNotifies_Accept) {
   receive_manager_.OnTransferUpdate(share_target_, transfer_metadata_);
   FlushMojoMessages();
   EXPECT_EQ(share_target_.id, observer_.last_share_target_.id);
-  ASSERT_TRUE(observer_.last_connection_token_.has_value());
-  EXPECT_EQ("1234", observer_.last_connection_token_);
+  ASSERT_TRUE(observer_.last_metadata_.has_value());
+  EXPECT_EQ("1234", observer_.last_metadata_->token);
 
   ExpectAccept();
   bool success = false;
@@ -179,8 +179,8 @@ TEST_F(NearbyReceiveManagerTest, ShareTargetNotifies_Reject) {
   receive_manager_.OnTransferUpdate(share_target_, transfer_metadata_);
   FlushMojoMessages();
   EXPECT_EQ(share_target_.id, observer_.last_share_target_.id);
-  ASSERT_TRUE(observer_.last_connection_token_.has_value());
-  EXPECT_EQ("1234", observer_.last_connection_token_);
+  ASSERT_TRUE(observer_.last_metadata_.has_value());
+  EXPECT_EQ("1234", observer_.last_metadata_->token);
 
   ExpectReject();
   bool success = false;
@@ -195,8 +195,8 @@ TEST_F(NearbyReceiveManagerTest,
   receive_manager_.OnTransferUpdate(share_target_, transfer_metadata_);
   FlushMojoMessages();
   EXPECT_EQ(share_target_.id, observer_.last_share_target_.id);
-  ASSERT_TRUE(observer_.last_connection_token_.has_value());
-  EXPECT_EQ("1234", observer_.last_connection_token_);
+  ASSERT_TRUE(observer_.last_metadata_.has_value());
+  EXPECT_EQ("1234", observer_.last_metadata_->token);
 
   // Simulate the sender canceling before we accept the share target and causing
   // the accept to fail before hitting the service.
@@ -217,8 +217,8 @@ TEST_F(NearbyReceiveManagerTest,
   receive_manager_.OnTransferUpdate(share_target_, transfer_metadata_);
   FlushMojoMessages();
   EXPECT_EQ(share_target_.id, observer_.last_share_target_.id);
-  ASSERT_TRUE(observer_.last_connection_token_.has_value());
-  EXPECT_EQ("1234", observer_.last_connection_token_);
+  ASSERT_TRUE(observer_.last_metadata_.has_value());
+  EXPECT_EQ("1234", observer_.last_metadata_->token);
 
   // Simulate the sender canceling before we reject the share target and causing
   // the reject to fail before hitting the service.

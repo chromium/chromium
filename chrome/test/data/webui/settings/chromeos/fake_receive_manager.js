@@ -40,7 +40,14 @@ cr.define('nearby_share', function() {
 
     simulateShareTargetArrival(name, connectionToken) {
       const target = {id: {low: 1, high: 2}, name: name, type: 1};
-      this.observer_.onIncomingShare(target, connectionToken);
+      const metadata = {
+        'status': nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
+        progress: 0.0,
+        token: connectionToken,
+        is_original: true,
+        is_final_status: false
+      };
+      this.observer_.onTransferUpdate(target, metadata);
       return target;
     }
 

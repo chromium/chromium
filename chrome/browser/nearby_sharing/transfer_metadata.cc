@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 
 // static
@@ -61,6 +62,58 @@ std::string TransferMetadata::StatusToString(Status status) {
     case Status::kExternalProviderLaunched:
       return "kExternalProviderLaunched";
   }
+}
+
+// static
+nearby_share::mojom::TransferStatus TransferMetadata::StatusToMojo(
+    Status status) {
+  switch (status) {
+    case Status::kUnknown:
+      return nearby_share::mojom::TransferStatus::kUnknown;
+    case Status::kConnecting:
+      return nearby_share::mojom::TransferStatus::kConnecting;
+    case Status::kAwaitingLocalConfirmation:
+      return nearby_share::mojom::TransferStatus::kAwaitingLocalConfirmation;
+    case Status::kAwaitingRemoteAcceptance:
+      return nearby_share::mojom::TransferStatus::kAwaitingRemoteAcceptance;
+    case Status::kAwaitingRemoteAcceptanceFailed:
+      return nearby_share::mojom::TransferStatus::
+          kAwaitingRemoteAcceptanceFailed;
+    case Status::kInProgress:
+      return nearby_share::mojom::TransferStatus::kInProgress;
+    case Status::kComplete:
+      return nearby_share::mojom::TransferStatus::kComplete;
+    case Status::kFailed:
+      return nearby_share::mojom::TransferStatus::kFailed;
+    case Status::kRejected:
+      return nearby_share::mojom::TransferStatus::kRejected;
+    case Status::kCancelled:
+      return nearby_share::mojom::TransferStatus::kCancelled;
+    case Status::kTimedOut:
+      return nearby_share::mojom::TransferStatus::kTimedOut;
+    case Status::kMediaUnavailable:
+      return nearby_share::mojom::TransferStatus::kMediaUnavailable;
+    case Status::kNotEnoughSpace:
+      return nearby_share::mojom::TransferStatus::kNotEnoughSpace;
+    case Status::kUnsupportedAttachmentType:
+      return nearby_share::mojom::TransferStatus::kUnsupportedAttachmentType;
+    case Status::kMediaDownloading:
+    case Status::kExternalProviderLaunched:
+      // These statuses are not used anywhere.
+      NOTREACHED();
+      return nearby_share::mojom::TransferStatus::kUnknown;
+  }
+  NOTREACHED();
+}
+
+nearby_share::mojom::TransferMetadataPtr TransferMetadata::ToMojo() const {
+  auto mojo_transfer_metadata = nearby_share::mojom::TransferMetadata::New();
+  mojo_transfer_metadata->status = StatusToMojo(status());
+  mojo_transfer_metadata->progress = progress();
+  mojo_transfer_metadata->token = token();
+  mojo_transfer_metadata->is_original = is_original();
+  mojo_transfer_metadata->is_final_status = is_final_status();
+  return mojo_transfer_metadata;
 }
 
 TransferMetadata::TransferMetadata(Status status,
