@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/script/dynamic_module_resolver.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"

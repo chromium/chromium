@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

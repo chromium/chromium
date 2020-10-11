@@ -12,7 +12,6 @@
 
 #include "base/bind_helpers.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/webrtc_switches.h"

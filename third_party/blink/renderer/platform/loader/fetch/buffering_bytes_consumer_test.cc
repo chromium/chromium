@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"

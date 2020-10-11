@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
