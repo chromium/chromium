@@ -514,6 +514,16 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-js-code-coverage": {
+    "gn_args": {
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-chromium-tests-staging-builder": {
     "gn_args": {
       "is_component_build": false,

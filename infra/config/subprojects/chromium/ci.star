@@ -132,7 +132,7 @@ ci.console_view(
             "win32",
         ],
         "code_coverage": ci.ordering(
-            short_names = ["and", "ann", "lnx", "lcr", "mac"],
+            short_names = ["and", "ann", "lnx", "lcr", "jcr", "mac"],
         ),
         "mac": ci.ordering(short_names = ["bld", "15", "herm"]),
         "deterministic|mac": ci.ordering(short_names = ["rel", "dbg"]),
@@ -2706,6 +2706,16 @@ ci.fyi_coverage_builder(
         short_name = "lcr",
     ),
     use_clang_coverage = True,
+    schedule = "triggered",
+    triggered_by = [],
+)
+
+ci.fyi_coverage_builder(
+    name = "linux-chromeos-js-code-coverage",
+    console_view_entry = ci.console_view_entry(
+        category = "code_coverage",
+        short_name = "jcr",
+    ),
     schedule = "triggered",
     triggered_by = [],
 )
