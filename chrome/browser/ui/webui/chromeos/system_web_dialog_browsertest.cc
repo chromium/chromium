@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"

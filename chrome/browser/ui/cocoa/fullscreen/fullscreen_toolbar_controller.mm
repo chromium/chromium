@@ -12,7 +12,6 @@
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_animation_controller.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_mouse_tracker.h"
 #import "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"

@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

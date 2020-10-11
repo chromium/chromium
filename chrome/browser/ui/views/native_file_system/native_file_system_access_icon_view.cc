@@ -10,7 +10,6 @@
 #include "chrome/browser/native_file_system/chrome_native_file_system_permission_context.h"
 #include "chrome/browser/native_file_system/native_file_system_permission_context_factory.h"
 #include "chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"

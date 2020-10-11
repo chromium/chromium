@@ -20,7 +20,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/prerender/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"

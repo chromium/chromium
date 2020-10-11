@@ -11,7 +11,6 @@
 #include "base/metrics/histogram.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"

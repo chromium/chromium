@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"

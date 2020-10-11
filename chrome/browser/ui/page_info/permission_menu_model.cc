@@ -7,7 +7,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
