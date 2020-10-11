@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/sct_status_flags.h"

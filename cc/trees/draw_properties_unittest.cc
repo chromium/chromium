@@ -12,7 +12,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
