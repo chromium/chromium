@@ -99,15 +99,12 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
   content::WebContents* LaunchApp(const apps::AppLaunchParams& params,
                                   bool wait_for_load,
                                   Browser** out_browser);
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
 };
 
 enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
 
 using SystemWebAppManagerTestParams =
-    std::tuple<ProviderType, InstallationType, TestProfileType>;
+    std::tuple<InstallationType, TestProfileType>;
 
 class SystemWebAppManagerBrowserTest
     : public SystemWebAppManagerBrowserTestBase,
@@ -116,17 +113,13 @@ class SystemWebAppManagerBrowserTest
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
   ~SystemWebAppManagerBrowserTest() override = default;
 
-  ProviderType provider_type() const { return std::get<0>(GetParam()); }
   bool install_from_web_app_info() const {
-    return std::get<1>(GetParam()) == InstallationType::kWebAppInfoInstall;
+    return std::get<0>(GetParam()) == InstallationType::kWebAppInfoInstall;
   }
-  TestProfileType profile_type() const { return std::get<2>(GetParam()); }
+  TestProfileType profile_type() const { return std::get<1>(GetParam()); }
 
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using SystemWebAppManagerWebAppInfoBrowserTest = SystemWebAppManagerBrowserTest;
@@ -145,8 +138,6 @@ std::string SystemWebAppManagerTestParamsToString(
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                          \
       SUITE,                                                                \
       ::testing::Combine(                                                   \
-          ::testing::Values(web_app::ProviderType::kBookmarkApps,           \
-                            web_app::ProviderType::kWebApps),               \
           ::testing::Values(web_app::InstallationType::kManifestInstall,    \
                             web_app::InstallationType::kWebAppInfoInstall), \
           ::testing::Values(TestProfileType::kRegular)))
@@ -156,8 +147,6 @@ std::string SystemWebAppManagerTestParamsToString(
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                        \
       SUITE,                                                              \
       ::testing::Combine(                                                 \
-          ::testing::Values(web_app::ProviderType::kBookmarkApps,         \
-                            web_app::ProviderType::kWebApps),             \
           ::testing::Values(web_app::InstallationType::kManifestInstall), \
           ::testing::Values(TestProfileType::kRegular)))
 
@@ -166,8 +155,6 @@ std::string SystemWebAppManagerTestParamsToString(
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                            \
       SUITE,                                                                  \
       ::testing::Combine(                                                     \
-          ::testing::Values(web_app::ProviderType::kBookmarkApps,             \
-                            web_app::ProviderType::kWebApps),                 \
           ::testing::Values(web_app::InstallationType::kWebAppInfoInstall),   \
           ::testing::Values(TestProfileType::kRegular)))
 
@@ -181,8 +168,6 @@ std::string SystemWebAppManagerTestParamsToString(
     SUITE, INSTALL_TYPE)                                                     \
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
       SUITE, ::testing::Combine(                                             \
-                 ::testing::Values(web_app::ProviderType::kBookmarkApps,     \
-                                   web_app::ProviderType::kWebApps),         \
                  ::testing::Values(web_app::InstallationType::INSTALL_TYPE), \
                  ::testing::Values(TestProfileType::kRegular,                \
                                    TestProfileType::kIncognito,              \

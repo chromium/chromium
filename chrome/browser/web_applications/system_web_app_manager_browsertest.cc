@@ -80,8 +80,7 @@ apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
 namespace web_app {
 
 SystemWebAppManagerBrowserTestBase::SystemWebAppManagerBrowserTestBase(
-    bool install_mock) {
-}
+    bool install_mock) {}
 
 SystemWebAppManagerBrowserTestBase::~SystemWebAppManagerBrowserTestBase() =
     default;
@@ -181,13 +180,6 @@ GURL SystemWebAppManagerBrowserTestBase::GetStartUrl(
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
     bool install_mock)
     : SystemWebAppManagerBrowserTestBase(install_mock) {
-  if (provider_type() == ProviderType::kWebApps) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsWithoutExtensions);
-  } else if (provider_type() == ProviderType::kBookmarkApps) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDesktopPWAsWithoutExtensions);
-  }
   if (install_mock) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
@@ -254,18 +246,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest, Install) {
 std::string SystemWebAppManagerTestParamsToString(
     const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info) {
   std::string output;
-  switch (std::get<0>(param_info.param)) {
-    case ProviderType::kBookmarkApps:
-      output.append("BookmarkApps");
-      break;
-    case ProviderType::kWebApps:
-      output.append("WebApps");
-      break;
-  }
-  if (std::get<1>(param_info.param) == InstallationType::kWebAppInfoInstall) {
+
+  if (std::get<0>(param_info.param) == InstallationType::kWebAppInfoInstall) {
     output.append("_WebAppInfoInstall");
   }
-  switch (std::get<2>(param_info.param)) {
+  switch (std::get<1>(param_info.param)) {
     case TestProfileType::kRegular:
       break;
     case TestProfileType::kIncognito:
@@ -274,6 +259,10 @@ std::string SystemWebAppManagerTestParamsToString(
     case TestProfileType::kGuest:
       output.append("_Guest");
       break;
+  }
+  // The framework doesn't accept a blank param
+  if (output.empty()) {
+    output = "_Default";
   }
   return output;
 }
@@ -390,22 +379,13 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   explicit SystemWebAppManagerFileHandlingBrowserTestBase(
       IncludeLaunchDirectory include_launch_directory)
       : SystemWebAppManagerBrowserTestBase(/*install_mock=*/false) {
-    web_app::ProviderType provider_type = std::get<0>(GetParam());
-    if (provider_type == ProviderType::kWebApps) {
-      scoped_feature_web_app_provider_type_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else if (provider_type == ProviderType::kBookmarkApps) {
-      scoped_feature_web_app_provider_type_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-
     scoped_feature_blink_api_.InitWithFeatures(
         {blink::features::kFileHandlingAPI}, {});
 
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
             include_launch_directory,
-            std::get<1>(GetParam()) == InstallationType::kWebAppInfoInstall);
+            std::get<0>(GetParam()) == InstallationType::kWebAppInfoInstall);
   }
 
   content::WebContents* LaunchApp(
