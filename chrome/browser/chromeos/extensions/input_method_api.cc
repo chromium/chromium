@@ -518,12 +518,9 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   const auto& params = parent_params->parameters;
   const gfx::Range range =
       engine->GetAutocorrectRange(params.context_id, &error);
-  if (range.is_empty()) {
-    return RespondNow(Error(InformativeError(error, function_name())));
-  }
   auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetInteger("start", range.start());
-  ret->SetInteger("end", range.end());
+  ret->SetInteger("start", range.is_empty() ? 0 : range.start());
+  ret->SetInteger("end", range.is_empty() ? 0 : range.end());
   return RespondNow(OneArgument(std::move(ret)));
 }
 

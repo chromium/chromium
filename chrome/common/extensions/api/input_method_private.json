@@ -636,7 +636,7 @@
       }, {
         "name": "getAutocorrectRange",
         "type": "function",
-        "description": "Get the autocorrected word's bounds.",
+        "description": "Get the autocorrected word's bounds. Returns an empty range if there is no autocorrected word.",
         "parameters": [
           {
             "name": "parameters",
