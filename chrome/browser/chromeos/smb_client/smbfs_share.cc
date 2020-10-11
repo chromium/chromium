@@ -162,7 +162,11 @@ void SmbFsShare::Unmount(SmbFsShare::UnmountCallback callback) {
     return;
   }
 
-  // Remove volume from VolumeManager.
+  // Remove volume from VolumeManager. It's critical this is done before
+  // revoking the filesystem from ExternalMountPoints as some observers
+  // (ie. Crostini) need to create a cracked FileSystemURL (which
+  // requires the mount to still be registered with ExternalMountPoints)
+  // during the unmount process.
   file_manager::VolumeManager::Get(profile_)->RemoveSmbFsVolume(
       host_->mount_path());
 

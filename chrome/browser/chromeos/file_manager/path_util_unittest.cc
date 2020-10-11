@@ -362,6 +362,13 @@ TEST_F(FileManagerPathUtilTest, ConvertFileSystemURLToPathInsideVM) {
   mount_points->RegisterFileSystem(
       chromeos::kSystemMountNameArchive, storage::kFileSystemTypeNativeLocal,
       storage::FileSystemMountOption(), base::FilePath(kArchiveMountPath));
+  // SmbFsShare comes up with a unique stable ID for the share, it can
+  // just be faked here, the mount ID is expected to appear in the mount
+  // path, it's faked too.
+  mount_points->RegisterFileSystem(
+      "smbfsmountid" /* fake mount ID for mount name */,
+      storage::kFileSystemTypeSmbFs, storage::FileSystemMountOption(),
+      base::FilePath("/media/fuse/smbfs-smbfsmountid"));
 
   base::FilePath inside;
   base::FilePath vm_mount("/mnt/chromeos");
@@ -451,6 +458,13 @@ TEST_F(FileManagerPathUtilTest, ConvertFileSystemURLToPathInsideVM) {
           url::Origin(), "archive", base::FilePath("file.rar/path/in/archive")),
       vm_mount, &inside));
   EXPECT_EQ("/mnt/chromeos/archive/file.rar/path/in/archive", inside.value());
+
+  EXPECT_TRUE(ConvertFileSystemURLToPathInsideVM(
+      profile_.get(),
+      mount_points->CreateExternalFileSystemURL(
+          url::Origin(), "smbfsmountid", base::FilePath("path/in/smb/share")),
+      vm_mount, &inside));
+  EXPECT_EQ("/mnt/chromeos/SMB/smbfsmountid/path/in/smb/share", inside.value());
 }
 
 TEST_F(FileManagerPathUtilTest, ExtractMountNameFileSystemNameFullPath) {

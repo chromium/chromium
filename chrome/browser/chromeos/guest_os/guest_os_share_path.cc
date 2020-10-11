@@ -20,6 +20,9 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/chromeos/smb_client/smb_service.h"
+#include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
+#include "chrome/browser/chromeos/smb_client/smbfs_share.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -34,6 +37,10 @@
 #include "url/gurl.h"
 
 namespace {
+
+// Root path under which FUSE filesystems such as DriveFS, SmbFs are mounted.
+constexpr base::FilePath::CharType kFuseFsRootPath[] =
+    FILE_PATH_LITERAL("/media/fuse");
 
 void OnSeneschalSharePathResponse(
     guest_os::GuestOsSharePath::SharePathCallback callback,
@@ -211,12 +218,18 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
   }
 
   vm_tools::seneschal::SharePathRequest request;
+  base::FilePath fuse_fs_root_path(kFuseFsRootPath);
   base::FilePath drivefs_path;
   base::FilePath relative_path;
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
   base::FilePath drivefs_mount_point_path;
   base::FilePath drivefs_mount_name;
+  chromeos::smb_client::SmbService* smb_service =
+      chromeos::smb_client::SmbServiceFactory::Get(profile_);
+  chromeos::smb_client::SmbFsShare* smb_share = nullptr;
+  base::FilePath smbfs_mount_point_path;
+  base::FilePath smbfs_mount_name;
 
   // Allow MyFiles directory and subdirs.
   bool allowed_path = false;
@@ -237,9 +250,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
              (drivefs_mount_point_path =
                   integration_service->GetMountPointPath())
                  .AppendRelativePath(path, &drivefs_path) &&
-             base::FilePath("/media/fuse")
-                 .AppendRelativePath(drivefs_mount_point_path,
-                                     &drivefs_mount_name)) {
+             fuse_fs_root_path.AppendRelativePath(drivefs_mount_point_path,
+                                                  &drivefs_mount_name)) {
     // Allow subdirs of DriveFS except .Trash.
     request.set_drivefs_mount_name(drivefs_mount_name.value());
     base::FilePath root("root");
@@ -305,6 +317,16 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     allowed_path = true;
     request.set_storage_location(
         vm_tools::seneschal::SharePathRequest::ARCHIVE);
+  } else if (smb_service &&
+             (smb_share = smb_service->GetSmbFsShareForPath(path)) &&
+             ((smbfs_mount_point_path = smb_share->mount_path())
+                  .AppendRelativePath(path, &relative_path) ||
+              path == smbfs_mount_point_path /* sharing root of mount */) &&
+             fuse_fs_root_path.AppendRelativePath(smbfs_mount_point_path,
+                                                  &smbfs_mount_name)) {
+    allowed_path = true;
+    request.set_storage_location(vm_tools::seneschal::SharePathRequest::SMBFS);
+    request.set_smbfs_mount_name(smbfs_mount_name.value());
   }
 
   if (!allowed_path) {

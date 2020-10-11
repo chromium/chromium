@@ -249,8 +249,6 @@ CrostiniImpl.DEFAULT_VM = 'termina';
 CrostiniImpl.PLUGIN_VM = 'PvmDefault';
 
 /**
- * Keep in sync with histograms.xml:FileBrowserCrostiniSharedPathsDepth
- * histogram_suffix.
  * @type {!Map<?VolumeManagerCommon.RootType, string>}
  * @const
  */
@@ -265,4 +263,5 @@ CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE = new Map([
   [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
   [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
   [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
+  [VolumeManagerCommon.RootType.SMB, 'SMB'],
 ]);

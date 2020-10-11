@@ -57,6 +57,7 @@ constexpr char kCrostiniMapGoogleDrive[] = "GoogleDrive";
 constexpr char kCrostiniMapLinuxFiles[] = "LinuxFiles";
 constexpr char kCrostiniMapMyDrive[] = "MyDrive";
 constexpr char kCrostiniMapPlayFiles[] = "PlayFiles";
+constexpr char kCrostiniMapSmbFs[] = "SMB";
 constexpr char kCrostiniMapTeamDrives[] = "SharedDrives";
 constexpr char kFolderNameDownloads[] = "Downloads";
 constexpr char kFolderNameMyFiles[] = "MyFiles";
@@ -425,6 +426,13 @@ bool ConvertFileSystemURLToPathInsideVM(
     } else {
       *inside = vm_mount.Append(kCrostiniMapLinuxFiles);
     }
+  } else if (file_system_url.type() == storage::kFileSystemTypeSmbFs) {
+    // Do not assume the share is currently accessible via SmbService
+    // as this function is called during unmount when SmbFsShare is
+    // destroyed. The only information safely available is the stable
+    // mount ID.
+    *inside = vm_mount.Append(kCrostiniMapSmbFs);
+    *inside = inside->Append(id);
   } else {
     return false;
   }
