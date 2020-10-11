@@ -339,7 +339,7 @@ const base::Feature kGesturePropertiesDBusService{
 
 // Enable Guest OS external protocol handling.
 const base::Feature kGuestOsExternalProtocol{"GuestOsExternalProtocol",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables editing with handwriting gestures within the virtual keyboard.
 const base::Feature kHandwritingGestureEditing{
