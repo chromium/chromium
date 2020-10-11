@@ -40,10 +40,6 @@ struct CORE_EXPORT LogicalOffset {
   PhysicalOffset ConvertToPhysical(WritingDirectionMode writing_direction,
                                    PhysicalSize outer_size,
                                    PhysicalSize inner_size) const;
-  PhysicalOffset ConvertToPhysical(WritingMode writing_mode,
-                                   TextDirection direction,
-                                   PhysicalSize outer_size,
-                                   PhysicalSize inner_size) const;
 
   constexpr bool operator==(const LogicalOffset& other) const {
     return std::tie(other.inline_offset, other.block_offset) ==

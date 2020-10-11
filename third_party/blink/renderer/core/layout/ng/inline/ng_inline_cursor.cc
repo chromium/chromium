@@ -653,8 +653,8 @@ PhysicalOffset NGInlineCursorPosition::LineStartPoint() const {
   DCHECK(IsLineBox()) << this;
   const LogicalOffset logical_start;  // (0, 0)
   const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
-  return logical_start.ConvertToPhysical(Style().GetWritingMode(),
-                                         BaseDirection(), Size(), pixel_size);
+  return logical_start.ConvertToPhysical(
+      {Style().GetWritingMode(), BaseDirection()}, Size(), pixel_size);
 }
 
 PhysicalOffset NGInlineCursorPosition::LineEndPoint() const {
@@ -664,7 +664,7 @@ PhysicalOffset NGInlineCursorPosition::LineEndPoint() const {
       IsHorizontalWritingMode(writing_mode) ? Size().width : Size().height;
   const LogicalOffset logical_end(inline_size, LayoutUnit());
   const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
-  return logical_end.ConvertToPhysical(writing_mode, BaseDirection(), Size(),
+  return logical_end.ConvertToPhysical({writing_mode, BaseDirection()}, Size(),
                                        pixel_size);
 }
 
@@ -686,13 +686,11 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
     const PhysicalOffset& point,
     const NGPhysicalBoxFragment& container) {
   DCHECK(IsItemCursor());
-  const ComputedStyle& container_style = container.Style();
-  const WritingMode writing_mode = container_style.GetWritingMode();
-  const TextDirection direction = container_style.Direction();
+  const auto writing_direction = container.Style().GetWritingDirection();
   const PhysicalSize& container_size = container.Size();
   const LayoutUnit point_block_offset =
       point
-          .ConvertToLogical(writing_mode, direction, container_size,
+          .ConvertToLogical(writing_direction, container_size,
                             // |point| is actually a pixel with size 1x1.
                             PhysicalSize(LayoutUnit(1), LayoutUnit(1)))
           .block_offset;
@@ -720,7 +718,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
       // Try to resolve if |point| falls in a line box in block direction.
       const LayoutUnit child_block_offset =
           child_item->OffsetInContainerBlock()
-              .ConvertToLogical(writing_mode, direction, container_size,
+              .ConvertToLogical(writing_direction, container_size,
                                 child_item->Size())
               .block_offset;
       if (point_block_offset < child_block_offset) {
@@ -735,7 +733,9 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
       // Hitting on line bottom doesn't count, to match legacy behavior.
       const LayoutUnit child_block_end_offset =
           child_block_offset +
-          child_item->Size().ConvertToLogical(writing_mode).block_size;
+          child_item->Size()
+              .ConvertToLogical(writing_direction.GetWritingMode())
+              .block_size;
       if (point_block_offset >= child_block_end_offset) {
         if (child_block_end_offset > closest_line_after_block_offset) {
           closest_line_after_block_offset = child_block_end_offset;
@@ -811,13 +811,11 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
   DCHECK(container);
   DCHECK(container->Type() == NGFragmentItem::kLine ||
          container->Type() == NGFragmentItem::kBox);
-  const ComputedStyle& container_style = container->Style();
-  const WritingMode writing_mode = container_style.GetWritingMode();
-  const TextDirection direction = container_style.Direction();
+  const auto writing_direction = container->Style().GetWritingDirection();
   const PhysicalSize& container_size = container->Size();
   const LayoutUnit point_inline_offset =
       point
-          .ConvertToLogical(writing_mode, direction, container_size,
+          .ConvertToLogical(writing_direction, container_size,
                             // |point| is actually a pixel with size 1x1.
                             PhysicalSize(LayoutUnit(1), LayoutUnit(1)))
           .inline_offset;
@@ -845,7 +843,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
     }
     const LayoutUnit child_inline_offset =
         child_item->OffsetInContainerBlock()
-            .ConvertToLogical(writing_mode, direction, container_size,
+            .ConvertToLogical(writing_direction, container_size,
                               child_item->Size())
             .inline_offset;
     if (point_inline_offset < child_inline_offset) {
@@ -857,7 +855,9 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
     }
     const LayoutUnit child_inline_end_offset =
         child_inline_offset +
-        child_item->Size().ConvertToLogical(writing_mode).inline_size;
+        child_item->Size()
+            .ConvertToLogical(writing_direction.GetWritingMode())
+            .inline_size;
     if (point_inline_offset > child_inline_end_offset) {
       if (child_inline_end_offset > closest_child_before_inline_offset) {
         closest_child_before_inline_offset = child_inline_end_offset;

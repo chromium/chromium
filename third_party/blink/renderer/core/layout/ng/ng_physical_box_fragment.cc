@@ -486,8 +486,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
                            TextHeightType height_type)
         : container(container),
           style(container.Style()),
-          writing_mode(style.GetWritingMode()),
-          direction(style.Direction()),
+          writing_direction(style.GetWritingDirection()),
           border_inline_start(LayoutUnit(style.BorderStartWidth())),
           border_block_start(LayoutUnit(style.BorderBeforeWidth())),
           height_type(height_type) {
@@ -503,16 +502,16 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
             ToLayoutBox(container.GetLayoutObject());
         padding_strut = NGBoxStrut(LayoutUnit(), layout_object->PaddingEnd(),
                                    LayoutUnit(), layout_object->PaddingAfter())
-                            .ConvertToPhysical({writing_mode, direction});
+                            .ConvertToPhysical(writing_direction);
       }
     }
 
     // Rectangles not reachable by scroll should not be added to overflow.
     bool IsRectReachableByScroll(const PhysicalRect& rect) {
       LogicalOffset rect_logical_end =
-          rect.offset.ConvertToLogical(writing_mode, direction,
-                                       container.Size(), rect.size) +
-          rect.size.ConvertToLogical(writing_mode);
+          rect.offset.ConvertToLogical(writing_direction, container.Size(),
+                                       rect.size) +
+          rect.size.ConvertToLogical(writing_direction.GetWritingMode());
       return rect_logical_end.inline_offset > border_inline_start &&
              rect_logical_end.block_offset > border_block_start;
     }
@@ -576,8 +575,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
 
     const NGPhysicalBoxFragment& container;
     const ComputedStyle& style;
-    const WritingMode writing_mode;
-    const TextDirection direction;
+    const WritingDirectionMode writing_direction;
     const LayoutUnit border_inline_start;
     const LayoutUnit border_block_start;
     base::Optional<NGPhysicalBoxStrut> padding_strut;

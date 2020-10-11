@@ -989,16 +989,14 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     // TODO(layout-dev): Use selection top & bottom instead of line's, or decide
     // if we still want to distinguish line and selection heights in NG.
     const ComputedStyle& line_style = line_box.Current().Style();
-    const WritingMode writing_mode = line_style.GetWritingMode();
-    const TextDirection text_direction = line_style.Direction();
+    const auto writing_direction = line_style.GetWritingDirection();
     const PhysicalOffset line_box_offset =
         line_box.Current().OffsetInContainerBlock();
     const PhysicalSize line_box_size = line_box.Current().Size();
     const LogicalOffset logical_offset = line_box_offset.ConvertToLogical(
-        writing_mode, text_direction, fragmentainer->Size(),
-        line_box.Current().Size());
+        writing_direction, fragmentainer->Size(), line_box.Current().Size());
     const LogicalSize logical_size =
-        line_box_size.ConvertToLogical(writing_mode);
+        line_box_size.ConvertToLogical(writing_direction.GetWritingMode());
     return {logical_offset.block_offset,
             logical_offset.block_offset + logical_size.block_size};
   }

@@ -40,10 +40,6 @@ struct CORE_EXPORT PhysicalOffset {
   LogicalOffset ConvertToLogical(WritingDirectionMode writing_direction,
                                  PhysicalSize outer_size,
                                  PhysicalSize inner_size) const;
-  LogicalOffset ConvertToLogical(WritingMode writing_mode,
-                                 TextDirection direction,
-                                 PhysicalSize outer_size,
-                                 PhysicalSize inner_size) const;
 
   constexpr bool IsZero() const { return !left && !top; }
   constexpr bool HasFraction() const {

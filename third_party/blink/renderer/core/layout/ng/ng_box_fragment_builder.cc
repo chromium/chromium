@@ -432,7 +432,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
       for (const auto& line_box_child : line_box_fragment.Children()) {
         if (line_box_child->GetLayoutObject() == object) {
           return child.offset + line_box_child.Offset().ConvertToLogical(
-                                    GetWritingMode(), Direction(),
+                                    GetWritingDirection(),
                                     line_box_fragment.Size(),
                                     line_box_child->Size());
         }
@@ -463,8 +463,8 @@ void NGBoxFragmentBuilder::ComputeInlineContainerGeometryFromFragmentTree(
     if (child.fragment->IsLineBox()) {
       const auto& linebox = To<NGPhysicalLineBoxFragment>(*child.fragment);
       const PhysicalOffset linebox_offset = child.offset.ConvertToPhysical(
-          GetWritingMode(), Direction(),
-          ToPhysicalSize(Size(), GetWritingMode()), linebox.Size());
+          GetWritingDirection(), ToPhysicalSize(Size(), GetWritingMode()),
+          linebox.Size());
       GatherInlineContainerFragmentsFromLinebox(inline_containing_block_map,
                                                 &containing_linebox_map,
                                                 linebox, linebox_offset);
@@ -482,8 +482,8 @@ void NGBoxFragmentBuilder::ComputeInlineContainerGeometryFromFragmentTree(
       // For more on this special case, see "css container is an inline, with
       // inline splitting" comment in NGOutOfFlowLayoutPart::LayoutDescendant.
       const PhysicalOffset box_offset = child.offset.ConvertToPhysical(
-          GetWritingMode(), Direction(),
-          ToPhysicalSize(Size(), GetWritingMode()), box_fragment.Size());
+          GetWritingDirection(), ToPhysicalSize(Size(), GetWritingMode()),
+          box_fragment.Size());
 
       // Traverse lineboxes of anonymous box.
       for (const auto& box_child : box_fragment.Children()) {
@@ -545,7 +545,7 @@ void NGBoxFragmentBuilder::ComputeInlineContainerGeometry(
       continue;
 
     const PhysicalOffset child_offset = child.offset.ConvertToPhysical(
-        GetWritingMode(), Direction(), ToPhysicalSize(Size(), GetWritingMode()),
+        GetWritingDirection(), ToPhysicalSize(Size(), GetWritingMode()),
         child_fragment.Size());
     GatherInlineContainerFragmentsFromItems(items->Items(), child_offset,
                                             inline_containing_block_map,

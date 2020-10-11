@@ -136,9 +136,7 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
         found_line = true;
         const LayoutUnit start =
             base_child_link.offset
-                .ConvertToLogical(writing_direction.GetWritingMode(),
-                                  writing_direction.Direction(),
-                                  child_fragment.Size(),
+                .ConvertToLogical(writing_direction, child_fragment.Size(),
                                   base_child_link.get()->Size())
                 .inline_offset;
         const LayoutUnit end = base_inline_size - start - line_inline_size;

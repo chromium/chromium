@@ -754,10 +754,10 @@ PositionWithAffinity NGPaintFragment::PositionForPointInInlineLevelBox(
   DCHECK(PhysicalFragment().IsInline() || PhysicalFragment().IsLineBox());
   DCHECK(!PhysicalFragment().IsBlockFlow());
 
-  const LogicalOffset logical_point = point.ConvertToLogical(
-      Style().GetWritingMode(), Style().Direction(), Size(),
-      // |point| is actually a pixel with size 1x1.
-      PhysicalSize(LayoutUnit(1), LayoutUnit(1)));
+  const LogicalOffset logical_point =
+      point.ConvertToLogical(Style().GetWritingDirection(), Size(),
+                             // |point| is actually a pixel with size 1x1.
+                             PhysicalSize(LayoutUnit(1), LayoutUnit(1)));
   const LayoutUnit inline_point = logical_point.inline_offset;
 
   // Stores the closest child before |point| in the inline direction. Used if we
@@ -825,10 +825,10 @@ PositionWithAffinity NGPaintFragment::PositionForPointInInlineFormattingContext(
              .GetLayoutObject()
              ->ChildrenInline());
 
-  const LogicalOffset logical_point = point.ConvertToLogical(
-      Style().GetWritingMode(), Style().Direction(), Size(),
-      // |point| is actually a pixel with size 1x1.
-      PhysicalSize(LayoutUnit(1), LayoutUnit(1)));
+  const LogicalOffset logical_point =
+      point.ConvertToLogical(Style().GetWritingDirection(), Size(),
+                             // |point| is actually a pixel with size 1x1.
+                             PhysicalSize(LayoutUnit(1), LayoutUnit(1)));
   const LayoutUnit block_point = logical_point.block_offset;
 
   // Stores the closest line box child below |point| in the block direction.

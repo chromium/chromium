@@ -20,13 +20,6 @@ PhysicalOffset LogicalOffset::ConvertToPhysical(
       .ToPhysical(*this, inner_size);
 }
 
-PhysicalOffset LogicalOffset::ConvertToPhysical(WritingMode writing_mode,
-                                                TextDirection direction,
-                                                PhysicalSize outer_size,
-                                                PhysicalSize inner_size) const {
-  return ConvertToPhysical({writing_mode, direction}, outer_size, inner_size);
-}
-
 String LogicalOffset::ToString() const {
   return String::Format("%d,%d", inline_offset.ToInt(), block_offset.ToInt());
 }

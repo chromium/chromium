@@ -191,9 +191,10 @@ class AbstractLineBox {
                                                bool only_editable_leaves) {
     DCHECK(line.Current().IsLineBox());
     const PhysicalSize unit_square(LayoutUnit(1), LayoutUnit(1));
-    const LogicalOffset logical_point = point.ConvertToLogical(
-        line.Current().Style().GetWritingMode(), line.Current().BaseDirection(),
-        line.Current().Size(), unit_square);
+    const LogicalOffset logical_point =
+        point.ConvertToLogical({line.Current().Style().GetWritingMode(),
+                                line.Current().BaseDirection()},
+                               line.Current().Size(), unit_square);
     const LayoutUnit inline_offset = logical_point.inline_offset;
     NGInlineCursor closest_leaf_child;
     LayoutUnit closest_leaf_distance;

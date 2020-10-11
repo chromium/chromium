@@ -21,13 +21,6 @@ LogicalOffset PhysicalOffset::ConvertToLogical(
       .ToLogical(*this, inner_size);
 }
 
-LogicalOffset PhysicalOffset::ConvertToLogical(WritingMode writing_mode,
-                                               TextDirection direction,
-                                               PhysicalSize outer_size,
-                                               PhysicalSize inner_size) const {
-  return ConvertToLogical({writing_mode, direction}, outer_size, inner_size);
-}
-
 String PhysicalOffset::ToString() const {
   return String::Format("%s,%s", left.ToString().Ascii().c_str(),
                         top.ToString().Ascii().c_str());

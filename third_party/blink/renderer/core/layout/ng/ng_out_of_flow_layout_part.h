@@ -77,8 +77,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     STACK_ALLOCATED();
 
    public:
-    // The direction of the container.
-    TextDirection direction;
+    // The writing direction of the container.
+    WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
+                                              TextDirection::kLtr};
     // Logical in containing block coordinates.
     LogicalSize content_size_for_absolute;
     // Content size for fixed is different for the ICB.
@@ -121,8 +122,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const NGLogicalStaticPosition&,
       LogicalSize container_content_size,
       const ContainingBlockInfo&,
-      const WritingMode,
-      const TextDirection,
+      const WritingDirectionMode,
       const LayoutBox* only_layout,
       bool is_fragmentainer_descendant = false);
 
