@@ -84,17 +84,36 @@ WifiSyncFeatureManagerImpl::WifiSyncFeatureManagerImpl(
   if (GetCurrentState() == CurrentState::kValidPendingRequest) {
     AttemptSetWifiSyncHostStateNetworkRequest(false /* is_retry */);
   }
+
+  if (ShouldEnableOnVerify()) {
+    ProcessEnableOnVerifyAttempt();
+  }
 }
 
 void WifiSyncFeatureManagerImpl::OnHostStatusChange(
     const HostStatusProvider::HostStatusWithDevice& host_status_with_device) {
-  if (GetCurrentState() == CurrentState::kNoVerifiedHost) {
+  if (GetCurrentState() == CurrentState::kNoVerifiedHost &&
+      !ShouldEnableOnVerify()) {
     ResetPendingWifiSyncHostNetworkRequest();
+  }
+  // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
+  // setup flow has been completed on the local device.
+  if (host_status_with_device.host_status() ==
+          mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation &&
+      features::IsWifiSyncAndroidEnabled()) {
+    SetPendingWifiSyncHostNetworkRequest(
+        PendingState::kSetPendingEnableOnVerify);
+    return;
+  }
+
+  if (ShouldEnableOnVerify()) {
+    ProcessEnableOnVerifyAttempt();
   }
 }
 
 void WifiSyncFeatureManagerImpl::OnNewDevicesSynced() {
-  if (GetCurrentState() != CurrentState::kValidPendingRequest) {
+  if (GetCurrentState() != CurrentState::kValidPendingRequest &&
+      !ShouldEnableOnVerify()) {
     ResetPendingWifiSyncHostNetworkRequest();
   }
 }
@@ -151,7 +170,13 @@ WifiSyncFeatureManagerImpl::GetCurrentState() {
     return CurrentState::kNoVerifiedHost;
   }
 
-  if (GetPendingState() == PendingState::kPendingNone) {
+  PendingState pending_state = GetPendingState();
+
+  // If the pending request is kSetPendingEnableOnVerify then there is no
+  // actionable pending equest. The pending request will be changed from
+  // kSetPendingEnableOnVerify when the host has been verified.
+  if (pending_state == PendingState::kPendingNone ||
+      pending_state == PendingState::kSetPendingEnableOnVerify) {
     return CurrentState::kNoPendingRequest;
   }
 
@@ -161,7 +186,7 @@ WifiSyncFeatureManagerImpl::GetCurrentState() {
            ->GetSoftwareFeatureState(
                multidevice::SoftwareFeature::kWifiSyncHost) ==
        multidevice::SoftwareFeatureState::kEnabled);
-  bool pending_enabled = (GetPendingState() == PendingState::kPendingEnable);
+  bool pending_enabled = (pending_state == PendingState::kPendingEnable);
 
   if (pending_enabled == enabled_on_host) {
     return CurrentState::kPendingMatchesBackend;
@@ -263,6 +288,33 @@ void WifiSyncFeatureManagerImpl::OnSetWifiSyncHostStateNetworkRequestFinished(
                                      AttemptSetWifiSyncHostStateNetworkRequest,
                                  base::Unretained(this), true /* is_retry */));
   }
+}
+
+bool WifiSyncFeatureManagerImpl::ShouldEnableOnVerify() {
+  return (GetPendingState() == PendingState::kSetPendingEnableOnVerify);
+}
+
+void WifiSyncFeatureManagerImpl::ProcessEnableOnVerifyAttempt() {
+  mojom::HostStatus host_status =
+      host_status_provider_->GetHostWithStatus().host_status();
+
+  // If host is not set.
+  if (host_status == mojom::HostStatus::kNoEligibleHosts ||
+      host_status == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
+    ResetPendingWifiSyncHostNetworkRequest();
+    return;
+  }
+
+  if (host_status != mojom::HostStatus::kHostVerified) {
+    return;
+  }
+
+  if (IsWifiSyncEnabled()) {
+    ResetPendingWifiSyncHostNetworkRequest();
+    return;
+  }
+
+  SetIsWifiSyncEnabled(true);
 }
 
 }  // namespace multidevice_setup
