@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/web_applications/web_app_uninstall_dialog.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 
 namespace web_app {
 

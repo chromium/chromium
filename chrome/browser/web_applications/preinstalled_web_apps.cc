@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/common/chrome_features.h"
 
 namespace web_app {
 namespace {
