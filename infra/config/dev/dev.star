@@ -54,6 +54,9 @@ luci.realm(
     ],
 )
 
+# Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
+luci.builder.defaults.experiments.set({"luci.use_realms": 100})
+
 exec("//dev/swarming.star")
 
 exec("//dev/subprojects/chromium/subproject.star")
