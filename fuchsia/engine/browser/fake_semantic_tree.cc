@@ -61,6 +61,22 @@ void FakeSemanticTree::RunUntilNodeCountAtLeast(size_t count) {
   run_loop.Run();
 }
 
+void FakeSemanticTree::RunUntilCommitCountIs(size_t count) {
+  DCHECK(!on_commit_updates_);
+  if (count == num_commit_calls_)
+    return;
+
+  base::RunLoop run_loop;
+  base::AutoReset<base::RepeatingClosure> auto_reset(
+      &on_commit_updates_,
+      base::BindLambdaForTesting([this, count, &run_loop]() {
+        if (static_cast<size_t>(num_commit_calls_) == count) {
+          run_loop.Quit();
+        }
+      }));
+  run_loop.Run();
+}
+
 void FakeSemanticTree::SetNodeUpdatedCallback(
     uint32_t node_id,
     base::OnceClosure node_updated_callback) {
@@ -108,6 +124,7 @@ fuchsia::accessibility::semantics::Node* FakeSemanticTree::GetNodeFromRole(
 
 void FakeSemanticTree::UpdateSemanticNodes(
     std::vector<fuchsia::accessibility::semantics::Node> nodes) {
+  num_update_calls_++;
   bool wait_node_updated = false;
   for (auto& node : nodes) {
     if (node.node_id() == node_wait_id_ && on_node_updated_callback_)
@@ -121,11 +138,13 @@ void FakeSemanticTree::UpdateSemanticNodes(
 }
 
 void FakeSemanticTree::DeleteSemanticNodes(std::vector<uint32_t> node_ids) {
+  num_delete_calls_++;
   for (auto id : node_ids)
     nodes_.erase(id);
 }
 
 void FakeSemanticTree::CommitUpdates(CommitUpdatesCallback callback) {
+  num_commit_calls_++;
   callback();
   if (on_commit_updates_)
     on_commit_updates_.Run();
