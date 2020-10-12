@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "base/timer/timer.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -25,6 +26,9 @@ namespace {
 // than strings.
 constexpr char kVideoCodecH264[] = "h264";
 constexpr char kVideoCodecVp8[] = "vp8";
+
+// Timeout to end the Session when no offer message is sent.
+constexpr base::TimeDelta kInitTimeout = base::TimeDelta::FromSeconds(5);
 
 }  // namespace
 
@@ -48,19 +52,24 @@ class CastStreamingSession::Internal
       : task_runner_(task_runner),
         environment_(&openscreen::Clock::now, &task_runner_),
         cast_message_port_impl_(std::move(message_port_request)),
-        // TODO(crbug.com/1087520): Add streaming session Constraints and
-        // DisplayDescription.
-        receiver_session_(this,
-                          &environment_,
-                          &cast_message_port_impl_,
-                          openscreen::cast::ReceiverSession::Preferences(
-                              {openscreen::cast::VideoCodec::kH264,
-                               openscreen::cast::VideoCodec::kVp8},
-                              {openscreen::cast::AudioCodec::kAac,
-                               openscreen::cast::AudioCodec::kOpus})),
         client_(client) {
     DCHECK(task_runner);
     DCHECK(client_);
+
+    // TODO(crbug.com/1087520): Add streaming session Constraints and
+    // DisplayDescription.
+    receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
+        this, &environment_, &cast_message_port_impl_,
+        openscreen::cast::ReceiverSession::Preferences(
+            {openscreen::cast::VideoCodec::kH264,
+             openscreen::cast::VideoCodec::kVp8},
+            {openscreen::cast::AudioCodec::kAac,
+             openscreen::cast::AudioCodec::kOpus}));
+
+    init_timeout_timer_.Start(
+        FROM_HERE, kInitTimeout,
+        base::BindOnce(&CastStreamingSession::Internal::OnInitializationTimeout,
+                       base::Unretained(this)));
   }
 
   ~Internal() final = default;
@@ -69,14 +78,22 @@ class CastStreamingSession::Internal
   Internal& operator=(const Internal&) = delete;
 
  private:
+  void OnInitializationTimeout() {
+    DVLOG(1) << __func__;
+    DCHECK(!is_initialized_);
+    client_->OnInitializationFailure();
+    is_initialized_ = true;
+  }
+
   // openscreen::cast::ReceiverSession::Client implementation.
   void OnNegotiated(
       const openscreen::cast::ReceiverSession* session,
       openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) final {
     DVLOG(1) << __func__;
-    DCHECK_EQ(session, &receiver_session_);
+    DCHECK_EQ(session, receiver_session_.get());
+    init_timeout_timer_.Stop();
 
-    if (initialized_called_) {
+    if (is_initialized_) {
       // TODO(crbug.com/1116185): Handle multiple offer messages properly.
       return;
     }
@@ -99,11 +116,15 @@ class CastStreamingSession::Internal
       }
 
       // Initialize the audio consumer.
+      // We can use unretained pointers here because StreamConsumer is owned by
+      // this object and |client_| is guaranteed to outlive this object.
       audio_consumer_ = std::make_unique<StreamConsumer>(
           receivers.audio->receiver, std::move(data_pipe_producer),
           base::BindRepeating(
               &CastStreamingSession::Client::OnAudioBufferReceived,
-              base::Unretained(client_)));
+              base::Unretained(client_)),
+          base::BindOnce(&CastStreamingSession::Internal::OnDataTimeout,
+                         base::Unretained(this)));
 
       // Gather data for the audio decoder config.
       media::ChannelLayout channel_layout =
@@ -143,11 +164,15 @@ class CastStreamingSession::Internal
       }
 
       // Initialize the video consumer.
+      // We can use unretained pointers here because StreamConsumer is owned by
+      // this object and |client_| is guaranteed to outlive this object.
       video_consumer_ = std::make_unique<StreamConsumer>(
           receivers.video->receiver, std::move(data_pipe_producer),
           base::BindRepeating(
               &CastStreamingSession::Client::OnVideoBufferReceived,
-              base::Unretained(client_)));
+              base::Unretained(client_)),
+          base::BindOnce(&CastStreamingSession::Internal::OnDataTimeout,
+                         base::Unretained(this)));
 
       // Gather data for the video decoder config.
       const std::string& video_codec =
@@ -193,14 +218,15 @@ class CastStreamingSession::Internal
       client_->OnInitializationSuccess(std::move(audio_stream_info),
                                        std::move(video_stream_info));
     }
-    initialized_called_ = true;
+    is_initialized_ = true;
   }
 
   // TODO(https://crbug.com/1116185): Handle |reason| and reset streams on a
   // new offer message.
   void OnReceiversDestroying(const openscreen::cast::ReceiverSession* session,
                              ReceiversDestroyingReason reason) final {
-    DCHECK_EQ(session, &receiver_session_);
+    // This can be called when |receiver_session_| is being destroyed, so we
+    // do not sanity-check |session| here.
     DVLOG(1) << __func__;
     audio_consumer_.reset();
     video_consumer_.reset();
@@ -209,20 +235,26 @@ class CastStreamingSession::Internal
 
   void OnError(const openscreen::cast::ReceiverSession* session,
                openscreen::Error error) final {
-    DCHECK_EQ(session, &receiver_session_);
+    DCHECK_EQ(session, receiver_session_.get());
     LOG(ERROR) << error;
-    if (!initialized_called_) {
+    if (!is_initialized_) {
       client_->OnInitializationFailure();
-      initialized_called_ = true;
+      is_initialized_ = true;
     }
+  }
+
+  void OnDataTimeout() {
+    DVLOG(1) << __func__;
+    receiver_session_.reset();
   }
 
   openscreen_platform::TaskRunner task_runner_;
   openscreen::cast::Environment environment_;
   CastMessagePortImpl cast_message_port_impl_;
-  openscreen::cast::ReceiverSession receiver_session_;
+  std::unique_ptr<openscreen::cast::ReceiverSession> receiver_session_;
+  base::OneShotTimer init_timeout_timer_;
 
-  bool initialized_called_ = false;
+  bool is_initialized_ = false;
   CastStreamingSession::Client* const client_;
   std::unique_ptr<openscreen::cast::Receiver::Consumer> audio_consumer_;
   std::unique_ptr<openscreen::cast::Receiver::Consumer> video_consumer_;

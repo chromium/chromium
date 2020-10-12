@@ -267,7 +267,7 @@ void CastMessagePortImpl::PostMessage(
     client_->OnMessage(sender_id, message_namespace, str_message);
   } else if (message_namespace == kInjectNamespace) {
     SendInjectResponse(sender_id, str_message);
-  } else if (message_namespace == kSystemNamespace) {
+  } else if (message_namespace != kSystemNamespace) {
     // System messages are ignored, log messages from unknown namespaces.
     DVLOG(2) << "Unknown message from " << sender_id
              << ", namespace=" << message_namespace
