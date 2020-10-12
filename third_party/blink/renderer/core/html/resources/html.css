@@ -396,7 +396,7 @@ fieldset {
 }
 
 button {
-    -webkit-appearance: button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
 }
 
 /* Form controls don't go vertical. */
@@ -601,7 +601,7 @@ input[type="radio" i], input[type="checkbox" i] {
 
 input[type="button" i], input[type="submit" i], input[type="reset" i] {
     -internal-empty-line-height: fabricated;
-    -webkit-appearance: push-button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     -webkit-user-select: none;
     white-space: pre
 }
@@ -711,17 +711,17 @@ param {
 }
 
 input[type="checkbox" i] {
-    -webkit-appearance: checkbox; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
 }
 
 input[type="radio" i] {
-    -webkit-appearance: radio; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
 }
 
 input[type="color" i] {
-    -webkit-appearance: square-button; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     width: 44px;
     height: 23px;
     background-color: ButtonFace;

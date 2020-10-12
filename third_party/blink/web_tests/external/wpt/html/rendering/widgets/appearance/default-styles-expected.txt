@@ -14,17 +14,17 @@ FAIL <input type="time"> assert_equals: -webkit-appearance expected "auto" but g
 FAIL <input type="datetime-local"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
 FAIL <input type="number"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
 FAIL <input type="range"> assert_equals: -webkit-appearance expected "auto" but got "slider-horizontal"
-FAIL <input type="color"> assert_equals: -webkit-appearance expected "auto" but got "square-button"
-FAIL <input type="checkbox"> assert_equals: -webkit-appearance expected "auto" but got "checkbox"
-FAIL <input type="radio"> assert_equals: -webkit-appearance expected "auto" but got "radio"
-FAIL <input type="submit"> assert_equals: -webkit-appearance expected "auto" but got "push-button"
-FAIL <input type="reset"> assert_equals: -webkit-appearance expected "auto" but got "push-button"
-FAIL <input type="button"> assert_equals: -webkit-appearance expected "auto" but got "push-button"
+PASS <input type="color">
+PASS <input type="checkbox">
+PASS <input type="radio">
+PASS <input type="submit">
+PASS <input type="reset">
+PASS <input type="button">
 FAIL <input type="unknowntype"> assert_equals: -webkit-appearance expected "auto" but got "textfield"
 FAIL <select> assert_equals: -webkit-appearance expected "auto" but got "menulist"
 FAIL <select multiple=""> assert_equals: -webkit-appearance expected "auto" but got "listbox"
 FAIL <select size="2"> assert_equals: -webkit-appearance expected "auto" but got "listbox"
-FAIL <button> assert_equals: -webkit-appearance expected "auto" but got "button"
+PASS <button>
 FAIL <textarea> assert_equals: -webkit-appearance expected "auto" but got "textarea"
 PASS <meter>
 PASS <progress>
