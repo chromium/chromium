@@ -21,15 +21,18 @@ namespace policy {
 
 DeviceManagementServiceConfigurationIOS::
     DeviceManagementServiceConfigurationIOS(
-        const std::string& server_url,
-        const std::string& reporting_server_url)
-    : server_url_(server_url), reporting_server_url_(reporting_server_url) {}
+        const std::string& dm_server_url,
+        const std::string& realtime_reporting_server_url,
+        const std::string& encrypted_reporting_server_url)
+    : dm_server_url_(dm_server_url),
+      realtime_reporting_server_url_(realtime_reporting_server_url),
+      encrypted_reporting_server_url_(encrypted_reporting_server_url) {}
 
 DeviceManagementServiceConfigurationIOS::
     ~DeviceManagementServiceConfigurationIOS() = default;
 
 std::string DeviceManagementServiceConfigurationIOS::GetDMServerUrl() {
-  return server_url_;
+  return dm_server_url_;
 }
 
 std::string DeviceManagementServiceConfigurationIOS::GetAgentParameter() {
@@ -56,8 +59,14 @@ std::string DeviceManagementServiceConfigurationIOS::GetPlatformParameter() {
                             os_version.c_str());
 }
 
-std::string DeviceManagementServiceConfigurationIOS::GetReportingServerUrl() {
-  return reporting_server_url_;
+std::string
+DeviceManagementServiceConfigurationIOS::GetRealtimeReportingServerUrl() {
+  return realtime_reporting_server_url_;
+}
+
+std::string
+DeviceManagementServiceConfigurationIOS::GetEncryptedReportingServerUrl() {
+  return encrypted_reporting_server_url_;
 }
 
 std::string

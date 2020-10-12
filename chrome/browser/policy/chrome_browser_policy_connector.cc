@@ -86,7 +86,8 @@ void ChromeBrowserPolicyConnector::Init(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   std::unique_ptr<DeviceManagementService::Configuration> configuration(
       new DeviceManagementServiceConfiguration(GetDeviceManagementUrl(),
-                                               GetRealtimeReportingUrl()));
+                                               GetRealtimeReportingUrl(),
+                                               GetEncryptedReportingUrl()));
   std::unique_ptr<DeviceManagementService> device_management_service(
       new DeviceManagementService(std::move(configuration)));
   device_management_service->ScheduleInitialization(

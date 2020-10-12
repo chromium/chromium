@@ -69,12 +69,13 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
 #if defined(OS_CHROMEOS)
         fake_serial_number_(&fake_statistics_provider_),
 #endif
-        configuration_(&client_,
-                       DMAuth::FromDMToken(kDummyToken),
-                       service_.configuration()->GetReportingServerUrl(),
-                       false,
-                       base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
-                                      base::Unretained(&callback_observer_))) {
+        configuration_(
+            &client_,
+            DMAuth::FromDMToken(kDummyToken),
+            service_.configuration()->GetRealtimeReportingServerUrl(),
+            false,
+            base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
+                           base::Unretained(&callback_observer_))) {
   }
 
   void SetUp() override {

@@ -110,7 +110,10 @@ class POLICY_EXPORT DeviceManagementService {
     virtual std::string GetPlatformParameter() = 0;
 
     // Server at which to contact the real time reporting service.
-    virtual std::string GetReportingServerUrl() = 0;
+    virtual std::string GetRealtimeReportingServerUrl() = 0;
+
+    // Server endpoint for encrypted events.
+    virtual std::string GetEncryptedReportingServerUrl() = 0;
 
     // Server at which to contact the real time reporting service for
     // enterprise connectors.

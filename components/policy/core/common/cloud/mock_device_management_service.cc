@@ -97,7 +97,13 @@ std::string MockDeviceManagementServiceConfiguration::GetPlatformParameter() {
   return kPlatform;
 }
 
-std::string MockDeviceManagementServiceConfiguration::GetReportingServerUrl() {
+std::string
+MockDeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() {
+  return server_url_;
+}
+
+std::string
+MockDeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
   return server_url_;
 }
 

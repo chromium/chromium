@@ -607,7 +607,8 @@ void CloudPolicyClient::UploadAppInstallReport(base::Value report,
   CHECK(is_registered());
   CancelAppInstallReportUpload();
   app_install_report_request_job_ = CreateNewRealtimeReportingJob(
-      std::move(report), service()->configuration()->GetReportingServerUrl(),
+      std::move(report),
+      service()->configuration()->GetRealtimeReportingServerUrl(),
       /* add_connector_url_params=*/false, std::move(callback));
   DCHECK(app_install_report_request_job_);
 }
@@ -627,7 +628,8 @@ void CloudPolicyClient::UploadExtensionInstallReport(base::Value report,
   CHECK(is_registered());
   CancelExtensionInstallReportUpload();
   extension_install_report_request_job_ = CreateNewRealtimeReportingJob(
-      std::move(report), service()->configuration()->GetReportingServerUrl(),
+      std::move(report),
+      service()->configuration()->GetRealtimeReportingServerUrl(),
       /* add_connector_url_params=*/false, std::move(callback));
   DCHECK(extension_install_report_request_job_);
 }

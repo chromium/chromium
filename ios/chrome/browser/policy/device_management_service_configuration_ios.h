@@ -19,8 +19,9 @@ class DeviceManagementServiceConfigurationIOS
     : public DeviceManagementService::Configuration {
  public:
   DeviceManagementServiceConfigurationIOS(
-      const std::string& server_url,
-      const std::string& reporting_server_url);
+      const std::string& dm_server_url,
+      const std::string& realtime_reporting_server_url,
+      const std::string& encrypted_reporting_server_url);
   DeviceManagementServiceConfigurationIOS(
       const DeviceManagementServiceConfigurationIOS&) = delete;
   DeviceManagementServiceConfigurationIOS& operator=(
@@ -31,12 +32,14 @@ class DeviceManagementServiceConfigurationIOS
   std::string GetDMServerUrl() override;
   std::string GetAgentParameter() override;
   std::string GetPlatformParameter() override;
-  std::string GetReportingServerUrl() override;
+  std::string GetRealtimeReportingServerUrl() override;
+  std::string GetEncryptedReportingServerUrl() override;
   std::string GetReportingConnectorServerUrl() override;
 
  private:
-  const std::string server_url_;
-  const std::string reporting_server_url_;
+  const std::string dm_server_url_;
+  const std::string realtime_reporting_server_url_;
+  const std::string encrypted_reporting_server_url_;
 };
 
 }  // namespace policy

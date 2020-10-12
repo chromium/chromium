@@ -26,15 +26,18 @@
 namespace policy {
 
 DeviceManagementServiceConfiguration::DeviceManagementServiceConfiguration(
-    const std::string& server_url,
-    const std::string& reporting_server_url)
-    : server_url_(server_url), reporting_server_url_(reporting_server_url) {}
+    const std::string& dm_server_url,
+    const std::string& realtime_reporting_server_url,
+    const std::string& encrypted_reporting_server_url)
+    : dm_server_url_(dm_server_url),
+      realtime_reporting_server_url_(realtime_reporting_server_url),
+      encrypted_reporting_server_url_(encrypted_reporting_server_url) {}
 
 DeviceManagementServiceConfiguration::~DeviceManagementServiceConfiguration() {
 }
 
 std::string DeviceManagementServiceConfiguration::GetDMServerUrl() {
-  return server_url_;
+  return dm_server_url_;
 }
 
 std::string DeviceManagementServiceConfiguration::GetAgentParameter() {
@@ -79,8 +82,14 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
       "%s|%s|%s", os_name.c_str(), os_hardware.c_str(), os_version.c_str());
 }
 
-std::string DeviceManagementServiceConfiguration::GetReportingServerUrl() {
-  return reporting_server_url_;
+std::string
+DeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() {
+  return realtime_reporting_server_url_;
+}
+
+std::string
+DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
+  return encrypted_reporting_server_url_;
 }
 
 std::string

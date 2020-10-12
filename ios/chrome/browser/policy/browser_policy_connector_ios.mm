@@ -58,7 +58,8 @@ void BrowserPolicyConnectorIOS::Init(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   std::unique_ptr<policy::DeviceManagementService::Configuration> configuration(
       new policy::DeviceManagementServiceConfigurationIOS(
-          GetDeviceManagementUrl(), GetRealtimeReportingUrl()));
+          GetDeviceManagementUrl(), GetRealtimeReportingUrl(),
+          GetEncryptedReportingUrl()));
   std::unique_ptr<policy::DeviceManagementService> device_management_service(
       new policy::DeviceManagementService(std::move(configuration)));
   device_management_service->ScheduleInitialization(
