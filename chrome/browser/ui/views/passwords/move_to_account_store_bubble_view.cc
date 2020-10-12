@@ -22,8 +22,11 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/label.h"
@@ -34,54 +37,33 @@
 
 namespace {
 
-// The space between the right/bottom edge of the badge and the
-// right/bottom edge of the main icon.
-constexpr int kBadgeSpacing = 4;
-constexpr int kBadgeBorderWidth = 2;
 constexpr int kImageSize = BadgedProfilePhoto::kImageSize;
-// Width and Height of the badged icon.
-constexpr int kBadgedProfilePhotoSize = kImageSize + kBadgeSpacing;
 
-// An images view with an empty space for the badge.
-class ImageViewWithPlaceForBadge : public views::ImageView {
-  // views::ImageView
-  void OnPaint(gfx::Canvas* canvas) override {
-    const int kBadgeIconSize = gfx::kFaviconSize;
-    // Remove the part of the ImageView that contains the badge.
-    SkPath mask;
-    mask.addCircle(
-        /*x=*/GetMirroredXInView(kBadgedProfilePhotoSize - kBadgeIconSize / 2),
-        /*y=*/kBadgedProfilePhotoSize - kBadgeIconSize / 2,
-        /*radius=*/kBadgeIconSize / 2 + kBadgeBorderWidth);
-    mask.toggleInverseFillType();
-    canvas->ClipPath(mask, true);
-    ImageView::OnPaint(canvas);
-  }
-};
-
-// An image view that shows a vector icon and tracks changes in the theme.
-class VectorIconView : public ImageViewWithPlaceForBadge {
+// An image source that represent a filled circle of the given size and color.
+class CircleImageSource : public gfx::CanvasImageSource {
  public:
-  explicit VectorIconView(const gfx::VectorIcon& icon, int size)
-      : icon_(icon), size_(size) {}
+  CircleImageSource(int size, SkColor color)
+      : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
+  ~CircleImageSource() override = default;
 
-  // views::ImageView
-  void OnThemeChanged() override {
-    ImageView::OnThemeChanged();
-    const SkColor color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
-    SetImage(gfx::CreateVectorIcon(icon_, size_, color));
-    SizeToPreferredSize();
-  }
+  void Draw(gfx::Canvas* canvas) override;
 
  private:
-  const gfx::VectorIcon& icon_;
-  const int size_;
+  SkColor color_;
 };
+
+void CircleImageSource::Draw(gfx::Canvas* canvas) {
+  float radius = size().width() / 2.0f;
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setAntiAlias(true);
+  flags.setColor(color_);
+  canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
+}
 
 // A class represting an image with a badge. By default, the image is the globe
 // icon. However, badge could be updated via the UpdateBadge() method.
-class ImageWithBadge : public views::View {
+class ImageWithBadge : public views::ImageView {
  public:
   // Constructs a View hierarchy with the a badge positioned in the bottom-right
   // corner of |main_image|. In RTL mode the badge is positioned in the
@@ -90,52 +72,73 @@ class ImageWithBadge : public views::View {
   explicit ImageWithBadge(const gfx::VectorIcon& main_image);
   ~ImageWithBadge() override = default;
 
+  // views::ImageView:
+  void OnThemeChanged() override;
+
   void UpdateBadge(const gfx::ImageSkia& badge_image);
 
  private:
-  // Adds a default badge of "globe" icon.
-  void AddDefaultBadge();
+  gfx::ImageSkia GetMainImage();
+  gfx::ImageSkia GetBadge();
+  void Render();
 
-  views::ImageView* badge_view_;
+  const gfx::VectorIcon* main_vector_icon_ = nullptr;
+  base::Optional<gfx::ImageSkia> main_image_skia_;
+  base::Optional<gfx::ImageSkia> badge_image_skia_;
 };
 
-ImageWithBadge::ImageWithBadge(const gfx::ImageSkia& main_image) {
-  SetCanProcessEventsWithinSubtree(false);
-  auto main_view = std::make_unique<ImageViewWithPlaceForBadge>();
-  main_view->SetImage(main_image);
-  main_view->SizeToPreferredSize();
-  AddChildView(std::move(main_view));
-  AddDefaultBadge();
-}
+ImageWithBadge::ImageWithBadge(const gfx::ImageSkia& main_image)
+    : main_image_skia_(main_image) {}
 
-ImageWithBadge::ImageWithBadge(const gfx::VectorIcon& main_image) {
-  SetCanProcessEventsWithinSubtree(false);
-  auto main_view = std::make_unique<VectorIconView>(main_image, kImageSize);
-  main_view->SizeToPreferredSize();
-  AddChildView(std::move(main_view));
-  AddDefaultBadge();
-}
+ImageWithBadge::ImageWithBadge(const gfx::VectorIcon& main_image)
+    : main_vector_icon_(&main_image) {}
 
-void ImageWithBadge::AddDefaultBadge() {
-  const int kBadgeIconSize = gfx::kFaviconSize;
-  // Use a Globe icon as the default badge.
-  auto badge_view =
-      std::make_unique<VectorIconView>(kGlobeIcon, kBadgeIconSize);
-  badge_view->SetPosition(gfx::Point(kBadgedProfilePhotoSize - kBadgeIconSize,
-                                     kBadgedProfilePhotoSize - kBadgeIconSize));
-  badge_view->SizeToPreferredSize();
-  badge_view_ = AddChildView(std::move(badge_view));
-
-  SetPreferredSize(gfx::Size(kBadgedProfilePhotoSize, kBadgedProfilePhotoSize));
+void ImageWithBadge::OnThemeChanged() {
+  ImageView::OnThemeChanged();
+  Render();
 }
 
 void ImageWithBadge::UpdateBadge(const gfx::ImageSkia& badge_image) {
+  badge_image_skia_ = badge_image;
+  Render();
+}
+
+gfx::ImageSkia ImageWithBadge::GetMainImage() {
+  if (main_image_skia_)
+    return main_image_skia_.value();
+  DCHECK(main_vector_icon_);
+  const SkColor color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DefaultIconColor);
+  return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
+}
+
+gfx::ImageSkia ImageWithBadge::GetBadge() {
+  if (badge_image_skia_)
+    return badge_image_skia_.value();
+  // If there is no badge set, fallback to the default globe icon.
+  const SkColor color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DefaultIconColor);
+  return gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize, color);
+}
+
+void ImageWithBadge::Render() {
   gfx::Image rounded_badge = profiles::GetSizedAvatarIcon(
-      gfx::Image(badge_image),
+      gfx::Image(GetBadge()),
       /*is_rectangle=*/true, /*width=*/gfx::kFaviconSize,
       /*height=*/gfx::kFaviconSize, profiles::SHAPE_CIRCLE);
-  badge_view_->SetImage(rounded_badge.ToImageSkia());
-  badge_view_->SizeToPreferredSize();
+
+  gfx::ImageSkia badge_background =
+      gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
+          gfx::kFaviconSize, GetNativeTheme()->GetSystemColor(
+                                 ui::NativeTheme::kColorId_BubbleBackground));
+
+  gfx::ImageSkia rounded_badge_with_background =
+      gfx::ImageSkiaOperations::CreateSuperimposedImage(
+          badge_background, *rounded_badge.ToImageSkia());
+
+  gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
+      GetMainImage(), rounded_badge_with_background);
+  SetImage(badged_image);
 }
 
 std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
