@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/common/content_switches.h"
 
@@ -136,6 +137,10 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
         base::JoinString(actual_lines, "\n") + "\n";
     CHECK(base::WriteFile(expected_file, actual_contents_for_output));
     LOG(INFO) << "Wrote expectations to: " << expected_file.LossyDisplayName();
+#if defined(OS_ANDROID)
+    LOG(INFO) << "Generated expectations written to file on test device.";
+    LOG(INFO) << "To fetch, run: adb pull " << expected_file.LossyDisplayName();
+#endif
   }
 
   return !is_different;
