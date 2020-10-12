@@ -4884,6 +4884,7 @@ hooks = [
     ],
   },
   # Download AFDO profiles for Chrome OS for each architecture.
+  # TODO(crbug/1135245): silvermont, airmont, broadwell to be replaced by atom and bigcore
   {
     'name': 'Fetch Chrome OS AFDO profiles (silvermont)',
     'pattern': '.',
@@ -4917,6 +4918,30 @@ hooks = [
                 '--newest_state=src/chromeos/profiles/broadwell.afdo.newest.txt',
                 '--local_state=src/chromeos/profiles/broadwell.afdo.local.txt',
                 '--output_name=src/chromeos/profiles/broadwell.afdo.prof',
+                '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
+    ],
+  },
+  {
+    'name': 'Fetch Chrome OS AFDO profiles (from Intel Atom cores)',
+    'pattern': '.',
+    'condition': 'checkout_chromeos or checkout_simplechrome',
+    'action': [ 'vpython',
+		'src/tools/download_optimization_profile.py',
+                '--newest_state=src/chromeos/profiles/atom.afdo.newest.txt',
+                '--local_state=src/chromeos/profiles/atom.afdo.local.txt',
+                '--output_name=src/chromeos/profiles/atom.afdo.prof',
+                '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
+    ],
+  },
+  {
+    'name': 'Fetch Chrome OS AFDO profiles (from Intel big cores)',
+    'pattern': '.',
+    'condition': 'checkout_chromeos or checkout_simplechrome',
+    'action': [ 'vpython',
+                'src/tools/download_optimization_profile.py',
+                '--newest_state=src/chromeos/profiles/bigcore.afdo.newest.txt',
+                '--local_state=src/chromeos/profiles/bigcore.afdo.local.txt',
+                '--output_name=src/chromeos/profiles/bigcore.afdo.prof',
                 '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
     ],
   },

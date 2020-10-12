@@ -96,7 +96,7 @@ declare_args() {
   # the microarchitectures we are using. This is only used if
   # clang_use_default_sample_profile is true and clang_sample_profile_path is
   # empty.
-  chromeos_afdo_platform = "silvermont"
+  chromeos_afdo_platform = "atom"
 
   # Emit debug information for profiling wile building with clang.
   clang_emit_debug_info_for_profiling = false
@@ -2203,10 +2203,14 @@ if (is_clang && is_a_target_toolchain) {
     if (is_android) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
+      # TODO(crbug/1135245): Remove silvermont, airmont and broadwell after
+      # the change atom and bigcore reaches Chrome OS.
       assert(
           chromeos_afdo_platform == "silvermont" ||
               chromeos_afdo_platform == "airmont" ||
-              chromeos_afdo_platform == "broadwell",
+              chromeos_afdo_platform == "broadwell" ||
+              chromeos_afdo_platform == "atom" ||
+              chromeos_afdo_platform == "bigcore",
           "Only silvermont, airmont and broadwell are valid Chrome OS profiles.")
       _clang_sample_profile =
           "//chromeos/profiles/${chromeos_afdo_platform}.afdo.prof"
