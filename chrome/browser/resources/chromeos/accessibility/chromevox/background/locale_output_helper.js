@@ -23,6 +23,8 @@ LocaleOutputHelper = class {
         chrome.i18n.getUILanguage().toLowerCase();
     /** @private {string} */
     this.currentLocale_ = LocaleOutputHelper.BROWSER_UI_LOCALE_ || '';
+    /** @private {string} */
+    this.lastSpokenLocale_ = this.currentLocale_;
     /**
      * Confidence threshold to meet before assigning sub-node language.
      * @const
@@ -64,6 +66,7 @@ LocaleOutputHelper = class {
     if (this.hasVoiceForLocale_(newLocale)) {
       this.setCurrentLocale_(newLocale);
       if (shouldAnnounce) {
+        this.lastSpokenLocale_ = newLocale;
         // Prepend the human-readable locale to |outputString|.
         const displayLanguage =
             chrome.accessibilityPrivate.getDisplayNameForLocale(
@@ -141,21 +144,20 @@ LocaleOutputHelper = class {
    * @private
    */
   shouldAnnounceLocale_(newLocale) {
-    // Note: currentLocale_ and newLocale are guaranteed to contain a language
-    // code. However, they might not contain a country code.
-    const [currentLanguage, currentCountry] = this.currentLocale_.split('-');
+    const [lastSpokenLanguage, lastSpokenCountry] =
+        this.lastSpokenLocale_.split('-');
     const [newLanguage, newCountry] = newLocale.split('-');
-    if (currentLanguage !== newLanguage) {
+    if (lastSpokenLanguage !== newLanguage) {
       return true;
     }
 
-    if (!currentCountry || !newCountry) {
-      // If one of the countries is blank, then we don't want to announce the
-      // locale. For example, we don't want to announce 'en' -> 'en-us'.
+    if (!newCountry) {
+      // If |newCountry| is undefined, then we don't want to announce the
+      // locale. For example, we don't want to announce 'en-us' -> 'en'.
       return false;
     }
 
-    return currentCountry !== newCountry;
+    return lastSpokenCountry !== newCountry;
   }
 
   // =============== Static Methods ==============

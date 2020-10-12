@@ -578,42 +578,31 @@ TEST_F(
       });
     });
 
-TEST_F(
-    'ChromeVoxLocaleOutputHelperTest', 'DoNotAnnounceLocaleFirstCase',
-    function() {
-      const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(
-          `
+// Tests logic in shouldAnnounceLocale_(). We only announce the locale once when
+// transitioning to more specific locales, e.g. 'en' -> 'en-us'. Transitions to
+// less specific locales, e.g. 'en-us' -> 'en' should not be announced. Finally,
+// subsequent transitions to the same locale, e.g. 'en' -> 'en-us' should not be
+// announced.
+TEST_F('ChromeVoxLocaleOutputHelperTest', 'MaybeAnnounceLocale', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
   <p lang="en">Start</p>
-  <p lang="en-us">End</p>
+  <p lang="en-ca">Middle</p>
+  <p lang="en">Penultimate</p>
+  <p lang="en-ca">End</p>
   `,
-          function() {
-            localStorage['languageSwitching'] = 'true';
-            this.setAvailableVoices();
-            mockFeedback.call(doCmd('jumpToTop'))
-                .expectSpeechWithLocale('en', 'Start')
-                .call(doCmd('nextObject'))
-                .expectSpeechWithLocale('en-us', 'End')
-                .replay();
-          });
-    });
-
-TEST_F(
-    'ChromeVoxLocaleOutputHelperTest', 'DoNotAnnounceLocaleSecondCase',
-    function() {
-      const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(
-          `
-  <p lang="en-us">Start</p>
-  <p lang="en">End</p>
-  `,
-          function() {
-            localStorage['languageSwitching'] = 'true';
-            this.setAvailableVoices();
-            mockFeedback.call(doCmd('jumpToTop'))
-                .expectSpeechWithLocale('en-us', 'Start')
-                .call(doCmd('nextObject'))
-                .expectSpeechWithLocale('en', 'End')
-                .replay();
-          });
-    });
+      function() {
+        localStorage['languageSwitching'] = 'true';
+        this.setAvailableVoices();
+        mockFeedback.call(doCmd('jumpToTop'))
+            .expectSpeechWithLocale('en', 'Start')
+            .call(doCmd('nextObject'))
+            .expectSpeechWithLocale('en-ca', 'English (Canada): Middle')
+            .call(doCmd('nextObject'))
+            .expectSpeechWithLocale('en', 'Penultimate')
+            .call(doCmd('nextObject'))
+            .expectSpeechWithLocale('en-ca', 'End')
+            .replay();
+      });
+});
