@@ -60,11 +60,7 @@ TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', function() {
         .call(press(KeyCode.DOWN))
         .expectSpeech('Digits', 'List item', ' 2 of 2 ')
         .call(press(KeyCode.RETURN))
-
-        // TODO: The underlying select behavior here is unexpected because we
-        // never get a new focus event for the select (moving us away from the
-        // menu item). We simply repeat the menu item.
-        .expectSpeech('Digits', ' 2 of 2 ')
+        .expectSpeech('Digits', 'Collapsed')
         .call(() => {
           assertEquals('asDigits', localStorage['numberReadingStyle']);
         })
@@ -108,11 +104,7 @@ TEST_F_WITH_PREAMBLE(
             .call(press(KeyCode.DOWN))
             .expectSpeech('Some', 'List item', ' 2 of 3 ')
             .call(press(KeyCode.RETURN))
-
-            // TODO(josiahk): The underlying select behavior here is unexpected
-            // because we never get a new focus event for the select (moving us
-            // away from the menu item). We simply repeat the menu item.
-            .expectSpeech('Some', ' 2 of 3 ')
+            .expectSpeech('Some', 'Collapsed')
             .call(() => {
               assertEquals(
                   PUNCTUATION_ECHO_SOME,
