@@ -68,7 +68,7 @@ ModelAssociationManager::ModelAssociationManager(
       configure_status_(DataTypeManager::UNKNOWN),
       notified_about_ready_for_configure_(false) {}
 
-ModelAssociationManager::~ModelAssociationManager() {}
+ModelAssociationManager::~ModelAssociationManager() = default;
 
 void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
                                          ModelTypeSet preferred_types,
@@ -185,8 +185,7 @@ void ModelAssociationManager::StopDatatypeImpl(
 
 void ModelAssociationManager::LoadEnabledTypes() {
   // Load in kStartOrder.
-  for (size_t i = 0; i < base::size(kStartOrder); i++) {
-    ModelType type = kStartOrder[i];
+  for (ModelType type : kStartOrder) {
     if (!desired_types_.Has(type))
       continue;
 
@@ -203,6 +202,7 @@ void ModelAssociationManager::LoadEnabledTypes() {
                               weak_ptr_factory_.GetWeakPtr()));
     }
   }
+  // It's possible that all models are already loaded.
   NotifyDelegateIfReadyForConfigure();
 }
 
@@ -233,9 +233,8 @@ void ModelAssociationManager::StartAssociationAsync(
                base::BindOnce(&ModelAssociationManager::ModelAssociationDone,
                               weak_ptr_factory_.GetWeakPtr(), INITIALIZED));
 
-  // Start association of types that are loaded in specified order.
-  for (size_t i = 0; i < base::size(kStartOrder); i++) {
-    ModelType type = kStartOrder[i];
+  // Associate types that are already loaded in specified order.
+  for (ModelType type : kStartOrder) {
     if (!associating_types_.Has(type) || !loaded_types_.Has(type))
       continue;
 
@@ -243,7 +242,7 @@ void ModelAssociationManager::StartAssociationAsync(
     TRACE_EVENT_ASYNC_BEGIN1("sync", "ModelAssociation", dtc, "DataType",
                              ModelTypeToString(type));
 
-    TypeStartCallback(type);
+    MarkDataTypeAssociationDone(type);
   }
 }
 
@@ -310,26 +309,26 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
     // MODEL_LOADED.
     // TODO(pavely): Add test for this scenario in DataTypeManagerImpl
     // unittests.
+    // TODO(crbug.com/647505): The above sounds quite broken (will
+    // MarkDataTypeAssociationDone never get called in that case?!), and also
+    // outdated (StartAssociating doesn't exist anymore). Can we just move the
+    // NotifyDelegateIfReadyForConfigure call below?
     if (dtc->state() == DataTypeController::MODEL_LOADED) {
-      TypeStartCallback(type);
+      MarkDataTypeAssociationDone(type);
     }
   }
 }
 
-void ModelAssociationManager::TypeStartCallback(ModelType type) {
-  // This happens for example if a type disables itself after initial
-  // configuration.
-  if (!desired_types_.Has(type)) {
-    // It's possible all types failed to associate, in which case association
-    // is complete.
-    if (state_ == ASSOCIATING && associating_types_.Empty())
-      ModelAssociationDone(INITIALIZED);
-    return;
-  }
-
+void ModelAssociationManager::MarkDataTypeAssociationDone(ModelType type) {
+  DCHECK(desired_types_.Has(type));
+  DCHECK(associating_types_.Has(type));
+  DCHECK(loaded_types_.Has(type));
   DCHECK(!associated_types_.Has(type));
+
   associated_types_.Put(type);
 
+  // TODO(crbug.com/647505): Should we check this *before* adding the type to
+  // |associated_types_|?
   if (state_ != ASSOCIATING)
     return;
 

@@ -104,10 +104,6 @@ class ModelAssociationManager {
                     ShutdownReason shutdown_reason,
                     SyncError error);
 
-  // This is used for TESTING PURPOSE ONLY. The test case can inspect
-  // and modify the timer.
-  // TODO(sync) : This would go away if we made this class be able to do
-  // Dependency injection. crbug.com/129212.
   base::OneShotTimer* GetTimerForTesting();
 
   State state() const { return state_; }
@@ -120,8 +116,7 @@ class ModelAssociationManager {
   // will be passed to |LoadModels| function.
   void ModelLoadCallback(ModelType type, const SyncError& error);
 
-  // TODO(crbug.com/647505): Consider removing or renaming this function.
-  void TypeStartCallback(ModelType type);
+  void MarkDataTypeAssociationDone(ModelType type);
 
   // Called when all requested types are associated or association times out.
   // Will clean up any unfinished types, and update |state_| to be |new_state|
