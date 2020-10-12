@@ -595,10 +595,9 @@ Polymer({
     if (this.mojoType_ === mojom.NetworkType.kVPN) {
       let saveCredentials = false;
       const vpn = managedProperties.typeProperties.vpn;
-      const vpnType = vpn.type && vpn.type.value;
-      if (vpnType === mojom.VpnType.kOpenVPN) {
+      if (vpn.type === mojom.VpnType.kOpenVPN) {
         saveCredentials = this.getActiveBoolean_(vpn.openVpn.saveCredentials);
-      } else if (vpnType === mojom.VpnType.kL2TPIPsec) {
+      } else if (vpn.type === mojom.VpnType.kL2TPIPsec) {
         saveCredentials = this.getActiveBoolean_(vpn.ipSec.saveCredentials) ||
             this.getActiveBoolean_(vpn.l2tp.saveCredentials);
       }
