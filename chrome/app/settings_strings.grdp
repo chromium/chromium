@@ -358,6 +358,9 @@
       =1 {Found {COUNT} security issue}
       other {Found {COUNT} security issues}}
   </message>
+  <message name="IDS_SETTINGS_NO_WEAK_PASSWORDS_FOUND" desc="Description used only when user is signed out and full password check was not completed and no weak passwords found afther the password weakness check.">
+    No weak passwords found
+  </message>
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_AGAIN" desc="Button to start bulk password check manually in passwords check section.">
     Check again
   </message>

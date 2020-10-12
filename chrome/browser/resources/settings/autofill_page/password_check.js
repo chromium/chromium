@@ -661,7 +661,12 @@ Polymer({
    */
   getPasswordsCount_() {
     if (this.passwordsWeaknessCheckEnabled) {
-      return this.insecurePasswordsCount;
+      if (this.isSignedOut_ &&
+          this.leakedPasswords.length + this.weakPasswords.length === 0) {
+        return this.i18n('noWeakPasswords');
+      } else {
+        return this.insecurePasswordsCount;
+      }
     } else {
       return this.compromisedPasswordsCount;
     }
