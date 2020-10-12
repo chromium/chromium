@@ -19,6 +19,10 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .routine-container {
+    @apply --diagnostics-default-font;
+  }
+
   .spacing {
     margin: 18px 0px;
     padding-inline-end: 15px;
@@ -41,5 +45,9 @@
     <div id="body" class="body-container">
       <slot name="body"></slot>
     </div>
+  </div>
+
+  <div id="routines" class="routine-container spacing">
+    <slot name="routines"></slot>
   </div>
 </div>
