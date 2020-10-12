@@ -129,6 +129,12 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 @implementation ChromeMatchersAppInterface
 
++ (id<GREYMatcher>)windowWithNumber:(int)windowNumber {
+  return grey_allOf(
+      grey_accessibilityLabel([NSString stringWithFormat:@"%d", windowNumber]),
+      grey_kindOfClass([UIWindow class]), nil);
+}
+
 + (id<GREYMatcher>)buttonWithAccessibilityLabel:(NSString*)label {
   return grey_allOf(grey_accessibilityLabel(label),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
