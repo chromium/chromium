@@ -50,6 +50,9 @@ public class TabGroupUtils {
                                 FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE))) {
             return;
         }
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled() && view == null) {
+            return;
+        }
 
         @StringRes
         int textId;
