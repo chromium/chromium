@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/pickle.h"
+#include "build/build_config.h"
 #include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -58,7 +59,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
-#if defined(USE_X11)
+#if defined(OS_LINUX)
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
 #endif
@@ -104,6 +105,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   // For HTML format
   base::string16 html_;
   GURL base_url_;
+
+  bool originated_from_renderer_ = false;
 };
 
 }  // namespace ui

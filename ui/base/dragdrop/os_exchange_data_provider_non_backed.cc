@@ -40,12 +40,11 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
 }
 
 void OSExchangeDataProviderNonBacked::MarkOriginatedFromRenderer() {
-  // TODO(dcheng): Currently unneeded because ChromeOS Aura correctly separates
-  // URL and filename metadata, and does not implement the DownloadURL protocol.
+  originated_from_renderer_ = true;
 }
 
 bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
-  return false;
+  return originated_from_renderer_;
 }
 
 void OSExchangeDataProviderNonBacked::SetString(const base::string16& data) {
@@ -85,6 +84,15 @@ void OSExchangeDataProviderNonBacked::SetPickledData(
 }
 
 bool OSExchangeDataProviderNonBacked::GetString(base::string16* data) const {
+#if defined(OS_LINUX)
+  if (HasFile()) {
+    // Various Linux file managers both pass a list of file:// URIs and set the
+    // string representation to the URI. We explicitly don't want to return use
+    // this representation.
+    return false;
+  }
+#endif  // defined(OS_LINUX)
+
   if ((formats_ & OSExchangeData::STRING) == 0)
     return false;
   *data = string_;
@@ -160,11 +168,11 @@ bool OSExchangeDataProviderNonBacked::HasCustomFormat(
   return base::Contains(pickle_data_, format);
 }
 
-#if defined(USE_X11)
+#if defined(OS_LINUX)
 void OSExchangeDataProviderNonBacked::SetFileContents(
     const base::FilePath& filename,
     const std::string& file_contents) {
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 #endif
 

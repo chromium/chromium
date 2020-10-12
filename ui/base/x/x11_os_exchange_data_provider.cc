@@ -367,7 +367,6 @@ bool XOSExchangeDataProvider::HasCustomFormat(
   return !requested_types.empty();
 }
 
-#if defined(USE_X11)
 void XOSExchangeDataProvider::SetFileContents(
     const base::FilePath& filename,
     const std::string& file_contents) {
@@ -398,7 +397,6 @@ void XOSExchangeDataProvider::SetFileContents(
              scoped_refptr<base::RefCountedMemory>(
                  base::RefCountedString::TakeString(&file_contents_copy)));
 }
-#endif
 
 void XOSExchangeDataProvider::SetHtml(const base::string16& html,
                                       const GURL& base_url) {

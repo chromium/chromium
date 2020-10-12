@@ -82,10 +82,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
-#if defined(USE_X11)
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
-#endif
 
   void SetHtml(const base::string16& html, const GURL& base_url) override;
   bool GetHtml(base::string16* html, GURL* base_url) const override;
