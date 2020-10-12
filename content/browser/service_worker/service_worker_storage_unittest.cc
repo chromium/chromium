@@ -69,6 +69,29 @@ ResourceRecord CreateResourceRecord(int64_t resource_id,
                                                           size_bytes);
 }
 
+storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
+    int64_t registration_id,
+    int64_t version_id,
+    const GURL& scope,
+    const GURL& script_url,
+    const std::vector<ResourceRecord>& resources) {
+  auto data = storage::mojom::ServiceWorkerRegistrationData::New();
+  data->registration_id = registration_id;
+  data->version_id = version_id;
+  data->scope = scope;
+  data->script = script_url;
+  data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
+  data->is_active = true;
+
+  int64_t resources_total_size_bytes = 0;
+  for (auto& resource : resources) {
+    resources_total_size_bytes += resource->size_bytes;
+  }
+  data->resources_total_size_bytes = resources_total_size_bytes;
+
+  return data;
+}
+
 void StatusCallback(base::OnceClosure quit_closure,
                     base::Optional<blink::ServiceWorkerStatusCode>* result,
                     blink::ServiceWorkerStatusCode status) {
@@ -635,22 +658,20 @@ class ServiceWorkerStorageTest : public testing::Test {
     return ids;
   }
 
-  // Directly writes a registration using
-  // ServiceWorkerDatabase::WriteRegistration rather than
-  // ServiceWorkerStorage::StoreRegistration. Useful for simulating a
-  // registration written by an earlier version of Chrome.
-  void WriteRegistrationToDB(const RegistrationData& registration,
-                             const std::vector<ResourceRecord>& resources) {
-    ServiceWorkerDatabase* database_raw = database();
+  void StoreRegistrationData(
+      storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
+      std::vector<ResourceRecord> resources) {
     base::RunLoop loop;
-    storage()->database_task_runner_->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          ServiceWorkerDatabase::DeletedVersion deleted_version;
-          ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-                    database_raw->WriteRegistration(registration, resources,
-                                                    &deleted_version));
-          loop.Quit();
-        }));
+    storage()->StoreRegistrationData(
+        std::move(registration_data), std::move(resources),
+        base::BindLambdaForTesting(
+            [&](storage::mojom::ServiceWorkerDatabaseStatus status,
+                int64_t /*deleted_version_id*/,
+                const std::vector<int64_t>& /*newly_purgeable_resources*/) {
+              ASSERT_EQ(storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+                        status);
+              loop.Quit();
+            }));
     loop.Run();
   }
 
@@ -1820,32 +1841,32 @@ TEST_F(ServiceWorkerResourceStorageTest, UpdateRegistration_NoLiveVersion) {
 TEST_F(ServiceWorkerStorageTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   const GURL origin1("http://www1.example.com");
   const GURL scope1("http://www1.example.com/foo/");
-  RegistrationData data1;
-  data1.registration_id = 100;
-  data1.scope = scope1;
-  data1.script = GURL(origin1.spec() + "/script.js");
-  data1.version_id = 1000;
-  data1.is_active = true;
-  data1.resources_total_size_bytes = 100;
-  // Don't set origin_trial_tokens to simulate old database entry.
+  const GURL script1(origin1.spec() + "/script.js");
   std::vector<ResourceRecord> resources1;
-  resources1.push_back(CreateResourceRecord(1, data1.script, 100));
-  WriteRegistrationToDB(data1, resources1);
+  resources1.push_back(CreateResourceRecord(1, script1, 100));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
+      CreateRegistrationData(
+          /*registration_id=*/100,
+          /*version_id=*/1000,
+          /*scope=*/scope1,
+          /*script_url=*/script1, resources1);
+  // Don't set origin_trial_tokens to simulate old database entry.
+  StoreRegistrationData(std::move(data1), std::move(resources1));
 
   const GURL origin2("http://www2.example.com");
   const GURL scope2("http://www2.example.com/foo/");
-  RegistrationData data2;
-  data2.registration_id = 200;
-  data2.scope = scope2;
-  data2.script = GURL(origin2.spec() + "/script.js");
-  data2.version_id = 2000;
-  data2.is_active = true;
-  data2.resources_total_size_bytes = 200;
-  // Set empty origin_trial_tokens.
-  data2.origin_trial_tokens = blink::TrialTokenValidator::FeatureToTokensMap();
+  const GURL script2(origin2.spec() + "/script.js");
   std::vector<ResourceRecord> resources2;
-  resources2.push_back(CreateResourceRecord(2, data2.script, 200));
-  WriteRegistrationToDB(data2, resources2);
+  resources2.push_back(CreateResourceRecord(2, script2, 200));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data2 =
+      CreateRegistrationData(
+          /*registration_id=*/200,
+          /*version_id=*/2000,
+          /*scope=*/scope2,
+          /*script_url=*/script2, resources2);
+  // Set empty origin_trial_tokens.
+  data2->origin_trial_tokens = blink::TrialTokenValidator::FeatureToTokensMap();
+  StoreRegistrationData(std::move(data2), std::move(resources2));
 
   scoped_refptr<ServiceWorkerRegistration> found_registration;
 
@@ -1868,17 +1889,17 @@ TEST_F(ServiceWorkerStorageTest, OriginTrialsAbsentEntryAndEmptyEntry) {
 TEST_F(ServiceWorkerStorageTest, AbsentNavigationPreloadState) {
   const GURL origin1("http://www1.example.com");
   const GURL scope1("http://www1.example.com/foo/");
-  RegistrationData data1;
-  data1.registration_id = 100;
-  data1.scope = scope1;
-  data1.script = GURL(origin1.spec() + "/script.js");
-  data1.version_id = 1000;
-  data1.is_active = true;
-  data1.resources_total_size_bytes = 100;
-  // Don't set navigation preload state to simulate old database entry.
+  const GURL script1(origin1.spec() + "/script.js");
   std::vector<ResourceRecord> resources1;
-  resources1.push_back(CreateResourceRecord(1, data1.script, 100));
-  WriteRegistrationToDB(data1, std::move(resources1));
+  resources1.push_back(CreateResourceRecord(1, script1, 100));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
+      CreateRegistrationData(
+          /*registration_id=*/100,
+          /*version_id=*/1000,
+          /*scope=*/scope1,
+          /*script_url=*/script1, resources1);
+  // Don't set navigation preload state to simulate old database entry.
+  StoreRegistrationData(std::move(data1), std::move(resources1));
 
   scoped_refptr<ServiceWorkerRegistration> found_registration;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
@@ -1896,60 +1917,55 @@ TEST_F(ServiceWorkerStorageTest, AbsentNavigationPreloadState) {
 
 // Tests reading storage usage from database.
 TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
+  const int64_t kRegistrationId1 = 1;
   const GURL kScope1("https://www.example.com/foo/");
   const GURL kScript1("https://www.example.com/foo/sw.js");
+  const int64_t kRegistrationId2 = 2;
   const GURL kScope2("https://www.example.com/bar/");
   const GURL kScript2("https://www.example.com/bar/sw.js");
   const GURL kScript3("https://www.example.com/bar/sub.js");
 
   // Preparation: Store two registrations.
-  RegistrationData data1;
-  data1.registration_id = 1;
-  data1.scope = kScope1;
-  data1.script = kScript1;
-  data1.version_id = 1;
-  data1.is_active = true;
   std::vector<ResourceRecord> resources1;
   resources1.push_back(CreateResourceRecord(1, kScript1, 123));
-  data1.resources_total_size_bytes = 0;
-  for (auto& resource : resources1) {
-    data1.resources_total_size_bytes += resource->size_bytes;
-  }
-  WriteRegistrationToDB(data1, std::move(resources1));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
+      CreateRegistrationData(
+          /*registration_id=*/kRegistrationId1,
+          /*version_id=*/1,
+          /*scope=*/kScope1,
+          /*script_url=*/kScript1, resources1);
+  int64_t resources_total_size_bytes1 = data1->resources_total_size_bytes;
+  StoreRegistrationData(std::move(data1), std::move(resources1));
 
-  RegistrationData data2;
-  data2.registration_id = 2;
-  data2.scope = kScope2;
-  data2.script = kScript2;
-  data2.version_id = 1;
-  data2.is_active = true;
   std::vector<ResourceRecord> resources2;
   resources2.push_back(CreateResourceRecord(2, kScript2, 456));
   resources2.push_back(CreateResourceRecord(3, kScript3, 789));
-  data2.resources_total_size_bytes = 0;
-  for (auto& resource : resources2) {
-    data2.resources_total_size_bytes += resource->size_bytes;
-  }
-  WriteRegistrationToDB(data2, std::move(resources2));
+  storage::mojom::ServiceWorkerRegistrationDataPtr data2 =
+      CreateRegistrationData(
+          /*registration_id=*/kRegistrationId2,
+          /*version_id=*/1,
+          /*scope=*/kScope1,
+          /*script_url=*/kScript2, resources2);
+  int64_t resources_total_size_bytes2 = data2->resources_total_size_bytes;
+  StoreRegistrationData(std::move(data2), std::move(resources2));
 
   // Storage usage should report total resource size from two registrations.
   const url::Origin origin = url::Origin::Create(kScope1.GetOrigin());
   int64_t usage;
   EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(usage, data1.resources_total_size_bytes +
-                       data2.resources_total_size_bytes);
+  EXPECT_EQ(usage, resources_total_size_bytes1 + resources_total_size_bytes2);
 
   // Delete the first registration. Storage usage should report only the second
   // registration.
-  EXPECT_EQ(DeleteRegistrationById(data1.registration_id, origin.GetURL()),
+  EXPECT_EQ(DeleteRegistrationById(kRegistrationId1, origin.GetURL()),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(usage, data2.resources_total_size_bytes);
+  EXPECT_EQ(usage, resources_total_size_bytes2);
 
   // Delete the second registration. No storage usage should be reported.
-  EXPECT_EQ(DeleteRegistrationById(data2.registration_id, origin.GetURL()),
+  EXPECT_EQ(DeleteRegistrationById(kRegistrationId2, origin.GetURL()),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(GetStorageUsageForOrigin(origin, usage),
             blink::ServiceWorkerStatusCode::kOk);
