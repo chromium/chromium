@@ -79,6 +79,7 @@ extern const base::Feature kIPHFeedHeaderMenuFeature;
 extern const base::Feature kIPHChromeReengagementNotification1Feature;
 extern const base::Feature kIPHChromeReengagementNotification2Feature;
 extern const base::Feature kIPHChromeReengagementNotification3Feature;
+extern const base::Feature kIPHPwaInstallAvailableFeature;
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)

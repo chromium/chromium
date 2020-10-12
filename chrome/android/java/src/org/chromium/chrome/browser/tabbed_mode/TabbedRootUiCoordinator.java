@@ -19,6 +19,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
+import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -77,6 +79,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
+    private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private ObservableSupplier<Boolean> mIntentWithEffect;
     private Callback<Boolean> mIntentWithEffectObserver;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -150,6 +153,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
 
         if (mToolbarButtonInProductHelpController != null) {
             mToolbarButtonInProductHelpController.destroy();
+        }
+
+        if (mAppBannerInProductHelpController != null) {
+            AppBannerInProductHelpControllerFactory.detach(mAppBannerInProductHelpController);
         }
 
         if (mHistoryNavigationCoordinator != null) {
@@ -319,6 +326,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
                     new OfflineIndicatorInProductHelpController(mActivity, mToolbarManager,
                             mAppMenuCoordinator.getAppMenuHandler(), mStatusIndicatorCoordinator);
         }
+
+        mAppBannerInProductHelpController =
+                AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
+                        mActivity, mAppMenuCoordinator.getAppMenuHandler(),
+                        () -> mActivity.getToolbarManager().getMenuButtonView());
+        AppBannerInProductHelpControllerFactory.attach(
+                mActivity.getWindowAndroid(), mAppBannerInProductHelpController);
     }
 
     private void initStatusIndicatorCoordinator(LayoutManager layoutManager) {

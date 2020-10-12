@@ -45,6 +45,10 @@ const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
 #endif  // defined(OS_IOS)
 
+#if defined(OS_ANDROID)
+const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";
+#endif  // defined(OS_ANDROID)
+
 }  // namespace events
 
 }  // namespace feature_engagement

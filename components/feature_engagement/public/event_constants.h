@@ -80,6 +80,12 @@ extern const char kBottomToolbarOpened[];
 extern const char kDiscoverFeedLoaded[];
 #endif  // defined(OS_IOS)
 
+// Android.
+#if defined(OS_ANDROID)
+// The user has explicitly used the Install menu item under the App Menu.
+extern const char kPwaInstallMenuSelected[];
+#endif  // defined(OS_ANDROID)
+
 }  // namespace events
 
 }  // namespace feature_engagement

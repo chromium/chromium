@@ -132,6 +132,11 @@ class AppBannerManagerAndroid
   // Returns the appropriate app name based on whether we have a native/web app.
   base::string16 GetAppName() const override;
 
+  // Shows the in-product help if possible and returns true when a request to
+  // show it was made, but false if conditions (e.g. engagement score) for
+  // showing where not deemed adequate.
+  bool MaybeShowInProductHelp() const;
+
   // Hides the ambient badge if it is showing.
   void HideAmbientBadge();
 

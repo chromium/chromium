@@ -16,7 +16,10 @@
 #include "chrome/browser/banners/app_banner_manager_android.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/installable/installable_metrics.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -209,6 +212,14 @@ void AddToHomescreenMediator::OnDataAvailable(const ShortcutInfo& info,
   }
   UMA_HISTOGRAM_ENUMERATION("Webapp.AddToHomescreenMediator.AppTypeToMenuEntry",
                             entry, AppTypeToMenuEntry::kAppTypeFinalEntry);
+
+  if (is_webapk) {
+    DVLOG(2) << "Sending event: IPH used for Installing PWA";
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(
+            data_fetcher_->web_contents()->GetBrowserContext());
+    tracker->NotifyEvent(feature_engagement::events::kPwaInstallMenuSelected);
+  }
 }
 
 void AddToHomescreenMediator::RecordEventForAppMenu(

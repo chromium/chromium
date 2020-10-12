@@ -41,7 +41,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.HOMEPAGE_PROMO_CARD_FEATURE, FeatureConstants.FEED_HEADER_MENU_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
-        FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE})
+        FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
+        FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
@@ -203,4 +204,9 @@ public @interface FeatureConstants {
      * An IPH feature to show the third re-engagement notification.
      */
     String CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE = "IPH_ChromeReengagementNotification3";
+
+    /**
+     * An IPH feature to inform users that installing a PWA is an option.
+     */
+    String PWA_INSTALL_AVAILABLE_FEATURE = "IPH_PwaInstallAvailable";
 }
