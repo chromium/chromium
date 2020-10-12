@@ -29,7 +29,6 @@ using sync_pb::UserEventSpecifics;
 using syncer::FakeUserEventService;
 using syncer::SyncService;
 using syncer::SyncServiceObserver;
-using syncer::TypeDebugInfoObserver;
 
 namespace {
 
@@ -53,14 +52,6 @@ class TestSyncService : public syncer::FakeSyncService {
     ++remove_observer_count_;
   }
 
-  void AddTypeDebugInfoObserver(TypeDebugInfoObserver* observer) override {
-    ++add_type_debug_info_observer_count_;
-  }
-
-  void RemoveTypeDebugInfoObserver(TypeDebugInfoObserver* observer) override {
-    ++remove_type_debug_info_observer_count_;
-  }
-
   base::WeakPtr<syncer::JsController> GetJsController() override {
     return js_controller_.AsWeakPtr();
   }
@@ -73,12 +64,6 @@ class TestSyncService : public syncer::FakeSyncService {
 
   int add_observer_count() const { return add_observer_count_; }
   int remove_observer_count() const { return remove_observer_count_; }
-  int add_type_debug_info_observer_count() const {
-    return add_type_debug_info_observer_count_;
-  }
-  int remove_type_debug_info_observer_count() const {
-    return remove_type_debug_info_observer_count_;
-  }
   base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
   get_all_nodes_callback() {
     return std::move(get_all_nodes_callback_);
@@ -87,8 +72,6 @@ class TestSyncService : public syncer::FakeSyncService {
  private:
   int add_observer_count_ = 0;
   int remove_observer_count_ = 0;
-  int add_type_debug_info_observer_count_ = 0;
-  int remove_type_debug_info_observer_count_ = 0;
   syncer::MockJsController js_controller_;
   base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
       get_all_nodes_callback_;
@@ -219,19 +202,12 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
   handler()->HandleRegisterForEvents(&empty_list);
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
 
-  EXPECT_EQ(0, test_sync_service()->add_type_debug_info_observer_count());
-  handler()->HandleRegisterForPerTypeCounters(&empty_list);
-  EXPECT_EQ(1, test_sync_service()->add_type_debug_info_observer_count());
-
   EXPECT_EQ(0, test_sync_service()->remove_observer_count());
-  EXPECT_EQ(0, test_sync_service()->remove_type_debug_info_observer_count());
   ResetHandler();
   EXPECT_EQ(1, test_sync_service()->remove_observer_count());
-  EXPECT_EQ(1, test_sync_service()->remove_type_debug_info_observer_count());
 
-  // Add calls should never have increased since the initial subscription.
+  // Add call should not have increased since the initial subscription.
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
-  EXPECT_EQ(1, test_sync_service()->add_type_debug_info_observer_count());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
@@ -241,22 +217,14 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
   handler()->HandleRegisterForEvents(&empty_list);
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
 
-  EXPECT_EQ(0, test_sync_service()->add_type_debug_info_observer_count());
-  handler()->HandleRegisterForPerTypeCounters(&empty_list);
-  EXPECT_EQ(1, test_sync_service()->add_type_debug_info_observer_count());
-
   EXPECT_EQ(0, test_sync_service()->remove_observer_count());
-  EXPECT_EQ(0, test_sync_service()->remove_type_debug_info_observer_count());
   handler()->DisallowJavascript();
   EXPECT_EQ(1, test_sync_service()->remove_observer_count());
-  EXPECT_EQ(1, test_sync_service()->remove_type_debug_info_observer_count());
 
   // Deregistration should not repeat, no counts should increase.
   ResetHandler();
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
-  EXPECT_EQ(1, test_sync_service()->add_type_debug_info_observer_count());
   EXPECT_EQ(1, test_sync_service()->remove_observer_count());
-  EXPECT_EQ(1, test_sync_service()->remove_type_debug_info_observer_count());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
@@ -266,31 +234,10 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
 
   ListValue empty_list;
   handler()->HandleRegisterForEvents(&empty_list);
-  handler()->HandleRegisterForPerTypeCounters(&empty_list);
   handler()->DisallowJavascript();
   // Cannot verify observer methods on sync services were not called, because
   // there is no sync service. Rather, we're just making sure the handler hasn't
   // performed any invalid operations when the sync service is missing.
-}
-
-TEST_F(SyncInternalsMessageHandlerTest,
-       RepeatedHandleRegisterForPerTypeCounters) {
-  ListValue empty_list;
-  handler()->HandleRegisterForPerTypeCounters(&empty_list);
-  EXPECT_EQ(1, test_sync_service()->add_type_debug_info_observer_count());
-  EXPECT_EQ(0, test_sync_service()->remove_type_debug_info_observer_count());
-
-  handler()->HandleRegisterForPerTypeCounters(&empty_list);
-  EXPECT_EQ(2, test_sync_service()->add_type_debug_info_observer_count());
-  EXPECT_EQ(1, test_sync_service()->remove_type_debug_info_observer_count());
-
-  handler()->HandleRegisterForPerTypeCounters(&empty_list);
-  EXPECT_EQ(3, test_sync_service()->add_type_debug_info_observer_count());
-  EXPECT_EQ(2, test_sync_service()->remove_type_debug_info_observer_count());
-
-  ResetHandler();
-  EXPECT_EQ(3, test_sync_service()->add_type_debug_info_observer_count());
-  EXPECT_EQ(3, test_sync_service()->remove_type_debug_info_observer_count());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {

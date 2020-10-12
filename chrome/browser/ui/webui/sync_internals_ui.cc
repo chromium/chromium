@@ -35,7 +35,6 @@ content::WebUIDataSource* CreateSyncInternalsHTMLSource() {
        IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_JS},
       {syncer::sync_ui_util::kChromeSyncJS,
        IDR_SYNC_DRIVER_SYNC_INTERNALS_CHROME_SYNC_JS},
-      {syncer::sync_ui_util::kTypesJS, IDR_SYNC_DRIVER_SYNC_INTERNALS_TYPES_JS},
       {syncer::sync_ui_util::kSyncLogJS,
        IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_LOG_JS},
       {syncer::sync_ui_util::kSyncNodeBrowserJS,

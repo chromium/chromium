@@ -16,9 +16,6 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "components/sync/engine/cycle/commit_counters.h"
-#include "components/sync/engine/cycle/status_counters.h"
-#include "components/sync/engine/cycle/update_counters.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/js/js_event_details.h"
 #include "ios/components/webui/web_ui_provider.h"
@@ -54,10 +51,6 @@ SyncInternalsMessageHandler::~SyncInternalsMessageHandler() {
     service->RemoveObserver(this);
     service->RemoveProtocolEventObserver(this);
   }
-
-  if (service && is_registered_for_counters_) {
-    service->RemoveTypeDebugInfoObserver(this);
-  }
 }
 
 void SyncInternalsMessageHandler::RegisterMessages() {
@@ -67,12 +60,6 @@ void SyncInternalsMessageHandler::RegisterMessages() {
       syncer::sync_ui_util::kRegisterForEvents,
       base::BindRepeating(&SyncInternalsMessageHandler::HandleRegisterForEvents,
                           base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRegisterForPerTypeCounters,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRegisterForPerTypeCounters,
-          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       syncer::sync_ui_util::kRequestUpdatedAboutInfo,
@@ -140,22 +127,6 @@ void SyncInternalsMessageHandler::HandleRegisterForEvents(
     js_controller_ = service->GetJsController();
     js_controller_->AddJsEventHandler(this);
     is_registered_ = true;
-  }
-}
-
-void SyncInternalsMessageHandler::HandleRegisterForPerTypeCounters(
-    const base::ListValue* args) {
-  DCHECK(args->empty());
-
-  if (syncer::SyncService* service = GetSyncService()) {
-    if (!is_registered_for_counters_) {
-      service->AddTypeDebugInfoObserver(this);
-      is_registered_for_counters_ = true;
-    } else {
-      // Re-register to ensure counters get re-emitted.
-      service->RemoveTypeDebugInfoObserver(this);
-      service->AddTypeDebugInfoObserver(this);
-    }
   }
 }
 
@@ -285,35 +256,6 @@ void SyncInternalsMessageHandler::OnProtocolEvent(
   std::unique_ptr<base::DictionaryValue> value(
       event.ToValue(include_specifics_));
   DispatchEvent(syncer::sync_ui_util::kOnProtocolEvent, *value);
-}
-
-void SyncInternalsMessageHandler::OnCommitCountersUpdated(
-    syncer::ModelType type,
-    const syncer::CommitCounters& counters) {
-  EmitCounterUpdate(type, syncer::sync_ui_util::kCommit, counters.ToValue());
-}
-
-void SyncInternalsMessageHandler::OnUpdateCountersUpdated(
-    syncer::ModelType type,
-    const syncer::UpdateCounters& counters) {
-  EmitCounterUpdate(type, syncer::sync_ui_util::kUpdate, counters.ToValue());
-}
-
-void SyncInternalsMessageHandler::OnStatusCountersUpdated(
-    syncer::ModelType type,
-    const syncer::StatusCounters& counters) {
-  EmitCounterUpdate(type, syncer::sync_ui_util::kStatus, counters.ToValue());
-}
-
-void SyncInternalsMessageHandler::EmitCounterUpdate(
-    syncer::ModelType type,
-    const std::string& counter_type,
-    std::unique_ptr<base::DictionaryValue> value) {
-  std::unique_ptr<base::DictionaryValue> details(new base::DictionaryValue());
-  details->SetString(syncer::sync_ui_util::kModelType, ModelTypeToString(type));
-  details->SetString(syncer::sync_ui_util::kCounterType, counter_type);
-  details->Set(syncer::sync_ui_util::kCounters, std::move(value));
-  DispatchEvent(syncer::sync_ui_util::kOnCountersUpdated, *details);
 }
 
 void SyncInternalsMessageHandler::HandleJsEvent(

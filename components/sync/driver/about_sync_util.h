@@ -36,7 +36,6 @@ extern const char kSyncIndexJS[];
 extern const char kSyncLogJS[];
 extern const char kSyncNodeBrowserJS[];
 extern const char kSyncSearchJS[];
-extern const char kTypesJS[];
 extern const char kUserEventsJS[];
 extern const char kTrafficLogJS[];
 
@@ -46,7 +45,6 @@ extern const char kDispatchEvent[];
 extern const char kGetAllNodes[];
 extern const char kGetAllNodesCallback[];
 extern const char kRegisterForEvents[];
-extern const char kRegisterForPerTypeCounters[];
 extern const char kRequestIncludeSpecificsInitialState[];
 extern const char kRequestListOfTypes[];
 extern const char kRequestStart[];
@@ -61,20 +59,12 @@ extern const char kWriteUserEvent[];
 
 // Other strings.
 // Must match the constants used in the resource files.
-extern const char kCommit[];
-extern const char kCounters[];
-extern const char kCounterType[];
 extern const char kIncludeSpecifics[];
-extern const char kModelType[];
 extern const char kOnAboutInfoUpdated[];
-extern const char kOnCountersUpdated[];
 extern const char kOnProtocolEvent[];
 extern const char kOnReceivedIncludeSpecificsInitialState[];
 extern const char kOnReceivedListOfTypes[];
-extern const char kStatus[];
 extern const char kTypes[];
-extern const char kUpdate[];
-
 // This function returns a DictionaryValue which contains all the information
 // required to populate the 'About' tab of about:sync.
 // Note that |service| may be null.

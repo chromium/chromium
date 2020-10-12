@@ -32,29 +32,6 @@ cr.define('chrome.sync.about_tab', function() {
     refreshAboutInfo(e.details);
   }
 
-  function onAboutInfoCountersUpdated(e) {
-    const details = e.details;
-
-    const modelType = details.modelType;
-    const counters = details.counters;
-
-    const typeStatusArray = chrome.sync.aboutInfo.type_status;
-    typeStatusArray.forEach(function(row) {
-      if (row.name === modelType) {
-        // There are three types of counters, only "status" counters have these
-        // fields. Keep the old values if updated fields are not present.
-        if (counters.numEntriesAndTombstones !== undefined) {
-          row.num_entries = counters.numEntriesAndTombstones;
-        }
-        if (counters.numEntries !== undefined) {
-          row.num_live = counters.numEntries;
-        }
-      }
-    });
-    jstProcess(
-        new JsEvalContext({type_status: typeStatusArray}), $('typeInfo'));
-  }
-
   /**
    * Helper to determine if an element is scrolled to its bottom limit.
    * @param {Element} elem element to check
@@ -177,10 +154,6 @@ cr.define('chrome.sync.about_tab', function() {
           'onAboutInfoUpdated',
           onAboutInfoUpdatedEvent);
 
-      chrome.sync.events.removeEventListener(
-          'onCountersUpdated',
-          onAboutInfoCountersUpdated);
-
       const aboutInfo = JSON.parse(data);
       refreshAboutInfo(aboutInfo);
     });
@@ -218,10 +191,6 @@ cr.define('chrome.sync.about_tab', function() {
     chrome.sync.events.addEventListener(
         'onAboutInfoUpdated',
         onAboutInfoUpdatedEvent);
-
-    chrome.sync.events.addEventListener(
-        'onCountersUpdated',
-        onAboutInfoCountersUpdated);
 
     $('request-start').addEventListener('click', function(event) {
       chrome.sync.requestStart();

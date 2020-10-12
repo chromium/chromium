@@ -20,8 +20,6 @@ js_type_check("closure_compile") {
     #":sync_node_browser",
     #":sync_search",
     ":traffic_log",
-
-    #":types",
     ":user_events",
   ]
 }
@@ -87,10 +85,6 @@ js_library("sync_search") {
 }
 
 js_library("traffic_log") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("types") {
   deps = [ "//ui/webui/resources/js:cr" ]
 }
 

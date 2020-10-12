@@ -45,7 +45,6 @@ const char kSyncIndexJS[] = "sync_index.js";
 const char kSyncLogJS[] = "sync_log.js";
 const char kSyncNodeBrowserJS[] = "sync_node_browser.js";
 const char kSyncSearchJS[] = "sync_search.js";
-const char kTypesJS[] = "types.js";
 const char kUserEventsJS[] = "user_events.js";
 const char kTrafficLogJS[] = "traffic_log.js";
 
@@ -54,7 +53,6 @@ const char kDispatchEvent[] = "chrome.sync.dispatchEvent";
 const char kGetAllNodes[] = "getAllNodes";
 const char kGetAllNodesCallback[] = "chrome.sync.getAllNodesCallback";
 const char kRegisterForEvents[] = "registerForEvents";
-const char kRegisterForPerTypeCounters[] = "registerForPerTypeCounters";
 const char kRequestIncludeSpecificsInitialState[] =
     "requestIncludeSpecificsInitialState";
 const char kRequestListOfTypes[] = "requestListOfTypes";
@@ -70,20 +68,13 @@ const char kUserEventsVisibilityCallback[] =
 const char kWriteUserEvent[] = "writeUserEvent";
 
 // Other strings.
-const char kCommit[] = "commit";
-const char kCounters[] = "counters";
-const char kCounterType[] = "counterType";
 const char kIncludeSpecifics[] = "includeSpecifics";
-const char kModelType[] = "modelType";
 const char kOnAboutInfoUpdated[] = "onAboutInfoUpdated";
-const char kOnCountersUpdated[] = "onCountersUpdated";
 const char kOnProtocolEvent[] = "onProtocolEvent";
 const char kOnReceivedIncludeSpecificsInitialState[] =
     "onReceivedIncludeSpecificsInitialState";
 const char kOnReceivedListOfTypes[] = "onReceivedListOfTypes";
-const char kStatus[] = "status";
 const char kTypes[] = "types";
-const char kUpdate[] = "update";
 
 namespace {
 
