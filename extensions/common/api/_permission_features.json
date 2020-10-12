@@ -460,11 +460,6 @@
       "extension", "legacy_packaged_app", "platform_app"
     ]
   },
-  "networking.config": {
-    "channel": "stable",
-    "platforms": ["chromeos"],
-    "extension_types": ["extension", "platform_app"]
-  },
   "networking.onc": [{
     "channel": "stable",
     "extension_types": ["platform_app"],

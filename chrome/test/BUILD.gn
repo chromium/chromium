@@ -2087,7 +2087,6 @@ if (!is_android) {
           "../browser/extensions/api/force_installed_affiliated_extension_apitest.cc",
           "../browser/extensions/api/force_installed_affiliated_extension_apitest.h",
           "../browser/extensions/api/input_ime/input_ime_apitest_chromeos.cc",
-          "../browser/extensions/api/networking_config_chromeos_apitest_chromeos.cc",
           "../browser/extensions/api/platform_keys/platform_keys_apitest_nss.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.h",

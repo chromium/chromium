@@ -28,8 +28,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "url/gurl.h"
 
-class NetworkingConfigTest;
-
 namespace base {
 class Value;
 }
@@ -58,7 +56,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   ~NetworkPortalDetectorImpl() override;
 
  private:
-  friend class ::NetworkingConfigTest;
   friend class NetworkPortalDetectorImplTest;
   friend class NetworkPortalDetectorImplBrowserTest;
 

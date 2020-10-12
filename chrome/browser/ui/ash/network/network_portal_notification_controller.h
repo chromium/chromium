@@ -9,15 +9,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
-
-namespace extensions {
-class Extension;
-class NetworkingConfigService;
-}  // namespace extensions
 
 namespace chromeos {
 
@@ -28,8 +22,7 @@ class NetworkPortalNotificationControllerTest;
 // Shows a message center notification when the networking stack detects a
 // captive portal.
 class NetworkPortalNotificationController
-    : public NetworkStateHandlerObserver,
-      public NetworkPortalDetector::Observer,
+    : public NetworkPortalDetector::Observer,
       public session_manager::SessionManagerObserver {
  public:
   // The values of these metrics are being used for UMA gathering, so it is
@@ -41,12 +34,7 @@ class NetworkPortalNotificationController
     USER_ACTION_METRIC_COUNT
   };
 
-  static const int kUseExtensionButtonIndex;
-  static const int kOpenPortalButtonIndex;
-
   static const char kNotificationId[];
-
-  static const char kNotificationMetric[];
 
   explicit NetworkPortalNotificationController(
       NetworkPortalDetector* network_portal_dectector);
@@ -60,10 +48,6 @@ class NetworkPortalNotificationController
 
   // NULLifies reference to the active dialog.
   void OnDialogDestroyed(const NetworkPortalWebDialog* dialog);
-
-  // Called if an extension has successfully finished authentication to the
-  // previously detected captive portal.
-  void OnExtensionFinishedAuthentication();
 
   // Ignores "No network" errors in browser tests.
   void SetIgnoreNoNetworkForTesting();
@@ -81,25 +65,11 @@ class NetworkPortalNotificationController
   std::unique_ptr<message_center::Notification>
   CreateDefaultCaptivePortalNotification(const NetworkState* network);
 
-  // Creates an advanced captive portal notification informing the user that a
-  // captive portal has been detected and an extension has registered to perform
-  // captive portal authentication for that network. Gives the user the choice
-  // to either authenticate using that extension or open the captive portal
-  // login page in the browser.
-  std::unique_ptr<message_center::Notification>
-  CreateCaptivePortalNotificationForExtension(
-      const NetworkState* network,
-      extensions::NetworkingConfigService* networking_config_service,
-      const extensions::Extension* extension);
-
   // Constructs a notification to inform the user that a captive portal has been
   // detected.
   std::unique_ptr<message_center::Notification> GetNotification(
       const NetworkState* network,
       const NetworkPortalDetector::CaptivePortalState& state);
-
-  // NetworkStateHandlerObserver:
-  void DefaultNetworkChanged(const NetworkState* network) override;
 
   // NetworkPortalDetector::Observer:
   void OnPortalDetectionCompleted(

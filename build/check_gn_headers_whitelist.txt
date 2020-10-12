@@ -90,7 +90,6 @@ content/public/common/gpu_stream_constants.h
 content/renderer/external_popup_menu.h
 content/shell/android/shell_descriptors.h
 extensions/browser/api/clipboard/clipboard_api.h
-extensions/browser/api/networking_config/networking_config_service_factory.h
 extensions/browser/api/webcam_private/webcam.h
 extensions/browser/api/webcam_private/webcam_private_api.h
 extensions/browser/entry_info.h

@@ -47,7 +47,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
-#include "extensions/browser/api/networking_config/networking_config_service_factory.h"
 #include "extensions/browser/api/system_power_source/system_power_source_api.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
@@ -93,9 +92,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   HidDeviceManager::GetFactoryInstance();
   IdleManagerFactory::GetInstance();
   ManagementAPI::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
-  NetworkingConfigServiceFactory::GetInstance();
-#endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
     defined(OS_MAC)
   NetworkingPrivateEventRouterFactory::GetInstance();

@@ -387,10 +387,6 @@
     "location": "policy",
     "platforms": ["chromeos"]
   }],
-  "networking.config": {
-    "dependencies": ["permission:networking.config"],
-    "contexts": ["blessed_extension"]
-  },
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],
     "contexts": ["blessed_extension"],

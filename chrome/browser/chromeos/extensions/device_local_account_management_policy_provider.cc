@@ -459,9 +459,6 @@ const char* const kSafePermissionStrings[] = {
     // Probably doesn't work on Chrome OS anyways.
     "nativeMessaging",
 
-    // Admin controls network connectivity anyways.
-    "networking.config",
-
     // Status quo considers this risky due to the ability to fake system UI -
     // low risk IMHO however since notifications are already badged with app
     // icon and won't extract any data.

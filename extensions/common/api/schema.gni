@@ -70,7 +70,6 @@ if (is_chromeos) {
     "diagnostics.idl",
     "lock_screen_data.idl",
     "media_perception_private.idl",
-    "networking_config.idl",
     "vpn_provider.idl",
     "webcam_private.idl",
   ]

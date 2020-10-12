@@ -23152,7 +23152,8 @@ Called by update_extension_histograms.py.-->
   <int value="182" label="MEDIA_PLAYER_PRIVATE_ON_NEXT_TRACK"/>
   <int value="183" label="MEDIA_PLAYER_PRIVATE_ON_PREV_TRACK"/>
   <int value="184" label="MEDIA_PLAYER_PRIVATE_ON_TOGGLE_PLAY_STATE"/>
-  <int value="185" label="NETWORKING_CONFIG_ON_CAPTIVE_PORTAL_DETECTED"/>
+  <int value="185"
+      label="DELETED_NETWORKING_CONFIG_ON_CAPTIVE_PORTAL_DETECTED"/>
   <int value="186" label="NETWORKING_PRIVATE_ON_DEVICE_STATE_LIST_CHANGED"/>
   <int value="187" label="NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED"/>
   <int value="188" label="NETWORKING_PRIVATE_ON_NETWORKS_CHANGED"/>
@@ -24452,8 +24453,8 @@ Called by update_extension_histograms.py.-->
   <int value="952" label="FILEMANAGERPRIVATE_SEARCHFILESBYHASHES"/>
   <int value="953" label="DELETED_EASYUNLOCKPRIVATE_SHOWERRORBUBBLE"/>
   <int value="954" label="DELETED_EXTENSIONVIEWINTERNAL_NAVIGATE"/>
-  <int value="955" label="NETWORKING_CONFIG_SETNETWORKFILTER"/>
-  <int value="956" label="NETWORKING_CONFIG_FINISHAUTHENTICATION"/>
+  <int value="955" label="DELETED_NETWORKING_CONFIG_SETNETWORKFILTER"/>
+  <int value="956" label="DELETED_NETWORKING_CONFIG_FINISHAUTHENTICATION"/>
   <int value="957" label="PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES"/>
   <int value="958" label="CRYPTOTOKENPRIVATE_CANORIGINASSERTAPPID"/>
   <int value="959" label="DELETED_EASYUNLOCKPRIVATE_SETAUTOPAIRINGRESULT"/>
@@ -25523,7 +25524,7 @@ Called by update_extension_permission.py.-->
   <int value="103" label="kMDns"/>
   <int value="104" label="kMusicManagerPrivate"/>
   <int value="105" label="kNativeMessaging"/>
-  <int value="106" label="kNetworkingConfig"/>
+  <int value="106" label="kDeleted_NetworkingConfig"/>
   <int value="107" label="kNetworkingPrivate"/>
   <int value="108" label="kDeleted_NotificationProvider"/>
   <int value="109" label="kNotifications"/>
