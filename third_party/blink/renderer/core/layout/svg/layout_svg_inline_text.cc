@@ -88,6 +88,18 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
   }
 }
 
+void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
+  if (!RuntimeEnabledFeatures::
+          CSSReducedFontLoadingLayoutInvalidationsEnabled() ||
+      !IsFontFallbackValid()) {
+    if (LayoutSVGText* text_layout_object =
+            LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
+      text_layout_object->SetNeedsTextMetricsUpdate();
+    }
+  }
+  LayoutText::InvalidateSubtreeLayoutForFontUpdates();
+}
+
 InlineTextBox* LayoutSVGInlineText::CreateTextBox(int start, uint16_t length) {
   InlineTextBox* box =
       new SVGInlineTextBox(LineLayoutItem(this), start, length);
