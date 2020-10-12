@@ -73,8 +73,8 @@ declare_args() {
   # If true, use Goma for ThinLTO code generation where applicable.
   use_goma_thin_lto = false
 
-  # Ignored, only exists temporarily for backwards compat.
-  # TODO(thakis): Remove this once bots no longer set it.
+  # Limit the number of jobs (threads/processes) the linker is allowed
+  # to use (for linkers that support this).
   max_jobs_per_link = 8
 
   # Whether we're using a sample profile collected on an architecture different
