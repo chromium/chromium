@@ -198,7 +198,6 @@ TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', function() {
     this.assertActiveMenuItem(
         'panel_menu_form_controls', 'español: Prueba Button');
     this.fireMockEvent('ArrowUp')();
-    this.assertActiveMenuItem(
-        'panel_menu_form_controls', 'English: Test Button');
+    this.assertActiveMenuItem('panel_menu_form_controls', 'Test Button');
   });
 });

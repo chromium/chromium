@@ -60,10 +60,10 @@ LocaleOutputHelper = class {
         contextNode.detectedLanguage || contextNode.language || '';
     const newLocale = this.computeNewLocale_(nodeLocale);
     let outputString = text;
-    const shouldAlert = newLocale !== this.currentLocale_;
+    const shouldAnnounce = this.shouldAnnounceLocale_(newLocale);
     if (this.hasVoiceForLocale_(newLocale)) {
       this.setCurrentLocale_(newLocale);
-      if (shouldAlert) {
+      if (shouldAnnounce) {
         // Prepend the human-readable locale to |outputString|.
         const displayLanguage =
             chrome.accessibilityPrivate.getDisplayNameForLocale(
@@ -133,6 +133,29 @@ LocaleOutputHelper = class {
     if (LocaleOutputHelper.isValidLocale_(locale)) {
       this.currentLocale_ = locale;
     }
+  }
+
+  /**
+   * @param {string} newLocale
+   * @return {boolean}
+   * @private
+   */
+  shouldAnnounceLocale_(newLocale) {
+    // Note: currentLocale_ and newLocale are guaranteed to contain a language
+    // code. However, they might not contain a country code.
+    const [currentLanguage, currentCountry] = this.currentLocale_.split('-');
+    const [newLanguage, newCountry] = newLocale.split('-');
+    if (currentLanguage !== newLanguage) {
+      return true;
+    }
+
+    if (!currentCountry || !newCountry) {
+      // If one of the countries is blank, then we don't want to announce the
+      // locale. For example, we don't want to announce 'en' -> 'en-us'.
+      return false;
+    }
+
+    return currentCountry !== newCountry;
   }
 
   // =============== Static Methods ==============

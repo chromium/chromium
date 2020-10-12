@@ -162,20 +162,16 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
   get chineseDoc() {
     return `
       <p lang="en-us">United States</p>
-      <p lang="zh">Chinese</p>
       <p lang="zh-hans">Simplified Chinese</p>
       <p lang="zh-hant">Traditional Chinese</p>
-      <p lang="zh">Chinese</p>
     `;
   }
 
   get portugueseDoc() {
     return `
       <p lang="en-us">United States</p>
-      <p lang="pt">Portuguese</p>
       <p lang="pt-br">Brazil</p>
       <p lang="pt-pt">Portugal</p>
-      <p lang="pt">Portuguese</p>
     `;
   }
 };
@@ -208,7 +204,7 @@ TEST_F(
         this.setAvailableVoices();
         mockFeedback.call(doCmd('jumpToTop'))
             .expectSpeechWithLocale(
-                'en', 'English: In the morning, I sometimes eat breakfast.');
+                'en', 'In the morning, I sometimes eat breakfast.');
         mockFeedback.call(doCmd('nextLine'))
             .expectSpeechWithLocale(
                 'fr', 'français: Dans l\'apres-midi, je dejeune.');
@@ -303,7 +299,7 @@ TEST_F(
         mockFeedback.call(doCmd('jumpToTop'))
             .expectSpeechWithLocale(
                 'en',
-                'English: This entire object should be read in English, even' +
+                'This entire object should be read in English, even' +
                     ' the following French passage: ' +
                     'salut mon ami! Ca va? Bien, et toi? It\'s hard to' +
                     ' differentiate between latin-based languages.');
@@ -457,7 +453,7 @@ TEST_F('ChromeVoxLocaleOutputHelperTest', 'WordNavigationTest', function() {
     this.setAvailableVoices();
     mockFeedback.call(doCmd('jumpToTop'))
         .expectSpeechWithLocale(
-            'en', 'English: In the morning, I sometimes eat breakfast.')
+            'en', 'In the morning, I sometimes eat breakfast.')
         .call(doCmd('nextLine'))
         .expectSpeechWithLocale(
             'fr', 'français: Dans l\'apres-midi, je dejeune.')
@@ -509,7 +505,7 @@ TEST_F(
         this.setAvailableVoices();
         mockFeedback.call(doCmd('jumpToTop'))
             .expectSpeechWithLocale(
-                'en', 'English: In the morning, I sometimes eat breakfast.')
+                'en', 'In the morning, I sometimes eat breakfast.')
             .call(doCmd('nextLine'))
             .expectSpeechWithLocale(
                 'fr', 'français: Dans l\'apres-midi, je dejeune.')
@@ -556,15 +552,11 @@ TEST_F(
         mockFeedback.call(doCmd('jumpToTop'))
             .expectSpeechWithLocale('en-us', 'United States')
             .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('zh', '中文: Chinese')
-            .call(doCmd('nextLine'))
             .expectSpeechWithLocale(
                 'zh-hans', '中文（简体）: Simplified Chinese')
             .call(doCmd('nextLine'))
             .expectSpeechWithLocale(
-                'zh-hant', '中文（繁體）: Traditional Chinese')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('zh', '中文: Chinese');
+                'zh-hant', '中文（繁體）: Traditional Chinese');
         mockFeedback.replay();
       });
     });
@@ -579,13 +571,49 @@ TEST_F(
         mockFeedback.call(doCmd('jumpToTop'))
             .expectSpeechWithLocale('en-us', 'United States')
             .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('pt', 'português: Portuguese')
-            .call(doCmd('nextLine'))
             .expectSpeechWithLocale('pt-br', 'português (Brasil): Brazil')
             .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('pt-pt', 'português (Portugal): Portugal')
-            .call(doCmd('nextLine'))
-            .expectSpeechWithLocale('pt', 'português: Portuguese');
+            .expectSpeechWithLocale('pt-pt', 'português (Portugal): Portugal');
         mockFeedback.replay();
       });
+    });
+
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'DoNotAnnounceLocaleFirstCase',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      this.runWithLoadedTree(
+          `
+  <p lang="en">Start</p>
+  <p lang="en-us">End</p>
+  `,
+          function() {
+            localStorage['languageSwitching'] = 'true';
+            this.setAvailableVoices();
+            mockFeedback.call(doCmd('jumpToTop'))
+                .expectSpeechWithLocale('en', 'Start')
+                .call(doCmd('nextObject'))
+                .expectSpeechWithLocale('en-us', 'End')
+                .replay();
+          });
+    });
+
+TEST_F(
+    'ChromeVoxLocaleOutputHelperTest', 'DoNotAnnounceLocaleSecondCase',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      this.runWithLoadedTree(
+          `
+  <p lang="en-us">Start</p>
+  <p lang="en">End</p>
+  `,
+          function() {
+            localStorage['languageSwitching'] = 'true';
+            this.setAvailableVoices();
+            mockFeedback.call(doCmd('jumpToTop'))
+                .expectSpeechWithLocale('en-us', 'Start')
+                .call(doCmd('nextObject'))
+                .expectSpeechWithLocale('en', 'End')
+                .replay();
+          });
     });
