@@ -73,8 +73,7 @@ CORE_EXPORT void ComputeOutOfFlowInlineDimensions(
     const base::Optional<MinMaxSizes>& minmax_content_sizes,
     const base::Optional<MinMaxSizes>& minmax_intrinsic_sizes_for_ar,
     const base::Optional<LogicalSize>& replaced_size,
-    const WritingMode container_writing_mode,
-    const TextDirection container_direction,
+    const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions);
 
 // Computes the rest of the absolute position which depends on child's
@@ -86,8 +85,7 @@ CORE_EXPORT void ComputeOutOfFlowBlockDimensions(
     const NGLogicalStaticPosition&,
     const base::Optional<LayoutUnit>& child_block_size,
     const base::Optional<LogicalSize>& replaced_size,
-    const WritingMode container_writing_mode,
-    const TextDirection container_direction,
+    const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions);
 
 }  // namespace blink

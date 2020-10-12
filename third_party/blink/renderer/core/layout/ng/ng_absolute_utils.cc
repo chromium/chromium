@@ -26,17 +26,13 @@ namespace {
 // vlr rtl => bottom left
 // vrl ltr => top right
 // vrl rtl => bottom right
-bool IsLeftDominant(const WritingMode container_writing_mode,
-                    const TextDirection container_direction) {
-  return (container_writing_mode != WritingMode::kVerticalRl) &&
-         !(container_writing_mode == WritingMode::kHorizontalTb &&
-           container_direction == TextDirection::kRtl);
+bool IsLeftDominant(const WritingDirectionMode writing_direction) {
+  return (writing_direction.GetWritingMode() != WritingMode::kVerticalRl) &&
+         !(writing_direction.IsHorizontal() && writing_direction.IsRtl());
 }
 
-bool IsTopDominant(const WritingMode container_writing_mode,
-                   const TextDirection container_direction) {
-  return (container_writing_mode == WritingMode::kHorizontalTb) ||
-         (container_direction != TextDirection::kRtl);
+bool IsTopDominant(const WritingDirectionMode writing_direction) {
+  return writing_direction.IsHorizontal() || writing_direction.IsLtr();
 }
 
 // A direction agnostic version of |NGLogicalStaticPosition::InlineEdge|, and
@@ -428,8 +424,7 @@ void ComputeOutOfFlowInlineDimensions(
     const base::Optional<MinMaxSizes>& minmax_content_sizes,
     const base::Optional<MinMaxSizes>& minmax_intrinsic_sizes_for_ar,
     const base::Optional<LogicalSize>& replaced_size,
-    const WritingMode container_writing_mode,
-    const TextDirection container_direction,
+    const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
 
@@ -475,15 +470,14 @@ void ComputeOutOfFlowInlineDimensions(
     inline_size = minmax_content_sizes->min_size;
   }
 
+  const auto writing_direction = style.GetWritingDirection();
   bool is_start_dominant;
-  if (style.GetWritingMode() == WritingMode::kHorizontalTb) {
-    is_start_dominant =
-        IsLeftDominant(container_writing_mode, container_direction) ==
-        IsLeftDominant(style.GetWritingMode(), style.Direction());
+  if (writing_direction.IsHorizontal()) {
+    is_start_dominant = IsLeftDominant(container_writing_direction) ==
+                        IsLeftDominant(writing_direction);
   } else {
-    is_start_dominant =
-        IsTopDominant(container_writing_mode, container_direction) ==
-        IsTopDominant(style.GetWritingMode(), style.Direction());
+    is_start_dominant = IsTopDominant(container_writing_direction) ==
+                        IsTopDominant(writing_direction);
   }
 
   ComputeAbsoluteSize(
@@ -506,8 +500,7 @@ void ComputeOutOfFlowBlockDimensions(
     const NGLogicalStaticPosition& static_position,
     const base::Optional<LayoutUnit>& child_block_size,
     const base::Optional<LogicalSize>& replaced_size,
-    const WritingMode container_writing_mode,
-    const TextDirection container_direction,
+    const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
   // After partial size has been computed, child block size is either unknown,
   // or fully computed, there is no minmax. To express this, a 'fixed' minmax
@@ -541,15 +534,14 @@ void ComputeOutOfFlowBlockDimensions(
     block_size = replaced_size->block_size;
   }
 
+  const auto writing_direction = style.GetWritingDirection();
   bool is_start_dominant;
-  if (style.GetWritingMode() == WritingMode::kHorizontalTb) {
-    is_start_dominant =
-        IsTopDominant(container_writing_mode, container_direction) ==
-        IsTopDominant(style.GetWritingMode(), style.Direction());
+  if (writing_direction.IsHorizontal()) {
+    is_start_dominant = IsTopDominant(container_writing_direction) ==
+                        IsTopDominant(writing_direction);
   } else {
-    is_start_dominant =
-        IsLeftDominant(container_writing_mode, container_direction) ==
-        IsLeftDominant(style.GetWritingMode(), style.Direction());
+    is_start_dominant = IsLeftDominant(container_writing_direction) ==
+                        IsLeftDominant(writing_direction);
   }
 
   ComputeAbsoluteSize(

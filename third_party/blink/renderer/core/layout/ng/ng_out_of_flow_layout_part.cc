@@ -775,8 +775,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
       ComputeOutOfFlowBlockDimensions(
           candidate_constraint_space, candidate_style, border_padding,
           candidate_static_position, base::nullopt, base::nullopt,
-          default_writing_direction.GetWritingMode(),
-          container_writing_direction.Direction(), &node_dimensions);
+          container_writing_direction, &node_dimensions);
       has_computed_block_dimensions = true;
       input.percentage_resolution_block_size = node_dimensions.size.block_size;
     }
@@ -824,8 +823,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   ComputeOutOfFlowInlineDimensions(
       candidate_constraint_space, candidate_style, border_padding,
       candidate_static_position, min_max_sizes, minmax_intrinsic_sizes_for_ar,
-      replaced_size, default_writing_direction.GetWritingMode(),
-      container_writing_direction.Direction(), &node_dimensions);
+      replaced_size, container_writing_direction, &node_dimensions);
 
   // |should_be_considered_as_replaced| sets the inline-size.
   // It does not set the block-size. This is a compatibility quirk.
@@ -875,8 +873,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     ComputeOutOfFlowBlockDimensions(
         candidate_constraint_space, candidate_style, border_padding,
         candidate_static_position, block_estimate, replaced_size,
-        default_writing_direction.GetWritingMode(),
-        container_writing_direction.Direction(), &node_dimensions);
+        container_writing_direction, &node_dimensions);
     has_computed_block_dimensions = true;
   }
 
