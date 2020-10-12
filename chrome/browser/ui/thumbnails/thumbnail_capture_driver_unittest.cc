@@ -94,33 +94,34 @@ TEST_F(ThumbnailCaptureDriverTest,
 }
 
 TEST_F(ThumbnailCaptureDriverTest,
-       NoCaptureWhenPageIsVisibleAndThumbnailIsRequested) {
-  EXPECT_CALL(mock_client_, RequestCapture()).Times(0);
-  EXPECT_CALL(mock_client_, StartCapture()).Times(0);
-  EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+       CaptureWhenPageIsVisibleAndThumbnailIsRequested) {
+  // StopCapture() can be called unnecessarily at first.
+  Expectation stop_capture =
+      EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
 
+  // Capture shouldn't start, just requested.
+  EXPECT_CALL(mock_client_, StartCapture()).Times(0);
+
+  // Simulate the current page having its thumbnail requested.
   capture_driver_.UpdatePageVisibility(true);
   capture_driver_.UpdateThumbnailVisibility(true);
 
-  EXPECT_EQ(scheduler_.priority(),
-            ThumbnailScheduler::TabCapturePriority::kNone);
-
-  // Simulate a page loading from start to finish
+  // Page becomes sufficiently loaded for capture, but no further, and
+  // the client never reports it's ready to capture. This should trigger
+  // a RequestCapture() call but nothing more.
   capture_driver_.UpdatePageReadiness(
       ThumbnailReadinessTracker::Readiness::kNotReady);
-  capture_driver_.SetCanCapture(true);
-  EXPECT_EQ(scheduler_.priority(),
-            ThumbnailScheduler::TabCapturePriority::kNone);
 
   capture_driver_.UpdatePageReadiness(
       ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture);
   EXPECT_EQ(scheduler_.priority(),
-            ThumbnailScheduler::TabCapturePriority::kNone);
+            ThumbnailScheduler::TabCapturePriority::kLow);
 
-  capture_driver_.UpdatePageReadiness(
-      ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
-  EXPECT_EQ(scheduler_.priority(),
-            ThumbnailScheduler::TabCapturePriority::kNone);
+  // Capture should only be requested when the scheduler allows it.
+  // Additionally ensure the RequestCapture() call is ordered before any
+  // StopCapture() calls.
+  EXPECT_CALL(mock_client_, RequestCapture()).Times(1).After(stop_capture);
+  capture_driver_.SetCapturePermittedByScheduler(true);
 }
 
 TEST_F(ThumbnailCaptureDriverTest, NoCaptureWhenPageAndThumbnailAreNotVisible) {
@@ -346,13 +347,13 @@ TEST_F(ThumbnailCaptureDriverTest, StopsOngoingCaptureWhenPageNoLongerReady) {
   capture_driver_.SetCapturePermittedByScheduler(false);
 }
 
-TEST_F(ThumbnailCaptureDriverTest, StopsCaptureIfPageBecomesVisible) {
+TEST_F(ThumbnailCaptureDriverTest, CanContinueCaptureIfPageBecomesVisible) {
   {
     InSequence s;
     EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
     EXPECT_CALL(mock_client_, RequestCapture());
     EXPECT_CALL(mock_client_, StartCapture());
-    EXPECT_CALL(mock_client_, StopCapture()).Times(AtLeast(1));
+    EXPECT_CALL(mock_client_, StopCapture()).Times(0);
   }
 
   capture_driver_.UpdateThumbnailVisibility(true);
@@ -367,13 +368,12 @@ TEST_F(ThumbnailCaptureDriverTest, StopsCaptureIfPageBecomesVisible) {
 
   capture_driver_.UpdatePageVisibility(true);
   EXPECT_EQ(scheduler_.priority(),
-            ThumbnailScheduler::TabCapturePriority::kNone);
-  capture_driver_.SetCapturePermittedByScheduler(false);
+            ThumbnailScheduler::TabCapturePriority::kLow);
 
   capture_driver_.UpdatePageReadiness(
       ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
   EXPECT_EQ(scheduler_.priority(),
-            ThumbnailScheduler::TabCapturePriority::kNone);
+            ThumbnailScheduler::TabCapturePriority::kHigh);
 }
 
 TEST_F(ThumbnailCaptureDriverTest, ContinuesCaptureWhenPageBecomesFinal) {
