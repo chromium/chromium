@@ -7080,6 +7080,27 @@
             ]
         }
     ],
+    "UserAgentClientHintRollout": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UserAgentClientHintRollout",
+                    "enable_features": [
+                        "UserAgentClientHint"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserDataSnapshot": [
         {
             "platforms": [
