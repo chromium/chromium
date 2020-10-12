@@ -65,6 +65,7 @@ base::ThreadSafePartitionRoot& Allocator() {
   // Semantically equivalent to base::Lock::Acquire().
   while (!g_initialization_lock.compare_exchange_strong(
       expected, true, std::memory_order_acquire, std::memory_order_acquire)) {
+    expected = false;
   }
 
   root = g_root_.load(std::memory_order_relaxed);
