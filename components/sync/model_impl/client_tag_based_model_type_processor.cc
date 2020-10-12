@@ -1142,16 +1142,6 @@ void ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata() {
   DCHECK(!entity_tracker_);
 }
 
-void ClientTagBasedModelTypeProcessor::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
-  StatusCounters counters;
-  if (entity_tracker_) {
-    counters.num_entries_and_tombstones = entity_tracker_->size();
-    counters.num_entries = entity_tracker_->CountNonTombstoneEntries();
-  }
-  std::move(callback).Run(type_, counters);
-}
-
 void ClientTagBasedModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   SyncRecordModelTypeMemoryHistogram(type_, EstimateMemoryUsage());
   const size_t non_tombstone_entries_count =

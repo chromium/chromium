@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/model/data_type_error_handler.h"
 
@@ -60,9 +59,6 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   using AllNodesCallback =
       base::OnceCallback<void(const ModelType,
                               std::unique_ptr<base::ListValue>)>;
-
-  using StatusCountersCallback =
-      base::OnceCallback<void(ModelType, const StatusCounters&)>;
 
   using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -124,12 +120,6 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodes(AllNodesCallback callback) = 0;
-
-  // Collects StatusCounters for this datatype and passes them to |callback|.
-  // Used to display entity counts in chrome://sync-internals. Can be called
-  // only if state() != NOT_RUNNING.
-  // TODO(crbug.com/1102849): Remove, not used anymore.
-  virtual void GetStatusCounters(StatusCountersCallback callback) = 0;
 
   // Records entities count and estimated memory usage of the type into
   // histograms. Can be called only if state() != NOT_RUNNING.

@@ -52,8 +52,6 @@ class MockDelegate : public ModelTypeControllerDelegate {
                     StartCallback callback));
   MOCK_METHOD1(OnSyncStopping, void(SyncStopMetadataFate metadata_fate));
   MOCK_METHOD1(GetAllNodesForDebugging, void(AllNodesCallback callback));
-  MOCK_METHOD1(GetStatusCountersForDebugging,
-               void(StatusCountersCallback callback));
   MOCK_METHOD0(RecordMemoryUsageAndCountsHistograms, void());
 };
 

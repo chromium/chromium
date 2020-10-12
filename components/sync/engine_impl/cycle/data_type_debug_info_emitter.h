@@ -55,11 +55,6 @@ class DataTypeDebugInfoEmitter {
   // Triggers an update counters update to registered observers.
   void EmitUpdateCountersUpdate();
 
-  // Triggers a status counters update to registered observers. The default
-  // implementation does nothing and is present only to make this class
-  // non-abstract and thus unit-testable.
-  virtual void EmitStatusCountersUpdate();
-
  protected:
   const ModelType type_;
 

@@ -626,22 +626,6 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
-       ShouldReportNoCountersWhenModelIsNotLoaded) {
-  SimulateOnSyncStarting();
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
-  syncer::StatusCounters status_counters;
-  // Assign an arbitrary non-zero number to the |num_entries| to be able to
-  // check that actually a 0 has been written to it later.
-  status_counters.num_entries = 1000;
-  processor()->GetStatusCountersForDebugging(
-      base::BindLambdaForTesting([&](syncer::ModelType model_type,
-                                     const syncer::StatusCounters& counters) {
-        status_counters = counters;
-      }));
-  EXPECT_EQ(0u, status_counters.num_entries);
-}
-
-TEST_F(BookmarkModelTypeProcessorTest,
        ShouldNotCommitEntitiesWithoutLoadedFavicons) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(

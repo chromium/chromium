@@ -11,11 +11,4 @@ NonBlockingTypeDebugInfoEmitter::NonBlockingTypeDebugInfoEmitter(ModelType type)
 
 NonBlockingTypeDebugInfoEmitter::~NonBlockingTypeDebugInfoEmitter() {}
 
-void NonBlockingTypeDebugInfoEmitter::EmitStatusCountersUpdate() {
-  // TODO(gangwu): Allow driving emission of status counters from here. This is
-  // tricky because we do not have access to ClientTagBasedModelTypeProcessor or
-  // ModelTypeStore currently. This method is fairly redundant since counters
-  // are also emitted from the UI thread, unclear how important this is.
-}
-
 }  // namespace syncer

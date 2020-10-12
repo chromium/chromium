@@ -377,7 +377,6 @@ void ModelTypeWorker::ApplyPendingUpdates() {
   UpdateCounters* counters = debug_info_emitter_->GetMutableUpdateCounters();
   counters->num_updates_applied += num_updates_applied;
   debug_info_emitter_->EmitUpdateCountersUpdate();
-  debug_info_emitter_->EmitStatusCountersUpdate();
 
   pending_updates_.clear();
 }

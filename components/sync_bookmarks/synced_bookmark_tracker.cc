@@ -879,16 +879,15 @@ size_t SyncedBookmarkTracker::EstimateMemoryUsage() const {
   return memory_usage;
 }
 
+size_t SyncedBookmarkTracker::TrackedBookmarksCount() const {
+  return bookmark_node_to_entities_map_.size();
+}
+
 size_t SyncedBookmarkTracker::TrackedEntitiesCountForTest() const {
   return sync_id_to_entities_map_.size();
 }
 
-size_t SyncedBookmarkTracker::TrackedBookmarksCountForDebugging() const {
-  return bookmark_node_to_entities_map_.size();
-}
-
-size_t SyncedBookmarkTracker::TrackedUncommittedTombstonesCountForDebugging()
-    const {
+size_t SyncedBookmarkTracker::TrackedUncommittedTombstonesCountForTest() const {
   return ordered_local_tombstones_.size();
 }
 

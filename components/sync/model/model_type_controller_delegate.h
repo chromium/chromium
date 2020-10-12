@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_error.h"
 
@@ -29,8 +28,6 @@ class ModelTypeControllerDelegate {
       base::OnceCallback<void(ModelType, std::unique_ptr<base::ListValue>)>;
   using StartCallback =
       base::OnceCallback<void(std::unique_ptr<DataTypeActivationResponse>)>;
-  using StatusCountersCallback =
-      base::OnceCallback<void(ModelType, const StatusCounters&)>;
 
   virtual ~ModelTypeControllerDelegate() = default;
 
@@ -48,11 +45,6 @@ class ModelTypeControllerDelegate {
   // Returns a ListValue representing all nodes for the type to |callback|.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodesForDebugging(AllNodesCallback callback) = 0;
-
-  // Returns StatusCounters for the type to |callback|.
-  // Used for updating data type counters in chrome://sync-internals.
-  virtual void GetStatusCountersForDebugging(
-      StatusCountersCallback callback) = 0;
 
   // Records entities count and estimated memory usage of the type into
   // histograms.

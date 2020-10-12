@@ -16,9 +16,6 @@ class NonBlockingTypeDebugInfoEmitter : public DataTypeDebugInfoEmitter {
 
   ~NonBlockingTypeDebugInfoEmitter() override;
 
-  // Triggers a status counters update to registered observers.
-  void EmitStatusCountersUpdate() override;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(NonBlockingTypeDebugInfoEmitter);
 };

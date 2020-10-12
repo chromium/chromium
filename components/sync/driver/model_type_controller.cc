@@ -214,11 +214,6 @@ void ModelTypeController::GetAllNodes(AllNodesCallback callback) {
   delegate_->GetAllNodesForDebugging(std::move(callback));
 }
 
-void ModelTypeController::GetStatusCounters(StatusCountersCallback callback) {
-  DCHECK(delegate_);
-  delegate_->GetStatusCountersForDebugging(std::move(callback));
-}
-
 void ModelTypeController::RecordMemoryUsageAndCountsHistograms() {
   DCHECK(delegate_);
   delegate_->RecordMemoryUsageAndCountsHistograms();

@@ -45,7 +45,6 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
-  void GetStatusCountersForDebugging(StatusCountersCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   // NigoriLocalChangeProcessor implementation.
@@ -60,6 +59,8 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
   bool IsConnectedForTest() const;
   const sync_pb::ModelTypeState& GetModelTypeStateForTest();
+  // Whether |entity_| is non-null.
+  bool HasEntityForTest() const;
 
  private:
   // Returns true if the handshake with sync thread is complete.

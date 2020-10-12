@@ -29,15 +29,6 @@ void GetAllNodesForDebuggingHelperOnModelThread(
   delegate->GetAllNodesForDebugging(std::move(callback_bound_to_ui_thread));
 }
 
-void GetStatusCountersForDebuggingHelperOnModelThread(
-    ProxyModelTypeControllerDelegate::StatusCountersCallback
-        callback_bound_to_ui_thread,
-    base::WeakPtr<ModelTypeControllerDelegate> delegate) {
-  DCHECK(delegate);
-  delegate->GetStatusCountersForDebugging(
-      std::move(callback_bound_to_ui_thread));
-}
-
 void StopSyncHelperOnModelThread(
     SyncStopMetadataFate metadata_fate,
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
@@ -92,13 +83,6 @@ void ProxyModelTypeControllerDelegate::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   PostTask(FROM_HERE,
            base::BindOnce(&GetAllNodesForDebuggingHelperOnModelThread,
-                          BindToCurrentSequence(std::move(callback))));
-}
-
-void ProxyModelTypeControllerDelegate::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
-  PostTask(FROM_HERE,
-           base::BindOnce(&GetStatusCountersForDebuggingHelperOnModelThread,
                           BindToCurrentSequence(std::move(callback))));
 }
 

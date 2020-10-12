@@ -54,7 +54,6 @@ class ModelTypeController : public DataTypeController {
   void Stop(ShutdownReason shutdown_reason, StopCallback callback) override;
   State state() const override;
   void GetAllNodes(AllNodesCallback callback) override;
-  void GetStatusCounters(StatusCountersCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   ModelTypeControllerDelegate* GetDelegateForTesting(SyncMode sync_mode);

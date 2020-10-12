@@ -262,15 +262,6 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   std::move(callback).Run(syncer::NIGORI, std::move(all_nodes));
 }
 
-void NigoriModelTypeProcessor::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StatusCounters counters;
-  counters.num_entries = entity_ ? 1 : 0;
-  counters.num_entries_and_tombstones = counters.num_entries;
-  std::move(callback).Run(syncer::NIGORI, counters);
-}
-
 void NigoriModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t memory_usage = 0;
@@ -389,6 +380,10 @@ bool NigoriModelTypeProcessor::IsConnectedForTest() const {
 const sync_pb::ModelTypeState&
 NigoriModelTypeProcessor::GetModelTypeStateForTest() {
   return model_type_state_;
+}
+
+bool NigoriModelTypeProcessor::HasEntityForTest() const {
+  return entity_ != nullptr;
 }
 
 bool NigoriModelTypeProcessor::IsTrackingMetadata() {

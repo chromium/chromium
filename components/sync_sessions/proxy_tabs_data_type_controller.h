@@ -33,7 +33,6 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   State state() const override;
   void DeactivateDataType(syncer::ModelTypeConfigurer* configurer) override;
   void GetAllNodes(AllNodesCallback callback) override;
-  void GetStatusCounters(StatusCountersCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
  private:

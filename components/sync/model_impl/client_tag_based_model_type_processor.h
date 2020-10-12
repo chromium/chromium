@@ -17,7 +17,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine/non_blocking_sync_common.h"
 #include "components/sync/model/data_batch.h"
@@ -103,7 +102,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
-  void GetStatusCountersForDebugging(StatusCountersCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   // Returns the estimate of dynamically allocated memory in bytes.

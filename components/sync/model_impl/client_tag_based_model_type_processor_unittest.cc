@@ -74,12 +74,6 @@ void CaptureCommitRequest(CommitRequestDataList* dst,
   *dst = std::move(src);
 }
 
-void CaptureStatusCounters(StatusCounters* dst,
-                           ModelType model_type,
-                           const StatusCounters& counters) {
-  *dst = counters;
-}
-
 class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
  public:
   explicit TestModelTypeSyncBridge(bool commit_only,
@@ -2194,10 +2188,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUntrackEntityForStorageKey) {
   worker()->AckOnePendingCommit();
 
   // Check the processor tracks the entity.
-  StatusCounters status_counters;
-  type_processor()->GetStatusCountersForDebugging(
-      base::BindOnce(&CaptureStatusCounters, &status_counters));
-  ASSERT_EQ(1u, status_counters.num_entries);
   ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // The bridge deletes the data locally and does not want to sync the deletion.
@@ -2207,9 +2197,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldUntrackEntityForStorageKey) {
   // The deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity any more.
-  type_processor()->GetStatusCountersForDebugging(
-      base::BindOnce(&CaptureStatusCounters, &status_counters));
-  EXPECT_EQ(status_counters.num_entries, 0U);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 
@@ -2226,10 +2213,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // No deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity.
-  StatusCounters status_counters;
-  type_processor()->GetStatusCountersForDebugging(
-      base::BindOnce(&CaptureStatusCounters, &status_counters));
-  EXPECT_EQ(status_counters.num_entries, 0U);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 
@@ -2245,10 +2228,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   worker()->AckOnePendingCommit();
 
   // Check the processor tracks the entity.
-  StatusCounters status_counters;
-  type_processor()->GetStatusCountersForDebugging(
-      base::BindOnce(&CaptureStatusCounters, &status_counters));
-  ASSERT_EQ(1u, status_counters.num_entries);
   ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
 
   // The bridge deletes the data locally and does not want to sync the deletion.
@@ -2258,9 +2237,6 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // The deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity any more.
-  type_processor()->GetStatusCountersForDebugging(
-      base::BindOnce(&CaptureStatusCounters, &status_counters));
-  EXPECT_EQ(status_counters.num_entries, 0U);
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 

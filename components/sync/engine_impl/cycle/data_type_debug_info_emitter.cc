@@ -123,6 +123,4 @@ void DataTypeDebugInfoEmitter::EmitUpdateCountersUpdate() {
   emitted_update_counters_ = update_counters_;
 }
 
-void DataTypeDebugInfoEmitter::EmitStatusCountersUpdate() {}
-
 }  // namespace syncer

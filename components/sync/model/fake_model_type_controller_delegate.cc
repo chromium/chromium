@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 
@@ -83,11 +82,6 @@ void FakeModelTypeControllerDelegate::OnSyncStopping(
 void FakeModelTypeControllerDelegate::GetAllNodesForDebugging(
     ModelTypeControllerDelegate::AllNodesCallback callback) {
   std::move(callback).Run(type_, std::make_unique<base::ListValue>());
-}
-
-void FakeModelTypeControllerDelegate::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
-  std::move(callback).Run(type_, StatusCounters());
 }
 
 void FakeModelTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}

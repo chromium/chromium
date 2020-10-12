@@ -149,17 +149,6 @@ class NigoriModelTypeProcessorTest : public testing::Test {
 
   NigoriModelTypeProcessor* processor() { return &processor_; }
 
-  bool ProcessorHasEntity() {
-    StatusCounters status_counters;
-    base::MockCallback<
-        syncer::ModelTypeControllerDelegate::StatusCountersCallback>
-        status_callback;
-    EXPECT_CALL(status_callback, Run)
-        .WillOnce(testing::SaveArg<1>(&status_counters));
-    processor()->GetStatusCountersForDebugging(status_callback.Get());
-    return status_counters.num_entries > 0;
-  }
-
  private:
   testing::NiceMock<MockNigoriSyncBridge> mock_nigori_sync_bridge_;
   std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_;
@@ -515,7 +504,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndClearMetadata) {
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
-  ASSERT_TRUE(ProcessorHasEntity());
+  ASSERT_TRUE(processor()->HasEntityForTest());
 
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
@@ -532,7 +521,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
   EXPECT_EQ(processor()->GetModelTypeStateForTest().cache_guid(),
             kOtherCacheGuid);
 
-  EXPECT_FALSE(ProcessorHasEntity());
+  EXPECT_FALSE(processor()->HasEntityForTest());
 
   // Check that sync can be started.
   const std::string kDecryptorTokenKeyName = "key_name";
@@ -555,7 +544,7 @@ TEST_F(NigoriModelTypeProcessorTest,
       switches::kSyncNigoriRemoveMetadataOnCacheGuidMismatch);
 
   SimulateModelReadyToSync(/*initial_sync_done=*/true);
-  ASSERT_TRUE(ProcessorHasEntity());
+  ASSERT_TRUE(processor()->HasEntityForTest());
 
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
@@ -571,7 +560,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   EXPECT_TRUE(processor()->IsTrackingMetadata());
   EXPECT_EQ(processor()->GetModelTypeStateForTest().cache_guid(), kCacheGuid);
 
-  EXPECT_TRUE(ProcessorHasEntity());
+  EXPECT_TRUE(processor()->HasEntityForTest());
 }
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {

@@ -36,8 +36,6 @@ static_library("rest_of_sync") {
     "engine/cycle/commit_counters.h",
     "engine/cycle/model_neutral_state.cc",
     "engine/cycle/model_neutral_state.h",
-    "engine/cycle/status_counters.cc",
-    "engine/cycle/status_counters.h",
     "engine/cycle/sync_cycle_snapshot.cc",
     "engine/cycle/sync_cycle_snapshot.h",
     "engine/cycle/update_counters.cc",

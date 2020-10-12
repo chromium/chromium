@@ -52,10 +52,6 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     GetBridgeDelegate()->GetAllNodesForDebugging(std::move(callback));
   }
 
-  void GetStatusCountersForDebugging(StatusCountersCallback callback) override {
-    GetBridgeDelegate()->GetStatusCountersForDebugging(std::move(callback));
-  }
-
   void RecordMemoryUsageAndCountsHistograms() override {
     GetBridgeDelegate()->RecordMemoryUsageAndCountsHistograms();
   }

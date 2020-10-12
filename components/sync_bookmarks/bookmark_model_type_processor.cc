@@ -22,7 +22,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
-#include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
@@ -566,27 +565,12 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     AppendNodeAndChildrenForDebugging(child.get(), i++, all_nodes);
 }
 
-void BookmarkModelTypeProcessor::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  syncer::StatusCounters counters;
-  if (bookmark_tracker_) {
-    counters.num_entries =
-        bookmark_tracker_->TrackedBookmarksCountForDebugging();
-    counters.num_entries_and_tombstones =
-        counters.num_entries +
-        bookmark_tracker_->TrackedUncommittedTombstonesCountForDebugging();
-  }
-  std::move(callback).Run(syncer::BOOKMARKS, counters);
-}
-
 void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SyncRecordModelTypeMemoryHistogram(syncer::BOOKMARKS, EstimateMemoryUsage());
   if (bookmark_tracker_) {
     SyncRecordModelTypeCountHistogram(
-        syncer::BOOKMARKS,
-        bookmark_tracker_->TrackedBookmarksCountForDebugging());
+        syncer::BOOKMARKS, bookmark_tracker_->TrackedBookmarksCount());
   } else {
     SyncRecordModelTypeCountHistogram(syncer::BOOKMARKS, 0);
   }

@@ -34,7 +34,6 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
-  void GetStatusCountersForDebugging(StatusCountersCallback callback) override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
  private:

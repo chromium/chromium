@@ -198,7 +198,6 @@ void NonBlockingTypeCommitContribution::CleanUp() {
   cleaned_up_ = true;
 
   debug_info_emitter_->EmitCommitCountersUpdate();
-  debug_info_emitter_->EmitStatusCountersUpdate();
 }
 
 size_t NonBlockingTypeCommitContribution::GetNumEntries() const {

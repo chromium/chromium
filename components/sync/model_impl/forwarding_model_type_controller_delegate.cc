@@ -34,11 +34,6 @@ void ForwardingModelTypeControllerDelegate::GetAllNodesForDebugging(
   other_->GetAllNodesForDebugging(std::move(callback));
 }
 
-void ForwardingModelTypeControllerDelegate::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
-  other_->GetStatusCountersForDebugging(std::move(callback));
-}
-
 void ForwardingModelTypeControllerDelegate::
     RecordMemoryUsageAndCountsHistograms() {
   other_->RecordMemoryUsageAndCountsHistograms();
