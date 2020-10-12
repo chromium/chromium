@@ -277,6 +277,11 @@ void AXImageAnnotator::OnImageAnnotated(
   if (!base::Contains(image_annotations_, image.AxID()))
     return;
 
+  if (!blink::WebAXObject::MaybeUpdateLayoutAndCheckValidity(
+          image.GetDocument())) {
+    return;
+  }
+
   if (image.IsDetached()) {
     image_annotations_.at(image.AxID())
         .set_status(ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);

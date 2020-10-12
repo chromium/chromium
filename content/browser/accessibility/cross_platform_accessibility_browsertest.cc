@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -38,6 +39,14 @@
 #include "base/win/scoped_com_initializer.h"
 #include "ui/base/win/atl_module.h"
 #endif
+
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) &&         \
+    !defined(LEAK_SANITIZER) && !defined(MEMORY_SANITIZER) && \
+    !defined(THREAD_SANITIZER) && !defined(UNDEFINED_SANITIZER)
+#define IS_FAST_BUILD
+#endif
+
+constexpr int kDelayForDeferredUpdatesAfterPageLoad = 150;
 
 namespace content {
 
@@ -1462,5 +1471,173 @@ IN_PROC_BROWSER_TEST_F(
   bounds = heading->GetUnclippedRootFrameBoundsRect();
   EXPECT_GT(bounds.y(), 0);
 }
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       NonInteractiveChangesAreBatched) {
+  // Ensure that normal DOM changes are batched together, and do not occur
+  // more than once every kDelayForDeferredUpdatesAfterPageLoad.
+  const char url_str[] =
+      R"HTML(data:text/html,
+      <!doctype html>
+      <body><div id=foo></div>
+      <script>
+      const startTime = performance.now();
+      const fooElem = document.getElementById('foo');
+      function addChild() {
+        const newChild = document.createElement('div');
+        newChild.innerHTML = '<button>x</button>';
+        fooElem.appendChild(newChild);
+        if (performance.now() - startTime < 1000)
+          requestAnimationFrame(addChild);
+        else
+          document.close();
+      }
+      addChild();
+      </script>
+      </body></html>)HTML";
+  GURL url(url_str);
+
+  // Load the document and wait for it
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kLoadComplete);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    waiter.WaitForNotification();
+  }
+  base::ElapsedTimer timer;
+  int num_batches = 0;
+
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kLayoutComplete);
+    // Run test for 1 second, counting the number of layout completes.
+    while (timer.Elapsed().InMilliseconds() < 1000) {
+      waiter.WaitForNotificationWithTimeout(
+          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      ++num_batches;
+    }
+  }
+
+  // In practice, num_batches lines up nicely with the top end expected,
+  // so if kDelayForDeferredUpdatesAfterPageLoad == 150, 6-7 batches are likely.
+  EXPECT_GT(num_batches, 1);
+  EXPECT_LE(num_batches, 1000 / kDelayForDeferredUpdatesAfterPageLoad + 1);
+}
+
+#if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       DocumentSelectionChangesAreNotBatched) {
+  // Ensure that document selection changes are not batched, and occur faster
+  // than once per kDelayForDeferredUpdatesAfterPageLoad.
+  const char url_str[] =
+      R"HTML(data:text/html,
+      <!doctype html>
+      <body><div id=foo></div>
+      <script>
+      const startTime = performance.now();
+      const fooElem = document.getElementById('foo');
+      function addChild() {
+        const newChild = document.createElement('div');
+        newChild.innerHTML = '<button>x</button>';
+        fooElem.appendChild(newChild);
+        window.getSelection().selectAllChildren(newChild);
+        if (performance.now() - startTime < 1000)
+          requestAnimationFrame(addChild);
+        else
+          document.close();
+      }
+      addChild();
+      </script>
+      </body></html>)HTML";
+  GURL url(url_str);
+
+  // Load the document and wait for it
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kLoadComplete);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    waiter.WaitForNotification();
+  }
+
+  base::ElapsedTimer timer;
+  int num_batches = 0;
+
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kLayoutComplete);
+    // Run test for 1 second, counting the number of layout completes.
+    while (timer.Elapsed().InMilliseconds() < 1000) {
+      waiter.WaitForNotificationWithTimeout(
+          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      ++num_batches;
+    }
+  }
+
+  // In practice, num_batches is about 50 on a fast Linux box.
+  EXPECT_GT(num_batches, 1000 / kDelayForDeferredUpdatesAfterPageLoad);
+}
+#endif  // IS_FAST_BUILD
+
+#if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       ActiveDescendantChangesAreNotBatched) {
+  // Ensure that active descendant changes are not batched, and occur faster
+  // than once per kDelayForDeferredUpdatesAfterPageLoad.
+  const char url_str[] =
+      R"HTML(data:text/html,
+      <!doctype html>
+      <body><div id=foo tabindex=0 autofocus></div>
+      <script>
+      const startTime = performance.now();
+      const fooElem = document.getElementById('foo');
+      let count = 0;
+      function addChild() {
+        const newChild = document.createElement('div');
+        ++count;
+        newChild.innerHTML = '<button id=' + count + '>x</button>';
+        fooElem.appendChild(newChild);
+        fooElem.setAttribute('aria-activedescendant', count);
+        if (performance.now() - startTime < 1000)
+          requestAnimationFrame(addChild);
+        else
+          document.close();
+      }
+      addChild();
+      </script>
+      </body></html>)HTML";
+  GURL url(url_str);
+
+  // Load the document and wait for it
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kLoadComplete);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    waiter.WaitForNotification();
+  }
+
+  base::ElapsedTimer timer;
+  int num_batches = 0;
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED);
+    // Run test for 1 second, counting the number of active descendant changes.
+    while (timer.Elapsed().InMilliseconds() < 1000) {
+      waiter.WaitForNotificationWithTimeout(
+          base::TimeDelta::FromMilliseconds(1000) - timer.Elapsed());
+      ++num_batches;
+    }
+  }
+
+  // In practice, num_batches is about 50 on a fast Linux box.
+  EXPECT_GT(num_batches, 1000 / kDelayForDeferredUpdatesAfterPageLoad);
+}
+#endif  // IS_FAST_BUILD
 
 }  // namespace content

@@ -280,6 +280,10 @@ uint64_t WebDocument::GetVisualViewportScrollingElementIdForTesting() {
       .GetStableId();
 }
 
+bool WebDocument::IsLoaded() {
+  return !ConstUnwrap<Document>()->Parser();
+}
+
 WebDocument::WebDocument(Document* elem) : WebNode(elem) {}
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebDocument, ConstUnwrap<Node>()->IsDocumentNode())

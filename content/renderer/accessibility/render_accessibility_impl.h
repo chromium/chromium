@@ -164,6 +164,15 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // versions. If any have moved, send an IPC with the new locations.
   void SendLocationChanges();
 
+  // Return true if the event indicates that the current batch of changes
+  // should be processed immediately in order for the user to get fast
+  // feedback, e.g. for navigation or data entry activities.
+  bool IsImmediateProcessingRequiredForEvent(const ui::AXEvent&) const;
+
+  // Get the amount of time, in ms, that event processing should be deferred
+  // in order to more efficiently batch changes.
+  int GetDeferredEventsDelay();
+
  private:
   struct DirtyObject {
     DirtyObject();

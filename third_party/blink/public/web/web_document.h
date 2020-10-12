@@ -132,6 +132,8 @@ class WebDocument : public WebNode {
   // See cc/paint/element_id.h for the definition of these id.
   BLINK_EXPORT uint64_t GetVisualViewportScrollingElementIdForTesting();
 
+  BLINK_EXPORT bool IsLoaded();
+
 #if INSIDE_BLINK
   BLINK_EXPORT WebDocument(Document*);
   BLINK_EXPORT WebDocument& operator=(Document*);

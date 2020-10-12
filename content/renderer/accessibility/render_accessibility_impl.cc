@@ -60,11 +60,6 @@ using blink::WebView;
 
 namespace {
 
-// The amount of time, in milliseconds, to wait before sending accessibility
-// events that are deferred rather than being sent right away. As one
-// example this is used during initial page load.
-constexpr int kDelayForDeferredEvents = 350;
-
 // The minimum amount of time in milliseconds that should be spent
 // in serializing code in order to report the elapsed time as a URL-keyed
 // metric.
@@ -230,10 +225,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   settings->SetAccessibilityIncludeSvgGElement(true);
 #endif
 
-  if (render_frame_->IsMainFrame())
-    event_schedule_mode_ = EventScheduleMode::kDeferEvents;
-  else
-    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
+  event_schedule_mode_ = EventScheduleMode::kDeferEvents;
 
   // Optionally disable AXMenuList, which makes the internal pop-up menu
   // UI for a select element directly accessible. Disable by default on
@@ -572,6 +564,10 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(const WebAXObject& obj,
   if (subtree)
     serializer_->InvalidateSubtree(obj);
 
+  // If the event occurred on the focused object, process immediately.
+  if (obj.IsFocused())
+    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
+
   ScheduleSendPendingAccessibilityEvents();
 }
 
@@ -611,12 +607,89 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     }
   }
   pending_events_.push_back(event);
-
-  // Once we get the first load, we should no longer defer events.
-  if (event.event_type == ax::mojom::Event::kLoadComplete)
+  if (IsImmediateProcessingRequiredForEvent(event))
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
   ScheduleSendPendingAccessibilityEvents();
+}
+
+bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
+    const ui::AXEvent& event) const {
+  if (event_schedule_mode_ == EventScheduleMode::kProcessEventsImmediately)
+    return true;  // Already scheduled for immediate mode.
+
+  if (event.event_from == ax::mojom::EventFrom::kAction)
+    return true;  // Actions should result in an immediate response.
+
+  switch (event.event_type) {
+    case ax::mojom::Event::kActiveDescendantChanged:
+    case ax::mojom::Event::kBlur:
+    case ax::mojom::Event::kCheckedStateChanged:
+    case ax::mojom::Event::kClicked:
+    case ax::mojom::Event::kDocumentSelectionChanged:
+    case ax::mojom::Event::kFocus:
+    case ax::mojom::Event::kHover:
+    case ax::mojom::Event::kLoadComplete:
+    case ax::mojom::Event::kTextSelectionChanged:
+    case ax::mojom::Event::kValueChanged:
+      return true;
+
+    case ax::mojom::Event::kAriaAttributeChanged:
+    case ax::mojom::Event::kChildrenChanged:
+    case ax::mojom::Event::kDocumentTitleChanged:
+    case ax::mojom::Event::kExpandedChanged:
+    case ax::mojom::Event::kHide:
+    case ax::mojom::Event::kInvalidStatusChanged:
+    case ax::mojom::Event::kLayoutComplete:
+    case ax::mojom::Event::kLocationChanged:
+    case ax::mojom::Event::kMenuListValueChanged:
+    case ax::mojom::Event::kRowCollapsed:
+    case ax::mojom::Event::kRowCountChanged:
+    case ax::mojom::Event::kRowExpanded:
+    case ax::mojom::Event::kScrollPositionChanged:
+    case ax::mojom::Event::kScrolledToAnchor:
+    case ax::mojom::Event::kSelectedChildrenChanged:
+    case ax::mojom::Event::kShow:
+    case ax::mojom::Event::kTextChanged:
+      return false;
+
+    case ax::mojom::Event::kAlert:
+    case ax::mojom::Event::kAutocorrectionOccured:
+    case ax::mojom::Event::kControlsChanged:
+    case ax::mojom::Event::kEndOfTest:
+    case ax::mojom::Event::kFocusAfterMenuClose:
+    case ax::mojom::Event::kFocusContext:
+    case ax::mojom::Event::kHitTestResult:
+    case ax::mojom::Event::kImageFrameUpdated:
+    case ax::mojom::Event::kLoadStart:
+    case ax::mojom::Event::kLiveRegionCreated:
+    case ax::mojom::Event::kLiveRegionChanged:
+    case ax::mojom::Event::kMediaStartedPlaying:
+    case ax::mojom::Event::kMediaStoppedPlaying:
+    case ax::mojom::Event::kMenuEnd:
+    case ax::mojom::Event::kMenuPopupEnd:
+    case ax::mojom::Event::kMenuPopupStart:
+    case ax::mojom::Event::kMenuStart:
+    case ax::mojom::Event::kMouseCanceled:
+    case ax::mojom::Event::kMouseDragged:
+    case ax::mojom::Event::kMouseMoved:
+    case ax::mojom::Event::kMousePressed:
+    case ax::mojom::Event::kMouseReleased:
+    case ax::mojom::Event::kNone:
+    case ax::mojom::Event::kSelection:
+    case ax::mojom::Event::kSelectionAdd:
+    case ax::mojom::Event::kSelectionRemove:
+    case ax::mojom::Event::kStateChanged:
+    case ax::mojom::Event::kTooltipClosed:
+    case ax::mojom::Event::kTooltipOpened:
+    case ax::mojom::Event::kTreeChanged:
+    case ax::mojom::Event::kWindowActivated:
+    case ax::mojom::Event::kWindowDeactivated:
+    case ax::mojom::Event::kWindowVisibilityChanged:
+      // Never fired from Blink.
+      NOTREACHED() << "Event not expected from Blink: " << event.event_type;
+      return false;
+  }
 }
 
 bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
@@ -639,6 +712,23 @@ bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
   }
 
   return true;
+}
+
+int RenderAccessibilityImpl::GetDeferredEventsDelay() {
+  // The amount of time, in milliseconds, to wait before sending non-interactive
+  // events that are deferred before the initial page load.
+  constexpr int kDelayForDeferredUpdatesBeforePageLoad = 350;
+
+  // The amount of time, in milliseconds, to wait before sending non-interactive
+  // events that are deferred after the initial page load.
+  // Shync with same constant in CrossPlatformAccessibilityBrowserTest.
+  constexpr int kDelayForDeferredUpdatesAfterPageLoad = 150;
+
+  // Prefer WebDocument::IsLoaded() over WebAXObject::IsLoaded() as the
+  // latter could trigger a layout update while retrieving the root
+  // WebAXObject.
+  return GetMainDocument().IsLoaded() ? kDelayForDeferredUpdatesAfterPageLoad
+                                      : kDelayForDeferredUpdatesBeforePageLoad;
 }
 
 void RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents(
@@ -681,11 +771,14 @@ void RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents(
   switch (event_schedule_mode_) {
     case EventScheduleMode::kDeferEvents:
       event_schedule_status_ = EventScheduleStatus::kScheduledDeferred;
-      // During page load, process changes on a delay so that they occur in
-      // larger batches, which helps improve efficiency of page loads.
-      delay = base::TimeDelta::FromMilliseconds(kDelayForDeferredEvents);
+      // Where the user is not currently navigating or typing,
+      // process changes on a delay so that they occur in larger batches,
+      // improving efficiency of repetitive mutations.
+      delay = base::TimeDelta::FromMilliseconds(GetDeferredEventsDelay());
       break;
     case EventScheduleMode::kProcessEventsImmediately:
+      // This set of events needed to be processed immediately because of a
+      // page load or user action.
       event_schedule_status_ = EventScheduleStatus::kScheduledImmediate;
       delay = base::TimeDelta::FromMilliseconds(0);
       break;
@@ -776,8 +869,13 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
         ui::AXEvent(obj.AxID(), ax::mojom::Event::kLayoutComplete));
   }
 
-  if (pending_events_.empty() && dirty_objects_.empty())
+  if (pending_events_.empty() && dirty_objects_.empty()) {
+    // By default, assume the next batch does not have interactive events, and
+    // defer so that the batch of events is larger. If any interactive events
+    // come in, the batch will be processed immediately.
+    event_schedule_mode_ = EventScheduleMode::kDeferEvents;
     return;
+  }
 
   // Update layout before snapshotting the events so that live state read from
   // the DOM during freezing (e.g. which node currently has focus) is consistent
@@ -995,8 +1093,12 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   if (had_load_complete_messages) {
     has_injected_stylesheet_ = false;
-    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
   }
+
+  // Now that this batch is complete, assume the next batch does not have
+  // interactive events, and defer so that the batch of events is larger.
+  // If any interactive events come in, the batch will be processed immediately.
+  event_schedule_mode_ = EventScheduleMode::kDeferEvents;
 
   if (image_annotation_debugging_)
     AddImageAnnotationDebuggingAttributes(updates);
@@ -1096,6 +1198,7 @@ void RenderAccessibilityImpl::OnLoadInlineTextBoxes(
   serializer_->InvalidateSubtree(obj);
 
   // Explicitly send a tree change update event now.
+  event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
   HandleAXEvent(ui::AXEvent(obj.AxID(), ax::mojom::Event::kTreeChanged));
 }
 
@@ -1119,6 +1222,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
     return;
 
   serializer_->InvalidateSubtree(obj);
+  event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
   HandleAXEvent(ui::AXEvent(obj.AxID(), ax::mojom::Event::kImageFrameUpdated));
 }
 
