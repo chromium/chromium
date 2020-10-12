@@ -27,6 +27,9 @@ class CaptivePortalView : public SimpleWebViewDialog {
   void LoadingStateChanged(content::WebContents* source,
                            bool to_different_document) override;
 
+  // Overridden from SimpleWebViewDialog:
+  std::unique_ptr<views::WidgetDelegate> MakeWidgetDelegate() override;
+
  private:
   // Contains CaptivePortalWindowProxy to be notified when redirection state is
   // resolved.

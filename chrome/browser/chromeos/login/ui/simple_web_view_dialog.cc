@@ -37,6 +37,7 @@
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 using content::WebContents;
 using views::GridLayout;
@@ -246,14 +247,6 @@ void SimpleWebViewDialog::Init() {
   Layout();
 }
 
-void SimpleWebViewDialog::Layout() {
-  views::WidgetDelegateView::Layout();
-}
-
-views::View* SimpleWebViewDialog::GetInitiallyFocusedView() {
-  return web_view_;
-}
-
 void SimpleWebViewDialog::ButtonPressed(views::Button* sender,
                                         const ui::Event& event) {
   command_updater_->ExecuteCommand(sender->tag());
@@ -333,6 +326,14 @@ void SimpleWebViewDialog::ExecuteCommandWithDisposition(int id,
     default:
       NOTREACHED();
   }
+}
+
+std::unique_ptr<views::WidgetDelegate>
+SimpleWebViewDialog::MakeWidgetDelegate() {
+  auto delegate = std::make_unique<views::WidgetDelegate>();
+  delegate->SetInitiallyFocusedView(web_view_);
+  delegate->SetOwnedByWidget(true);
+  return delegate;
 }
 
 void SimpleWebViewDialog::LoadImages() {

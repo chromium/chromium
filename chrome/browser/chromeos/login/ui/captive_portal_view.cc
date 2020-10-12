@@ -13,6 +13,7 @@
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 namespace {
@@ -38,13 +39,7 @@ namespace chromeos {
 
 CaptivePortalView::CaptivePortalView(Profile* profile,
                                      CaptivePortalWindowProxy* proxy)
-    : SimpleWebViewDialog(profile), proxy_(proxy), redirected_(false) {
-  SetCanResize(false);
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-  SetShowTitle(true);
-  SetTitle(WindowTitleForNetwork(
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork()));
-}
+    : SimpleWebViewDialog(profile), proxy_(proxy), redirected_(false) {}
 
 CaptivePortalView::~CaptivePortalView() {}
 
@@ -76,6 +71,16 @@ void CaptivePortalView::LoadingStateChanged(content::WebContents* source,
   // Relying on just shill portal check to close dialog is fine.
   // if (!is_loading && !redirected_)
   //   proxy_->OnOriginalURLLoaded();
+}
+
+std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate() {
+  auto delegate = SimpleWebViewDialog::MakeWidgetDelegate();
+  delegate->SetCanResize(false);
+  delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  delegate->SetShowTitle(true);
+  delegate->SetTitle(WindowTitleForNetwork(
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork()));
+  return delegate;
 }
 
 }  // namespace chromeos

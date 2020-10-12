@@ -15,7 +15,6 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 class CommandUpdaterImpl;
@@ -26,6 +25,7 @@ class LocationBarModel;
 namespace views {
 class WebView;
 class Widget;
+class WidgetDelegate;
 }  // namespace views
 
 namespace chromeos {
@@ -38,7 +38,7 @@ class StubBubbleModelDelegate;
 // to be used for sign in to captive portal on login screen (when Browser
 // isn't running).
 class SimpleWebViewDialog : public views::ButtonListener,
-                            public views::WidgetDelegateView,
+                            public views::View,
                             public LocationBarView::Delegate,
                             public ChromeLocationBarModelDelegate,
                             public CommandUpdaterDelegate,
@@ -53,12 +53,6 @@ class SimpleWebViewDialog : public views::ButtonListener,
 
   // Inits view. Should be attached to a Widget before call.
   void Init();
-
-  // Overridden from views::View:
-  void Layout() override;
-
-  // Overridden from views::WidgetDelegate:
-  views::View* GetInitiallyFocusedView() override;
 
   // Implements views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -84,6 +78,8 @@ class SimpleWebViewDialog : public views::ButtonListener,
 
   // Implements CommandUpdaterDelegate:
   void ExecuteCommandWithDisposition(int id, WindowOpenDisposition) override;
+
+  virtual std::unique_ptr<views::WidgetDelegate> MakeWidgetDelegate();
 
  private:
   friend class SimpleWebViewDialogTest;
