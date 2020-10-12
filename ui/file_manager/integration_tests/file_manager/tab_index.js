@@ -232,6 +232,73 @@ testcase.tabindexFocusDirectorySelected = async () => {
 };
 
 /**
+ * Tests the tab focus behavior of the Files app when a directory is selected.
+ */
+testcase.tabindexFocusDirectorySelectedSharesheetEnabled = async () => {
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Check that the file list has the focus on launch.
+  await Promise.all([
+    remoteCall.waitForElement(appId, ['#file-list:focus']),
+    remoteCall.waitForElement(appId, ['#drive-welcome-link']),
+  ]);
+  const element =
+      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+  chrome.test.assertEq('list', element.attributes['class']);
+
+  // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
+  const fakeData = {
+    'chrome.fileManagerPrivate.sharesheetHasTargets': ['static_fake', [true]],
+  };
+  await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
+
+  // Select the directory named 'photos'.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']));
+
+  await Promise.all([
+
+    // Wait for share button to to be visible and enabled.
+    remoteCall.waitForElement(
+        appId, ['#sharesheet-button:not([hidden]):not([disabled])']),
+
+    // Wait for delete button to to be visible and enabled.
+    remoteCall.waitForElement(
+        appId, ['#delete-button:not([hidden]):not([disabled])']),
+  ]);
+
+  // Send Tab key events to cycle through the tabable elements.
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'pinned-toggle'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'sharesheet-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'delete-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'search-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'view-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'sort-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'gear-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'file-list'));
+
+  // Remove fakes.
+  const removedCount = await remoteCall.callRemoteTestUtil(
+      'removeAllForegroundFakes', appId, []);
+  chrome.test.assertEq(1, removedCount);
+};
+
+/**
  * Tests the tab focus in the dialog and closes the dialog.
  *
  * @param {!Object} dialogParams Dialog parameters to be passed to

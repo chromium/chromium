@@ -1672,7 +1672,12 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends Command {
     }
 
     event.canExecute = true;
-    event.command.disabled = true;
+    // In the case where changing focus to action bar elements, it is safe to
+    // keep the command enabled if it was visible before, because there should
+    // be no change to the selected entries.
+    event.command.disabled =
+        !fileManager.ui.actionbar.contains(/** @type {Node} */ (event.target));
+
     chrome.fileManagerPrivate.sharesheetHasTargets(entries, hasTargets => {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);

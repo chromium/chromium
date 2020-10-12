@@ -130,6 +130,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& DisableSharesheet() {
+    options.enable_sharesheet = false;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -788,8 +793,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexFocusDownloads").InGuestMode().DisableFilesNg(),
         // TestCase("tabindexFocusBreadcrumbBackground").FilesNg(),
         TestCase("tabindexFocusBreadcrumbBackground").DisableFilesNg(),
-        TestCase("tabindexFocusDirectorySelected").FilesNg(),
-        TestCase("tabindexFocusDirectorySelected").DisableFilesNg(),
+        TestCase("tabindexFocusDirectorySelected")
+            .FilesNg()
+            .DisableSharesheet(),
+        TestCase("tabindexFocusDirectorySelected")
+            .DisableFilesNg()
+            .DisableSharesheet(),
+        TestCase("tabindexFocusDirectorySelectedSharesheetEnabled")
+            .FilesNg()
+            .EnableSharesheet(),
         TestCase("tabindexOpenDialogDownloadsFilesNg").WithBrowser().FilesNg(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser().DisableFilesNg(),
         TestCase("tabindexOpenDialogDownloads")
