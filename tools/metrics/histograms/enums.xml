@@ -65584,12 +65584,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SharingActionSource">
 <!--
   SharingActionSource must be kept in sync with ValidSharingActionSource defined
   in //ui/file_manager/file_manager/foreground/js/file_manager_commands.js.
 -->
 
-<enum name="SharingActionSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Context Menu"/>
   <int value="2" label="Share Button"/>
@@ -65666,6 +65666,29 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Failure: no image content loaded"/>
   <int value="6" label="Failure: decode image failed"/>
   <int value="7" label="Failure: decoded image draws nothing"/>
+</enum>
+
+<enum name="SharingScreenshotAction">
+<!--
+  SharingScreenshotAction must be kept in sync with SharingScreenshotAction defined
+  in /clank/browser/image_editor/internal/java/src/org/chromium/chrome/browser/image_editor/ImageEditorMetrics.java
+-->
+
+  <int value="0" label="Crop tool selected"/>
+  <int value="1" label="Text tool selected"/>
+  <int value="2" label="Draw tool selected"/>
+  <int value="3" label="Share sheet selected"/>
+  <int value="4" label="Screenshot Shared"/>
+  <int value="5" label="Screenshot Saved"/>
+  <int value="6" label="Screenshot Deleted"/>
+  <int value="7" label="Text tool: text edited"/>
+  <int value="8" label="Text tool: text copied"/>
+  <int value="9" label="Text tool: text scaled"/>
+  <int value="10" label="Text tool: text rotated"/>
+  <int value="11" label="Text tool: text deleted"/>
+  <int value="12" label="Text tool: color changed"/>
+  <int value="13" label="Draw tool: size changed"/>
+  <int value="14" label="Draw tool: color changed"/>
 </enum>
 
 <enum name="SharingSendMessageResult">
