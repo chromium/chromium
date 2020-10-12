@@ -30,26 +30,29 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  // TODO(lyf): Make config_ read-only. The creationOptions getter which
-  // asks for the pointer is forbidened by a read-only variable.
-  // TODO(lyf): This could be optimized by dropping config_ and adding
-  // Vector<QualifiedName> for drop_elements.
-  Member<SanitizerConfig> config_ = {};
-  Vector<AtomicString> drop_attributes_ = {};
-  const Vector<String> default_drop_elements_ = {"SCRIPT",    "ANNOTATION-XML",
-                                                 "AUDIO",     "COLGROUP",
-                                                 "DESC",      "FOREIGNOBJECT",
-                                                 "HEAD",      "IFRAME",
-                                                 "MATH",      "MI",
-                                                 "MN",        "MO",
-                                                 "MS",        "MTEXT",
-                                                 "NOEMBED",   "NOFRAMES",
-                                                 "PLAINTEXT", "STYLE",
-                                                 "SVG",       "TEMPLATE",
-                                                 "THEAD",     "TITLE",
-                                                 "VIDEO",     "XMP"};
-  const Vector<String> default_block_elements_ = {};
-  const Vector<AtomicString> default_drop_attributes_ = {"onclick", "onsubmit"};
+  HashSet<String> allow_elements_ = {};
+  HashSet<String> block_elements_ = {};
+  HashSet<String> drop_elements_ = {};
+  HashSet<String> allow_attributes_;
+  HashSet<String> drop_attributes_ = {};
+
+  bool has_allow_elements_ = false;
+  bool has_allow_attributes_ = false;
+
+  const HashSet<String> default_block_elements_ = {};
+  const HashSet<String> default_drop_elements_ = {"SCRIPT",    "ANNOTATION-XML",
+                                                  "AUDIO",     "COLGROUP",
+                                                  "DESC",      "FOREIGNOBJECT",
+                                                  "HEAD",      "IFRAME",
+                                                  "MATH",      "MI",
+                                                  "MN",        "MO",
+                                                  "MS",        "MTEXT",
+                                                  "NOEMBED",   "NOFRAMES",
+                                                  "PLAINTEXT", "STYLE",
+                                                  "SVG",       "TEMPLATE",
+                                                  "THEAD",     "TITLE",
+                                                  "VIDEO",     "XMP"};
+  const HashSet<String> default_drop_attributes_ = {"onclick", "onsubmit"};
 };
 
 }  // namespace blink
