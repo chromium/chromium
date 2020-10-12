@@ -358,7 +358,7 @@ void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     usbdevfs_urb* urb = nullptr;
     int rc = HANDLE_EINTR(ioctl(fd_.get(), USBDEVFS_REAPURBNDELAY, &urb));
-    if (rc) {
+    if (rc || !urb) {
       if (errno == EAGAIN)
         break;
       USB_PLOG(DEBUG) << "Failed to reap urbs";
