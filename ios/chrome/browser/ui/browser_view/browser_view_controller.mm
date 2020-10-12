@@ -4866,6 +4866,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
     newTabPageCoordinator.webState = webState;
     _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
+    [newTabPageCoordinator.viewController
+        willMoveToParentViewController:self.browserContainerViewController];
+    [self.browserContainerViewController
+        addChildViewController:newTabPageCoordinator.viewController];
+    [self.browserContainerViewController.view
+        addSubview:newTabPageCoordinator.viewController.view];
+    [newTabPageCoordinator.viewController
+        didMoveToParentViewController:self.browserContainerViewController];
   } else {
     NewTabPageCoordinator* newTabPageCoordinator =
         _ntpCoordinatorsForWebStates[webState];
