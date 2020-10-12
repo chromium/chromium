@@ -36,7 +36,7 @@ enum GatewayCanBePingedProblem {
   kDefaultNetworkAboveLatencyThreshold,
   // One or more of the non-default networks has failed pings.
   kUnsuccessfulNonDefaultNetworksPings,
-  // One of more of the non-default networks has a latency above the threshold.
+  // One or more of the non-default networks has a latency above the threshold.
   kNonDefaultNetworksAboveLatencyThreshold,
 };
 

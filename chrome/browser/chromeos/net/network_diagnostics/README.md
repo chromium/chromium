@@ -69,7 +69,7 @@ Problems:
    above the threshold.
 * `kUnsuccessfulNonDefaultNetworksPings`: One or more of the non-default
    networks has failed pings.
-* `kNonDefaultNetworksAboveLatencyThreshold`: One of more of the non-default
+* `kNonDefaultNetworksAboveLatencyThreshold`: One or more of the non-default
    networks has a latency above the threshold.
 
 #### HasSecureWiFiConnection
