@@ -212,10 +212,6 @@ bool PluginVmInstallerView::Accept() {
 }
 
 bool PluginVmInstallerView::Cancel() {
-  // We call |Cancel()| if the user hasn't started installation to log to UMA.
-  if (state_ == State::kConfirmInstall || state_ == State::kInstalling)
-    plugin_vm_installer_->Cancel();
-
   return true;
 }
 
@@ -435,6 +431,9 @@ void PluginVmInstallerView::SetFinishedCallbackForTesting(
 
 PluginVmInstallerView::~PluginVmInstallerView() {
   plugin_vm_installer_->RemoveObserver();
+  // We call |Cancel()| if the user hasn't started installation to log to UMA.
+  if (state_ == State::kConfirmInstall || state_ == State::kInstalling)
+    plugin_vm_installer_->Cancel();
   g_plugin_vm_installer_view = nullptr;
 }
 
