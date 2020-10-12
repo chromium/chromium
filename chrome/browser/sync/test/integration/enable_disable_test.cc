@@ -154,13 +154,7 @@ class EnableDisableSingleClientTest : public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(EnableDisableSingleClientTest);
 };
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_EnableOneAtATime DISABLED_EnableOneAtATime
-#else
-#define MAYBE_EnableOneAtATime EnableOneAtATime
-#endif
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_EnableOneAtATime) {
+IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
@@ -195,13 +189,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_EnableOneAtATime) {
   }
 }
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_DisableOneAtATime DISABLED_DisableOneAtATime
-#else
-#define MAYBE_DisableOneAtATime DisableOneAtATime
-#endif
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_DisableOneAtATime) {
+IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, DisableOneAtATime) {
   // Setup sync with no disabled types.
   SetupTest(/*all_types_enabled=*/true);
 
@@ -228,14 +216,8 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, MAYBE_DisableOneAtATime) {
   }
 }
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_FastEnableDisableOneAtATime DISABLED_FastEnableDisableOneAtATime
-#else
-#define MAYBE_FastEnableDisableOneAtATime FastEnableDisableOneAtATime
-#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       MAYBE_FastEnableDisableOneAtATime) {
+                       FastEnableDisableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
@@ -266,14 +248,8 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   }
 }
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_FastDisableEnableOneAtATime DISABLED_FastDisableEnableOneAtATime
-#else
-#define MAYBE_FastDisableEnableOneAtATime FastDisableEnableOneAtATime
-#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       MAYBE_FastDisableEnableOneAtATime) {
+                       FastDisableEnableOneAtATime) {
   // Setup sync with no disabled types.
   SetupTest(/*all_types_enabled=*/true);
 
@@ -296,16 +272,8 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   }
 }
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_FastEnableDisableEnableOneAtATime \
-  DISABLED_FastEnableDisableEnableOneAtATime
-#else
-#define MAYBE_FastEnableDisableEnableOneAtATime \
-  FastEnableDisableEnableOneAtATime
-#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       MAYBE_FastEnableDisableEnableOneAtATime) {
+                       FastEnableDisableEnableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
@@ -364,15 +332,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableAndRestart) {
   }
 }
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_FastEnableDisableEnable DISABLED_FastEnableDisableEnable
-#else
-#define MAYBE_FastEnableDisableEnable FastEnableDisableEnable
-#endif
-
-IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       MAYBE_FastEnableDisableEnable) {
+IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
   SetupTest(/*all_types_enabled=*/false);
 
   // Enable all, and then disable+reenable immediately afterwards, before
@@ -424,15 +384,8 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   EXPECT_EQ(GetNumUpdatesDownloadedInLastCycle(), initial_updates_downloaded);
 }
 
-// Flakiness spike on Windows, see crbug.com/1111227.
-#if defined(OS_WIN)
-#define MAYBE_DoesNotRedownloadAfterKeepData \
-  DISABLED_DoesNotRedownloadAfterKeepData
-#else
-#define MAYBE_DoesNotRedownloadAfterKeepData DoesNotRedownloadAfterKeepData
-#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       MAYBE_DoesNotRedownloadAfterKeepData) {
+                       DoesNotRedownloadAfterKeepData) {
   ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
