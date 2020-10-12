@@ -133,8 +133,12 @@ void PermissionChip::Show(permissions::PermissionPrompt::Delegate* delegate) {
   UpdatePermissionIconAndTextColor();
 
   SetVisible(true);
-  animation_->Show();
+  // TODO(olesiamarukhno): Add tests for animation logic.
+  animation_->Reset();
+  if (!delegate_->WasCurrentRequestAlreadyDisplayed())
+    animation_->Show();
   requested_time_ = base::TimeTicks::Now();
+  PreferredSizeChanged();
 }
 
 void PermissionChip::Hide() {

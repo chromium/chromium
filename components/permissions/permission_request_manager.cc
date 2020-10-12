@@ -403,6 +403,10 @@ void PermissionRequestManager::Closing() {
   FinalizeBubble(PermissionAction::DISMISSED);
 }
 
+bool PermissionRequestManager::WasCurrentRequestAlreadyDisplayed() {
+  return current_request_already_displayed_;
+}
+
 PermissionRequestManager::PermissionRequestManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -498,7 +502,7 @@ void PermissionRequestManager::ShowBubble() {
   if (!view_)
     return;
 
-  if (!current_request_view_shown_to_user_) {
+  if (!current_request_already_displayed_) {
     PermissionUmaUtil::PermissionPromptShown(requests_);
 
     if (ShouldCurrentRequestUseQuietUI()) {
@@ -528,7 +532,7 @@ void PermissionRequestManager::ShowBubble() {
       }
     }
   }
-  current_request_view_shown_to_user_ = true;
+  current_request_already_displayed_ = true;
   NotifyBubbleAdded();
 
   // If in testing mode, automatically respond to the bubble that was shown.
@@ -601,7 +605,7 @@ void PermissionRequestManager::FinalizeBubble(
   if (notification_permission_ui_selector_)
     notification_permission_ui_selector_->Cancel();
 
-  current_request_view_shown_to_user_ = false;
+  current_request_already_displayed_ = false;
   current_request_ui_to_use_.reset();
 
   if (view_)
