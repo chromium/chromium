@@ -1318,11 +1318,9 @@ void Browser::SetFocusToLocationBar() {
   // Two differences between this and FocusLocationBar():
   // (1) This doesn't get recorded in user metrics, since it's called
   //     internally.
-  // (2) This is called with |select_all| == false, because this is a renderer
-  //     initiated focus (this method is a WebContentsDelegate override).
-  //     We don't select-all for renderer initiated focuses, as the user may
-  //     currently be typing something while the tab finishes loading. We don't
-  //     want to clobber user input by selecting all while the user is typing.
+  // (2) This is called with |is_user_initiated| == false, because this is a
+  //     renderer initiated focus (this method is a WebContentsDelegate
+  //     override).
   window_->SetFocusToLocationBar(false);
 }
 

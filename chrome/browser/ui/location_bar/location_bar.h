@@ -48,8 +48,6 @@ class LocationBar {
   // Renderer-initiated focuses (like browser startup or NTP finished loading),
   // should have |is_user_initiated| set to false, so we can avoid disrupting
   // user actions and avoid requesting on-focus suggestions.
-  //
-  // TODO(tommycli): See if there's a more descriptive name for this method.
   virtual void FocusLocation(bool is_user_initiated) = 0;
 
   // Puts the user into keyword mode with their default search provider.
