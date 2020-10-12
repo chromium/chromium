@@ -224708,7 +224708,7 @@
      "widgets": {
       "appearance": {
        "default-styles-expected.txt": [
-        "3617545f255149bcd355cb0a2c6030aea55c1906",
+        "f2b7d4027f11935dfffab45453b644a4e696c281",
         []
        ]
       },
@@ -231174,7 +231174,7 @@
     ]
    },
    "lint.ignore": [
-    "5bcb811df36051225f60efa903f7f1e4cd7eda29",
+    "fe2933bb8a31cb7d5a8c39eee06626f1c7b261ac",
     []
    ],
    "loading": {
@@ -232668,14 +232668,6 @@
    "mediacapture-image": {
     "META.yml": [
      "1b4fef5e5a19ed3d7e61320bfa752a19da1f595a",
-     []
-    ],
-    "MediaStreamTrack-applyConstraints-fast-expected.txt": [
-     "d6120da5694b15623fc71b6ff203fbc063f6a089",
-     []
-    ],
-    "MediaStreamTrack-getConstraints-fast-expected.txt": [
-     "9b9d77c3b7b55e69e58d6d80f834cbccd6767d39",
      []
     ],
     "resources": {
@@ -237118,7 +237110,7 @@
       []
      ],
      "mock-imagecapture.js": [
-      "ce2b968391343339a9958100f564fa73d5c01509",
+      "035b5241ae989161bfc604b5607a81734a9bdb8d",
       []
      ],
      "mock-screenenumeration.js": [
@@ -242344,19 +242336,19 @@
       []
      ],
      "cacert.key": [
-      "7b83e8f0e9ebe229c83335b3a2f0632540942ed2",
+      "3a3e487a83de0f5676e481e7240b68107b7ee34e",
       []
      ],
      "cacert.pem": [
-      "a8ce54be5579b743001fa0de3c163129965d356c",
+      "e9b5fda55c380cf8850f4b94524b62055c9ca360",
       []
      ],
      "web-platform.test.key": [
-      "c4f5dc3f2cfba081e4536708c4667e7595e09d74",
+      "957dfb234f8b90ebb40a1fb48d58623875f2e03d",
       []
      ],
      "web-platform.test.pem": [
-      "438f504b2b696757ea292e3c53ea0f0baa1fdd23",
+      "61d7e4d189266500efb379da960eafbb38aca530",
       []
      ]
     },
@@ -242777,7 +242769,7 @@
      []
     ],
     "requirements_mypy.txt": [
-     "fae3597764cc04e1c35772efb7cec648bc6111a3",
+     "65100d70376cf614b4396dd242181394453efa49",
      []
     ],
     "runner": {
@@ -248648,7 +248640,7 @@
         []
        ],
        "chrome_spki_certs.py": [
-        "289453bd080959445ea5a452362b05a7675735e4",
+        "c6e583581882dbabe817600b1f1047e48a0d1dcb",
         []
        ],
        "edge.py": [
@@ -372609,14 +372601,14 @@
      ]
     ],
     "MediaStreamTrack-applyConstraints-fast.html": [
-     "00c2f1274e8ff5bbed613337f6caed9cadc38439",
+     "5c5d3e119b77bd68cf90698bc89b943de92639d9",
      [
       null,
       {}
      ]
     ],
-    "MediaStreamTrack-applyConstraints-getSettings.html": [
-     "2ae3a87af2312a5c9045a378f5bf6d9113c21baa",
+    "MediaStreamTrack-applyConstraints-getSettings.https.html": [
+     "db0e1ea09f212591de6b8c5895c402e4ef355983",
      [
       null,
       {
@@ -372624,8 +372616,8 @@
       }
      ]
     ],
-    "MediaStreamTrack-applyConstraints-reject.html": [
-     "02ba251fc9f12265f58cd21b93875945700ed0c1",
+    "MediaStreamTrack-applyConstraints-reject.https.html": [
+     "395ef17ca8bb264191c1618669f9b6e4606cae26",
      [
       null,
       {
@@ -372633,8 +372625,8 @@
       }
      ]
     ],
-    "MediaStreamTrack-applyConstraints.html": [
-     "3c5c05aefa05d878b07f927eea600af75598d497",
+    "MediaStreamTrack-applyConstraints.https.html": [
+     "e5466ede04a31abf483bf08b62609bea7f032716",
      [
       null,
       {
@@ -372649,8 +372641,8 @@
       {}
      ]
     ],
-    "MediaStreamTrack-getCapabilities.html": [
-     "d0b7c2a3f204f3a108d7dc15696df2904373292c",
+    "MediaStreamTrack-getCapabilities.https.html": [
+     "8d22ad20949b4819b11c60e6ba86d01a91a5be67",
      [
       null,
       {
@@ -372658,11 +372650,13 @@
       }
      ]
     ],
-    "MediaStreamTrack-getConstraints-fast.html": [
-     "06a09feecdd5bc72ce4a1643b98170e482549a70",
+    "MediaStreamTrack-getConstraints.https.html": [
+     "18cb9dba9780089598fcea26c0947f48aadf31ba",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "MediaStreamTrack-getSettings-fast.html": [
@@ -372672,8 +372666,8 @@
       {}
      ]
     ],
-    "MediaStreamTrack-getSettings.html": [
-     "747eff8937d923b25c72e2ecd3c18967905f71a1",
+    "MediaStreamTrack-getSettings.https.html": [
+     "907991d152240414528ce244f15cd0cd12b780f4",
      [
       null,
       {
