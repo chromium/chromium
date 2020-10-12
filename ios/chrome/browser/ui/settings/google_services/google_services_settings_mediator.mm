@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
@@ -323,6 +324,11 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // Updates the sync section. If |notifyConsumer| is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncSection:(BOOL)notifyConsumer {
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    // Chrome adds the sync section within "Manage Your Settings" for the MICE
+    // experiment.
+    return;
+  }
   BOOL needsAccountSigninItemUpdate = [self updateAccountSignInItem];
   BOOL needsSyncErrorItemsUpdate = [self updateSyncErrorItems];
   BOOL needsSyncChromeDataItemUpdate = [self updateSyncChromeDataItem];
@@ -596,12 +602,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (BOOL)shouldDisplaySync {
-  BOOL experimentEnabled =
-      base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency);
-  BOOL firstSetupWithExperiment =
-      !self.syncSetupService->IsFirstSetupComplete() && experimentEnabled;
-  return (firstSetupWithExperiment || !experimentEnabled) &&
-         self.isAuthenticated && !self.isSyncDisabledByAdministrator;
+  return self.isAuthenticated && !self.isSyncDisabledByAdministrator;
 }
 
 - (ItemArray)nonPersonalizedItems {
@@ -815,7 +816,11 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.consumer, controller);
   [self loadIdentitySection];
-  [self loadSyncSection];
+  // For the MICE experiment Chrome will display the Sync section within "Manage
+  // Sync Settings".
+  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    [self loadSyncSection];
+  }
   [self loadNonPersonalizedSection];
   _identityManagerObserverBridge.reset(
       new signin::IdentityManagerObserverBridge(self.identityManager, self));
@@ -905,16 +910,16 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       [self.commandHandler showSignIn];
       break;
     case RestartAuthenticationFlowErrorItemType:
-      [self.commandHandler restartAuthenticationFlow];
+      [self.syncErrorHandler restartAuthenticationFlow];
       break;
     case ReauthDialogAsSyncIsInAuthErrorItemType:
-      [self.commandHandler openReauthDialogAsSyncIsInAuthError];
+      [self.syncErrorHandler openReauthDialogAsSyncIsInAuthError];
       break;
     case ShowPassphraseDialogErrorItemType:
-      [self.commandHandler openPassphraseDialog];
+      [self.syncErrorHandler openPassphraseDialog];
       break;
     case SyncNeedsTrustedVaultKeyErrorItemType:
-      [self.commandHandler openTrustedVaultReauth];
+      [self.syncErrorHandler openTrustedVaultReauth];
       break;
     case ManageSyncItemType:
       [self.commandHandler openManageSyncSettings];

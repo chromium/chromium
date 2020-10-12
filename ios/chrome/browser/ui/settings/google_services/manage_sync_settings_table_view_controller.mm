@@ -90,6 +90,15 @@
                         withRowAnimation:UITableViewRowAnimationNone];
 }
 
+- (void)reloadSections:(NSIndexSet*)sections {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView reloadSections:sections
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView

@@ -17,6 +17,7 @@ class AuthenticationService;
 @protocol GoogleServicesSettingsCommandHandler;
 @class GoogleServicesSettingsViewController;
 class PrefService;
+@protocol SyncErrorSettingsCommandHandler;
 class SyncSetupService;
 
 namespace syncer {
@@ -41,6 +42,8 @@ class IdentityManager;
 // Command handler.
 @property(nonatomic, weak) id<GoogleServicesSettingsCommandHandler>
     commandHandler;
+// Sync error handler.
+@property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
 // Sync service.
 @property(nonatomic, assign) syncer::SyncService* syncService;
 // Identity manager;

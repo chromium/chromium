@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_
+
+// Protocol to communicate actions following Sync errors from the mediator to
+// its coordinator.
+@protocol SyncErrorSettingsCommandHandler <NSObject>
+
+// Restarts the authentication flow.
+- (void)restartAuthenticationFlow;
+
+// Opens the reauth sync dialog.
+- (void)openReauthDialogAsSyncIsInAuthError;
+
+// Opens the passphrase dialog.
+- (void)openPassphraseDialog;
+
+// Opens the trusted vault reauthentication dialog.
+- (void)openTrustedVaultReauth;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_

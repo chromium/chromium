@@ -20,13 +20,16 @@
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -38,9 +41,13 @@
 #error "This file requires ARC support."
 #endif
 
+using signin_metrics::AccessPoint;
+using signin_metrics::PromoAction;
+
 @interface ManageSyncSettingsCoordinator () <
     ChromeIdentityBrowserOpener,
     ManageSyncSettingsCommandHandler,
+    SyncErrorSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     SyncObserverModelBridge> {
   // Sync observer.
@@ -54,9 +61,13 @@
 @property(nonatomic, strong) ManageSyncSettingsMediator* mediator;
 // Sync service.
 @property(nonatomic, assign, readonly) syncer::SyncService* syncService;
+// Authentication service.
+@property(nonatomic, assign, readonly) AuthenticationService* authService;
 // Dismiss callback for Web and app setting details view.
 @property(nonatomic, copy) ios::DismissASMViewControllerBlock
     dismissWebAndAppSettingDetailsControllerBlock;
+// Manages the authentication flow for a given identity.
+@property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
 
 @end
 
@@ -81,7 +92,9 @@
           userPrefService:self.browser->GetBrowserState()->GetPrefs()];
   self.mediator.syncSetupService = SyncSetupServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+  self.mediator.authService = self.authService;
   self.mediator.commandHandler = self;
+  self.mediator.syncErrorHandler = self;
   self.viewController = [[ManageSyncSettingsTableViewController alloc]
       initWithStyle:UITableViewStyleGrouped];
   self.viewController.serviceDelegate = self.mediator;
@@ -97,6 +110,11 @@
 
 - (syncer::SyncService*)syncService {
   return ProfileSyncServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+}
+
+- (AuthenticationService*)authService {
+  return AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
 }
 
@@ -137,6 +155,32 @@
 
 #pragma mark - ManageSyncSettingsCommandHandler
 
+- (void)openWebAppActivityDialog {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_AccountSettings_GoogleActivityControlsClicked"));
+  self.dismissWebAndAppSettingDetailsControllerBlock =
+      ios::GetChromeBrowserProvider()
+          ->GetChromeIdentityService()
+          ->PresentWebAndAppSettingDetailsController(
+              authService->GetAuthenticatedIdentity(), self.viewController,
+              YES);
+}
+
+- (void)openDataFromChromeSyncWebPage {
+  GURL url = google_util::AppendGoogleLocaleParam(
+      GURL(kSyncGoogleDashboardURL),
+      GetApplicationContext()->GetApplicationLocale());
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [handler closeSettingsUIAndOpenURL:command];
+}
+
+#pragma mark - SyncErrorSettingsCommandHandler
+
 - (void)openPassphraseDialog {
   DCHECK(self.mediator.shouldEncryptionItemBeEnabled);
   UIViewController<SettingsRootViewControlling>* controllerToPush;
@@ -169,28 +213,44 @@
                                                 kSettings];
 }
 
-- (void)openWebAppActivityDialog {
-  AuthenticationService* authService =
+- (void)restartAuthenticationFlow {
+  ChromeIdentity* authenticatedIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  base::RecordAction(base::UserMetricsAction(
-      "Signin_AccountSettings_GoogleActivityControlsClicked"));
-  self.dismissWebAndAppSettingDetailsControllerBlock =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->PresentWebAndAppSettingDetailsController(
-              authService->GetAuthenticatedIdentity(), self.viewController,
-              YES);
+          self.browser->GetBrowserState())
+          ->GetAuthenticatedIdentity();
+  [self.viewController preventUserInteraction];
+  DCHECK(!self.authenticationFlow);
+  self.authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:authenticatedIdentity
+                                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
+                                 postSignInAction:POST_SIGNIN_ACTION_START_SYNC
+                         presentingViewController:self.viewController];
+  self.authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+  __weak ManageSyncSettingsCoordinator* weakSelf = self;
+  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    // TODO(crbug.com/889919): Needs to add histogram for |success|.
+    DCHECK(weakSelf.authenticationFlow);
+    weakSelf.authenticationFlow = nil;
+    [weakSelf.viewController allowUserInteraction];
+  }];
 }
 
-- (void)openDataFromChromeSyncWebPage {
-  GURL url = google_util::AppendGoogleLocaleParam(
-      GURL(kSyncGoogleDashboardURL),
-      GetApplicationContext()->GetApplicationLocale());
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler closeSettingsUIAndOpenURL:command];
+- (void)openReauthDialogAsSyncIsInAuthError {
+  ChromeIdentity* identity = self.authService->GetAuthenticatedIdentity();
+  if (self.authService->HasCachedMDMErrorForIdentity(identity)) {
+    self.authService->ShowMDMErrorDialogForIdentity(identity);
+    return;
+  }
+  // Sync enters in a permanent auth error state when fetching an access token
+  // fails with invalid credentials. This corresponds to Gaia responding with an
+  // "invalid grant" error. The current implementation of the iOS SSOAuth
+  // library user by Chrome removes the identity from the device when receiving
+  // an "invalid grant" response, which leads to the account being also signed
+  // out of Chrome. So the sync permanent auth error is a transient state on
+  // iOS. The decision was to avoid handling this error in the UI, which means
+  // that the reauth dialog is not actually presented on iOS.
 }
 
 #pragma mark - SyncObserverModelBridge

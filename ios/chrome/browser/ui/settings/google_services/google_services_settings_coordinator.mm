@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -42,7 +43,8 @@ using signin_metrics::PromoAction;
 @interface GoogleServicesSettingsCoordinator () <
     GoogleServicesSettingsCommandHandler,
     GoogleServicesSettingsViewControllerPresentationDelegate,
-    ManageSyncSettingsCoordinatorDelegate>
+    ManageSyncSettingsCoordinatorDelegate,
+    SyncErrorSettingsCommandHandler>
 
 // Google services settings mode.
 @property(nonatomic, assign, readonly) GoogleServicesSettingsMode mode;
@@ -111,6 +113,7 @@ using signin_metrics::PromoAction;
   self.mediator.identityManager = IdentityManagerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
+  self.mediator.syncErrorHandler = self;
   self.mediator.syncService = ProfileSyncServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   viewController.modelDelegate = self.mediator;
@@ -170,7 +173,7 @@ using signin_metrics::PromoAction;
       isEqual:self.baseNavigationController.topViewController];
 }
 
-#pragma mark - GoogleServicesSettingsCommandHandler
+#pragma mark - SyncErrorSettingsCommandHandler
 
 - (void)restartAuthenticationFlow {
   ChromeIdentity* authenticatedIdentity =
@@ -221,6 +224,20 @@ using signin_metrics::PromoAction;
       self.browser->GetCommandDispatcher());
   [self.baseNavigationController pushViewController:controller animated:YES];
 }
+
+- (void)openTrustedVaultReauth {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  [applicationCommands
+      showTrustedVaultReauthenticationFromViewController:
+          self.googleServicesSettingsViewController
+                                        retrievalTrigger:
+                                            syncer::KeyRetrievalTriggerForUMA::
+                                                kSettings];
+}
+
+#pragma mark - GoogleServicesSettingsCommandHandler
 
 - (void)showSignIn {
   __weak __typeof(self) weakSelf = self;
@@ -285,18 +302,6 @@ using signin_metrics::PromoAction;
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [handler closeSettingsUIAndOpenURL:command];
-}
-
-- (void)openTrustedVaultReauth {
-  id<ApplicationCommands> applicationCommands =
-      static_cast<id<ApplicationCommands>>(
-          self.browser->GetCommandDispatcher());
-  [applicationCommands
-      showTrustedVaultReauthenticationFromViewController:
-          self.googleServicesSettingsViewController
-                                        retrievalTrigger:
-                                            syncer::KeyRetrievalTriggerForUMA::
-                                                kSettings];
 }
 
 #pragma mark - GoogleServicesSettingsViewControllerPresentationDelegate

@@ -8,15 +8,6 @@
 // Protocol to communicate user actions from the mediator to its coordinator.
 @protocol GoogleServicesSettingsCommandHandler <NSObject>
 
-// Restarts the authentication flow.
-- (void)restartAuthenticationFlow;
-
-// Opens the reauth sync dialog.
-- (void)openReauthDialogAsSyncIsInAuthError;
-
-// Opens the passphrase dialog.
-- (void)openPassphraseDialog;
-
 // Presents the sign-in dialog to the user.
 - (void)showSignIn;
 
@@ -32,9 +23,6 @@
 // Opens the "Manage Your Google Account" web page.
 // TODO(crbug.com/1043080): Remove web page API once MyGoogle UI is launched.
 - (void)openManageGoogleAccountWebPage;
-
-// Opens the trusted vault reauthentication dialog.
-- (void)openTrustedVaultReauth;
 
 @end
 

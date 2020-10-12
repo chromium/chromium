@@ -1482,6 +1482,9 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
 
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
+
   _settingsHasBeenDismissed = YES;
   DCHECK(!self.isSigninInProgress);
   [_signinPromoViewMediator signinPromoViewIsRemoved];
