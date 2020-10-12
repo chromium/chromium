@@ -214,7 +214,24 @@ class SyncProfileDelegate : public Profile::Delegate {
   DISALLOW_COPY_AND_ASSIGN(SyncProfileDelegate);
 };
 
+instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
+    Profile* profile,
+    std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
+        profile_to_instance_id_driver_map) {
+  if (!profile_to_instance_id_driver_map->count(profile)) {
+    (*profile_to_instance_id_driver_map)[profile] =
+        std::make_unique<SyncTest::FakeInstanceIDDriver>();
+  }
+  return (*profile_to_instance_id_driver_map)[profile].get();
+}
+
 }  // namespace
+
+int SyncTest::FakeInstanceID::next_token_id_ = 1;
+
+SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id)
+    : instance_id::InstanceID(app_id, /*gcm_driver = */ nullptr),
+      token_(base::StringPrintf("token %d", next_token_id_++)) {}
 
 void SyncTest::FakeInstanceID::GetToken(
     const std::string& authorized_entity,
@@ -223,16 +240,25 @@ void SyncTest::FakeInstanceID::GetToken(
     const std::map<std::string, std::string>& options,
     std::set<Flags> flags,
     GetTokenCallback callback) {
-  std::move(callback).Run("token", instance_id::InstanceID::Result::SUCCESS);
+  std::move(callback).Run(token_, instance_id::InstanceID::Result::SUCCESS);
 }
+
+SyncTest::FakeInstanceIDDriver::FakeInstanceIDDriver()
+    : instance_id::InstanceIDDriver(/*gcm_driver=*/nullptr) {}
+
+SyncTest::FakeInstanceIDDriver::~FakeInstanceIDDriver() = default;
 
 instance_id::InstanceID* SyncTest::FakeInstanceIDDriver::GetInstanceID(
     const std::string& app_id) {
-  return &fake_instance_id_;
+  if (!fake_instance_ids_.count(app_id)) {
+    fake_instance_ids_[app_id] = std::make_unique<FakeInstanceID>(app_id);
+  }
+  return fake_instance_ids_[app_id].get();
 }
+
 bool SyncTest::FakeInstanceIDDriver::ExistsInstanceID(
     const std::string& app_id) const {
-  return true;
+  return fake_instance_ids_.count(app_id);
 }
 
 SyncTest::SyncTest(TestType test_type)
@@ -958,21 +984,24 @@ void SyncTest::OnWillCreateBrowserContextServices(
           context,
           base::BindRepeating(&SyncTest::CreateProfileInvalidationProvider,
                               &profile_to_fcm_network_handler_map_,
-                              &fake_instance_id_driver_));
+                              &profile_to_instance_id_driver_map_));
   SyncInvalidationsServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&SyncTest::CreateSyncInvalidationsService,
-                                   &fake_instance_id_driver_));
+                                   &profile_to_instance_id_driver_map_));
 }
 
 // static
 std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
     std::map<const Profile*, syncer::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map,
-    instance_id::InstanceIDDriver* instance_id_driver,
+    std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
+        profile_to_instance_id_driver_map,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   gcm::GCMProfileService* gcm_profile_service =
       gcm::GCMProfileServiceFactory::GetForProfile(profile);
+  instance_id::InstanceIDDriver* instance_id_driver =
+      GetOrCreateInstanceIDDriver(profile, profile_to_instance_id_driver_map);
 
   auto profile_identity_provider =
       std::make_unique<invalidation::ProfileIdentityProvider>(
@@ -1007,7 +1036,8 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
 
 // static
 std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
-    instance_id::InstanceIDDriver* instance_id_driver,
+    std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
+        profile_to_instance_id_driver_map,
     content::BrowserContext* context) {
   if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
     return nullptr;
@@ -1017,6 +1047,8 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
 
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
+  instance_id::InstanceIDDriver* instance_id_driver =
+      GetOrCreateInstanceIDDriver(profile, profile_to_instance_id_driver_map);
   return std::make_unique<syncer::SyncInvalidationsServiceImpl>(
       gcm_driver, instance_id_driver);
 }

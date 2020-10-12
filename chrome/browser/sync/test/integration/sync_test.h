@@ -104,8 +104,7 @@ class SyncTest : public PlatformBrowserTest {
 
   class FakeInstanceID : public instance_id::InstanceID {
    public:
-    FakeInstanceID()
-        : instance_id::InstanceID("FakeAppId", /*gcm_driver = */ nullptr) {}
+    explicit FakeInstanceID(const std::string& app_id);
     ~FakeInstanceID() override = default;
 
     void GetID(GetIDCallback callback) override {}
@@ -135,20 +134,21 @@ class SyncTest : public PlatformBrowserTest {
     void DeleteIDImpl(DeleteIDCallback callback) override {}
 
    private:
+    static int next_token_id_;
+    const std::string token_;
     DISALLOW_COPY_AND_ASSIGN(FakeInstanceID);
   };
 
   class FakeInstanceIDDriver : public instance_id::InstanceIDDriver {
    public:
-    FakeInstanceIDDriver()
-        : instance_id::InstanceIDDriver(/*gcm_driver=*/nullptr) {}
-    ~FakeInstanceIDDriver() override = default;
+    FakeInstanceIDDriver();
+    ~FakeInstanceIDDriver() override;
     instance_id::InstanceID* GetInstanceID(const std::string& app_id) override;
     void RemoveInstanceID(const std::string& app_id) override {}
     bool ExistsInstanceID(const std::string& app_id) const override;
 
    private:
-    FakeInstanceID fake_instance_id_;
+    std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
     DISALLOW_COPY_AND_ASSIGN(FakeInstanceIDDriver);
   };
 
@@ -357,11 +357,13 @@ class SyncTest : public PlatformBrowserTest {
   static std::unique_ptr<KeyedService> CreateProfileInvalidationProvider(
       std::map<const Profile*, syncer::FCMNetworkHandler*>*
           profile_to_fcm_network_handler_map,
-      instance_id::InstanceIDDriver* instance_id_driver,
+      std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
+          profile_to_instance_id_driver_map,
       content::BrowserContext* context);
 
   static std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
-      instance_id::InstanceIDDriver* instance_id_driver,
+      std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
+          profile_to_instance_id_driver_map,
       content::BrowserContext* context);
 
   // Helper to Profile::CreateProfile that handles path creation. It creates
@@ -481,7 +483,8 @@ class SyncTest : public PlatformBrowserTest {
   std::map<const Profile*, syncer::FCMNetworkHandler*>
       profile_to_fcm_network_handler_map_;
 
-  FakeInstanceIDDriver fake_instance_id_driver_;
+  std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>
+      profile_to_instance_id_driver_map_;
 
   // Triggers a GetUpdates via refresh after a configuration.
   std::unique_ptr<ConfigurationRefresher> configuration_refresher_;
