@@ -184,7 +184,7 @@ void DownloadDangerPromptViews::OnDownloadUpdated(
 
 gfx::Size DownloadDangerPromptViews::CalculatePreferredSize() const {
   int preferred_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                            views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                         margins().width();
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }

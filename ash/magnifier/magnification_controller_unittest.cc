@@ -630,7 +630,7 @@ TEST_F(MagnificationControllerTest, FollowTextInputFieldKeyPress) {
   const int kViewportWidth = 400;
   // Add some extra distance horizontally from text caret to to left edge of
   // the text input view.
-  int x = kViewportWidth - (kCaretPanningMargin + 20) / kScale;
+  int x = kViewportWidth - (kCaretPanningMargin + 30) / kScale;
   text_input_helper_.CreateAndShowTextInputView(gfx::Rect(x, 200, 80, 80));
   gfx::Rect text_input_bounds = text_input_helper_.GetTextInputViewBounds();
 

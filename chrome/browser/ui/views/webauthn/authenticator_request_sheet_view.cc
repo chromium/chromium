@@ -75,7 +75,7 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   const int illustration_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const gfx::Size illustration_size(illustration_width, kIllustrationHeight);
 
   // The container view has no layout, so its preferred size is hardcoded to

@@ -148,8 +148,8 @@ PrintJobConfirmationDialogView::~PrintJobConfirmationDialogView() = default;
 gfx::Size PrintJobConfirmationDialogView::CalculatePreferredSize() const {
   const int width =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          dialog_is_bubble_ ? DISTANCE_BUBBLE_PREFERRED_WIDTH
-                            : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+          dialog_is_bubble_ ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
+                            : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
       margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }

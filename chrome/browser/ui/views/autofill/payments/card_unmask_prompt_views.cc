@@ -212,7 +212,7 @@ gfx::Size CardUnmaskPromptViews::CalculatePreferredSize() const {
   // taken into consideration in the frame width size. Because of that, the
   // dialog width will be snapped to a larger size when Harmony is enabled.
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }

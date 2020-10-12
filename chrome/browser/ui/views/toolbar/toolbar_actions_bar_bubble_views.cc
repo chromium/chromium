@@ -167,9 +167,9 @@ void ToolbarActionsBarBubbleViews::Init() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  int width = provider->GetDistanceMetric(
-                  ChromeDistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-              margins().width();
+  int width =
+      provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      margins().width();
 
   if (!body_text_string.empty()) {
     body_text_ = new views::Label(body_text_string);

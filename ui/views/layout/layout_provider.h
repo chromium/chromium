@@ -55,8 +55,11 @@ enum DistanceMetric {
   // two types have not been interchanged.
   VIEWS_DISTANCE_START = VIEWS_INSETS_MAX,
 
+  // Width of a bubble unless the content is too wide to make that
+  // feasible.
+  DISTANCE_BUBBLE_PREFERRED_WIDTH = VIEWS_DISTANCE_START,
   // The default padding to add on each side of a button's label.
-  DISTANCE_BUTTON_HORIZONTAL_PADDING = VIEWS_DISTANCE_START,
+  DISTANCE_BUTTON_HORIZONTAL_PADDING,
   // The maximum width a button can have and still influence the sizes of
   // other linked buttons.  This allows short buttons to have linked widths
   // without long buttons making things overly wide.
@@ -80,6 +83,9 @@ enum DistanceMetric {
   // The distance between the bottom of a dialog's title and the top of the
   // dialog's content, when the first content element is text.
   DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT,
+  // Width of modal dialogs unless the content is too wide to make that
+  // feasible.
+  DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH,
   // The spacing between a pair of related horizontal buttons, used for
   // dialog layout.
   DISTANCE_RELATED_BUTTON_HORIZONTAL,
@@ -175,6 +181,11 @@ class VIEWS_EXPORT LayoutProvider {
   // the appropriate elevation.
   virtual gfx::ShadowValues MakeShadowValues(int elevation,
                                              SkColor color) const;
+
+ protected:
+  static constexpr int kSmallDialogWidth = 320;
+  static constexpr int kMediumDialogWidth = 448;
+  static constexpr int kLargeDialogWidth = 512;
 
  private:
   TypographyProvider typography_provider_;

@@ -160,7 +160,7 @@ void SharingDialogView::WebContentsDestroyed() {
 
 gfx::Size SharingDialogView::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_BUBBLE_PREFERRED_WIDTH);
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
@@ -310,7 +310,7 @@ void SharingDialogView::InitListView() {
   constexpr size_t kMaxDialogButtons = 5;
   if (dialog_buttons_.size() > kMaxDialogButtons) {
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_BUBBLE_PREFERRED_WIDTH);
+        views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 
     int max_list_height = 0;
     for (size_t i = 0; i < kMaxDialogButtons; ++i)

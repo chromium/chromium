@@ -117,7 +117,7 @@ bool RequestPinView::ShouldShowCloseButton() const {
 
 gfx::Size RequestPinView::CalculatePreferredSize() const {
   int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   return gfx::Size(default_width, GetHeightForWidth(default_width));
 }
 

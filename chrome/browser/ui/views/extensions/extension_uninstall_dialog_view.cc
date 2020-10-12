@@ -283,10 +283,11 @@ const char* ExtensionUninstallDialogDelegateView::GetClassName() const {
 }
 
 gfx::Size ExtensionUninstallDialogDelegateView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        is_bubble_ ? DISTANCE_BUBBLE_PREFERRED_WIDTH
-                                   : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
+  const int width =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          is_bubble_ ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
+                     : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+      margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }
 

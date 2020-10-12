@@ -86,7 +86,7 @@ bool IdleActionWarningDialogView::ShouldShowCloseButton() const {
 
 gfx::Size IdleActionWarningDialogView::CalculatePreferredSize() const {
   const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   return gfx::Size(
       default_width,
       GetLayoutManager()->GetPreferredHeightForWidth(this, default_width));

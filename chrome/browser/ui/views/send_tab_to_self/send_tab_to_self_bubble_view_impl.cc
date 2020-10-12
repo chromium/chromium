@@ -78,7 +78,7 @@ void SendTabToSelfBubbleViewImpl::ButtonPressed(views::Button* sender,
 
 gfx::Size SendTabToSelfBubbleViewImpl::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_BUBBLE_PREFERRED_WIDTH);
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   return gfx::Size(width, GetHeightForWidth(width));
 }
 

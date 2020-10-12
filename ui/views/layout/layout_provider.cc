@@ -37,8 +37,7 @@ LayoutProvider* LayoutProvider::Get() {
 int LayoutProvider::GetControlHeightForFont(int context,
                                             int style,
                                             const gfx::FontList& font) {
-  return std::max(views::style::GetLineHeight(context, style),
-                  font.GetHeight()) +
+  return std::max(style::GetLineHeight(context, style), font.GetHeight()) +
          Get()->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING) * 2;
 }
 
@@ -74,39 +73,56 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
 
 int LayoutProvider::GetDistanceMetric(int metric) const {
   DCHECK_GE(metric, VIEWS_DISTANCE_START);
-  DCHECK_LT(metric, VIEWS_DISTANCE_MAX);
-  switch (metric) {
-    case DistanceMetric::DISTANCE_BUTTON_HORIZONTAL_PADDING:
+  DCHECK_LT(metric, VIEWS_DISTANCE_END);
+
+  switch (static_cast<DistanceMetric>(metric)) {
+    case DISTANCE_BUBBLE_PREFERRED_WIDTH:
+      return kSmallDialogWidth;
+    case DISTANCE_BUTTON_HORIZONTAL_PADDING:
       return 16;
-    case DistanceMetric::DISTANCE_BUTTON_MAX_LINKABLE_WIDTH:
-      return 0;
-    case DistanceMetric::DISTANCE_CLOSE_BUTTON_MARGIN:
-      return 7;
-    case DistanceMetric::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
+    case DISTANCE_BUTTON_MAX_LINKABLE_WIDTH:
+      return 112;
+    case DISTANCE_CLOSE_BUTTON_MARGIN:
       return 4;
-    case DistanceMetric::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
-      return 75;
-    case DistanceMetric::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL:
-    case DistanceMetric::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT:
-    case DistanceMetric::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL:
-    case DistanceMetric::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT:
-      return 13;
-    case DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL:
+    case DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
       return 6;
-    case DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL:
+    case DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
+      // Minimum label size plus padding.
+      return 32 + 2 * GetDistanceMetric(DISTANCE_BUTTON_HORIZONTAL_PADDING);
+    case DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL:
+      return 24;
+    case DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT:
+      // This is reduced so there is about the same amount of visible
+      // whitespace, compensating for the text's internal leading.
+      return GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL) -
+             8;
+    case DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL:
+      return 16;
+    case DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT:
+      // See the comment in DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT above.
+      return GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL) - 8;
+    case DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH:
+      return kMediumDialogWidth;
+    case DISTANCE_RELATED_BUTTON_HORIZONTAL:
       return 8;
-    case DistanceMetric::DISTANCE_RELATED_CONTROL_VERTICAL:
+    case DISTANCE_RELATED_CONTROL_HORIZONTAL:
+      return 16;
+    case DISTANCE_RELATED_CONTROL_VERTICAL:
       return 8;
-    case DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL:
-      return 10;
-    case DistanceMetric::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT:
-      return 160;
-    case DistanceMetric::DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN:
-      return 10;
-    case DistanceMetric::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING:
-      return 4;
-    case DistanceMetric::DISTANCE_UNRELATED_CONTROL_VERTICAL:
-      return 20;
+    case DISTANCE_RELATED_LABEL_HORIZONTAL:
+      return 12;
+    case DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT:
+      return 192;
+    case DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN:
+      return 12;
+    case DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING:
+      return 8;
+    case DISTANCE_UNRELATED_CONTROL_VERTICAL:
+      return 16;
+    case VIEWS_DISTANCE_END:
+    case VIEWS_DISTANCE_MAX:
+      NOTREACHED();
+      return 0;
   }
   NOTREACHED();
   return 0;
@@ -117,6 +133,9 @@ const TypographyProvider& LayoutProvider::GetTypographyProvider() const {
 }
 
 int LayoutProvider::GetSnappedDialogWidth(int min_width) const {
+  // TODO(pbos): Move snapping logic from ChromeLayoutProvider and update
+  // unittests to pass with snapping points (instead of exact preferred width).
+
   // This is an arbitrary value, but it's a good arbitrary value. Some dialogs
   // have very small widths for their contents views, which causes ugly
   // title-wrapping where a two-word title is split across multiple lines or
@@ -145,7 +164,7 @@ gfx::Insets LayoutProvider::GetDialogInsetsForContentType(
 int LayoutProvider::GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
                                           const gfx::Size& size) const {
   switch (emphasis_metric) {
-    case views::EMPHASIS_NONE:
+    case EMPHASIS_NONE:
       return 0;
     case EMPHASIS_LOW:
     case EMPHASIS_MEDIUM:
@@ -160,15 +179,15 @@ int LayoutProvider::GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
 int LayoutProvider::GetShadowElevationMetric(
     EmphasisMetric emphasis_metric) const {
   switch (emphasis_metric) {
-    case views::EMPHASIS_NONE:
+    case EMPHASIS_NONE:
       return 0;
-    case views::EMPHASIS_LOW:
+    case EMPHASIS_LOW:
       return 1;
-    case views::EMPHASIS_MEDIUM:
+    case EMPHASIS_MEDIUM:
       return 2;
-    case views::EMPHASIS_HIGH:
+    case EMPHASIS_HIGH:
       return 3;
-    case views::EMPHASIS_MAXIMUM:
+    case EMPHASIS_MAXIMUM:
       return 16;
   }
 }

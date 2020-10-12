@@ -196,7 +196,7 @@ void ArcAppDialogView::OnDialogCancelled() {
 
 gfx::Size ArcAppDialogView::CalculatePreferredSize() const {
   const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   return gfx::Size(default_width, GetHeightForWidth(default_width));
 }
 

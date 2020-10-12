@@ -211,7 +211,7 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
 std::unique_ptr<views::View>
 SecurePaymentConfirmationDialogView::CreateHeaderView() {
   const int header_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const gfx::Size header_size(header_width, kHeaderIconHeight);
 
   // The container view has no layout, so its preferred size is hardcoded to

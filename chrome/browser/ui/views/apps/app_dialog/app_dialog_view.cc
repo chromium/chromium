@@ -24,7 +24,7 @@ AppDialogView::~AppDialogView() = default;
 
 gfx::Size AppDialogView::CalculatePreferredSize() const {
   const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                                views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
                             margins().width();
   return gfx::Size(default_width, GetHeightForWidth(default_width));
 }

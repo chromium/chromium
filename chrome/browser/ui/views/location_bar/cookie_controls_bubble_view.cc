@@ -39,7 +39,7 @@ std::unique_ptr<views::TooltipIcon> CreateInfoIcon() {
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_HELP));
   explanation_tooltip->set_bubble_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_BUBBLE_PREFERRED_WIDTH));
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   explanation_tooltip->set_anchor_point_arrow(
       views::BubbleBorder::Arrow::TOP_RIGHT);
   return explanation_tooltip;

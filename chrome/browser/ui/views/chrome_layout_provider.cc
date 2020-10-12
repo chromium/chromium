@@ -17,9 +17,6 @@ namespace {
 // respected (there's 3 * unit / 4 in use to express 12).
 // The Harmony layout unit. All distances are in terms of this unit.
 constexpr int kHarmonyLayoutUnit = 16;
-constexpr int kSmallSnapPoint = 320;
-constexpr int kMediumSnapPoint = 448;
-constexpr int kLargeSnapPoint = 512;
 
 ChromeLayoutProvider* g_chrome_layout_provider = nullptr;
 
@@ -79,107 +76,63 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
 }
 
 int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
-  DCHECK_GE(metric, views::VIEWS_INSETS_MAX);
-  switch (metric) {
+  DCHECK_GE(metric, views::VIEWS_DISTANCE_START);
+  DCHECK_LT(metric, views::VIEWS_DISTANCE_MAX);
+
+  if (metric < views::VIEWS_DISTANCE_END)
+    return LayoutProvider::GetDistanceMetric(metric);
+
+  switch (static_cast<ChromeDistanceMetric>(metric)) {
     case DISTANCE_CONTENT_LIST_VERTICAL_SINGLE:
       return kHarmonyLayoutUnit / 4;
     case DISTANCE_CONTENT_LIST_VERTICAL_MULTI:
       return kHarmonyLayoutUnit / 2;
     case DISTANCE_CONTROL_LIST_VERTICAL:
       return kHarmonyLayoutUnit * 3 / 4;
-    case views::DISTANCE_CLOSE_BUTTON_MARGIN: {
-      constexpr int kVisibleMargin = kHarmonyLayoutUnit / 2;
-      // The visible margin is based on the unpadded size, so to get the actual
-      // margin we need to subtract out the padding.
-      return kVisibleMargin - kHarmonyLayoutUnit / 4;
-    }
-    case views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
-      return 6;
-    case views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL:
-      return kHarmonyLayoutUnit * 3 / 2;
-    case views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT: {
-      // This is reduced so there is about the same amount of visible
-      // whitespace, compensating for the text's internal leading.
-      return GetDistanceMetric(
-                 views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL) -
-             8;
-    }
-    case views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL:
-      return kHarmonyLayoutUnit;
-    case views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT: {
-      // See the comment in DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT above.
-      return GetDistanceMetric(
-                 views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL) -
-             8;
-    }
     case DISTANCE_DROPDOWN_BUTTON_LABEL_ARROW_SPACING:
       return 8;
     case DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN:
       return 12;
-    case views::DISTANCE_RELATED_BUTTON_HORIZONTAL:
-      return kHarmonyLayoutUnit / 2;
-    case views::DISTANCE_RELATED_CONTROL_HORIZONTAL:
-      return kHarmonyLayoutUnit;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL:
       return kHarmonyLayoutUnit;
-    case views::DISTANCE_RELATED_CONTROL_VERTICAL:
-      return kHarmonyLayoutUnit / 2;
     case DISTANCE_RELATED_CONTROL_VERTICAL_SMALL:
       return kHarmonyLayoutUnit / 2;
-    case views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
     case DISTANCE_BUTTON_MINIMUM_WIDTH:
-      // Minimum label size plus padding.
-      return 2 * kHarmonyLayoutUnit +
-             2 * GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
-    case views::DISTANCE_BUTTON_HORIZONTAL_PADDING:
-      return kHarmonyLayoutUnit;
-    case views::DISTANCE_BUTTON_MAX_LINKABLE_WIDTH:
-      return kHarmonyLayoutUnit * 7;
-    case views::DISTANCE_RELATED_LABEL_HORIZONTAL:
-    case views::DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN:
-      return 3 * kHarmonyLayoutUnit / 4;
+      return GetDistanceMetric(views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH);
     case DISTANCE_RELATED_LABEL_HORIZONTAL_LIST:
       return kHarmonyLayoutUnit / 2;
-    case views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT:
-      return kHarmonyLayoutUnit * 12;
     case DISTANCE_SUBSECTION_HORIZONTAL_INDENT:
       return 0;
     case DISTANCE_TOAST_CONTROL_VERTICAL:
       return 8;
     case DISTANCE_TOAST_LABEL_VERTICAL:
       return 12;
-    case views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING:
-      return kHarmonyLayoutUnit / 2;
     case DISTANCE_UNRELATED_CONTROL_HORIZONTAL:
       return kHarmonyLayoutUnit;
     case DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE:
-      return kHarmonyLayoutUnit;
-    case views::DISTANCE_UNRELATED_CONTROL_VERTICAL:
       return kHarmonyLayoutUnit;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE:
       return kHarmonyLayoutUnit;
     case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
       return 20;
-    case DISTANCE_BUBBLE_PREFERRED_WIDTH:
-      return kSmallSnapPoint;
-    case DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH:
     case DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH:
-      return kMediumSnapPoint;
+      return kMediumDialogWidth;
     case DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH:
-      return kLargeSnapPoint;
+      return kLargeDialogWidth;
     case DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL:
       return 24;
     case DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING:
       return 8;
     case DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING:
       return 4;
-    default:
-      return LayoutProvider::GetDistanceMetric(metric);
   }
+  NOTREACHED();
+  return 0;
 }
 
 int ChromeLayoutProvider::GetSnappedDialogWidth(int min_width) const {
-  for (int snap_point : {kSmallSnapPoint, kMediumSnapPoint, kLargeSnapPoint}) {
+  for (int snap_point :
+       {kSmallDialogWidth, kMediumDialogWidth, kLargeDialogWidth}) {
     if (min_width <= snap_point)
       return snap_point;
   }

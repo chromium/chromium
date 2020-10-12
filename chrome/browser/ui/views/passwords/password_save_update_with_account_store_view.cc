@@ -305,7 +305,7 @@ std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
   if (preferred_size.width()) {
     float scale =
         static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
+            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
         preferred_size.width();
     preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
     image_view->SetImageSize(preferred_size);
@@ -568,7 +568,7 @@ void PasswordSaveUpdateWithAccountStoreView::OnWidgetDestroying(
 gfx::Size PasswordSaveUpdateWithAccountStoreView::CalculatePreferredSize()
     const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }

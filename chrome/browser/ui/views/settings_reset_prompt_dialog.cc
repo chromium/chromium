@@ -115,7 +115,7 @@ base::string16 SettingsResetPromptDialog::GetWindowTitle() const {
 
 gfx::Size SettingsResetPromptDialog::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }

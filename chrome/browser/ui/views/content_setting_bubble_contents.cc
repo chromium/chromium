@@ -411,7 +411,7 @@ void ContentSettingBubbleContents::WindowClosing() {
 
 gfx::Size ContentSettingBubbleContents::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }

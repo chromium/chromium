@@ -150,7 +150,7 @@ std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
     preferred_size = gfx::ScaleToRoundedSize(
         preferred_size,
         static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
+            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
             preferred_size.width());
     image_view->SetImageSize(preferred_size);
   }
@@ -289,7 +289,7 @@ void MoveToAccountStoreBubbleView::OnThemeChanged() {
 
 gfx::Size MoveToAccountStoreBubbleView::CalculatePreferredSize() const {
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
 }

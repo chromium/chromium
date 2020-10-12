@@ -155,7 +155,7 @@ bool ChromeCleanerDialog::ShouldShowCloseButton() const {
 
 gfx::Size ChromeCleanerDialog::CalculatePreferredSize() const {
   const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                               views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
                            margins().width();
   return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
 }

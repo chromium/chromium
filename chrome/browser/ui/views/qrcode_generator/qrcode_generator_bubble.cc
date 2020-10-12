@@ -269,7 +269,7 @@ void QRCodeGeneratorBubble::Init() {
   views::ColumnSet* column_set_textfield =
       layout->AddColumnSet(kTextFieldColumnSetId);
   int textfield_min_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                                views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                             insets.left() - insets.right();
   column_set_textfield->AddColumn(
       views::GridLayout::FILL,    // Fill text field horizontally.
@@ -340,7 +340,7 @@ void QRCodeGeneratorBubble::Init() {
   auto tooltip_icon = std::make_unique<views::TooltipIcon>(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP));
   tooltip_icon->set_bubble_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_BUBBLE_PREFERRED_WIDTH));
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   tooltip_icon->set_anchor_point_arrow(
       views::BubbleBorder::Arrow::BOTTOM_RIGHT);
   tooltip_icon_ = layout->AddView(std::move(tooltip_icon));

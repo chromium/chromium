@@ -147,9 +147,9 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
   text_label->SetMultiLine(true);
   text_label->SetLineHeight(20);
   text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  text_label->SizeToFit(
-      layout_provider->GetDistanceMetric(DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-      insets.left() - insets.right());
+  text_label->SizeToFit(layout_provider->GetDistanceMetric(
+                            views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                        insets.left() - insets.right());
   bottom_layout->AddView(std::move(text_label));
 
   // Add buttons.
@@ -195,12 +195,12 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
 
   bottom_layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                                      views::GridLayout::kFixedSize, spacing);
-  bottom_layout->AddView(
-      std::move(button_view), 1, 1, views::GridLayout::LEADING,
-      views::GridLayout::LEADING,
-      layout_provider->GetDistanceMetric(DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-          insets.left() - insets.right(),
-      0);
+  bottom_layout->AddView(std::move(button_view), 1, 1,
+                         views::GridLayout::LEADING, views::GridLayout::LEADING,
+                         layout_provider->GetDistanceMetric(
+                             views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                             insets.left() - insets.right(),
+                         0);
   bubble_layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   bubble_layout->AddView(std::move(bottom_view));
 
