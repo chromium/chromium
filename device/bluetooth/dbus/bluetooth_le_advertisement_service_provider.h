@@ -27,6 +27,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisementServiceProvider {
   using UUIDList = std::vector<std::string>;
   using ManufacturerData = std::map<uint16_t, std::vector<uint8_t>>;
   using ServiceData = std::map<std::string, std::vector<uint8_t>>;
+  using ScanResponseData = std::map<uint8_t, std::vector<uint8_t>>;
 
   // Type of advertisement.
   enum AdvertisementType {
@@ -63,7 +64,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisementServiceProvider {
       std::unique_ptr<UUIDList> service_uuids,
       std::unique_ptr<ManufacturerData> manufacturer_data,
       std::unique_ptr<UUIDList> solicit_uuids,
-      std::unique_ptr<ServiceData> service_data);
+      std::unique_ptr<ServiceData> service_data,
+      std::unique_ptr<ScanResponseData> scan_response_data);
 
  protected:
   BluetoothLEAdvertisementServiceProvider();

@@ -89,7 +89,7 @@ BluetoothAdvertisementBlueZ::BluetoothAdvertisementBlueZ(
           bluez::BluetoothLEAdvertisementServiceProvider::AdvertisementType>(
           data->type()),
       data->service_uuids(), data->manufacturer_data(), data->solicit_uuids(),
-      data->service_data());
+      data->service_data(), data->scan_response_data());
 }
 
 void BluetoothAdvertisementBlueZ::Register(

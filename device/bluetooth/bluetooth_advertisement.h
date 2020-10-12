@@ -62,6 +62,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
   using UUIDList = std::vector<std::string>;
   using ManufacturerData = std::map<uint16_t, std::vector<uint8_t>>;
   using ServiceData = std::map<std::string, std::vector<uint8_t>>;
+  using ScanResponseData = std::map<uint8_t, std::vector<uint8_t>>;
 
   // Structure that holds the data for an advertisement.
   class DEVICE_BLUETOOTH_EXPORT Data {
@@ -82,6 +83,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
     std::unique_ptr<ServiceData> service_data() {
       return std::move(service_data_);
     }
+    std::unique_ptr<ScanResponseData> scan_response_data() {
+      return std::move(scan_response_data_);
+    }
 
     void set_service_uuids(std::unique_ptr<UUIDList> service_uuids) {
       service_uuids_ = std::move(service_uuids);
@@ -96,6 +100,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
     void set_service_data(std::unique_ptr<ServiceData> service_data) {
       service_data_ = std::move(service_data);
     }
+    void set_scan_response_data(
+        std::unique_ptr<ScanResponseData> scan_response_data) {
+      scan_response_data_ = std::move(scan_response_data);
+    }
 
     void set_include_tx_power(bool include_tx_power) {
       include_tx_power_ = include_tx_power;
@@ -109,6 +117,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
     std::unique_ptr<ManufacturerData> manufacturer_data_;
     std::unique_ptr<UUIDList> solicit_uuids_;
     std::unique_ptr<ServiceData> service_data_;
+    std::unique_ptr<ScanResponseData> scan_response_data_;
     bool include_tx_power_;
 
     DISALLOW_COPY_AND_ASSIGN(Data);
