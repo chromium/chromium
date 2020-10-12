@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.RectF;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
 
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -86,23 +83,7 @@ public class AssistantOverlayCoordinator {
                 mEventFilter.setTapTrackingDurationMs(
                         model.get(AssistantOverlayModel.TAP_TRACKING_DURATION_MS));
             } else if (AssistantOverlayModel.OVERLAY_IMAGE == propertyKey) {
-                AssistantOverlayImage image = model.get(AssistantOverlayModel.OVERLAY_IMAGE);
-                if (image != null && !TextUtils.isEmpty(image.mImageUrl)) {
-                    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-                    // TODO(b/143517837) Merge autofill assistant image fetcher UMA names.
-                    ImageFetcher.Params params = ImageFetcher.Params.create(
-                            image.mImageUrl, ImageFetcher.ASSISTANT_DETAILS_UMA_CLIENT_NAME);
-                    mImageFetcher.fetchImage(
-                            params, result -> {
-                                image.mImageBitmap = result != null ? Bitmap.createScaledBitmap(
-                                                             result, image.mImageSizeInPixels,
-                                                             image.mImageSizeInPixels, true)
-                                                                    : null;
-                                mDrawable.setFullOverlayImage(image);
-                            });
-                } else {
-                    mDrawable.setFullOverlayImage(image);
-                }
+                mDrawable.setFullOverlayImage(model.get(AssistantOverlayModel.OVERLAY_IMAGE));
             }
         });
     }

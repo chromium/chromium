@@ -294,6 +294,7 @@ source_set("unit_tests") {
     "basic_interactions_unittest.cc",
     "batch_element_checker_unittest.cc",
     "client_context_unittest.cc",
+    "client_settings_unittest.cc",
     "controller_unittest.cc",
     "details_unittest.cc",
     "element_area_unittest.cc",

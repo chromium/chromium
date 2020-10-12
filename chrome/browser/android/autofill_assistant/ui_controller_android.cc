@@ -49,6 +49,7 @@
 #include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -1715,8 +1716,10 @@ void UiControllerAndroid::OnClientSettingsChanged(
         env, jcontext, image.text_size(), 0);
 
     Java_AssistantOverlayModel_setOverlayImage(
-        env, GetOverlayModel(),
-        base::android::ConvertUTF8ToJavaString(env, image.image_url()),
+        env, GetOverlayModel(), jcontext,
+        ui_controller_android_utils::CreateJavaDrawable(
+            env, jcontext, image.image_drawable(),
+            ui_delegate_->GetUserModel()),
         image_size, top_margin, bottom_margin,
         base::android::ConvertUTF8ToJavaString(env, image.text()),
         ui_controller_android_utils::GetJavaColor(env, image.text_color()),

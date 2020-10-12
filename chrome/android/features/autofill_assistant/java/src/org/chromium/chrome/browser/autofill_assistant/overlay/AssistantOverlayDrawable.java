@@ -291,11 +291,13 @@ class AssistantOverlayDrawable extends Drawable implements BrowserControlsStateP
         canvas.drawPaint(mBackground);
 
         // Draw overlay image, if specified.
-        if (!mPartial && mOverlayImage != null && mOverlayImage.mImageBitmap != null) {
-            canvas.drawBitmap(mOverlayImage.mImageBitmap,
-                    bounds.left + (bounds.right - bounds.left) / 2.0f
-                            - mOverlayImage.mImageSizeInPixels / 2.0f,
-                    yTop + mOverlayImage.mImageTopMarginInPixels, null);
+        if (!mPartial && mOverlayImage != null && mOverlayImage.mDrawable != null) {
+            int left = bounds.left + (bounds.right - bounds.left) / 2
+                    - mOverlayImage.mImageSizeInPixels / 2;
+            int top = yTop + mOverlayImage.mImageTopMarginInPixels;
+            mOverlayImage.mDrawable.setBounds(left, top, left + mOverlayImage.mImageSizeInPixels,
+                    top + mOverlayImage.mImageSizeInPixels);
+            mOverlayImage.mDrawable.draw(canvas);
 
             if (!TextUtils.isEmpty(mOverlayImage.mText)) {
                 String text = trimStringToWidth(

@@ -145,8 +145,8 @@ public class AutofillAssistantOverlayUiTest {
         AssistantOverlayModel model = new AssistantOverlayModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);
 
-        AssistantOverlayImage image = new AssistantOverlayImage("http://localhost/example.png", 64,
-                64, 40, "example.com", Color.parseColor("#B3FFFFFF"), 40);
+        AssistantOverlayImage image = new AssistantOverlayImage(
+                64, 64, 40, "example.com", Color.parseColor("#B3FFFFFF"), 40);
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
             model.set(AssistantOverlayModel.OVERLAY_IMAGE, image);
@@ -234,8 +234,7 @@ public class AutofillAssistantOverlayUiTest {
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
             model.set(AssistantOverlayModel.OVERLAY_IMAGE,
-                    new AssistantOverlayImage("https://www.example.com/example.png", 32, 32, 12,
-                            "Text", Color.RED, 20));
+                    new AssistantOverlayImage(32, 32, 12, "Text", Color.RED, 20));
         });
 
         assertScrimDisplayed(true);
@@ -252,8 +251,7 @@ public class AutofillAssistantOverlayUiTest {
         runOnUiThreadBlocking(() -> {
             model.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
             model.set(AssistantOverlayModel.OVERLAY_IMAGE,
-                    new AssistantOverlayImage("https://www.example.com/example.png", 32, 32, 12,
-                            "Text", Color.RED, 20));
+                    new AssistantOverlayImage(32, 32, 12, "Text", Color.RED, 20));
         });
 
         assertScrimDisplayed(true);

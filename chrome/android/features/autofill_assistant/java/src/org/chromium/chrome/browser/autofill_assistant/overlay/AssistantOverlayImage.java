@@ -4,17 +4,15 @@
 
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 /** Java equivalent to {@code OverlayImageProto}. */
 public class AssistantOverlayImage {
-    /** The url of the image to display. */
-    public final String mImageUrl;
-    /** The image to display, after {@code mImageUrl} has been resolved. */
-    public @Nullable Bitmap mImageBitmap;
+    /** The image to display. */
+    public @Nullable Drawable mDrawable;
     /** The size of the image to display. */
     public final int mImageSizeInPixels;
     /** The margin between the top of the page (anchor) and the image. */
@@ -28,10 +26,9 @@ public class AssistantOverlayImage {
     /** The size of the text to display. */
     public final int mTextSizeInPixels;
 
-    public AssistantOverlayImage(String imageUrl, int imageSizeInPixels, int imageTopMarginInPixels,
+    public AssistantOverlayImage(int imageSizeInPixels, int imageTopMarginInPixels,
             int imageBottomMarginInPixels, String text, @Nullable @ColorInt Integer textColor,
             int textSizeInPixels) {
-        mImageUrl = imageUrl;
         mImageSizeInPixels = imageSizeInPixels;
         mImageTopMarginInPixels = imageTopMarginInPixels;
         mImageBottomMarginInPixels = imageBottomMarginInPixels;

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
+import android.content.Context;
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDrawable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -101,12 +103,22 @@ public class AssistantOverlayModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setOverlayImage(String imageUrl, int imageSizeInPixels, int imageTopMarginInPixels,
-            int imageBottomMarginInPixels, String text, @Nullable @ColorInt Integer textColor,
-            int textSizeInPixels) {
-        set(OVERLAY_IMAGE,
-                new AssistantOverlayImage(imageUrl, imageSizeInPixels, imageTopMarginInPixels,
-                        imageBottomMarginInPixels, text, textColor, textSizeInPixels));
+    private void setOverlayImage(Context context, @Nullable AssistantDrawable imageDrawable,
+            int imageSizeInPixels, int imageTopMarginInPixels, int imageBottomMarginInPixels,
+            String text, @Nullable @ColorInt Integer textColor, int textSizeInPixels) {
+        AssistantOverlayImage assistantOverlayImage =
+                new AssistantOverlayImage(imageSizeInPixels, imageTopMarginInPixels,
+                        imageBottomMarginInPixels, text, textColor, textSizeInPixels);
+        if (imageDrawable == null) {
+            set(OVERLAY_IMAGE, assistantOverlayImage);
+            return;
+        }
+        imageDrawable.getDrawable(context, drawable -> {
+            if (drawable != null) {
+                assistantOverlayImage.mDrawable = drawable;
+                set(OVERLAY_IMAGE, assistantOverlayImage);
+            }
+        });
     }
 
     @CalledByNative

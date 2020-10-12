@@ -124,8 +124,14 @@ message SupportsScriptResponseProto {
 
 // Overlay image to be drawn on top of full overlays.
 message OverlayImageProto {
-  // The image to display. If set, |image_size| is mandatory.
-  optional string image_url = 1;
+  // TODO(b/170202574): Remove legacy |image_url|.
+  // If set, |image_size| is mandatory.
+  oneof image {
+    // Deprecated, but currently still supported. The image to display.
+    string image_url = 1;
+    // The image to display.
+    DrawableProto image_drawable = 8;
+  }
   // The size of the image to display.
   optional ClientDimensionProto image_size = 2;
   // The margin between the top of the page (anchor) and the image.
