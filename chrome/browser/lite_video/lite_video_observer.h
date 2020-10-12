@@ -44,6 +44,7 @@ class LiteVideoObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void MediaBufferUnderflow(const content::MediaPlayerId& id) override;
+  void MediaPlayerSeek(const content::MediaPlayerId& id) override;
 
   // Determines the LiteVideoDecision based on |hint| and the coinflip
   // holdback state.

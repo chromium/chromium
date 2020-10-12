@@ -239,6 +239,17 @@ void RendererWebMediaPlayerDelegate::DidBufferUnderflow(int player_id) {
   Send(new MediaPlayerDelegateHostMsg_OnBufferUnderflow(routing_id(),
                                                         player_id));
 }
+
+void RendererWebMediaPlayerDelegate::DidSeek(int player_id) {
+  // Send the seek updates to delegate only once per second.
+  if (last_seek_update_time_.is_null() ||
+      (base::TimeTicks::Now() - last_seek_update_time_ >=
+       base::TimeDelta::FromSeconds(1))) {
+    last_seek_update_time_ = base::TimeTicks::Now();
+    Send(new MediaPlayerDelegateHostMsg_OnSeek(routing_id(), player_id));
+  }
+}
+
 void RendererWebMediaPlayerDelegate::WasHidden() {
   RecordAction(base::UserMetricsAction("Media.Hidden"));
 
