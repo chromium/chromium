@@ -430,7 +430,6 @@ class UpgradeInfoBarDismissObserver
   [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
               forKey:kIOSChromeUpgradeURLKey];
   [defaults setValue:newVersionString forKey:kIOSChromeNextVersionKey];
-  [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
 
   if ([self shouldShowInfoBar])
     [self showUpgradeInfoBars];

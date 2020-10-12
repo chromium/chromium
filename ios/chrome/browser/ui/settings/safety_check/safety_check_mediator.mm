@@ -824,7 +824,6 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
     base::UmaHistogramEnumeration(
         kSafetyCheckMetricsUpdates,
         safety_check::SafetyCheck::UpdateStatus::kUpdated);
-    [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
   } else {
     // upgradeURL and next_version are only set if not up to date.
     const GURL& upgradeUrl = details.upgrade_url;
@@ -861,7 +860,6 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
                 forKey:kIOSChromeUpgradeURLKey];
     [defaults setValue:base::SysUTF8ToNSString(details.next_version)
                 forKey:kIOSChromeNextVersionKey];
-    [defaults setBool:details.is_up_to_date forKey:kIOSChromeUpToDateKey];
 
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.
