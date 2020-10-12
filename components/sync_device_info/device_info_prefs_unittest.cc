@@ -27,26 +27,6 @@ class DeviceInfoPrefsTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(DeviceInfoPrefsTest, ShouldMigrateFromObsoletePref) {
-  const char kObsoleteDeviceInfoRecentGUIDs[] = "sync.local_device_guids";
-
-  ListPrefUpdate cache_guids_update(&pref_service_,
-                                    kObsoleteDeviceInfoRecentGUIDs);
-
-  cache_guids_update->Insert(cache_guids_update->GetList().begin(),
-                             base::Value("old_guid1"));
-  cache_guids_update->Insert(cache_guids_update->GetList().begin(),
-                             base::Value("old_guid2"));
-
-  ASSERT_FALSE(device_info_prefs_.IsRecentLocalCacheGuid("old_guid1"));
-  ASSERT_FALSE(device_info_prefs_.IsRecentLocalCacheGuid("old_guid2"));
-
-  DeviceInfoPrefs::MigrateRecentLocalCacheGuidsPref(&pref_service_);
-
-  EXPECT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("old_guid1"));
-  EXPECT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("old_guid2"));
-}
-
 TEST_F(DeviceInfoPrefsTest, ShouldGarbageCollectExpiredCacheGuids) {
   const base::TimeDelta kMaxDaysLocalCacheGuidsStored =
       base::TimeDelta::FromDays(10);

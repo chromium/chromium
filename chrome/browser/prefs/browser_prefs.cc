@@ -1065,8 +1065,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(
       kDataReductionProxySavingsClearedNegativeSystemClock);
 
-  // Added 10/2019.
-  syncer::DeviceInfoPrefs::MigrateRecentLocalCacheGuidsPref(profile_prefs);
 #if defined(OS_CHROMEOS)
   // Added 10/2019.
   profile_prefs->ClearPref(kDisplayRotationAcceleratorDialogHasBeenAccepted);

@@ -268,9 +268,6 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kGoogleServicesUsername);
   prefs->ClearPref(kGoogleServicesUserAccountId);
 
-  // Added 10/2019.
-  syncer::DeviceInfoPrefs::MigrateRecentLocalCacheGuidsPref(prefs);
-
   // Added 1/2020.
   prefs->ClearPref(kGCMChannelStatus);
   prefs->ClearPref(kGCMChannelPollIntervalSeconds);

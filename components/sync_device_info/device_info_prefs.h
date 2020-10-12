@@ -24,8 +24,6 @@ class DeviceInfoPrefs {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  static void MigrateRecentLocalCacheGuidsPref(PrefService* pref_service);
-
   // |pref_service| and |clock| must outlive this class and be non null.
   DeviceInfoPrefs(PrefService* pref_service, const base::Clock* clock);
   ~DeviceInfoPrefs();

@@ -17,10 +17,6 @@
 namespace syncer {
 namespace {
 
-// Name of obsolete preference that stores most recently used past cache
-// GUIDs, most recent first.
-const char kObsoleteDeviceInfoRecentGUIDs[] = "sync.local_device_guids";
-
 // Preference name for storing recently used cache GUIDs and their timestamps
 // in days since Windows epoch. Most recent first.
 const char kDeviceInfoRecentGUIDsWithTimestamps[] =
@@ -54,25 +50,6 @@ bool MatchesGuidInDictionary(const base::Value& dict,
 // static
 void DeviceInfoPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDeviceInfoRecentGUIDsWithTimestamps);
-  registry->RegisterListPref(kObsoleteDeviceInfoRecentGUIDs);
-}
-
-// static
-void DeviceInfoPrefs::MigrateRecentLocalCacheGuidsPref(
-    PrefService* pref_service) {
-  base::Value::ConstListView obsolete_cache_guids =
-      pref_service->GetList(kObsoleteDeviceInfoRecentGUIDs)->GetList();
-  DeviceInfoPrefs prefs(pref_service, base::DefaultClock::GetInstance());
-
-  // Iterate in reverse order to maintain original order.
-  for (auto it = obsolete_cache_guids.rbegin();
-       it != obsolete_cache_guids.rend(); ++it) {
-    if (it->is_string()) {
-      prefs.AddLocalCacheGuid(it->GetString());
-    }
-  }
-
-  pref_service->ClearPref(kObsoleteDeviceInfoRecentGUIDs);
 }
 
 DeviceInfoPrefs::DeviceInfoPrefs(PrefService* pref_service,
