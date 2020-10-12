@@ -45,7 +45,8 @@ ProxyTabsDataTypeController::RegisterWithBackend(
   state_ = RUNNING;
   state_changed_cb_.Run(state_);
 
-  return REGISTRATION_IGNORED;
+  // Proxy types don't have any data to download.
+  return TYPE_ALREADY_DOWNLOADED;
 }
 
 void ProxyTabsDataTypeController::Stop(syncer::ShutdownReason shutdown_reason,

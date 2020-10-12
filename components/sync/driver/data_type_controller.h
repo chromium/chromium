@@ -43,10 +43,8 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
 
   // Returned from RegisterWithBackend.
   enum RegisterWithBackendResult {
-    // Used when RegisterWithBackend is called on an already-registered type.
-    // TODO(crbug.com/647505): Get rid of this entry entirely if possible.
-    REGISTRATION_IGNORED,
-    // Indicates that the initial download for this type is already complete.
+    // Indicates that the initial download for this type is already complete, or
+    // wasn't needed in the first place (e.g. for proxy types).
     TYPE_ALREADY_DOWNLOADED,
     // Indicates that the initial download for this type still needs to be done.
     TYPE_NOT_YET_DOWNLOADED,
