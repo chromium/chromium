@@ -48,6 +48,9 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   // KeyedService overrides.
   void Shutdown() override;
 
+  // Used in integration tests.
+  FCMHandler* GetFCMHandlerForTesting();
+
  private:
   std::unique_ptr<FCMHandler> fcm_handler_;
   InterestedDataTypesManager data_types_manager_;

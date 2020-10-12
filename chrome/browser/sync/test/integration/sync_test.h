@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/configuration_refresher.h"
 #include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
+#include "chrome/browser/sync/test/integration/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -364,6 +365,7 @@ class SyncTest : public PlatformBrowserTest {
   static std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
       std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
           profile_to_instance_id_driver_map,
+      std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
       content::BrowserContext* context);
 
   // Helper to Profile::CreateProfile that handles path creation. It creates
@@ -519,6 +521,10 @@ class SyncTest : public PlatformBrowserTest {
       app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
       model_updater_factory_;
 #endif
+
+  std::vector<syncer::FCMHandler*> sync_invalidations_fcm_handlers_;
+  std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
+      fake_server_sync_invalidation_sender_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncTest);
 };

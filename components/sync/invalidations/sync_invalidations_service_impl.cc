@@ -86,4 +86,8 @@ void SyncInvalidationsServiceImpl::Shutdown() {
   fcm_handler_.reset();
 }
 
+FCMHandler* SyncInvalidationsServiceImpl::GetFCMHandlerForTesting() {
+  return fcm_handler_.get();
+}
+
 }  // namespace syncer

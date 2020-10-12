@@ -6799,6 +6799,8 @@ if (!is_fuchsia) {
       "../browser/sync/test/integration/device_info_helper.h",
       "../browser/sync/test/integration/fake_server_invalidation_sender.cc",
       "../browser/sync/test/integration/fake_server_invalidation_sender.h",
+      "../browser/sync/test/integration/fake_server_sync_invalidation_sender.cc",
+      "../browser/sync/test/integration/fake_server_sync_invalidation_sender.h",
       "../browser/sync/test/integration/multi_client_status_change_checker.cc",
       "../browser/sync/test/integration/multi_client_status_change_checker.h",
       "../browser/sync/test/integration/profile_sync_service_harness.cc",

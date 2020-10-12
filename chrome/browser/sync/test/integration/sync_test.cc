@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -655,6 +656,13 @@ bool SyncTest::SetupClients() {
   }
 #endif
 
+  // Create the fake server sync invalidations sender.
+  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
+    fake_server_sync_invalidation_sender_ =
+        std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
+            GetFakeServer(), sync_invalidations_fcm_handlers_);
+  }
+
   LOG(INFO)
       << "SyncTest::SetupClients() completed; elapsed time since construction: "
       << (base::Time::Now() - test_construction_time_);
@@ -955,6 +963,7 @@ void SyncTest::TearDownOnMainThread() {
              observer : fake_server_invalidation_observers_) {
       fake_server_->RemoveObserver(observer.get());
     }
+    fake_server_sync_invalidation_sender_.reset();
     fake_server_.reset();
   }
 
@@ -987,7 +996,8 @@ void SyncTest::OnWillCreateBrowserContextServices(
                               &profile_to_instance_id_driver_map_));
   SyncInvalidationsServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&SyncTest::CreateSyncInvalidationsService,
-                                   &profile_to_instance_id_driver_map_));
+                                   &profile_to_instance_id_driver_map_,
+                                   &sync_invalidations_fcm_handlers_));
 }
 
 // static
@@ -1038,6 +1048,7 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
 std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
     std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
         profile_to_instance_id_driver_map,
+    std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
     content::BrowserContext* context) {
   if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
     return nullptr;
@@ -1049,8 +1060,13 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =
       GetOrCreateInstanceIDDriver(profile, profile_to_instance_id_driver_map);
-  return std::make_unique<syncer::SyncInvalidationsServiceImpl>(
+  auto service = std::make_unique<syncer::SyncInvalidationsServiceImpl>(
       gcm_driver, instance_id_driver);
+
+  sync_invalidations_fcm_handlers->push_back(
+      service->GetFCMHandlerForTesting());
+
+  return std::move(service);
 }
 
 void SyncTest::ResetSyncForPrimaryAccount() {
