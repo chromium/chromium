@@ -1025,7 +1025,7 @@ source_set("test_support") {
     deps += [ "//ui/base/x" ]
   }
 
-  if (use_ozone && is_desktop_linux) {
+  if (use_ozone && is_linux) {
     sources += [
       "test/test_desktop_screen_ozone.cc",
       "test/test_desktop_screen_ozone.h",

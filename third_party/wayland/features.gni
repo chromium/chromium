@@ -9,7 +9,7 @@ declare_args() {
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party.
   use_system_libwayland =
-      is_desktop_linux && !is_chromecast && !chromeos_is_browser_only &&
+      is_linux && !is_chromecast && !chromeos_is_browser_only &&
       default_toolchain != "//build/toolchain/cros:target"
 
   # Path to wayland-scanner. Has effect only when the system libwayland is used.
