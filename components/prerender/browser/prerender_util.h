@@ -20,12 +20,6 @@ class PrerenderManager;
 // Indicates whether the URL provided is a GWS origin.
 bool IsGoogleOriginURL(const GURL& origin_url);
 
-// Report a URL was canceled due to trying to handle an external URL.
-void ReportPrerenderExternalURL();
-
-// Report a URL was canceled due to unsupported prerender scheme.
-void ReportUnsupportedPrerenderScheme(const GURL& url);
-
 // Records the metrics for the nostate prefetch to an event with UKM source ID
 // |source_id|.
 void RecordNoStatePrefetchMetrics(
