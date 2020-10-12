@@ -127,12 +127,6 @@ class IdlSchemaTest(unittest.TestCase):
     self.assertTrue(func is not None)
     self.assertTrue(func['nocompile'])
 
-  def testNoDefine(self):
-    schema = self.idl_basics
-    func = getFunction(schema, 'function31')
-    self.assertTrue(func is not None)
-    self.assertTrue(func['nodefine'])
-
   def testNoDocOnEnum(self):
     schema = self.idl_basics
     enum_with_nodoc = getType(schema, 'EnumTypeWithNoDoc')

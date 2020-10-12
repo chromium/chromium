@@ -34,18 +34,6 @@ namespace mediaGalleries {
     mimeTypeOnly
   };
 
-  [nodefine, inline_doc] enum ScanProgressType {
-    // The scan started.
-    start,
-    // The scan was cancelled.
-    cancel,
-    // The scan finished but none of the result have been added,
-    // addScanResults() has to be called to ask the user for permission.
-    finish,
-    // The scan encountered an error and could not proceed.
-    error
-  };
-
   [inline_doc] dictionary GalleryChangeDetails {
     // Type of change event.
     GalleryChangeType type;
@@ -76,8 +64,6 @@ namespace mediaGalleries {
       void ([instanceOf=DOMFileSystem] object[] mediaFileSystems,
             DOMString selectedFileSystemName);
 
-  [nodefine] callback DropPermissionForMediaFileSystemCallback = void ();
-
   [inline_doc] dictionary MediaFileSystemMetadata {
     // The name of the file system.
     DOMString name;
@@ -98,20 +84,6 @@ namespace mediaGalleries {
 
     // True if the device is currently available.
     boolean isAvailable;
-  };
-
-  [nodefine, inline_doc] dictionary ScanProgressDetails {
-    // The type of progress event, i.e. start, finish, etc.
-    ScanProgressType type;
-
-    // The number of Galleries found.
-    long? galleryCount;
-
-    // Appoximate number of media files found; some file types can be either
-    // audio or video and are included in both counts.
-    long? audioCount;
-    long? imageCount;
-    long? videoCount;
   };
 
   callback MediaFileSystemsMetadataCallback =
@@ -168,8 +140,6 @@ namespace mediaGalleries {
   };
 
   callback AddGalleryWatchCallback = void (AddGalleryWatchResult result);
-  [nodefine] callback GetAllGalleryWatchCallback =
-      void (DOMString[] galleryIds);
 
   interface Functions {
     // Get the media galleries configured in this user agent. If none are
@@ -184,40 +154,9 @@ namespace mediaGalleries {
     // gesture, the callback will run as though the user canceled.
     static void addUserSelectedFolder(AddUserFolderCallback callback);
 
-    // Give up access to a given media gallery.
-    [nodefine, deprecated="The user can manually drop access to galleries
-    via the permissions dialog."]
-    static void dropPermissionForMediaFileSystem(
-        DOMString galleryId,
-        optional DropPermissionForMediaFileSystemCallback callback);
-
-    // Start a scan of the user's hard disks for directories containing media.
-    // The scan may take a long time so progress and completion is communicated
-    // by events. No permission is granted as a result of the scan, see
-    // addScanResults.
-    [nodefine, deprecated="The mediaGalleries API no longer supports scanning."]
-    static void startMediaScan();
-
-    // Cancel any pending media scan.  Well behaved apps should provide a way
-    // for the user to cancel scans they start.
-    [nodefine, deprecated="The mediaGalleries API no longer supports scanning."]
-    static void cancelMediaScan();
-
-    // Show the user the scan results and let them add any or all of them as
-    // galleries. This should be used after the 'finish' onScanProgress()
-    // event has happened. All galleries the app has access to are returned, not
-    // just the newly added galleries.
-    [nodefine, deprecated="The mediaGalleries API no longer supports scanning."]
-    static void addScanResults(MediaFileSystemsCallback callback);
-
     // Get metadata about a specific media file system.
     [nocompile] static MediaFileSystemMetadata getMediaFileSystemMetadata(
         [instanceOf=DOMFileSystem] object mediaFileSystem);
-
-    // Get metadata for all available media galleries.
-    [nodefine, deprecated="Use getMediaFileSystemMetadata instead."]
-    static void getAllMediaFileSystemMetadata(
-        MediaFileSystemsMetadataCallback callback);
 
     // Gets the media-specific metadata for a media file. This should work
     // for files in media galleries as well as other DOM filesystems.
@@ -232,24 +171,10 @@ namespace mediaGalleries {
 
     // Removes a gallery watch for the gallery with the specified gallery ID.
     static void removeGalleryWatch(DOMString galleryId);
-
-    // Notifies which galleries are being watched via the given callback.
-    [nodefine, deprecated="Applications should store their own gallery watches
-    as they are added."]
-    static void getAllGalleryWatch(GetAllGalleryWatchCallback callback);
-
-    // Removes all gallery watches.
-    [nodefine, deprecated="Use removeGalleryWatch instead."]
-    static void removeAllGalleryWatch();
   };
 
   interface Events {
     // Fired when a media gallery is changed or a gallery watch is dropped.
     static void onGalleryChanged(GalleryChangeDetails details);
-
-    // The pending media scan has changed state. See details for more
-    // information.
-    [nodefine, deprecated="The mediaGalleries API no longer supports scanning."]
-    static void onScanProgress(ScanProgressDetails details);
   };
 };

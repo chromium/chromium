@@ -58,9 +58,6 @@ def GenerateSchema(generator_name,
     if generator_name == 'cpp':
       api_def = json_schema.DeleteNodes(api_def, 'nocompile')
 
-    # Delete all 'nodefine' nodes. They are only for documentation.
-    api_def = json_schema.DeleteNodes(api_def, 'nodefine')
-
     api_defs.extend(api_def)
 
   api_model = Model(allow_inline_enums=False)
