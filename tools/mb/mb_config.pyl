@@ -76,7 +76,7 @@
       'fuchsia-official': 'fuchsia_official_optimize_goma',
       'linux-archive-rel': 'release_bot',
       'linux-archive-dbg': 'debug_bot',
-      'linux-official': 'linux_official_optimize_goma',
+      'linux-official': 'official_optimize_goma',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
       'mac-archive-dbg': 'debug_bot',
       'mac-official': 'official_optimize_goma',
@@ -1573,9 +1573,6 @@
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
       'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official',
-      # The CrOS ebuild pins concurrent_links to just 1 on LTO builds.
-      # Experiment with bumping it up on these builders.
-      'chromeos_lto_link_jobs',
     ],
 
     'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients': [
@@ -2139,10 +2136,6 @@
       'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer',
     ],
 
-    'linux_official_optimize_goma': [
-      'official_optimize_goma', 'linux_official_link_jobs',
-    ],
-
     'mac_arm64_release_bot': [
       'release_bot', 'arm64',
     ],
@@ -2597,10 +2590,6 @@
       'mixins': ['chromeos_device', 'kevin',]
     },
 
-    'chromeos_lto_link_jobs': {
-      'gn_args': 'concurrent_links=2',
-    },
-
     'chromeos_with_codecs': {
       'mixins': ['chromeos', 'chromeos_codecs'],
     },
@@ -2857,14 +2846,6 @@
 
     'link_jobs_32': {
       'gn_args': 'max_jobs_per_link=32',
-    },
-
-    # Without this, linux-official uses too many concurrent links with the
-    # available RAM. We want to adjust this number to mitigate possible memory
-    # issues related to linking.
-    # See https://bugs.chromium.org/p/chromium/issues/detail?id=1103490
-    'linux_official_link_jobs': {
-      'gn_args': 'concurrent_links=6',
     },
 
     'lsan': {

@@ -49,7 +49,6 @@
   },
   "linux-official": {
     "gn_args": {
-      "concurrent_links": 6,
       "is_official_build": true,
       "use_goma": true
     }

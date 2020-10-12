@@ -15,7 +15,6 @@
   "chromeos-betty-pi-arc-cfi-thin-lto-chrome": {
     "args_file": "//build/args/chromeos/betty-pi-arc.gni",
     "gn_args": {
-      "concurrent_links": 2,
       "is_cfi": true,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
