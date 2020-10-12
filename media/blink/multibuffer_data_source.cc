@@ -139,7 +139,7 @@ MultibufferDataSource::MultibufferDataSource(
   DCHECK(url_data_.get());
   url_data_->Use();
   url_data_->OnRedirect(
-      base::BindOnce(&MultibufferDataSource::OnRedirect, weak_ptr_));
+      base::BindOnce(&MultibufferDataSource::OnRedirected, weak_ptr_));
 }
 
 MultibufferDataSource::~MultibufferDataSource() {
@@ -213,10 +213,10 @@ void MultibufferDataSource::Initialize(InitializeCB init_cb) {
   }
 }
 
-void MultibufferDataSource::OnRedirect(
-    const scoped_refptr<UrlData>& destination) {
-  if (!destination) {
-    // A failure occured.
+void MultibufferDataSource::OnRedirected(
+    const scoped_refptr<UrlData>& new_destination) {
+  if (!new_destination) {
+    // A failure occurred.
     failed_ = true;
     if (init_cb_) {
       render_task_runner_->PostTask(
@@ -229,38 +229,39 @@ void MultibufferDataSource::OnRedirect(
     StopLoader();
     return;
   }
-  if (url_data_->url().GetOrigin() != destination->url().GetOrigin()) {
+  if (url_data_->url().GetOrigin() != new_destination->url().GetOrigin()) {
     single_origin_ = false;
   }
   SetReader(nullptr);
-  url_data_ = std::move(destination);
+  url_data_ = std::move(new_destination);
 
-  if (url_data_) {
-    url_data_->OnRedirect(
-        base::BindOnce(&MultibufferDataSource::OnRedirect, weak_ptr_));
+  url_data_->OnRedirect(
+      base::BindOnce(&MultibufferDataSource::OnRedirected, weak_ptr_));
 
-    if (init_cb_) {
-      CreateResourceLoader(0, kPositionNotSpecified);
-      if (reader_->Available()) {
-        render_task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
-      } else {
-        reader_->Wait(1, base::BindOnce(&MultibufferDataSource::StartCallback,
-                                        weak_ptr_));
-      }
-    } else if (read_op_) {
-      CreateResourceLoader(read_op_->position(), kPositionNotSpecified);
-      if (reader_->Available()) {
-        render_task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(&MultibufferDataSource::ReadTask, weak_ptr_));
-      } else {
-        reader_->Wait(
-            1, base::BindOnce(&MultibufferDataSource::ReadTask, weak_ptr_));
-      }
+  if (init_cb_) {
+    CreateResourceLoader(0, kPositionNotSpecified);
+    if (reader_->Available()) {
+      render_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
+    } else {
+      reader_->Wait(
+          1, base::BindOnce(&MultibufferDataSource::StartCallback, weak_ptr_));
+    }
+  } else if (read_op_) {
+    CreateResourceLoader(read_op_->position(), kPositionNotSpecified);
+    if (reader_->Available()) {
+      render_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&MultibufferDataSource::ReadTask, weak_ptr_));
+    } else {
+      reader_->Wait(
+          1, base::BindOnce(&MultibufferDataSource::ReadTask, weak_ptr_));
     }
   }
+
+  if (redirect_cb_)
+    redirect_cb_.Run();
 }
 
 void MultibufferDataSource::SetPreload(Preload preload) {
@@ -279,6 +280,10 @@ bool MultibufferDataSource::HasSingleOrigin() {
 
 bool MultibufferDataSource::IsCorsCrossOrigin() const {
   return url_data_->is_cors_cross_origin();
+}
+
+void MultibufferDataSource::OnRedirect(RedirectCB callback) {
+  redirect_cb_ = std::move(callback);
 }
 
 bool MultibufferDataSource::HasAccessControl() const {

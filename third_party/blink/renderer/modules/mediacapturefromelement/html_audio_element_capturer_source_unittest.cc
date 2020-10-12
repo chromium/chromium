@@ -102,7 +102,7 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
         media_stream_source_->Id(), media_stream_source_);
 
-    // |media_stream_source_| takes wnership of
+    // |media_stream_source_| takes ownership of
     // HtmlAudioElementCapturerSource.
     auto capture_source = std::make_unique<HtmlAudioElementCapturerSource>(
         audio_source_, blink::scheduler::GetSingleThreadTaskRunnerForTesting());
@@ -179,6 +179,38 @@ TEST_F(HTMLAudioElementCapturerSourceTest,
 
   track()->Stop();
   base::RunLoop().RunUntilIdle();
+  track()->RemoveSink(&sink);
+}
+
+TEST_F(HTMLAudioElementCapturerSourceTest, TaintedPlayerDeliversMutedAudio) {
+  testing::InSequence s;
+
+  base::RunLoop run_loop;
+  base::OnceClosure quit_closure = run_loop.QuitClosure();
+
+  MockMediaStreamAudioSink sink;
+  track()->AddSink(&sink);
+  EXPECT_CALL(sink, OnSetFormat(testing::_)).Times(1);
+  EXPECT_CALL(
+      sink,
+      OnData(testing::AllOf(
+                 testing::Property(&media::AudioBus::channels,
+                                   kNumChannelsForTest),
+                 testing::Property(&media::AudioBus::frames,
+                                   kAudioTrackSamplesPerBuffer),
+                 testing::Property(&media::AudioBus::AreFramesZero, true)),
+             testing::_))
+      .Times(1)
+      .WillOnce([&](const auto&, auto) { std::move(quit_closure).Run(); });
+
+  audio_source_->TaintOrigin();
+
+  std::unique_ptr<media::AudioBus> bus =
+      media::AudioBus::Create(kNumChannelsForTest, kAudioTrackSamplesPerBuffer);
+  InjectAudio(bus.get());
+  run_loop.Run();
+
+  track()->Stop();
   track()->RemoveSink(&sink);
 }
 
