@@ -329,12 +329,12 @@ Polymer({
       /** @type {{hide: Function}} */ (tooltip).hide();
       target.removeEventListener('mouseleave', hide);
       target.removeEventListener('blur', hide);
-      target.removeEventListener('tap', hide);
+      target.removeEventListener('click', hide);
       tooltip.removeEventListener('mouseenter', hide);
     };
     target.addEventListener('mouseleave', hide);
     target.addEventListener('blur', hide);
-    target.addEventListener('tap', hide);
+    target.addEventListener('click', hide);
     tooltip.addEventListener('mouseenter', hide);
 
     tooltip.show();

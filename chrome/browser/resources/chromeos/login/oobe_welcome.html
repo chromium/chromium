@@ -105,7 +105,7 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="ok-button-language" text-key="oobeOKButtonText"
-            inverse on-tap="closeLanguageSection_"></oobe-text-button>
+            inverse on-click="closeLanguageSection_"></oobe-text-button>
       </div>
     </oobe-dialog>
     <oobe-dialog id="accessibilityScreen" role="dialog" hidden has-buttons
@@ -221,7 +221,7 @@
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="ok-button-accessibility"
             text-key="oobeOKButtonText" inverse
-            on-tap="closeAccessibilitySection_"></oobe-text-button>
+            on-click="closeAccessibilitySection_"></oobe-text-button>
       </div>
     </oobe-dialog>
     <oobe-dialog id="timezoneScreen" role="dialog" hidden has-buttons
@@ -246,7 +246,7 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="ok-button-timezone" text-key="oobeOKButtonText"
-            inverse on-tap="closeTimezoneSection_"></oobe-text-button>
+            inverse on-click="closeTimezoneSection_"></oobe-text-button>
       </div>
     </oobe-dialog>
     <oobe-dialog id="oobeAdvancedOptionsScreen" role="dialog" hidden has-buttons
@@ -258,7 +258,7 @@
       <div slot="footer" class="layout vertical">
         <div class="flex layout vertical center-justified
             advanced-options-entry">
-          <button on-tap="onCFMBootstrappingClicked_">
+          <button on-click="onCFMBootstrappingClicked_">
             <div class="advanced-option-title">
               [[i18nDynamic(locale, 'advancedOptionsCFMSetupTitle')]]
             </div>
@@ -269,7 +269,7 @@
         </div>
         <div class="flex layout vertical center-justified
             advanced-options-entry">
-          <button on-tap="onDeviceRequisitionClicked_">
+          <button on-click="onDeviceRequisitionClicked_">
             <div class="advanced-option-title">
               [[i18nDynamic(locale, 'advancedOptionsDeviceRequisitionTitle')]]
             </div>
@@ -282,7 +282,7 @@
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="ok-button-advanced-options"
             text-key="oobeOKButtonText" inverse
-            on-tap="closeAdvancedOptionsSection_"></oobe-text-button>
+            on-click="closeAdvancedOptionsSection_"></oobe-text-button>
       </div>
     </oobe-dialog>
   </template>

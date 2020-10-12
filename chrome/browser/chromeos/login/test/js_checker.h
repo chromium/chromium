@@ -229,17 +229,11 @@ class JSChecker {
     web_contents_ = web_contents;
   }
 
-  void set_polymer_ui(bool polymer_ui) { polymer_ui_ = polymer_ui; }
-
  private:
   void GetBoolImpl(const std::string& expression, bool* result);
   void GetIntImpl(const std::string& expression, int* result);
   void GetStringImpl(const std::string& expression, std::string* result);
 
-  // Checks if we assume that WebUI is polymer-based. There are few UI elements
-  // that were not migrated to polymer, as well as some test-only UIs
-  // (e.g. test SAML pages) that require old-fashioned interaction.
-  bool polymer_ui_ = true;
   content::WebContents* web_contents_ = nullptr;
 };
 

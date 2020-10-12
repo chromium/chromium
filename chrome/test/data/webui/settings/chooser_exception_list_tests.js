@@ -442,7 +442,7 @@ suite('ChooserExceptionList', function() {
                */
               const testsParams = [
                 {text: 'a', el: testElement, eventType: 'mouseleave'},
-                {text: 'b', el: testElement, eventType: 'tap'},
+                {text: 'b', el: testElement, eventType: 'click'},
                 {text: 'c', el: testElement, eventType: 'blur'},
                 {text: 'd', el: tooltip, eventType: 'mouseenter'},
               ];

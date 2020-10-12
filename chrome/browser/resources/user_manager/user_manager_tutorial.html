@@ -257,14 +257,14 @@
       <template is="dom-if" if="[[!isStepHidden_(currentStep_, 'notYou')]]">
         <div class="tutorial-slide" id="notYou">
           <iron-icon id="dismiss" icon="cr:close"
-              on-tap="onDissmissTap_">
+              on-click="onDissmissTap_">
           </iron-icon>
           <div class="slide-buttons">
             <div class="slide-text">
               $i18n{slideCompleteUserNotFound}
             </div>
             <div id="slide-add-user">
-              <a id="addUser" is="action-link" on-tap="onAddUserTap_">
+              <a id="addUser" is="action-link" on-click="onAddUserTap_">
                 $i18n{slideCompleteAddUser}
               </a>
             </div>

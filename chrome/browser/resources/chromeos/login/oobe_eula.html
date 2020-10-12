@@ -36,13 +36,13 @@
             on-contentload="onFrameLoad_">
         </webview>
         <div id="footer-more" class="layout vertical">
-          <a href="#" id="additionalTerms" on-tap="onAdditionalTermsClicked_"
+          <a href="#" id="additionalTerms" on-click="onAdditionalTermsClicked_"
               class="oobe-local-link">
             [[i18nDynamic(locale, 'oobeEulaAditionalTerms')]]
           </a>
           <a id="securitySettings" href="#"
               class="oobe-local-link"
-              on-tap="onSecuritySettingsClicked_">
+              on-click="onSecuritySettingsClicked_">
             [[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]
           </a>
           <div id="logging" class="layout horizontal">
@@ -54,7 +54,7 @@
                   [[i18nDynamic(locale, 'checkboxLogging')]]
                 </span>
                 <a id="learnMore" href="#"
-                    on-tap="onUsageStatsHelpLinkClicked_"
+                    on-click="onUsageStatsHelpLinkClicked_"
                     class="oobe-local-link">
                   [[i18nDynamic(locale, 'learnMore')]]
                 </a>
@@ -68,7 +68,7 @@
             on-click="onEulaBackButtonPressed_"></oobe-back-button>
         <div class="flex">
         </div>
-        <oobe-text-button id="acceptButton" inverse on-tap="eulaAccepted_"
+        <oobe-text-button id="acceptButton" inverse on-click="eulaAccepted_"
             class="focus-on-show"
             disabled="[[acceptButtonDisabled]]"
             text-key="oobeEulaAcceptAndContinueButtonText">
@@ -91,7 +91,7 @@
         <oobe-text-button id="settings-close-button" inverse
             class="focus-on-show"
             text-key="eulaSystemSecuritySettingsOkButton"
-            on-tap="onSecuritySettingsCloseClicked_"></oobe-text-button>
+            on-click="onSecuritySettingsCloseClicked_"></oobe-text-button>
       </div>
     </oobe-dialog>
     <cr-dialog id="additionalToS" ignore-popstate

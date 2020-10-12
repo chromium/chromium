@@ -24,11 +24,11 @@
       <div slot="bottom-buttons" class="flex layout horizontal">
         <oobe-back-button id="errorBackButton"
             disabled="[[backButtonDisabled_]]"
-            on-tap="onTosBackButtonPressed_"></oobe-back-button>
+            on-click="onTosBackButtonPressed_"></oobe-back-button>
         <oobe-text-button id="retryButton" inverse
             text-key="termsOfServiceRetryButton"
             disabled="[[retryButtonDisabled_]]"
-            on-tap="onTosRetryButtonPressed_"></oobe-text-button>
+            on-click="onTosRetryButtonPressed_"></oobe-text-button>
       </div>
     </oobe-dialog>
 
@@ -64,11 +64,11 @@
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-back-button id="backButton" disabled="[[backButtonDisabled_]]"
-            on-tap="onTosBackButtonPressed_"></oobe-back-button>
+            on-click="onTosBackButtonPressed_"></oobe-back-button>
         <oobe-text-button id="acceptButton" inverse
             text-key="termsOfServiceAcceptButton"
             disabled="[[acceptButtonDisabled_]]"
-            on-tap="onTermsOfServiceAccepted_"></oobe-text-button>
+            on-click="onTermsOfServiceAccepted_"></oobe-text-button>
       </div>
     </oobe-dialog>
   </template>

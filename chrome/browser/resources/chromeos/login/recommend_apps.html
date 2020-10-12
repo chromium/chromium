@@ -31,9 +31,9 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="skipButton"
-            text-key="recommendAppsSkip" on-tap="onSkip_" border>
+            text-key="recommendAppsSkip" on-click="onSkip_" border>
         </oobe-text-button>
-        <oobe-next-button id="installButton" on-tap="onInstall_" inverse
+        <oobe-next-button id="installButton" on-click="onInstall_" inverse
             text-key="recommendAppsInstall"
             disabled="[[!canProceed_(appsSelected_)]]">
         </oobe-next-button>

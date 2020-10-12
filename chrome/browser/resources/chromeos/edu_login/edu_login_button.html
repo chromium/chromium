@@ -7,7 +7,7 @@
     padding-inline-start: 10px;
   }
 </style>
-<cr-button class$="[[getClass_(buttonType)]]" on-tap="onTap_"
+<cr-button class$="[[getClass_(buttonType)]]" on-click="onTap_"
     disabled="[[disabled]]">
   <template is="dom-if" if="[[hasIconBeforeText_(buttonType)]]">
     <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>

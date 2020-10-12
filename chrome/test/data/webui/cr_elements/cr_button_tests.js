@@ -101,12 +101,6 @@ suite('cr-button', function() {
     assertNotEquals('none', getComputedStyle(button).display);
   });
 
-  test('tap event is emitted on click', async () => {
-    const wait = test_util.eventToPromise('tap', button);
-    button.click();
-    await wait;
-  });
-
   test('space up does not click without space down', () => {
     let clicked = false;
     button.addEventListener('click', () => {

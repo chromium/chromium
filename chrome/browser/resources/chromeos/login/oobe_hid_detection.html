@@ -72,7 +72,7 @@
         </div>
         <div class="layout vertical hid-selection-entry">
           <div id="hid-keyboard-row" class="flex layout horizontal center"
-              on-tap="openPinDialog_">
+              on-click="openPinDialog_">
             <hd-iron-icon id="keyboard-icon" alt=""
                 icon1x="oobe-hid-detection-20:keyboard"
                 icon2x="oobe-hid-detection-40:keyboard">
@@ -87,7 +87,7 @@
         </div>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
-        <oobe-text-button inverse on-tap="onHIDContinueTap_"
+        <oobe-text-button inverse on-click="onHIDContinueTap_"
             text-key="hidDetectionContinue"
             id="hid-continue-button"
             disabled="[[!continueButtonEnabled]]"></oobe-text-button>

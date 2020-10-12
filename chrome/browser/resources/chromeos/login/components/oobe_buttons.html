@@ -59,7 +59,7 @@
   <template>
     <style include="cr-shared-style oobe-common"></style>
     <link rel="stylesheet" href="oobe_text_buttons.css">
-    <cr-button id="textButton" on-tap="onClick_" disabled="[[disabled]]"
+    <cr-button id="textButton" on-click="onClick_" disabled="[[disabled]]"
         inverse$="[[inverse]]" aria-label$="[[labelForAriaText_]]"
         border$="[[border]]">
       <div id="container"
@@ -126,7 +126,7 @@
     <style include="cr-icons cr-shared-style oobe-common"></style>
     <link rel="stylesheet" href="oobe_text_buttons.css">
     <link rel="stylesheet" href="oobe_next_button.css">
-    <cr-button id="button" on-tap="onClick_" disabled="[[disabled]]"
+    <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria_]]" class="action-button">
       <div class="flex horizontal layout start center">
         <slot name="text">

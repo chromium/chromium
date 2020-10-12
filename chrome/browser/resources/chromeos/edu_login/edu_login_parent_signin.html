@@ -144,7 +144,7 @@
       <h1>[[getParentSigninTitle_(parent)]]</h1>
 
       <div class="account-selection-container"
-          on-tap="onBackClicked_"
+          on-click="onBackClicked_"
           role="button"
           aria-labelledby="backButton"
           aria-describedby="parentEmail">
@@ -173,7 +173,7 @@
               class="password-icon"
               title="[[getPasswordIconLabel_(isPasswordVisible_)]]"
               aria-label="[[getPasswordIconLabel_(isPasswordVisible_)]]"
-              on-tap="onTogglePasswordVisibilityClicked_">
+              on-click="onTogglePasswordVisibilityClicked_">
           </cr-icon-button>
         </div>
         <p hidden="[[!isWrongPassword_]]" class="error-message">

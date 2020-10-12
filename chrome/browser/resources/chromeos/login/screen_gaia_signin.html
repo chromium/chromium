@@ -50,14 +50,14 @@
           </div>
           <oobe-text-button id="secondary-action-button"
               label-for-aria="[[secondaryActionButtonLabel_]]"
-              on-tap="onSecondaryActionButtonClicked_"
+              on-click="onSecondaryActionButtonClicked_"
               hidden="[[!secondaryActionButtonLabel_]]"
               disabled="[[!secondaryActionButtonEnabled_]]">
             <div slot="text">[[secondaryActionButtonLabel_]]</div>
           </oobe-text-button>
           <oobe-text-button id="primary-action-button"
               label-for-aria="[[primaryActionButtonLabel_]]"
-              on-tap="onPrimaryActionButtonClicked_"
+              on-click="onPrimaryActionButtonClicked_"
               hidden="[[!primaryActionButtonLabel_]]"
               disabled="[[!primaryActionButtonEnabled_]]"
               inverse>
@@ -84,18 +84,18 @@
         [[i18nDynamic(locale, 'samlInterstitialMessage',
                       samlInterstitialDomain_)]]
         <p>
-          <a href="#" class="oobe-local-link" on-tap="onSamlPageChangeAccount_"
+          <a href="#" class="oobe-local-link" on-click="onSamlPageChangeAccount_"
               id="interstitial-change-account">
               [[i18nDynamic(locale, 'samlInterstitialChangeAccountLink')]]
           </a>
         </p>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal">
-        <oobe-back-button id="interstitial-back" on-tap="onBackButtonClicked_">
+        <oobe-back-button id="interstitial-back" on-click="onBackButtonClicked_">
         </oobe-back-button>
         <div class="flex">
         </div>
-        <oobe-next-button on-tap="onSamlInterstitialNext_"
+        <oobe-next-button on-click="onSamlInterstitialNext_"
             id="interstitial-next" class="focus-on-show"></oobe-next-button>
       </div>
     </oobe-dialog>

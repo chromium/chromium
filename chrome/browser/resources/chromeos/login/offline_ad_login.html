@@ -64,10 +64,10 @@
         </cr-input>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="skipButton" on-tap="onSkipClicked_"
+        <oobe-text-button id="skipButton" on-click="onSkipClicked_"
             text-key="adUnlockPasswordSkip"></oobe-text-button>
         <oobe-next-button id="unlockButton"
-            on-tap="onUnlockPasswordEntered_"></oobe-next-button>
+            on-click="onUnlockPasswordEntered_"></oobe-next-button>
       </div>
     </oobe-dialog>
     <oobe-dialog id="credsStep" hidden="[[unlockPasswordStep]]"
@@ -140,7 +140,7 @@
         <oobe-back-button id="backButton" on-click="onBackButton_"
             hidden="[[isDomainJoin]]"></oobe-back-button>
         <div class="flex"></div>
-        <oobe-next-button id="nextButton" on-tap="onSubmit_"
+        <oobe-next-button id="nextButton" on-click="onSubmit_"
             disabled="[[disabled]]"></oobe-next-button>
       </div>
     </oobe-dialog>
@@ -184,9 +184,9 @@
       </div>
       <div slot="button-container">
         <oobe-text-button text-key="adJoinCancel"
-            on-tap="onMoreOptionsCancelTap_" autofocus></oobe-text-button>
+            on-click="onMoreOptionsCancelTap_" autofocus></oobe-text-button>
         <oobe-text-button id="moreOptionsSave" text-key="adJoinSave"
-            on-tap="onMoreOptionsConfirmTap_" inverse></oobe-text-button>
+            on-click="onMoreOptionsConfirmTap_" inverse></oobe-text-button>
       </div>
     </cr-dialog>
   </template>

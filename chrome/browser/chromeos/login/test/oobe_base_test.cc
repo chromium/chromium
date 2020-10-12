@@ -218,8 +218,6 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
       LoginDisplayHost::default_host()->GetOobeWebContents(),
       gaia_frame_parent_);
   test::JSChecker result = test::JSChecker(frame);
-  // Fake GAIA / fake SAML pages do not use polymer-based UI.
-  result.set_polymer_ui(false);
   return result;
 }
 

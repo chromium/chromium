@@ -95,19 +95,19 @@
             <!-- BACK - Shown when the generic cancel button is hidden -->
             <oobe-back-button id="errorCancelBackButton"
                 hidden$="[[isGenericCancel_(isAutoEnroll_, isForced_)]]"
-                on-tap="cancel" style="margin-right: auto"></oobe-back-button>
+                on-click="cancel" style="margin-right: auto"></oobe-back-button>
 
             <!-- GENERAL CANCEL BUTTON (SKIP / ENROLL MANUALLY) -->
             <oobe-text-button id="errorGenericCancelButton"
                 hidden$="[[!isGenericCancel_(isAutoEnroll_, isForced_)]]"
-                on-tap="cancel"  inverse$="[[!canRetryAfterError_]]"
+                on-click="cancel"  inverse$="[[!canRetryAfterError_]]"
                 text-key="[[getCancelButtonLabel_(locale, isAutoEnroll_)]]">
             </oobe-text-button>
 
             <!-- TRY AGAIN BUTTON -  -->
             <oobe-text-button inverse id="errorRetryButton"
               hidden$="[[!canRetryAfterError_]]"
-              on-tap="doRetry_" class="focus-on-show"
+              on-click="doRetry_" class="focus-on-show"
               text-key="oauthEnrollRetry">
             </oobe-text-button>
           </div>
@@ -123,7 +123,7 @@
           <!-- BOTTOM BUTTONS: ATTRIBUTE ERROR -->
           <div for-step="attribute-prompt-error">
             <oobe-text-button inverse id="attributeErrorButton"
-                on-tap="onEnrollmentFinished_" class="focus-on-show"
+                on-click="onEnrollmentFinished_" class="focus-on-show"
                 text-key="oauthEnrollDone">
             </oobe-text-button>
           </div>
@@ -151,7 +151,7 @@
         </div>
         <div slot="bottom-buttons" class="layout horizontal end-justified">
           <oobe-text-button inverse id="successDoneButton"
-              text-key="oauthEnrollDone" on-tap="onEnrollmentFinished_"
+              text-key="oauthEnrollDone" on-click="onEnrollmentFinished_"
               class="focus-on-show"></oobe-text-button>
         </div>
       </oobe-dialog>
@@ -185,11 +185,11 @@
         </div>
         <div slot="bottom-buttons" class="layout horizontal end-justified">
           <oobe-text-button id="attributesSkip"
-              text-key="oauthEnrollSkip" on-tap="skipAttributes_">
+              text-key="oauthEnrollSkip" on-click="skipAttributes_">
           </oobe-text-button>
           <div class="flex"></div>
           <oobe-next-button id="attributesSubmit"
-              on-tap="submitAttributes_"></oobe-next-button>
+              on-click="submitAttributes_"></oobe-next-button>
         </div>
       </oobe-dialog>
     </div>

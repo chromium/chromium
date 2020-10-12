@@ -96,9 +96,9 @@
         </div>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal justified">
-        <oobe-back-button on-tap="onBackButtonClicked_"></oobe-back-button>
+        <oobe-back-button on-click="onBackButtonClicked_"></oobe-back-button>
         <oobe-next-button id="next-button"
-            on-tap="onNextButtonClicked_"></oobe-next-button>
+            on-click="onNextButtonClicked_"></oobe-next-button>
       </div>
     </oobe-dialog>
     <cr-dialog id="forgotPasswordDlg"
@@ -107,7 +107,7 @@
         [[i18nDynamic(locale, 'offlineLoginForgotPasswordDlg')]]
       </div>
       <div slot="button-container">
-        <cr-button autofocus on-tap="onForgotPasswordCloseTap_"
+        <cr-button autofocus on-click="onForgotPasswordCloseTap_"
             class="action-button">
           [[i18nDynamic(locale, 'offlineLoginCloseBtn')]]
         </cr-button>

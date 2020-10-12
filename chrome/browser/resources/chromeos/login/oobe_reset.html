@@ -33,7 +33,7 @@
           <a id="powerwash-help-link-md" href="#"
               class="oobe-local-link"
               hidden="[[inRevertState_]]"
-             on-tap="onLearnMoreTap_">[[i18nDynamic(locale, 'learnMore')]]
+             on-click="onLearnMoreTap_">[[i18nDynamic(locale, 'learnMore')]]
           </a>
         </if>
         <!-- Spinner - Shown when the revert process is ongoing -->
@@ -69,7 +69,7 @@
               <if expr="_google_chrome">
                 <a href="#"
                     class="oobe-local-link"
-                    on-tap="onTPMFirmwareUpdateLearnMore_"
+                    on-click="onTPMFirmwareUpdateLearnMore_"
                     >[[i18nDynamic(locale, 'learnMore')]]</a>
               </if>
             </div>
@@ -79,15 +79,15 @@
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
         <!-- Cancel button, only disabled when reverting -->
-        <oobe-text-button border on-tap="onCancelTap_" text-key="cancelButton"
+        <oobe-text-button border on-click="onCancelTap_" text-key="cancelButton"
             id="resetCancel" disabled="[[inRevertState_]]"></oobe-text-button>
         <!-- Restart button -->
-        <oobe-text-button inverse on-tap="onRestartTap_" class="focus-on-show"
+        <oobe-text-button inverse on-click="onRestartTap_" class="focus-on-show"
             id="restart" text-key="resetButtonRestart"
             hidden="[[!inRestartRequiredState_]]">
         </oobe-text-button>
         <!-- Powerwash button (depends on powerwash mode) -->
-        <oobe-text-button inverse on-tap="onPowerwashTap_" class="focus-on-show"
+        <oobe-text-button inverse on-click="onPowerwashTap_" class="focus-on-show"
             id="powerwash" hidden="[[!inPowerwashState_]]"
             text-key="[[powerwashButtonTextKey_]]"
             disabled="[[powerwashButtonDisabled_]]">
@@ -100,9 +100,9 @@
       <div slot="title">[[confirmationDialogTitle_]]</div>
       <div slot="content">[[confirmationDialogText_]]</div>
       <div slot="buttons">
-        <oobe-text-button id="cancelButton" border on-tap="onDialogCancelTap_"
+        <oobe-text-button id="cancelButton" border on-click="onDialogCancelTap_"
             text-key="cancel"></oobe-text-button>
-        <oobe-text-button inverse on-tap="onDialogContinueTap_"
+        <oobe-text-button inverse on-click="onDialogContinueTap_"
             id="confirmPowerwash"
             text-key="confirmResetButton"></oobe-text-button>
       </div>

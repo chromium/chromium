@@ -48,11 +48,11 @@
       <div slot="bottom-buttons" class="layout horizontal justified">
         <oobe-back-button inverse on-click="onCloseClicked_"
             disabled="[[isPowerwashRequired_]]"></oobe-back-button>
-        <oobe-text-button id="retryButton" on-tap="onRetryClicked_"
+        <oobe-text-button id="retryButton" on-click="onRetryClicked_"
             text-key="demoSetupErrorScreenRetryButtonLabel"
             inverse hidden="[[isPowerwashRequired_]]">
         </oobe-text-button>
-        <oobe-text-button id="powerwashButton" on-tap="onPowerwashClicked_"
+        <oobe-text-button id="powerwashButton" on-click="onPowerwashClicked_"
             text-key="demoSetupErrorScreenPowerwashButtonLabel"
             inverse hidden="[[!isPowerwashRequired_]]">
         </oobe-text-button>

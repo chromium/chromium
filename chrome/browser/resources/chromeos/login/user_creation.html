@@ -98,12 +98,12 @@ found in the LICENSE file. -->
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal">
-        <oobe-back-button id="backButton" on-tap="onBackClicked_"
+        <oobe-back-button id="backButton" on-click="onBackClicked_"
             hidden="[[!isBackButtonVisible_]]">
         </oobe-back-button>
         <div class="flex"></div>
         <oobe-next-button id="nextButton" class="focus-on-show"
-            on-tap="onNextClicked_">
+            on-click="onNextClicked_">
         </oobe-next-button>
       </div>
     </oobe-dialog>
@@ -116,7 +116,7 @@ found in the LICENSE file. -->
       <div slot="subtitle">
         <div>
           [[i18nDynamic(locale, 'childSignInSubtitle')]]
-          <a href="#" class="oobe-local-link" on-tap="onLearnMoreClicked_">
+          <a href="#" class="oobe-local-link" on-click="onLearnMoreClicked_">
             [[i18nDynamic(locale, 'childSignInLearnMore')]]
           </a>
         </div>
@@ -153,9 +153,9 @@ found in the LICENSE file. -->
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button id="childBackButton" on-tap="onBackClicked_">
+        <oobe-back-button id="childBackButton" on-click="onBackClicked_">
         </oobe-back-button>
-        <oobe-next-button id="childNextButton" on-tap="onNextClicked_"
+        <oobe-next-button id="childNextButton" on-click="onNextClicked_"
             disabled="[[!selectedSignInMethod]]">
         </oobe-next-button>
       </div>

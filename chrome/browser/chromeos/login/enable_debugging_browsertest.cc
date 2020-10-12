@@ -182,32 +182,10 @@ class EnableDebuggingTestBase : public OobeBaseTest {
   }
 
   void CloseEnableDebuggingScreen() {
-    // TODO(crbug.com/944573): inline this method once UI is polymer-based.
-    test::JSChecker js = test::OobeJS();
-    js.set_polymer_ui(false);
-    js.TapOn("debugging-cancel-button");
+    test::OobeJS().TapOn("debugging-cancel-button");
   }
 
-  void ClickRemoveProtectionButton() {
-    // TODO(crbug.com/944573): inline this method once UI is polymer-based.
-    test::JSChecker js = test::OobeJS();
-    js.set_polymer_ui(false);
-    js.TapOn("debugging-remove-protection-button");
-  }
-
-  void ClickEnableButton() {
-    // TODO(crbug.com/944573): inline this method once UI is polymer-based.
-    test::JSChecker js = test::OobeJS();
-    js.set_polymer_ui(false);
-    js.TapOn("debugging-enable-button");
-  }
-
-  void ClickOKButton() {
-    // TODO(crbug.com/944573): inline this method once UI is polymer-based.
-    test::JSChecker js = test::OobeJS();
-    js.set_polymer_ui(false);
-    js.TapOn("debugging-ok-button");
-  }
+  void ClickEnableButton() { test::OobeJS().TapOn("debugging-enable-button"); }
 
   void ShowRemoveProtectionScreen() {
     debug_daemon_client_->SetDebuggingFeaturesStatus(
@@ -285,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
 IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndRemoveProtection) {
   ShowRemoveProtectionScreen();
   debug_daemon_client_->ResetWait();
-  ClickRemoveProtectionButton();
+  test::OobeJS().TapOn("debugging-remove-protection-button");
   debug_daemon_client_->WaitUntilCalled();
   test::OobeJS().ExpectHasClass("wait-view", {"debugging"});
 

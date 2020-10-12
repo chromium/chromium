@@ -57,7 +57,6 @@ void ToggleAccessibilityFeature(const std::string& feature_name,
   std::string feature_toggle =
       test::GetOobeElementPath({"connect", feature_name, "button"}) +
       ".checked";
-  js.set_polymer_ui(false);
 
   if (!new_value)
     feature_toggle = "!" + feature_toggle;

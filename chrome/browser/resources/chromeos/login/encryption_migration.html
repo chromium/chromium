@@ -49,10 +49,10 @@
       <div slot="bottom-buttons" class="flex layout horizontal"
           hidden="[[isResuming]]">
         <div class="flex"></div>
-        <oobe-text-button border id="skip-button" on-tap="onSkip_"
+        <oobe-text-button border id="skip-button" on-click="onSkip_"
             hidden="[[isSkipHidden_()]]" text-key="migrationButtonSkip">
         </oobe-text-button>
-        <oobe-text-button inverse id="upgrade-button" on-tap="onUpgrade_"
+        <oobe-text-button inverse id="upgrade-button" on-click="onUpgrade_"
             disabled="[[isUpdateDisabled_(isEnoughBattery, isSkipped)]]"
             text-key="migrationButtonUpdate"></oobe-text-button>
       </div>
@@ -84,11 +84,11 @@
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
 <if expr="_google_chrome">
-        <oobe-text-button border on-tap="onReportAnIssue_"
+        <oobe-text-button border on-click="onReportAnIssue_"
             text-key="migrationButtonReportAnIssue"></oobe-text-button>
 </if>
         <oobe-text-button inverse id="restart-button"
-            on-tap="onRestartOnFailure_" text-key="migrationButtonRestart">
+            on-click="onRestartOnFailure_" text-key="migrationButtonRestart">
         </oobe-text-button>
       </div>
     </oobe-dialog>
@@ -112,11 +112,11 @@
         <div class="flex"></div>
         <oobe-text-button inverse id="insufficient-space-skip-button"
             hidden="[[isResuming]]"
-            on-tap="onSkip_" text-key="migrationButtonContinue">
+            on-click="onSkip_" text-key="migrationButtonContinue">
         </oobe-text-button>
         <oobe-text-button inverse id="insufficient-space-restart-button"
             hidden="[[!isResuming]]"
-            on-tap="onRestartOnLowStorage_"
+            on-click="onRestartOnLowStorage_"
             text-key="migrationButtonRestart">
         </oobe-text-button>
       </div>

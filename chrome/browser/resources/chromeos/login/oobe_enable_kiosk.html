@@ -30,11 +30,11 @@
       </div>  
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-text-button id="enable" hidden="[[!eq_(state_, 'confirm')]]"
-            inverse on-tap="onEnableButton_" text-key="kioskEnableButton">
+            inverse on-click="onEnableButton_" text-key="kioskEnableButton">
         </oobe-text-button>
         <oobe-text-button id="close" class="focus-on-show" inverse
             text-key="[[primaryButtonTextKey_(state_)]]"
-            on-tap="closeDialog_"></oobe-text-button>
+            on-click="closeDialog_"></oobe-text-button>
       </div>
     </oobe-dialog>
   </template>

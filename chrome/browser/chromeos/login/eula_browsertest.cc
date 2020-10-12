@@ -147,14 +147,6 @@ class EulaTest : public OobeBaseTest {
     }
   }
 
-  // Returns an Oobe JSChecker that sends 'click' events instead of 'tap'
-  // events when interacting with UI elements.
-  test::JSChecker NonPolymerOobeJS() {
-    test::JSChecker js = test::OobeJS();
-    js.set_polymer_ui(false);
-    return js;
-  }
-
   base::OnceClosure SetCollectStatsConsentClosure(bool consented) {
     return base::BindOnce(
         base::IgnoreResult(&GoogleUpdateSettings::SetCollectStatsConsent),
@@ -263,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(EulaTest, EnableUsageStats) {
       StatsReportingController::Get()->AddObserver(runloop.QuitClosure());
 
   // Enable and disable usageStats that to see that metrics are recorded.
-  NonPolymerOobeJS().TapOnPath(kUsageStats);
-  NonPolymerOobeJS().TapOnPath(kUsageStats);
+  test::OobeJS().TapOnPath(kUsageStats);
+  test::OobeJS().TapOnPath(kUsageStats);
   // Advance to the next screen for changes to take effect.
   test::OobeJS().TapOnPath(kAcceptEulaButton);
 
@@ -313,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(EulaTest, DisableUsageStats) {
 
   // Click on the toggle to disable stats collection and advance to the next
   // screen for changes to take effect.
-  NonPolymerOobeJS().TapOnPath(kUsageStats);
+  test::OobeJS().TapOnPath(kUsageStats);
   test::OobeJS().TapOnPath(kAcceptEulaButton);
 
   // Wait for StartReportingController update.
@@ -369,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(EulaTest, AdditionalToS) {
       .CreateWaiter(test::GetOobeElementPath(kAdditionalTermsDialog) + ".open")
       ->Wait();
 
-  NonPolymerOobeJS().TapOnPath(kAdditionalTermsClose);
+  test::OobeJS().TapOnPath(kAdditionalTermsClose);
 
   test::OobeJS()
       .CreateWaiter(test::GetOobeElementPath(kAdditionalTermsDialog) +

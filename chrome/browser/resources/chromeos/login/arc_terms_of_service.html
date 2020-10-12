@@ -33,7 +33,7 @@
           <p>
             <span>[[i18nDynamic(locale, metricsTextKey)]]</span>
             <a href="#" id="learnMoreLinkMetrics"
-                on-tap="onMetricsLearnMoreTap_">
+                on-click="onMetricsLearnMoreTap_">
               [[i18nDynamic(locale, 'arcLearnMoreText')]]
             </a>
           </p>
@@ -54,7 +54,7 @@
             <p>
               <span>[[i18nDynamic(locale, 'arcTextBackupRestore')]]</span>
               <a href="#" id="learnMoreLinkBackupRestore"
-                on-tap="onBackupRestoreLearnMoreTap_">
+                on-click="onBackupRestoreLearnMoreTap_">
                 [[i18nDynamic(locale, 'arcLearnMoreText')]]
               </a>
             </p>
@@ -72,7 +72,7 @@
               <p>
                 <span>[[i18nDynamic(locale, 'arcTextLocationService')]]</span>
                 <a href="#" id="learnMoreLinkLocationService"
-                    on-tap="onLocationServiceLearnMoreTap_">
+                    on-click="onLocationServiceLearnMoreTap_">
                   [[i18nDynamic(locale, 'arcLearnMoreText')]]
                 </a>
               </p>
@@ -82,7 +82,7 @@
             <p>
               <span>[[i18nDynamic(locale, 'arcTextPaiService')]]</span>
               <a href="#" id="learnMoreLinkPai"
-                  on-tap="onPaiLearnMoreTap_">
+                  on-click="onPaiLearnMoreTap_">
                 [[i18nDynamic(locale, 'arcLearnMoreText')]]
               </a>
             </p>
@@ -115,16 +115,16 @@
         <div class="flex">
         </div>
         <oobe-text-button id="arcTosRetryButton"
-            inverse on-tap="onRetry_"
+            inverse on-click="onRetry_"
             disabled="[[arcTosButtonsDisabled]]"
             text-key="arcTermsOfServiceRetryButton"></oobe-text-button>
         <oobe-text-button id="arcTosNextButton"
-            inverse on-tap="onNext_"
+            inverse on-click="onNext_"
             disabled="[[arcTosButtonsDisabled]]"
             hidden="[[showFullDialog]]"
             text-key="arcTermsOfServiceNextButton"></oobe-text-button>
         <oobe-text-button id="arcTosAcceptButton"
-            inverse on-tap="onAccept_"
+            inverse on-click="onAccept_"
             disabled="[[arcTosButtonsDisabled]]"
             hidden="[[!showFullDialog]]"
             text-key="[[acceptTextKey]]"></oobe-text-button>

@@ -114,32 +114,33 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
       $('error-message-back-button')
           .addEventListener('click', this.cancel.bind(this));
 
-      $('error-message-md-reboot-button').addEventListener('tap', function(e) {
-        self.send(login.Screen.CALLBACK_USER_ACTED, USER_ACTION_REBOOT);
-        e.stopPropagation();
-      });
+      $('error-message-md-reboot-button')
+          .addEventListener('click', function(e) {
+            self.send(login.Screen.CALLBACK_USER_ACTED, USER_ACTION_REBOOT);
+            e.stopPropagation();
+          });
       $('error-message-md-diagnose-button')
-          .addEventListener('tap', function(e) {
+          .addEventListener('click', function(e) {
             self.send(login.Screen.CALLBACK_USER_ACTED, USER_ACTION_DIAGNOSE);
             e.stopPropagation();
           });
       $('error-message-md-configure-certs-button')
-          .addEventListener('tap', function(e) {
+          .addEventListener('click', function(e) {
             self.send(
                 login.Screen.CALLBACK_USER_ACTED, USER_ACTION_CONFIGURE_CERTS);
             e.stopPropagation();
           });
       $('error-message-md-continue-button')
-          .addEventListener('tap', function(e) {
+          .addEventListener('click', function(e) {
             chrome.send('continueAppLaunch');
             e.stopPropagation();
           });
-      $('error-message-md-ok-button').addEventListener('tap', function(e) {
+      $('error-message-md-ok-button').addEventListener('click', function(e) {
         chrome.send('login.ResetScreen.userActed', ['cancel-reset']);
         e.stopPropagation();
       });
       $('error-message-md-powerwash-button')
-          .addEventListener('tap', function(e) {
+          .addEventListener('click', function(e) {
             self.send(
                 login.Screen.CALLBACK_USER_ACTED,
                 USER_ACTION_LOCAL_STATE_POWERWASH);

@@ -68,13 +68,13 @@
           <oobe-welcome-secondary-button
               hidden="[[!isA11ySettingsButtonVisible_]]"
               id="marketing-opt-in-accessibility-button"
-              on-tap="onToggleAccessibilityPage_"
+              on-click="onToggleAccessibilityPage_"
               icon1x="marketing-opt-in-32:accessibility"
               icon2x="marketing-opt-in-64:accessibility"
               text-key="marketingOptInA11yButtonLabel">
           </oobe-welcome-secondary-button>
         </div>
-        <oobe-text-button on-tap="onGetStarted_" class="focus-on-show"
+        <oobe-text-button on-click="onGetStarted_" class="focus-on-show"
             inverse text-key="marketingOptInScreenAllSet"
             id="marketing-opt-in-next-button">
         </oobe-text-button>
@@ -104,9 +104,9 @@
         </oobe-a11y-option>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button on-tap="onToggleAccessibilityPage_"
+        <oobe-back-button on-click="onToggleAccessibilityPage_"
             id="final-accessibility-back-button"></oobe-back-button>
-        <oobe-text-button on-tap="onGetStarted_" class="focus-on-show"
+        <oobe-text-button on-click="onGetStarted_" class="focus-on-show"
             id="final-accessibility-next-button" inverse
             text-key="finalA11yPageDoneButtonTitle">
         </oobe-text-button>

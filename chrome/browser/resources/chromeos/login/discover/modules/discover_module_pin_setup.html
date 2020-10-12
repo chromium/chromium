@@ -54,10 +54,10 @@
         </cr-input>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
-        <oobe-text-button on-tap="onSkipButton_"
+        <oobe-text-button on-click="onSkipButton_"
             text-key="discoverPinSetupSkip"></oobe-text-button>
         <oobe-next-button inverse disabled="[[!password_]]"
-            on-tap="onPasswordSubmitButton_">
+            on-click="onPasswordSubmitButton_">
         </oobe-next-button>
       </div>
     </oobe-dialog>
@@ -109,17 +109,17 @@
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-back-button
             hidden="[[isStepHidden_(step_, 'confirm')]]"
-            on-tap="onBackButton_"></oobe-back-button>
+            on-click="onBackButton_"></oobe-back-button>
         <div class="flex"></div>
-        <oobe-text-button id="setupSkipButton" on-tap="onSkipButton_"
+        <oobe-text-button id="setupSkipButton" on-click="onSkipButton_"
             text-key="discoverPinSetupSkip"
             hidden="[[!isStepHidden_(step_, 'done')]]">
         </oobe-text-button>
         <oobe-next-button inverse
             disabled="[[isNextDisabled_(step_, enableSubmit_)]]"
-            on-tap="onNextButton_" class="focus-on-show"
+            on-click="onNextButton_" class="focus-on-show"
             hidden="[[!isStepHidden_(step_, 'done')]]"></oobe-next-button>
-        <oobe-text-button inverse on-tap="onDoneButton_" class="focus-on-show"
+        <oobe-text-button inverse on-click="onDoneButton_" class="focus-on-show"
             text-key="discoverPinSetupDone"
             hidden="[[isStepHidden_(step_, 'done')]]">
         </oobe-text-button>

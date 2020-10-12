@@ -28,10 +28,10 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="skipStart"
-            text-key="skipFingerprintSetup" on-tap="onSkip_">
+            text-key="skipFingerprintSetup" on-click="onSkip_">
         </oobe-text-button>
         <oobe-next-button id="next"
-            on-tap="onNext_" class="focus-on-show"
+            on-click="onNext_" class="focus-on-show"
             text-key="fingerprintSetupNext" inverse></oobe-next-button>
       </div>
     </oobe-dialog>
@@ -58,7 +58,7 @@
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="setupLater"
             text-key="fingerprintSetupLater"
-            on-tap="onSetupLater_" class="focus-on-show">
+            on-click="onSetupLater_" class="focus-on-show">
         </oobe-text-button>
       </div>
     </oobe-dialog>
@@ -89,7 +89,7 @@
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button id="skipProgress"
-            on-tap="onSkip_" class="focus-on-show"
+            on-click="onSkip_" class="focus-on-show"
             text-key="skipFingerprintSetup"
             hidden="[[complete_]]">
         </oobe-text-button>
@@ -97,12 +97,12 @@
             text-key="fingerprintSetupAddAnother"
             hidden="[[!isAnotherButtonVisible_(percentComplete_,
                 canAddFinger)]]"
-            on-tap="onAddAnother_">
+            on-click="onAddAnother_">
         </oobe-text-button>
         <oobe-text-button id="done"
             hidden="[[!complete_]]"
             text-key="fingerprintSetupDone"
-            on-tap="onDone_" class="focus-on-show" inverse>
+            on-click="onDone_" class="focus-on-show" inverse>
         </oobe-text-button>
       </div>
     </oobe-dialog>

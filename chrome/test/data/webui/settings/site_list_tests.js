@@ -1054,7 +1054,7 @@ suite('SiteList', function() {
 
       const testsParams = [
         ['a', testElement, new MouseEvent('mouseleave')],
-        ['b', testElement, new MouseEvent('tap')],
+        ['b', testElement, new MouseEvent('click')],
         ['c', testElement, new Event('blur')],
         ['d', tooltip, new MouseEvent('mouseenter')],
       ];

@@ -22,7 +22,7 @@
       <div slot="subtitle">
         <div>
           [[i18nDynamic(locale, 'enableAdbSideloadingSetupMessage')]]
-          <a href="#" on-tap="onLearnMoreTap_" class="oobe-local-link">
+          <a href="#" on-click="onLearnMoreTap_" class="oobe-local-link">
             [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
           </a>
         </div>
@@ -36,10 +36,10 @@
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
-        <oobe-text-button border on-tap="onCancelTap_"
+        <oobe-text-button border on-click="onCancelTap_"
             text-key="enableAdbSideloadingCancelButton"
             id="enable-adb-sideloading-cancel-button"></oobe-text-button>
-        <oobe-text-button inverse on-tap="onEnableTap_" class="focus-on-show"
+        <oobe-text-button inverse on-click="onEnableTap_" class="focus-on-show"
             text-key="enableAdbSideloadingConfirmButton"
             id="enable-adb-sideloading-ok-button"></oobe-text-button>
       </div>
@@ -55,7 +55,7 @@
       </hd-iron-icon>
       <div slot="subtitle">
         [[i18nDynamic(locale, 'enableAdbSideloadingErrorMessage')]]
-        <a href="#" on-tap="onLearnMoreTap_" class="oobe-local-link">
+        <a href="#" on-click="onLearnMoreTap_" class="oobe-local-link">
           [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
         </a>
       </div>
@@ -68,7 +68,7 @@
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
-        <oobe-text-button inverse on-tap="onCancelTap_" class="focus-on-show"
+        <oobe-text-button inverse on-click="onCancelTap_" class="focus-on-show"
             text-key="enableAdbSideloadingOkButton"></oobe-text-button>
       </div>
     </oobe-dialog>
