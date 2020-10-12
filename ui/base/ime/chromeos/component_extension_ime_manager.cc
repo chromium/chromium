@@ -99,16 +99,6 @@ bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
   return false;
 }
 
-bool ComponentExtensionIMEManager::UnloadComponentExtensionIME(
-    Profile* profile,
-    const std::string& input_method_id) {
-  ComponentExtensionIME ime;
-  if (!FindEngineEntry(input_method_id, &ime))
-    return false;
-  delegate_->Unload(profile, ime.id, ime.path);
-  return true;
-}
-
 bool ComponentExtensionIMEManager::IsAllowlisted(
     const std::string& input_method_id) {
   return input_method_id_set_.find(input_method_id) !=

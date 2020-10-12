@@ -33,9 +33,6 @@ class ComponentExtensionIMEManagerImpl
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& file_path) override;
-  void Unload(Profile* profile,
-              const std::string& extension_id,
-              const base::FilePath& file_path) override;
 
   static bool IsIMEExtensionID(const std::string& id);
 
@@ -72,4 +69,3 @@ class ComponentExtensionIMEManagerImpl
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_INPUT_METHOD_COMPONENT_EXTENSION_IME_MANAGER_IMPL_H_
-

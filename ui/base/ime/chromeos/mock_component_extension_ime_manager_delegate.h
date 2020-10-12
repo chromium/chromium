@@ -23,36 +23,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockComponentExtIMEManagerDelegate
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& path) override;
-  void Unload(Profile*,
-              const std::string& extension_id,
-              const base::FilePath& path) override;
 
-  int load_call_count() const { return load_call_count_; }
-  int unload_call_count() const { return unload_call_count_; }
-  const std::string& last_loaded_extension_id() const {
-    return last_loaded_extension_id_;
-  }
-  const std::string& last_unloaded_extension_id() const {
-    return last_unloaded_extension_id_;
-  }
-  const base::FilePath& last_loaded_file_path() const {
-    return last_loaded_file_path_;
-  }
-  const base::FilePath& last_unloaded_file_path() const {
-    return last_unloaded_file_path_;
-  }
   void set_ime_list(const std::vector<ComponentExtensionIME>& ime_list) {
     ime_list_ = ime_list;
   }
 
  private:
-  int load_call_count_;
-  int unload_call_count_;
-  std::string last_loaded_extension_id_;
-  std::string last_unloaded_extension_id_;
-  base::FilePath last_loaded_file_path_;
-  base::FilePath last_unloaded_file_path_;
-
   std::vector<ComponentExtensionIME> ime_list_;
 
   DISALLOW_COPY_AND_ASSIGN(MockComponentExtIMEManagerDelegate);

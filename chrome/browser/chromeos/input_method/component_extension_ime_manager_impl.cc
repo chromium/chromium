@@ -188,14 +188,6 @@ void ComponentExtensionIMEManagerImpl::Load(Profile* profile,
                      base::Owned(copied_file_path)));
 }
 
-void ComponentExtensionIMEManagerImpl::Unload(Profile* profile,
-                                              const std::string& extension_id,
-                                              const base::FilePath& file_path) {
-  // Remove(extension_id) does nothing when the extension has already been
-  // removed or not been registered.
-  GetComponentLoader(profile)->Remove(extension_id);
-}
-
 std::unique_ptr<base::DictionaryValue>
 ComponentExtensionIMEManagerImpl::GetManifest(
     const std::string& manifest_string) {

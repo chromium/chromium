@@ -24,14 +24,14 @@ struct COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionEngine {
   ComponentExtensionEngine();
   ComponentExtensionEngine(const ComponentExtensionEngine& other);
   ~ComponentExtensionEngine();
-  std::string engine_id;  // The engine id.
-  std::string display_name;  // The display name.
-  std::string indicator;  // The indicator text.
-  std::vector<std::string> language_codes;  // The engine's language(ex. "en").
-  std::string description;  // The engine description.
-  std::vector<std::string> layouts;  // The list of keyboard layout of engine.
-  GURL options_page_url; // an URL to option page.
-  GURL input_view_url; // an URL to input view page.
+  std::string engine_id;
+  std::string display_name;
+  std::string indicator;
+  std::vector<std::string> language_codes;  // e.g. "en".
+  std::string description;
+  std::vector<std::string> layouts;
+  GURL options_page_url;
+  GURL input_view_url;
 };
 
 // Represents a component extension IME.
@@ -42,7 +42,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIME {
   std::string id;  // extension id.
   std::string manifest;  // the contents of manifest.json
   std::string description;  // description of extension.
-  GURL options_page_url; // an URL to option page.
+  GURL options_page_url;
   base::FilePath path;
   std::vector<ComponentExtensionEngine> engines;
 };
@@ -63,11 +63,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
                     const std::string& extension_id,
                     const std::string& manifest,
                     const base::FilePath& path) = 0;
-
-  // Unloads component extension IME associated with |extension_id|.
-  virtual void Unload(Profile* profile,
-                      const std::string& extension_id,
-                      const base::FilePath& path) = 0;
 };
 
 // This class manages component extension input method.
@@ -87,12 +82,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
   // already corresponding component extension is loaded.
   bool LoadComponentExtensionIME(Profile* profile,
                                  const std::string& input_method_id);
-
-  // Unloads |input_method_id| component extension IME. This function returns
-  // true on success. This function is safe to call multiple times. Returns
-  // false if already corresponding component extension is unloaded.
-  bool UnloadComponentExtensionIME(Profile* profile,
-                                   const std::string& input_method_id);
 
   // Returns true if |input_method_id| is allowlisted component extension input
   // method.
