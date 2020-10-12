@@ -45,10 +45,6 @@ class InfoBarAndroid : public InfoBar {
   const base::android::JavaRef<jobject>& GetJavaInfoBar();
   bool HasSetJavaInfoBar() const;
 
-  // Tells the Java-side counterpart of this InfoBar to point to the replacement
-  // InfoBar instead of this one.
-  void ReassignJavaInfoBar(InfoBarAndroid* replacement);
-
   int GetInfoBarIdentifier(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
   virtual void OnLinkClicked(JNIEnv* env,

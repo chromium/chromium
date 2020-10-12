@@ -289,9 +289,9 @@ public class TranslateCompactInfoBar extends InfoBar
     }
 
     @Override
-    protected void onNativeDestroyed() {
+    protected void resetNativeInfoBar() {
         mNativeTranslateInfoBarPtr = 0;
-        super.onNativeDestroyed();
+        super.resetNativeInfoBar();
     }
 
     private void closeInfobar(boolean explicitly) {

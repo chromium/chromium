@@ -92,11 +92,12 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
      */
     @CalledByNative
     private final void setNativeInfoBar(long nativeInfoBarPtr) {
+        assert nativeInfoBarPtr != 0;
         mNativeInfoBarPtr = nativeInfoBarPtr;
     }
 
     @CalledByNative
-    protected void onNativeDestroyed() {
+    protected void resetNativeInfoBar() {
         mNativeInfoBarPtr = 0;
     }
 
