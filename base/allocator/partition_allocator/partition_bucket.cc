@@ -240,7 +240,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
       char* super_page = reinterpret_cast<char*>(
           reinterpret_cast<uintptr_t>(ret) & kSuperPageBaseMask);
       char* tag_bitmap = super_page + PartitionPageSize();
-      PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + kActualTagBitmapSize);
+      PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + ActualTagBitmapSize());
       PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
 #endif
       SetSystemPagesAccess(root->next_tag_bitmap_page,
@@ -287,7 +287,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // TODO(tasak): Consider starting the bitmap right after metadata to save
   // space.
   char* tag_bitmap = super_page + PartitionPageSize();
-  char* quarantine_bitmaps = tag_bitmap + kReservedTagBitmapSize;
+  char* quarantine_bitmaps = tag_bitmap + ReservedTagBitmapSize();
   const size_t quarantine_bitmaps_size =
       root->pcscan ? 2 * sizeof(QuarantineBitmap) : 0;
   PA_DCHECK(quarantine_bitmaps_size % PartitionPageSize() == 0);
@@ -317,7 +317,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
       bits::Align(reinterpret_cast<uintptr_t>(
                       PartitionTagPointer(root->next_partition_page)),
                   SystemPageSize()));
-  PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + kActualTagBitmapSize);
+  PA_DCHECK(next_tag_bitmap_page <= tag_bitmap + ActualTagBitmapSize());
   PA_DCHECK(next_tag_bitmap_page > tag_bitmap);
   // |ret| points at the end of the tag bitmap.
   PA_DCHECK(next_tag_bitmap_page <= ret);
@@ -340,9 +340,9 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // TODO(ajwong): Refactor Page Allocator API so the SuperPage comes in
   // decommited initially.
   SetSystemPagesAccess(
-      super_page + PartitionPageSize() + kReservedTagBitmapSize +
+      super_page + PartitionPageSize() + ReservedTagBitmapSize() +
           quarantine_bitmaps_size + total_size,
-      (kSuperPageSize - PartitionPageSize() - kReservedTagBitmapSize -
+      (kSuperPageSize - PartitionPageSize() - ReservedTagBitmapSize() -
        quarantine_bitmaps_size - total_size),
       PageInaccessible);
 

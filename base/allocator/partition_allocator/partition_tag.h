@@ -109,8 +109,8 @@ ALWAYS_INLINE PartitionTag* PartitionTagPointer(void* ptr) {
   // feature, use "offset" to see whether the given ptr is_direct_mapped or not.
   // DirectMap object should cause this PA_DCHECK's failure, as tags aren't
   // currently supported there.
-  PA_DCHECK(offset >= kReservedTagBitmapSize);
-  size_t bitmap_offset = (offset - kReservedTagBitmapSize) >>
+  PA_DCHECK(offset >= ReservedTagBitmapSize());
+  size_t bitmap_offset = (offset - ReservedTagBitmapSize()) >>
                          tag_bitmap::kBytesPerPartitionTagShift
                              << tag_bitmap::kPartitionTagSizeShift;
   return reinterpret_cast<PartitionTag* const>(bitmap_base + bitmap_offset);

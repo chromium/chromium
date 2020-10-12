@@ -561,6 +561,17 @@ struct BASE_EXPORT PartitionRoot {
     return total_size_of_committed_pages;
   }
 
+  ALWAYS_INLINE internal::PartitionTag GetNewPartitionTag() {
+#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
+    auto tag = ++current_partition_tag;
+    tag += !tag;  // Avoid 0.
+    current_partition_tag = tag;
+    return tag;
+#else
+    return 0;
+#endif
+  }
+
  private:
   // Allocates memory, without any cookies / tags.
   //
@@ -578,17 +589,6 @@ struct BASE_EXPORT PartitionRoot {
                                       size_t* allocated_size,
                                       bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  ALWAYS_INLINE internal::PartitionTag GetNewPartitionTag() {
-#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_MTE_CHECKED_PTR
-    auto tag = ++current_partition_tag;
-    tag += !tag;  // Avoid 0.
-    current_partition_tag = tag;
-    return tag;
-#else
-    return 0;
-#endif
-  }
 
   bool ReallocDirectMappedInPlace(internal::PartitionPage<thread_safe>* page,
                                   size_t requested_size)
@@ -707,8 +707,6 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   PA_DCHECK(IsValidPage(page));
 
   if (allow_extras) {
-    size_t allocated_size = page->GetAllocatedSize();
-
     // |ptr| points after the tag and the cookie.
     // The layout is | tag or ref count | cookie | data | cookie |
     //               ^                           ^
@@ -719,6 +717,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
         internal::PartitionPointerAdjustSubtract(true /* allow_extras */, ptr);
 
 #if DCHECK_IS_ON()
+    size_t allocated_size = page->GetAllocatedSize();
+
     void* start_cookie_ptr =
         internal::PartitionCookiePointerAdjustSubtract(ptr);
     void* end_cookie_ptr = internal::PartitionCookiePointerAdjustSubtract(
@@ -730,12 +730,17 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif
 
     if (!page->bucket->is_direct_mapped()) {
-      size_t size_with_no_extras =
-          internal::PartitionSizeAdjustSubtract(true, allocated_size);
+      // PartitionTagIncrementValue and PartitionTagClearValue require that the
+      // size is tag_bitmap::kBytesPerPartitionTag-aligned (currently 16
+      // bytes-aligned) when MTECheckedPtr is enabled. However, allocated_size
+      // may not be aligned for single-slot slot spans. So we need the bucket's
+      // slot_size.
+      size_t slot_size_with_no_extras =
+          internal::PartitionSizeAdjustSubtract(true, page->bucket->slot_size);
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR && MTE_CHECKED_PTR_SET_TAG_AT_FREE
-      internal::PartitionTagIncrementValue(ptr, size_with_no_extras);
+      internal::PartitionTagIncrementValue(ptr, slot_size_with_no_extras);
 #else
-      internal::PartitionTagClearValue(ptr, size_with_no_extras);
+      internal::PartitionTagClearValue(ptr, slot_size_with_no_extras);
 #endif
 
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
@@ -1080,8 +1085,12 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(int flags,
     // Do not set tag for MTECheckedPtr in the set-tag-at-free case.
     // It is set only at Free() time and at slot span allocation time.
 #if !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE
-    size_t slot_size_with_no_extras =
-        internal::PartitionSizeAdjustSubtract(allow_extras, allocated_size);
+    // PartitionTagSetValue requires that the size is
+    // tag_bitmap::kBytesPerPartitionTag-aligned (currently 16 bytes-aligned)
+    // when MTECheckedPtr is enabled. However, allocated_size may not be aligned
+    // for single-slot slot spans. So we need the bucket's slot_size.
+    size_t slot_size_with_no_extras = internal::PartitionSizeAdjustSubtract(
+        allow_extras, buckets[bucket_index].slot_size);
     internal::PartitionTagSetValue(ret, slot_size_with_no_extras,
                                    GetNewPartitionTag());
 #endif  // !ENABLE_TAG_FOR_MTE_CHECKED_PTR || !MTE_CHECKED_PTR_SET_TAG_AT_FREE

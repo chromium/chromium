@@ -192,7 +192,7 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(bool with_pcscan, void* ptr) {
   const auto ptr_as_uint = reinterpret_cast<uintptr_t>(ptr);
   const auto super_page_base = ptr_as_uint & kSuperPageBaseMask;
   const uintptr_t payload_start =
-      super_page_base + PartitionPageSize() + kReservedTagBitmapSize +
+      super_page_base + PartitionPageSize() + ReservedTagBitmapSize() +
       (with_pcscan ? 2 * sizeof(QuarantineBitmap) : 0);
   const uintptr_t payload_end =
       super_page_base + kSuperPageSize - PartitionPageSize();
@@ -394,7 +394,7 @@ ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
   auto* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
                                              kSuperPageBaseMask);
   auto* first_bitmap = reinterpret_cast<QuarantineBitmap*>(
-      super_page + PartitionPageSize() + kReservedTagBitmapSize);
+      super_page + PartitionPageSize() + ReservedTagBitmapSize());
   auto* second_bitmap = first_bitmap + 1;
 
   if (type == QuarantineBitmapType::kScanner)

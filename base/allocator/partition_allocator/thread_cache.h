@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
@@ -169,7 +170,7 @@ class BASE_EXPORT ThreadCache {
   };
 
   // TODO(lizeb): Optimize the threshold.
-#if defined(ARCH_CPU_64_BITS)
+#if defined(ARCH_CPU_64_BITS) || ENABLE_TAG_FOR_MTE_CHECKED_PTR
   static constexpr size_t kBucketCount = 41;
 #else
   static constexpr size_t kBucketCount = 49;

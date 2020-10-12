@@ -417,7 +417,7 @@ TEST_F(PartitionAllocTest, Basic) {
   EXPECT_EQ(kPointerOffset,
             reinterpret_cast<size_t>(ptr) & PartitionPageOffsetMask());
   // Check that the offset appears to include a guard page.
-  EXPECT_EQ(PartitionPageSize() + kPointerOffset + kReservedTagBitmapSize,
+  EXPECT_EQ(PartitionPageSize() + kPointerOffset + ReservedTagBitmapSize(),
             reinterpret_cast<size_t>(ptr) & kSuperPageOffsetMask);
 
   allocator.root()->Free(ptr);
@@ -630,7 +630,7 @@ TEST_F(PartitionAllocTest, MultiPageAllocs) {
   size_t num_pages_per_slot_span = GetNumPagesPerSlotSpan(kTestAllocSize);
   // 1 SuperPage has 2 guard PartitionPages.
   size_t num_slot_span_needed =
-      (NumPartitionPagesPerSuperPage() - kNumPartitionPagesPerTagBitmap - 2) /
+      (NumPartitionPagesPerSuperPage() - NumPartitionPagesPerTagBitmap() - 2) /
       num_pages_per_slot_span;
 
   // This is guaranteed to cross a super page boundary because the first
@@ -659,7 +659,7 @@ TEST_F(PartitionAllocTest, MultiPageAllocs) {
           reinterpret_cast<uintptr_t>(storage_ptr) & kSuperPageOffsetMask;
       EXPECT_FALSE(second_super_page_base == first_super_page_base);
       // Check that we allocated a guard page for the second page.
-      EXPECT_EQ(PartitionPageSize() + kReservedTagBitmapSize,
+      EXPECT_EQ(PartitionPageSize() + ReservedTagBitmapSize(),
                 second_super_page_offset);
     }
   }
@@ -1265,7 +1265,7 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   // The -2 is because the first and last partition pages in a super page are
   // guard pages.
   size_t num_slot_span_needed =
-      (NumPartitionPagesPerSuperPage() - kNumPartitionPagesPerTagBitmap - 2) /
+      (NumPartitionPagesPerSuperPage() - NumPartitionPagesPerTagBitmap() - 2) /
       num_pages_per_slot_span;
   size_t num_partition_pages_needed =
       num_slot_span_needed * num_pages_per_slot_span;
@@ -1283,9 +1283,9 @@ TEST_F(PartitionAllocTest, MappingCollision) {
 
   char* page_base = reinterpret_cast<char*>(
       PartitionRoot<ThreadSafe>::Page::ToPointer(first_super_page_pages[0]));
-  EXPECT_EQ(PartitionPageSize() + kReservedTagBitmapSize,
+  EXPECT_EQ(PartitionPageSize() + ReservedTagBitmapSize(),
             reinterpret_cast<uintptr_t>(page_base) & kSuperPageOffsetMask);
-  page_base -= PartitionPageSize() - kReservedTagBitmapSize;
+  page_base -= PartitionPageSize() - ReservedTagBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   void* map1 = AllocPages(
@@ -1305,9 +1305,9 @@ TEST_F(PartitionAllocTest, MappingCollision) {
 
   page_base = reinterpret_cast<char*>(
       PartitionRoot<ThreadSafe>::Page::ToPointer(second_super_page_pages[0]));
-  EXPECT_EQ(PartitionPageSize() + kReservedTagBitmapSize,
+  EXPECT_EQ(PartitionPageSize() + ReservedTagBitmapSize(),
             reinterpret_cast<uintptr_t>(page_base) & kSuperPageOffsetMask);
-  page_base -= PartitionPageSize() - kReservedTagBitmapSize;
+  page_base -= PartitionPageSize() - ReservedTagBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(page_base - PageAllocationGranularity(),
