@@ -889,6 +889,7 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         }
 
         mInterceptNavigationDelegateClient.destroy();
+        mInterceptNavigationDelegateClient = null;
         mInterceptNavigationDelegate = null;
 
         mInfoBarContainer.destroy();
