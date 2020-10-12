@@ -247,6 +247,8 @@ suite('ScanningAppTest', () => {
               firstCapabilities.sources[0].name, scanningApp.selectedSource);
           assertEquals(
               firstCapabilities.colorModes[0], scanningApp.selectedColorMode);
+          assertEquals(
+              firstCapabilities.resolutions[0], scanningApp.selectedResolution);
 
           // Before the scan button is clicked, the settings and scan button
           // should be enabled, and there should be no scan status.
@@ -257,6 +259,9 @@ suite('ScanningAppTest', () => {
           const colorModeSelect =
               scanningApp.$$('#colorModeSelect').$$('select');
           assertFalse(colorModeSelect.disabled);
+          const resolutionSelect =
+              scanningApp.$$('#resolutionSelect').$$('select');
+          assertFalse(resolutionSelect.disabled);
           const scanButton = scanningApp.$$('#scanButton');
           assertFalse(scanButton.disabled);
           const statusText = scanningApp.$$('#statusText');
@@ -269,6 +274,7 @@ suite('ScanningAppTest', () => {
           assertTrue(scannerSelect.disabled);
           assertTrue(sourceSelect.disabled);
           assertTrue(colorModeSelect.disabled);
+          assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
           assertEquals('Scanning...', statusText.textContent.trim());
           return fakeScanService_.whenCalled('scan');
@@ -280,6 +286,8 @@ suite('ScanningAppTest', () => {
           assertFalse(scanningApp.$$('#scannerSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#sourceSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#colorModeSelect').$$('select').disabled);
+          assertFalse(
+              scanningApp.$$('#resolutionSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#scanButton').disabled);
           assertEquals(
               'Scan complete! File(s) saved to My files.',
@@ -493,6 +501,76 @@ suite('ColorModeSelectTest', () => {
 
     colorModeArr = colorModeArr.concat([ColorMode.GRAYSCALE]);
     colorModeSelect.colorModes = colorModeArr;
+    flush();
+
+    // Verify the dropdown is enabled when there's more than one option.
+    assertEquals(2, select.length);
+    assertFalse(select.disabled);
+  });
+});
+
+suite('ResolutionSelectTest', () => {
+  /** @type {!ResolutionSelectElement} */
+  let resolutionSelect;
+
+  setup(() => {
+    resolutionSelect = document.createElement('resolution-select');
+    assertTrue(!!resolutionSelect);
+    document.body.appendChild(resolutionSelect);
+  });
+
+  teardown(() => {
+    resolutionSelect.remove();
+    resolutionSelect = null;
+  });
+
+  test('initializeResolutionSelect', () => {
+    // Before options are added, the dropdown should be disabled and empty.
+    const select = resolutionSelect.$$('select');
+    assertTrue(!!select);
+    assertTrue(select.disabled);
+    assertEquals(0, select.length);
+
+    const firstResolution = 75;
+    const secondResolution = 300;
+    resolutionSelect.resolutions = [firstResolution, secondResolution];
+    flush();
+
+    // Verify that adding more than one resolution results in the dropdown
+    // becoming enabled with the correct options.
+    assertFalse(select.disabled);
+    assertEquals(2, select.length);
+    assertEquals(
+        firstResolution.toString() + ' dpi',
+        select.options[0].textContent.trim());
+    assertEquals(
+        secondResolution.toString() + ' dpi',
+        select.options[1].textContent.trim());
+    assertEquals(firstResolution.toString(), select.value);
+
+    // Selecting a different option should update the selected value.
+    select.value = secondResolution;
+    select.dispatchEvent(new CustomEvent('change'));
+    flush();
+
+    assertEquals(
+        secondResolution.toString(), resolutionSelect.selectedResolution);
+  });
+
+  test('resolutionSelectDisabled', () => {
+    const select = resolutionSelect.$$('select');
+    assertTrue(!!select);
+
+    let resolutionArr = [75];
+    resolutionSelect.resolutions = resolutionArr;
+    flush();
+
+    // Verify the dropdown is disabled when there's only one option.
+    assertEquals(1, select.length);
+    assertTrue(select.disabled);
+
+    resolutionArr = resolutionArr.concat([150]);
+    resolutionSelect.resolutions = resolutionArr;
     flush();
 
     // Verify the dropdown is enabled when there's more than one option.
