@@ -18,7 +18,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"

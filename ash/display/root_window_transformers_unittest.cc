@@ -17,7 +17,6 @@
 #include "ash/wm/cursor_manager_test_api.h"
 #include "base/command_line.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tracker.h"

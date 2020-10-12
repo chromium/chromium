@@ -8,7 +8,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/views/widget/widget.h"
 

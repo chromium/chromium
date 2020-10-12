@@ -44,7 +44,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"

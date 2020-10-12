@@ -10,7 +10,6 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"

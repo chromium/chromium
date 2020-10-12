@@ -33,7 +33,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"

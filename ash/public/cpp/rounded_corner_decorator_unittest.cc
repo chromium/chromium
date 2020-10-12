@@ -5,7 +5,6 @@
 #include "ash/public/cpp/rounded_corner_decorator.h"
 
 #include "ash/public/cpp/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"

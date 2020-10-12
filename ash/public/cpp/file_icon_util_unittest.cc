@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

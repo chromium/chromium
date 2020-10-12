@@ -20,7 +20,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"

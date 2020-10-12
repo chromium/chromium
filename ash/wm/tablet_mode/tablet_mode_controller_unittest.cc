@@ -43,7 +43,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"

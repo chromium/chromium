@@ -13,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/window_factory.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_tracker.h"
