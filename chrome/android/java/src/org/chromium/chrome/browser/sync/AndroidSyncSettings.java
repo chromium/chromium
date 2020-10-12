@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -226,7 +227,9 @@ public class AndroidSyncSettings {
         if (value == mChromeSyncEnabled || mAccount == null) return;
         mChromeSyncEnabled = value;
 
-        mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mContractAuthority, value);
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mContractAuthority, value);
+        }
         notifyObservers();
     }
 
@@ -243,24 +246,29 @@ public class AndroidSyncSettings {
 
         mIsSyncable = shouldBeSyncable;
 
-        // Make account syncable if there is one.
-        if (shouldBeSyncable) {
-            mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 1);
-            // This reduces unnecessary resource usage. See http://crbug.com/480688 for details.
-            mSyncContentResolverDelegate.removePeriodicSync(
-                    mAccount, mContractAuthority, Bundle.EMPTY);
-        } else if (mAccount != null) {
-            mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 0);
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            // Make account syncable if there is one.
+            if (shouldBeSyncable) {
+                mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 1);
+                // This reduces unnecessary resource usage. See http://crbug.com/480688 for details.
+                mSyncContentResolverDelegate.removePeriodicSync(
+                        mAccount, mContractAuthority, Bundle.EMPTY);
+            } else if (mAccount != null) {
+                mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 0);
+            }
         }
 
         // Disable the syncability of Chrome for all other accounts.
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            for (Account account : accounts) {
-                if (account.equals(mAccount)) continue;
-                if (mSyncContentResolverDelegate.getIsSyncable(account, mContractAuthority) <= 0) {
-                    continue;
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                for (Account account : accounts) {
+                    if (account.equals(mAccount)) continue;
+                    if (mSyncContentResolverDelegate.getIsSyncable(account, mContractAuthority)
+                            <= 0) {
+                        continue;
+                    }
+                    mSyncContentResolverDelegate.setIsSyncable(account, mContractAuthority, 0);
                 }
-                mSyncContentResolverDelegate.setIsSyncable(account, mContractAuthority, 0);
             }
         });
     }
@@ -275,16 +283,19 @@ public class AndroidSyncSettings {
         boolean oldChromeSyncEnabled = mChromeSyncEnabled;
         boolean oldMasterSyncEnabled = mMasterSyncEnabled;
 
-        if (mAccount != null) {
-            mIsSyncable =
-                    mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority) > 0;
-            mChromeSyncEnabled =
-                    mSyncContentResolverDelegate.getSyncAutomatically(mAccount, mContractAuthority);
-        } else {
-            mIsSyncable = false;
-            mChromeSyncEnabled = false;
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            if (mAccount != null) {
+                mIsSyncable =
+                        mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority)
+                        > 0;
+                mChromeSyncEnabled = mSyncContentResolverDelegate.getSyncAutomatically(
+                        mAccount, mContractAuthority);
+            } else {
+                mIsSyncable = false;
+                mChromeSyncEnabled = false;
+            }
+            mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
         }
-        mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
 
         if (mAccount != null && ProfileSyncService.get() != null
                 && ChromeFeatureList.isEnabled(
