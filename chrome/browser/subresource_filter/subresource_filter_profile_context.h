@@ -10,14 +10,19 @@
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
+class HostContentSettingsMap;
 class SubresourceFilterContentSettingsManager;
 class AdsInterventionManager;
+
+namespace history {
+class HistoryService;
+}
 
 // This class holds profile scoped context for subresource filtering.
 class SubresourceFilterProfileContext : public KeyedService {
  public:
-  explicit SubresourceFilterProfileContext(Profile* profile);
+  SubresourceFilterProfileContext(HostContentSettingsMap* settings_map,
+                                  history::HistoryService* history_service);
   ~SubresourceFilterProfileContext() override;
 
   SubresourceFilterContentSettingsManager* settings_manager() {

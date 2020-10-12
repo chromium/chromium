@@ -8,9 +8,12 @@
 #include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
 
 SubresourceFilterProfileContext::SubresourceFilterProfileContext(
-    Profile* profile)
+    HostContentSettingsMap* settings_map,
+    history::HistoryService* history_service)
     : settings_manager_(
-          std::make_unique<SubresourceFilterContentSettingsManager>(profile)),
+          std::make_unique<SubresourceFilterContentSettingsManager>(
+              settings_map,
+              history_service)),
       ads_intervention_manager_(
           std::make_unique<AdsInterventionManager>(settings_manager_.get())) {}
 

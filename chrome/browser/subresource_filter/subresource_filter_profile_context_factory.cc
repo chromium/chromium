@@ -5,6 +5,8 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
@@ -27,11 +29,19 @@ SubresourceFilterProfileContextFactory::GetInstance() {
 SubresourceFilterProfileContextFactory::SubresourceFilterProfileContextFactory()
     : BrowserContextKeyedServiceFactory(
           "SubresourceFilterProfileContext",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
+}
 
 KeyedService* SubresourceFilterProfileContextFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new SubresourceFilterProfileContext(static_cast<Profile*>(profile));
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  return new SubresourceFilterProfileContext(
+      HostContentSettingsMapFactory::GetForProfile(profile),
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS));
 }
 
 content::BrowserContext*

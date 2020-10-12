@@ -18,11 +18,14 @@
 
 class GURL;
 class HostContentSettingsMap;
-class Profile;
 
 namespace base {
 class DictionaryValue;
 }  // namespace base
+
+namespace history {
+class HistoryService;
+}
 
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
@@ -65,7 +68,9 @@ class DictionaryValue;
 class SubresourceFilterContentSettingsManager
     : public history::HistoryServiceObserver {
  public:
-  explicit SubresourceFilterContentSettingsManager(Profile* profile);
+  SubresourceFilterContentSettingsManager(
+      HostContentSettingsMap* settings_map,
+      history::HistoryService* history_service);
   ~SubresourceFilterContentSettingsManager() override;
 
   ContentSetting GetSitePermission(const GURL& url) const;

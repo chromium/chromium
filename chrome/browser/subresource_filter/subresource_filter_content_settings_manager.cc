@@ -10,9 +10,6 @@
 #include "base/check.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_constraints.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -43,16 +40,15 @@ constexpr base::TimeDelta
     SubresourceFilterContentSettingsManager::kMaxPersistMetadataDuration;
 
 SubresourceFilterContentSettingsManager::
-    SubresourceFilterContentSettingsManager(Profile* profile)
-    : settings_map_(HostContentSettingsMapFactory::GetForProfile(profile)),
+    SubresourceFilterContentSettingsManager(
+        HostContentSettingsMap* settings_map,
+        history::HistoryService* history_service)
+    : settings_map_(settings_map),
       clock_(std::make_unique<base::DefaultClock>(base::DefaultClock())),
       should_use_smart_ui_(ShouldUseSmartUI()) {
-  DCHECK(profile);
   DCHECK(settings_map_);
-  if (auto* history_service = HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS)) {
+  if (history_service)
     history_observer_.Add(history_service);
-  }
 }
 
 SubresourceFilterContentSettingsManager::
