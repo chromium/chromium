@@ -1481,7 +1481,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (NSNumber*)index {
   if (![self instanceActive])
     return nil;
-  if ([self internalRole] == ax::mojom::Role::kColumn) {
+
+  if ([self internalRole] == ax::mojom::Role::kTreeItem) {
+    return [self treeItemRowIndex];
+  } else if ([self internalRole] == ax::mojom::Role::kColumn) {
     DCHECK(_owner->node());
     base::Optional<int> col_index = *_owner->node()->GetTableColColIndex();
     if (col_index)
@@ -1494,6 +1497,56 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   }
 
   return nil;
+}
+
+- (NSNumber*)treeItemRowIndex {
+  if (![self instanceActive])
+    return nil;
+
+  DCHECK([self internalRole] == ax::mojom::Role::kTreeItem);
+  DCHECK([[self role] isEqualToString:NSAccessibilityRowRole]);
+
+  // First find an ancestor that establishes this tree or treegrid. We
+  // will search in this ancestor to calculate our row index.
+  BrowserAccessibility* container = [self owner]->PlatformGetParent();
+  while (container && container->GetRole() != ax::mojom::Role::kTree &&
+         container->GetRole() != ax::mojom::Role::kTreeGrid) {
+    container = container->PlatformGetParent();
+  }
+  if (!container)
+    return nil;
+
+  const BrowserAccessibilityCocoa* cocoaContainer =
+      ToBrowserAccessibilityCocoa(container);
+  int currentIndex = 0;
+  if ([cocoaContainer findRowIndex:self withCurrentIndex:&currentIndex]) {
+    return @(currentIndex);
+  }
+
+  return nil;
+}
+
+- (bool)findRowIndex:(BrowserAccessibilityCocoa*)toFind
+    withCurrentIndex:(int*)currentIndex {
+  if (![self instanceActive])
+    return false;
+
+  DCHECK([[toFind role] isEqualToString:NSAccessibilityRowRole]);
+  for (BrowserAccessibilityCocoa* childToCheck in [self children]) {
+    if ([toFind isEqual:childToCheck]) {
+      return true;
+    }
+
+    if ([[childToCheck role] isEqualToString:NSAccessibilityRowRole]) {
+      ++(*currentIndex);
+    }
+
+    if ([childToCheck findRowIndex:toFind withCurrentIndex:currentIndex]) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 - (NSNumber*)insertionPointLineNumber {
@@ -3409,12 +3462,15 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       container = container->PlatformGetParent();
     if ([subrole isEqualToString:NSAccessibilityOutlineRowSubrole] ||
         (container && container->GetRole() == ax::mojom::Role::kTreeGrid)) {
+      // clang-format off
       [ret addObjectsFromArray:@[
-        NSAccessibilityDisclosingAttribute,
+        NSAccessibilityIndexAttribute,
         NSAccessibilityDisclosedByRowAttribute,
-        NSAccessibilityDisclosureLevelAttribute,
-        NSAccessibilityDisclosedRowsAttribute
+        NSAccessibilityDisclosedRowsAttribute,
+        NSAccessibilityDisclosingAttribute,
+        NSAccessibilityDisclosureLevelAttribute
       ]];
+      // clang-format on
     } else {
       [ret addObjectsFromArray:@[ NSAccessibilityIndexAttribute ]];
     }

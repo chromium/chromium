@@ -113,6 +113,11 @@ id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
 - (NSAttributedString*)attributedValueForRange:(NSRange)range;
 - (NSRect)frameForRange:(NSRange)range;
 
+// Find the index of the given row among the descendants of this object
+// or return nil if this row is not found.
+- (bool)findRowIndex:(BrowserAccessibilityCocoa*)toFind
+    withCurrentIndex:(int*)currentIndex;
+
 // Internally-used property.
 @property(nonatomic, readonly) NSPoint origin;
 
@@ -149,6 +154,7 @@ id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
 @property(nonatomic, readonly, getter=isIgnored) BOOL ignored;
 // Index of a row, column, or tree item.
 @property(nonatomic, readonly) NSNumber* index;
+@property(nonatomic, readonly) NSNumber* treeItemRowIndex;
 @property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
 @property(nonatomic, readonly) NSString* invalid;
 @property(nonatomic, readonly) NSNumber* isMultiSelectable;
