@@ -30,6 +30,12 @@ SANDBOX_POLICY_EXPORT extern const base::Feature kGpuLPAC;
 SANDBOX_POLICY_EXPORT extern const base::Feature kXRSandbox;
 #endif  // !defined(OS_ANDROID)
 
+#if defined(OS_CHROMEOS)
+SANDBOX_POLICY_EXPORT extern const base::Feature kSpectreVariant2Mitigation;
+SANDBOX_POLICY_EXPORT extern const base::Feature
+    kForceSpectreVariant2Mitigation;
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace features
 }  // namespace policy
 }  // namespace sandbox

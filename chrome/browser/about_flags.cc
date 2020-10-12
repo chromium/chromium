@@ -3619,9 +3619,17 @@ const FeatureEntry kFeatureEntries[] = {
     {"files-unified-media-view", flag_descriptions::kUnifiedMediaViewName,
      flag_descriptions::kUnifiedMediaViewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kUnifiedMediaView)},
+    {"force-spectre-v2-mitigation",
+     flag_descriptions::kForceSpectreVariant2MitigationName,
+     flag_descriptions::kForceSpectreVariant2MitigationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         sandbox::policy::features::kForceSpectreVariant2Mitigation)},
     {"smbfs-file-shares", flag_descriptions::kSmbfsFileSharesName,
      flag_descriptions::kSmbfsFileSharesName, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kSmbFs)},
+    {"spectre-v2-mitigation", flag_descriptions::kSpectreVariant2MitigationName,
+     flag_descriptions::kSpectreVariant2MitigationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(sandbox::policy::features::kSpectreVariant2Mitigation)},
 #endif  // OS_CHROMEOS
 
 #if defined(OS_WIN)

@@ -2146,6 +2146,9 @@ extern const char kCryptAuthV2EnrollmentDescription[];
 extern const char kDisableCameraFrameRotationAtSourceName[];
 extern const char kDisableCameraFrameRotationAtSourceDescription[];
 
+extern const char kForceSpectreVariant2MitigationName[];
+extern const char kForceSpectreVariant2MitigationDescription[];
+
 extern const char kDisableCancelAllTouchesName[];
 extern const char kDisableCancelAllTouchesDescription[];
 
@@ -2497,6 +2500,9 @@ extern const char kSmartTextSelectionDescription[];
 
 extern const char kSmbfsFileSharesName[];
 extern const char kSmbfsFileSharesDescription[];
+
+extern const char kSpectreVariant2MitigationName[];
+extern const char kSpectreVariant2MitigationDescription[];
 
 extern const char kSplitSettingsSyncName[];
 extern const char kSplitSettingsSyncDescription[];
