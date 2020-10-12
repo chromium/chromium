@@ -1248,12 +1248,12 @@ bool BookmarkFaviconLoadedChecker::IsExitConditionSatisfied(std::ostream* os) {
 ServerBookmarksEqualityChecker::ServerBookmarksEqualityChecker(
     syncer::ProfileSyncService* service,
     fake_server::FakeServer* fake_server,
-    const std::vector<ExpectedBookmark>& expected_bookmarks,
+    std::vector<ExpectedBookmark> expected_bookmarks,
     syncer::Cryptographer* cryptographer)
     : SingleClientStatusChangeChecker(service),
       fake_server_(fake_server),
       cryptographer_(cryptographer),
-      expected_bookmarks_(expected_bookmarks) {}
+      expected_bookmarks_(std::move(expected_bookmarks)) {}
 
 bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
     std::ostream* os) {
@@ -1293,6 +1293,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
                      [actual_specifics](const ExpectedBookmark& bookmark) {
                        return actual_specifics.legacy_canonicalized_title() ==
                                   bookmark.title &&
+                              actual_specifics.full_title() == bookmark.title &&
                               actual_specifics.url() == bookmark.url;
                      });
     if (it != expected.end()) {
