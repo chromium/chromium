@@ -22,6 +22,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -264,7 +265,10 @@ class USBDeviceImplTest : public testing::Test {
   void OpenMockHandle(UsbDevice::OpenCallback& callback) {
     EXPECT_FALSE(is_device_open_);
     is_device_open_ = true;
-    std::move(callback).Run(mock_handle_);
+    // Simulate the asynchronous device opening process.
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mock_handle_),
+        base::TimeDelta::FromMilliseconds(1));
   }
 
   void CloseMockHandle() {
@@ -514,17 +518,39 @@ TEST_F(USBDeviceImplTest, OpenFailure) {
       GetMockDeviceProxy(device_client.CreateInterfacePtrAndBind());
 
   EXPECT_CALL(mock_device(), OpenInternal(_))
-      .WillOnce(Invoke([](UsbDevice::OpenCallback& callback) {
+      .WillOnce([](UsbDevice::OpenCallback& callback) {
         std::move(callback).Run(nullptr);
-      }));
+      });
   EXPECT_CALL(device_client, OnDeviceOpened()).Times(0);
   EXPECT_CALL(device_client, OnDeviceClosed()).Times(0);
 
-  base::RunLoop loop;
-  device->Open(base::BindOnce(&ExpectOpenAndThen,
-                              mojom::UsbOpenDeviceError::ACCESS_DENIED,
-                              loop.QuitClosure()));
-  loop.Run();
+  {
+    base::RunLoop loop;
+    device->Open(
+        base::BindLambdaForTesting([&](mojom::UsbOpenDeviceError result) {
+          EXPECT_EQ(result, mojom::UsbOpenDeviceError::ACCESS_DENIED);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  // A second attempt can succeed.
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+  EXPECT_CALL(device_client, OnDeviceOpened());
+  EXPECT_CALL(device_client, OnDeviceClosed());
+
+  {
+    base::RunLoop loop;
+    device->Open(
+        base::BindLambdaForTesting([&](mojom::UsbOpenDeviceError result) {
+          EXPECT_EQ(result, mojom::UsbOpenDeviceError::OK);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  device.reset();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
@@ -546,6 +572,24 @@ TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
   base::RunLoop().RunUntilIdle();
 
   std::move(saved_callback).Run(nullptr);
+}
+
+TEST_F(USBDeviceImplTest, MultipleOpenNotAllowed) {
+  MockUsbDeviceClient device_client;
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxy(device_client.CreateInterfacePtrAndBind());
+
+  base::RunLoop loop;
+  device->Open(
+      base::BindLambdaForTesting([&](mojom::UsbOpenDeviceError result) {
+        EXPECT_EQ(result, mojom::UsbOpenDeviceError::OK);
+      }));
+  device->Open(
+      base::BindLambdaForTesting([&](mojom::UsbOpenDeviceError result) {
+        EXPECT_EQ(result, mojom::UsbOpenDeviceError::ALREADY_OPEN);
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 TEST_F(USBDeviceImplTest, Close) {
