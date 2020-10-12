@@ -7,7 +7,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,7 +41,7 @@ class ClearBrowsingDataHandlerBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
   ClearBrowsingDataHandlerBrowserTest() = default;
-  ~ClearBrowsingDataHandlerBrowserTest() = default;
+  ~ClearBrowsingDataHandlerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -79,7 +78,7 @@ class ClearBrowsingDataHandlerBrowserTest
   content::TestWebUI web_ui_;
 };
 
-IN_PROC_BROWSER_TEST_P(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
+IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
   GURL url(https_server()->GetURL("/"));
   InstallAndLaunchApp(url);
   base::ListValue args;
@@ -98,11 +97,5 @@ IN_PROC_BROWSER_TEST_P(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
   auto& installed_app = result.back();
   ASSERT_EQ(url.host(), *(installed_app.FindStringKey("registerableDomain")));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClearBrowsingDataHandlerBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
 
 }  // namespace settings

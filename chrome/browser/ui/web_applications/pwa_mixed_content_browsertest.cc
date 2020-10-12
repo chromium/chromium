@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -99,7 +98,7 @@ class PWAMixedContentBrowserTestWithAutoupgradesDisabled
 
 // Tests that creating a shortcut app but not installing a PWA is available for
 // a non-installable site.
-IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTest,
+IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest,
                        ShortcutMenuOptionsForNonInstallableSite) {
   EXPECT_FALSE(
       NavigateAndAwaitInstallabilityCheck(browser(), GetMixedContentAppURL()));
@@ -109,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTest,
 }
 
 // Tests that mixed content is loaded inside PWA windows.
-IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
+IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
                        MixedContentInPWA) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -122,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
 // Tests that when calling OpenInChrome, mixed content can be loaded in the new
 // tab.
-IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
+IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
                        MixedContentOpenInChrome) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -159,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
 // Tests that when calling ReparentWebContentsIntoAppBrowser, mixed
 // content cannot be loaded in the new app window.
-IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
+IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
                        MixedContentReparentWebContentsIntoAppBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -198,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 }
 
 // Tests that mixed content is not loaded inside iframes in PWA windows.
-IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTest, IFrameMixedContentInPWA) {
+IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest, IFrameMixedContentInPWA) {
   const GURL app_url = GetSecureIFrameAppURL();
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
@@ -208,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTest, IFrameMixedContentInPWA) {
 
 // Tests that iframes can't dynamically load mixed content in a PWA window, when
 // the iframe was created in a regular tab.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PWAMixedContentBrowserTestWithAutoupgradesDisabled,
     IFrameDynamicMixedContentInPWAReparentWebContentsIntoAppBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -242,7 +241,7 @@ IN_PROC_BROWSER_TEST_P(
 #define MAYBE_IFrameDynamicMixedContentInPWAOpenInChrome \
   IFrameDynamicMixedContentInPWAOpenInChrome
 #endif
-IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
+IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
                        MAYBE_IFrameDynamicMixedContentInPWAOpenInChrome) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -261,17 +260,5 @@ IN_PROC_BROWSER_TEST_P(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
   CheckMixedContentLoaded(browser());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PWAMixedContentBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PWAMixedContentBrowserTestWithAutoupgradesDisabled,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

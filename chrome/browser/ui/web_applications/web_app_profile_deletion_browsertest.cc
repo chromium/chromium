@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_registrar.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
@@ -35,7 +34,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppProfileDeletionBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
                        AppRegistrarNotifiesProfileDeletion) {
   GURL app_url(GetInstallableAppURL());
   const AppId app_id = InstallPWA(app_url);
@@ -45,17 +44,8 @@ IN_PROC_BROWSER_TEST_P(WebAppProfileDeletionBrowserTest,
   observer.SetWebAppProfileWillBeDeletedDelegate(
       base::BindLambdaForTesting([&](const AppId& app_to_be_uninstalled) {
         EXPECT_EQ(app_to_be_uninstalled, app_id);
-
-        if (GetParam() == ProviderType::kWebApps) {
-          EXPECT_TRUE(registrar().IsInstalled(app_id));
-          EXPECT_TRUE(registrar().AsWebAppRegistrar()->GetAppById(app_id));
-        } else if (GetParam() == ProviderType::kBookmarkApps) {
-          // IsInstalled() returns false here. This is a legacy behavior for
-          // bookmark apps:
-          EXPECT_FALSE(registrar().IsInstalled(app_id));
-          EXPECT_TRUE(
-              registrar().AsBookmarkAppRegistrar()->FindExtension(app_id));
-        }
+        EXPECT_TRUE(registrar().IsInstalled(app_id));
+        EXPECT_TRUE(registrar().AsWebAppRegistrar()->GetAppById(app_id));
 
         run_loop.Quit();
       }));
@@ -64,17 +54,7 @@ IN_PROC_BROWSER_TEST_P(WebAppProfileDeletionBrowserTest,
   run_loop.Run();
 
   EXPECT_FALSE(registrar().IsInstalled(app_id));
-  if (GetParam() == ProviderType::kWebApps) {
-    EXPECT_FALSE(registrar().AsWebAppRegistrar()->GetAppById(app_id));
-  } else if (GetParam() == ProviderType::kBookmarkApps) {
-    EXPECT_FALSE(registrar().AsBookmarkAppRegistrar()->FindExtension(app_id));
-  }
+  EXPECT_FALSE(registrar().AsWebAppRegistrar()->GetAppById(app_id));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppProfileDeletionBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

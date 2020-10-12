@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -71,7 +70,7 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        NonInstalledWebApp_RecordsDailyInteraction) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -104,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
       entry, UkmEntry::kNumSessionsName));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        InstalledWebAppInTab_RecordsDailyInteraction) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -146,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
       entry, UkmEntry::kNumSessionsName));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     WebAppMetricsBrowserTest,
     InstalledWebAppInWindow_RecordsDailyInteractionWithSessionDurations) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -189,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(
                                                  UkmEntry::kNumSessionsName, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest, NonWebApp_RecordsNothing) {
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, NonWebApp_RecordsNothing) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   NavigateAndAwaitInstallabilityCheck(browser(), GetNonWebAppUrl());
@@ -200,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest, NonWebApp_RecordsNothing) {
   ASSERT_EQ(entries.size(), 0U);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        NavigationsWithinInstalledWebApp_RecordsOneSession) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -219,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
   EXPECT_THAT(metrics, Contains(Pair(UkmEntry::kNumSessionsNameHash, 1)));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        InstalledWebApp_RecordsTimeAndSessions) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   AppId app_id = InstallWebApp();
@@ -276,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
 // Verify that the behavior with multiple web app instances is as expected, even
 // though that behavior isn't completely accurate in recording time
 // (crbug.com/1081187).
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        MultipleWebAppInstances_StillRecordsTime) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   AppId app_id = InstallWebApp();
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
               Not(Contains(Key(UkmEntry::kBackgroundDurationNameHash))));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
                        InstalledWebApp_RecordsZeroTimeIfOverLimit) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   AppId app_id = InstallWebApp();
@@ -377,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest,
   EXPECT_THAT(metrics, Contains(Pair(UkmEntry::kNumSessionsNameHash, 1)));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   AppId app_id = InstallWebApp();
   Browser* app_browser;
@@ -427,11 +426,5 @@ IN_PROC_BROWSER_TEST_P(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
       entry, UkmEntry::kBackgroundDurationName));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppMetricsBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

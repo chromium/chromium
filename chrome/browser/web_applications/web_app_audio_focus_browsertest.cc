@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -88,7 +87,7 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
+IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL(kAudioFocusTestPageURL);
 
@@ -173,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
+IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL(kAudioFocusTestPageURL);
 
@@ -186,11 +185,5 @@ IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
 
   EXPECT_EQ(base::UnguessableToken::Null(), GetAudioFocusGroupId(web_contents));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppAudioFocusBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

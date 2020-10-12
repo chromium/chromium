@@ -15,7 +15,6 @@
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -48,7 +47,7 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
 };
 
 // Tests that app windows are restored in a tab if the app is uninstalled.
-IN_PROC_BROWSER_TEST_P(WebAppUninstallBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
                        RestoreAppWindowForUninstalledApp) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
@@ -78,7 +77,7 @@ IN_PROC_BROWSER_TEST_P(WebAppUninstallBrowserTest,
 }
 
 // Check that uninstalling a PWA with a window opened doesn't crash.
-IN_PROC_BROWSER_TEST_P(WebAppUninstallBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
                        UninstallPwaWithWindowOpened) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -94,7 +93,7 @@ IN_PROC_BROWSER_TEST_P(WebAppUninstallBrowserTest,
 }
 
 // PWAs moved to tabbed browsers should not get closed when uninstalled.
-IN_PROC_BROWSER_TEST_P(WebAppUninstallBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
                        UninstallPwaWithWindowMovedToTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -119,11 +118,5 @@ IN_PROC_BROWSER_TEST_P(WebAppUninstallBrowserTest,
                 ->GetLastCommittedURL(),
             GetSecureAppURL());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppUninstallBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         ProviderTypeParamToString);
 
 }  // namespace web_app

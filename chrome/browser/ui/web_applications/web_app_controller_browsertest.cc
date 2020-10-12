@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -98,15 +97,8 @@ base::Optional<AppId> WebAppControllerBrowserTestBase::FindAppWithUrlInScope(
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-  if (GetParam() == ProviderType::kWebApps) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsWithoutExtensions},
-        {predictors::kSpeculativePreconnectFeature});
-  } else {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kDesktopPWAsWithoutExtensions,
-             predictors::kSpeculativePreconnectFeature});
-  }
+  scoped_feature_list_.InitAndDisableFeature(
+      predictors::kSpeculativePreconnectFeature);
 }
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;

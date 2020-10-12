@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -153,7 +152,7 @@ class ImmersiveModeControllerAshWebAppBrowserTest
 
 // Test the layout and visibility of the TopContainerView and web contents when
 // a web app is put into immersive fullscreen.
-IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest, Layout) {
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest, Layout) {
   LaunchAppBrowser();
   TabStrip* tabstrip = browser_view()->tabstrip();
   ToolbarView* toolbar = browser_view()->toolbar();
@@ -214,7 +213,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest, Layout) {
 // autohidden in tablet mode).
 
 // Crashes on Linux Chromium OS ASan LSan Tests.  http://crbug.com/1091606
-IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
                        DISABLED_ImmersiveModeStatusTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
@@ -265,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
 
 // Verify that the frame layout is as expected when using immersive mode in
 // tablet mode.
-IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
                        FrameLayoutToggleTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
@@ -304,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
 
 // Verify that the frame layout for new windows is as expected when using
 // immersive mode in tablet mode.
-IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
                        FrameLayoutStartInTabletMode) {
   // Start in tablet mode
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
@@ -338,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
 // but still drawn. In this case, we should have a null anchor view so that the
 // bubble gets placed in the default top left corner. Regression test for
 // https://crbug.com/1087143.
-IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
                        PermissionsBubbleAnchor) {
   LaunchAppBrowser();
   auto test_api =
@@ -382,9 +381,3 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerAshWebAppBrowserTest,
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   EXPECT_FALSE(bubble_dialog->GetAnchorView());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ImmersiveModeControllerAshWebAppBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);

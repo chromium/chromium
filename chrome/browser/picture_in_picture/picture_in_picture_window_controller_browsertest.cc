@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,7 +63,6 @@
 #endif
 
 using ::testing::_;
-using web_app::ProviderType;
 
 namespace {
 
@@ -2544,7 +2542,7 @@ class WebAppPictureInPictureWindowControllerBrowserTest
 };
 
 // Show/hide pwa page and check that Auto Picture-in-Picture is triggered.
-IN_PROC_BROWSER_TEST_P(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPicture) {
   InstallAndLaunchPWA(main_url());
   bool result = false;
@@ -2572,7 +2570,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPictureInPictureWindowControllerBrowserTest,
 
 // Show pwa page and check that Auto Picture-in-Picture is not triggered if
 // document is not inside the scope specified in the Web App Manifest.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredIfDocumentNotInWebAppScope) {
   // We open a web app with a different scope
@@ -2605,7 +2603,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Show pwa page and check that Auto Picture-in-Picture is not triggered if
 // video is not playing.
-IN_PROC_BROWSER_TEST_P(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureNotTriggeredIfVideoNotPlaying) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(content::ExecuteScript(web_contents(),
@@ -2631,7 +2629,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPictureInPictureWindowControllerBrowserTest,
 
 // Check that Auto Picture-in-Picture is not triggered if there's already a
 // video in Picture-in-Picture.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureWhenPictureInPictureWindowAlreadyVisible) {
   InstallAndLaunchPWA(main_url());
@@ -2668,7 +2666,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Check that video does not leave Picture-in-Picture automatically when it
 // doesn't have the Auto Picture-in-Picture attribute set.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
   InstallAndLaunchPWA(main_url());
@@ -2709,7 +2707,7 @@ IN_PROC_BROWSER_TEST_P(
 // TODO(http://crbug/1001249): flaky.
 // Check that Auto Picture-in-Picture applies only to the video element whose
 // autoPictureInPicture attribute was set most recently
-IN_PROC_BROWSER_TEST_P(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
                        DISABLED_AutoPictureInPictureAttributeApplies) {
   InstallAndLaunchPWA(main_url());
   bool result = false;
@@ -2788,7 +2786,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPictureInPictureWindowControllerBrowserTest,
 
 // Check that video does not leave Picture-in-Picture automatically when it
 // not the most recent element with the Auto Picture-in-Picture attribute set.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNotEnteredAutoPictureInPicture) {
   InstallAndLaunchPWA(main_url());
@@ -2831,7 +2829,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Check that video with no audio that is paused when hidden is still eligible
 // to enter Auto Picture-in-Picture and resumes playback.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureTriggeredOnPageHiddenIfVideoPausedWhenHidden) {
   InstallAndLaunchPWA(main_url());
@@ -3016,9 +3014,3 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
             content::TitleWatcher(active_web_contents, expected_title)
                 .WaitAndGetTitle());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppPictureInPictureWindowControllerBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);

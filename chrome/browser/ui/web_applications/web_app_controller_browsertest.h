@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/web_application_info.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -28,8 +27,6 @@ namespace web_app {
 class WebAppProviderBase;
 
 // Base class for tests of user interface support for web applications.
-// ProviderType selects between use of BMO web apps and
-// Extensions-based bookmark apps.
 class WebAppControllerBrowserTestBase
     : public extensions::ExtensionBrowserTest {
  public:
@@ -67,12 +64,10 @@ class WebAppControllerBrowserTestBase
   base::Optional<AppId> FindAppWithUrlInScope(const GURL& url);
 };
 
-class WebAppControllerBrowserTest
-    : public WebAppControllerBrowserTestBase,
-      public ::testing::WithParamInterface<ProviderType> {
+class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {
  public:
   WebAppControllerBrowserTest();
-  ~WebAppControllerBrowserTest() = 0;
+  ~WebAppControllerBrowserTest() override = 0;
 
   // ExtensionBrowserTest:
   void SetUp() override;

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -67,12 +66,12 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
 };
 
 // Test that the web app menu button opens a menu on click.
-IN_PROC_BROWSER_TEST_P(WebAppAshInteractiveUITest, MenuButtonClickable) {
+IN_PROC_BROWSER_TEST_F(WebAppAshInteractiveUITest, MenuButtonClickable) {
   CheckWebAppMenuClickable();
 }
 
 // Test that the web app menu button opens a menu on click in immersive mode.
-IN_PROC_BROWSER_TEST_P(WebAppAshInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(WebAppAshInteractiveUITest,
                        ImmersiveMenuButtonClickable) {
   FullscreenNotificationObserver waiter(browser());
   chrome::ToggleFullscreenMode(browser());
@@ -84,9 +83,3 @@ IN_PROC_BROWSER_TEST_P(WebAppAshInteractiveUITest,
 
   CheckWebAppMenuClickable();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppAshInteractiveUITest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);

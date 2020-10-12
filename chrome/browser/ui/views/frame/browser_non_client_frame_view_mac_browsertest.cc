@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -26,8 +25,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/gurl.h"
-
-using web_app::ProviderType;
 
 namespace {
 
@@ -75,7 +72,7 @@ class BrowserNonClientFrameViewMacBrowserTest
   ~BrowserNonClientFrameViewMacBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
   const GURL start_url = GetInstallableAppURL();
@@ -120,7 +117,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
 
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest,
                        ToolbarLayoutFullscreenTransition) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
@@ -154,9 +151,3 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewMacBrowserTest,
   // invalidation.
   EXPECT_TRUE(frame_view_test_api.needs_layout());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BrowserNonClientFrameViewMacBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);

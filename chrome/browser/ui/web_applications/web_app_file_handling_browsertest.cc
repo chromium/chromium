@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/web_application_info.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/test/browser_test.h"
@@ -214,7 +213,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithNoFiles) {
   InstallFileHandlingPWA();
   content::WebContents* web_contents =
@@ -222,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParams) {
   InstallFileHandlingPWA();
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
@@ -235,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
             content::EvalJs(web_contents, "window.launchParams.files[0].name"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParamsInTab) {
   InstallFileHandlingPWA();
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
@@ -249,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
             content::EvalJs(web_contents, "window.launchParams.files[0].name"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsDispatchOnCorrectFileHandlingURL) {
   InstallFileHandlingPWA();
 
@@ -313,7 +312,7 @@ class WebAppFileHandlingOriginTrialBrowserTest
   FakeFileHandlingExpiryService file_handling_expiry_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        FileHandlingIsNotAvailableUntilOriginTrialIsChecked) {
   InstallFileHandlingPWA();
 
@@ -330,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
   EXPECT_TRUE(file_handler_manager().AreFileHandlersEnabled(app_id()));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        FileHandlingOriginTrialIsCheckedAtInstallation) {
   // Navigate to the app's launch url, so the origin trial token can be checked.
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -345,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
   EXPECT_TRUE(file_handler_manager().AreFileHandlersEnabled(app_id()));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        WhenOriginTrialHasExpiredFileHandlersAreNotAvailable) {
   InstallFileHandlingPWA();
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -363,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
 // Tests that expired file handlers are cleaned up.
 // Part 1: Install a file handling app and set it's expiry time to some time in
 // the past.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        PRE_ExpiredTrialHandlersAreCleanedUpAtLaunch) {
   InstallFileHandlingPWA();
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -376,14 +375,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
 }
 
 // Part 2: Test that expired file handlers for an app are cleaned up.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        ExpiredTrialHandlersAreCleanedUpAtLaunch) {
   EXPECT_EQ(1, file_handler_manager().TriggerFileHandlerCleanupForTesting());
 }
 
 // Tests that non expired file handlers are not cleaned up.
 // Part 1: Install an app with valid file handlers.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        PRE_ValidFileHandlerAreNotCleanedUpAtLaunch) {
   InstallFileHandlingPWA();
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -391,12 +390,12 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
 }
 
 // Part 2: Test that expired file handlers for an app are cleaned up.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        ValidFileHandlerAreNotCleanedUpAtLaunch) {
   EXPECT_EQ(0, file_handler_manager().TriggerFileHandlerCleanupForTesting());
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        DisableForceEnabledFileHandlingOriginTrial) {
   InstallFileHandlingPWA();
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -418,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
   EXPECT_EQ(nullptr, file_handler_manager().GetEnabledFileHandlers(app_id()));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        ForceEnabledFileHandling_IgnoreExpiryTimeUpdate) {
   InstallFileHandlingPWA();
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -445,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
   EXPECT_TRUE(file_handler_manager().GetEnabledFileHandlers(app_id()));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
                        ForceEnabledFileHandling_IgnoreExpiryTimeInflightIPC) {
   InstallFileHandlingPWA();
   SetUpInterceptorNavigateToAppAndMaybeWait();
@@ -543,7 +542,7 @@ class WebAppFileHandlingOriginTrialTest
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        LaunchParamsArePassedCorrectly) {
   GURL start_url;
   const web_app::AppId app_id = InstallFileHandlingWebApp(&start_url);
@@ -563,7 +562,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
 // End-to-end test to ensure the file handler is registered on ChromeOS when the
 // extension system is initialized. Gives more coverage than the unit tests for
 // web_file_tasks.cc.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        IsFileHandlerOnChromeOS) {
   const web_app::AppId app_id = InstallFileHandlingWebApp();
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
@@ -580,7 +579,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
 // Ensures correct behavior for files on "special volumes", such as file systems
 // provided by extensions. These do not have local files (i.e. backed by
 // inodes).
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        NotHandlerForNonNativeFiles) {
   const web_app::AppId app_id = InstallFileHandlingWebApp();
   base::WeakPtr<file_manager::Volume> fsp_volume =
@@ -600,21 +599,3 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingOriginTrialTest,
 }
 
 #endif  // OS_CHROMEOS
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppFileHandlingBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppFileHandlingOriginTrialBrowserTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppFileHandlingOriginTrialTest,
-                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                                           web_app::ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
