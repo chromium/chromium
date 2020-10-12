@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("messaging") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "blink_cloneable_message.cc",
     "blink_cloneable_message.h",

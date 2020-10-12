@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("streams") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "byte_length_queuing_strategy.cc",
     "byte_length_queuing_strategy.h",

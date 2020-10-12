@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("fullscreen") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "document_fullscreen.cc",
     "document_fullscreen.h",

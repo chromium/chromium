@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("events") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "after_print_event.h",
     "animation_event.cc",

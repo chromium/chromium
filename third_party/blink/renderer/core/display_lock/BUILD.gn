@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("display_lock") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "display_lock_context.cc",
     "display_lock_context.h",

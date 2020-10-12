@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("clipboard") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "clipboard_mime_types.cc",
     "clipboard_mime_types.h",

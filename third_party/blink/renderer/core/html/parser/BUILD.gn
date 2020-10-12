@@ -6,6 +6,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("parser") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "atomic_html_token.cc",
     "atomic_html_token.h",

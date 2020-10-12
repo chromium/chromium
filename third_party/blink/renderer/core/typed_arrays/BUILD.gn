@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("typed_arrays") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "array_buffer/array_buffer_contents.cc",
     "array_buffer/array_buffer_contents.h",

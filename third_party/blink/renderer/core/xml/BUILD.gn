@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("xml") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "document_xml_tree_viewer.cc",
     "document_xml_tree_viewer.h",

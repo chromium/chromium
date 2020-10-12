@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("scroll") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "ns_scroller_imp_details.h",
     "programmatic_scroll_animator.cc",

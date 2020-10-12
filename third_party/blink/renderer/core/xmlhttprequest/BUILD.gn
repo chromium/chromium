@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("xmlhttprequest") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "xml_http_request.cc",
     "xml_http_request.h",

@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("origin_trials") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "navigation_origin_trial_features.cc",
     "origin_trial_context.cc",

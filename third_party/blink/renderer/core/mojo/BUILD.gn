@@ -6,6 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("mojo") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "mojo.cc",
     "mojo.h",

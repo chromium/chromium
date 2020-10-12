@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("url") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "dom_url.cc",
     "dom_url.h",
