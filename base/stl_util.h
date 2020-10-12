@@ -221,7 +221,7 @@ template <typename F,
           typename T1,
           typename... Args,
           EnableIf<IsMemFunPtr<F> && IsMemPtrToBaseOf<F, T1>> = true>
-constexpr decltype(auto) invoke(F&& f, T1&& t1, Args&&... args) {
+constexpr decltype(auto) InvokeImpl(F&& f, T1&& t1, Args&&... args) {
   return (std::forward<T1>(t1).*f)(std::forward<Args>(args)...);
 }
 
@@ -233,7 +233,7 @@ template <typename F,
           typename T1,
           typename... Args,
           EnableIf<IsMemFunPtr<F> && IsRefWrapper<T1>> = true>
-constexpr decltype(auto) invoke(F&& f, T1&& t1, Args&&... args) {
+constexpr decltype(auto) InvokeImpl(F&& f, T1&& t1, Args&&... args) {
   return (t1.get().*f)(std::forward<Args>(args)...);
 }
 
@@ -246,7 +246,7 @@ template <typename F,
           typename... Args,
           EnableIf<IsMemFunPtr<F> && !IsMemPtrToBaseOf<F, T1> &&
                    !IsRefWrapper<T1>> = true>
-constexpr decltype(auto) invoke(F&& f, T1&& t1, Args&&... args) {
+constexpr decltype(auto) InvokeImpl(F&& f, T1&& t1, Args&&... args) {
   return ((*std::forward<T1>(t1)).*f)(std::forward<Args>(args)...);
 }
 
@@ -257,7 +257,7 @@ constexpr decltype(auto) invoke(F&& f, T1&& t1, Args&&... args) {
 template <typename F,
           typename T1,
           EnableIf<IsMemObjPtr<F> && IsMemPtrToBaseOf<F, T1>> = true>
-constexpr decltype(auto) invoke(F&& f, T1&& t1) {
+constexpr decltype(auto) InvokeImpl(F&& f, T1&& t1) {
   return std::forward<T1>(t1).*f;
 }
 
@@ -268,7 +268,7 @@ constexpr decltype(auto) invoke(F&& f, T1&& t1) {
 template <typename F,
           typename T1,
           EnableIf<IsMemObjPtr<F> && IsRefWrapper<T1>> = true>
-constexpr decltype(auto) invoke(F&& f, T1&& t1) {
+constexpr decltype(auto) InvokeImpl(F&& f, T1&& t1) {
   return t1.get().*f;
 }
 
@@ -280,7 +280,7 @@ template <typename F,
           typename T1,
           EnableIf<IsMemObjPtr<F> && !IsMemPtrToBaseOf<F, T1> &&
                    !IsRefWrapper<T1>> = true>
-constexpr decltype(auto) invoke(F&& f, T1&& t1) {
+constexpr decltype(auto) InvokeImpl(F&& f, T1&& t1) {
   return (*std::forward<T1>(t1)).*f;
 }
 
@@ -289,7 +289,7 @@ constexpr decltype(auto) invoke(F&& f, T1&& t1) {
 //
 // Reference: https://wg21.link/func.require#1.7
 template <typename F, typename... Args>
-constexpr decltype(auto) invoke(F&& f, Args&&... args) {
+constexpr decltype(auto) InvokeImpl(F&& f, Args&&... args) {
   return std::forward<F>(f)(std::forward<Args>(args)...);
 }
 
@@ -305,7 +305,7 @@ constexpr decltype(auto) invoke(F&& f, Args&&... args) {
 // - https://wg21.link/func.invoke
 template <typename F, typename... Args>
 constexpr decltype(auto) invoke(F&& f, Args&&... args) {
-  return internal::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+  return internal::InvokeImpl(std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 // Implementation of C++20's std::identity.
