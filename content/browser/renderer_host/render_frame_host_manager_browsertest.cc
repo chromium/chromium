@@ -6971,10 +6971,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
 
   // 5) Do a replaceState to another URL.
   {
-    GURL url_2(embedded_test_server()->GetURL("/title2.html"));
     TestNavigationObserver observer(web_contents);
-    std::string script =
-        "history.replaceState({}, '', '/" + url_2.spec() + "')";
+    std::string script = "history.replaceState({}, '', '/title2.html')";
     EXPECT_TRUE(ExecJs(root, script));
     observer.Wait();
   }

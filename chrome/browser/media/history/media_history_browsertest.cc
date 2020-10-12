@@ -285,7 +285,8 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   void SimulateNavigationToCommit(Browser* browser) {
     // Navigate to trigger the session to be saved.
-    ui_test_utils::NavigateToURL(browser, embedded_test_server()->base_url());
+    ui_test_utils::NavigateToURL(browser,
+                                 embedded_test_server()->GetURL("/empty.html"));
 
     // Wait until the session has finished saving.
     WaitForDB(GetMediaHistoryService(browser));

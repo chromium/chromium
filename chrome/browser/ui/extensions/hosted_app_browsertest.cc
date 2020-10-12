@@ -1237,8 +1237,17 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 // "//" path (on which GURL::Resolve() currently fails due to
 // https://crbug.com/1034197), and that the resulting SiteInstance has a valid
 // site URL. See https://crbug.com/1016954.
+// The navigation currently fails/results in a 404 on Windows, so it's currently
+// disabled.  TODO(crbug.com/1137323): Fix this.
+#if defined(OS_WIN)
+#define MAYBE_NavigateToAppURLWithDoubleSlashPath \
+  DISABLED_NavigateToAppURLWithDoubleSlashPath
+#else
+#define MAYBE_NavigateToAppURLWithDoubleSlashPath \
+  NavigateToAppURLWithDoubleSlashPath
+#endif
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
-                       NavigateToAppURLWithDoubleSlashPath) {
+                       MAYBE_NavigateToAppURLWithDoubleSlashPath) {
   // Set up and launch the hosted app.
   GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/frame_tree/simple.htm");

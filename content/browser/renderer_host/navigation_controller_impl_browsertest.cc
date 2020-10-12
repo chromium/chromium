@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Navigate with Javascript.
   {
-    GURL navigate_url = embedded_test_server()->base_url();
+    GURL navigate_url = embedded_test_server()->GetURL("/title1.html");
     std::string script = JsReplace("document.location = $1", navigate_url);
     TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
     EXPECT_TRUE(ExecJs(shell(), script));
@@ -9998,8 +9998,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   // gesture.
   GURL a1_url(embedded_test_server()->GetURL("/title2.html"));
   GURL a2_url(embedded_test_server()->GetURL("/title3.html"));
-  GURL a3_url(embedded_test_server()->GetURL("/simple_page_1.html"));
-  GURL a4_url(embedded_test_server()->GetURL("/simple_page_2.html"));
+  GURL a3_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  GURL a4_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_2.html"));
   std::string script("history.pushState('', '','" + a1_url.spec() + "');");
   ASSERT_TRUE(ExecJs(shell()->web_contents(), script));
   script = "history.pushState('', '','" + a2_url.spec() + "');";

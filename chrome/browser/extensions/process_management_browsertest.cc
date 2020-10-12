@@ -495,11 +495,18 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreInIsolatedOriginTest,
       content::SiteInstance::CreateForURL(context, gallery_url());
   EXPECT_TRUE(cws_site_instance->RequiresDedicatedProcess());
 
+  // Calculate an URL that is 1) relative to the fake (i.e. test-controlled)
+  // Chrome Web Store gallery URL and 2) resolves to something that
+  // embedded_test_server can actually serve (e.g. title1.html test file).
+  GURL::Replacements replace_path;
+  replace_path.SetPathStr("/title1.html");
+  GURL cws_web_url = gallery_url().ReplaceComponents(replace_path);
+
   // Navigate to Chrome Web Store and check that it's loaded successfully.
-  ui_test_utils::NavigateToURL(browser(), gallery_url());
+  ui_test_utils::NavigateToURL(browser(), cws_web_url);
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(gallery_url(), web_contents->GetLastCommittedURL());
+  EXPECT_EQ(cws_web_url, web_contents->GetLastCommittedURL());
 
   // Verify that the Chrome Web Store hosted app is really loaded.
   content::RenderProcessHost* render_process_host =
