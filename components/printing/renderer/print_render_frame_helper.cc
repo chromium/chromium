@@ -2471,6 +2471,10 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
                "page_number", page_number);
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
+  // Make sure the RenderFrame is alive before taking the snapshot.
+  if (render_frame_gone_)
+    snapshotter_.reset();
+
   // For tagged PDF exporting, send a snapshot of the accessibility tree
   // along with page 0. The accessibility tree contains the content for
   // all of the pages of the main frame.
