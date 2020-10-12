@@ -50,9 +50,6 @@ NSSet* GaiaIdSetWithIdentities(NSArray* identities) {
 #pragma mark - Public
 
 bool SigninShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
-  if (signin::ForceStartupSigninPromo())
-    return true;
-
   if (tests_hook::DisableSigninRecallPromo())
     return false;
 
@@ -69,6 +66,9 @@ bool SigninShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
   // Do not show the SSO promo if the user is already logged in.
   if (authService->IsAuthenticated())
     return false;
+
+  if (signin::ForceStartupSigninPromo())
+    return true;
 
   // Show the promo at most every two major versions.
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
