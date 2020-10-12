@@ -1290,19 +1290,23 @@ component("base") {
       "allocator/allocator_shim.cc",
       "allocator/allocator_shim.h",
       "allocator/allocator_shim_internals.h",
-      "allocator/allocator_shim_override_cpp_symbols.h",
-      "allocator/allocator_shim_override_libc_symbols.h",
     ]
     if (is_android) {
-      sources +=
-          [ "allocator/allocator_shim_override_linker_wrapped_symbols.h" ]
+      sources += [
+        "allocator/allocator_shim_override_cpp_symbols.h",
+        "allocator/allocator_shim_override_linker_wrapped_symbols.h",
+      ]
       all_dependent_configs += [ "//base/allocator:wrap_malloc_symbols" ]
     }
     if (is_apple) {
       sources += [ "allocator/allocator_shim_override_mac_symbols.h" ]
     }
     if (is_chromeos || is_linux) {
-      sources += [ "allocator/allocator_shim_override_glibc_weak_symbols.h" ]
+      sources += [
+        "allocator/allocator_shim_override_cpp_symbols.h",
+        "allocator/allocator_shim_override_glibc_weak_symbols.h",
+        "allocator/allocator_shim_override_libc_symbols.h",
+      ]
     }
     if (is_win) {
       sources += [
