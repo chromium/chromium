@@ -58,12 +58,30 @@ gfx::Point MovePointToWindow(const NSPoint& point,
                     NSHeight(content_rect) - point_in_window.y);
 }
 
-// Returns true if |event| may have triggered dismissal of an IME and would
-// otherwise be ignored by a ui::TextInputClient when inserted.
-bool IsImeTriggerEvent(NSEvent* event) {
+// Some keys are silently consumed by -[NSView interpretKeyEvents:]
+// They should not be processed as accelerators.
+// See comments at |keyDown:| for details.
+bool ShouldIgnoreAcceleratorWithMarkedText(NSEvent* event) {
   ui::KeyboardCode key = ui::KeyboardCodeFromNSEvent(event);
-  return key == ui::VKEY_RETURN || key == ui::VKEY_TAB ||
-         key == ui::VKEY_ESCAPE;
+  switch (key) {
+    // crbug/883952: Kanji IME completes composition and dismisses itself.
+    case ui::VKEY_RETURN:
+    // Kanji IME: select candidate words.
+    // Pinyin IME: change tone.
+    case ui::VKEY_TAB:
+    // Dismiss IME.
+    case ui::VKEY_ESCAPE:
+    // crbug/915924: Pinyin IME selects candidate.
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+    case ui::VKEY_PRIOR:
+    case ui::VKEY_NEXT:
+      return true;
+    default:
+      return false;
+  }
 }
 
 ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
@@ -709,14 +727,14 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   [self interpretKeyEvents:@[ theEvent ]];
 
   // When there is marked text, -[NSView interpretKeyEvents:] may handle the
-  // event by dismissing the IME window in a way that neither unmarks text, nor
-  // updates any composition. That is, no signal is given either to the
-  // NSTextInputClient or the NSTextInputContext that the IME changed state.
-  // However, we must ensure this key down is not processed as an accelerator.
-  // TODO(tapted): Investigate removing the IsImeTriggerEvent() check - it's
-  // probably not required, but helps tests that expect some events to always
-  // get processed (i.e. TextfieldTest.TextInputClientTest).
-  if (hadMarkedTextAtKeyDown && IsImeTriggerEvent(theEvent))
+  // event by updating the IME state without updating the composition text.
+  // That is, no signal is given either to the NSTextInputClient or the
+  // NSTextInputContext, leaving |hasUnhandledKeyDownEvent_| to be true.
+  // In such a case, the key down event should not processed as an accelerator.
+  // TODO(kerenzhu): Note it may be valid to always mark the key down event as
+  // handled by IME when there is marked text. For now, only certain keys are
+  // skipped.
+  if (hadMarkedTextAtKeyDown && ShouldIgnoreAcceleratorWithMarkedText(theEvent))
     _hasUnhandledKeyDownEvent = NO;
 
   // Even with marked text, some IMEs may follow with -insertNewLine:;

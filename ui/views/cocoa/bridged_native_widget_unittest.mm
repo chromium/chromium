@@ -1599,6 +1599,92 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
   EXPECT_EQ(1, enter_view->count());  // Now we see the accelerator.
 }
 
+// Simulate 'a' and candidate selection keys. This should just insert "啊",
+// suppressing accelerators.
+TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
+  Textfield* textfield = InstallTextField("");
+  EXPECT_TRUE([ns_view_ textInputClient]);
+
+  EnterAcceleratorView* enter_view = new EnterAcceleratorView();
+  textfield->parent()->AddChildView(enter_view);
+
+  // Sequence of calls (and corresponding keyDown events) obtained via tracing
+  // with Pinyin IME and pressing 'a', Tab, PageDown, PageUp, Right, Down, Left,
+  // and finally Up on the keyboard.
+  // Note 0 is the actual keyCode for 'a', not a placeholder.
+  NSEvent* a_in_ime = UnicodeKeyDown(0, @"a");
+  InterpretKeyEventsCallback handle_a_in_ime = base::BindRepeating([](id view) {
+    // Pinyin does not change composition text while selecting candidate words.
+    [view setMarkedText:@"a"
+           selectedRange:NSMakeRange(1, 0)
+        replacementRange:NSMakeRange(NSNotFound, 0)];
+  });
+
+  InterpretKeyEventsCallback handle_tab_in_ime =
+      base::BindRepeating([](id view) {
+        [view setMarkedText:@"ā"
+               selectedRange:NSMakeRange(0, 1)
+            replacementRange:NSMakeRange(NSNotFound, 0)];
+      });
+
+  // Composition text will not change in candidate selection.
+  InterpretKeyEventsCallback handle_candidate_select_in_ime =
+      base::BindRepeating([](id view) {});
+
+  InterpretKeyEventsCallback handle_space_in_ime =
+      base::BindRepeating([](id view) {
+        // Space will confirm the composition.
+        [view insertText:@"啊" replacementRange:NSMakeRange(NSNotFound, 0)];
+      });
+
+  InterpretKeyEventsCallback handle_enter_in_ime =
+      base::BindRepeating([](id view) {
+        // Space after Space will generate -insertNewLine:.
+        [view doCommandBySelector:@selector(insertNewLine:)];
+      });
+
+  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());
+
+  object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
+  g_fake_interpret_key_events = &handle_a_in_ime;
+  [ns_view_ keyDown:a_in_ime];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"a"), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());
+
+  g_fake_interpret_key_events = &handle_tab_in_ime;
+  [ns_view_ keyDown:VkeyKeyDown(ui::VKEY_RETURN)];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"ā"), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());  // Not seen as an accelerator.
+
+  // Pinyin changes candidate word on this sequence of keys without changing the
+  // composition text. At the end of this sequence, the word "啊" should be
+  // selected.
+  const ui::KeyboardCode key_seqence[] = {ui::VKEY_NEXT,  ui::VKEY_PRIOR,
+                                          ui::VKEY_RIGHT, ui::VKEY_DOWN,
+                                          ui::VKEY_LEFT,  ui::VKEY_UP};
+
+  g_fake_interpret_key_events = &handle_candidate_select_in_ime;
+  for (auto key : key_seqence) {
+    [ns_view_ keyDown:VkeyKeyDown(key)];
+    EXPECT_EQ(base::SysNSStringToUTF16(@"ā"),
+              textfield->GetText());  // No change.
+    EXPECT_EQ(0, enter_view->count());
+  }
+
+  // Space to confirm composition
+  g_fake_interpret_key_events = &handle_space_in_ime;
+  [ns_view_ keyDown:VkeyKeyDown(ui::VKEY_SPACE)];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"啊"), textfield->GetText());
+  EXPECT_EQ(0, enter_view->count());
+
+  // The next Enter should be processed as accelerator.
+  g_fake_interpret_key_events = &handle_enter_in_ime;
+  [ns_view_ keyDown:VkeyKeyDown(ui::VKEY_RETURN)];
+  EXPECT_EQ(base::SysNSStringToUTF16(@"啊"), textfield->GetText());
+  EXPECT_EQ(1, enter_view->count());
+}
+
 // Simulate 'a', Enter in Hiragana. This should just insert "あ", suppressing
 // accelerators.
 TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
