@@ -61,6 +61,7 @@ extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers;
 extern const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
+extern const base::Feature kOmniboxZeroSuggestCaching;
 extern const base::Feature kOnFocusSuggestionsContextualWeb;
 extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
 extern const base::Feature kReactiveZeroSuggestionsOnNTPOmnibox;

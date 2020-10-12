@@ -223,6 +223,11 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Used to enable/disable caching for remote zero-prefix suggestions. Caching is
+// enabled by default. We will be experimenting with DISABLING this behavior.
+const base::Feature kOmniboxZeroSuggestCaching{
+    "OmniboxZeroSuggestCaching", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables on-focus suggestions on the Open Web, that are contextual to the
 // current URL. Will only work if user is signed-in and syncing, or is
 // otherwise eligible to send the current page URL to the suggest server.
