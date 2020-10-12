@@ -318,7 +318,7 @@
       Window placement
     </message>
     <message name="IDS_PAGE_INFO_TYPE_FONT_ACCESS" desc="The label used for the Font Access permission controls in the Page Info popup.">
-      Local font access
+      Fonts
     </message>
     <message name="IDS_PAGE_INFO_TYPE_HID" desc="The label used for the HID permission controls in the Page Info popup.">
       HID devices
