@@ -28,7 +28,6 @@
 #include <memory>
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -91,7 +90,7 @@ class ScopedSVGPaintState {
   const PaintInfo& paint_info_;
   const DisplayItemClient& display_item_client_;
   base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties_;
-  base::Optional<SVGMaskPainter> mask_painter_;
+  bool should_paint_mask_ = false;
   bool should_paint_clip_path_as_mask_image_ = false;
 #if DCHECK_IS_ON()
   bool apply_effects_called_ = false;

@@ -14,17 +14,10 @@
 
 namespace blink {
 
-SVGMaskPainter::SVGMaskPainter(GraphicsContext& context,
-                               const LayoutObject& layout_object,
-                               const DisplayItemClient& display_item_client)
-    : context_(context),
-      layout_object_(layout_object),
-      display_item_client_(display_item_client) {
-  DCHECK(layout_object_.StyleRef().SvgStyle().MaskerResource());
-}
-
-SVGMaskPainter::~SVGMaskPainter() {
-  const auto* properties = layout_object_.FirstFragment().PaintProperties();
+void SVGMaskPainter::Paint(GraphicsContext& context,
+                           const LayoutObject& layout_object,
+                           const DisplayItemClient& display_item_client) {
+  const auto* properties = layout_object.FirstFragment().PaintProperties();
   // TODO(crbug.com/814815): This condition should be a DCHECK, but for now
   // we may paint the object for filters during PrePaint before the
   // properties are ready.
@@ -36,45 +29,43 @@ SVGMaskPainter::~SVGMaskPainter() {
       properties->Mask()->LocalTransformSpace(), *properties->MaskClip(),
       *properties->Mask());
   ScopedPaintChunkProperties scoped_paint_chunk_properties(
-      context_.GetPaintController(), property_tree_state, display_item_client_,
+      context.GetPaintController(), property_tree_state, display_item_client,
       DisplayItem::kSVGMask);
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          context_, display_item_client_, DisplayItem::kSVGMask))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
+                                                  DisplayItem::kSVGMask))
     return;
 
   FloatRect visual_rect = properties->MaskClip()->UnsnappedClipRect().Rect();
-  visual_rect.Intersect(layout_object_.VisualRectInLocalSVGCoordinates());
-  DrawingRecorder recorder(context_, display_item_client_,
-                           DisplayItem::kSVGMask,
+  visual_rect.Intersect(layout_object.VisualRectInLocalSVGCoordinates());
+  DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
                            EnclosingIntRect(visual_rect));
 
-  const SVGComputedStyle& svg_style = layout_object_.StyleRef().SvgStyle();
+  const SVGComputedStyle& svg_style = layout_object.StyleRef().SvgStyle();
   auto* masker =
       GetSVGResourceAsType<LayoutSVGResourceMasker>(svg_style.MaskerResource());
   DCHECK(masker);
   SECURITY_DCHECK(!masker->NeedsLayout());
   masker->ClearInvalidationMask();
 
-  FloatRect reference_box =
-      SVGResources::ReferenceBoxForEffects(layout_object_);
+  FloatRect reference_box = SVGResources::ReferenceBoxForEffects(layout_object);
   AffineTransform content_transformation;
   if (masker->MaskContentUnits() ==
       SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
     content_transformation.Translate(reference_box.X(), reference_box.Y());
     content_transformation.ScaleNonUniform(reference_box.Width(),
                                            reference_box.Height());
-  } else if (layout_object_.IsSVGForeignObject()) {
-    content_transformation.Scale(layout_object_.StyleRef().EffectiveZoom());
+  } else if (layout_object.IsSVGForeignObject()) {
+    content_transformation.Scale(layout_object.StyleRef().EffectiveZoom());
   }
 
   sk_sp<const PaintRecord> record =
-      masker->CreatePaintRecord(content_transformation, context_);
+      masker->CreatePaintRecord(content_transformation, context);
 
-  context_.Save();
-  context_.ConcatCTM(content_transformation);
-  context_.DrawRecord(std::move(record));
-  context_.Restore();
+  context.Save();
+  context.ConcatCTM(content_transformation);
+  context.DrawRecord(std::move(record));
+  context.Restore();
 }
 
 }  // namespace blink

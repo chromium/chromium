@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
+#include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
@@ -37,6 +38,8 @@ ScopedSVGPaintState::~ScopedSVGPaintState() {
     ClipPathClipper::PaintClipPathAsMaskImage(
         paint_info_.context, object_, display_item_client_, PhysicalOffset());
   }
+  if (should_paint_mask_)
+    SVGMaskPainter::Paint(paint_info_.context, object_, display_item_client_);
 }
 
 void ScopedSVGPaintState::ApplyEffects() {
@@ -99,7 +102,7 @@ void ScopedSVGPaintState::ApplyMaskIfNecessary() {
   SVGResources* resources =
       SVGResourcesCache::CachedResourcesForLayoutObject(object_);
   if (resources && resources->Masker())
-    mask_painter_.emplace(paint_info_.context, object_, display_item_client_);
+    should_paint_mask_ = true;
 }
 
 }  // namespace blink

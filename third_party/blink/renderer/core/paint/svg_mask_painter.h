@@ -14,18 +14,12 @@ class GraphicsContext;
 class LayoutObject;
 
 class SVGMaskPainter {
-  STACK_ALLOCATED();
+  STATIC_ONLY(SVGMaskPainter);
 
  public:
-  SVGMaskPainter(GraphicsContext&,
-                 const LayoutObject&,
-                 const DisplayItemClient&);
-  ~SVGMaskPainter();
-
- private:
-  GraphicsContext& context_;
-  const LayoutObject& layout_object_;
-  const DisplayItemClient& display_item_client_;
+  static void Paint(GraphicsContext& context,
+                    const LayoutObject& layout_object,
+                    const DisplayItemClient& display_item_client);
 };
 
 }  // namespace blink
