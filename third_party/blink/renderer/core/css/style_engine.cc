@@ -470,6 +470,14 @@ void StyleEngine::RemoveTextTrack(TextTrack* text_track) {
   text_tracks_.erase(text_track);
 }
 
+Element* StyleEngine::EnsureVTTOriginatingElement() {
+  if (!vtt_originating_element_) {
+    vtt_originating_element_ = MakeGarbageCollected<Element>(
+        QualifiedName(g_null_atom, g_empty_atom, g_empty_atom), document_);
+  }
+  return vtt_originating_element_;
+}
+
 void StyleEngine::MediaQueryAffectingValueChanged(
     HeapHashSet<Member<TextTrack>>& text_tracks,
     MediaValueChange change) {
@@ -2344,6 +2352,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(tracker_);
   visitor->Trace(meta_color_scheme_);
   visitor->Trace(text_tracks_);
+  visitor->Trace(vtt_originating_element_);
   FontSelectorClient::Trace(visitor);
 }
 

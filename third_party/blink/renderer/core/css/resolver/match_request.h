@@ -42,12 +42,12 @@ class MatchRequest {
                const ContainerNode* scope = nullptr,
                const CSSStyleSheet* css_sheet = nullptr,
                unsigned style_sheet_index = 0,
-               bool is_from_vtt = false)
+               Element* vtt_originating_element = nullptr)
       : rule_set(rule_set),
         scope(scope),
         style_sheet(css_sheet),
         style_sheet_index(style_sheet_index),
-        is_from_vtt(is_from_vtt) {
+        vtt_originating_element(vtt_originating_element) {
     // Now that we're about to read from the RuleSet, we're done adding more
     // rules to the set and we should make sure it's compacted.
     rule_set->CompactRulesIfNeeded();
@@ -57,7 +57,10 @@ class MatchRequest {
   const ContainerNode* scope;
   const CSSStyleSheet* style_sheet;
   const unsigned style_sheet_index;
-  bool is_from_vtt;
+  // For WebVTT STYLE blocks, this is set to the featureless-like Element
+  // described by the spec:
+  // https://w3c.github.io/webvtt/#obtaining-css-boxes
+  Element* vtt_originating_element;
 };
 
 }  // namespace blink

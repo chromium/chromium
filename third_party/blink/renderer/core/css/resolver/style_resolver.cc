@@ -409,12 +409,12 @@ static void MatchVTTRules(const Element& element,
     int style_sheet_index = 0;
     collector.ClearMatchedRules();
     for (CSSStyleSheet* style : styles) {
-      RuleSet* rule_set =
-          element.GetDocument().GetStyleEngine().RuleSetForSheet(*style);
+      StyleEngine& style_engine = element.GetDocument().GetStyleEngine();
+      RuleSet* rule_set = style_engine.RuleSetForSheet(*style);
       if (rule_set) {
-        collector.CollectMatchingRules(
-            MatchRequest(rule_set, nullptr /* scope */, style,
-                         style_sheet_index, true /* is_from_webvtt */));
+        collector.CollectMatchingRules(MatchRequest(
+            rule_set, nullptr /* scope */, style, style_sheet_index,
+            style_engine.EnsureVTTOriginatingElement()));
         style_sheet_index++;
       }
     }

@@ -133,6 +133,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void AddTextTrack(TextTrack*);
   void RemoveTextTrack(TextTrack*);
 
+  // An Element with no tag name, IDs, classes (etc), as described by the
+  // WebVTT spec:
+  // https://w3c.github.io/webvtt/#obtaining-css-boxes
+  //
+  // TODO(https://github.com/w3c/webvtt/issues/477): Make originating element
+  // actually featureless.
+  Element* EnsureVTTOriginatingElement();
+
   const ActiveStyleSheetVector ActiveStyleSheetsForInspector();
 
   bool NeedsActiveStyleUpdate() const;
@@ -661,6 +669,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   friend class WhitespaceAttacherTest;
 
   HeapHashSet<Member<TextTrack>> text_tracks_;
+  Member<Element> vtt_originating_element_;
 };
 
 }  // namespace blink

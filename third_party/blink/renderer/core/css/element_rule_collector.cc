@@ -150,7 +150,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       &context_.GetElement(), SelectorChecker::kVisitedMatchEnabled);
   context.scope = match_request.scope;
   context.pseudo_id = pseudo_style_request_.pseudo_id;
-  context.is_from_vtt = match_request.is_from_vtt;
+  context.vtt_originating_element = match_request.vtt_originating_element;
 
   unsigned rejected = 0;
   unsigned fast_rejected = 0;
