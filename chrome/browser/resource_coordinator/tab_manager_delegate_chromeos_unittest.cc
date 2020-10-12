@@ -12,7 +12,6 @@
 #include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"

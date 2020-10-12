@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "components/optimization_guide/optimization_guide_features.h"

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 
 #include "base/task/post_task.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/timer.h"
