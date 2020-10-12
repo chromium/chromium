@@ -17,6 +17,19 @@ NonNetworkURLLoaderFactoryBase::NonNetworkURLLoaderFactoryBase(
 
 NonNetworkURLLoaderFactoryBase::~NonNetworkURLLoaderFactoryBase() = default;
 
+void NonNetworkURLLoaderFactoryBase::DisconnectReceiversAndDestroy() {
+  // Clear |receivers_| to explicitly make sure that no further method
+  // invocations or disconnection notifications will happen.  (per the
+  // comment of mojo::ReceiverSet::Clear)
+  receivers_.Clear();
+
+  // Similarly to OnDisconnect, if there are no more |receivers_|, then no
+  // instance methods of |this| can be called in the future (mojo methods Clone
+  // and CreateLoaderAndStart should be the only public entrypoints).
+  // Therefore, it is safe to delete |this| at this point.
+  delete this;
+}
+
 void NonNetworkURLLoaderFactoryBase::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -27,8 +40,13 @@ void NonNetworkURLLoaderFactoryBase::Clone(
 void NonNetworkURLLoaderFactoryBase::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (receivers_.empty())
+  if (receivers_.empty()) {
+    // If there are no more |receivers_|, then no instance methods of |this| can
+    // be called in the future (mojo methods Clone and CreateLoaderAndStart
+    // should be the only public entrypoints).  Therefore, it is safe to delete
+    // |this| at this point.
     delete this;
+  }
 }
 
 }  // namespace content

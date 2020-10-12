@@ -5,7 +5,12 @@
 #ifndef CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 #define CHROMECAST_BROWSER_CAST_EXTENSION_URL_LOADER_FACTORY_H_
 
+#include <memory>
+
 #include "base/macros.h"
+#include "base/no_destructor.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,6 +49,8 @@ class CastExtensionURLLoaderFactory
       content::BrowserContext* browser_context,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory);
 
+  static void EnsureShutdownNotifierFactoryBuilt();
+
  private:
   ~CastExtensionURLLoaderFactory() override;
 
@@ -65,9 +72,30 @@ class CastExtensionURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
+  void OnBrowserContextDestroyed();
+
+  class BrowserContextShutdownNotifierFactory
+      : public BrowserContextKeyedServiceShutdownNotifierFactory {
+   public:
+    static BrowserContextShutdownNotifierFactory* GetInstance();
+
+    // No copying.
+    BrowserContextShutdownNotifierFactory(
+        const BrowserContextShutdownNotifierFactory&) = delete;
+    BrowserContextShutdownNotifierFactory& operator=(
+        const BrowserContextShutdownNotifierFactory&) = delete;
+
+   private:
+    friend class base::NoDestructor<BrowserContextShutdownNotifierFactory>;
+    BrowserContextShutdownNotifierFactory();
+  };
+
   extensions::ExtensionRegistry* extension_registry_;
   mojo::Remote<network::mojom::URLLoaderFactory> extension_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> network_factory_;
+
+  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
+      browser_context_shutdown_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(CastExtensionURLLoaderFactory);
 };
