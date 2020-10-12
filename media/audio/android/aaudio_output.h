@@ -67,6 +67,7 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   AudioSourceCallback* callback_ GUARDED_BY(lock_) = nullptr;
   bool muted_ GUARDED_BY(lock_) = false;
   double volume_ GUARDED_BY(lock_) = 1.0;
+  bool device_changed_ GUARDED_BY(lock_) = false;
 
   DISALLOW_COPY_AND_ASSIGN(AAudioOutputStream);
 };

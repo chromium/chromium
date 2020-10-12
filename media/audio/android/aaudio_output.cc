@@ -114,6 +114,13 @@ void AAudioOutputStream::Start(AudioSourceCallback* callback) {
 
   {
     base::AutoLock al(lock_);
+
+    // The device might have been disconnected between Open() and Start().
+    if (device_changed_) {
+      callback->OnError(AudioSourceCallback::ErrorType::kDeviceChange);
+      return;
+    }
+
     DCHECK(!callback_);
     callback_ = callback;
   }
@@ -217,9 +224,20 @@ aaudio_data_callback_result_t AAudioOutputStream::OnAudioDataRequested(
 
 void AAudioOutputStream::OnStreamError(aaudio_result_t error) {
   base::AutoLock al(lock_);
+
+  if (error == AAUDIO_ERROR_DISCONNECTED)
+    device_changed_ = true;
+
+  if (!callback_)
+    return;
+
+  if (device_changed_) {
+    callback_->OnError(AudioSourceCallback::ErrorType::kDeviceChange);
+    return;
+  }
+
   // TODO(dalecurtis): Consider sending a translated |error| code.
-  if (callback_)
-    callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
+  callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
 void AAudioOutputStream::SetVolume(double volume) {
