@@ -149,8 +149,28 @@ class AssociatedBinding : public AssociatedBindingBase {
     return old_impl;
   }
 
+  // Acquires a callback which may be run to report the currently dispatching
+  // message as bad and close this binding. Note that this is only legal to
+  // call from directly within stack frame of a message dispatch, but the
+  // returned callback may be called exactly once any time thereafter to report
+  // the message as bad. |GetBadMessageCallback()| may only be called once per
+  // message, and the returned callback must be run on the same sequence to
+  // which this binding is bound.
+  ReportBadMessageCallback GetBadMessageCallback() {
+    return base::BindOnce(
+        [](ReportBadMessageCallback inner_callback,
+           base::WeakPtr<AssociatedBinding> binding, const std::string& error) {
+          std::move(inner_callback).Run(error);
+          if (binding)
+            binding->Close();
+        },
+        mojo::GetBadMessageCallback(), weak_ptr_factory_.GetWeakPtr());
+  }
+
  private:
   typename Interface::template Stub_<ImplRefTraits> stub_;
+
+  base::WeakPtrFactory<AssociatedBinding> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssociatedBinding);
 };

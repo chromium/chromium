@@ -53,6 +53,10 @@ class IntegerSenderImpl : public IntegerSender {
   }
 
   void Echo(int32_t value, EchoCallback callback) override {
+    if (value == -1) {
+      receiver_.ReportBadMessage("Reporting bad message for value == -1");
+      return;
+    }
     std::move(callback).Run(value);
   }
   void Send(int32_t value) override { notify_send_method_called_.Run(value); }
@@ -1074,6 +1078,34 @@ TEST_F(AssociatedInterfaceTest, AsyncErrorHandlersWhenClosingPrimaryInterface) {
   // ...but it should be triggered once we spin the scheduler.
   loop.Run();
   EXPECT_TRUE(error_handler_invoked);
+}
+
+TEST_F(AssociatedInterfaceTest, AssociatedReceiverReportBadMessage) {
+  PendingAssociatedReceiver<IntegerSender> pending_receiver;
+  PendingAssociatedRemote<IntegerSender> pending_remote;
+  CreateIntegerSender(&pending_remote, &pending_receiver);
+
+  IntegerSenderImpl impl(std::move(pending_receiver));
+  AssociatedRemote<IntegerSender> remote(std::move(pending_remote));
+
+  bool called = false;
+  base::RunLoop run_loop;
+  remote.set_disconnect_handler(base::BindLambdaForTesting([&] {
+    called = true;
+    run_loop.Quit();
+  }));
+
+  std::string received_error;
+  SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { received_error = error; }));
+
+  remote->Echo(-1, IntegerSenderImpl::EchoCallback());
+  EXPECT_FALSE(called);
+  run_loop.Run();
+  EXPECT_TRUE(called);
+  EXPECT_EQ("Reporting bad message for value == -1", received_error);
+
+  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 }  // namespace

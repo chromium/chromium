@@ -241,6 +241,26 @@ class AssociatedReceiver {
     return binding_.SwapImplForTesting(new_impl);
   }
 
+  // Reports the currently dispatching message as bad and resets this receiver.
+  // Note that this is only legal to call from within the stack frame of a
+  // message dispatch. If you need to do asynchronous work before determining
+  // the legitimacy of a message, use GetBadMessageCallback() and retain its
+  // result until ready to invoke or discard it.
+  void ReportBadMessage(const std::string& error) {
+    GetBadMessageCallback().Run(error);
+  }
+
+  // Acquires a callback which may be run to report the currently dispatching
+  // message as bad and reset this receiver. Note that this is only legal to
+  // call from directly within stack frame of a message dispatch, but the
+  // returned callback may be called exactly once any time thereafter to report
+  // the message as bad. |GetBadMessageCallback()| may only be called once per
+  // message, and the returned callback must be run on the same sequence to
+  // which this Receiver is bound.
+  ReportBadMessageCallback GetBadMessageCallback() {
+    return binding_.GetBadMessageCallback();
+  }
+
  private:
   // TODO(https://crbug.com/875030): Move AssociatedBinding details into this
   // class.
