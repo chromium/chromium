@@ -623,7 +623,7 @@ bool FakeChromeUserManager::IsGaiaUserAllowed(
     const user_manager::User& user) const {
   DCHECK(user.HasGaiaAccount());
   return CrosSettings::Get()->IsUserAllowlisted(
-      user.GetAccountId().GetUserEmail(), nullptr);
+      user.GetAccountId().GetUserEmail(), nullptr, user.GetType());
 }
 
 bool FakeChromeUserManager::IsUserAllowed(

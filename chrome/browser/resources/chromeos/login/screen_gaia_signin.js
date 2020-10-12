@@ -1411,8 +1411,18 @@ Polymer({
   showAllowlistCheckFailedError(show, opt_data) {
     if (show) {
       const isManaged = opt_data && opt_data.enterpriseManaged;
-      this.$['gaia-allowlist-error'].textContent = loadTimeData.getValue(
-          isManaged ? 'allowlistErrorEnterprise' : 'allowlistErrorConsumer');
+      const isFamilyLinkAllowed = opt_data && opt_data.familyLinkAllowed;
+      errorMessage = '';
+      if (isManaged && isFamilyLinkAllowed) {
+        errorMessage = 'allowlistErrorEnterpriseAndFamilyLink';
+      } else if (isManaged) {
+        errorMessage = 'allowlistErrorEnterprise';
+      } else {
+        errorMessage = 'allowlistErrorConsumer';
+      }
+
+      this.$['gaia-allowlist-error'].textContent =
+          loadTimeData.getValue(errorMessage);
       // To make animations correct, we need to make sure Gaia is completely
       // reloaded. Otherwise ChromeOS overlays hide and Gaia page is shown
       // somewhere in the middle of animations.

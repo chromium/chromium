@@ -229,10 +229,12 @@ void LoginDisplayHostCommon::LoadSigninWallpaper() {
   WallpaperControllerClient::Get()->ShowSigninWallpaper();
 }
 
-bool LoginDisplayHostCommon::IsUserAllowlisted(const AccountId& account_id) {
+bool LoginDisplayHostCommon::IsUserAllowlisted(
+    const AccountId& account_id,
+    const base::Optional<user_manager::UserType>& user_type) {
   if (!GetExistingUserController())
     return true;
-  return GetExistingUserController()->IsUserAllowlisted(account_id);
+  return GetExistingUserController()->IsUserAllowlisted(account_id, user_type);
 }
 
 void LoginDisplayHostCommon::CancelPasswordChangedFlow() {

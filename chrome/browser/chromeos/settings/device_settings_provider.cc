@@ -30,6 +30,7 @@
 #include "chrome/browser/chromeos/settings/device_settings_cache.h"
 #include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -216,12 +217,18 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   // Value of DeviceFamilyLinkAccountsAllowed policy does not affect
-  // |kAccountsPrefAllowNewUser| setting. Family Link accounts will be only
-  // allowed if both |kAccountsPrefAllowNewUser| and
-  // |kAccountsPrefFamilyLinkAccountsAllowed| are true.
+  // |kAccountsPrefAllowNewUser| setting. Family Link accounts are only
+  // allowed if user allowlist is enforced.
+  bool user_allowlist_enforced =
+      ((policy.has_user_whitelist() &&
+        policy.user_whitelist().user_whitelist_size() > 0) ||
+       (policy.has_user_allowlist() &&
+        policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      policy.has_family_link_accounts_allowed() &&
+      chromeos::features::IsFamilyLinkOnSchoolDeviceEnabled() &&
+          user_allowlist_enforced &&
+          policy.has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed()
               .has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed().family_link_accounts_allowed());

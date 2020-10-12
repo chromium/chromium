@@ -214,6 +214,18 @@ void UpdateAuthParams(base::DictionaryValue* params,
     params->SetString("flow", "nosignup");
 }
 
+bool ShouldCheckUserTypeBeforeAllowing() {
+  if (!chromeos::features::IsFamilyLinkOnSchoolDeviceEnabled())
+    return false;
+
+  CrosSettings* cros_settings = CrosSettings::Get();
+  bool family_link_allowed = false;
+  cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
+                            &family_link_allowed);
+
+  return family_link_allowed;
+}
+
 void RecordSAMLScrapingVerificationResultInHistogram(bool success) {
   UMA_HISTOGRAM_BOOLEAN("ChromeOS.SAML.Scraping.VerificationResult", success);
 }
@@ -631,6 +643,8 @@ void GaiaScreenHandler::DeclareLocalizedValues(
   builder->Add("allowlistErrorConsumer", IDS_LOGIN_ERROR_ALLOWLIST);
   builder->Add("allowlistErrorEnterprise",
                IDS_ENTERPRISE_LOGIN_ERROR_ALLOWLIST);
+  builder->Add("allowlistErrorEnterpriseAndFamilyLink",
+               IDS_ENTERPRISE_AND_FAMILY_LINK_LOGIN_ERROR_ALLOWLIST);
   builder->Add("tryAgainButton", IDS_ALLOWLIST_ERROR_TRY_AGAIN_BUTTON);
   builder->Add("learnMoreButton", IDS_LEARN_MORE);
   builder->Add("gaiaLoading", IDS_LOGIN_GAIA_LOADING_MESSAGE);
@@ -772,10 +786,16 @@ void GaiaScreenHandler::OnPortalDetectionCompleted(
 }
 
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
+  // We cannot tell a user type from the identifier, so we delay checking if
+  // the account should be allowed.
+  if (ShouldCheckUserTypeBeforeAllowing())
+    return;
+
   if (LoginDisplayHost::default_host() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
           user_manager::known_user::GetAccountId(
-              user_email, std::string() /* id */, AccountType::UNKNOWN))) {
+              user_email, std::string() /* id */, AccountType::UNKNOWN),
+          base::nullopt)) {
     ShowAllowlistCheckFailedError();
   }
 }
@@ -919,6 +939,17 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 
   DCHECK(!email.empty());
   DCHECK(!gaia_id.empty());
+
+  // Execute delayed allowlist check that is based on user type.
+  const user_manager::UserType user_type =
+      GetUsertypeFromServicesString(services);
+  if (ShouldCheckUserTypeBeforeAllowing() &&
+      !LoginDisplayHost::default_host()->IsUserAllowlisted(
+          GetAccountId(email, gaia_id, AccountType::GOOGLE), user_type)) {
+    ShowAllowlistCheckFailedError();
+    return;
+  }
+
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
@@ -1519,6 +1550,12 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
                     g_browser_process->platform_part()
                         ->browser_policy_connector_chromeos()
                         ->IsEnterpriseManaged());
+
+  bool family_link_allowed = false;
+  CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
+                                  &family_link_allowed);
+  params.SetBoolean("familyLinkAllowed", family_link_allowed);
+
   CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", true, params);
 }
 
