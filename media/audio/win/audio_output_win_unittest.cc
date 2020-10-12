@@ -117,7 +117,7 @@ class TestSourceLaggy : public TestSourceBasic {
 class ReadOnlyMappedFile {
  public:
   explicit ReadOnlyMappedFile(const wchar_t* file_name)
-      : fmap_(NULL), start_(NULL), size_(0) {
+      : fmap_(NULL), start_(nullptr), size_(0) {
     HANDLE file = ::CreateFileW(file_name, GENERIC_READ, FILE_SHARE_READ, NULL,
                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (INVALID_HANDLE_VALUE == file)

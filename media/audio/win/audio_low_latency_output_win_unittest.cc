@@ -70,7 +70,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
   explicit ReadFromFileAudioSource(const std::string& name)
       : pos_(0),
         previous_call_time_(base::TimeTicks::Now()),
-        text_file_(NULL),
+        text_file_(nullptr),
         elements_to_write_(0) {
     // Reads a test file from media/test/data directory.
     file_ = ReadTestDataFile(name);

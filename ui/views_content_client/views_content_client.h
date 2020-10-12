@@ -32,7 +32,7 @@ namespace ui {
 //
 // #if defined(OS_WIN)
 // int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
-//   sandbox::SandboxInterfaceInfo sandbox_info = {0};
+//   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
 //   content::InitializeSandboxInfo(&sandbox_info);
 //   ui::ViewsContentClient params(instance, &sandbox_info);
 // #else

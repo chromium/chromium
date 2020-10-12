@@ -29,12 +29,11 @@ const wchar_t MainUIWindow::kDefaultEntryPoint_[] = L"Run";
 const wchar_t MainUIWindow::kDefaultLogFile_[]    = L"";
 
 MainUIWindow::MainUIWindow()
-    : broker_(NULL),
+    : broker_(nullptr),
       spawn_target_(L""),
       instance_handle_(NULL),
       dll_path_(L""),
-      entry_point_(L"") {
-}
+      entry_point_(L"") {}
 
 MainUIWindow::~MainUIWindow() {
 }

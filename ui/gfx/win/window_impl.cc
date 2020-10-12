@@ -245,7 +245,7 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
     CHECK(false);
   }
   if (!destroyed)
-    destroyed_ = NULL;
+    destroyed_ = nullptr;
 
   CheckWindowCreated(hwnd_, create_window_error);
 

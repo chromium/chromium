@@ -14,9 +14,7 @@
 // object goes out of scope
 class HandleToFile {
  public:
-  HandleToFile() {
-    file_ = NULL;
-  }
+  HandleToFile() { file_ = nullptr; }
 
   // Note: c_file_handle_ does not need to be closed because fclose does it.
   ~HandleToFile() {

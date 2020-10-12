@@ -179,7 +179,7 @@ int main(int argc, const char** argv) {
 #if defined(OS_WIN)
   // In windows, you must initialize and set the sandbox, or pass it along
   // if it has already been initialized.
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   builder.SetSandboxInfo(&sandbox_info);
 #endif

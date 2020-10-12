@@ -794,7 +794,7 @@ void RenderWidgetHostViewAura::CopyFromSurface(
 
 #if defined(OS_WIN)
 bool RenderWidgetHostViewAura::UsesNativeWindowFrame() const {
-  return (legacy_render_widget_host_HWND_ != NULL);
+  return (legacy_render_widget_host_HWND_ != nullptr);
 }
 
 void RenderWidgetHostViewAura::UpdateMouseLockRegion() {
@@ -1694,7 +1694,7 @@ void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
     legacy_render_widget_host_HWND_->Destroy();
     // The Destroy call above will delete the LegacyRenderWidgetHostHWND
     // instance.
-    legacy_render_widget_host_HWND_ = NULL;
+    legacy_render_widget_host_HWND_ = nullptr;
   }
 #endif
 

@@ -16,7 +16,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
   extensions::ShellMainDelegate delegate;
   content::ContentMainParams params(&delegate);
 
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   params.instance = instance;
   params.sandbox_info = &sandbox_info;

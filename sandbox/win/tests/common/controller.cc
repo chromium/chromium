@@ -103,7 +103,7 @@ TestRunner::TestRunner(JobLevel job_level,
       no_sandbox_(false),
       disable_csrss_(true),
       target_process_id_(0) {
-  broker_ = NULL;
+  broker_ = nullptr;
   policy_.reset();
   timeout_ = kDefaultTimeout;
   state_ = AFTER_REVERT;

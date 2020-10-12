@@ -69,7 +69,7 @@ namespace {
 class AutoProtectMemory {
  public:
   AutoProtectMemory()
-      : changed_(false), address_(NULL), bytes_(0), old_protect_(0) {}
+      : changed_(false), address_(nullptr), bytes_(0), old_protect_(0) {}
 
   ~AutoProtectMemory() {
     RevertProtection();
@@ -122,7 +122,7 @@ void AutoProtectMemory::RevertProtection() {
 
   VirtualProtect(address_, bytes_, old_protect_, &old_protect_);
   changed_ = false;
-  address_ = NULL;
+  address_ = nullptr;
   bytes_ = 0;
   old_protect_ = 0;
 }

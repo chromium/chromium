@@ -82,7 +82,7 @@ PCMWaveOutAudioOutputStream::PCMWaveOutAudioOutputStream(
     UINT device_id)
     : state_(PCMA_BRAND_NEW),
       manager_(manager),
-      callback_(NULL),
+      callback_(nullptr),
       num_buffers_(num_buffers),
       buffer_size_(params.GetBytesPerBuffer(kSampleFormat)),
       volume_(1),
@@ -270,7 +270,7 @@ void PCMWaveOutAudioOutputStream::Stop() {
     GetBuffer(ix)->dwFlags = WHDR_PREPARED;
 
   // Don't use callback after Stop().
-  callback_ = NULL;
+  callback_ = nullptr;
 
   state_ = PCMA_READY;
 }

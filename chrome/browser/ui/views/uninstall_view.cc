@@ -22,10 +22,10 @@
 
 UninstallView::UninstallView(int* user_selection,
                              const base::Closure& quit_closure)
-    : confirm_label_(NULL),
-      delete_profile_(NULL),
-      change_default_browser_(NULL),
-      browsers_combo_(NULL),
+    : confirm_label_(nullptr),
+      delete_profile_(nullptr),
+      change_default_browser_(nullptr),
+      browsers_combo_(nullptr),
       user_selection_(*user_selection),
       quit_closure_(quit_closure) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK,

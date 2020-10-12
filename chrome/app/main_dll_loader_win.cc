@@ -131,7 +131,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   process_type_ = cmd_line.GetSwitchValueASCII(switches::kProcessType);
 
   // Initialize the sandbox services.
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   const bool is_browser = process_type_.empty();
   const bool is_cloud_print_service =
       process_type_ == switches::kCloudPrintServiceProcess;

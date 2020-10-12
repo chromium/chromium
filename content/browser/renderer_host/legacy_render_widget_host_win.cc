@@ -114,7 +114,7 @@ void LegacyRenderWidgetHostHWND::SetBounds(const gfx::Rect& bounds) {
 void LegacyRenderWidgetHostHWND::OnFinalMessage(HWND hwnd) {
   if (host_) {
     host_->OnLegacyWindowDestroyed();
-    host_ = NULL;
+    host_ = nullptr;
   }
 
   // Re-enable flicks for just a moment

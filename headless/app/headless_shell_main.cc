@@ -15,7 +15,7 @@
 
 int main(int argc, const char** argv) {
 #if defined(OS_WIN)
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   return headless::HeadlessShellMain(0, &sandbox_info);
 #else

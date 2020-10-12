@@ -124,7 +124,7 @@ base::string16 NSSDecryptor::Decrypt(const std::string& crypt) const {
         const_cast<char*>(decoded_data.data()));
     request.len = static_cast<unsigned int>(decoded_data.size());
     SECItem reply;
-    reply.data = NULL;
+    reply.data = nullptr;
     reply.len = 0;
 #if defined(USE_NSS_CERTS)
     result = PK11SDR_DecryptWithSlot(slot, &request, &reply, NULL);

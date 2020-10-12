@@ -40,7 +40,7 @@ int Main(MainParams params
 #if defined(WIN_CONSOLE_APP)
   HINSTANCE instance = GetModuleHandle(nullptr);
 #endif
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   content_params.instance = instance;
   content_params.sandbox_info = &sandbox_info;

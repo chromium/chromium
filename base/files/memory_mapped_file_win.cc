@@ -20,8 +20,7 @@
 
 namespace base {
 
-MemoryMappedFile::MemoryMappedFile() : data_(NULL), length_(0) {
-}
+MemoryMappedFile::MemoryMappedFile() : data_(nullptr), length_(0) {}
 
 bool MemoryMappedFile::MapImageToMemory(Access access) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -124,7 +123,7 @@ bool MemoryMappedFile::MapFileRegionToMemory(
       ::MapViewOfFile(file_mapping_.Get(),
                       (flags & PAGE_READONLY) ? FILE_MAP_READ : FILE_MAP_WRITE,
                       map_start.HighPart, map_start.LowPart, map_size));
-  if (data_ == NULL)
+  if (data_ == nullptr)
     return false;
   data_ += data_offset;
   return true;
@@ -138,7 +137,7 @@ void MemoryMappedFile::CloseHandles() {
   if (file_.IsValid())
     file_.Close();
 
-  data_ = NULL;
+  data_ = nullptr;
   length_ = 0;
 }
 

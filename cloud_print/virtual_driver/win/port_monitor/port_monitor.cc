@@ -59,7 +59,7 @@ struct MonitorData {
 };
 
 struct PortData {
-  PortData() : job_id(0), printer_handle(NULL), file(0) {}
+  PortData() : job_id(0), printer_handle(NULL), file(nullptr) {}
   ~PortData() { Close(); }
   void Close() {
     if (printer_handle) {
@@ -68,7 +68,7 @@ struct PortData {
     }
     if (file) {
       base::CloseFile(file);
-      file = NULL;
+      file = nullptr;
     }
   }
   DWORD job_id;
@@ -86,18 +86,18 @@ MONITORUI g_monitor_ui = {sizeof(MONITORUI), MonitorUiAddPortUi,
 MONITOR2 g_monitor_2 = {sizeof(MONITOR2),
                         Monitor2EnumPorts,
                         Monitor2OpenPort,
-                        NULL,  // OpenPortEx is not supported.
+                        nullptr,  // OpenPortEx is not supported.
                         Monitor2StartDocPort,
                         Monitor2WritePort,
                         Monitor2ReadPort,
                         Monitor2EndDocPort,
                         Monitor2ClosePort,
-                        NULL,  // AddPort is not supported.
-                        NULL,  // AddPortEx is not supported.
-                        NULL,  // ConfigurePort is not supported.
-                        NULL,  // DeletePort is not supported.
-                        NULL,
-                        NULL,  // SetPortTimeOuts is not supported.
+                        nullptr,  // AddPort is not supported.
+                        nullptr,  // AddPortEx is not supported.
+                        nullptr,  // ConfigurePort is not supported.
+                        nullptr,  // DeletePort is not supported.
+                        nullptr,
+                        nullptr,  // SetPortTimeOuts is not supported.
                         Monitor2XcvOpenPort,
                         Monitor2XcvDataPort,
                         Monitor2XcvClosePort,
@@ -497,7 +497,7 @@ BOOL WINAPI Monitor2StartDocPort(HANDLE port_handle,
     return FALSE;
   }
   port_data->file = base::OpenFile(file_path, "wb+");
-  if (port_data->file == NULL) {
+  if (port_data->file == nullptr) {
     LOG(ERROR) << "Error opening file " << file_path.value() << ".";
     return FALSE;
   }
@@ -540,9 +540,9 @@ BOOL WINAPI Monitor2EndDocPort(HANDLE port_handle) {
     return FALSE;
   }
 
-  if (port_data->file != NULL) {
+  if (port_data->file != nullptr) {
     base::CloseFile(port_data->file);
-    port_data->file = NULL;
+    port_data->file = nullptr;
     bool delete_file = true;
     int64_t file_size = 0;
     base::GetFileSize(port_data->file_path, &file_size);

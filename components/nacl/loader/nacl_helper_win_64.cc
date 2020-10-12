@@ -56,7 +56,7 @@ int NaClBrokerMain(const content::MainFunctionParams& parameters) {
 namespace nacl {
 
 int NaClWin64Main() {
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
 
   const base::CommandLine& command_line =
