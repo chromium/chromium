@@ -21,7 +21,6 @@
 <translation id="1446450296470737166">MIDI түзмктрд толук көзмлд уркст</translation>
 <translation id="1509960214886564027">Функциялар көпчүлүк сайттарда туура иштебеши мүмкүн.</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="1647391597548383849">Камераңызга мүмкүнчүлүк алуу</translation>
 <translation id="1660204651932907780">Сайттарга үн чыгарууга уруксат берилсин (сунушталат)</translation>
 <translation id="1677097821151855053">Cookie файлдары жана башка маалымат сизди эстеп калып, аккаунтка кирүү же жарнамаларды жекелештирүү ж.б. үчүн колдонулат. Бардык сайттардын cookie файлдарын башкаруу үчүн <ph name="BEGIN_LINK" />Жөндөөлөргө<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="1688867105868176567">Сайттын дайындары тазалансынбы?</translation>
@@ -55,7 +54,6 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Мб</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> үчүн уруксат берилди}}</translation>
 <translation id="2434158240863470628">Жүктөлүп алынды: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2440823041667407902">Жайгашкн жерд көрп туруу</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> тарабынан башкарылат</translation>
 <translation id="2498359688066513246">Жардам/пикир билдирүү</translation>
@@ -303,7 +301,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> колдонмосу үчүн уруксаттарды <ph name="BEGIN_LINK" />Android Жөндөөлөрүнөн<ph name="END_LINK" /> күйгүзүңүз.</translation>
-<translation id="945632385593298557">Микрофонуңузга мүмкүнчүлүк алуу</translation>
 <translation id="965817943346481315">Эгер сайт тажатма же адаштыруучу жарнамаларды көрсөтүп баштаса, бөгөттөлсүн (сунушталат)</translation>
 <translation id="967624055006145463">Сакталган дайындар</translation>
 </translationbundle>

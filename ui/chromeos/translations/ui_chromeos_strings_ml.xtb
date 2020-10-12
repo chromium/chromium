@@ -61,6 +61,7 @@
 <translation id="1538729222189715449">Linux ഫയലുകൾ തുറക്കുന്നു...</translation>
 <translation id="1547964879613821194">കനേഡിയന്‍ ഇംഗ്ലീഷ്</translation>
 <translation id="1556189134700913550">എല്ലാത്തിലും പ്രയോഗിക്കുക</translation>
+<translation id="1561842594491319104">Chrome ഉപകരണങ്ങൾ</translation>
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
 <translation id="158809615184981282">ഫാറോസി കീബോർഡ്</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +191,7 @@
 <translation id="3064388234319122767">ലിപ്യന്തരണം (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows ഫയലുകൾ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> എന്നതുമായി പങ്കിടുക</translation>
+<translation id="3083975830683400843">Chromebit-കൾ</translation>
 <translation id="3116361045094675131">യുകെ കീബോര്‍ഡ്</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">പൂർത്തിയായി</translation>
@@ -344,6 +346,7 @@
 <translation id="4804827417948292437">അവൊക്കാഡോ</translation>
 <translation id="4823651846660089135">ഉപകരണം വായിക്കാൻ മാത്രമുള്ള മോഡിലാണ്</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ഇനങ്ങൾ തിരഞ്ഞെടുത്തു</translation>
+<translation id="4843566743023903107">Chromebase-കൾ</translation>
 <translation id="4849981557599196363">ജർമ്മൻ (ബെൽജിയം)</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
@@ -473,6 +476,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">നിങ്ങളുടെ Google ഡ്രൈവിലെ ഫയലുകൾ പരിഷ്‌ക്കരിക്കാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക. മാറ്റങ്ങൾ, നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലേക്ക് സമന്വയിപ്പിക്കും.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ</translation>
+<translation id="5957366693331451795">Chromebox-കൾ</translation>
 <translation id="5982621672636444458">അടുക്കൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="6005282720244019462">ലാറ്റിന്‍ അമേരിക്കന്‍ കീബോര്‍ഡ്</translation>
 <translation id="6007237601604674381">നീക്കുന്നത് പരാജയപ്പെട്ടു. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +636,7 @@
     <ph name="MARKUP_4" />നിങ്ങളുടെ ഡൗൺലോഡുകളുടെ ഫോൾഡറിൽ നിന്നും ഫയലുകൾ ഇല്ലാതാക്കുക<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ഉപകരണം ഫോർമാറ്റ് ചെയ്യുക</translation>
 <translation id="7799329977874311193">HTML പ്രമാണം</translation>
+<translation id="7801354353640549019">Chromebook-കൾ</translation>
 <translation id="7805768142964895445">നില</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> കണ്ടെത്തി.
     <ph name="LINE_BREAK1" />
