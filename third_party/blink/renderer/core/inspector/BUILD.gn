@@ -10,6 +10,8 @@ import("//v8/gni/v8.gni")
 _inspector_protocol_dir = "//third_party/inspector_protocol"
 
 blink_core_sources("inspector") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "console_message.cc",
     "console_message.h",

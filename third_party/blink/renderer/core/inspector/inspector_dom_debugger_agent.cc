@@ -301,13 +301,13 @@ void InspectorDOMDebuggerAgent::DidRemoveDOMNode(Node* node) {
     dom_breakpoints_.erase(node);
     HeapVector<Member<Node>> stack(1, InspectorDOMAgent::InnerFirstChild(node));
     do {
-      Node* node = stack.back();
+      Node* child_node = stack.back();
       stack.pop_back();
-      if (!node)
+      if (!child_node)
         continue;
-      dom_breakpoints_.erase(node);
-      stack.push_back(InspectorDOMAgent::InnerFirstChild(node));
-      stack.push_back(InspectorDOMAgent::InnerNextSibling(node));
+      dom_breakpoints_.erase(child_node);
+      stack.push_back(InspectorDOMAgent::InnerFirstChild(child_node));
+      stack.push_back(InspectorDOMAgent::InnerNextSibling(child_node));
     } while (!stack.IsEmpty());
   }
 }

@@ -396,14 +396,14 @@ void ThreadDebugger::UnmonitorEventsCallback(
 
 // static
 void ThreadDebugger::GetEventListenersCallback(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.Length() < 1)
+    const v8::FunctionCallbackInfo<v8::Value>& callback_info) {
+  if (callback_info.Length() < 1)
     return;
 
   ThreadDebugger* debugger = static_cast<ThreadDebugger*>(
-      v8::Local<v8::External>::Cast(info.Data())->Value());
+      v8::Local<v8::External>::Cast(callback_info.Data())->Value());
   DCHECK(debugger);
-  v8::Isolate* isolate = info.GetIsolate();
+  v8::Isolate* isolate = callback_info.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   int group_id = debugger->ContextGroupId(ToExecutionContext(context));
 
@@ -412,8 +412,8 @@ void ThreadDebugger::GetEventListenersCallback(
   // listener compilation.
   if (group_id)
     debugger->muteMetrics(group_id);
-  InspectorDOMDebuggerAgent::EventListenersInfoForTarget(isolate, info[0],
-                                                         &listener_info);
+  InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
+      isolate, callback_info[0], &listener_info);
   if (group_id)
     debugger->unmuteMetrics(group_id);
 
@@ -449,7 +449,7 @@ void ThreadDebugger::GetEventListenersCallback(
     CreateDataPropertyInArray(context, listeners, output_index++,
                               listener_object);
   }
-  info.GetReturnValue().Set(result);
+  callback_info.GetReturnValue().Set(result);
 }
 
 void ThreadDebugger::consoleTime(const v8_inspector::StringView& title) {

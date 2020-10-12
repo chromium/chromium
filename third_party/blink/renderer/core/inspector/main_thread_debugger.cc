@@ -472,12 +472,12 @@ void MainThreadDebugger::XpathSelectorCallback(
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     v8::Local<v8::Array> nodes = v8::Array::New(isolate);
     wtf_size_t index = 0;
-    while (Node* node = result->iterateNext(exception_state)) {
+    while (Node* next_node = result->iterateNext(exception_state)) {
       if (exception_state.HadException())
         return;
       if (!CreateDataPropertyInArray(
                context, nodes, index++,
-               ToV8(node, info.Holder(), info.GetIsolate()))
+               ToV8(next_node, info.Holder(), info.GetIsolate()))
                .FromMaybe(false))
         return;
     }

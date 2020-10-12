@@ -586,16 +586,18 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
   size_t explicit_grid_end_track_count =
       layout_grid->ExplicitGridEndForDirection(direction);
 
-  LayoutUnit first_offset = GetPositionForFirstTrack(layout_grid, direction);
+  {
+    LayoutUnit first_offset = GetPositionForFirstTrack(layout_grid, direction);
 
-  // Always start negative numbers at the first line.
-  std::unique_ptr<protocol::DictionaryValue> pos =
-      protocol::DictionaryValue::create();
-  PhysicalOffset number_position(first_offset, alt_axis_pos);
-  if (direction == kForRows)
-    number_position = Transpose(number_position);
-  number_positions->pushValue(
-      BuildPosition(LocalToAbsolutePoint(node, number_position, scale)));
+    // Always start negative numbers at the first line.
+    std::unique_ptr<protocol::DictionaryValue> pos =
+        protocol::DictionaryValue::create();
+    PhysicalOffset number_position(first_offset, alt_axis_pos);
+    if (direction == kForRows)
+      number_position = Transpose(number_position);
+    number_positions->pushValue(
+        BuildPosition(LocalToAbsolutePoint(node, number_position, scale)));
+  }
 
   // Then go line by line, calculating the offset to fall in the middle of gaps
   // if needed.

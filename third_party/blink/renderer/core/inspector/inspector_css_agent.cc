@@ -1422,8 +1422,7 @@ Response InspectorCSSAgent::setRuleSelector(
   bool success = dom_agent_->History()->Perform(action, exception_state);
   if (success) {
     CSSStyleRule* rule = InspectorCSSAgent::AsCSSStyleRule(action->TakeRule());
-    InspectorStyleSheet* inspector_style_sheet =
-        InspectorStyleSheetForRule(rule);
+    inspector_style_sheet = InspectorStyleSheetForRule(rule);
     if (!inspector_style_sheet) {
       return Response::ServerError(
           "Failed to get inspector style sheet for rule.");
@@ -1457,8 +1456,7 @@ Response InspectorCSSAgent::setKeyframeKey(
   bool success = dom_agent_->History()->Perform(action, exception_state);
   if (success) {
     auto* rule = To<CSSKeyframeRule>(action->TakeRule());
-    InspectorStyleSheet* inspector_style_sheet =
-        BindStyleSheet(rule->parentStyleSheet());
+    inspector_style_sheet = BindStyleSheet(rule->parentStyleSheet());
     if (!inspector_style_sheet) {
       return Response::ServerError(
           "Failed to get inspector style sheet for rule.");
@@ -1870,8 +1868,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
     CSSRule* parent_rule = media->ParentRule();
     if (!parent_rule)
       return media_object;
-    InspectorStyleSheet* inspector_style_sheet =
-        BindStyleSheet(parent_rule->parentStyleSheet());
+    inspector_style_sheet = BindStyleSheet(parent_rule->parentStyleSheet());
     media_object->setRange(
         inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
   }

@@ -870,7 +870,7 @@ Response InspectorDOMAgent::setAttributesAsText(int element_id,
       attribute_name = attribute_name.DeprecatedLower();
     found_original_attribute |=
         name.isJust() && attribute_name == case_adjusted_name;
-    Response response =
+    response =
         dom_editor_->SetAttribute(element, attribute_name, attribute.Value());
     if (!response.IsSuccess())
       return response;

@@ -653,9 +653,9 @@ void Diff(const Vector<String>& list_a,
     }
   }
 
-  for (wtf_size_t i = 0; i < n; ++i) {
-    delete[] diff[i];
-    delete[] backtrack[i];
+  for (wtf_size_t idx = 0; idx < n; ++idx) {
+    delete[] diff[idx];
+    delete[] backtrack[idx];
   }
   delete[] diff;
   delete[] backtrack;
