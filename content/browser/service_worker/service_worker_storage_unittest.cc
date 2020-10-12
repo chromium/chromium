@@ -1610,7 +1610,48 @@ TEST_F(ServiceWorkerResourceStorageDiskTest, CleanupOnRestart) {
   EXPECT_TRUE(VerifyBasicResponse(storage_control(), kNewResourceId, true));
 }
 
-TEST_F(ServiceWorkerResourceStorageDiskTest, DeleteAndStartOver) {
+// Test fixture that uses disk storage, rather than memory. Useful for tests
+// that test persistence by simulating browser shutdown and restart.
+class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(InitUserDataDirectory());
+    ServiceWorkerStorageTest::SetUp();
+    LazyInitialize();
+
+    // Store a registration with a resource to make sure disk cache and
+    // database directories are created.
+    const GURL kScope("http://www.example.com/scope/");
+    const GURL kScript("http://www.example.com/script.js");
+    const int64_t kScriptSize = 5;
+    auto data = storage::mojom::ServiceWorkerRegistrationData::New();
+    data->registration_id = 1;
+    data->version_id = 1;
+    data->scope = kScope;
+    data->script = kScript;
+    data->navigation_preload_state =
+        blink::mojom::NavigationPreloadState::New();
+    data->resources_total_size_bytes = kScriptSize;
+
+    std::vector<ResourceRecord> resources;
+    resources.push_back(CreateResourceRecord(1, kScript, kScriptSize));
+
+    base::RunLoop loop;
+    storage_control()->StoreRegistration(
+        std::move(data), std::move(resources),
+        base::BindLambdaForTesting(
+            [&](storage::mojom::ServiceWorkerDatabaseStatus status) {
+              DCHECK_EQ(storage::mojom::ServiceWorkerDatabaseStatus::kOk,
+                        status);
+              loop.Quit();
+            }));
+    loop.Run();
+
+    WriteBasicResponse(storage_control(), 1);
+  }
+};
+
+TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver) {
   EXPECT_FALSE(storage()->IsDisabled());
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDiskCachePath()));
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDatabasePath()));
@@ -1627,8 +1668,7 @@ TEST_F(ServiceWorkerResourceStorageDiskTest, DeleteAndStartOver) {
   EXPECT_FALSE(base::DirectoryExists(storage()->GetDatabasePath()));
 }
 
-TEST_F(ServiceWorkerResourceStorageDiskTest,
-       DeleteAndStartOver_UnrelatedFileExists) {
+TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_UnrelatedFileExists) {
   EXPECT_FALSE(storage()->IsDisabled());
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDiskCachePath()));
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDatabasePath()));
@@ -1652,8 +1692,7 @@ TEST_F(ServiceWorkerResourceStorageDiskTest,
   EXPECT_FALSE(base::DirectoryExists(storage()->GetDatabasePath()));
 }
 
-TEST_F(ServiceWorkerResourceStorageDiskTest,
-       DeleteAndStartOver_OpenedFileExists) {
+TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
   EXPECT_FALSE(storage()->IsDisabled());
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDiskCachePath()));
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDatabasePath()));
