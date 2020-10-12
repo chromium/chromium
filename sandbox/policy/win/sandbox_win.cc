@@ -699,7 +699,7 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
         !profile->AddCapability(L"lpacServicesManagement") ||
         !profile->AddCapability(L"lpacSessionManagement") ||
         !profile->AddCapability(L"lpacAppExperience") ||
-        !profile->AddCapability(L"lpacAppServices") ||
+        !profile->AddCapability(L"lpacInstrumentation") ||
         !profile->AddCapability(L"lpacCryptoServices") ||
         !profile->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
       DLOG(ERROR)
