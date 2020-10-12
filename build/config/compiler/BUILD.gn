@@ -621,7 +621,7 @@ config("compiler") {
       # files on Windows (https://crbug.com/871962).
       ldflags += [
         "/opt:lldlto=" + lto_opt_level,
-        "/opt:lldltojobs=" + max_jobs_per_link,
+        "/opt:lldltojobs=all",
 
         # Experimentally determined to yield a reasonable trade-off between
         # build time, run-time performance, and binary size.
@@ -637,10 +637,11 @@ config("compiler") {
       # usage in crbug.com/1038040. Note this will increase build time in
       # Chrome OS.
 
-      # Limit the parallelism to avoid too aggressive competition between
-      # linker jobs. This is still suboptimal to a potential dynamic
-      # resource allocation scheme, but should be good enough.
-      ldflags += [ "-Wl,--thinlto-jobs=" + max_jobs_per_link ]
+      # In ThinLTO builds, we run at most one link process at a time,
+      # and let it use all cores.
+      # TODO(thakis): Check if '=0' (that is, number of cores, instead
+      # of "all" which means number of hardware threads) is faster.
+      ldflags += [ "-Wl,--thinlto-jobs=all" ]
 
       # Limit the size of the ThinLTO cache to the lesser of 10% of
       # available disk space, 10GB and 100000 files.
