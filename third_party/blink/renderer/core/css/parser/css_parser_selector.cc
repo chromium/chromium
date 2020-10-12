@@ -59,8 +59,17 @@ void CSSParserSelector::SetSelectorList(
 }
 
 bool CSSParserSelector::IsSimple() const {
-  if (selector_->SelectorList() ||
-      selector_->Match() == CSSSelector::kPseudoElement)
+  if (selector_->SelectorList()) {
+    switch (selector_->GetPseudoType()) {
+      case CSSSelector::kPseudoIs:
+      case CSSSelector::kPseudoWhere:
+        break;
+      default:
+        return false;
+    }
+  }
+
+  if (selector_->Match() == CSSSelector::kPseudoElement)
     return false;
 
   if (!tag_history_)

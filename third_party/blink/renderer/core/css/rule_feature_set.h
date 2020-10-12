@@ -403,7 +403,8 @@ class CORE_EXPORT RuleFeatureSet {
       CSSSelector::PseudoType = CSSSelector::kPseudoUnknown);
   void ExtractInvalidationSetFeaturesFromSelectorList(const CSSSelector&,
                                                       InvalidationSetFeatures&,
-                                                      PositionType);
+                                                      PositionType,
+                                                      CSSSelector::PseudoType);
   void UpdateFeaturesFromCombinator(
       const CSSSelector&,
       const CSSSelector* last_compound_selector_in_adjacent_chain,

@@ -720,7 +720,8 @@ void RuleFeatureSet::UpdateRuleSetInvalidation(
 void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     const CSSSelector& simple_selector,
     InvalidationSetFeatures& features,
-    PositionType position) {
+    PositionType position,
+    CSSSelector::PseudoType pseudo_type) {
   AutoRestoreMaxDirectAdjacentSelectors restore_max(&features);
 
   const CSSSelectorList* selector_list = simple_selector.SelectorList();
@@ -755,10 +756,15 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   }
   // Don't add any features if one of the sub-selectors of does not contain
   // any invalidation set features. E.g. :-webkit-any(*, span).
-  if (all_sub_selectors_have_features)
-    features.NarrowToFeatures(any_features);
-  features.has_features_for_rule_set_invalidation |=
-      all_sub_selectors_have_features_for_ruleset_invalidation;
+  //
+  // :not() counts as not having features, since we should invalidate elements
+  // _without_ those features.
+  if (pseudo_type != CSSSelector::kPseudoNot) {
+    if (all_sub_selectors_have_features)
+      features.NarrowToFeatures(any_features);
+    features.has_features_for_rule_set_invalidation |=
+        all_sub_selectors_have_features_for_ruleset_invalidation;
+  }
 }
 
 const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
@@ -805,7 +811,7 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     }
 
     ExtractInvalidationSetFeaturesFromSelectorList(*simple_selector, features,
-                                                   position);
+                                                   position, pseudo);
 
     if (features.invalidation_flags.InvalidatesParts())
       metadata_.invalidates_parts = true;

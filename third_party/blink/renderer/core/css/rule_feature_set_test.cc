@@ -1566,6 +1566,22 @@ RefTestData ref_equal_test_data[] = {
     {":is(.a, *) .b", ".a .b, * .b"},
     {":is(.a + .b, .c) *", ".a + .b *, .c *"},
     {":is(.a + *, .c) *", ".a + * *, .c *"},
+    // TODO(andruud): At the time of writing these :not() tests, we only
+    // support a single simple selector inside :not(). When a complex selector
+    // list is supported, some refs should be rewritten to be less strange.
+    {":not(:is(.a))", ":not(.a)"},
+    {":not(:is(.a, .b))", ":not(.a), :not(.b)"},
+    {":not(:is(.a .b))", ":not(.b), .a .b"},
+    {":not(:is(.a .b, .c + .d))", ":not(.b), :not(.d), .a .b, .c + .d"},
+    {".a :not(:is(.b .c))", ".a :not(.c), .b .c"},
+    {":not(:is(.a)) .b", ":not(.a) .b"},
+    {":not(:is(.a .b, .c)) :not(:is(.d + .e, .f))",
+     ":not(.a):not(.b) :not(.f), :not(.a):not(.b) :not(.e),"
+     ":not(.c) :not(.f), .d + .e"},
+    // We don't have any special support for nested :not(): it's treated
+    // as a single :not() level in terms of invalidation:
+    {".a :not(:is(:not(.b), .c))", ".a :not(.b), .a :not(.c)"},
+    {":not(:is(:not(.a), .b)) .c", ":not(.a) .c, :not(.b) .c"},
 
     // clang-format on
 };
