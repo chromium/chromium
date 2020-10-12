@@ -54,6 +54,10 @@ void RecordUMAHistogram(MarketingBackendConnector::BackendConnectorEvent event,
                         const std::string& country) {
   base::UmaHistogramEnumeration(
       "OOBE.MarketingOptInScreen.BackendConnector." + country, event);
+
+  // Generic event aggregating data from all countries.
+  base::UmaHistogramEnumeration("OOBE.MarketingOptInScreen.BackendConnector",
+                                event);
 }
 
 std::unique_ptr<network::ResourceRequest> GetResourceRequest() {

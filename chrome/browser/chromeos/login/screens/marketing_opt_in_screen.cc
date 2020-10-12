@@ -58,6 +58,8 @@ void RecordOptInAndOptOutRates(const bool user_opted_in,
 
   base::UmaHistogramEnumeration("OOBE.MarketingOptInScreen.Event." + country,
                                 event);
+  // Generic event aggregating data from all countries.
+  base::UmaHistogramEnumeration("OOBE.MarketingOptInScreen.Event", event);
 }
 
 void RecordGeolocationResolve(MarketingOptInScreen::GeolocationEvent event) {
