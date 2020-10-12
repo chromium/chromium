@@ -481,13 +481,10 @@ bool ProcessMetrics::ParseProcTimeInState(
 }
 
 CPU::CoreType ProcessMetrics::GetCoreType(int core_index) {
-  if (!core_index_to_type_)
-    core_index_to_type_ = CPU::GuessCoreTypes();
-
-  if (static_cast<size_t>(core_index) >= core_index_to_type_->size())
+  const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
+  if (static_cast<size_t>(core_index) >= core_types.size())
     return CPU::CoreType::kUnknown;
-
-  return core_index_to_type_->at(static_cast<size_t>(core_index));
+  return core_types[static_cast<size_t>(core_index)];
 }
 
 const char kProcSelfExe[] = "/proc/self/exe";

@@ -388,16 +388,14 @@ bool ParseTimeInState(const std::string& content,
   return true;
 }
 
-}  // namespace
-
-// static
-std::vector<CPU::CoreType> CPU::GuessCoreTypes() {
+std::vector<CPU::CoreType> GuessCoreTypes() {
   // Try to guess the CPU architecture and cores of each cluster by comparing
   // the maximum frequencies of the available (online and offline) cores.
   const char kCPUMaxFreqPath[] =
       "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq";
   int num_cpus = SysInfo::NumberOfProcessors();
-  std::vector<CPU::CoreType> core_index_to_type(num_cpus, CoreType::kUnknown);
+  std::vector<CPU::CoreType> core_index_to_type(num_cpus,
+                                                CPU::CoreType::kUnknown);
 
   std::vector<uint32_t> max_core_frequencies_mhz(num_cpus, 0);
   flat_set<uint32_t> frequencies_mhz;
@@ -424,9 +422,9 @@ std::vector<CPU::CoreType> CPU::GuessCoreTypes() {
   for (int core_index = 0; core_index < num_cpus; ++core_index) {
     uint32_t core_frequency_mhz = max_core_frequencies_mhz[core_index];
 
-    CoreType core_type = CoreType::kOther;
+    CPU::CoreType core_type = CPU::CoreType::kOther;
     if (num_frequencies == 1u) {
-      core_type = CoreType::kSymmetric;
+      core_type = CPU::CoreType::kSymmetric;
     } else if (num_frequencies == 2u || num_frequencies == 3u) {
       auto it = frequencies_mhz.find(core_frequency_mhz);
       if (it != frequencies_mhz.end()) {
@@ -435,16 +433,17 @@ std::vector<CPU::CoreType> CPU::GuessCoreTypes() {
         switch (frequency_index) {
           case 0:
             core_type = num_frequencies == 2u
-                            ? CoreType::kBigLittle_Little
-                            : CoreType::kBigLittleBigger_Little;
+                            ? CPU::CoreType::kBigLittle_Little
+                            : CPU::CoreType::kBigLittleBigger_Little;
             break;
           case 1:
-            core_type = num_frequencies == 2u ? CoreType::kBigLittle_Big
-                                              : CoreType::kBigLittleBigger_Big;
+            core_type = num_frequencies == 2u
+                            ? CPU::CoreType::kBigLittle_Big
+                            : CPU::CoreType::kBigLittleBigger_Big;
             break;
           case 2:
             DCHECK_EQ(num_frequencies, 3u);
-            core_type = CoreType::kBigLittleBigger_Bigger;
+            core_type = CPU::CoreType::kBigLittleBigger_Bigger;
             break;
           default:
             NOTREACHED();
@@ -458,6 +457,14 @@ std::vector<CPU::CoreType> CPU::GuessCoreTypes() {
   return core_index_to_type;
 }
 
+}  // namespace
+
+// static
+const std::vector<CPU::CoreType>& CPU::GetGuessedCoreTypes() {
+  static NoDestructor<std::vector<CoreType>> kCoreTypes(GuessCoreTypes());
+  return *kCoreTypes.get();
+}
+
 // static
 bool CPU::GetTimeInState(TimeInState& time_in_state) {
   time_in_state.clear();
@@ -467,7 +474,7 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
   if (!kSupportsTimeInState)
     return false;
 
-  static NoDestructor<std::vector<CoreType>> kCoreTypes(GuessCoreTypes());
+  static const std::vector<CoreType>& kCoreTypes = GetGuessedCoreTypes();
 
   // time_in_state is reported per cluster. Identify the first cores of each
   // cluster.
@@ -516,7 +523,7 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
     if (!ReadFileToString(time_in_state_path, &buffer))
       return false;
 
-    if (!ParseTimeInState(buffer, (*kCoreTypes)[cluster_core_index],
+    if (!ParseTimeInState(buffer, kCoreTypes[cluster_core_index],
                           cluster_core_index, time_in_state)) {
       return false;
     }

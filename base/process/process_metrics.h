@@ -249,9 +249,6 @@ class BASE_EXPORT ProcessMetrics {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_AIX)
   CPU::CoreType GetCoreType(int core_index);
-
-  // Initialized on the first call to GetCoreType().
-  base::Optional<std::vector<CPU::CoreType>> core_index_to_type_;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
         // defined(OS_AIX)
 

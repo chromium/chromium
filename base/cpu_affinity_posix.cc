@@ -17,7 +17,7 @@ const cpu_set_t& AllCores() {
   static const cpu_set_t kAllCores = []() {
     cpu_set_t set;
     CPU_ZERO(&set);
-    std::vector<CPU::CoreType> core_types = CPU::GuessCoreTypes();
+    const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
     if (core_types.empty()) {
       memset(&set, 0xff, sizeof(set));
     } else {
@@ -31,7 +31,7 @@ const cpu_set_t& AllCores() {
 
 const cpu_set_t& LittleCores() {
   static const cpu_set_t kLittleCores = []() {
-    std::vector<CPU::CoreType> core_types = CPU::GuessCoreTypes();
+    const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
     if (core_types.empty())
       return AllCores();
 
@@ -64,7 +64,7 @@ const cpu_set_t& LittleCores() {
 
 bool HasBigCpuCores() {
   static const bool kHasBigCores = []() {
-    std::vector<CPU::CoreType> core_types = CPU::GuessCoreTypes();
+    const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
     if (core_types.empty())
       return false;
     for (CPU::CoreType core_type : core_types) {
