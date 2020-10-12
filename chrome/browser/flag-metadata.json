@@ -329,7 +329,7 @@
   {
     "name": "autofill-keyboard-accessory-view",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "autofill-off-no-server-data",
@@ -1215,7 +1215,7 @@
   {
     "name": "enable-autofill-manual-fallback",
     "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "enable-autofill-password-reauth-ios",
@@ -2567,8 +2567,8 @@
   },
   {
     "name": "filling-passwords-from-any-origin",
-    "owners": [ "fhorschig" ],
-    "expiry_milestone": 87
+    "owners": [ "fhorschig", "redatawfik" ],
+    "expiry_milestone": 90
   },
   {
     "name": "focus-mode",
