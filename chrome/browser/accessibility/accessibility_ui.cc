@@ -91,6 +91,8 @@ static const char kDisabled[] = "disabled";
 static const char kOff[] = "off";
 static const char kOn[] = "on";
 
+using ui::AXPropertyFilter;
+
 namespace {
 
 std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
@@ -259,20 +261,19 @@ void HandleAccessibilityRequestCallback(
 }
 
 bool MatchesPropertyFilters(
-    const std::vector<content::AccessibilityTreeFormatter::PropertyFilter>&
-        property_filters,
+    const std::vector<AXPropertyFilter>& property_filters,
     const std::string& text) {
   bool allow = false;
   for (const auto& filter : property_filters) {
     if (base::MatchPattern(text, filter.match_str)) {
       switch (filter.type) {
-        case content::AccessibilityTreeFormatter::PropertyFilter::ALLOW_EMPTY:
+        case AXPropertyFilter::ALLOW_EMPTY:
           allow = true;
           break;
-        case content::AccessibilityTreeFormatter::PropertyFilter::ALLOW:
+        case AXPropertyFilter::ALLOW:
           allow = (!base::MatchPattern(text, "*=''"));
           break;
-        case content::AccessibilityTreeFormatter::PropertyFilter::DENY:
+        case AXPropertyFilter::DENY:
           allow = false;
           break;
       }
@@ -284,8 +285,7 @@ bool MatchesPropertyFilters(
 std::string RecursiveDumpAXPlatformNodeAsString(
     ui::AXPlatformNode* node,
     int indent,
-    const std::vector<content::AccessibilityTreeFormatter::PropertyFilter>&
-        property_filters) {
+    const std::vector<AXPropertyFilter>& property_filters) {
   if (!node)
     return "";
   std::string str(2 * indent, '+');
@@ -311,11 +311,9 @@ std::string RecursiveDumpAXPlatformNodeAsString(
 // Add property filters to the property_filters vector for the given property
 // filter type. The attributes are passed in as a string with each attribute
 // separated by a space.
-void AddPropertyFilters(
-    std::vector<content::AccessibilityTreeFormatter::PropertyFilter>&
-        property_filters,
-    const std::string& attributes,
-    content::AccessibilityTreeFormatter::PropertyFilter::Type type) {
+void AddPropertyFilters(std::vector<AXPropertyFilter>& property_filters,
+                        const std::string& attributes,
+                        AXPropertyFilter::Type type) {
   for (const std::string& attribute : base::SplitString(
            attributes, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     property_filters.emplace_back(attribute, type);
@@ -565,16 +563,11 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
   // Enable AXMode to access to AX objects.
   ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 
-  std::vector<content::AccessibilityTreeFormatter::PropertyFilter>
-      property_filters;
-  AddPropertyFilters(
-      property_filters, allow,
-      content::AccessibilityTreeFormatter::PropertyFilter::ALLOW);
-  AddPropertyFilters(
-      property_filters, allow_empty,
-      content::AccessibilityTreeFormatter::PropertyFilter::ALLOW_EMPTY);
-  AddPropertyFilters(property_filters, deny,
-                     content::AccessibilityTreeFormatter::PropertyFilter::DENY);
+  std::vector<AXPropertyFilter> property_filters;
+  AddPropertyFilters(property_filters, allow, AXPropertyFilter::ALLOW);
+  AddPropertyFilters(property_filters, allow_empty,
+                     AXPropertyFilter::ALLOW_EMPTY);
+  AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
 
   PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
   bool internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
@@ -608,16 +601,11 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
   AllowJavascript();
 
 #if !defined(OS_ANDROID)
-  std::vector<content::AccessibilityTreeFormatter::PropertyFilter>
-      property_filters;
-  AddPropertyFilters(
-      property_filters, allow,
-      content::AccessibilityTreeFormatter::PropertyFilter::ALLOW);
-  AddPropertyFilters(
-      property_filters, allow_empty,
-      content::AccessibilityTreeFormatter::PropertyFilter::ALLOW_EMPTY);
-  AddPropertyFilters(property_filters, deny,
-                     content::AccessibilityTreeFormatter::PropertyFilter::DENY);
+  std::vector<AXPropertyFilter> property_filters;
+  AddPropertyFilters(property_filters, allow, AXPropertyFilter::ALLOW);
+  AddPropertyFilters(property_filters, allow_empty,
+                     AXPropertyFilter::ALLOW_EMPTY);
+  AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
 
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->session_id().id() == session_id) {

@@ -268,9 +268,9 @@ AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
       AccessibilityTreeFormatterBlink::CreateBlink();
   accessibility_tree_formatter->set_show_ids(true);
   accessibility_tree_formatter->SetPropertyFilters(
-      {{"name=*", AccessibilityTreeFormatter::PropertyFilter::ALLOW},
-       {"location=*", AccessibilityTreeFormatter::PropertyFilter::ALLOW},
-       {"size=*", AccessibilityTreeFormatter::PropertyFilter::ALLOW}});
+      {{"name=*", ui::AXPropertyFilter::ALLOW},
+       {"location=*", ui::AXPropertyFilter::ALLOW},
+       {"size=*", ui::AXPropertyFilter::ALLOW}});
   std::string accessibility_tree;
   accessibility_tree_formatter->FormatAccessibilityTreeForTesting(
       GetRootAndAssertNonNull(), &accessibility_tree);

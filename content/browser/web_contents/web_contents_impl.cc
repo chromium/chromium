@@ -4113,7 +4113,7 @@ void WebContentsImpl::AccessibilityLocationChangesReceived(
 
 std::string WebContentsImpl::DumpAccessibilityTree(
     bool internal,
-    std::vector<AccessibilityTreeFormatter::PropertyFilter> property_filters) {
+    std::vector<ui::AXPropertyFilter> property_filters) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DumpAccessibilityTree");
   auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
   DCHECK(ax_mgr);

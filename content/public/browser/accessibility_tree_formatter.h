@@ -57,33 +57,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
     : public AccessibilityTestExpectationsLocator {
  public:
   using AXTreeSelector = ui::AXTreeSelector;
-
-  // A single property filter specification. Represents a parsed string of the
-  // filter_str;match_str format, where `filter_str` has
-  // :line_num_0,...:line_num_N format, `match_str` has format of
-  // property_str=value_str. For example, :1,:3;AXDOMClassList=*.
-  //
-  // Longer version: `filter_str` is a comma separated list of the line
-  // indexes from the output accessible tree, and serves to narrow down the
-  // property calls to the accessible object placed on those line indexes only;
-  // `match_str` is used to match properties by property name and value.
-  // For example, :1,:3;AXDOMClassList=*
-  // will query a AXDOMClassList attribute on accessible objects placed at 1st
-  // and 3rd lines in the output accessible tree.
-  // Also see
-  // DumpAccessibilityTestBase::ParseHtmlForExtraDirectives() for more
-  // information.
-  struct CONTENT_EXPORT PropertyFilter {
-    enum Type { ALLOW, ALLOW_EMPTY, DENY };
-
-    std::string match_str;
-    std::string property_str;
-    std::string filter_str;
-    Type type;
-
-    PropertyFilter(const std::string& str, Type type);
-    PropertyFilter(const PropertyFilter&);
-  };
+  using AXPropertyFilter = ui::AXPropertyFilter;
 
   // A single node filter specification  which will exclude any node where the
   // value of the named property matches the given pattern.
@@ -118,10 +92,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   static TestPass GetTestPass(size_t index);
 
   virtual void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) = 0;
+      std::vector<AXPropertyFilter>* property_filters) = 0;
 
   static bool MatchesPropertyFilters(
-      const std::vector<PropertyFilter>& property_filters,
+      const std::vector<AXPropertyFilter>& property_filters,
       const std::string& text,
       bool default_result);
 
@@ -156,7 +130,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   // Set regular expression filters that apply to each property of every node
   // before it's output.
   virtual void SetPropertyFilters(
-      const std::vector<PropertyFilter>& property_filters) = 0;
+      const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Set regular expression filters that apply to every node before output.
   virtual void SetNodeFilters(const std::vector<NodeFilter>& node_filters) = 0;

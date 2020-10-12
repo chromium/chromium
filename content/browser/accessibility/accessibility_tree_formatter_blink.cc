@@ -160,7 +160,7 @@ AccessibilityTreeFormatterBlink::AccessibilityTreeFormatterBlink()
 AccessibilityTreeFormatterBlink::~AccessibilityTreeFormatterBlink() {}
 
 void AccessibilityTreeFormatterBlink::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
+    std::vector<AXPropertyFilter>* property_filters) {
   // Noisy, perhaps add later:
   //   editable, focus*, horizontal, linked, richlyEditable, vertical
   // Too flaky: hovered, offscreen
@@ -172,7 +172,7 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
   AddPropertyFilter(property_filters, "required");
   AddPropertyFilter(property_filters, "select*");
   AddPropertyFilter(property_filters, "selectedFromFocus=*",
-                    PropertyFilter::DENY);
+                    AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "visited");
   // Other attributes
   AddPropertyFilter(property_filters, "busy=true");
@@ -189,7 +189,7 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
   AddPropertyFilter(property_filters, "invalidState=*");
   AddPropertyFilter(property_filters, "ignored*");
   AddPropertyFilter(property_filters, "invalidState=false",
-                    PropertyFilter::DENY);  // Don't show false value
+                    AXPropertyFilter::DENY);  // Don't show false value
   AddPropertyFilter(property_filters, "roleDescription=*");
   AddPropertyFilter(property_filters, "errormessageId=*");
 }

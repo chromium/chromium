@@ -39,7 +39,7 @@ const char kSkipChildren[] = "@NO_CHILDREN_DUMP";
 
 // static
 PropertyNode PropertyNode::FromPropertyFilter(
-    const AccessibilityTreeFormatter::PropertyFilter& filter) {
+    const ui::AXPropertyFilter& filter) {
   // Property invocation: property_str expected format is
   // prop_name or prop_name(arg1, ... argN).
   PropertyNode root;
@@ -265,23 +265,6 @@ PropertyNode::iterator PropertyNode::Parse(PropertyNode* node,
 // AccessibilityTreeFormatter
 //
 
-AccessibilityTreeFormatter::PropertyFilter::PropertyFilter(
-    const PropertyFilter&) = default;
-
-AccessibilityTreeFormatter::PropertyFilter::PropertyFilter(
-    const std::string& str,
-    Type type)
-    : match_str(str), type(type) {
-  size_t index = str.find(';');
-  if (index != std::string::npos) {
-    filter_str = str.substr(0, index);
-    if (index + 1 < str.length()) {
-      match_str = str.substr(index + 1, std::string::npos);
-    }
-  }
-  property_str = match_str.substr(0, match_str.find('='));
-}
-
 AccessibilityTreeFormatter::TestPass AccessibilityTreeFormatter::GetTestPass(
     size_t index) {
   std::vector<content::AccessibilityTreeFormatter::TestPass> passes =
@@ -294,7 +277,7 @@ AccessibilityTreeFormatter::TestPass AccessibilityTreeFormatter::GetTestPass(
 std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     BrowserAccessibilityManager* ax_mgr,
     bool internal,
-    std::vector<PropertyFilter> property_filters) {
+    std::vector<AXPropertyFilter> property_filters) {
   std::unique_ptr<AccessibilityTreeFormatter> formatter;
   if (internal)
     formatter = std::make_unique<AccessibilityTreeFormatterBlink>();
@@ -310,7 +293,7 @@ std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
 }
 
 bool AccessibilityTreeFormatter::MatchesPropertyFilters(
-    const std::vector<PropertyFilter>& property_filters,
+    const std::vector<AXPropertyFilter>& property_filters,
     const std::string& text,
     bool default_result) {
   bool allow = default_result;
@@ -326,13 +309,13 @@ bool AccessibilityTreeFormatter::MatchesPropertyFilters(
          filter.match_str[filter.match_str.length() - 1] != '*' &&
          base::MatchPattern(text, filter.match_str + "=*"))) {
       switch (filter.type) {
-        case PropertyFilter::ALLOW_EMPTY:
+        case AXPropertyFilter::ALLOW_EMPTY:
           allow = true;
           break;
-        case PropertyFilter::ALLOW:
+        case AXPropertyFilter::ALLOW:
           allow = (!base::MatchPattern(text, "*=''"));
           break;
-        case PropertyFilter::DENY:
+        case AXPropertyFilter::DENY:
           allow = false;
           break;
       }
@@ -428,7 +411,7 @@ void AccessibilityTreeFormatterBase::RecursiveFormatAccessibilityTree(
 }
 
 void AccessibilityTreeFormatterBase::SetPropertyFilters(
-    const std::vector<PropertyFilter>& property_filters) {
+    const std::vector<AXPropertyFilter>& property_filters) {
   property_filters_ = property_filters;
 }
 
@@ -462,11 +445,11 @@ AccessibilityTreeFormatterBase::PropertyFilterNodesFor(
     }
 
     switch (filter.type) {
-      case PropertyFilter::ALLOW_EMPTY:
-      case PropertyFilter::ALLOW:
+      case AXPropertyFilter::ALLOW_EMPTY:
+      case AXPropertyFilter::ALLOW:
         list.push_back(std::move(property_node));
         break;
-      case PropertyFilter::DENY:
+      case AXPropertyFilter::DENY:
         break;
       default:
         break;
@@ -477,7 +460,7 @@ AccessibilityTreeFormatterBase::PropertyFilterNodesFor(
 
 bool AccessibilityTreeFormatterBase::HasMatchAllPropertyFilter() const {
   for (const auto& filter : property_filters_) {
-    if (filter.type == PropertyFilter::ALLOW && filter.match_str == "*") {
+    if (filter.type == AXPropertyFilter::ALLOW && filter.match_str == "*") {
       return true;
     }
   }
@@ -537,13 +520,13 @@ bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
 }
 
 void AccessibilityTreeFormatterBase::AddPropertyFilter(
-    std::vector<PropertyFilter>* property_filters,
+    std::vector<AXPropertyFilter>* property_filters,
     std::string filter,
-    PropertyFilter::Type type) {
-  property_filters->push_back(PropertyFilter(filter, type));
+    AXPropertyFilter::Type type) {
+  property_filters->push_back(AXPropertyFilter(filter, type));
 }
 
 void AccessibilityTreeFormatterBase::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {}
+    std::vector<AXPropertyFilter>* property_filters) {}
 
 }  // namespace content

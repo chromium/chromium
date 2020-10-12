@@ -36,7 +36,7 @@ class AXTreeServer final {
            bool use_json);
 
   // Generates property filters.
-  std::vector<AccessibilityTreeFormatter::PropertyFilter> GetPropertyFilters(
+  std::vector<ui::AXPropertyFilter> GetPropertyFilters(
       const base::FilePath& filters_path);
 
   // Formats and dumps into console the tree.

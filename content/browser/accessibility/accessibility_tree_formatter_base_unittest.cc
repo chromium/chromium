@@ -31,8 +31,7 @@ class AccessibilityTreeFormatterBaseTest : public testing::Test {
 };
 
 PropertyNode Parse(const char* input) {
-  AccessibilityTreeFormatter::PropertyFilter filter(
-      input, AccessibilityTreeFormatter::PropertyFilter::ALLOW);
+  ui::AXPropertyFilter filter(input, ui::AXPropertyFilter::ALLOW);
   return PropertyNode::FromPropertyFilter(filter);
 }
 

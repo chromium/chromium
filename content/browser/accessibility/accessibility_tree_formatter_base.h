@@ -37,8 +37,7 @@ namespace content {
 class CONTENT_EXPORT PropertyNode final {
  public:
   // Parses a property node from a string.
-  static PropertyNode FromPropertyFilter(
-      const AccessibilityTreeFormatter::PropertyFilter& filter);
+  static PropertyNode FromPropertyFilter(const ui::AXPropertyFilter& filter);
 
   PropertyNode();
   PropertyNode(PropertyNode&&);
@@ -107,7 +106,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   static std::string DumpAccessibilityTreeFromManager(
       BrowserAccessibilityManager* ax_mgr,
       bool internal,
-      std::vector<PropertyFilter> property_filters);
+      std::vector<AXPropertyFilter> property_filters);
 
   // Populates the given DictionaryValue with the accessibility tree.
   // The dictionary contains a key/value pair for each attribute of the node,
@@ -135,7 +134,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
 
   // AccessibilityTreeFormatter overrides.
   void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
+      std::vector<AXPropertyFilter>* property_filters) override;
   std::unique_ptr<base::DictionaryValue> FilterAccessibilityTree(
       const base::DictionaryValue& dict) override;
   void FormatAccessibilityTree(const base::DictionaryValue& tree_node,
@@ -143,7 +142,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   void FormatAccessibilityTreeForTesting(ui::AXPlatformNodeDelegate* root,
                                          std::string* contents) override;
   void SetPropertyFilters(
-      const std::vector<PropertyFilter>& property_filters) override;
+      const std::vector<AXPropertyFilter>& property_filters) override;
   void SetNodeFilters(const std::vector<NodeFilter>& node_filters) override;
   void set_show_ids(bool show_ids) override;
   base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() override;
@@ -194,9 +193,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   bool WriteAttribute(bool include_by_default,
                       const std::string& attr,
                       std::string* line);
-  void AddPropertyFilter(std::vector<PropertyFilter>* property_filters,
+  void AddPropertyFilter(std::vector<AXPropertyFilter>* property_filters,
                          std::string filter,
-                         PropertyFilter::Type type = PropertyFilter::ALLOW);
+                         AXPropertyFilter::Type type = AXPropertyFilter::ALLOW);
   bool show_ids() { return show_ids_; }
 
  private:
@@ -210,7 +209,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
 
   // Property filters used when formatting the accessibility tree as text.
   // Any property which matches a property filter will be skipped.
-  std::vector<PropertyFilter> property_filters_;
+  std::vector<AXPropertyFilter> property_filters_;
 
   // Node filters used when formatting the accessibility tree as text.
   // Any node which matches a node wilder will be skipped, along with all its

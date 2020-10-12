@@ -55,7 +55,7 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
 
   static void SetUpCommandLineForTestPass(base::CommandLine* command_line);
   void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
+      std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
   void RecursiveBuildAccessibilityTree(
@@ -126,7 +126,7 @@ void AccessibilityTreeFormatterWin::SetUpCommandLineForTestPass(
 }
 
 void AccessibilityTreeFormatterWin::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
+    std::vector<AXPropertyFilter>* property_filters) {
   // Too noisy: HOTTRACKED, LINKED, SELECTABLE, IA2_STATE_EDITABLE,
   //            IA2_STATE_OPAQUE, IA2_STATE_SELECTAbLE_TEXT,
   //            IA2_STATE_SINGLE_LINE, IA2_STATE_VERTICAL.
@@ -167,9 +167,9 @@ void AccessibilityTreeFormatterWin::AddDefaultFilters(
   AddPropertyFilter(property_filters, "IA2_STATE_STALE");
   AddPropertyFilter(property_filters, "IA2_STATE_TRANSIENT");
   // Reduce flakiness.
-  AddPropertyFilter(property_filters, "FOCUSED", PropertyFilter::DENY);
-  AddPropertyFilter(property_filters, "HOTTRACKED", PropertyFilter::DENY);
-  AddPropertyFilter(property_filters, "OFFSCREEN", PropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "FOCUSED", AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "HOTTRACKED", AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "OFFSCREEN", AXPropertyFilter::DENY);
 }
 
 AccessibilityTreeFormatterWin::AccessibilityTreeFormatterWin() {

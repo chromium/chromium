@@ -276,7 +276,7 @@ AccessibilityTreeFormatterUia::AccessibilityTreeFormatterUia() {
 AccessibilityTreeFormatterUia::~AccessibilityTreeFormatterUia() {}
 
 void AccessibilityTreeFormatterUia::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
+    std::vector<AXPropertyFilter>* property_filters) {
   // Too noisy: IsKeyboardFocusable, IsDataValidForForm, UIA_ScrollPatternId,
   //  Value.IsReadOnly
 
@@ -321,7 +321,7 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
   // UIA_ValuePatternId
   AddPropertyFilter(property_filters, "Value.Value=*");
   AddPropertyFilter(property_filters, "Value.Value='http*'",
-                    PropertyFilter::DENY);
+                    AXPropertyFilter::DENY);
   // UIA_WindowPatternId
   AddPropertyFilter(property_filters, "Window.IsModal=*");
 }

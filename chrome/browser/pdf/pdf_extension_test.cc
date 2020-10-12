@@ -3162,13 +3162,13 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
  private:
-  using PropertyFilter = content::AccessibilityTreeFormatter::PropertyFilter;
+  using AXPropertyFilter = ui::AXPropertyFilter;
 
   //  See chrome/test/data/pdf/accessibility/readme.md for more info.
   void ParsePdfForExtraDirectives(
       const std::string& pdf_contents,
       content::AccessibilityTreeFormatter* formatter,
-      std::vector<PropertyFilter>* property_filters) {
+      std::vector<AXPropertyFilter>* property_filters) {
     const char kCommentMark = '%';
     for (const std::string& line : base::SplitString(
              pdf_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
@@ -3178,8 +3178,8 @@ class PDFExtensionAccessibilityTreeDumpTest
         const std::string& allow_str = formatter->GetAllowString();
         if (base::StartsWith(trimmed_line, allow_str,
                              base::CompareCase::SENSITIVE)) {
-          property_filters->push_back(PropertyFilter(
-              trimmed_line.substr(allow_str.size()), PropertyFilter::ALLOW));
+          property_filters->push_back(AXPropertyFilter(
+              trimmed_line.substr(allow_str.size()), AXPropertyFilter::ALLOW));
         }
       }
     }
@@ -3196,7 +3196,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     // file.
     std::unique_ptr<content::AccessibilityTreeFormatter> formatter =
         test_pass_.create_formatter();
-    std::vector<PropertyFilter> property_filters;
+    std::vector<AXPropertyFilter> property_filters;
     formatter->AddDefaultFilters(&property_filters);
     AddDefaultFilters(&property_filters);
     ParsePdfForExtraDirectives(pdf_contents, formatter.get(),
@@ -3250,18 +3250,19 @@ class PDFExtensionAccessibilityTreeDumpTest
         test_file_path, expected_file_path, actual_lines, *expected_lines));
   }
 
-  void AddDefaultFilters(std::vector<PropertyFilter>* property_filters) {
+  void AddDefaultFilters(std::vector<AXPropertyFilter>* property_filters) {
     AddPropertyFilter(property_filters, "value='*'");
     // The value attribute on the document object contains the URL of the
     // current page which will not be the same every time the test is run.
     // The PDF plugin uses the 'chrome-extension' protocol, so block that as
     // well.
-    AddPropertyFilter(property_filters, "value='http*'", PropertyFilter::DENY);
+    AddPropertyFilter(property_filters, "value='http*'",
+                      AXPropertyFilter::DENY);
     AddPropertyFilter(property_filters, "value='chrome-extension*'",
-                      PropertyFilter::DENY);
+                      AXPropertyFilter::DENY);
     // Object attributes.value
     AddPropertyFilter(property_filters, "layout-guess:*",
-                      PropertyFilter::ALLOW);
+                      AXPropertyFilter::ALLOW);
 
     AddPropertyFilter(property_filters, "select*");
     AddPropertyFilter(property_filters, "descript*");
@@ -3271,15 +3272,17 @@ class PDFExtensionAccessibilityTreeDumpTest
     AddPropertyFilter(property_filters, "isPageBreakingObject*");
 
     // Deny most empty values
-    AddPropertyFilter(property_filters, "*=''", PropertyFilter::DENY);
+    AddPropertyFilter(property_filters, "*=''", AXPropertyFilter::DENY);
     // After denying empty values, because we want to allow name=''
-    AddPropertyFilter(property_filters, "name=*", PropertyFilter::ALLOW_EMPTY);
+    AddPropertyFilter(property_filters, "name=*",
+                      AXPropertyFilter::ALLOW_EMPTY);
   }
 
-  void AddPropertyFilter(std::vector<PropertyFilter>* property_filters,
-                         std::string filter,
-                         PropertyFilter::Type type = PropertyFilter::ALLOW) {
-    property_filters->push_back(PropertyFilter(filter, type));
+  void AddPropertyFilter(
+      std::vector<AXPropertyFilter>* property_filters,
+      std::string filter,
+      AXPropertyFilter::Type type = AXPropertyFilter::ALLOW) {
+    property_filters->push_back(AXPropertyFilter(filter, type));
   }
 
   content::AccessibilityTreeFormatter::TestPass test_pass_;

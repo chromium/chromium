@@ -34,6 +34,34 @@ struct AX_EXPORT AXTreeSelector {
   bool empty() const { return types == None && pattern.empty(); }
 };
 
+// A single property filter specification. Represents a parsed string of the
+// filter_str;match_str format, where `filter_str` has
+// :line_num_0,...:line_num_N format, `match_str` has format of
+// property_str=value_str, value_str is optional. For example,
+// AXSubrole=* or :1,:3;AXDOMClassList.
+//
+// Longer version: `filter_str` is a comma separated list of the line
+// indexes from the output accessible tree, and serves to narrow down the
+// property calls to the accessible object placed on those line indexes only;
+// `match_str` is used to match properties by property name and value.
+// For example, :1,:3;AXDOMClassList=*
+// will query a AXDOMClassList attribute on accessible objects placed at 1st
+// and 3rd lines in the output accessible tree.
+// Also see
+// DumpAccessibilityTestBase::ParseHtmlForExtraDirectives() for more
+// information.
+struct AX_EXPORT AXPropertyFilter {
+  enum Type { ALLOW, ALLOW_EMPTY, DENY };
+
+  std::string match_str;
+  std::string property_str;
+  std::string filter_str;
+  Type type;
+
+  AXPropertyFilter(const std::string& str, Type type);
+  AXPropertyFilter(const AXPropertyFilter&);
+};
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_INSPECT_H_

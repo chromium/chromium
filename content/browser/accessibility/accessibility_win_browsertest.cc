@@ -144,8 +144,8 @@ std::string AccessibilityWinBrowserTest::PrintAXTree() const {
       AccessibilityTreeFormatter::Create());
   DCHECK(formatter);
   formatter->set_show_ids(true);
-  formatter->SetPropertyFilters({AccessibilityTreeFormatter::PropertyFilter(
-      "*", AccessibilityTreeFormatter::PropertyFilter::ALLOW)});
+  formatter->SetPropertyFilters(
+      {ui::AXPropertyFilter("*", ui::AXPropertyFilter::ALLOW)});
 
   std::string str;
   formatter->FormatAccessibilityTreeForTesting(

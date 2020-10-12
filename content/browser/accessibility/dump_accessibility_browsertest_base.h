@@ -58,8 +58,7 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
 
   // Add the default filters that are applied to all tests.
   virtual void AddDefaultFilters(
-      std::vector<AccessibilityTreeFormatter::PropertyFilter>*
-          property_filters) = 0;
+      std::vector<ui::AXPropertyFilter>* property_filters) = 0;
 
   // This gets called if the diff didn't match; the test can print
   // additional useful info.
@@ -117,7 +116,7 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
 
   // The default property filters plus the property filters loaded from the test
   // file.
-  std::vector<AccessibilityTreeFormatter::PropertyFilter> property_filters_;
+  std::vector<ui::AXPropertyFilter> property_filters_;
 
   // The node filters loaded from the test file.
   std::vector<AccessibilityTreeFormatter::NodeFilter> node_filters_;

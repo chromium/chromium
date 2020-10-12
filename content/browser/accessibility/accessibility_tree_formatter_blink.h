@@ -29,7 +29,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
       const AXTreeSelector& selector) override;
 
   void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
+      std::vector<AXPropertyFilter>* property_filters) override;
 
   static std::unique_ptr<AccessibilityTreeFormatter> CreateBlink();
 

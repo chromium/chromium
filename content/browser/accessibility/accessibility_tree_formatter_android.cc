@@ -93,7 +93,7 @@ class AccessibilityTreeFormatterAndroid
       const AXTreeSelector& selector) override;
 
   void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
+      std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
   base::FilePath::StringType GetExpectedFileSuffix() override;
@@ -160,12 +160,12 @@ AccessibilityTreeFormatterAndroid::BuildAccessibilityTreeForSelector(
 }
 
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
+    std::vector<AXPropertyFilter>* property_filters) {
   AddPropertyFilter(property_filters, "hint=*");
-  AddPropertyFilter(property_filters, "interesting", PropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "interesting", AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "has_character_locations",
-                    PropertyFilter::DENY);
-  AddPropertyFilter(property_filters, "has_image", PropertyFilter::DENY);
+                    AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "has_image", AXPropertyFilter::DENY);
 }
 
 void AccessibilityTreeFormatterAndroid::RecursiveBuildAccessibilityTree(

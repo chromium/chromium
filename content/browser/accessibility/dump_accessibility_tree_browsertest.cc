@@ -42,7 +42,7 @@
 
 namespace content {
 
-typedef AccessibilityTreeFormatter::PropertyFilter PropertyFilter;
+using ui::AXPropertyFilter;
 
 // See content/test/data/accessibility/readme.md for an overview.
 //
@@ -59,11 +59,12 @@ typedef AccessibilityTreeFormatter::PropertyFilter PropertyFilter;
 class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
  public:
   void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
-  void AddPropertyFilter(std::vector<PropertyFilter>* property_filters,
-                         const std::string& filter,
-                         PropertyFilter::Type type = PropertyFilter::ALLOW) {
-    property_filters->push_back(PropertyFilter(filter, type));
+      std::vector<AXPropertyFilter>* property_filters) override;
+  void AddPropertyFilter(
+      std::vector<AXPropertyFilter>* property_filters,
+      const std::string& filter,
+      AXPropertyFilter::Type type = AXPropertyFilter::ALLOW) {
+    property_filters->push_back(AXPropertyFilter(filter, type));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -203,26 +204,27 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 };
 
 void DumpAccessibilityTreeTest::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
+    std::vector<AXPropertyFilter>* property_filters) {
   AddPropertyFilter(property_filters, "value='*'");
   // The value attribute on the document object contains the URL of the current
   // page which will not be the same every time the test is run.
-  AddPropertyFilter(property_filters, "value='http*'", PropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "value='http*'", AXPropertyFilter::DENY);
   // Object attributes.value
-  AddPropertyFilter(property_filters, "layout-guess:*", PropertyFilter::ALLOW);
+  AddPropertyFilter(property_filters, "layout-guess:*",
+                    AXPropertyFilter::ALLOW);
 
   AddPropertyFilter(property_filters, "select*");
   AddPropertyFilter(property_filters, "selectedFromFocus=*",
-                    PropertyFilter::DENY);
+                    AXPropertyFilter::DENY);
   AddPropertyFilter(property_filters, "descript*");
   AddPropertyFilter(property_filters, "check*");
   AddPropertyFilter(property_filters, "horizontal");
   AddPropertyFilter(property_filters, "multiselectable");
 
   // Deny most empty values
-  AddPropertyFilter(property_filters, "*=''", PropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "*=''", AXPropertyFilter::DENY);
   // After denying empty values, because we want to allow name=''
-  AddPropertyFilter(property_filters, "name=*", PropertyFilter::ALLOW_EMPTY);
+  AddPropertyFilter(property_filters, "name=*", AXPropertyFilter::ALLOW_EMPTY);
 }
 
 // Parameterize the tests so that each test-pass is run independently.

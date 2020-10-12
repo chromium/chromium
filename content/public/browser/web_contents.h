@@ -432,8 +432,7 @@ class WebContents : public PageNavigator,
 
   virtual std::string DumpAccessibilityTree(
       bool internal,
-      std::vector<content::AccessibilityTreeFormatter::PropertyFilter>
-          property_filters) = 0;
+      std::vector<ui::AXPropertyFilter> property_filters) = 0;
 
   // A callback that takes a string which contains accessibility event
   // information.

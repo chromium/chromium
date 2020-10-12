@@ -76,7 +76,7 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
 
 }  // namespace
 
-typedef AccessibilityTreeFormatter::PropertyFilter PropertyFilter;
+using ui::AXPropertyFilter;
 typedef AccessibilityTreeFormatter::NodeFilter NodeFilter;
 
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
@@ -140,8 +140,8 @@ void DumpAccessibilityTestBase::ChooseFeatures(
 std::string
 DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   std::unique_ptr<AccessibilityTreeFormatter> formatter(formatter_factory_());
-  std::vector<PropertyFilter> property_filters;
-  property_filters.emplace_back("*", PropertyFilter::ALLOW);
+  std::vector<AXPropertyFilter> property_filters;
+  property_filters.emplace_back("*", AXPropertyFilter::ALLOW);
   formatter->SetPropertyFilters(property_filters);
   formatter->set_show_ids(true);
   std::string ax_tree_dump;
@@ -169,13 +169,15 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
     const std::string& until_str = formatter_->GetRunUntilEventString();
     const std::string& default_action_on_str = "@DEFAULT-ACTION-ON:";
     if (base::StartsWith(line, allow_empty_str, base::CompareCase::SENSITIVE)) {
-      property_filters_.emplace_back(
-          line.substr(allow_empty_str.size()), PropertyFilter::ALLOW_EMPTY);
+      property_filters_.emplace_back(line.substr(allow_empty_str.size()),
+                                     AXPropertyFilter::ALLOW_EMPTY);
     } else if (base::StartsWith(line, allow_str,
                                 base::CompareCase::SENSITIVE)) {
-      property_filters_.emplace_back(line.substr(allow_str.size()), PropertyFilter::ALLOW);
+      property_filters_.emplace_back(line.substr(allow_str.size()),
+                                     AXPropertyFilter::ALLOW);
     } else if (base::StartsWith(line, deny_str, base::CompareCase::SENSITIVE)) {
-      property_filters_.emplace_back(line.substr(deny_str.size()), PropertyFilter::DENY);
+      property_filters_.emplace_back(line.substr(deny_str.size()),
+                                     AXPropertyFilter::DENY);
     } else if (base::StartsWith(line, deny_node_str,
                                 base::CompareCase::SENSITIVE)) {
       const auto& node_filter = line.substr(deny_node_str.size());

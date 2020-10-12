@@ -60,7 +60,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   ~AccessibilityTreeFormatterMac() override;
 
   void AddDefaultFilters(
-      std::vector<PropertyFilter>* property_filters) override;
+      std::vector<AXPropertyFilter>* property_filters) override;
 
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
@@ -136,7 +136,7 @@ AccessibilityTreeFormatterMac::AccessibilityTreeFormatterMac() {}
 AccessibilityTreeFormatterMac::~AccessibilityTreeFormatterMac() {}
 
 void AccessibilityTreeFormatterMac::AddDefaultFilters(
-    std::vector<PropertyFilter>* property_filters) {
+    std::vector<AXPropertyFilter>* property_filters) {
   static NSArray* default_attributes = [@[
     @"AXAutocompleteValue=*", @"AXDescription=*", @"AXRole=*", @"AXTitle=*",
     @"AXTitleUIElement=*", @"AXHelp=*", @"AXValue=*"
