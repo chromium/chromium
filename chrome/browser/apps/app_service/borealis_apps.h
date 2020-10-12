@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -22,7 +24,8 @@ namespace apps {
 
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
-class BorealisApps : public apps::PublisherBase {
+class BorealisApps : public apps::PublisherBase,
+                     public guest_os::GuestOsRegistryService::Observer {
  public:
   BorealisApps(const mojo::Remote<apps::mojom::AppService>& app_service,
                Profile* profile);
@@ -33,6 +36,14 @@ class BorealisApps : public apps::PublisherBase {
   BorealisApps& operator=(const BorealisApps&) = delete;
 
  private:
+  // Helper method to get the registry used by this profile
+  guest_os::GuestOsRegistryService* Registry();
+
+  // Turns GuestOsRegistry's "app" into one the AppService can use.
+  apps::mojom::AppPtr Convert(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      bool new_icon_key);
+
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
@@ -51,7 +62,17 @@ class BorealisApps : public apps::PublisherBase {
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
 
+  // GuestOsRegistryService::Observer overrides.
+  void OnRegistryUpdated(
+      guest_os::GuestOsRegistryService* registry_service,
+      guest_os::GuestOsRegistryService::VmType vm_type,
+      const std::vector<std::string>& updated_apps,
+      const std::vector<std::string>& removed_apps,
+      const std::vector<std::string>& inserted_apps) override;
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
+
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   Profile* const profile_;
 };

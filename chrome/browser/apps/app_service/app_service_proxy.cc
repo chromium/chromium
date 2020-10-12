@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -167,6 +168,11 @@ void AppServiceProxy::Initialize() {
       built_in_chrome_os_apps_ =
           std::make_unique<BuiltInChromeOsApps>(app_service_, profile_);
     }
+    // TODO(b/170591339): Allow borealis to provide apps for the non-primary
+    // profile.
+    if (guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)) {
+      borealis_apps_ = std::make_unique<BorealisApps>(app_service_, profile_);
+    }
     crostini_apps_ = std::make_unique<CrostiniApps>(app_service_, profile_);
     extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(
         app_service_, profile_, apps::mojom::AppType::kExtension,
@@ -191,7 +197,6 @@ void AppServiceProxy::Initialize() {
           app_service_, profile_, apps::mojom::AppType::kWeb,
           &instance_registry_);
     }
-    borealis_apps_ = std::make_unique<BorealisApps>(app_service_, profile_);
 #else
     if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
       web_apps_ = std::make_unique<WebApps>(app_service_, profile_);
@@ -648,6 +653,7 @@ void AppServiceProxy::Shutdown() {
       extension_web_apps_->Shutdown();
     }
   }
+  borealis_apps_.reset();
 #endif
 }
 

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/dip_px_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
@@ -568,7 +569,9 @@ GuestOsRegistryService::GetEnabledApps() const {
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
   bool plugin_vm_enabled =
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  if (!crostini_enabled && !plugin_vm_enabled)
+  bool borealis_enabled =
+      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsEnabled();
+  if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled)
     return {};
 
   auto apps = GetAllRegisteredApps();
@@ -580,6 +583,9 @@ GuestOsRegistryService::GetEnabledApps() const {
         break;
       case VmType::ApplicationList_VmType_PLUGIN_VM:
         enabled = plugin_vm_enabled;
+        break;
+      case VmType::ApplicationList_VmType_BOREALIS:
+        enabled = borealis_enabled;
         break;
       default:
         LOG(ERROR) << "Unsupported VmType: "
@@ -632,7 +638,9 @@ void GuestOsRegistryService::RecordStartupMetrics() {
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
   bool plugin_vm_enabled =
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  if (!crostini_enabled && !plugin_vm_enabled)
+  bool borealis_enabled =
+      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsEnabled();
+  if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled)
     return;
 
   int num_crostini_apps = 0;
@@ -667,6 +675,8 @@ void GuestOsRegistryService::RecordStartupMetrics() {
   if (plugin_vm_enabled)
     UMA_HISTOGRAM_COUNTS_1000(kPluginVmAppsInstalledHistogram,
                               num_plugin_vm_apps);
+
+  // TODO(b/166691285): borealis launch metrics.
 }
 
 base::FilePath GuestOsRegistryService::GetAppPath(
