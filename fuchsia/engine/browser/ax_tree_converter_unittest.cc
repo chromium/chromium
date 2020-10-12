@@ -41,6 +41,9 @@ ui::AXNodeData CreateAXNodeData(ax::mojom::Role role,
                                 base::StringPiece description,
                                 ax::mojom::CheckedState checked_state) {
   ui::AXNodeData node;
+  // Important! ID must be set to zero here because its default value (-1), will
+  // fail when getting converted to an unsigned int (Fuchsia's ID format).
+  node.id = 0;
   node.role = role;
   node.AddAction(action);
   node.AddIntAttribute(ax::mojom::IntAttribute::kCheckedState,
@@ -113,8 +116,9 @@ TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
   states.set_hidden(false);
   states.set_selected(false);
   auto expected_node = CreateSemanticNode(
-      source_node_data.id, Role::BUTTON, std::move(attributes),
-      std::move(states), std::vector<Action>{Action::SET_FOCUS},
+      static_cast<uint32_t>(source_node_data.id), Role::BUTTON,
+      std::move(attributes), std::move(states),
+      std::vector<Action>{Action::SET_FOCUS},
       std::vector<uint32_t>{kChildId1, kChildId2, kChildId3}, box, mat.value);
 
   EXPECT_TRUE(fidl::Equals(converted_node, expected_node));
@@ -122,6 +126,7 @@ TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
 
 TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
   ui::AXNodeData source_node_data;
+  source_node_data.id = 0;
   source_node_data.AddAction(ax::mojom::Action::kFocus);
   source_node_data.AddAction(ax::mojom::Action::kSetValue);
   source_node_data.child_ids = std::vector<int32_t>{kChildId1};
@@ -133,10 +138,11 @@ TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
             converted_node.node_id());
 
   Node expected_node;
-  expected_node.set_node_id(source_node_data.id);
+  expected_node.set_node_id(static_cast<uint32_t>(source_node_data.id));
   expected_node.set_actions(
       std::vector<Action>{Action::SET_FOCUS, Action::SET_VALUE});
-  expected_node.set_child_ids(std::vector<uint32_t>{kChildId1});
+  expected_node.set_child_ids(
+      std::vector<uint32_t>{static_cast<uint32_t>(kChildId1)});
   expected_node.set_role(Role::IMAGE);
   States states;
   states.set_hidden(false);
@@ -196,6 +202,21 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
   modified_node_data.child_ids = std::vector<int32_t>{};
   converted_node = AXNodeDataToSemanticNode(modified_node_data);
   EXPECT_FALSE(fidl::Equals(converted_node, expected_node));
+}
+
+TEST_F(AXTreeConverterTest, ConvertToFuchsiaNodeId) {
+  // Root AxNode is 0, Fuchsia is also 0.
+  EXPECT_EQ(0u, ConvertToFuchsiaNodeId(0, 0));
+
+  // Root AxNode is not 0, Fuchsia is still 0.
+  EXPECT_EQ(0u, ConvertToFuchsiaNodeId(2, 2));
+
+  // Regular AxNode is 0, Fuchsia can't be 0.
+  EXPECT_EQ(static_cast<uint32_t>(std::numeric_limits<int32_t>::max()) + 1,
+            ConvertToFuchsiaNodeId(0, 2));
+
+  // Regular AxNode is not 0, Fuchsia is same value.
+  EXPECT_EQ(10u, ConvertToFuchsiaNodeId(10, 0));
 }
 
 }  // namespace

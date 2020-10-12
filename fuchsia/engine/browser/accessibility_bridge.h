@@ -86,10 +86,6 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // Callback for SemanticTree::CommitUpdates.
   void OnCommitComplete();
 
-  // Converts AXNode ids to Semantic Node ids, and handles special casing of
-  // the root.
-  uint32_t ConvertToFuchsiaNodeId(int32_t ax_node_id);
-
   // Deletes all nodes in subtree rooted at and including |node|, unless
   // |node| is the root of the tree. |tree| and |node| are owned by the
   // accessibility bridge.
