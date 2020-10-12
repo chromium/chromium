@@ -168,7 +168,10 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   // Don't report shift of anonymous objects. Will report the children because
   // we want report real DOM nodes.
   if (object.IsAnonymous())
-    return true;
+    return false;
+
+  if (object.StyleRef().Visibility() != EVisibility::kVisible)
+    return false;
 
   // Ignore layout objects that move (in the coordinate space of the paint
   // invalidation container) on scroll.
