@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -899,7 +900,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNowrap || value_id == CSSValueID::kWrap ||
              value_id == CSSValueID::kWrapReverse;
     case CSSPropertyID::kHyphens:
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(USE_MINIKIN_HYPHENATION) || defined(OS_MAC)
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kManual;
 #else
