@@ -45,8 +45,6 @@ static_library("rest_of_sync") {
     "engine/cycle/update_counters.h",
     "engine/data_type_activation_response.cc",
     "engine/data_type_activation_response.h",
-    "engine/data_type_association_stats.cc",
-    "engine/data_type_association_stats.h",
     "engine/data_type_debug_info_listener.cc",
     "engine/data_type_debug_info_listener.h",
     "engine/engine_components_factory.h",

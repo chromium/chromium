@@ -15,7 +15,6 @@
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/driver/data_type_manager.h"
-#include "components/sync/engine/data_type_association_stats.h"
 #include "components/sync/engine/shutdown_reason.h"
 
 namespace syncer {
@@ -45,9 +44,7 @@ class ModelAssociationManagerDelegate {
 
   // Called when model association (MergeDataAndStartSyncing) has completed
   // for |type|, regardless of success or failure.
-  virtual void OnSingleDataTypeAssociationDone(
-      ModelType type,
-      const DataTypeAssociationStats& association_stats) = 0;
+  virtual void OnSingleDataTypeAssociationDone(ModelType type) = 0;
 
   // Called when the ModelAssociationManager has decided it must stop |type|,
   // likely because it is no longer a desired data type or sync is shutting

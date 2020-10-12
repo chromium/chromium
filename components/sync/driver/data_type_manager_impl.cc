@@ -723,9 +723,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   }
 }
 
-void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(
-    ModelType type,
-    const DataTypeAssociationStats& association_stats) {
+void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(ModelType type) {
   DCHECK(!association_types_queue_.empty());
 
   if (!debug_info_listener_.IsInitialized())
@@ -734,7 +732,6 @@ void DataTypeManagerImpl::OnSingleDataTypeAssociationDone(
   AssociationTypesInfo& info = association_types_queue_.front();
   configuration_stats_.push_back(DataTypeConfigurationStats());
   configuration_stats_.back().model_type = type;
-  configuration_stats_.back().association_stats = association_stats;
   if (info.types.Has(type)) {
     // Times in |info| only apply to non-slow types.
     configuration_stats_.back().download_wait_time =

@@ -62,9 +62,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // |ModelAssociationManagerDelegate| implementation.
   void OnAllDataTypesReadyForConfigure() override;
-  void OnSingleDataTypeAssociationDone(
-      ModelType type,
-      const DataTypeAssociationStats& association_stats) override;
+  void OnSingleDataTypeAssociationDone(ModelType type) override;
   void OnModelAssociationDone(
       const DataTypeManager::ConfigureResult& result) override;
   void OnSingleDataTypeWillStop(ModelType type,

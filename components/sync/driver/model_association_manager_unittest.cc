@@ -35,9 +35,7 @@ class MockModelAssociationManagerDelegate
   MockModelAssociationManagerDelegate() {}
   ~MockModelAssociationManagerDelegate() override {}
   MOCK_METHOD0(OnAllDataTypesReadyForConfigure, void());
-  MOCK_METHOD2(OnSingleDataTypeAssociationDone,
-               void(ModelType type,
-                    const DataTypeAssociationStats& association_stats));
+  MOCK_METHOD1(OnSingleDataTypeAssociationDone, void(ModelType type));
   MOCK_METHOD2(OnSingleDataTypeWillStop,
                void(ModelType, const SyncError& error));
   MOCK_METHOD1(OnModelAssociationDone,
@@ -400,8 +398,8 @@ TEST_F(SyncModelAssociationManagerTest, KeepsMetadataForPreferredDataType) {
   ModelTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS, _));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS, _));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
   EXPECT_CALL(delegate_, OnModelAssociationDone(MatchesResult(
                              DataTypeManager::OK, desired_types)));
 
@@ -440,8 +438,8 @@ TEST_F(SyncModelAssociationManagerTest, ClearsMetadataForNotPreferredDataType) {
   ModelTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS, _));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS, _));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
   EXPECT_CALL(delegate_, OnModelAssociationDone(MatchesResult(
                              DataTypeManager::OK, desired_types)));
 
@@ -487,8 +485,8 @@ TEST_F(SyncModelAssociationManagerTest,
   configure_context.cache_guid = "test_cache_guid";
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS, _));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS, _));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
   EXPECT_CALL(delegate_, OnModelAssociationDone(MatchesResult(
                              DataTypeManager::OK, desired_types)));
 
@@ -510,7 +508,7 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS, _));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
   EXPECT_CALL(delegate_, OnModelAssociationDone(MatchesResult(
                              DataTypeManager::OK, desired_types)));
 
@@ -543,8 +541,8 @@ TEST_F(SyncModelAssociationManagerTest,
   configure_context.cache_guid = "test_cache_guid";
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS, _));
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS, _));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(APPS));
   EXPECT_CALL(delegate_, OnModelAssociationDone(MatchesResult(
                              DataTypeManager::OK, desired_types)));
 
@@ -566,7 +564,7 @@ TEST_F(SyncModelAssociationManagerTest,
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(APPS, _));
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
-  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS, _));
+  EXPECT_CALL(delegate_, OnSingleDataTypeAssociationDone(BOOKMARKS));
   EXPECT_CALL(delegate_, OnModelAssociationDone(MatchesResult(
                              DataTypeManager::OK, desired_types)));
 

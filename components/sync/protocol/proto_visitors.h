@@ -338,23 +338,9 @@ VISIT_PROTO_FIELDS(const sync_pb::DataTypeProgressMarker& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::DatatypeAssociationStats& proto) {
   VISIT(data_type_id);
-  VISIT(num_local_items_before_association);
-  VISIT(num_sync_items_before_association);
-  VISIT(num_local_items_after_association);
-  VISIT(num_sync_items_after_association);
-  VISIT(num_local_items_added);
-  VISIT(num_local_items_deleted);
-  VISIT(num_local_items_modified);
-  VISIT(num_sync_items_added);
-  VISIT(num_sync_items_deleted);
-  VISIT(num_sync_items_modified);
-  VISIT(local_version_pre_association);
-  VISIT(sync_version_pre_association);
-  VISIT(had_error);
   VISIT(download_wait_time_us);
   VISIT(download_time_us);
   VISIT(association_wait_time_for_high_priority_us);
-  VISIT(association_wait_time_for_same_priority_us);
   VISIT_REP(high_priority_type_configured_before);
   VISIT_REP(same_priority_type_configured_before);
 }

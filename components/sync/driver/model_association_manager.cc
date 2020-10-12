@@ -339,11 +339,8 @@ void ModelAssociationManager::TypeStartCallback(ModelType type) {
 
   // Track the merge results if we succeeded or an association failure
   // occurred.
-  if (ProtocolTypes().Has(type)) {
-    // TODO(crbug.com/647505): Clean up.
-    DataTypeAssociationStats stats;
-    delegate_->OnSingleDataTypeAssociationDone(type, stats);
-  }
+  if (ProtocolTypes().Has(type))
+    delegate_->OnSingleDataTypeAssociationDone(type);
 
   associating_types_.Remove(type);
 

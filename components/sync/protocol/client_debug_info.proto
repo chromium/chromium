@@ -64,32 +64,6 @@ message DatatypeAssociationStats {
   // The datatype that was associated.
   optional int32 data_type_id = 1;
 
-  // The state of the world before association.
-  optional int32 num_local_items_before_association = 2;
-  optional int32 num_sync_items_before_association = 3;
-
-  // The state of the world after association.
-  optional int32 num_local_items_after_association = 4;
-  optional int32 num_sync_items_after_association = 5;
-
-  // The changes that got us from before to after. In a correctly working
-  // system these should be the deltas between before and after.
-  optional int32 num_local_items_added = 6;
-  optional int32 num_local_items_deleted = 7;
-  optional int32 num_local_items_modified = 8;
-  optional int32 num_sync_items_added = 9;
-  optional int32 num_sync_items_deleted = 10;
-  optional int32 num_sync_items_modified = 11;
-
-  // Model versions before association. Ideally local and sync model should
-  // have same version if models were persisted properly in last cycle.
-  // Note: currently version is only set on bookmark model.
-  optional int64 local_version_pre_association = 20;
-  optional int64 sync_version_pre_association = 21;
-
-  // The data type ran into an error during model association.
-  optional bool had_error = 12;
-
   // Waiting time before downloading starts. This measures the time between
   // receiving configuration request for a set of data types to starting
   // downloading data of this type.
@@ -110,24 +84,42 @@ message DatatypeAssociationStats {
   // have near zero waiting time.
   optional int64 association_wait_time_for_high_priority_us = 16;
 
-  // Waiting time for other types with same priority during association.
-  // Data type manger sends types of same priority to association manager to
-  // configure as a batch. Association manager configures one type at a time.
-  // This measures the time between when a type is sent to association manager
-  // (among other types) to when association manager starts configuring the
-  // type. Total wait time before association is
-  //     |association_wait_time_for_high_priority_us| +
-  //     |association_wait_time_for_same_priority_us|
-  optional int64 association_wait_time_for_same_priority_us = 14;
-
-  // Time spent on model association.
-  optional int64 association_time_us = 17;
-
   // Higher priority type that's configured before this type.
   repeated int32 high_priority_type_configured_before = 18;
 
   // Same priority type that's configured before this type.
   repeated int32 same_priority_type_configured_before = 19;
+
+  reserved "num_local_items_before_association";
+  reserved 2;
+  reserved "num_sync_items_before_association";
+  reserved 3;
+  reserved "num_local_items_after_association";
+  reserved 4;
+  reserved "num_sync_items_after_association";
+  reserved 5;
+  reserved "num_local_items_added";
+  reserved 6;
+  reserved "num_local_items_deleted";
+  reserved 7;
+  reserved "num_local_items_modified";
+  reserved 8;
+  reserved "num_sync_items_added";
+  reserved 9;
+  reserved "num_sync_items_deleted";
+  reserved 10;
+  reserved "num_sync_items_modified";
+  reserved 11;
+  reserved "had_error";
+  reserved 12;
+  reserved "association_wait_time_for_same_priority_us";
+  reserved 14;
+  reserved "association_time_us";
+  reserved 17;
+  reserved "local_version_pre_association";
+  reserved 20;
+  reserved "sync_version_pre_association";
+  reserved 21;
 }
 
 message DebugEventInfo {
