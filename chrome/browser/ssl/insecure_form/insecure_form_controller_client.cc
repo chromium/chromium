@@ -5,8 +5,10 @@
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "content/public/browser/web_contents.h"
 
 // static
@@ -27,7 +29,8 @@ InsecureFormControllerClient::InsecureFormControllerClient(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL)),
+          GURL(chrome::kChromeUINewTabURL),
+          /*settings_page_helper=*/nullptr),
       web_contents_(web_contents) {}
 
 InsecureFormControllerClient::~InsecureFormControllerClient() = default;

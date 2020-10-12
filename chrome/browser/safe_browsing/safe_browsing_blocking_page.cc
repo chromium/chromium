@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
@@ -26,6 +27,7 @@
 #include "components/safe_browsing/core/triggers/trigger_manager.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -239,9 +241,13 @@ SafeBrowsingBlockingPage::CreateControllerClient(
               ServiceAccessType::EXPLICIT_ACCESS),
           unsafe_resources[0].url, GetReportingInfo(unsafe_resources));
 
+  auto chrome_settings_page_helper =
+      std::make_unique<security_interstitials::ChromeSettingsPageHelper>();
+
   return std::make_unique<ChromeControllerClient>(
       web_contents, std::move(metrics_helper), profile->GetPrefs(),
-      ui_manager->app_locale(), ui_manager->default_safe_page());
+      ui_manager->app_locale(), ui_manager->default_safe_page(),
+      std::move(chrome_settings_page_helper));
 }
 
 }  // namespace safe_browsing

@@ -54,6 +54,7 @@ static_library("security_interstitial_page") {
     "security_interstitial_page.h",
     "security_interstitial_tab_helper.cc",
     "security_interstitial_tab_helper.h",
+    "settings_page_helper.h",
     "ssl_blocking_page.cc",
     "ssl_blocking_page.h",
     "ssl_blocking_page_base.cc",

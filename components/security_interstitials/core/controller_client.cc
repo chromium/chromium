@@ -60,10 +60,6 @@ void ControllerClient::OpenExtendedReportingWhitepaper(
   OpenURL(open_links_in_new_tab, whitepaper_url);
 }
 
-void ControllerClient::OpenEnhancedProtectionSettings() {
-  // TODO(crbug.com/1130721): Implement this method.
-}
-
 void ControllerClient::OpenURL(bool open_links_in_new_tab, const GURL& url) {
   if (open_links_in_new_tab) {
     OpenUrlInNewForegroundTab(url);

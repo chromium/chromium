@@ -23,6 +23,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/content/utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,14 +79,17 @@ SSLErrorControllerClient::SSLErrorControllerClient(
     const net::SSLInfo& ssl_info,
     int cert_error,
     const GURL& request_url,
-    std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper)
+    std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
+    std::unique_ptr<security_interstitials::SettingsPageHelper>
+        settings_page_helper)
     : SecurityInterstitialControllerClient(
           web_contents,
           std::move(metrics_helper),
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL)),
+          GURL(chrome::kChromeUINewTabURL),
+          std::move(settings_page_helper)),
       ssl_info_(ssl_info),
       request_url_(request_url),
       cert_error_(cert_error) {

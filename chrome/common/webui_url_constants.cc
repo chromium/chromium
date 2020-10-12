@@ -421,6 +421,7 @@ const char kPrintingSettingsSubPage[] = "printing";
 const char kPrivacySubPage[] = "privacy";
 const char kResetSubPage[] = "reset";
 const char kResetProfileSettingsSubPage[] = "resetProfileSettings";
+const char kSafeBrowsingEnhancedProtectionSubPage[] = "security?q=enhanced";
 const char kSafeBrowsingSubPage[] = "security";
 const char kSafetyCheckSubPage[] = "safetyCheck";
 const char kSearchSubPage[] = "search";

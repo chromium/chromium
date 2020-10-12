@@ -8,6 +8,7 @@
 
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -21,12 +22,14 @@ SecurityInterstitialControllerClient::SecurityInterstitialControllerClient(
     std::unique_ptr<MetricsHelper> metrics_helper,
     PrefService* prefs,
     const std::string& app_locale,
-    const GURL& default_safe_page)
+    const GURL& default_safe_page,
+    std::unique_ptr<SettingsPageHelper> settings_page_helper)
     : ControllerClient(std::move(metrics_helper)),
       web_contents_(web_contents),
       prefs_(prefs),
       app_locale_(app_locale),
-      default_safe_page_(default_safe_page) {}
+      default_safe_page_(default_safe_page),
+      settings_page_helper_(std::move(settings_page_helper)) {}
 
 SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() {}
 
@@ -79,6 +82,10 @@ void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   web_contents_->OpenURL(params);
+}
+
+void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
+  settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);
 }
 
 const std::string&

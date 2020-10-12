@@ -22,6 +22,8 @@ class InsecureFormControllerClient
  public:
   static std::unique_ptr<security_interstitials::MetricsHelper>
   GetMetricsHelper(const GURL& url);
+  static std::unique_ptr<security_interstitials::SettingsPageHelper>
+  GetSettingsPageHelper();
 
   InsecureFormControllerClient(content::WebContents* web_contents,
                                const GURL& form_target_url);

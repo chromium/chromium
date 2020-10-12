@@ -18303,6 +18303,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Options_ShowSafeBrowsingEnhancedProtection">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>Settings: Safe Browsing enhanced protection</description>
+</action>
+
 <action name="Options_ShowStorageManager">
   <owner>fukino@chromium.org</owner>
   <description>Settings: Storage management</description>

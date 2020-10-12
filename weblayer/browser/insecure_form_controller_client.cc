@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/insecure_form_controller_client.h"
 
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/i18n_util.h"
 
@@ -18,6 +19,14 @@ InsecureFormControllerClient::GetMetricsHelper(const GURL& url) {
                                                                  nullptr);
 }
 
+// static
+std::unique_ptr<security_interstitials::SettingsPageHelper>
+InsecureFormControllerClient::GetSettingsPageHelper() {
+  // Return nullptr since there is no enhanced protection message in insecure
+  // form interstitials.
+  return nullptr;
+}
+
 InsecureFormControllerClient::InsecureFormControllerClient(
     content::WebContents* web_contents,
     const GURL& form_target_url)
@@ -26,7 +35,8 @@ InsecureFormControllerClient::InsecureFormControllerClient(
           GetMetricsHelper(form_target_url),
           nullptr, /* prefs */
           i18n::GetApplicationLocale(),
-          GURL("about:blank") /* default_safe_page */),
+          GURL("about:blank") /* default_safe_page */,
+          GetSettingsPageHelper()),
       web_contents_(web_contents) {}
 
 InsecureFormControllerClient::~InsecureFormControllerClient() = default;

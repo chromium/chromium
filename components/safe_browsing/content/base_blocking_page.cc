@@ -15,6 +15,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
@@ -277,7 +278,9 @@ BaseBlockingPage::CreateControllerClient(
     content::WebContents* web_contents,
     const UnsafeResourceList& unsafe_resources,
     BaseUIManager* ui_manager,
-    PrefService* pref_service) {
+    PrefService* pref_service,
+    std::unique_ptr<security_interstitials::SettingsPageHelper>
+        settings_page_helper) {
   history::HistoryService* history_service =
       ui_manager->history_service(web_contents);
 
@@ -288,7 +291,8 @@ BaseBlockingPage::CreateControllerClient(
 
   return std::make_unique<SafeBrowsingControllerClient>(
       web_contents, std::move(metrics_helper), pref_service,
-      ui_manager->app_locale(), ui_manager->default_safe_page());
+      ui_manager->app_locale(), ui_manager->default_safe_page(),
+      std::move(settings_page_helper));
 }
 
 int BaseBlockingPage::GetHTMLTemplateId() {

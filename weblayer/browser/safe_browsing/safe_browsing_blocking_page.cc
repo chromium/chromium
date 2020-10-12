@@ -5,6 +5,7 @@
 #include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "content/public/browser/navigation_entry.h"
@@ -57,10 +58,13 @@ SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
       safe_browsing::IsExtendedReportingEnabled(
           *(browser_context->pref_service()));
 
+  // TODO(crbug.com/1080748): Set settings_page_helper once enhanced protection
+  // is supported on weblayer.
   return new SafeBrowsingBlockingPage(
       ui_manager, web_contents, url, unsafe_resources,
       CreateControllerClient(web_contents, unsafe_resources, ui_manager,
-                             browser_context->pref_service()),
+                             browser_context->pref_service(),
+                             /*settings_page_helper*/ nullptr),
       display_options);
 }
 

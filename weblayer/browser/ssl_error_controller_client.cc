@@ -7,6 +7,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/utils.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -24,13 +25,16 @@ SSLErrorControllerClient::SSLErrorControllerClient(
     int cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
-    std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper)
+    std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
+    std::unique_ptr<security_interstitials::SettingsPageHelper>
+        settings_page_helper)
     : security_interstitials::SecurityInterstitialControllerClient(
           web_contents,
           std::move(metrics_helper),
           nullptr /*prefs*/,
           i18n::GetApplicationLocale(),
-          GURL("about:blank") /*default_safe_page*/),
+          GURL("about:blank") /*default_safe_page*/,
+          std::move(settings_page_helper)),
       cert_error_(cert_error),
       ssl_info_(ssl_info),
       request_url_(request_url) {}

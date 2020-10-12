@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -130,6 +132,12 @@ std::unique_ptr<ContentMetricsHelper> CreateMetricsHelperAndStartRecording(
   return metrics_helper;
 }
 
+std::unique_ptr<security_interstitials::SettingsPageHelper>
+CreateSettingsPageHelper() {
+  return security_interstitials::ChromeSettingsPageHelper::
+      CreateChromeSettingsPageHelper();
+}
+
 }  // namespace
 
 std::unique_ptr<SSLBlockingPage>
@@ -173,7 +181,7 @@ ChromeSecurityBlockingPageFactory::CreateSSLPage(
 
   auto controller_client = std::make_unique<SSLErrorControllerClient>(
       web_contents, ssl_info, cert_error, request_url,
-      std::move(metrics_helper));
+      std::move(metrics_helper), CreateSettingsPageHelper());
 
   std::unique_ptr<SSLBlockingPage> page;
 
@@ -200,7 +208,8 @@ ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "captive_portal", false)),
+                                               "captive_portal", false),
+          CreateSettingsPageHelper()),
       base::BindRepeating(&OpenLoginPage));
 
   DoChromeSpecificSetup(page.get());
@@ -222,7 +231,8 @@ ChromeSecurityBlockingPageFactory::CreateBadClockBlockingPage(
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "bad_clock", false)));
+                                               "bad_clock", false),
+          CreateSettingsPageHelper()));
 
   ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(page.get());
   return page;
@@ -241,7 +251,8 @@ ChromeSecurityBlockingPageFactory::CreateLegacyTLSBlockingPage(
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "legacy_tls", false)));
+                                               "legacy_tls", false),
+          CreateSettingsPageHelper()));
 
   DoChromeSpecificSetup(page.get());
   return page;
@@ -261,7 +272,8 @@ ChromeSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "mitm_software", false)));
+                                               "mitm_software", false),
+          CreateSettingsPageHelper()));
 
   DoChromeSpecificSetup(page.get());
   return page;
@@ -280,7 +292,8 @@ ChromeSecurityBlockingPageFactory::CreateBlockedInterceptionBlockingPage(
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "blocked_interception", false)));
+                                               "blocked_interception", false),
+          CreateSettingsPageHelper()));
 
   ChromeSecurityBlockingPageFactory::DoChromeSpecificSetup(page.get());
   return page;

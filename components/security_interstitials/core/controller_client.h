@@ -69,8 +69,6 @@ class ControllerClient {
   void OpenExtendedReportingPrivacyPolicy(bool open_links_in_new_tab);
   void OpenExtendedReportingWhitepaper(bool open_links_in_new_tab);
 
-  void OpenEnhancedProtectionSettings();
-
   // Helper method which either opens a URL in a new tab or a the current tab
   // based on the display options setting.
   void OpenURL(bool open_links_in_new_tab, const GURL& url);
@@ -105,6 +103,8 @@ class ControllerClient {
   virtual void OpenUrlInCurrentTab(const GURL& url) = 0;
 
   virtual void OpenUrlInNewForegroundTab(const GURL& url) = 0;
+
+  virtual void OpenEnhancedProtectionSettings() = 0;
 
   virtual PrefService* GetPrefService() = 0;
 

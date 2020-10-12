@@ -14,6 +14,7 @@ class WebContents;
 
 namespace security_interstitials {
 class MetricsHelper;
+class SettingsPageHelper;
 }
 
 class PrefService;
@@ -30,7 +31,9 @@ class SafeBrowsingControllerClient
       std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
       PrefService* prefs,
       const std::string& app_locale,
-      const GURL& default_safe_page);
+      const GURL& default_safe_page,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
   ~SafeBrowsingControllerClient() override;
 
   void Proceed() override;

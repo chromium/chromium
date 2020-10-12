@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/common/url_constants.h"
+#include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -36,7 +37,8 @@ LookalikeUrlControllerClient::LookalikeUrlControllerClient(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
-          GURL(chrome::kChromeUINewTabURL)),
+          GURL(chrome::kChromeUINewTabURL),
+          /*settings_page_helper=*/nullptr),
       request_url_(request_url),
       safe_url_(safe_url) {}
 

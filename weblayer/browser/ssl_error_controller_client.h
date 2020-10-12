@@ -15,6 +15,7 @@ class WebContents;
 
 namespace security_interstitials {
 class MetricsHelper;
+class SettingsPageHelper;
 }
 
 namespace weblayer {
@@ -30,7 +31,9 @@ class SSLErrorControllerClient
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
-      std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper);
+      std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
 
   ~SSLErrorControllerClient() override = default;
 
