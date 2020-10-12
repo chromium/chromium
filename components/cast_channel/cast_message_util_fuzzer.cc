@@ -106,7 +106,7 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
       break;
     }
     case CastMessageUtilInputs::kStringInput: {
-      IsCastInternalNamespace(input_union.string_input());
+      IsCastReservedNamespace(input_union.string_input());
       break;
     }
     case CastMessageUtilInputs::kCastMessage: {

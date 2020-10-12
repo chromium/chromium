@@ -277,7 +277,7 @@ Result CastMessageHandler::SendCastMessage(int channel_id,
 
 Result CastMessageHandler::SendAppMessage(int channel_id,
                                           const CastMessage& message) {
-  DCHECK(!IsCastInternalNamespace(message.namespace_()))
+  DCHECK(!IsCastReservedNamespace(message.namespace_()))
       << ": unexpected app message namespace: " << message.namespace_();
   if (message.ByteSizeLong() > kMaxCastMessagePayload) {
     return Result::kFailed;
@@ -354,7 +354,7 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
   // separate data type is pretty questionable, because it causes duplicated
   // code paths in the downstream logic (manifested as separate OnAppMessage and
   // OnInternalMessage methods).
-  if (IsCastInternalNamespace(message.namespace_())) {
+  if (IsCastReservedNamespace(message.namespace_())) {
     if (message.payload_type() ==
         cast::channel::CastMessage_PayloadType_STRING) {
       VLOG(1) << __func__ << ": channel_id: " << socket.id()

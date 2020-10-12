@@ -139,7 +139,7 @@ message CastMessageUtilInputs {
 
   message GetLaunchSessionResponseInput { required JunkValue payload = 1; }
 
-  message IsCastInternalNamespaceInput {
+  message IsCastReservedNamespaceInput {
     required string message_namespace = 1;
   }
 
