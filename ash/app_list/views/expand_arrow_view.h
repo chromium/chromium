@@ -29,7 +29,6 @@ class ContentsView;
 
 // A tile item for the expand arrow on the start page.
 class APP_LIST_EXPORT ExpandArrowView : public views::Button,
-                                        public views::ButtonListener,
                                         public views::ViewTargeterDelegate {
  public:
   ExpandArrowView(ContentsView* contents_view, AppListView* app_list_view);
@@ -37,9 +36,6 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -67,6 +63,8 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  void OnButtonPressed();
 
   void TransitToFullscreenAllAppsState();
 

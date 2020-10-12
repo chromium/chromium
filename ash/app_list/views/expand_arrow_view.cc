@@ -129,7 +129,8 @@ class ExpandArrowHighlightPathGenerator : public views::HighlightPathGenerator {
 
 ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
                                  AppListView* app_list_view)
-    : views::Button(this),
+    : views::Button(base::BindRepeating(&ExpandArrowView::OnButtonPressed,
+                                        base::Unretained(this))),
       contents_view_(contents_view),
       app_list_view_(app_list_view) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -242,14 +243,6 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
   for (size_t i = 1; i < kPointCount; ++i)
     arrow_path.lineTo(arrow_points[i].x(), arrow_points[i].y());
   canvas->DrawPath(arrow_path, arrow_flags);
-}
-
-void ExpandArrowView::ButtonPressed(views::Button* /*sender*/,
-                                    const ui::Event& /*event*/) {
-  button_pressed_ = true;
-  ResetHintingAnimation();
-  TransitToFullscreenAllAppsState();
-  GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);
 }
 
 gfx::Size ExpandArrowView::CalculatePreferredSize() const {
@@ -371,6 +364,13 @@ void ExpandArrowView::AnimationEnded(const gfx::Animation* /*animation*/) {
   // user has made the app_list fullscreen, a hint to do so is no longer needed
   if (!app_list_view_->is_fullscreen())
     ScheduleHintingAnimation(false);
+}
+
+void ExpandArrowView::OnButtonPressed() {
+  button_pressed_ = true;
+  ResetHintingAnimation();
+  TransitToFullscreenAllAppsState();
+  GetInkDrop()->AnimateToState(views::InkDropState::ACTION_TRIGGERED);
 }
 
 void ExpandArrowView::TransitToFullscreenAllAppsState() {
