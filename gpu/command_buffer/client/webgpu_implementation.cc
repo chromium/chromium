@@ -229,10 +229,10 @@ gpu::ContextResult WebGPUImplementation::Initialize(
   memory_transfer_service_ =
       std::make_unique<DawnClientMemoryTransferService>(mapped_memory_.get());
 
-  procs_ = dawn_wire::WireClient::GetProcs();
+  procs_ = dawn_wire::client::GetProcs();
 
   // TODO(senorblanco): Do this only once per process. Doing it once per
-  // WebGPUImplementation is non-optimal but valid valid, since the returned
+  // WebGPUImplementation is non-optimal but valid, since the returned
   // procs are always the same.
   dawnProcSetProcs(&procs_);
 #endif
