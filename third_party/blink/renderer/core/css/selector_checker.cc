@@ -194,6 +194,13 @@ static bool ScopeContainsLastMatchedElement(
   if (context.scope->GetTreeScope() == context.element->GetTreeScope())
     return true;
 
+  // The scope-contains-last-matched-element check is only relevant for
+  // ShadowDOM V0 features (::content, ::shadow, /deep/), and the selector
+  // parser does not allow mixing ShadowDOM V0 with nested complex
+  // selectors, hence we can skip the check inside a nested complex selector.
+  if (context.in_nested_complex_selector)
+    return true;
+
   // Because Blink treats a shadow host's TreeScope as a separate one from its
   // descendent shadow roots, if the last matched element is a shadow host, the
   // condition above isn't met, even though it should be.
@@ -1102,6 +1109,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoAny: {
       SelectorCheckingContext sub_context(context);
       sub_context.is_sub_selector = true;
+      sub_context.in_nested_complex_selector = true;
       if (!selector.SelectorList())
         break;
       for (sub_context.selector = selector.SelectorList()->First();

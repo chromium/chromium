@@ -126,6 +126,7 @@ class SelectorChecker {
     bool has_selection_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
     bool is_from_vtt = false;
+    bool in_nested_complex_selector = false;
   };
 
   struct MatchResult {
