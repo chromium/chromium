@@ -352,8 +352,8 @@ bool ServiceImageTransferCacheEntry::BuildFromHardwareDecodedImage(
         DLOG(ERROR) << "Could not generate mipmap chain for plane " << plane;
         return false;
       }
-      plane_sizes_.push_back(
-          GrContext::ComputeImageSize(plane_images[plane], GrMipMapped::kYes));
+      plane_sizes_.push_back(GrDirectContext::ComputeImageSize(
+          plane_images[plane], GrMipMapped::kYes));
       safe_total_size += plane_sizes_.back();
     }
     if (!safe_total_size.AssignIfValid(&size_)) {
@@ -473,7 +473,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         return false;
       DCHECK(plane->isTextureBacked());
 
-      const size_t plane_size = GrContext::ComputeImageSize(plane, gr_mips);
+      const size_t plane_size =
+          GrDirectContext::ComputeImageSize(plane, gr_mips);
       size_ += plane_size;
       plane_sizes_.push_back(plane_size);
 
@@ -542,7 +543,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   if (image_) {
     // Match GrTexture::onGpuMemorySize so that memory traces agree.
     auto gr_mips = has_mips_ ? GrMipMapped::kYes : GrMipMapped::kNo;
-    size_ = GrContext::ComputeImageSize(image_, gr_mips);
+    size_ = GrDirectContext::ComputeImageSize(image_, gr_mips);
   }
 
   return !!image_;
@@ -623,8 +624,8 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
       if (!mipped_plane)
         return;
       mipped_planes.push_back(std::move(mipped_plane));
-      mipped_plane_sizes.push_back(
-          GrContext::ComputeImageSize(mipped_planes.back(), GrMipMapped::kYes));
+      mipped_plane_sizes.push_back(GrDirectContext::ComputeImageSize(
+          mipped_planes.back(), GrMipMapped::kYes));
     }
     sk_sp<SkImage> mipped_image = MakeYUVImageFromUploadedPlanes(
         context_, mipped_planes, plane_images_format_, yuv_color_space_.value(),
