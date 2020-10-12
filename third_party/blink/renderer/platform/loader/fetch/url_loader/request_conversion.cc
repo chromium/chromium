@@ -41,7 +41,7 @@ constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
 
 const char* ImageAcceptHeader() {
   static constexpr char kImageAcceptHeaderWithAvif[] =
-      "image/avif,image/webp,image/apng,image/*,*/*;q=0.8";
+      "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
   static constexpr size_t kOffset = sizeof("image/avif,") - 1;
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   static const char* header = base::FeatureList::IsEnabled(features::kAVIF)

@@ -133,11 +133,11 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
 
   // ResourceType::kImage
   const char* expected_image_accept_header =
-      "image/webp,image/apng,image/*,*/*;q=0.8";
+      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   if (base::FeatureList::IsEnabled(blink::features::kAVIF)) {
     expected_image_accept_header =
-        "image/avif,image/webp,image/apng,image/*,*/*;q=0.8";
+        "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
   }
 #endif
   EXPECT_EQ(expected_image_accept_header, GetFor("/image.gif"));

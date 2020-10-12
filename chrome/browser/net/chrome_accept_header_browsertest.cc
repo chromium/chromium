@@ -57,11 +57,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
   ASSERT_EQ(expected_plugin_accept_header, plugin_accept_header);
 
   const char* expected_favicon_accept_header =
-      "image/webp,image/apng,image/*,*/*;q=0.8";
+      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   if (base::FeatureList::IsEnabled(blink::features::kAVIF)) {
     expected_favicon_accept_header =
-        "image/avif,image/webp,image/apng,image/*,*/*;q=0.8";
+        "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
   }
 #endif
   ASSERT_EQ(expected_favicon_accept_header, favicon_accept_header);
