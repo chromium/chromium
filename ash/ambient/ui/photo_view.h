@@ -22,6 +22,7 @@ namespace ash {
 
 class AmbientBackgroundImageView;
 class AmbientViewDelegate;
+struct PhotoWithDetails;
 
 // View to display photos in ambient mode.
 class ASH_EXPORT PhotoView : public views::View,
@@ -47,7 +48,7 @@ class ASH_EXPORT PhotoView : public views::View,
 
   void Init();
 
-  void UpdateImages();
+  void UpdateImage(const PhotoWithDetails& image);
 
   void StartTransitionAnimation();
 

@@ -56,9 +56,8 @@ void AmbientBackendModel::AppendTopics(
   NotifyTopicsChanged();
 }
 
-bool AmbientBackendModel::ShouldFetchImmediately() const {
-  // Prefetch one image |next_image_| for photo transition animation.
-  return current_image_.IsNull() || next_image_.IsNull();
+bool AmbientBackendModel::ImagesReady() const {
+  return !current_image_.IsNull() && !next_image_.IsNull();
 }
 
 void AmbientBackendModel::AddNextImage(
@@ -67,6 +66,7 @@ void AmbientBackendModel::AddNextImage(
     current_image_ = photo_with_details;
   } else if (next_image_.IsNull()) {
     next_image_ = photo_with_details;
+    NotifyImagesReady();
   } else {
     current_image_ = next_image_;
     next_image_ = photo_with_details;
@@ -75,8 +75,12 @@ void AmbientBackendModel::AddNextImage(
   NotifyImagesChanged();
 }
 
+bool AmbientBackendModel::HashMatchesNextImage(const std::string& hash) const {
+  return GetNextImage().hash == hash;
+}
+
 base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() {
-  if (ShouldFetchImmediately())
+  if (!ImagesReady())
     return base::TimeDelta();
 
   return photo_refresh_interval_;
@@ -123,6 +127,11 @@ void AmbientBackendModel::NotifyTopicsChanged() {
 void AmbientBackendModel::NotifyImagesChanged() {
   for (auto& observer : observers_)
     observer.OnImagesChanged();
+}
+
+void AmbientBackendModel::NotifyImagesReady() {
+  for (auto& observer : observers_)
+    observer.OnImagesReady();
 }
 
 void AmbientBackendModel::NotifyWeatherInfoUpdated() {

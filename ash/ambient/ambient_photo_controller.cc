@@ -397,14 +397,8 @@ void AmbientPhotoController::ScheduleFetchTopics(bool backoff) {
 }
 
 void AmbientPhotoController::ScheduleRefreshImage() {
-  base::TimeDelta refresh_interval;
-  if (!ambient_backend_model_.ShouldFetchImmediately())
-    refresh_interval = kPhotoRefreshInterval;
-
-  // |photo_refresh_timer_| will start immediately if ShouldFetchImmediately()
-  // is true.
   photo_refresh_timer_.Start(
-      FROM_HERE, refresh_interval,
+      FROM_HERE, ambient_backend_model_.GetPhotoRefreshInterval(),
       base::BindOnce(&AmbientPhotoController::FetchPhotoRawData,
                      weak_factory_.GetWeakPtr()));
 }
@@ -464,7 +458,6 @@ void AmbientPhotoController::OnScreenUpdateInfoFetched(
     }
     return;
   }
-
   fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/true);
   ambient_backend_model_.AppendTopics(screen_update.next_topics);
   StartDownloadingWeatherConditionIcon(screen_update.weather_info);
@@ -516,11 +509,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
 }
 
 void AmbientPhotoController::TryReadPhotoRawData() {
-  auto on_done =
-      base::BindRepeating(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
-                          weak_factory_.GetWeakPtr(),
-                          /*from_downloading=*/false);
-
+  ResetImageData();
   // Stop reading from cache after the max number of retries.
   if (retries_to_read_from_cache_ == 0) {
     if (backup_retries_to_read_from_cache_ == 0) {
@@ -545,6 +534,10 @@ void AmbientPhotoController::TryReadPhotoRawData() {
     // Try to read a backup image.
     auto photo_data = std::make_unique<std::string>();
     auto* photo_data_ptr = photo_data.get();
+    auto on_done = base::BindRepeating(
+        &AmbientPhotoController::OnAllPhotoRawDataAvailable,
+        weak_factory_.GetWeakPtr(), /*from_downloading=*/false);
+
     task_runner_->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(
@@ -569,12 +562,19 @@ void AmbientPhotoController::TryReadPhotoRawData() {
 
   --retries_to_read_from_cache_;
   std::string file_name = base::NumberToString(cache_index_for_display_);
+
   ++cache_index_for_display_;
   if (cache_index_for_display_ == kMaxNumberOfCachedImages)
     cache_index_for_display_ = 0;
 
   auto photo_data = std::make_unique<std::string>();
   auto photo_details = std::make_unique<std::string>();
+
+  auto on_done =
+      base::BindRepeating(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
+                          weak_factory_.GetWeakPtr(),
+                          /*from_downloading=*/false);
+
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
@@ -639,7 +639,8 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
   auto on_done = base::BarrierClosure(
       num_callbacks,
       base::BindOnce(&AmbientPhotoController::OnAllPhotoDecoded,
-                     weak_factory_.GetWeakPtr(), from_downloading));
+                     weak_factory_.GetWeakPtr(), from_downloading,
+                     /*hash=*/base::SHA1HashString(*image_data_)));
 
   task_runner_->PostTaskAndReply(
       FROM_HERE,
@@ -673,7 +674,7 @@ void AmbientPhotoController::DecodePhotoRawData(
   image_decoder_->Decode(
       image_bytes, base::BindOnce(&AmbientPhotoController::OnPhotoDecoded,
                                   weak_factory_.GetWeakPtr(), from_downloading,
-                                  is_related_image, on_done));
+                                  is_related_image, std::move(on_done)));
 }
 
 void AmbientPhotoController::OnPhotoDecoded(bool from_downloading,
@@ -688,13 +689,18 @@ void AmbientPhotoController::OnPhotoDecoded(bool from_downloading,
   std::move(on_done).Run();
 }
 
-void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading) {
+void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
+                                               const std::string& hash) {
   if (image_.isNull()) {
     LOG(WARNING) << "Image is null";
     if (from_downloading)
       resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
 
     // Try to read from cache when failure happens.
+    TryReadPhotoRawData();
+    return;
+  } else if (ambient_backend_model_.HashMatchesNextImage(hash)) {
+    LOG(WARNING) << "Skipping loading duplicate image.";
     TryReadPhotoRawData();
     return;
   }
@@ -709,6 +715,7 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading) {
   detailed_photo.photo = image_;
   detailed_photo.related_photo = related_image_;
   detailed_photo.details = *image_details_;
+  detailed_photo.hash = hash;
 
   ResetImageData();
 

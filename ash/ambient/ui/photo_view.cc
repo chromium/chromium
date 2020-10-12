@@ -35,7 +35,6 @@ void ReportSmoothness(int value) {
   base::UmaHistogramPercentage(kPhotoTransitionSmoothness, value);
 }
 
-
 }  // namespace
 
 // PhotoView ------------------------------------------------------------------
@@ -62,7 +61,7 @@ void PhotoView::OnImagesChanged() {
     return;
   }
 
-  UpdateImages();
+  UpdateImage(delegate_->GetAmbientBackendModel()->GetNextImage());
 }
 
 void PhotoView::Init() {
@@ -82,12 +81,13 @@ void PhotoView::Init() {
   // Hides one image view initially for fade in animation.
   image_views_[1]->layer()->SetOpacity(0.0f);
 
-  delegate_->GetAmbientBackendModel()->AddObserver(this);
+  auto* model = delegate_->GetAmbientBackendModel();
+  model->AddObserver(this);
+
+  UpdateImage(model->GetCurrentImage());
 }
 
-void PhotoView::UpdateImages() {
-  auto* model = delegate_->GetAmbientBackendModel();
-  auto& next_image = model->GetNextImage();
+void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
   if (next_image.photo.isNull())
     return;
 
@@ -135,7 +135,7 @@ void PhotoView::StartTransitionAnimation() {
 }
 
 void PhotoView::OnImplicitAnimationsCompleted() {
-  UpdateImages();
+  UpdateImage(delegate_->GetAmbientBackendModel()->GetNextImage());
   delegate_->OnPhotoTransitionAnimationCompleted();
 }
 
