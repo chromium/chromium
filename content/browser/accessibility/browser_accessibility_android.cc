@@ -556,8 +556,9 @@ base::string16 BrowserAccessibilityAndroid::GetHint() const {
 }
 
 base::string16 BrowserAccessibilityAndroid::GetStateDescription() const {
-  // For multiselectable state, generate a state description
-  if (IsMultiselectable())
+  // For multiselectable state, generate a state description. We do not set a
+  // state description for pop up/<select> to prevent double utterances.
+  if (IsMultiselectable() && GetRole() != ax::mojom::Role::kPopUpButton)
     return GetMultiselectableStateDescription();
 
   // For Toggle buttons, we will append "on"/"off" in the state description.
