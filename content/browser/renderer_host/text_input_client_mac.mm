@@ -65,8 +65,12 @@ void TextInputClientMac::GetStringAtPoint(RenderWidgetHost* rwh,
                                           const gfx::Point& point,
                                           GetStringCallback callback) {
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(rwh);
-  rwhi->GetAssociatedFrameWidget()->GetStringAtPoint(point,
-                                                     std::move(callback));
+  if (rwhi && rwhi->GetAssociatedFrameWidget()) {
+    rwhi->GetAssociatedFrameWidget()->GetStringAtPoint(point,
+                                                       std::move(callback));
+  } else {
+    std::move(callback).Run(nullptr, gfx::Point());
+  }
 }
 
 void TextInputClientMac::GetStringFromRange(RenderWidgetHost* rwh,
