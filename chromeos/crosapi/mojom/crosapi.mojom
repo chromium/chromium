@@ -79,6 +79,26 @@ enum SessionType {
   kPublicSession
 };
 
+// Device mode (e.g. enterprise enrollment state). See policy::DeviceMode.
+[Stable, Extensible]
+enum DeviceMode {
+  kUnknown = 0,
+  // Not yet set.
+  kNotSet,
+  // Locally owned as consumer device.
+  kConsumer,
+  // Enrolled as an enterprise device.
+  kEnterprise,
+  // Joined Active Directory.
+  kEnterpriseActiveDirectory,
+  // Retail kiosk device.
+  kLegacyRetailMode,
+  // Locally owned as consumer kiosk and can auto-launch a kiosk webapp.
+  kConsumerKioskAutolaunch,
+  // Demo mode, either enrolled online or setup in offline demo mode.
+  kDemo,
+};
+
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,
 // which is passed from ash-chrome to lacros-chrome. Since ash-chrome and
 // lacros-chrome may have different versions, lacros-chrome must handle this
@@ -114,9 +134,15 @@ struct LacrosInitParams {
   [MinVersion=2]
   bool ash_metrics_enabled@2;
 
-  // Type of the ash-chrome session.
+  // Type of the ash-chrome session at lacros startup time.
   [MinVersion=3]
   SessionType session_type@3;
+
+  // Device mode at lacros startup time. If lacros is running during the
+  // out-of-box experience, the device mode might change later (e.g. if the
+  // user chooses to enroll the device).
+  [MinVersion=4]
+  DeviceMode device_mode@4;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

@@ -19,6 +19,7 @@ class EnvironmentProvider {
 
   // Virtual for tests.
   virtual crosapi::mojom::SessionType GetSessionType();
+  virtual crosapi::mojom::DeviceMode GetDeviceMode();
 };
 
 }  // namespace crosapi

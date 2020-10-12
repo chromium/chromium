@@ -28,6 +28,9 @@ class FakeEnvironmentProvider : public EnvironmentProvider {
   crosapi::mojom::SessionType GetSessionType() override {
     return crosapi::mojom::SessionType::kRegularSession;
   }
+  mojom::DeviceMode GetDeviceMode() override {
+    return crosapi::mojom::DeviceMode::kConsumer;
+  }
 };
 
 // TODO(crbug.com/1124494): Refactor the code to share with ARC.

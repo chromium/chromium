@@ -68,6 +68,7 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
       metrics::prefs::kMetricsReportingEnabled);
 
   params->session_type = environment_provider->GetSessionType();
+  params->device_mode = environment_provider->GetDeviceMode();
   return params;
 }
 
