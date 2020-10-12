@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/component_updater/autofill_regex_component_installer.h"
 #include "chrome/browser/component_updater/autofill_states_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/floc_component_installer.h"
 #include "chrome/browser/component_updater/games_component_installer.h"
+#include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/optimization_hints_component_installer.h"
 #include "chrome/browser/component_updater/origin_trials_component_installer.h"
@@ -192,6 +194,10 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #if defined(OS_CHROMEOS)
   RegisterSmartDimComponent(cus);
 #endif  // !defined(OS_CHROMEOS)
+
+#if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !defined(OS_ANDROID)
+  RegisterHyphenationComponent(cus);
+#endif
 
   RegisterZxcvbnDataComponent(cus);
 

@@ -31,6 +31,7 @@ import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -77,6 +78,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_KALEIDOSCOPE=$enable_kaleidoscope",
+    "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
     "USE_THIN_LTO=$use_thin_lto",
   ]
   if (is_win) {
@@ -6133,6 +6135,13 @@ static_library("browser") {
 
   if (!is_android && !is_official_build) {
     deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+  }
+
+  if (use_minikin_hyphenation && !is_android) {
+    sources += [
+      "component_updater/hyphenation_component_installer.cc",
+      "component_updater/hyphenation_component_installer.h",
+    ]
   }
 }
 
