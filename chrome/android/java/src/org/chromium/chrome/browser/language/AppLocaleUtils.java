@@ -81,9 +81,10 @@ public class AppLocaleUtils {
         if (GlobalAppLocaleController.getInstance().isOverridden() && BundleUtils.isBundle()) {
             Log.i(TAG, "maybeInstallActivitySplit isOverridden: %s  isBundle: %s",
                     GlobalAppLocaleController.getInstance().isOverridden(), BundleUtils.isBundle());
-            SplitCompat.installActivity(context);
             Log.i(TAG, "Override Locale: %s", getAppLanguagePref());
-            logInstalledLanguages();
+            logInstalledLanguages(context);
+            SplitCompat.installActivity(context);
+            logInstalledLanguages(context);
         }
     }
 
@@ -102,17 +103,15 @@ public class AppLocaleUtils {
                             .build();
             splitInstallManager.startInstall(installRequest);
         }
-        logInstalledLanguages();
     }
 
     /**
-     * Log list of installed languages
+     * Log list of installed languages for context.
+     * @param context Context to log installed languages on.
      */
-    private static void logInstalledLanguages() {
+    private static void logInstalledLanguages(Context context) {
         if (BundleUtils.isBundle()) {
-            SplitInstallManager splitInstallManager =
-                    SplitInstallManagerFactory.create(ContextUtils.getApplicationContext());
-
+            SplitInstallManager splitInstallManager = SplitInstallManagerFactory.create(context);
             Log.i(TAG, "Installed Languages: %s",
                     TextUtils.join(", ", splitInstallManager.getInstalledLanguages()));
         } else {
