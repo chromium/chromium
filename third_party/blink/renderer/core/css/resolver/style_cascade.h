@@ -71,8 +71,10 @@ class CORE_EXPORT StyleCascade {
   const MatchResult& GetMatchResult() { return match_result_; }
 
   // Access the MatchResult in order to add declarations to it.
-  // The modifications made will be taken into account during the next call to
-  // Apply.
+  // The modifications made will be taken into account during Apply().
+  //
+  // It is invalid to modify the MatchResult after Apply has been called
+  // (unless Reset is called first).
   //
   // TODO(andruud): ElementRuleCollector could emit MatchedProperties
   // directly to the cascade.
@@ -80,6 +82,9 @@ class CORE_EXPORT StyleCascade {
 
   // Add ActiveInterpolationsMap to the cascade. The interpolations present
   // in the map will be taken into account during the next call to Apply.
+  //
+  // It is valid to add interpolations to the StyleCascade even after Apply
+  // has been called.
   //
   // Note that it's assumed that the incoming ActiveInterpolationsMap outlives
   // the StyleCascade object.

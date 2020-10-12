@@ -142,6 +142,7 @@ bool IsInterpolation(CascadePriority priority) {
 }  // namespace
 
 MatchResult& StyleCascade::MutableMatchResult() {
+  DCHECK(!generation_) << "Apply has already been called";
   needs_match_result_analyze_ = true;
   return match_result_;
 }
