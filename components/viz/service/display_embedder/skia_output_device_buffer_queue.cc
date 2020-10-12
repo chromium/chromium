@@ -288,7 +288,7 @@ void SkiaOutputDeviceBufferQueue::SwapBuffers(
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), image_size_, std::move(latency_info),
+          base::Unretained(this), GetSwapBuffersSize(), std::move(latency_info),
           submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
@@ -323,7 +323,7 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), image_size_, std::move(latency_info),
+          base::Unretained(this), GetSwapBuffersSize(), std::move(latency_info),
           submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
@@ -354,7 +354,7 @@ void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), image_size_, std::move(latency_info),
+          base::Unretained(this), GetSwapBuffersSize(), std::move(latency_info),
           submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
@@ -404,6 +404,20 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   PageFlipComplete(image.get());
 }
 
+gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
+  switch (overlay_transform_) {
+    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+      return gfx::Size(image_size_.height(), image_size_.width());
+    case gfx::OVERLAY_TRANSFORM_INVALID:
+    case gfx::OVERLAY_TRANSFORM_NONE:
+    case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+      return image_size_;
+  }
+}
+
 bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
                                           float device_scale_factor,
                                           const gfx::ColorSpace& color_space,
@@ -418,6 +432,7 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
 
   color_space_ = color_space;
   image_size_ = size;
+  overlay_transform_ = transform;
   FreeAllSurfaces();
 
   images_ = presenter_->AllocateImages(color_space_, image_size_,
