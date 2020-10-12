@@ -152,6 +152,31 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   // reference to it is kept for later use in that class.
   scoped_refptr<AudioBus> buffer_bus =
       AudioBus::Create(number_of_channels, buffer_length, false);
+
+  // Check to see if any of the channels have been transferred.  Note that an
+  // AudioBuffer cannot be created with a length of 0, so if any channel has a
+  // length of 0, it was transferred.
+  bool any_buffer_detached = false;
+  for (unsigned i = 0; i < number_of_channels; ++i) {
+    for (unsigned i = 0; i < number_of_channels; ++i) {
+      if (buffer->getChannelData(i)->lengthAsSizeT() == 0) {
+        any_buffer_detached = true;
+        break;
+      }
+    }
+  }
+
+  if (any_buffer_detached) {
+    // If any channel is detached, we're supposed to treat it as if all were.
+    // This means the buffer effectively has length 0, which is the same as if
+    // no buffer were given.
+    BaseAudioContext::GraphAutoLocker context_locker(Context());
+    MutexLocker locker(process_lock_);
+    reverb_.reset();
+    shared_buffer_ = nullptr;
+    return;
+  }
+
   for (unsigned i = 0; i < number_of_channels; ++i) {
     buffer_bus->SetChannelMemory(i, buffer->getChannelData(i).View()->Data(),
                                  buffer_length);
