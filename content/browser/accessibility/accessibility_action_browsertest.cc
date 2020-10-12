@@ -79,7 +79,9 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
 
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kScrollPositionChanged);
+        horizontal_alignment == ax::mojom::ScrollAlignment::kNone
+            ? ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED
+            : ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED);
     ui::AXActionData action_data;
     action_data.target_node_id = node->GetData().id;
     action_data.action = ax::mojom::Action::kScrollToMakeVisible;
@@ -92,10 +94,12 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
       waiter.WaitForNotification();
   }
 
-  void ScrollToTop() {
+  void ScrollToTop(bool will_scroll_horizontally = false) {
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kScrollPositionChanged);
+        will_scroll_horizontally
+            ? ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED
+            : ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
     BrowserAccessibility* document = GetManager()->GetRoot();
     ui::AXActionData action_data;
     action_data.target_node_id = document->GetData().id;
@@ -260,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, Scroll) {
 
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kScrollPositionChanged);
+      ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
 
   ui::AXActionData data;
   data.action = ax::mojom::Action::kScrollDown;
@@ -929,8 +933,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
   EXPECT_GE(bounds.x(), doc_right_third.x());
   EXPECT_LE(bounds.x(), doc_right_third.right());
   EXPECT_FALSE(doc_bounds.Contains(bounds));
-
-  ScrollToTop();
+  ScrollToTop(true /* horizontally scrolls */);
   bounds = target_node->GetUnclippedScreenBoundsRect();
   EXPECT_FALSE(doc_bounds.Contains(bounds));
 

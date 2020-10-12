@@ -2404,8 +2404,9 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*frame_view->GetFrame().GetDocument());
 
   InvalidateBoundingBoxForFixedOrStickyPosition();
+  MarkElementDirty(document_, false);
   DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document_,
-                  ax::mojom::blink::Event::kScrollPositionChanged);
+                  ax::mojom::blink::Event::kLayoutComplete);
 }
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(
@@ -2414,8 +2415,9 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   InvalidateBoundingBoxForFixedOrStickyPosition();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
+    MarkElementDirty(node, false);
     DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, node,
-                    ax::mojom::blink::Event::kScrollPositionChanged);
+                    ax::mojom::blink::Event::kLayoutComplete);
   }
 }
 

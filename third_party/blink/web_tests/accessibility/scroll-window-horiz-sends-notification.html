@@ -24,7 +24,7 @@ async_test((t) => {
   assert_equals(window.pageXOffset, 0);
 
   accessibilityController.addNotificationListener(t.step_func((target, notification) => {
-    if (target.role == 'AXRole: AXWebArea' && notification == 'ScrollPositionChanged') {
+    if (target.role == 'AXRole: AXWebArea' && notification == 'LayoutComplete') {
       console.log('Got notification on web area');
       accessibilityController.removeNotificationListener();
       assert_equals(window.pageXOffset, 500);

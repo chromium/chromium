@@ -820,10 +820,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   // Loop over each event and generate an updated event message.
   for (ui::AXEvent& event : src_events) {
-    if (event.event_type == ax::mojom::Event::kLayoutComplete ||
-        event.event_type == ax::mojom::Event::kScrollPositionChanged) {
+    if (event.event_type == ax::mojom::Event::kLayoutComplete)
       need_to_send_location_changes = true;
-    }
 
     if (event.event_type == ax::mojom::Event::kLoadComplete)
       had_load_complete_messages = true;

@@ -1372,7 +1372,10 @@ Output = class {
 
     if (!prevRange && range.start.node.root) {
       prevRange = cursors.Range.fromNode(range.start.node.root);
+    } else if (!prevRange) {
+      return;
     }
+
     let cursor = cursors.Cursor.fromNode(range.start.node);
     let prevNode = prevRange.start.node;
 

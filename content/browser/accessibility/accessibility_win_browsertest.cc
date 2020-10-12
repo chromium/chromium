@@ -4430,7 +4430,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestScrollTo) {
   // center of the window.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kScrollPositionChanged);
+      ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
   ASSERT_HRESULT_SUCCEEDED(target->scrollTo(IA2_SCROLL_TYPE_ANYWHERE));
   waiter.WaitForNotification();
 
@@ -4448,7 +4448,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestScrollTo) {
   // center of the window.
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kScrollPositionChanged);
+      ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
   ASSERT_HRESULT_SUCCEEDED(target2->scrollTo(IA2_SCROLL_TYPE_ANYWHERE));
   waiter2.WaitForNotification();
 
@@ -4596,7 +4596,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIScrollProvider) {
 
         AccessibilityNotificationWaiter waiter(
             shell()->web_contents(), ui::kAXModeComplete,
-            ax::mojom::Event::kScrollPositionChanged);
+            ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED);
 
         EXPECT_HRESULT_SUCCEEDED(scroll_provider->Scroll(
             ScrollAmount_SmallIncrement, ScrollAmount_NoAmount));
@@ -4609,7 +4609,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIScrollProvider) {
 
         AccessibilityNotificationWaiter waiter2(
             shell()->web_contents(), ui::kAXModeComplete,
-            ax::mojom::Event::kScrollPositionChanged);
+            ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED);
 
         EXPECT_HRESULT_SUCCEEDED(scroll_provider->SetScrollPercent(0.0, 0.0));
         waiter2.WaitForNotification();
@@ -4636,7 +4636,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIScrollProvider) {
 
         AccessibilityNotificationWaiter waiter(
             shell()->web_contents(), ui::kAXModeComplete,
-            ax::mojom::Event::kScrollPositionChanged);
+            ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
 
         EXPECT_HRESULT_SUCCEEDED(scroll_provider->Scroll(
             ScrollAmount_NoAmount, ScrollAmount_SmallIncrement));
@@ -4649,7 +4649,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIScrollProvider) {
 
         AccessibilityNotificationWaiter waiter2(
             shell()->web_contents(), ui::kAXModeComplete,
-            ax::mojom::Event::kScrollPositionChanged);
+            ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
 
         EXPECT_HRESULT_SUCCEEDED(scroll_provider->SetScrollPercent(0.0, 0.0));
         waiter2.WaitForNotification();

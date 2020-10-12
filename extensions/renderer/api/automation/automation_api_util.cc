@@ -37,7 +37,6 @@ bool IsEventTypeHandledByAXEventGenerator(ax::mojom::Event event_type) {
     case ax::mojom::Event::kRowCollapsed:
     case ax::mojom::Event::kRowCountChanged:
     case ax::mojom::Event::kRowExpanded:
-    case ax::mojom::Event::kScrollPositionChanged:
     case ax::mojom::Event::kSelectedChildrenChanged:
       return true;
 
@@ -73,6 +72,7 @@ bool IsEventTypeHandledByAXEventGenerator(ax::mojom::Event event_type) {
     case ax::mojom::Event::kMousePressed:
     case ax::mojom::Event::kMouseReleased:
     case ax::mojom::Event::kScrolledToAnchor:
+    case ax::mojom::Event::kScrollPositionChanged:
     case ax::mojom::Event::kSelection:
     case ax::mojom::Event::kSelectionAdd:
     case ax::mojom::Event::kSelectionRemove:
