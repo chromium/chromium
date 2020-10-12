@@ -12,6 +12,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
+#include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -377,6 +378,8 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
     } else {
       scoped_refptr<viz::RasterContextProvider> raster_context_provider =
           Platform::Current()->SharedMainThreadContextProvider();
+      auto* ri = raster_context_provider->RasterInterface();
+
       gpu::SharedImageInterface* shared_image_interface =
           raster_context_provider->SharedImageInterface();
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2;
@@ -397,8 +400,7 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
           local_frame.get(), raster_context_provider.get(), dest_holder);
       gpu::SyncToken sync_token;
-      raster_context_provider->RasterInterface()
-          ->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+      ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
       auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
           [](gpu::SharedImageInterface* sii, gpu::Mailbox mailbox,
@@ -416,6 +418,13 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
           SharedGpuContext::ContextProviderWrapper(),
           base::PlatformThread::CurrentRef(),
           Thread::Current()->GetTaskRunner(), std::move(release_callback));
+
+      if (local_frame->HasTextures()) {
+        // Attach a new sync token to |local_frame|, so it's not destroyed
+        // before |image| is fully created.
+        media::WaitAndReplaceSyncTokenClient client(ri);
+        local_frame->UpdateReleaseSyncToken(&client);
+      }
     }
 
     ImageBitmap* image_bitmap =
