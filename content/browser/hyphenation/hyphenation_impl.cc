@@ -33,11 +33,11 @@ base::File GetDictionaryFile(const std::string& locale) {
   // Keep Files open in the cache for subsequent calls.
   static base::NoDestructor<DictionaryFileMap> cache;
 
-  const auto& it = cache->find(locale);
-  if (it != cache->end())
-    return it->second.Duplicate();
   const auto& inserted = cache->insert(std::make_pair(locale, base::File()));
   base::File& file = inserted.first->second;
+  // If the |locale| is already in the cache, duplicate the file and return it.
+  if (!inserted.second)
+    return file.Duplicate();
   DCHECK(!file.IsValid());
 
 #if defined(OS_ANDROID)
