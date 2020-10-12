@@ -684,7 +684,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   ASSERT_EQ(0u, bookmark_client()->GetTasksCount());
   EXPECT_CALL(callback, Run(_));
-  processor()->GetLocalChanges(/*max_entities=*/10, callback.Get());
+  processor()->GetLocalChanges(/*max_entries=*/10, callback.Get());
   EXPECT_TRUE(callback_result.empty());
   EXPECT_TRUE(node->is_favicon_loading());
 
@@ -692,7 +692,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                            GURL(kIconUrl));
   ASSERT_TRUE(node->is_favicon_loaded());
   EXPECT_CALL(callback, Run(_));
-  processor()->GetLocalChanges(/*max_entities=*/10, callback.Get());
+  processor()->GetLocalChanges(/*max_entries=*/10, callback.Get());
   EXPECT_FALSE(callback_result.empty());
 }
 
