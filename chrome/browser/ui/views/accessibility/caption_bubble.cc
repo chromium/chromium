@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -417,23 +418,24 @@ void CaptionBubble::OnKeyEvent(ui::KeyEvent* event) {
   // Use the arrow keys to move.
   if (event->type() == ui::ET_KEY_PRESSED) {
     gfx::Vector2d offset;
-    if (event->key_code() == ui::VKEY_UP) {
+    if (event->key_code() == ui::VKEY_UP)
       offset.set_y(-kWidgetDisplacementWithArrowKeyDip);
-    }
-    if (event->key_code() == ui::VKEY_DOWN) {
+    if (event->key_code() == ui::VKEY_DOWN)
       offset.set_y(kWidgetDisplacementWithArrowKeyDip);
-    }
-    if (event->key_code() == ui::VKEY_LEFT) {
+    if (event->key_code() == ui::VKEY_LEFT)
       offset.set_x(-kWidgetDisplacementWithArrowKeyDip);
-    }
-    if (event->key_code() == ui::VKEY_RIGHT) {
+    if (event->key_code() == ui::VKEY_RIGHT)
       offset.set_x(kWidgetDisplacementWithArrowKeyDip);
-    }
     if (offset != gfx::Vector2d()) {
       DCHECK(GetWidget());
       gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
       bounds.Offset(offset);
       GetWidget()->SetBounds(bounds);
+      int x = 100 * base::ClampToRange(ratio_in_parent_x_, 0.0, 1.0);
+      int y = 100 * base::ClampToRange(ratio_in_parent_y_, 0.0, 1.0);
+      GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+          IDS_LIVE_CAPTION_BUBBLE_MOVE_SCREENREADER_ANNOUNCEMENT,
+          base::NumberToString16(x), base::NumberToString16(y)));
       return;
     }
   }
@@ -577,8 +579,11 @@ void CaptionBubble::UpdateBubbleVisibility() {
     // Show the widget if it has text or an error to display. Only show the
     // widget if it isn't already visible. Always calling Widget::Show() will
     // mean the widget gets focus each time.
-    if (!GetWidget()->IsVisible())
+    if (!GetWidget()->IsVisible()) {
       GetWidget()->Show();
+      GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+          IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT));
+    }
   } else if (GetWidget()->IsVisible()) {
     // No text and no error. Hide it.
     GetWidget()->Hide();
