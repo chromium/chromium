@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -25,6 +26,7 @@ struct CORE_EXPORT TextPaintStyle {
   float stroke_width;
   ColorScheme color_scheme;
   const ShadowList* shadow;
+  base::Optional<AppliedTextDecoration> selection_text_decoration;
 
   bool operator==(const TextPaintStyle& other) const {
     return current_color == other.current_color &&
@@ -32,7 +34,8 @@ struct CORE_EXPORT TextPaintStyle {
            stroke_color == other.stroke_color &&
            emphasis_mark_color == other.emphasis_mark_color &&
            stroke_width == other.stroke_width &&
-           color_scheme == other.color_scheme && shadow == other.shadow;
+           color_scheme == other.color_scheme && shadow == other.shadow &&
+           selection_text_decoration == other.selection_text_decoration;
   }
   bool operator!=(const TextPaintStyle& other) const {
     return !(*this == other);

@@ -373,9 +373,15 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
           EnclosingUnderlineObject(&inline_text_box_);
       const ComputedStyle* decorating_box_style =
           decorating_box ? decorating_box.Style() : nullptr;
+      base::Optional<AppliedTextDecoration> selection_text_decoration =
+          UNLIKELY(have_selection)
+              ? base::Optional<AppliedTextDecoration>(
+                    selection_style.selection_text_decoration)
+              : base::nullopt;
       decoration_info.emplace(box_origin, local_origin, width,
                               inline_text_box_.Root().BaselineType(),
-                              style_to_use, decorating_box_style);
+                              style_to_use, selection_text_decoration,
+                              decorating_box_style);
       TextDecorationOffset decoration_offset(decoration_info->Style(),
                                              &inline_text_box_, decorating_box);
       text_painter.PaintDecorationsExceptLineThrough(

@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -23,6 +24,9 @@ class CORE_EXPORT SelectionPaintingUtils {
   STATIC_ONLY(SelectionPaintingUtils);
 
  public:
+  static base::Optional<AppliedTextDecoration> SelectionTextDecoration(
+      const ComputedStyle&,
+      const ComputedStyle&);
   static Color SelectionBackgroundColor(const Document&,
                                         const ComputedStyle&,
                                         Node*);

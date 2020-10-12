@@ -390,7 +390,8 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   // after it has been computed.
   PhysicalOffset offset;
   TextDecorationInfo decoration_info(offset, offset, ink_overflow.Width(),
-                                     style.GetFontBaseline(), style, nullptr);
+                                     style.GetFontBaseline(), style,
+                                     base::nullopt, nullptr);
   NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,
                                            nullptr);
   const Vector<AppliedTextDecoration>& decorations =

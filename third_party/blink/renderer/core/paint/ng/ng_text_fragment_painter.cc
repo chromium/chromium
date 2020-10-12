@@ -366,6 +366,8 @@ class SelectionPaintState {
 
   const LayoutSelectionStatus& Status() const { return selection_status_; }
 
+  const TextPaintStyle& GetSelectionStyle() const { return selection_style_; }
+
   bool ShouldPaintSelectedTextOnly() const { return paint_selected_text_only_; }
 
   bool ShouldPaintSelectedTextSeparately() const {
@@ -667,9 +669,15 @@ void NGTextFragmentPainter<Cursor>::Paint(const PaintInfo& paint_info,
         !text_item.IsEllipsis()) {
       PhysicalOffset local_origin = box_rect.offset;
       LayoutUnit width = box_rect.Width();
+      base::Optional<AppliedTextDecoration> selection_text_decoration =
+          UNLIKELY(selection)
+              ? base::Optional<AppliedTextDecoration>(
+                    selection->GetSelectionStyle().selection_text_decoration)
+              : base::nullopt;
 
       decoration_info.emplace(box_rect.offset, local_origin, width,
-                              style.GetFontBaseline(), style, nullptr);
+                              style.GetFontBaseline(), style,
+                              selection_text_decoration, nullptr);
       NGTextDecorationOffset decoration_offset(decoration_info->Style(),
                                                text_item.Style(), nullptr);
       text_painter.PaintDecorationsExceptLineThrough(

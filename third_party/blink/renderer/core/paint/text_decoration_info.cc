@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
-
+#include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -159,8 +159,10 @@ TextDecorationInfo::TextDecorationInfo(
     LayoutUnit width,
     FontBaseline baseline_type,
     const ComputedStyle& style,
+    const base::Optional<AppliedTextDecoration> selection_text_decoration,
     const ComputedStyle* decorating_box_style)
     : style_(style),
+      selection_text_decoration_(selection_text_decoration),
       baseline_type_(baseline_type),
       width_(width),
       font_data_(style_.GetFont().PrimaryFont()),
@@ -202,6 +204,14 @@ ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
 }
 
 Color TextDecorationInfo::LineColor() const {
+  // Find the matched normal and selection |AppliedTextDecoration|
+  // and use the text-decoration-color from selection when it is.
+  if (selection_text_decoration_ &&
+      style_.AppliedTextDecorations()[decoration_index_].Lines() ==
+          selection_text_decoration_.value().Lines()) {
+    return selection_text_decoration_.value().GetColor();
+  }
+
   return style_.AppliedTextDecorations()[decoration_index_].GetColor();
 }
 

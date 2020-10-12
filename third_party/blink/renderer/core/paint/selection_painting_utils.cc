@@ -142,6 +142,35 @@ Color SelectionPaintingUtils::SelectionBackgroundColor(
                    style.UsedColorScheme());
 }
 
+base::Optional<AppliedTextDecoration>
+SelectionPaintingUtils::SelectionTextDecoration(
+    const ComputedStyle& style,
+    const ComputedStyle& pseudo_style) {
+  const Vector<AppliedTextDecoration>& style_decorations =
+      style.AppliedTextDecorations();
+  const Vector<AppliedTextDecoration>& pseudo_style_decorations =
+      pseudo_style.AppliedTextDecorations();
+
+  if (style_decorations.IsEmpty())
+    return base::nullopt;
+
+  base::Optional<AppliedTextDecoration> selection_text_decoration =
+      base::nullopt;
+
+  if (style_decorations.back().Lines() ==
+      pseudo_style_decorations.back().Lines()) {
+    selection_text_decoration = pseudo_style_decorations.back();
+
+    if (style_decorations.size() == pseudo_style_decorations.size()) {
+      selection_text_decoration.value().SetColor(
+          pseudo_style.VisitedDependentColor(
+              GetCSSPropertyTextDecorationColor()));
+    }
+  }
+
+  return selection_text_decoration;
+}
+
 Color SelectionPaintingUtils::SelectionForegroundColor(
     const Document& document,
     const ComputedStyle& style,
@@ -190,6 +219,8 @@ TextPaintStyle SelectionPaintingUtils::SelectionPaintingStyle(
       selection_style.stroke_width = pseudo_style->TextStrokeWidth();
       selection_style.shadow =
           uses_text_as_clip ? nullptr : pseudo_style->TextShadow();
+      selection_style.selection_text_decoration =
+          SelectionTextDecoration(style, *pseudo_style);
     }
 
     // Text shadows are disabled when printing. http://crbug.com/258321

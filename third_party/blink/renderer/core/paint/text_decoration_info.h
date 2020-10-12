@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
 namespace blink {
 
 class ComputedStyle;
@@ -34,12 +34,14 @@ enum class ResolvedUnderlinePosition {
 // https://www.w3.org/TR/css-text-decor-3/#painting-order
 class CORE_EXPORT TextDecorationInfo {
  public:
-  TextDecorationInfo(const PhysicalOffset& box_origin,
-                     PhysicalOffset local_origin,
-                     LayoutUnit width,
-                     FontBaseline baseline_type,
-                     const ComputedStyle& style,
-                     const ComputedStyle* decorating_box_style);
+  TextDecorationInfo(
+      const PhysicalOffset& box_origin,
+      PhysicalOffset local_origin,
+      LayoutUnit width,
+      FontBaseline baseline_type,
+      const ComputedStyle& style,
+      const base::Optional<AppliedTextDecoration> selection_text_decoration,
+      const ComputedStyle* decorating_box_style);
 
   // Set the decoration to use when painting and returning values.
   // Must be set before calling any other method, and can be called
@@ -104,6 +106,7 @@ class CORE_EXPORT TextDecorationInfo {
   FloatRect BoundsForWavy(TextDecoration line) const;
 
   const ComputedStyle& style_;
+  const base::Optional<AppliedTextDecoration> selection_text_decoration_;
   const FontBaseline baseline_type_;
   const LayoutUnit width_;
   const SimpleFontData* font_data_;
