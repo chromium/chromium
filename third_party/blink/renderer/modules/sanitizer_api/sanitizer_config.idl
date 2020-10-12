@@ -6,6 +6,7 @@
 
 dictionary SanitizerConfig {
   sequence<DOMString> allowElements;
+  sequence<DOMString> blockElements;
   sequence<DOMString> dropElements;
   sequence<DOMString> allowAttributes;
   sequence<DOMString> dropAttributes;

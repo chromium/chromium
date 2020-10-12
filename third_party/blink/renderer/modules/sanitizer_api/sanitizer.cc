@@ -31,15 +31,29 @@ Sanitizer::Sanitizer(const SanitizerConfig* config)
   Vector<String> drop_elements = default_drop_elements_;
   if (config->hasDropElements()) {
     for (const String& s : config->dropElements()) {
-      if (!drop_elements.Contains(s.UpperASCII())) {
-        drop_elements.push_back(s.UpperASCII());
+      const String& upper_s = s.UpperASCII();
+      if (!drop_elements.Contains(upper_s)) {
+        drop_elements.push_back(upper_s);
       }
     }
   }
   config_->setDropElements(drop_elements);
 
-  // Format allowElements to uppercase.
+  // Format blockElements to uppercase.
+  Vector<String> block_elements = default_block_elements_;
+  if (config->hasBlockElements()) {
+    for (const String& s : config->blockElements()) {
+      const String& upper_s = s.UpperASCII();
+      if (!drop_elements.Contains(upper_s) &&
+          !block_elements.Contains(upper_s)) {
+        block_elements.push_back(upper_s);
+      }
+    }
+  }
+  config_->setBlockElements(block_elements);
+
   if (config->hasAllowElements()) {
+    // Format allowElements to uppercase.
     Vector<String> l;
     for (const String& s : config->allowElements()) {
       if (!config_->dropElements().Contains(s))
@@ -49,20 +63,21 @@ Sanitizer::Sanitizer(const SanitizerConfig* config)
   }
 
   // Format dropAttributes to lowercase.
+  drop_attributes_ = default_drop_attributes_;
   if (config->hasDropAttributes()) {
-    drop_attributes_ = default_drop_attributes_;
     for (const String& s : config->dropAttributes()) {
       drop_attributes_.push_back(WTF::AtomicString(s.LowerASCII()));
     }
-  } else if (config->hasAllowAttributes()) {
+  }
+  if (config->hasAllowAttributes()) {
     Vector<String> l;
     for (const String& s : config->allowAttributes()) {
-      if (!default_drop_attributes_.Contains(s))
-        l.push_back(s.LowerASCII());
+      const String& lower_s = s.LowerASCII();
+      if (!default_drop_attributes_.Contains(lower_s) &&
+          !default_block_elements_.Contains(lower_s))
+        l.push_back(lower_s);
     }
     config_->setAllowAttributes(l);
-  } else {
-    drop_attributes_ = default_drop_attributes_;
   }
 }
 
@@ -106,8 +121,10 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
       Node* tmp = node;
       node = NodeTraversal::NextSkippingChildren(*node, fragment);
       tmp->remove();
-    } else if (config_->hasAllowElements() &&
-               !config_->allowElements().Contains(node_name)) {
+    } else if ((config_->hasBlockElements() &&
+                config_->blockElements().Contains(node_name)) ||
+               (config_->hasAllowElements() &&
+                !config_->allowElements().Contains(node_name))) {
       // If the current element is blocked, append its children after current
       // node to parent node, remove current element and proceed to the next
       // node.

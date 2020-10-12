@@ -22,6 +22,7 @@ PASS SanitizerAPI config: dropElements list ["test", "i"]}, sanitizeToString fun
 PASS SanitizerAPI config: dropElements list ["I", "AM"]}, sanitizeToString function for dropElements list ["I", "AM"]}
 PASS SanitizerAPI config: dropElements list ["am", "p"]}, sanitizeToString function for dropElements list ["am", "p"]}
 PASS SanitizerAPI config: dropElements list with invalid values}, sanitizeToString function for dropElements list with invalid values}
+PASS SanitizerAPI config: blockElements list with invalid values}, sanitizeToString function for blockElements list with invalid values}
 PASS SanitizerAPI config: allowElements list ["p"]., sanitizeToString function for allowElements list ["p"].
 PASS SanitizerAPI config: allowElements list has no influence to dropElements., sanitizeToString function for allowElements list has no influence to dropElements.
 PASS SanitizerAPI config: dropAttributes list ["style"] with style attribute, sanitizeToString function for dropAttributes list ["style"] with style attribute

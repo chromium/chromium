@@ -44,6 +44,17 @@
     }, "SanitizerAPI config allowElements is not editable.");
 
     test(t => {
+      let options = {blockElements: ["div"]};
+
+      let s = new Sanitizer(options);
+      assert_true(s instanceof Sanitizer);
+      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "balabala<test>test</test>");
+
+      options.blockElements.push("test");
+      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "balabala<test>test</test>");
+    }, "SanitizerAPI config blockElements is not editable.");
+
+    test(t => {
       let options = {dropElements: ["div"]};
 
       let s = new Sanitizer(options);
@@ -76,7 +87,7 @@
       assert_equals(s.sanitizeToString("<button id='btn' style='color: black'>balabala</button>"), "<button style=\"color: black\">balabala</button>");
     }, "SanitizerAPI config dropAttributes is not editable.");
 
-    const config_names = ["dropElements", "allowElements", "dropAttributes", "allowAttributes"];
+    const config_names = ["dropElements", "blockElements", "allowElements", "dropAttributes", "allowAttributes"];
     config_names.forEach(cname => {
       let options = {};
       options[cname] = [];

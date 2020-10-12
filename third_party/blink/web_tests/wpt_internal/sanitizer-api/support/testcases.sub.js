@@ -21,6 +21,7 @@ const testcases = [
   {config_input: {dropElements: ["I", "AM"]}, value: "<div>balabala<am>test</am></div>", result: "<div>balabala</div>", message: "dropElements list [\"I\", \"AM\"]}"},
   {config_input: {dropElements: ["am", "p"]}, value: "<div>balabala<i>i</i><p>t</p><test>a</test></div>", result: "<div>balabala<i>i</i><test>a</test></div>", message: "dropElements list [\"am\", \"p\"]}"},
   {config_input: {dropElements: [123, [], "test", "i"]}, value: "<div>balabala<i>test</i></div><test>t</test>", result: "<div>balabala</div>", message: "dropElements list with invalid values}"},
+  {config_input: {blockElements: [123, [], "test", "i"]}, value: "<div>balabala<i>test</i></div><test>t</test>", result: "<div>balabalatest</div>t", message: "blockElements list with invalid values}"},
   {config_input: {allowElements: ["p"]}, value: "<div>test<div>p</div>tt<p>div</p></div>", result: "testptt<p>div</p>", message: "allowElements list [\"p\"]."},
   {config_input: {dropElements: ["div"], allowElements: ["div"]}, value: "<div>test</div><c>bla", result: "bla", message: "allowElements list has no influence to dropElements."},
   {config_input: {dropAttributes: ["style"]}, value: "<p style='color: black'>Click.</p>", result: "<p>Click.</p>", message: "dropAttributes list [\"style\"] with style attribute"},
