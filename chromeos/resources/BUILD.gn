@@ -85,7 +85,7 @@ if (!is_official_build) {
     ]
 
     deps = [
-      "//chromeos/components/file_manager:file_manager_mojom_js",
+      "//chromeos/components/file_manager/mojom:mojom_js",
       "//mojo/public/js:bindings_lite",
     ]
   }

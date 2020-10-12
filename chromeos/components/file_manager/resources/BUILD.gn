@@ -9,7 +9,9 @@ js_library("main_js") {
     "browser_proxy.js",
     "main.js",
   ]
-  deps = [ "//chromeos/components/file_manager:file_manager_mojom_js_library_for_compile" ]
+  deps = [
+    "//chromeos/components/file_manager/mojom:mojom_js_library_for_compile",
+  ]
 }
 
 js_type_check("closure_compile") {

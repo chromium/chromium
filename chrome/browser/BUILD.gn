@@ -2322,8 +2322,8 @@ static_library("browser") {
     ]
     if (!is_official_build) {
       deps += [
-        "//chromeos/components/file_manager:file_manager_mojom",
         "//chromeos/components/file_manager:file_manager_ui",
+        "//chromeos/components/file_manager/mojom",
         "//chromeos/components/telemetry_extension_ui",
         "//chromeos/components/telemetry_extension_ui/mojom",
       ]
