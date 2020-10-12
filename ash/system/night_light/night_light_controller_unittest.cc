@@ -124,6 +124,8 @@ void TestCompositorsTemperature(float temperature) {
 class TestObserver : public NightLightController::Observer {
  public:
   TestObserver() { GetController()->AddObserver(this); }
+  TestObserver(const TestObserver& other) = delete;
+  TestObserver& operator=(const TestObserver& rhs) = delete;
   ~TestObserver() override { GetController()->RemoveObserver(this); }
 
   // ash::NightLightController::Observer:
@@ -133,8 +135,6 @@ class TestObserver : public NightLightController::Observer {
 
  private:
   bool status_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 constexpr double kFakePosition1_Latitude = 23.5;
@@ -150,6 +150,8 @@ constexpr int kFakePosition2_SunriseOffset = 3 * 60;
 class TestDelegate : public NightLightControllerImpl::Delegate {
  public:
   TestDelegate() = default;
+  TestDelegate(const TestDelegate& other) = delete;
+  TestDelegate& operator=(const TestDelegate& rhs) = delete;
   ~TestDelegate() override = default;
 
   void SetFakeNow(base::Time time) { fake_now_ = time; }
@@ -185,13 +187,13 @@ class TestDelegate : public NightLightControllerImpl::Delegate {
   base::Time fake_sunset_;
   base::Time fake_sunrise_;
   bool has_geoposition_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class NightLightTest : public NoSessionAshTestBase {
  public:
   NightLightTest() : delegate_(new TestDelegate) {}
+  NightLightTest(const NightLightTest& other) = delete;
+  NightLightTest& operator=(const NightLightTest& rhs) = delete;
   ~NightLightTest() override = default;
 
   PrefService* user1_pref_service() {
@@ -264,8 +266,6 @@ class NightLightTest : public NoSessionAshTestBase {
 
  private:
   TestDelegate* delegate_ = nullptr;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightTest);
 };
 
 // Tests toggling NightLight on / off and makes sure the observer is updated and
@@ -1077,65 +1077,6 @@ TEST_F(NightLightTest, TestAmbientLightRemappingTemperature) {
   EXPECT_EQ(ambient_temperature, controller->ambient_temperature());
 }
 
-TEST_F(NightLightTest, TestAmbientColorMatrix) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kAllowAmbientEQ);
-  SetNightLightEnabled(false);
-  SetAmbientColorPrefEnabled(true);
-  auto scaling_factors = GetAllDisplaysCompositorsRGBScaleFactors();
-  // If no temperature is set, we expect 1.0 for each scaling factor.
-  for (const gfx::Vector3dF& rgb : scaling_factors) {
-    EXPECT_TRUE((rgb - gfx::Vector3dF(1.0f, 1.0f, 1.0f)).IsZero());
-  }
-
-  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7350.0f);
-
-  scaling_factors = GetAllDisplaysCompositorsRGBScaleFactors();
-  // A cool temperature should affect only red and green.
-  for (const gfx::Vector3dF& rgb : scaling_factors) {
-    EXPECT_LT(rgb.x(), 1.0f);
-    EXPECT_LT(rgb.y(), 1.0f);
-    EXPECT_EQ(rgb.z(), 1.0f);
-  }
-
-  ambient_temperature = SimulateAmbientColorFromPowerd(2700, 5800.0f);
-
-  scaling_factors = GetAllDisplaysCompositorsRGBScaleFactors();
-  // A warm temperature should affect only green and blue.
-  for (const gfx::Vector3dF& rgb : scaling_factors) {
-    EXPECT_EQ(rgb.x(), 1.0f);
-    EXPECT_LT(rgb.y(), 1.0f);
-    EXPECT_LT(rgb.z(), 1.0f);
-  }
-}
-
-TEST_F(NightLightTest, TestNightLightAndAmbientColorInteraction) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kAllowAmbientEQ);
-
-  SetNightLightEnabled(true);
-
-  auto night_light_rgb = GetAllDisplaysCompositorsRGBScaleFactors().front();
-
-  SetAmbientColorPrefEnabled(true);
-
-  auto night_light_and_ambient_rgb =
-      GetAllDisplaysCompositorsRGBScaleFactors().front();
-  // Ambient color with neutral temperature should not affect night light.
-  EXPECT_TRUE((night_light_rgb - night_light_and_ambient_rgb).IsZero());
-
-  SimulateAmbientColorFromPowerd(2700, 5800.0f);
-
-  night_light_and_ambient_rgb =
-      GetAllDisplaysCompositorsRGBScaleFactors().front();
-
-  // Red should not be affected by a warmed ambient temperature.
-  EXPECT_EQ(night_light_and_ambient_rgb.x(), night_light_rgb.x());
-  // Green and blue should be lowered instead.
-  EXPECT_LT(night_light_and_ambient_rgb.y(), night_light_rgb.y());
-  EXPECT_LT(night_light_and_ambient_rgb.z(), night_light_rgb.z());
-}
-
 // Tests that manual changes to NightLight status while a schedule is being used
 // will be remembered and reapplied across user switches.
 TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
@@ -1293,6 +1234,8 @@ class NightLightCrtcTest : public NightLightTest {
  public:
   NightLightCrtcTest()
       : logger_(std::make_unique<display::test::ActionLogger>()) {}
+  NightLightCrtcTest(const NightLightCrtcTest& other) = delete;
+  NightLightCrtcTest& operator=(const NightLightCrtcTest& rhs) = delete;
   ~NightLightCrtcTest() override = default;
 
   static constexpr gfx::Size kDisplaySize{1024, 768};
@@ -1409,8 +1352,6 @@ class NightLightCrtcTest : public NightLightTest {
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
 
   std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightCrtcTest);
 };
 
 // static
@@ -1676,9 +1617,9 @@ TEST(AmbientTemperature, AmbientTemperatureToRGBScaleFactors) {
 class AutoNightLightTest : public NightLightTest {
  public:
   AutoNightLightTest() = default;
-  ~AutoNightLightTest() override = default;
   AutoNightLightTest(const AutoNightLightTest& other) = delete;
   AutoNightLightTest& operator=(const AutoNightLightTest& rhs) = delete;
+  ~AutoNightLightTest() override = default;
 
   // NightLightTest:
   void SetUp() override {
@@ -1836,10 +1777,10 @@ TEST_F(AutoNightLightTest, NoNotificationWhenManuallyEnabledFromSystemMenu) {
 class AutoNightLightOnFirstLogin : public AutoNightLightTest {
  public:
   AutoNightLightOnFirstLogin() { fake_now_ = 23 * 60; }
-  ~AutoNightLightOnFirstLogin() override = default;
   AutoNightLightOnFirstLogin(const AutoNightLightOnFirstLogin& other) = delete;
   AutoNightLightOnFirstLogin& operator=(const AutoNightLightOnFirstLogin& rhs) =
       delete;
+  ~AutoNightLightOnFirstLogin() override = default;
 };
 
 TEST_F(AutoNightLightOnFirstLogin, NotifyOnFirstLogin) {
@@ -1851,23 +1792,78 @@ TEST_F(AutoNightLightOnFirstLogin, NotifyOnFirstLogin) {
 // Fixture for testing Ambient EQ.
 class AmbientEQTest : public NightLightTest {
  public:
-  AmbientEQTest() = default;
-  ~AmbientEQTest() override = default;
+  AmbientEQTest() : logger_(std::make_unique<display::test::ActionLogger>()) {}
   AmbientEQTest(const AmbientEQTest& other) = delete;
   AmbientEQTest& operator=(const AmbientEQTest& rhs) = delete;
+  ~AmbientEQTest() override = default;
 
   static constexpr gfx::Vector3dF kDefaultScalingFactors{1.0f, 1.0f, 1.0f};
+  static constexpr int64_t kInternalDisplayId = 123;
+  static constexpr int64_t kExternalDisplayId = 456;
 
   // NightLightTest:
   void SetUp() override {
     NightLightTest::SetUp();
+
     features_.InitAndEnableFeature(features::kAllowAmbientEQ);
     controller_ = GetController();
+
+    native_display_delegate_ =
+        new display::test::TestNativeDisplayDelegate(logger_.get());
+    display_manager()->configurator()->SetDelegateForTesting(
+        std::unique_ptr<display::NativeDisplayDelegate>(
+            native_display_delegate_));
+    display_change_observer_ =
+        std::make_unique<display::DisplayChangeObserver>(display_manager());
+    test_api_ = std::make_unique<display::DisplayConfigurator::TestApi>(
+        display_manager()->configurator());
+  }
+
+  void ConfigureMulipleDisplaySetup() {
+    const gfx::Size kDisplaySize{1024, 768};
+    owned_snapshots_.clear();
+    owned_snapshots_.emplace_back(
+        display::FakeDisplaySnapshot::Builder()
+            .SetId(kInternalDisplayId)
+            .SetNativeMode(kDisplaySize)
+            .SetCurrentMode(kDisplaySize)
+            .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
+            .SetOrigin({0, 0})
+            .Build());
+    owned_snapshots_.emplace_back(display::FakeDisplaySnapshot::Builder()
+                                      .SetId(kExternalDisplayId)
+                                      .SetNativeMode(kDisplaySize)
+                                      .SetCurrentMode(kDisplaySize)
+                                      .SetOrigin({1030, 0})
+                                      .Build());
+
+    std::vector<display::DisplaySnapshot*> outputs = {
+        owned_snapshots_[0].get(), owned_snapshots_[1].get()};
+
+    native_display_delegate_->set_outputs(outputs);
+    display_manager()->configurator()->OnConfigurationChanged();
+    EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
+    display_change_observer_->GetStateForDisplayIds(outputs);
+    display_change_observer_->OnDisplayModeChanged(outputs);
+  }
+
+  void TearDown() override {
+    // DisplayChangeObserver access DeviceDataManager in its destructor, so
+    // destroy it first.
+    display_change_observer_ = nullptr;
+    NightLightTest::TearDown();
   }
 
  protected:
   base::test::ScopedFeatureList features_;
-  NightLightControllerImpl* controller_;  // Not owned.
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
+  std::unique_ptr<display::test::ActionLogger> logger_;
+
+  // Not owned.
+  NightLightControllerImpl* controller_;
+  display::test::TestNativeDisplayDelegate* native_display_delegate_;
+  std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
+  std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
 };
 
 // static
@@ -1932,6 +1928,69 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedBothDisabled) {
   user2_pref_service()->SetBoolean(prefs::kAmbientColorEnabled, false);
   SwitchActiveUser(kUser2Email);
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());
+}
+
+TEST_F(AmbientEQTest, TestAmbientColorMatrix) {
+  ConfigureMulipleDisplaySetup();
+  SetNightLightEnabled(false);
+  SetAmbientColorPrefEnabled(true);
+  auto scaling_factors = GetAllDisplaysCompositorsRGBScaleFactors();
+  // If no temperature is set, we expect 1.0 for each scaling factor.
+  for (const gfx::Vector3dF& rgb : scaling_factors) {
+    EXPECT_TRUE((rgb - gfx::Vector3dF(1.0f, 1.0f, 1.0f)).IsZero());
+  }
+
+  // Turn color temperature down.
+  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7350.0f);
+  auto internal_rgb = GetDisplayCompositorRGBScaleFactors(kInternalDisplayId);
+  auto external_rgb = GetDisplayCompositorRGBScaleFactors(kExternalDisplayId);
+
+  // A cool temperature should affect only red and green.
+  EXPECT_LT(internal_rgb.x(), 1.0f);
+  EXPECT_LT(internal_rgb.y(), 1.0f);
+  EXPECT_EQ(internal_rgb.z(), 1.0f);
+
+  // The external display should not be affected.
+  EXPECT_TRUE((external_rgb - gfx::Vector3dF(1.0f, 1.0f, 1.0f)).IsZero());
+
+  // Turn color temperature up.
+  ambient_temperature = SimulateAmbientColorFromPowerd(2700, 5800.0f);
+  internal_rgb = GetDisplayCompositorRGBScaleFactors(kInternalDisplayId);
+  external_rgb = GetDisplayCompositorRGBScaleFactors(kExternalDisplayId);
+
+  // A warm temperature should affect only green and blue.
+  EXPECT_EQ(internal_rgb.x(), 1.0f);
+  EXPECT_LT(internal_rgb.y(), 1.0f);
+  EXPECT_LT(internal_rgb.z(), 1.0f);
+
+  // The external display should not be affected.
+  EXPECT_TRUE((external_rgb - gfx::Vector3dF(1.0f, 1.0f, 1.0f)).IsZero());
+}
+
+TEST_F(AmbientEQTest, TestNightLightAndAmbientColorInteraction) {
+  ConfigureMulipleDisplaySetup();
+
+  SetNightLightEnabled(true);
+
+  auto night_light_rgb = GetAllDisplaysCompositorsRGBScaleFactors().front();
+
+  SetAmbientColorPrefEnabled(true);
+
+  auto night_light_and_ambient_rgb =
+      GetDisplayCompositorRGBScaleFactors(kInternalDisplayId);
+  // Ambient color with neutral temperature should not affect night light.
+  EXPECT_TRUE((night_light_rgb - night_light_and_ambient_rgb).IsZero());
+
+  SimulateAmbientColorFromPowerd(2700, 5800.0f);
+
+  night_light_and_ambient_rgb =
+      GetDisplayCompositorRGBScaleFactors(kInternalDisplayId);
+
+  // Red should not be affected by a warmed ambient temperature.
+  EXPECT_EQ(night_light_and_ambient_rgb.x(), night_light_rgb.x());
+  // Green and blue should be lowered instead.
+  EXPECT_LT(night_light_and_ambient_rgb.y(), night_light_rgb.y());
+  EXPECT_LT(night_light_and_ambient_rgb.z(), night_light_rgb.z());
 }
 
 }  // namespace
