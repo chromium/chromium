@@ -1016,8 +1016,10 @@ class MockRuntime {
             clientReceiver: clientReceiver,
             displayInfo: this.displayInfo_,
             enabledFeatures: enabled_features,
-            defaultFramebufferScale: this.defaultFramebufferScale_,
-            supportsViewportScaling: true
+            deviceConfig: {
+              defaultFramebufferScale: this.defaultFramebufferScale_,
+              supportsViewportScaling: true
+            }
           }
         });
       } else {

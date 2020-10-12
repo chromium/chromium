@@ -102,6 +102,25 @@ struct XRSessionOptions {
   array<XRSessionFeature> optional_features;
 };
 
+// This structure contains a description of the device's active configuration
+// for the session being established.
+struct XRSessionDeviceConfig {
+  // Indicates whether the device backing this session sends input events solely
+  // via eventing (as opposed to polling).
+  bool uses_input_eventing;
+
+  // The default scale that should be applied to the native framebuffer size
+  // unless overridden by the developer.
+  float default_framebuffer_scale = 1.0;
+
+  // Indicates whether the device supports dynamic viewport scaling via
+  // XRView.requestViewportScale which results in UpdateLayerBounds mojo calls.
+  // This is opt-in to avoid problems with devices that assume default bounds,
+  // this would result in broken rendering due to inconsistency between the
+  // drawn and displayed viewports.
+  bool supports_viewport_scaling;
+};
+
 // This structure contains all the mojo interfaces for different kinds of
 // XRSession. The only interface required by all sessions is the
 // XRFrameDataProvider. It must always be present. Other interfaces are set as
@@ -126,20 +145,8 @@ struct XRSession {
   // runtime, and have been consented to by the user.
   array<XRSessionFeature> enabled_features;
 
-  // Indicates whether the device backing this session sends input events solely
-  // via eventing (as opposed to polling).
-  bool uses_input_eventing;
-
-  // The default scale that should be applied to the native framebuffer size
-  // unless overridden by the developer.
-  float default_framebuffer_scale = 1.0;
-
-  // Indicates whether the device supports dynamic viewport scaling via
-  // XRView.requestViewportScale which results in UpdateLayerBounds mojo calls.
-  // This is opt-in to avoid problems with devices that assume default bounds,
-  // this would result in broken rendering due to inconsistency between the
-  // drawn and displayed viewports.
-  bool supports_viewport_scaling;
+  // Description of the device's active configuration.
+  XRSessionDeviceConfig device_config;
 };
 
 // This structure contains the infomation and interfaces needed to create a two

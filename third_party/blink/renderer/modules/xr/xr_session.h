@@ -116,9 +116,7 @@ class XRSession final
             device::mojom::blink::XRSessionMode mode,
             EnvironmentBlendMode environment_blend_mode,
             InteractionMode interaction_mode,
-            bool uses_input_eventing,
-            float default_framebuffer_scale,
-            bool supports_viewport_scaling,
+            device::mojom::blink::XRSessionDeviceConfigPtr device_config,
             bool sensorless_session,
             XRSessionFeatureSet enabled_features);
   ~XRSession() override = default;

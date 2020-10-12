@@ -1423,12 +1423,11 @@ void XRSystem::OnRequestSessionReturned(
     enabled_features.insert(feature);
   }
 
-  XRSession* session = CreateSession(
-      query->mode(), blend_mode, interaction_mode,
-      std::move(session_ptr->client_receiver),
-      std::move(session_ptr->display_info), session_ptr->uses_input_eventing,
-      session_ptr->default_framebuffer_scale,
-      session_ptr->supports_viewport_scaling, enabled_features);
+  XRSession* session =
+      CreateSession(query->mode(), blend_mode, interaction_mode,
+                    std::move(session_ptr->client_receiver),
+                    std::move(session_ptr->display_info),
+                    std::move(session_ptr->device_config), enabled_features);
 
   frameProvider()->OnSessionStarted(session, std::move(session_ptr));
 
@@ -1532,15 +1531,13 @@ XRSession* XRSystem::CreateSession(
     mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
         client_receiver,
     device::mojom::blink::VRDisplayInfoPtr display_info,
-    bool uses_input_eventing,
-    float default_framebuffer_scale,
-    bool supports_viewport_scaling,
+    device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     XRSessionFeatureSet enabled_features,
     bool sensorless_session) {
   XRSession* session = MakeGarbageCollected<XRSession>(
       this, std::move(client_receiver), mode, blend_mode, interaction_mode,
-      uses_input_eventing, default_framebuffer_scale, supports_viewport_scaling,
-      sensorless_session, std::move(enabled_features));
+      std::move(device_config), sensorless_session,
+      std::move(enabled_features));
   if (display_info)
     session->SetXRDisplayInfo(std::move(display_info));
   sessions_.insert(session);
@@ -1552,14 +1549,14 @@ XRSession* XRSystem::CreateSensorlessInlineSession() {
   XRSession::EnvironmentBlendMode blend_mode = XRSession::kBlendModeOpaque;
   XRSession::InteractionMode interaction_mode =
       XRSession::kInteractionModeScreen;
-  return CreateSession(
-      device::mojom::blink::XRSessionMode::kInline, blend_mode,
-      interaction_mode, mojo::NullReceiver() /* client receiver */,
-      nullptr /* display_info */, false /* uses_input_eventing */,
-      1.0 /* default_framebuffer_scale */,
-      false /* supports_viewport_scaling */,
-      {device::mojom::XRSessionFeature::REF_SPACE_VIEWER},
-      true /* sensorless_session */);
+  device::mojom::blink::XRSessionDeviceConfigPtr device_config =
+      device::mojom::blink::XRSessionDeviceConfig::New();
+  return CreateSession(device::mojom::blink::XRSessionMode::kInline, blend_mode,
+                       interaction_mode,
+                       mojo::NullReceiver() /* client receiver */,
+                       nullptr /* display_info */, std::move(device_config),
+                       {device::mojom::XRSessionFeature::REF_SPACE_VIEWER},
+                       true /* sensorless_session */);
 }
 
 void XRSystem::Dispose(DisposeType dispose_type) {

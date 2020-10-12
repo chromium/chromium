@@ -309,9 +309,7 @@ XRSession::XRSession(
     device::mojom::blink::XRSessionMode mode,
     EnvironmentBlendMode environment_blend_mode,
     InteractionMode interaction_mode,
-    bool uses_input_eventing,
-    float default_framebuffer_scale,
-    bool supports_viewport_scaling,
+    device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     bool sensorless_session,
     XRSessionFeatureSet enabled_features)
     : xr_(xr),
@@ -326,8 +324,8 @@ XRSession::XRSession(
       callback_collection_(
           MakeGarbageCollected<XRFrameRequestCallbackCollection>(
               xr->GetExecutionContext())),
-      uses_input_eventing_(uses_input_eventing),
-      supports_viewport_scaling_(supports_viewport_scaling),
+      uses_input_eventing_(device_config->uses_input_eventing),
+      supports_viewport_scaling_(device_config->supports_viewport_scaling),
       sensorless_session_(sensorless_session) {
   client_receiver_.Bind(
       std::move(client_receiver),
@@ -337,9 +335,9 @@ XRSession::XRSession(
   UpdateVisibilityState();
 
   // Clamp to a reasonable min/max size for the default framebuffer scale.
-  default_framebuffer_scale_ =
-      base::ClampToRange(default_framebuffer_scale, kMinDefaultFramebufferScale,
-                         kMaxDefaultFramebufferScale);
+  default_framebuffer_scale_ = base::ClampToRange(
+      device_config->default_framebuffer_scale, kMinDefaultFramebufferScale,
+      kMaxDefaultFramebufferScale);
 
   world_tracking_state_ = MakeGarbageCollected<XRWorldTrackingState>(
       IsFeatureEnabled(device::mojom::XRSessionFeature::PLANE_DETECTION));

@@ -139,6 +139,7 @@ void VROrientationDevice::RequestSession(
   if (display_info_) {
     session->display_info = display_info_.Clone();
   }
+  session->device_config = device::mojom::XRSessionDeviceConfig::New();
 
   std::move(callback).Run(std::move(session), std::move(controller));
 
