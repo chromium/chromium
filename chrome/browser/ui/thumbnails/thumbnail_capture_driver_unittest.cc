@@ -526,3 +526,58 @@ TEST_F(ThumbnailCaptureDriverTest, DoesNotReCaptureAfterFinalThumbnail) {
   EXPECT_EQ(scheduler_.priority(),
             ThumbnailScheduler::TabCapturePriority::kNone);
 }
+
+// Going from kReadyForFinalCapture to a lower readiness should always
+// invalidate the current thumbnail. Capture should restart from
+// scratch. Regression test for https://crbug.com/1137330
+TEST_F(ThumbnailCaptureDriverTest, InvalidatesThumbnailOnReadinessDecrease) {
+  {
+    InSequence s;
+    EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+    EXPECT_CALL(mock_client_, RequestCapture());
+    EXPECT_CALL(mock_client_, StartCapture());
+    EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+    EXPECT_CALL(mock_client_, RequestCapture());
+    EXPECT_CALL(mock_client_, StartCapture());
+  }
+
+  capture_driver_.UpdateThumbnailVisibility(true);
+  capture_driver_.UpdatePageVisibility(false);
+
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kNotReady);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture);
+  capture_driver_.SetCapturePermittedByScheduler(true);
+  capture_driver_.SetCanCapture(true);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kHigh);
+
+  capture_driver_.SetCapturePermittedByScheduler(true);
+  capture_driver_.GotFrame();
+  task_environment_.FastForwardBy(ThumbnailCaptureDriver::kCooldownDelay);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kNone);
+
+  // This should result in the thumbnail being invalidated. Subsequent
+  // loading should trigger capture again.
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kNotReady);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kNone);
+
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kLow);
+
+  capture_driver_.SetCapturePermittedByScheduler(true);
+  capture_driver_.SetCanCapture(true);
+
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
+  EXPECT_EQ(scheduler_.priority(),
+            ThumbnailScheduler::TabCapturePriority::kHigh);
+}
