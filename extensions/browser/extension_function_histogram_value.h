@@ -1573,6 +1573,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT = 1510,
   FILEMANAGERPRIVATE_SINGLEPARTITIONFORMAT = 1511,
   TABS_REMOVECSS = 1512,
+  IDENTITY_CLEARALLCACHEDAUTHTOKENS = 1513,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -94,6 +94,7 @@ namespace identity {
   callback GetAccountsCallback = void (AccountInfo[] accounts);
   callback GetProfileUserInfoCallback = void (ProfileUserInfo userInfo);
   callback InvalidateAuthTokenCallback = void ();
+  callback ClearAllCachedAuthTokensCallback = void ();
   callback LaunchWebAuthFlowCallback = void (optional DOMString responseUrl);
 
   interface Functions {
@@ -159,6 +160,15 @@ namespace identity {
     static void removeCachedAuthToken(
         InvalidTokenDetails details,
         optional InvalidateAuthTokenCallback callback);
+
+    // Resets the state of the Identity API:
+    // - Removes all OAuth2 access tokens from the token cache
+    // - Removes user's account preferences
+    // - De-authorizes the user from all auth flows
+    //
+    // |callback| : Called when the state has been cleared.
+    static void clearAllCachedAuthTokens(
+        ClearAllCachedAuthTokensCallback callback);
 
     // Starts an auth flow at the specified URL.
     //

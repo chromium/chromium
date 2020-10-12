@@ -106,6 +106,7 @@ class IdentityTokenCache {
                 const IdentityTokenCacheValue& token_data);
   void EraseAccessToken(const std::string& extension_id,
                         const std::string& token);
+  void EraseAllTokensForExtension(const std::string& extension_id);
   void EraseAllTokens();
   const IdentityTokenCacheValue& GetToken(const ExtensionTokenKey& key);
 
