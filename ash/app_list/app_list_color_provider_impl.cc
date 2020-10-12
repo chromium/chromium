@@ -158,24 +158,19 @@ SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetSeparatorColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor,
+      SkColorSetA(gfx::kGoogleGrey900, 0x24));
 }
 
 SkColor AppListColorProviderImpl::GetSearchResultViewInkDropColor() const {
-  AshColorProvider::RippleAttributes ripple_attributes =
-      ash_color_provider_->GetRippleAttributes(
-          GetSearchBoxCardBackgroundColor());
-  return SkColorSetA(ripple_attributes.base_color,
-                     ripple_attributes.inkdrop_opacity * 255);
+  return DeprecatedGetInkDropRippleColor(
+      SkColorSetA(gfx::kGoogleGrey900, 0x14));
 }
 
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
-  AshColorProvider::RippleAttributes ripple_attributes =
-      ash_color_provider_->GetRippleAttributes(
-          GetSearchBoxCardBackgroundColor());
-  return SkColorSetA(ripple_attributes.base_color,
-                     ripple_attributes.highlight_opacity * 255);
+  return DeprecatedGetInkDropHighlightColor(
+      SkColorSetA(gfx::kGoogleGrey900, 0x12));
 }
 
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
