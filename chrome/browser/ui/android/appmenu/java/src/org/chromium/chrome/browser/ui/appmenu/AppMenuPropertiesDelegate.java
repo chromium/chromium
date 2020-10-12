@@ -44,12 +44,11 @@ public interface AppMenuPropertiesDelegate {
     void prepareMenu(Menu menu, AppMenuHandler handler);
 
     /**
-     * Gets an optional bundle of extra data associated with the provided MenuItem.
+     * Gets a bundle of (optional) extra data associated with the provided MenuItem.
      *
      * @param item The {@link MenuItem} for which to return the Bundle.
-     * @return A {@link Bundle} for the provided MenuItem containing extra data, or null.
+     * @return A {@link Bundle} for the provided MenuItem containing extra data, if any.
      */
-    @Nullable
     Bundle getBundleForMenuItem(MenuItem item);
 
     /**

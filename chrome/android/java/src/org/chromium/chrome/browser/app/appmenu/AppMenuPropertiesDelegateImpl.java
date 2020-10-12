@@ -658,12 +658,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public Bundle getBundleForMenuItem(MenuItem item) {
+        Bundle bundle = new Bundle();
         if (item.getItemId() == R.id.add_to_homescreen_id) {
-            Bundle payload = new Bundle();
-            payload.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
-            return payload;
+            bundle.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
         }
-        return null;
+        return bundle;
     }
 
     /**
