@@ -169,12 +169,12 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
           NOTREACHED();
           return;
         case BytesConsumer::Result::kDone: {
-          DOMArrayBuffer* result = BuildArrayBuffer();
-          if (!result) {
+          DOMArrayBuffer* array_buffer = BuildArrayBuffer();
+          if (!array_buffer) {
             client_->DidFetchDataLoadFailed();
             return;
           }
-          client_->DidFetchDataLoadedArrayBuffer(result);
+          client_->DidFetchDataLoadedArrayBuffer(array_buffer);
           return;
         }
         case BytesConsumer::Result::kError:
