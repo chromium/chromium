@@ -105,6 +105,7 @@ FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
     const FloatRect& reference_box,
     float reference_box_zoom) {
   NOT_DESTROYED();
+  DCHECK(!NeedsLayout());
   auto* mask_element = To<SVGMaskElement>(GetElement());
   DCHECK(mask_element);
 
@@ -116,10 +117,6 @@ FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
   // box.
   if (mask_units == SVGUnitTypes::kSvgUnitTypeUserspaceonuse)
     mask_boundaries.Scale(reference_box_zoom);
-
-  // Resource was not layouted yet. Give back clipping rect of the mask.
-  if (SelfNeedsLayout())
-    return mask_boundaries;
 
   if (mask_content_boundaries_.IsEmpty())
     CalculateMaskContentVisualRect();

@@ -270,9 +270,7 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
 FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
     const FloatRect& reference_box) {
   NOT_DESTROYED();
-  // The resource has not been layouted yet. Return the reference box.
-  if (SelfNeedsLayout())
-    return reference_box;
+  DCHECK(!NeedsLayout());
 
   if (local_clip_bounds_.IsEmpty())
     CalculateLocalClipBounds();
