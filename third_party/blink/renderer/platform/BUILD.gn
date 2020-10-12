@@ -1538,7 +1538,6 @@ component("platform") {
       "mac/web_core_ns_cell_extras.mm",
       "text/locale_mac.h",
       "text/locale_mac.mm",
-      "text/mac/hyphenation_mac.cc",
     ]
   }
 
@@ -1547,7 +1546,6 @@ component("platform") {
       "fonts/linux/font_cache_linux.cc",
       "fonts/linux/font_unique_name_lookup_linux.cc",
       "fonts/linux/font_unique_name_lookup_linux.h",
-      "text/linux/hyphenation_linux.cc",
     ]
   }
 
@@ -1565,7 +1563,6 @@ component("platform") {
       "fonts/win/font_unique_name_lookup_win.h",
       "text/locale_win.cc",
       "text/locale_win.h",
-      "text/win/hyphenation_win.cc",
     ]
   }
 
@@ -1706,10 +1703,7 @@ component("platform") {
   }
 
   if (is_fuchsia) {
-    sources += [
-      "fonts/fuchsia/font_cache_fuchsia.cc",
-      "text/fuchsia/hyphenation_fuchsia.cc",
-    ]
+    sources += [ "fonts/fuchsia/font_cache_fuchsia.cc" ]
   }
 
   if (use_minikin_hyphenation) {
@@ -1719,6 +1713,10 @@ component("platform") {
       "text/hyphenation/hyphenator_aosp.cc",
       "text/hyphenation/hyphenator_aosp.h",
     ]
+  } else if (is_mac) {
+    sources += [ "text/mac/hyphenation_mac.cc" ]
+  } else {
+    sources += [ "text/hyphenation/hyphenation_null.cc" ]
   }
 
   if (enable_av1_decoder) {
