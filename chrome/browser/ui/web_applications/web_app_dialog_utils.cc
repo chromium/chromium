@@ -95,7 +95,7 @@ bool CanCreateWebApp(const Browser* browser) {
 
 bool CanPopOutWebApp(Profile* profile) {
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
-         !profile->IsOffTheRecord();
+         !profile->IsEphemeralGuestProfile() && !profile->IsOffTheRecord();
 }
 
 void CreateWebAppFromCurrentWebContents(Browser* browser,
