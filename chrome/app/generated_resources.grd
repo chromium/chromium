@@ -2247,6 +2247,10 @@ are declared in tools/grit/grit_rule.gni.
                    desc="Customization label for the new tab button in the touch bar.">
           New Tab
         </message>
+        <message name="IDS_TOUCH_BAR_URL_CUSTOMIZATION_LABEL"
+                   desc="Customization label for the URL field in the touch bar.">
+          Page URL
+        </message>
       </if>
 
       <!-- Abandon in-progress downloads confirmation dialog -->

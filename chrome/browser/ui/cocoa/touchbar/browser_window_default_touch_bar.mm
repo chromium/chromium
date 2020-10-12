@@ -273,6 +273,9 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   base::scoped_nsobject<NSButton> _starredButton;
 }
 
+// Creates and returns a touch bar for tab non-fullscreen mode.
+- (NSTouchBar*)createTabTouchBar;
+
 // Creates and returns a touch bar for tab fullscreen mode.
 - (NSTouchBar*)createTabFullscreenTouchBar;
 
@@ -304,37 +307,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
     return [self createTabFullscreenTouchBar];
   }
 
-  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
-  [touchBar
-      setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
-  [touchBar setDelegate:self];
-
-  NSMutableArray<NSString*>* customIdentifiers = [NSMutableArray array];
-  NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
-
-  NSArray<NSString*>* touchBarItems = @[
-    kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
-    kSearchTouchId, kStarTouchId, kNewTabTouchId
-  ];
-
-  for (NSString* item in touchBarItems) {
-    NSString* itemIdentifier =
-        ui::GetTouchBarItemId(kBrowserWindowTouchBarId, item);
-    [customIdentifiers addObject:itemIdentifier];
-
-    // Don't add the home button if it's not shown in the toolbar.
-    if (item == kHomeTouchId && !_notificationBridge->show_home_button())
-      continue;
-
-    [defaultIdentifiers addObject:itemIdentifier];
-  }
-
-  [customIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
-
-  [touchBar setDefaultItemIdentifiers:defaultIdentifiers];
-  [touchBar setCustomizationAllowedItemIdentifiers:customIdentifiers];
-
-  return touchBar.autorelease();
+  return [self createTabTouchBar];
 }
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
@@ -435,6 +408,9 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
     [touchBarItem
         setView:[NSTextField labelWithAttributedString:attributedString.get()]];
+    [touchBarItem
+        setCustomizationLabel:l10n_util::GetNSString(
+                                  IDS_TOUCH_BAR_URL_CUSTOMIZATION_LABEL)];
   } else {
     return nil;
   }
@@ -442,12 +418,52 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   return touchBarItem.autorelease();
 }
 
+- (NSTouchBar*)createTabTouchBar {
+  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
+  [touchBar
+      setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
+  [touchBar setDelegate:self];
+
+  NSMutableArray<NSString*>* customIdentifiers = [NSMutableArray array];
+  NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
+
+  NSArray<NSString*>* touchBarItems = @[
+    kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
+    kSearchTouchId, kStarTouchId, kNewTabTouchId
+  ];
+
+  for (NSString* item in touchBarItems) {
+    NSString* itemIdentifier =
+        ui::GetTouchBarItemId(kBrowserWindowTouchBarId, item);
+    [customIdentifiers addObject:itemIdentifier];
+
+    // Don't add the home button if it's not shown in the toolbar.
+    if (item == kHomeTouchId && !_notificationBridge->show_home_button())
+      continue;
+
+    [defaultIdentifiers addObject:itemIdentifier];
+  }
+
+  [customIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
+
+  [touchBar setDefaultItemIdentifiers:defaultIdentifiers];
+  [touchBar setCustomizationAllowedItemIdentifiers:customIdentifiers];
+
+  return touchBar.autorelease();
+}
+
 - (NSTouchBar*)createTabFullscreenTouchBar {
   base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
+  [touchBar
+      setCustomizationIdentifier:ui::GetTouchBarId(kTabFullscreenTouchBarId)];
   [touchBar setDelegate:self];
-  [touchBar setDefaultItemIdentifiers:@[ ui::GetTouchBarItemId(
-                                          kTabFullscreenTouchBarId,
-                                          kFullscreenOriginLabelTouchId) ]];
+
+  NSArray<NSString*>* touchBarItems = @[ ui::GetTouchBarItemId(
+      kTabFullscreenTouchBarId, kFullscreenOriginLabelTouchId) ];
+
+  [touchBar setDefaultItemIdentifiers:touchBarItems];
+  [touchBar setCustomizationAllowedItemIdentifiers:touchBarItems];
+
   return touchBar.autorelease();
 }
 
