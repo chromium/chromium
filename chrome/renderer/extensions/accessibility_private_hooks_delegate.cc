@@ -63,21 +63,26 @@ RequestResult AccessibilityPrivateHooksDelegate::HandleGetDisplayNameForLocale(
   const std::string display_locale =
       gin::V8ToString(script_context->isolate(), parsed_arguments[1]);
 
-  std::string locale_result =
-      base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
-          locale, display_locale, true /* is_ui */,
-          true /* disallow_default */));
+  bool found_valid_result = false;
+  std::string locale_result;
+  if (l10n_util::IsValidLocaleSyntax(locale) &&
+      l10n_util::IsValidLocaleSyntax(display_locale)) {
+    locale_result = base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
+        locale, display_locale, true /* is_ui */));
+    // Check for valid locales before getting the display name.
+    // The ICU Locale class returns "und" for undetermined locales, and
+    // returns the locale string directly if it has no translation.
+    // Treat these cases as invalid results.
+    found_valid_result =
+        locale_result != kUndeterminedLocale && locale_result != locale;
+  }
 
-  RequestResult result(RequestResult::HANDLED);
-
-  // Instead of returning "und", which is what the ICU Locale class returns for
-  // undetermined locales, we would simply like to return an empty string to
-  // communicate that we could not determine the display locale. In addition,
-  // ICU returns the |locale| as |result_locale| if it has no translation for a
-  // valid locale. Also return an empty string for that case.
-  if (locale_result == kUndeterminedLocale || locale_result == locale)
+  // We return an empty string to communicate that we could not determine
+  // the display locale.
+  if (!found_valid_result)
     locale_result = std::string();
 
+  RequestResult result(RequestResult::HANDLED);
   result.return_value =
       gin::StringToV8(script_context->isolate(), locale_result);
   return result;

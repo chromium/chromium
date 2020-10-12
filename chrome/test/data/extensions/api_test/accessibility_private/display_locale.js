@@ -9,6 +9,9 @@ var allTests = [function testGetDisplayNameForLocale() {
   chrome.test.assertEq(
       'English',
       chrome.accessibilityPrivate.getDisplayNameForLocale('en', 'en'));
+  chrome.test.assertEq(
+      'yue (Hong Kong)',
+      chrome.accessibilityPrivate.getDisplayNameForLocale('yue-HK', 'en'));
   chrome.test.succeed();
 }];
 chrome.test.runTests(allTests);
