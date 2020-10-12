@@ -150,6 +150,7 @@ Polymer({
     this.$['third-party-dialog'].setAttribute(
         'aria-label', data['thirdPartyTitle']);
     this.$['title-text'].textContent = data['thirdPartyTitle'];
+    this.$['next-button'].labelForAria = data['thirdPartyContinueButton'];
     this.$['next-button-text'].textContent = data['thirdPartyContinueButton'];
     this.$['footer-text'].innerHTML =
         this.sanitizer_.sanitizeHtml(data['thirdPartyFooter']);

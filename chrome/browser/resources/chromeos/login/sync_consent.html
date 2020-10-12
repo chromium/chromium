@@ -61,8 +61,11 @@
         </cr-checkbox>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="settingsSaveAndContinueButton" on-tap="onSettingsSaveAndContinue_" class="focus-on-show"
-          inverse>
+        <oobe-text-button class="focus-on-show" inverse
+            id="settingsSaveAndContinueButton"
+            on-tap="onSettingsSaveAndContinue_"
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentAcceptAndContinue')]]">
           <div slot="text" consent-description consent-confirmation>
             [[i18nDynamic(locale, 'syncConsentAcceptAndContinue')]]
           </div>
@@ -133,13 +136,17 @@
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="declineButton" on-tap="onDeclineTap_">
+        <oobe-text-button id="declineButton" on-tap="onDeclineTap_"
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenDecline')]]">
           <div slot="text" consent-description consent-confirmation>
             [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
           </div>
         </oobe-text-button>
         <oobe-text-button id="acceptButton" on-tap="onAcceptTap_"
-          class="focus-on-show" inverse>
+            class="focus-on-show" inverse
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenAccept')]]">
           <div slot="text" consent-description consent-confirmation>
             [[i18nDynamic(locale, 'syncConsentScreenAccept')]]
           </div>

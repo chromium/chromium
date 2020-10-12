@@ -265,7 +265,9 @@ Polymer({
     this.$['title-text'].textContent = data['valuePropTitle'];
     this.$['intro-text'].textContent = data['valuePropIntro'];
     this.$['user-name'].textContent = data['valuePropIdentity'];
+    this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
+    this.$['skip-button'].labelForAria = data['valuePropSkipButton'];
     this.$['skip-button-text'].textContent = data['valuePropSkipButton'];
     this.$['footer-text'].innerHTML =
         this.sanitizer_.sanitizeHtml(data['valuePropFooter']);

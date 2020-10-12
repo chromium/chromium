@@ -73,9 +73,13 @@ Polymer({
       value: 'back',
     },
 
+    labelForAria: {
+      type: String,
+    },
+
     labelForAria_: {
       type: String,
-      computed: 'i18nDynamic(locale, textKey)',
+      computed: 'ariaLabel_(labelForAria, locale, textKey)',
     },
   },
 
@@ -91,6 +95,13 @@ Polymer({
     if (this.disabled) {
       e.stopPropagation();
     }
+  },
+
+  ariaLabel_(labelForAria, locale, textKey) {
+    if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
+      return labelForAria;
+    }
+    return this.i18n(textKey);
   },
 });
 
@@ -109,9 +120,13 @@ Polymer({
       value: 'next',
     },
 
+    labelForAria: {
+      type: String,
+    },
+
     labelForAria_: {
       type: String,
-      computed: 'i18nDynamic(locale, textKey)',
+      computed: 'ariaLabel_(labelForAria, locale, textKey)',
     },
   },
 
@@ -122,7 +137,14 @@ Polymer({
   onClick_(e) {
     if (this.disabled)
       e.stopPropagation();
-  }
+  },
+
+  ariaLabel_(labelForAria, locale, textKey) {
+    if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
+      return labelForAria;
+    }
+    return this.i18n(textKey);
+  },
 });
 
 Polymer({

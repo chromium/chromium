@@ -41,7 +41,8 @@
     <oobe-icon-button inverse text-key="oobeOKButtonText">
     </oobe-icon-button>
 
-  Button text can be also changed by specifying element for "text" slot.
+  Button text can be also changed by specifying element for "text" slot, but
+  will have to define label-for-aria in such case.
 
   Attributes:
     'disabled' - button is disabled when the attribute is set.
@@ -51,6 +52,8 @@
     'border' - adds border to the button.
     'label-for-aria' - accessibility label, override usual behavior
                        (string specified by text-key is used as aria-label).
+                       Elements that use slot="text" must provide label-for-aria
+                       value.
 -->
 <dom-module id="oobe-text-button">
   <template>
@@ -84,7 +87,8 @@
 
     or
 
-    <oobe-back-button on-click="handleOnClick_">
+    <oobe-back-button on-click="handleOnClick_"
+        label-for-aria="[[i18nDynamic(locale, 'continueButton')]]">
       <div slot="text">[[i18nDynamic(locale, 'continueButton')]]</div>
     </oobe-back-button>
 
@@ -92,6 +96,10 @@
     'disabled' - button is disabled when the attribute is set.
     (See crbug.com/900640)
     'text-key' - ID of localized string to be used as button text.
+    'label-for-aria' - accessibility label, override usual behavior
+                       (string specified by text-key is used as aria-label).
+                       Elements that use slot="text" must provide label-for-aria
+                       value.
 -->
 <dom-module id="oobe-back-button">
   <template>
@@ -142,7 +150,8 @@
 
     or
 
-    <oobe-welcome-secondary-button icon="close">
+    <oobe-welcome-secondary-button icon="close"
+        label-for-aria="[[i18nDynamic(locale, 'offlineLoginCloseBtn')]]">
       <div slot="text">[[i18nDynamic(locale, 'offlineLoginCloseBtn')]]</div>
     </oobe-welcome-secondary-button>
 
@@ -152,7 +161,9 @@
       'icon1x' - a name of icon from material design set to show on button.
       'icon2x' - a name of icon from material design set to show on button.
     'label-for-aria' - accessibility label, override usual behavior
-                       (string specified by text-key  is used as aria-label).
+                       (string specified by text-key is used as aria-label).
+                       Elements that use slot="text" must provide label-for-aria
+                       value.
 -->
 <dom-module id="oobe-welcome-secondary-button">
   <template>
