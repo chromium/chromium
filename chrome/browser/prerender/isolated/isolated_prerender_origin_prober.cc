@@ -286,7 +286,7 @@ IsolatedPrerenderOriginProber::IsolatedPrerenderOriginProber(Profile* profile)
       content::BrowserContext::GetDefaultStoragePartition(profile_)
           ->GetURLLoaderFactoryForBrowserProcess(),
       profile_->GetPrefs(),
-      AvailabilityProber::ClientName::kIsolatedPrerenderTLSCanaryCheck,
+      AvailabilityProber::ClientName::kIsolatedPrerenderDNSCanaryCheck,
       IsolatedPrerenderDNSCanaryCheckURL(),
       AvailabilityProber::HttpMethod::kGet, net::HttpRequestHeaders(),
       retry_policy, timeout_policy, traffic_annotation,

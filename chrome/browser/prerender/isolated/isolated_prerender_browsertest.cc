@@ -2267,10 +2267,17 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ProbingEnabled_CanaryOn_TLSCanaryGood_DNSCanaryBad_IsolatedPrerenderBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(DNSProbeOK)) {
+  base::HistogramTester histogram_tester;
+
   RunProbeTest(/*probe_success=*/true,
                /*expect_successful_tls_probe=*/false,
                /*expected_status=*/1,
                /*expect_probe=*/true);
+
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderDNSCanaryCheck", 1);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderTLSCanaryCheck", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2285,10 +2292,17 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ProbingEnabled_CanaryOn_TLSCanaryBad_DNSCanaryBad_IsolatedPrerenderBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(TLSProbeOK)) {
+  base::HistogramTester histogram_tester;
+
   RunProbeTest(/*probe_success=*/true,
                /*expect_successful_tls_probe=*/true,
                /*expected_status=*/1,
                /*expect_probe=*/true);
+
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderDNSCanaryCheck", 1);
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.FinalState.IsolatedPrerenderTLSCanaryCheck", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
