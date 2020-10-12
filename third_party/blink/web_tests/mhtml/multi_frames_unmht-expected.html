@@ -3,11 +3,16 @@
 
 
 <title>A page that contains multiple nested frames</title>
+<script>
+  if (window.internals) {
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+  }
+</script>
 </head><body>
 This page contains several frames.<br>
-<iframe src="resources/frame_0.html"></iframe><br>
-<iframe src="resources/frame_1.html"></iframe><br>
+<iframe sandbox src="resources/frame_0.html"></iframe><br>
+<iframe sandbox src="resources/frame_1.html"></iframe><br>
 <iframe src="resources/frame_2.html"></iframe><br>
-And a red square:<br>
-<img src="resources/red_square.png">
+<div style="will-change:transform">And a red square:<br>
+<img src="resources/red_square.png"></div>
 </body></html>

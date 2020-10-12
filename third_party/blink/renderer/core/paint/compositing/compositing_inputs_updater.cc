@@ -38,6 +38,10 @@ CompositingInputsUpdater::~CompositingInputsUpdater() = default;
 
 bool CompositingInputsUpdater::LayerOrDescendantShouldBeComposited(
     PaintLayer* layer) {
+  if (layer->GetLayoutObject().IsLayoutView() &&
+      layer->GetLayoutObject().AdditionalCompositingReasons()) {
+    return true;
+  }
   PaintLayerCompositor* compositor =
       layer->GetLayoutObject().View()->Compositor();
   return layer->DescendantHasDirectOrScrollingCompositingReason() ||
@@ -199,13 +203,11 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
   }
   if (!descendant_has_direct_compositing_reason &&
       layer->GetLayoutObject().IsLayoutEmbeddedContent()) {
-    if (LayoutView* root_of_child =
+    if (LayoutView* embedded_layout_view =
             ToLayoutEmbeddedContent(layer->GetLayoutObject())
                 .ChildLayoutView()) {
-      if (CompositingInputsUpdater(root_of_child->Layer(),
-                                   root_of_child->Layer())
-              .LayerOrDescendantShouldBeComposited(root_of_child->Layer()))
-        descendant_has_direct_compositing_reason = true;
+      descendant_has_direct_compositing_reason |=
+          LayerOrDescendantShouldBeComposited(embedded_layout_view->Layer());
     }
   }
   layer->SetDescendantHasDirectOrScrollingCompositingReason(
