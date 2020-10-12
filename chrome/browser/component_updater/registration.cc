@@ -22,6 +22,7 @@
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/optimization_hints_component_installer.h"
 #include "chrome/browser/component_updater/origin_trials_component_installer.h"
+#include "chrome/browser/component_updater/pepper_flash_component_installer.h"
 #include "chrome/browser/component_updater/safety_tips_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/sth_set_component_remover.h"
@@ -66,10 +67,6 @@
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/component_updater/pepper_flash_component_installer.h"
-#endif
-
 #if BUILDFLAG(ENABLE_VR)
 #include "chrome/browser/component_updater/vr_assets_component_installer.h"
 #endif
@@ -99,9 +96,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   RegisterRecoveryComponent(cus, g_browser_process->local_state());
 #endif  // defined(OS_WIN)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  RegisterPepperFlashComponent(cus);
-#endif
+  // TODO(crbug.com/1069814): Remove after 2021-10-01.
+  CleanUpPepperFlashComponent();
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   RegisterWidevineCdmComponent(cus);

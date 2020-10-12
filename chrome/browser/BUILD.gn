@@ -306,6 +306,8 @@ static_library("browser") {
     "component_updater/optimization_hints_component_installer.h",
     "component_updater/origin_trials_component_installer.cc",
     "component_updater/origin_trials_component_installer.h",
+    "component_updater/pepper_flash_component_installer.cc",
+    "component_updater/pepper_flash_component_installer.h",
     "component_updater/pnacl_component_installer.cc",
     "component_updater/pnacl_component_installer.h",
     "component_updater/recovery_component_installer.cc",
@@ -5752,8 +5754,6 @@ static_library("browser") {
     sources += [
       "browsing_data/browsing_data_flash_lso_helper.cc",
       "browsing_data/browsing_data_flash_lso_helper.h",
-      "component_updater/pepper_flash_component_installer.cc",
-      "component_updater/pepper_flash_component_installer.h",
       "metrics/plugin_metrics_provider.cc",
       "metrics/plugin_metrics_provider.h",
       "pepper_broker_infobar_delegate.cc",
