@@ -14,7 +14,7 @@
 
 namespace extensions {
 
-bool IsEventTypeHandledByAXEventGenerator(ax::mojom::Event event_type) {
+bool ShouldIgnoreAXEvent(ax::mojom::Event event_type) {
   // Important note: if you are getting here as a result of a compilation error
   // while adding or removing enum values from ax::mojom::Event, please ensure
   // you keep that enum in sync with EventType in

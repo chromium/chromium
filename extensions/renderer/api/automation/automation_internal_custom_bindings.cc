@@ -155,7 +155,7 @@ api::automation::EventType AXEventToAutomationEventType(
     for (int i = static_cast<int>(ax::mojom::Event::kMinValue);
          i <= static_cast<int>(ax::mojom::Event::kMaxValue); i++) {
       auto ax_event_type = static_cast<ax::mojom::Event>(i);
-      if (IsEventTypeHandledByAXEventGenerator(ax_event_type) ||
+      if (ShouldIgnoreAXEvent(ax_event_type) ||
           ax_event_type == ax::mojom::Event::kNone) {
         enum_map->emplace_back(api::automation::EVENT_TYPE_NONE);
         continue;

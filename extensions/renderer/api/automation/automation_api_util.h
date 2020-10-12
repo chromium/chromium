@@ -11,7 +11,7 @@
 
 namespace extensions {
 
-bool IsEventTypeHandledByAXEventGenerator(ax::mojom::Event event_type);
+bool ShouldIgnoreAXEvent(ax::mojom::Event event_type);
 
 bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type);
 

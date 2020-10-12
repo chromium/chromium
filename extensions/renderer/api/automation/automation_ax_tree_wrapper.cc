@@ -145,9 +145,8 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
         event.event_type == ax::mojom::Event::kBlur)
       continue;
 
-    // Send some events directly from the event message, if they're not
-    // handled by AXEventGenerator yet.
-    if (!IsEventTypeHandledByAXEventGenerator(event.event_type)) {
+    // Send some events directly.
+    if (!ShouldIgnoreAXEvent(event.event_type)) {
       owner_->SendAutomationEvent(event_bundle.tree_id,
                                   event_bundle.mouse_location, event);
     }
