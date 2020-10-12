@@ -1358,6 +1358,18 @@
       <structure name="IDR_OS_SETTINGS_MULTIDEVICE_TETHER_ITEM_JS"
                  file="chromeos/multidevice_page/multidevice_tether_item.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_multidevice_wifi_sync_item_HTML"
+                 file="chromeos/multidevice_page/multidevice_wifi_sync_item.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_multidevice_wifi_sync_item_JS"
+                 file="chromeos/multidevice_page/multidevice_wifi_sync_item.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_MULTIDEVICE_WIFI_SYNC_DISABLED_LINK_HTML"
+                 file="chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_MULTIDEVICE_WIFI_SYNC_DISABLED_LINK_JS"
+                 file="chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONFIRM_PAGE_HTML"
                  file="chromeos/nearby_share_page/nearby_share_confirm_page.html"
                  compress="false" type="chrome_html" />

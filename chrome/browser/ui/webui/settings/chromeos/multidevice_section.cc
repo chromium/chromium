@@ -287,6 +287,10 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY},
       {"multideviceWifiSyncItemTitle",
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE},
+      {"multideviceWifiSyncChromeSyncLabel",
+       IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_CHROME_SYNC_LABEL},
+      {"multideviceWifiSyncLearnMoreLabel",
+       IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL},
       {"multideviceNotificationAccessSetupAckTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE},
       {"multideviceNotificationAccessSetupConnectingTitle",
@@ -375,11 +379,12 @@ void MultiDeviceSection::AddLoadTimeData(
       "multideviceWifiSyncItemSummary",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY,
-          // TODO(cvandermerwe) Replace with WifiSyncLearnMoreUrl once created
-          base::UTF8ToUTF16(
-              multidevice_setup::
-                  GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                      .spec())));
+          GetHelpUrlWithBoard(chrome::kWifiSyncLearnMoreURL)));
+  html_source->AddString(
+      "multideviceEnableWifiSyncV1ItemSummary",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_MULTIDEVICE_ENABLE_WIFI_SYNC_V1_SUMMARY,
+          GetHelpUrlWithBoard(chrome::kWifiSyncLearnMoreURL)));
 
   AddEasyUnlockStrings(html_source);
   ::settings::AddNearbyShareData(html_source);

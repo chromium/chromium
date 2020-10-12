@@ -41,11 +41,13 @@
         </slot>
         <div id="item-text-container" class="middle">
           <div id="featureName">[[getFeatureName(feature)]]</div>
-          <settings-localized-link
-              class="secondary"
-              id="featureSecondary"
-              localized-string="[[getFeatureSummaryHtml(feature)]]">
-          </settings-localized-link>
+          <slot name="feature-summary">
+            <settings-localized-link
+                class="secondary"
+                id="featureSecondary"
+                localized-string="[[getFeatureSummaryHtml(feature)]]">
+            </settings-localized-link>
+          </slot>
         </div>
         <template is="dom-if"
                   if="[[hasSubpageClickHandler_(

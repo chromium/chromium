@@ -108,6 +108,11 @@ TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
  ['MultidevicePage', 'multidevice_page_tests.m.js'],
  ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
+ [
+   'MultideviceWifiSyncDisabledLink',
+   'multidevice_wifi_sync_disabled_link_tests.m.js'
+ ],
+ ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.m.js'],
  ['NetworkProxySection', 'network_proxy_section_test.m.js'],
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],

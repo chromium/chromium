@@ -668,6 +668,16 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_multidevice_wifi_sync_item_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_wifi_sync_item.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_MULTIDEVICE_WIFI_SYNC_DISABLED_LINK_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_MULTIDEVICE_SMARTLOCK_SUBPAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock_subpage.m.js"
            use_base_dir="false"

@@ -17,6 +17,8 @@ js_type_check("closure_compile") {
     ":multidevice_smartlock_subpage",
     ":multidevice_subpage",
     ":multidevice_tether_item",
+    ":multidevice_wifi_sync_disabled_link",
+    ":multidevice_wifi_sync_item",
   ]
 }
 
@@ -114,6 +116,7 @@ js_library("multidevice_subpage") {
     ":multidevice_browser_proxy",
     ":multidevice_constants",
     ":multidevice_feature_behavior",
+    ":multidevice_wifi_sync_item",
     "..:deep_linking_behavior",
     "..:os_route",
     "..:os_settings_routes",
@@ -137,6 +140,32 @@ js_library("multidevice_tether_item") {
   extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
 }
 
+js_library("multidevice_wifi_sync_item") {
+  deps = [
+    ":multidevice_feature_behavior",
+    ":multidevice_feature_item",
+    ":multidevice_wifi_sync_disabled_link",
+    "..:os_route",
+    "..:route_origin_behavior",
+    "../..:router",
+    "../../people_page:sync_browser_proxy",
+    "../os_people_page:os_sync_browser_proxy",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_library("multidevice_wifi_sync_disabled_link") {
+  deps = [
+    ":multidevice_feature_behavior",
+    "..:os_route",
+    "..:route_origin_behavior",
+    "../..:router",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
@@ -151,6 +180,8 @@ js_type_check("closure_compile_module") {
     ":multidevice_smartlock_subpage.m",
     ":multidevice_subpage.m",
     ":multidevice_tether_item.m",
+    ":multidevice_wifi_sync_disabled_link.m",
+    ":multidevice_wifi_sync_item.m",
   ]
 }
 
@@ -268,6 +299,7 @@ js_library("multidevice_subpage.m") {
   deps = [
     ":multidevice_browser_proxy.m",
     ":multidevice_constants.m",
+    ":multidevice_wifi_sync_item.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:os_settings_routes.m",
@@ -292,6 +324,39 @@ js_library("multidevice_tether_item.m") {
   extra_deps = [ ":multidevice_tether_item_module" ]
 }
 
+js_library("multidevice_wifi_sync_item.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_wifi_sync_item.m.js" ]
+  deps = [
+    ":multidevice_feature_behavior.m",
+    ":multidevice_feature_item.m",
+    ":multidevice_wifi_sync_disabled_link.m",
+    "..:os_route.m",
+    "..:route_origin_behavior.m",
+    "../..:router.m",
+    "../../people_page:sync_browser_proxy.m",
+    "../os_people_page:os_sync_browser_proxy.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":multidevice_wifi_sync_item_module" ]
+}
+
+js_library("multidevice_wifi_sync_disabled_link.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.m.js" ]
+  deps = [
+    ":multidevice_feature_behavior.m",
+    "..:os_route.m",
+    "..:route_origin_behavior.m",
+    "../..:router.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":multidevice_wifi_sync_disabled_link_module" ]
+}
+
 group("polymer3_elements") {
   public_deps = [
     ":modulize",
@@ -303,6 +368,8 @@ group("polymer3_elements") {
     ":multidevice_smartlock_subpage_module",
     ":multidevice_subpage_module",
     ":multidevice_tether_item_module",
+    ":multidevice_wifi_sync_disabled_link_module",
+    ":multidevice_wifi_sync_item_module",
   ]
 }
 
@@ -377,6 +444,24 @@ polymer_modulizer("multidevice_subpage") {
 polymer_modulizer("multidevice_tether_item") {
   js_file = "multidevice_tether_item.js"
   html_file = "multidevice_tether_item.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("multidevice_wifi_sync_item") {
+  js_file = "multidevice_wifi_sync_item.js"
+  html_file = "multidevice_wifi_sync_item.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("multidevice_wifi_sync_disabled_link") {
+  js_file = "multidevice_wifi_sync_disabled_link.js"
+  html_file = "multidevice_wifi_sync_disabled_link.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

@@ -1116,6 +1116,55 @@ TEST_F('OSSettingsMultideviceSubPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Test fixture for the multidevice wifi sync disabled link.
+// eslint-disable-next-line no-var
+var OSSettingsMultideviceWifiSyncDisabledLinkTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'multidevice_wifi_sync_disabled_link_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsMultideviceWifiSyncDisabledLinkTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the multidevice wifi sync item.
+// eslint-disable-next-line no-var
+var OSSettingsMultideviceWifiSyncItemTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/multidevice_page/multidevice_wifi_sync_item.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + 'test_sync_browser_proxy.js',
+      'multidevice_wifi_sync_item_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsMultideviceWifiSyncItemTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+
 // Test fixture for the Nearby Share receive dialog.
 // eslint-disable-next-line no-var
 var OSSettingsNearbyShareReceiveDialogTest =
