@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
@@ -491,12 +493,23 @@ void PasswordManagerBrowserTestBase::GetNewTab(
 
 // static
 void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
-  scoped_refptr<password_manager::PasswordStore> password_store =
+  scoped_refptr<password_manager::PasswordStore> profile_password_store =
       PasswordStoreFactory::GetForProfile(browser->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
-  PasswordStoreResultsObserver syncer;
-  password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
-  syncer.WaitForResults();
+  PasswordStoreResultsObserver profile_syncer;
+  profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      &profile_syncer);
+  profile_syncer.WaitForResults();
+
+  scoped_refptr<password_manager::PasswordStore> account_password_store =
+      AccountPasswordStoreFactory::GetForProfile(
+          browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+  if (account_password_store) {
+    PasswordStoreResultsObserver account_syncer;
+    account_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+        &account_syncer);
+    account_syncer.WaitForResults();
+  }
 }
 
 content::WebContents* PasswordManagerBrowserTestBase::WebContents() const {
@@ -673,11 +686,33 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
                 // considered enabled.
                 ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
                     context, base::BindRepeating(&BuildTestSyncService));
+
                 PasswordStoreFactory::GetInstance()->SetTestingFactory(
                     context,
                     base::BindRepeating(&password_manager::BuildPasswordStore<
                                         content::BrowserContext,
                                         password_manager::TestPasswordStore>));
+
+                if (base::FeatureList::IsEnabled(
+                        password_manager::features::
+                            kEnablePasswordsAccountStorage)) {
+                  AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithArgs<
+                              content::BrowserContext,
+                              password_manager::TestPasswordStore,
+                              password_manager::IsAccountStore>,
+                          password_manager::IsAccountStore(true)));
+                } else {
+                  AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating(
+                          [](content::BrowserContext* context)
+                              -> scoped_refptr<RefcountedKeyedService> {
+                            return nullptr;
+                          }));
+                }
               }));
 }
 
