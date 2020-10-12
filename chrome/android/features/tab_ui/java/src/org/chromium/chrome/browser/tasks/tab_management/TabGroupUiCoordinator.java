@@ -255,6 +255,23 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     }
 
     private void recordSessionCount() {
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            TabModelFilter normalTabModelFilter =
+                    mActivity.getTabModelSelector().getTabModelFilterProvider().getTabModelFilter(
+                            false);
+
+            if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
+                String actualType = normalTabModelFilter == null
+                        ? "null"
+                        : normalTabModelFilter.getClass().getName();
+                assert false
+                    : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
+                      + actualType;
+
+                return;
+            }
+        }
+
         OverviewModeBehavior overviewModeBehavior =
                 (OverviewModeBehavior) mActivity.getOverviewModeBehaviorSupplier().get();
 
