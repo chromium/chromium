@@ -267,13 +267,52 @@ void SVGElement::ClearAnimatedAttribute(const QualifiedName& attribute) {
   });
 }
 
-bool SVGElement::HasMainThreadAnimations() const {
-  if (!HasSVGRareData())
+// TODO(crbug.com/1134652): For now composited animation doesn't work for SVG
+// if the animation also has properties other than the supported ones. We should
+// remove this when we make SVG CSS animations work in the same way as other
+// elements.
+static PropertyHandleSet SupportedCompositedAnimationProperties() {
+  DEFINE_STATIC_LOCAL(PropertyHandleSet, supported_properties,
+                      ({PropertyHandle(GetCSSPropertyOpacity()),
+                        PropertyHandle(GetCSSPropertyTransform()),
+                        PropertyHandle(GetCSSPropertyRotate()),
+                        PropertyHandle(GetCSSPropertyScale()),
+                        PropertyHandle(GetCSSPropertyTranslate()),
+                        PropertyHandle(GetCSSPropertyFilter()),
+                        PropertyHandle(GetCSSPropertyBackdropFilter())}));
+  return supported_properties;
+}
+
+static bool HasMainThreadAnimationProperty(const AnimationEffect* effect) {
+  const KeyframeEffectModelBase* model = nullptr;
+  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect))
+    model = DynamicTo<KeyframeEffectModelBase>(keyframe_effect->Model());
+  else if (auto* inert_effect = DynamicTo<InertEffect>(effect))
+    model = DynamicTo<KeyframeEffectModelBase>(inert_effect->Model());
+  if (!model)
     return false;
-  if (!SvgRareData()->WebAnimatedAttributes().IsEmpty())
+  for (auto& property : model->Properties()) {
+    if (!SupportedCompositedAnimationProperties().Contains(property))
+      return true;
+  }
+  return false;
+}
+
+bool SVGElement::HasMainThreadAnimations() const {
+  if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().IsEmpty())
     return true;
   if (GetSMILAnimations() && GetSMILAnimations()->HasAnimations())
     return true;
+  if (auto* element_animations = GetElementAnimations()) {
+    for (auto& entry : element_animations->Animations()) {
+      if (HasMainThreadAnimationProperty(entry.key->effect()))
+        return true;
+    }
+    for (auto& entry : element_animations->GetWorkletAnimations()) {
+      if (HasMainThreadAnimationProperty(entry->GetEffect()))
+        return true;
+    }
+  }
   return false;
 }
 
