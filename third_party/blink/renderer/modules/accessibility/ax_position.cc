@@ -763,15 +763,15 @@ const AXPosition AXPosition::AsValidDOMPosition(
       (child &&
        (!child->GetNode() || child->GetNode()->IsMarkerPseudoElement() ||
         child->IsMockObject() || child->IsVirtualObject()))) {
-    switch (adjustment_behavior) {
-      case AXPositionAdjustmentBehavior::kMoveRight:
-        return CreateNextPosition().AsValidDOMPosition(adjustment_behavior);
-      case AXPositionAdjustmentBehavior::kMoveLeft:
-        const AXPosition result = CreatePreviousPosition();
-        if (result && result != *this)
-          return result.AsValidDOMPosition(adjustment_behavior);
-        return {};
-    }
+    AXPosition result;
+    if (adjustment_behavior == AXPositionAdjustmentBehavior::kMoveRight)
+      result = CreateNextPosition();
+    else
+      result = CreatePreviousPosition();
+
+    if (result && result != *this)
+      return result.AsValidDOMPosition(adjustment_behavior);
+    return {};
   }
 
   // At this point, if a DOM node is associated with our container, then the
