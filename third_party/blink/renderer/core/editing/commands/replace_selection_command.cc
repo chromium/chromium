@@ -1754,7 +1754,8 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
     bool collapse_white_space =
         !end_node->GetLayoutObject() ||
         end_node->GetLayoutObject()->Style()->CollapseWhiteSpace();
-    if (auto* end_text_node = DynamicTo<Text>(end_node)) {
+    end_text_node = DynamicTo<Text>(end_node);
+    if (end_text_node) {
       InsertTextIntoNode(end_text_node, end_offset,
                          collapse_white_space ? NonBreakingSpaceString() : " ");
       if (end_of_inserted_content_.ComputeContainerNode() == end_node)

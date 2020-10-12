@@ -572,8 +572,8 @@ DocumentMarkerController::MarkersAroundPosition(
     if (!text_node)
       continue;
 
-    MarkerLists* const markers = markers_.at(text_node);
-    if (!markers)
+    MarkerLists* const marker_lists = markers_.at(text_node);
+    if (!marker_lists)
       continue;
 
     const unsigned start_range_offset = node == start_node ? start_offset : 0;
@@ -589,14 +589,14 @@ DocumentMarkerController::MarkersAroundPosition(
       continue;
 
     for (DocumentMarker::MarkerType type : types) {
-      const DocumentMarkerList* const list = ListForType(markers, type);
+      const DocumentMarkerList* const list = ListForType(marker_lists, type);
       if (!list)
         continue;
 
-      const DocumentMarkerVector& markers =
+      const DocumentMarkerVector& marker_vector =
           list->MarkersIntersectingRange(start_range_offset, end_range_offset);
 
-      for (DocumentMarker* marker : markers)
+      for (DocumentMarker* marker : marker_vector)
         node_marker_pairs.push_back(std::make_pair(&To<Text>(node), marker));
     }
   }

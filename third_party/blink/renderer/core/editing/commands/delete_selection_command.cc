@@ -645,10 +645,10 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
 
   if (start_node == downstream_end_.AnchorNode()) {
     if (downstream_end_.ComputeEditingOffset() - start_offset > 0) {
-      if (auto* text = DynamicTo<Text>(start_node)) {
+      if (auto* text_node_to_trim = DynamicTo<Text>(start_node)) {
         // in a text node that needs to be trimmed
         DeleteTextFromNode(
-            text, start_offset,
+            text_node_to_trim, start_offset,
             downstream_end_.ComputeOffsetInContainerNode() - start_offset);
       } else {
         RemoveChildrenInRange(start_node, start_offset,
@@ -736,10 +736,12 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
         // The node itself is fully selected, not just its contents.  Delete it.
         RemoveNode(downstream_end_.AnchorNode(), editing_state);
       } else {
-        if (auto* text = DynamicTo<Text>(downstream_end_.AnchorNode())) {
+        if (auto* text_node_to_trim =
+                DynamicTo<Text>(downstream_end_.AnchorNode())) {
           // in a text node that needs to be trimmed
           if (downstream_end_.ComputeEditingOffset() > 0) {
-            DeleteTextFromNode(text, 0, downstream_end_.ComputeEditingOffset());
+            DeleteTextFromNode(text_node_to_trim, 0,
+                               downstream_end_.ComputeEditingOffset());
           }
           // Remove children of downstream_end_.AnchorNode() that come after
           // upstream_start_. Don't try to remove children if upstream_start_

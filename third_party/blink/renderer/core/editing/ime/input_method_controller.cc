@@ -936,7 +936,7 @@ void InputMethodController::SetComposition(
     // to the new position.
     EventQueueScope scope;
     if (HasComposition()) {
-      RevealSelectionScope reveal_selection_scope(GetFrame());
+      RevealSelectionScope inner_reveal_selection_scope(GetFrame());
       // Do not attempt to apply IME selection offsets if ReplaceComposition()
       // fails (we compute the new range assuming the replacement will succeed).
       if (!ReplaceComposition(g_empty_string))

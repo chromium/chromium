@@ -5,6 +5,8 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("editing") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "bidi_adjustment.cc",
     "bidi_adjustment.h",

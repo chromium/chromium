@@ -700,10 +700,10 @@ DocumentFragment* CreateContextualFragment(
     next_node = node->nextSibling();
     if (IsA<HTMLHtmlElement>(node) || IsA<HTMLHeadElement>(node) ||
         IsA<HTMLBodyElement>(node)) {
-      auto* element = To<HTMLElement>(node);
-      if (Node* first_child = element->firstChild())
+      auto* child_element = To<HTMLElement>(node);
+      if (Node* first_child = child_element->firstChild())
         next_node = first_child;
-      RemoveElementPreservingChildren(fragment, element);
+      RemoveElementPreservingChildren(fragment, child_element);
     }
   }
   return fragment;
