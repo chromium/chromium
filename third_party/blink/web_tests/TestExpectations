@@ -354,6 +354,10 @@ crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientatio
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-border-image.html [ Failure ]
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-background-image.html [ Failure ]
 
+# Cross origin failures
+crbug.com/1110330 external/wpt/css/css-images/image-orientation/image-orientation-none-cross-origin.html [ Failure ]
+crbug.com/1110330 external/wpt/css/css-images/image-orientation/image-orientation-none-cross-origin-canvas.html [ Failure ]
+
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 
@@ -2606,8 +2610,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-images/image-orientation/image-orientation-none-cross-origin.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-images/image-orientation/image-orientation-none-cross-origin-canvas.html [ Failure ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/iframe.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
