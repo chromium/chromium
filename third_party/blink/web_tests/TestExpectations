@@ -319,9 +319,6 @@ wpt_internal/webgpu/* [ Skip ]
 
 crbug.com/1018273 [ Mac ] compositing/gestures/gesture-tapHighlight-2-iframe-scrolled-inner.html [ Failure ]
 
-# Fails due to lack of support for image orientation in tiling shaders.
-crbug.com/1066634 external/wpt/css/css-images/image-orientation/image-orientation-background-properties.html [ Failure ]
-
 # Requires support of the image-resolution CSS property
 crbug.com/1086473 external/wpt/css/css-images/image-resolution/* [ Skip ]
 
@@ -345,6 +342,7 @@ crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orienta
 crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orientation-none.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orientation-aspect-ratio.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-position.html [ Failure ]
+crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties.html [ Failure ]
 
 # Ref results are wrong on the background and list case, not sure on border result
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-list-style-image.html [ Failure ]

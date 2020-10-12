@@ -226,7 +226,7 @@ void Image::DrawPattern(GraphicsContext& context,
                         SkBlendMode composite_op,
                         const FloatRect& dest_rect,
                         const FloatSize& repeat_spacing,
-                        RespectImageOrientationEnum) {
+                        RespectImageOrientationEnum respect_orientation) {
   TRACE_EVENT0("skia", "Image::drawPattern");
 
   if (dest_rect.IsEmpty())
@@ -236,34 +236,48 @@ void Image::DrawPattern(GraphicsContext& context,
   if (!image)
     return;  // nothing to draw
 
-  // The subset_rect is in source image space, unscaled.
+  // The subset_rect is in source image space, unscaled, unoriented.
   IntRect subset_rect = EnclosingIntRect(float_src_rect);
   subset_rect.Intersect(IntRect(0, 0, image.width(), image.height()));
   if (subset_rect.IsEmpty())
     return;  // nothing to draw
+
+  // Apply image orientation, if necessary
+  FloatSize oriented_scale = scale_src_to_dest;
+  if (respect_orientation && !HasDefaultOrientation()) {
+    FloatSize original_image_size(SizeAsFloat(kDoNotRespectImageOrientation));
+    image = ResizeAndOrientImage(image, CurrentFrameOrientation());
+    subset_rect = RoundedIntRect(CorrectSrcRectForImageOrientation(
+        original_image_size, FloatRect(subset_rect)));
+    // Upstream, the scale_src_to_dest was computed to take an un-oriented size
+    // and make it oriented. For example, an image that is 100x50 un-oriented
+    // and 50x100 oriented will have a scale of (0.5,2). Undo this, because the
+    // scale has now been applied by orienting the image.
+    oriented_scale.Scale(
+        original_image_size.Width() / static_cast<float>(image.width()),
+        original_image_size.Height() / static_cast<float>(image.height()));
+  }
 
   SkMatrix local_matrix;
   // We also need to translate it such that the origin of the pattern is the
   // origin of the destination rect, which is what Blink expects. Skia uses
   // the coordinate system origin as the base for the pattern. If Blink wants
   // a shifted image, it will shift it from there using the localMatrix.
-  const float adjusted_x =
-      phase.X() + subset_rect.X() * scale_src_to_dest.Width();
+  const float adjusted_x = phase.X() + subset_rect.X() * oriented_scale.Width();
   const float adjusted_y =
-      phase.Y() + subset_rect.Y() * scale_src_to_dest.Height();
+      phase.Y() + subset_rect.Y() * oriented_scale.Height();
   local_matrix.setTranslate(SkFloatToScalar(adjusted_x),
                             SkFloatToScalar(adjusted_y));
 
   // Apply the scale to have the subset correctly fill the destination.
-  local_matrix.preScale(scale_src_to_dest.Width(), scale_src_to_dest.Height());
+  local_matrix.preScale(oriented_scale.Width(), oriented_scale.Height());
 
   // Fetch this now as subsetting may swap the image.
   auto image_id = image.stable_id();
 
   const FloatSize tile_size(
-      subset_rect.Width() * scale_src_to_dest.Width() + repeat_spacing.Width(),
-      subset_rect.Height() * scale_src_to_dest.Height() +
-          repeat_spacing.Height());
+      subset_rect.Width() * oriented_scale.Width() + repeat_spacing.Width(),
+      subset_rect.Height() * oriented_scale.Height() + repeat_spacing.Height());
   const auto tmx = ComputeTileMode(dest_rect.X(), dest_rect.MaxX(), adjusted_x,
                                    adjusted_x + tile_size.Width());
   const auto tmy = ComputeTileMode(dest_rect.Y(), dest_rect.MaxY(), adjusted_y,
@@ -273,8 +287,8 @@ void Image::DrawPattern(GraphicsContext& context,
       context.ComputeFilterQuality(this, dest_rect, FloatRect(subset_rect));
   sk_sp<PaintShader> tile_shader = CreatePatternShader(
       image, local_matrix, quality_to_use, context.ShouldAntialias(),
-      FloatSize(repeat_spacing.Width() / scale_src_to_dest.Width(),
-                repeat_spacing.Height() / scale_src_to_dest.Height()),
+      FloatSize(repeat_spacing.Width() / oriented_scale.Width(),
+                repeat_spacing.Height() / oriented_scale.Height()),
       tmx, tmy, subset_rect);
 
   PaintFlags flags = context.FillFlags();
