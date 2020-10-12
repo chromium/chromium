@@ -76,6 +76,7 @@ android_library("weblayer_private_java_tests") {
     "src/org/chromium/weblayer/test/PageInfoTest.java",
     "src/org/chromium/weblayer/test/PopupTest.java",
     "src/org/chromium/weblayer/test/ResourceLoadingTest.java",
+    "src/org/chromium/weblayer/test/TabPrivateTest.java",
     "src/org/chromium/weblayer/test/TranslateTest.java",
     "src/org/chromium/weblayer/test/UrlBarControllerTest.java",
   ]
