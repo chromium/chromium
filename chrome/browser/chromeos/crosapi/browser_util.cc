@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -58,6 +59,12 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
+using InterfaceVersions = base::flat_map<base::Token, uint32_t>;
+template <typename T>
+void AddVersion(InterfaceVersions* map) {
+  (*map)[T::Uuid_] = T::Version_;
+}
+
 mojom::LacrosInitParamsPtr GetLacrosInitParams(
     EnvironmentProvider* environment_provider) {
   auto params = mojom::LacrosInitParams::New();
@@ -69,6 +76,8 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
 
   params->session_type = environment_provider->GetSessionType();
   params->device_mode = environment_provider->GetDeviceMode();
+  params->interface_versions = GetInterfaceVersions();
+
   return params;
 }
 
@@ -132,6 +141,23 @@ bool IsLacrosWindow(const aura::Window* window) {
   if (!app_id)
     return false;
   return base::StartsWith(*app_id, kLacrosAppIdPrefix);
+}
+
+base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
+  static_assert(
+      crosapi::mojom::AshChromeService::Version_ == 4,
+      "if you add a new crosapi, please add it to the version map here");
+  InterfaceVersions versions;
+  AddVersion<crosapi::mojom::AccountManager>(&versions);
+  AddVersion<crosapi::mojom::AshChromeService>(&versions);
+  AddVersion<crosapi::mojom::Feedback>(&versions);
+  AddVersion<crosapi::mojom::KeystoreService>(&versions);
+  AddVersion<crosapi::mojom::MessageCenter>(&versions);
+  AddVersion<crosapi::mojom::ScreenManager>(&versions);
+  AddVersion<crosapi::mojom::SnapshotCapturer>(&versions);
+  AddVersion<device::mojom::HidConnection>(&versions);
+  AddVersion<device::mojom::HidManager>(&versions);
+  return versions;
 }
 
 mojo::Remote<crosapi::mojom::LacrosChromeService>

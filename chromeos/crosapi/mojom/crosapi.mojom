@@ -10,6 +10,7 @@ import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "services/device/public/mojom/hid.mojom";
 
 // LacrosInfo is a set of parameters passed to ash from lacros-chrome
@@ -143,6 +144,14 @@ struct LacrosInitParams {
   // user chooses to enroll the device).
   [MinVersion=4]
   DeviceMode device_mode@4;
+
+  // Ash sends all known crosapi interfaces and their versions at startup so
+  // that Lacros can synchronously query version info. Interfaces are identified
+  // by a UUID, which is manually generated and assigned via the UUID mojom
+  // qualifier.
+  // Added in M88.
+  [MinVersion=5]
+  map<mojo_base.mojom.Token, uint32>? interface_versions@5;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

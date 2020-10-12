@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_BROWSER_UTIL_H_
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/token.h"
 #include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,6 +54,9 @@ bool IsLacrosAllowed(version_info::Channel channel);
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
 bool IsLacrosWindow(const aura::Window* window);
+
+// Returns the UUID and version for all tracked interfaces. Exposed for testing.
+base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is

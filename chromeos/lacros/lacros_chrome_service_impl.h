@@ -166,6 +166,12 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return init_params_.get();
   }
 
+  // Returns the version for an ash interface with a given UUID. Returns -1 if
+  // the interface is not found. This is a synchronous version of
+  // mojo::Remote::QueryVersion. It relies on Ash M88. Features that need to
+  // work on M87 or older should not use this.
+  int GetInterfaceVersion(base::Token interface_uuid) const;
+
  private:
   // LacrosChromeServiceNeverBlockingState is an implementation detail of this
   // class.

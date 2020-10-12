@@ -13,6 +13,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/channel.h"
@@ -90,6 +91,20 @@ TEST_F(LacrosUtilTest, BlockedForChildUser) {
                                    /*browser_restart=*/false,
                                    /*is_child=*/true);
   EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::UNKNOWN));
+}
+
+TEST_F(LacrosUtilTest, GetInterfaceVersions) {
+  base::flat_map<base::Token, uint32_t> versions =
+      browser_util::GetInterfaceVersions();
+
+  // Check that a known interface with version > 0 is present and has non-zero
+  // version.
+  EXPECT_GT(versions[mojom::KeystoreService::Uuid_], 0);
+
+  // Check that the empty token is not present.
+  base::Token token;
+  auto it = versions.find(token);
+  EXPECT_EQ(it, versions.end());
 }
 
 }  // namespace crosapi

@@ -359,6 +359,20 @@ bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {
   return AshChromeServiceVersion() >= 3;
 }
 
+int LacrosChromeServiceImpl::GetInterfaceVersion(
+    base::Token interface_uuid) const {
+  if (g_disable_all_crosapi_for_tests)
+    return -1;
+  if (!init_params_->interface_versions)
+    return -1;
+  const base::flat_map<base::Token, uint32_t>& versions =
+      init_params_->interface_versions.value();
+  auto it = versions.find(interface_uuid);
+  if (it == versions.end())
+    return -1;
+  return it->second;
+}
+
 void LacrosChromeServiceImpl::BindScreenManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
   DCHECK(IsScreenManagerAvailable());
