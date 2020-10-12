@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS MediaStreamTrack.applyConstraints()
-PASS MediaStreamTrack.applyConstraints({advanced: []})
-PASS MediaStreamTrack.applyConstraints() with unsupported constraint
-FAIL MediaStreamTrack.applyConstraints() with non Image-Capture constraint promise_rejects_js: function "function OverconstrainedError() { [native code] }" is not an Error subtype
-Harness: the test ran to completion.
-
