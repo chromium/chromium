@@ -727,7 +727,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), null, mBookmarkBridgeSupplier);
+                getWindow().getDecorView(), null, mBookmarkBridgeSupplier, getModalDialogManager());
     }
 
     /**
@@ -1997,10 +1997,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 currentTab.goForward();
                 RecordUserAction.record("MobileMenuForward");
             }
-        } else if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id) {
+        } else if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id
+                || id == R.id.add_to_bookmarks_menu_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
-        } else if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id) {
+        } else if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id
+                || id == R.id.add_to_downloads_menu_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);
             RecordUserAction.record("MobileMenuDownloadPage");
         } else if (id == R.id.reload_menu_id) {
@@ -2035,7 +2037,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         new TabPrinter(currentTab), new PrintManagerDelegateImpl(this));
                 RecordUserAction.record("MobileMenuPrint");
             }
-        } else if (id == R.id.add_to_homescreen_id) {
+        } else if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id) {
             AddToHomescreenCoordinator.showForAppMenu(currentTab, this, getWindowAndroid(),
                     getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
             RecordUserAction.record("MobileMenuAddToHomescreen");

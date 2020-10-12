@@ -2899,6 +2899,18 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_MENU_STOP_IMAGE_DESCRIPTIONS" desc="Menu item to stop getting alt text accessibility image labels/descriptions [CHAR-LIMIT=27]">
         Stop image descriptions
       </message>
+      <message name="IDS_MENU_ADD_TO" desc="Menu item for opening the 'Add to' dialog which can add the page to bookmarks, downloads, home screen, etc. [CHAR-LIMIT=27]">
+        Add to…
+      </message>
+      <message name="IDS_MENU_ADD_TO_DIALOG_TITLE" desc="Menu item for opening the 'Add to' dialog which can add the page to bookmarks, downloads, home screen, etc.">
+        Add to:
+      </message>
+      <message name="IDS_MENU_ADD_TO_BOOKMARKS" desc="Menu item to save the web page to 'Bookmarks' section. The word 'Bookmarks' should match the translation in TC ID 1792806198663410166.">
+        Add to Bookmarks
+      </message>
+      <message name="IDS_MENU_ADD_TO_DOWNLOADS" desc="Menu item to download the current web page. The word 'Downloads' should match the translation in TC ID 9040361513231775562.">
+        Add to Downloads
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR-LIMIT=18]">

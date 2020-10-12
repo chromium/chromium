@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,9 +70,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
-            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito) {
+            boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito,
+            ModalDialogManager modalDialogManager) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, bookmarkBridgeSupplier);
+                toolbarManager, decorView, null, bookmarkBridgeSupplier, modalDialogManager);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
@@ -222,7 +224,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             }
 
             updateRequestDesktopSiteMenuItem(menu, currentTab, requestDesktopSiteVisible);
-            prepareAddToHomescreenMenuItem(menu, currentTab, addToHomeScreenVisible);
+            MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
+            MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
+            prepareAddToHomescreenMenuItem(
+                    homescreenItem, null, openWebApkItem, menu, currentTab, addToHomeScreenVisible);
         }
     }
 

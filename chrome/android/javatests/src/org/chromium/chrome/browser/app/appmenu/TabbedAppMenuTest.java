@@ -51,6 +51,9 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -439,6 +442,63 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:three_button_action_bar/add_to_option"})
+    public void
+    testAddToMenuItem_not_bookmarked() throws IOException {
+        LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
+        Assert.assertEquals(3, actionBar.getChildCount());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+
+        int addToIndex = findIndexOfMenuItemById(R.id.add_to_menu_id);
+        Assert.assertNotEquals("No add to row found.", -1, addToIndex);
+        mRenderTestRule.render(getListView().getChildAt(addToIndex), "add_to_menu_item");
+
+        View addToItem = getListView().getChildAt(addToIndex);
+        PropertyModel dialogModel = clickAndGetCurrentDialog(addToItem);
+        Assert.assertNotNull("No add to dialog found.", dialogModel);
+        ListView addToCustomView = (ListView) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Assert.assertEquals(3, addToCustomView.getChildCount());
+        mRenderTestRule.render(addToCustomView, "add_to_dialog_not_bookmarked");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:three_button_action_bar/add_to_option"})
+    public void
+    testAddToMenuItem_bookmarked() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
+        Assert.assertEquals("Add to Bookmarks/Downloads/Home screen should be shown", 3,
+                actionBar.getChildCount());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+
+        int addToIndex = findIndexOfMenuItemById(R.id.add_to_menu_id);
+        Assert.assertNotEquals("No add to row found.", -1, addToIndex);
+        mRenderTestRule.render(getListView().getChildAt(addToIndex), "add_to_menu_item");
+
+        View addToItem = getListView().getChildAt(addToIndex);
+        PropertyModel dialogModel = clickAndGetCurrentDialog(addToItem);
+        Assert.assertNotNull("No add to dialog found.", dialogModel);
+        ListView addToCustomView = (ListView) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Assert.assertEquals(3, addToCustomView.getChildCount());
+        mRenderTestRule.render(addToCustomView, "add_to_dialog_bookmarked");
+
+        AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP})
     public void testDividerLineMenuItem() throws IOException {
         int firstDividerLineIndex = findIndexOfMenuItemById(R.id.divider_line_id);
@@ -529,5 +589,20 @@ public class TabbedAppMenuTest {
         }
 
         return foundMenuItem ? firstMenuItemIndex : -1;
+    }
+
+    private PropertyModel clickAndGetCurrentDialog(View view) {
+        TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(), view);
+        CriteriaHelper.pollUiThread(() -> {
+            PropertyModel propertyModel = mActivityTestRule.getActivity()
+                                                  .getModalDialogManager()
+                                                  .getCurrentDialogForTest();
+            Criteria.checkThat(propertyModel, Matchers.notNullValue());
+        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> mActivityTestRule.getActivity()
+                                   .getModalDialogManager()
+                                   .getCurrentDialogForTest());
     }
 }

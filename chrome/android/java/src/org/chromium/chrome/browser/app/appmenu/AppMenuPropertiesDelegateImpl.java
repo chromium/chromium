@@ -62,6 +62,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +98,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ShareUtils mShareUtils;
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
+    private final ModalDialogManager mModalDialogManager;
 
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
@@ -117,11 +119,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @IntDef({ThreeButtonActionBarType.DISABLED, ThreeButtonActionBarType.ACTION_CHIP_VIEW,
-            ThreeButtonActionBarType.DESTINATION_CHIP_VIEW})
+            ThreeButtonActionBarType.DESTINATION_CHIP_VIEW, ThreeButtonActionBarType.ADD_TO_OPTION})
     @interface ThreeButtonActionBarType {
         int DISABLED = 0;
         int ACTION_CHIP_VIEW = 1;
         int DESTINATION_CHIP_VIEW = 2;
+        int ADD_TO_OPTION = 3;
     }
 
     protected @Nullable OverviewModeBehavior mOverviewModeBehavior;
@@ -142,12 +145,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      *         {@link OverviewModeBehavior} associated with the containing activity.
      * @param bookmarkBridgeSupplier An {@link ObservableSupplier} for the {@link BookmarkBridge}
      *         associated with the containing activity.
+     * @param modalDialogManager The {@link ModalDialogManager} that should be used to show "Add To"
+     *         dialog.
      */
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            ModalDialogManager modalDialogManager) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -155,6 +161,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mTabModelSelector = tabModelSelector;
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
+        mModalDialogManager = modalDialogManager;
 
         if (overviewModeBehaviorSupplier != null) {
             overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
@@ -192,6 +199,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         customViewBinders.add(new IncognitoMenuItemViewBinder());
         customViewBinders.add(new DividerLineMenuItemViewBinder());
         customViewBinders.add(new ChipViewMenuItemViewBinder(getThreeButtonActionBarType()));
+        customViewBinders.add(new AddToMenuItemViewBinder(mContext, mModalDialogManager));
         return customViewBinders;
     }
 
@@ -341,10 +349,34 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow());
 
-        if (shouldShowThreeButtonActionBar()) {
-            @ThreeButtonActionBarType
-            int threeButtonActionBarType = getThreeButtonActionBarType();
+        @ThreeButtonActionBarType
+        int threeButtonActionBarType = getThreeButtonActionBarType();
+        boolean addToOptionVisible =
+                threeButtonActionBarType == ThreeButtonActionBarType.ADD_TO_OPTION;
+        MenuItem addToDividerLineItem = menu.findItem(R.id.add_to_divider_line_id);
+        if (addToDividerLineItem != null) {
+            addToDividerLineItem.setVisible(addToOptionVisible);
+            addToDividerLineItem.setEnabled(false);
+        }
+        // Duplicating add_to_homescreen/install_app/open_webapk is for
+        // the purpose of experiment,  one of them will be removed once the
+        // experiments are done.
+        MenuItem addToMenuItem = menu.findItem(R.id.add_to_menu_id);
+        if (addToMenuItem != null) {
+            addToMenuItem.setVisible(addToOptionVisible);
+        }
+        MenuItem installAppItem = menu.findItem(R.id.install_app_id);
+        if (installAppItem != null) {
+            // Visible will be changed later by #prepareAddToHomescreenMenuItem.
+            installAppItem.setVisible(addToOptionVisible);
+        }
+        MenuItem menuOpenWebApkItem = menu.findItem(R.id.menu_open_webapk_id);
+        if (menuOpenWebApkItem != null) {
+            // Visible will be changed later by #prepareAddToHomescreenMenuItem.
+            menuOpenWebApkItem.setVisible(addToOptionVisible);
+        }
 
+        if (shouldShowThreeButtonActionBar()) {
             MenuItem downloadMenuItem =
                     menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(1);
             assert downloadMenuItem.getItemId() == R.id.offline_page_chip_id;
@@ -373,6 +405,21 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(0);
                 assert allBookmarkMenuItem.getItemId() == R.id.all_bookmarks_menu_id;
                 allBookmarkMenuItem.setTitle(R.string.all);
+            } else if (threeButtonActionBarType == ThreeButtonActionBarType.ADD_TO_OPTION) {
+                MenuItem addToBookmarksMenuItem =
+                        addToMenuItem.getSubMenu().findItem(R.id.add_to_bookmarks_menu_id);
+                updateBookmarkMenuItem(addToBookmarksMenuItem, currentTab);
+
+                MenuItem addToDownloadsMenuItem =
+                        addToMenuItem.getSubMenu().findItem(R.id.add_to_downloads_menu_id);
+                addToDownloadsMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
+
+                MenuItem addToHomescreenMenuItem =
+                        addToMenuItem.getSubMenu().findItem(R.id.add_to_homescreen_menu_id);
+                prepareAddToHomescreenMenuItem(addToHomescreenMenuItem, installAppItem,
+                        menuOpenWebApkItem, menu, currentTab,
+                        shouldShowHomeScreenMenuItem(
+                                isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
             }
         }
 
@@ -404,9 +451,16 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // Prepare translate menu button.
         prepareTranslateMenuItem(menu, currentTab);
 
-        prepareAddToHomescreenMenuItem(menu, currentTab,
-                shouldShowHomeScreenMenuItem(
-                        isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
+        MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
+        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
+        if (addToOptionVisible) {
+            homescreenItem.setVisible(false);
+            openWebApkItem.setVisible(false);
+        } else {
+            prepareAddToHomescreenMenuItem(homescreenItem, null, openWebApkItem, menu, currentTab,
+                    shouldShowHomeScreenMenuItem(
+                            isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
+        }
 
         updateRequestDesktopSiteMenuItem(menu, currentTab, true /* can show */);
 
@@ -610,44 +664,64 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /**
      * Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items.
      */
-    protected void prepareAddToHomescreenMenuItem(
-            Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
-        MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
-        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
+    protected void prepareAddToHomescreenMenuItem(MenuItem homescreenItem,
+            @Nullable MenuItem installAppItem, MenuItem openWebApkItem, Menu menu, Tab currentTab,
+            boolean shouldShowHomeScreenMenuItem) {
         mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_UNKNOWN;
-        if (shouldShowHomeScreenMenuItem) {
-            Context context = ContextUtils.getApplicationContext();
-            long addToHomeScreenStart = SystemClock.elapsedRealtime();
-            ResolveInfo resolveInfo =
-                    WebApkValidator.queryFirstWebApkResolveInfo(context, currentTab.getUrlString());
-            RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
-                    SystemClock.elapsedRealtime() - addToHomeScreenStart);
-
-            boolean openWebApkItemVisible =
-                    resolveInfo != null && resolveInfo.activityInfo.packageName != null;
-
-            if (openWebApkItemVisible) {
-                String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
-                openWebApkItem.setTitle(context.getString(R.string.menu_open_webapk, appName));
-
-                homescreenItem.setVisible(false);
-                openWebApkItem.setVisible(true);
-            } else {
-                AppBannerManager.InstallStringPair installStrings =
-                        getAddToHomeScreenTitle(currentTab);
-                homescreenItem.setTitle(installStrings.titleTextId);
-                homescreenItem.setVisible(true);
-                openWebApkItem.setVisible(false);
-
-                if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
-                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
-                } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
-                }
-            }
-        } else {
+        if (!shouldShowHomeScreenMenuItem) {
             homescreenItem.setVisible(false);
             openWebApkItem.setVisible(false);
+            if (installAppItem != null) {
+                installAppItem.setVisible(false);
+            }
+            return;
+        }
+
+        Context context = ContextUtils.getApplicationContext();
+        long addToHomeScreenStart = SystemClock.elapsedRealtime();
+        ResolveInfo resolveInfo =
+                WebApkValidator.queryFirstWebApkResolveInfo(context, currentTab.getUrlString());
+        RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
+                SystemClock.elapsedRealtime() - addToHomeScreenStart);
+
+        boolean openWebApkItemVisible =
+                resolveInfo != null && resolveInfo.activityInfo.packageName != null;
+
+        if (openWebApkItemVisible) {
+            String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
+            openWebApkItem.setTitle(context.getString(R.string.menu_open_webapk, appName));
+
+            homescreenItem.setVisible(false);
+            openWebApkItem.setVisible(true);
+            if (installAppItem != null) {
+                installAppItem.setVisible(false);
+            }
+        } else {
+            AppBannerManager.InstallStringPair installStrings = getAddToHomeScreenTitle(currentTab);
+            // When "Add to" mernu item is enabled for the app menu, if the current webpage is a PWA
+            // then the menu item to "Install app" ({@code installAppItem}) will be shown in the
+            // main menu. If the current webpage is not a PWA "Add to homescreen" will be shown in
+            // the "Add to dialog" instead. If {@code installAppItem} is not null, ensure that only
+            // one of installAppItem or homescreenItem are visible.
+            if (installAppItem != null
+                    && installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
+                installAppItem.setTitle(installStrings.titleTextId);
+                installAppItem.setVisible(true);
+                homescreenItem.setVisible(false);
+            } else {
+                homescreenItem.setTitle(installStrings.titleTextId);
+                homescreenItem.setVisible(true);
+                if (installAppItem != null) {
+                    installAppItem.setVisible(false);
+                }
+            }
+            openWebApkItem.setVisible(false);
+
+            if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
+                mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
+            } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
+                mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
+            }
         }
     }
 
@@ -659,7 +733,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @Override
     public Bundle getBundleForMenuItem(MenuItem item) {
         Bundle bundle = new Bundle();
-        if (item.getItemId() == R.id.add_to_homescreen_id) {
+        if (item.getItemId() == R.id.add_to_homescreen_id
+                || item.getItemId() == R.id.add_to_homescreen_menu_id) {
             bundle.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
         }
         return bundle;
@@ -865,6 +940,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             } else if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals(
                                "destination_chip_view")) {
                 return ThreeButtonActionBarType.DESTINATION_CHIP_VIEW;
+            } else if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals("add_to_option")) {
+                return ThreeButtonActionBarType.ADD_TO_OPTION;
             }
         }
         return ThreeButtonActionBarType.DISABLED;

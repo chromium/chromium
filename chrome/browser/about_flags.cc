@@ -1941,6 +1941,9 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kTabbedAppOverflowMenuThreeButtonActionbarDestination[] = {
         {"three_button_action_bar", "destination_chip_view"}};
+const FeatureEntry::FeatureParam
+    kTabbedAppOverflowMenuThreeButtonAddToOption[] = {
+        {"three_button_action_bar", "add_to_option"}};
 const FeatureEntry::FeatureVariation
     kTabbedAppOverflowMenuThreeButtonActionbarVariations[] = {
         {"(three button with action chip view)",
@@ -1949,7 +1952,10 @@ const FeatureEntry::FeatureVariation
         {"(three button with destination chip view)",
          kTabbedAppOverflowMenuThreeButtonActionbarDestination,
          base::size(kTabbedAppOverflowMenuThreeButtonActionbarDestination),
-         nullptr}};
+         nullptr},
+        {"(three button with add to option)",
+         kTabbedAppOverflowMenuThreeButtonAddToOption,
+         base::size(kTabbedAppOverflowMenuThreeButtonAddToOption), nullptr}};
 #endif  // OS_ANDROID
 
 const FeatureEntry::FeatureVariation
