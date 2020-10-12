@@ -9,13 +9,13 @@
     RuntimeEnabled=WebBluetooth,
     SecureContext
 ] interface BluetoothCharacteristicProperties {
-    [HighEntropy=Direct, MeasureAs=BCPBroadcast] readonly attribute boolean broadcast;
-    [HighEntropy=Direct, MeasureAs=BCPRead] readonly attribute boolean read;
-    [HighEntropy=Direct, MeasureAs=BCPWriteWithoutResponse] readonly attribute boolean writeWithoutResponse;
-    [HighEntropy=Direct, MeasureAs=BCPWrite] readonly attribute boolean write;
-    [HighEntropy=Direct, MeasureAs=BCPNotify] readonly attribute boolean notify;
-    [HighEntropy=Direct, MeasureAs=BCPIndicate] readonly attribute boolean indicate;
-    [HighEntropy=Direct, MeasureAs=BCPAuthenticatedSignedWrites] readonly attribute boolean authenticatedSignedWrites;
-    [HighEntropy=Direct, MeasureAs=BCPReliableWrite] readonly attribute boolean reliableWrite;
-    [HighEntropy=Direct, MeasureAs=BCPWritableAuxiliaries] readonly attribute boolean writableAuxiliaries;
+    readonly attribute boolean broadcast;
+    readonly attribute boolean read;
+    readonly attribute boolean writeWithoutResponse;
+    readonly attribute boolean write;
+    readonly attribute boolean notify;
+    readonly attribute boolean indicate;
+    readonly attribute boolean authenticatedSignedWrites;
+    readonly attribute boolean reliableWrite;
+    readonly attribute boolean writableAuxiliaries;
 };
