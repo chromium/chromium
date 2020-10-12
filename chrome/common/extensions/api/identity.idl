@@ -62,7 +62,7 @@ namespace identity {
     // The <code>enableGranularPermissions</code> flag allows extensions to
     // opt-in early to the granular permissions consent screen, in which
     // requested permissions are granted or denied individually.
-    [nodoc] boolean? enableGranularPermissions;
+    boolean? enableGranularPermissions;
   };
 
   dictionary InvalidTokenDetails {
