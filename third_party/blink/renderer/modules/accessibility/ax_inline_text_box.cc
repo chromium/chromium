@@ -239,6 +239,16 @@ void AXInlineTextBox::GetDocumentMarkers(
     Vector<AXRange>* marker_ranges) const {
   if (IsDetached())
     return;
+  if (!GetDocument() ||
+      GetDocument()->IsSlotAssignmentOrLegacyDistributionDirty()) {
+    // In order to retrieve the document markers we need access to the flat
+    // tree. If the slot assignments in a shadow DOM subtree are dirty,
+    // accessing the flat tree will cause them to be updated, which could in
+    // turn cause an update to the accessibility tree, potentially causing this
+    // method to be called repeatedly.
+    return;  // Wait until distribution for flat tree traversal has been
+             // updated.
+  }
 
   int text_length = TextLength();
   if (!text_length)
