@@ -134,7 +134,10 @@ void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
 void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  download_item_observer_.Add(item);
+  // Ignore `OnDownloadCreated()` events prior to `manager` initialization. For
+  // those events we bind any observers necessary in `OnManagerInitialized()`.
+  if (!is_restoring_persistence() && manager->IsManagerInitialized())
+    download_item_observer_.Add(item);
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
