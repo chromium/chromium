@@ -15810,13 +15810,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
   blink::ScreenInfo screen_info;
   a_node->render_manager()->GetRenderWidgetHostView()->GetScreenInfo(
       &screen_info);
-  int expected_y = roundf(screen_info.device_scale_factor * 5.0);
-  EXPECT_EQ(
-      b1_to_c1_message_filter->GetIntersectionState().main_frame_scroll_offset,
-      gfx::Point(0, expected_y));
-  EXPECT_EQ(
-      b2_to_c2_message_filter->GetIntersectionState().main_frame_scroll_offset,
-      gfx::Point(0, expected_y));
+  float expected_y = screen_info.device_scale_factor * 5.0;
+  EXPECT_NEAR(b1_to_c1_message_filter->GetIntersectionState()
+                  .main_frame_scroll_offset.y(),
+              expected_y, 1.f);
+  EXPECT_NEAR(b2_to_c2_message_filter->GetIntersectionState()
+                  .main_frame_scroll_offset.y(),
+              expected_y, 1.f);
 }
 
 class SitePerProcessCompositorViewportBrowserTest
