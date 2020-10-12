@@ -3250,11 +3250,6 @@ bool BrowserView::ShouldUseImmersiveFullscreenForUrl(const GURL& url) const {
   // Kiosk mode needs the whole screen.
   if (chrome::IsRunningInAppMode())
     return false;
-
-  // In Public Session, always use immersive fullscreen.
-  if (profiles::IsPublicSession())
-    return true;
-
   return url.is_empty();
 #else
   // No immersive except in Chrome OS.
