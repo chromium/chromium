@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -191,10 +190,6 @@ bool WaitForOmniboxContaining(std::string text) {
 // Tests that only the selected web state is loaded Restore-after-Crash.  This
 // is only possible in EG2.
 - (void)testRestoreOneWebstateOnlyAfterCrash {
-  if (IsSceneStartupSupported()) {
-    // TODO(crbug.com/1108433): Session restoration not available yet in MW.
-    EARL_GREY_TEST_DISABLED(@"Disabled in Multiwindow.");
-  }
   // Visit the background page.
   int visitCounter = 0;
   self.testServer->RegisterRequestHandler(
