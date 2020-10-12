@@ -20,9 +20,9 @@ test(function() {
 
 
 test(function() {
-	var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(navigator), "webdriver");
+  var descriptor = Object.getOwnPropertyDescriptor(navigator, "webdriver");
   assert_true(descriptor !== undefined);
-  assert_true(descriptor.configurable);
+  assert_false(descriptor.configurable);
   assert_true(descriptor.enumerable);
   assert_true(descriptor.set === undefined);
 }, "Test that the navigator.webdriver descriptor has expected properties");

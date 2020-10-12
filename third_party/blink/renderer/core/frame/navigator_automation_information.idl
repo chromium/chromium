@@ -7,5 +7,5 @@
 [
     RuntimeEnabled=AutomationControlled
 ] interface mixin NavigatorAutomationInformation {
-    readonly attribute boolean webdriver;
+    [LegacyUnforgeable] readonly attribute boolean webdriver;
 };
