@@ -509,19 +509,10 @@ class GpuIntegrationTest(
       tags.extend([re.sub('[ _]', '-', tag) for tag in gpu_tags])
 
       # Add tags based on GPU feature status.
-      skia_renderer = gpu_helper.GetSkiaRenderer(gpu_info.feature_status)
+      startup_args = getattr(browser, 'startup_args', None)
+      skia_renderer = gpu_helper.GetSkiaRenderer(gpu_info.feature_status,
+                                                 startup_args)
       tags.append(skia_renderer)
-      use_vulkan = gpu_helper.GetVulkan(gpu_info.feature_status)
-      tags.append(use_vulkan)
-
-    # If additional options have been set via '--extra-browser-args' check for
-    # those which map to expectation tags. The '_browser_backend' attribute may
-    # not exist in unit tests.
-    if hasattr(browser, 'startup_args'):
-      use_gl = gpu_helper.GetGL(browser.startup_args)
-      tags.append(use_gl)
-      use_skia_dawn = gpu_helper.GetSkiaDawn(browser.startup_args)
-      tags.append(use_skia_dawn)
     return tags
 
   @classmethod

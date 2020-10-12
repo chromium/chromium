@@ -158,7 +158,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     tag_set = _GenerateNvidiaExampleTagsForTestClassAndArgs(test_class, args)
     self.assertTrue(
         set([
-            'win', 'win10', 'd3d9', 'release', 'nvidia', 'nvidia-0x1cb3',
+            'win', 'win10', 'angle-d3d9', 'release', 'nvidia', 'nvidia-0x1cb3',
             'no-passthrough'
         ]).issubset(tag_set))
     return tag_set
@@ -201,9 +201,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self.assertEqual(
         _GetTagsToTest(browser),
         set([
-            'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'd3d9',
-            'no-passthrough', 'no-swiftshader-gl', 'no-use-vulkan',
-            'no-skia-renderer'
+            'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'angle-d3d9',
+            'no-passthrough', 'no-swiftshader-gl', 'no-skia-renderer'
         ]))
 
   def testGenerateVendorTagUsingVendorString(self):
@@ -218,8 +217,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'mac', 'mojave', 'release', 'imagination',
-            'imagination-PowerVR-SGX-554', 'opengles', 'passthrough',
-            'no-swiftshader-gl', 'no-use-vulkan', 'no-skia-renderer'
+            'imagination-PowerVR-SGX-554', 'angle-opengles', 'passthrough',
+            'no-swiftshader-gl', 'no-skia-renderer'
         ]))
 
   def testGenerateVendorTagUsingDeviceString(self):
@@ -232,8 +231,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'mac', 'mojave', 'release', 'imagination',
-            'imagination-Triangle-Monster-3000', 'no-angle', 'no-passthrough',
-            'no-swiftshader-gl', 'no-use-vulkan', 'no-skia-renderer'
+            'imagination-Triangle-Monster-3000', 'angle-no-backend',
+            'no-passthrough', 'no-swiftshader-gl', 'no-skia-renderer'
         ]))
 
   def testSimpleIntegrationTest(self):

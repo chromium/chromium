@@ -98,25 +98,25 @@ def GetGpuDriverVersion(gpu_info):
 
 
 def GetANGLERenderer(gpu_info):
-  retval = 'no_angle'
+  retval = 'angle-no-backend'
   if gpu_info and gpu_info.aux_attributes:
     gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
     if gl_renderer and 'ANGLE' in gl_renderer:
       if 'Direct3D11' in gl_renderer:
-        retval = 'd3d11'
+        retval = 'angle-d3d11'
       elif 'Direct3D9' in gl_renderer:
-        retval = 'd3d9'
+        retval = 'angle-d3d9'
       elif 'OpenGL ES' in gl_renderer:
-        retval = 'opengles'
+        retval = 'angle-opengles'
       elif 'OpenGL' in gl_renderer:
-        retval = 'opengl'
+        retval = 'angle-opengl'
       elif 'Metal' in gl_renderer:
-        retval = 'metal'
+        retval = 'angle-metal'
       # SwiftShader first because it also contains Vulkan
       elif 'SwiftShader' in gl_renderer:
-        retval = 'swiftshader'
+        retval = 'angle-swiftshader'
       elif 'Vulkan' in gl_renderer:
-        retval = 'vulkan'
+        retval = 'angle-vulkan'
   return retval
 
 
@@ -138,42 +138,40 @@ def GetCommandDecoder(gpu_info):
   return 'no_passthrough'
 
 
-# Used to check GPU feature status to see if SkiaRenderer is enabled.
-def GetSkiaRenderer(gpu_feature_status):
-  if gpu_feature_status and 'skia_renderer' in gpu_feature_status:
-    if gpu_feature_status['skia_renderer'] == 'enabled_on':
-      return 'skia-renderer'
-  return 'no-skia-renderer'
+def GetSkiaRenderer(gpu_feature_status, extra_browser_args):
+  retval = 'no-skia-renderer'
+  skia_renderer_enabled = (
+      gpu_feature_status
+      and gpu_feature_status.get('skia_renderer') == 'enabled_on')
+  if skia_renderer_enabled:
+    if HasDawnSkiaRenderer(extra_browser_args):
+      retval = 'dawn-skia-renderer'
+    elif HasGlSkiaRenderer(extra_browser_args):
+      retval = 'gl-skia-renderer'
+    elif HasVulkanSkiaRenderer(gpu_feature_status):
+      retval = 'vulkan-skia-renderer'
+  return retval
 
 
-# Used to check GPU feature status to see if Vulkan is enabled.
-def GetVulkan(gpu_feature_status):
-  if gpu_feature_status and 'vulkan' in gpu_feature_status:
-    if gpu_feature_status['vulkan'] == 'enabled_on':
-      return 'use-vulkan'
-  return 'no-use-vulkan'
-
-
-# Used to parse additional options sent to the browser instance via
-# '--extra-browser-args', looking for '--use-gl='.
-def GetGL(extra_browser_args):
-  if extra_browser_args:
-    for o in extra_browser_args:
-      if "--use-gl=" in o:
-        return 'use-gl'
-  return 'no-use-gl'
-
-
-# Used to parse additional options sent to the browser instance via
-# '--extra-browser-args', looking for '--enable-features=SkiaDawn' which
-# may be merged with additional feature flags.
 # TODO(sgilhuly): Use GPU feature status for Dawn instead of command line.
-def GetSkiaDawn(extra_browser_args):
+def HasDawnSkiaRenderer(extra_browser_args):
   if extra_browser_args:
-    for o in extra_browser_args:
-      if o.startswith('--enable-features') and "SkiaDawn" in o:
-        return 'use-skia-dawn'
-  return 'no-use-skia-dawn'
+    for arg in extra_browser_args:
+      if arg.startswith('--enable-features') and 'SkiaDawn' in arg:
+        return True
+  return False
+
+
+def HasGlSkiaRenderer(extra_browser_args):
+  if extra_browser_args:
+    for arg in extra_browser_args:
+      if '--use-gl=' in arg:
+        return True
+  return False
+
+
+def HasVulkanSkiaRenderer(gpu_feature_status):
+  return gpu_feature_status and gpu_feature_status.get('vulkan') == 'enabled_on'
 
 
 # used by unittests to create a mock arguments object
