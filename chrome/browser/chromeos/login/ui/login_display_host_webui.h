@@ -88,6 +88,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void RequestSystemInfoUpdate() override;
   void OnCancelPasswordChangedFlow() override;
   bool HasUserPods() override;
+  void AddObserver(LoginDisplayHost::Observer* observer) override;
+  void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 
   // Trace id for ShowLoginWebUI event (since there exists at most one login
   // WebUI at a time).

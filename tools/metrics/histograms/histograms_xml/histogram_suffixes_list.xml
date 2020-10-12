@@ -11930,6 +11930,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Demo-setup" label=""/>
   <suffix name="Device-disabled" label=""/>
   <suffix name="Discover" label=""/>
+  <suffix name="Edu-coexistence-login" label=""/>
   <suffix name="Encryption-migration" label=""/>
   <suffix name="Enroll" label=""/>
   <suffix name="Error-message" label=""/>
@@ -11979,6 +11980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Demo-setup.Completed" label=""/>
   <suffix name="Device-disabled.Canceled" label=""/>
   <suffix name="Discover.Next" label=""/>
+  <suffix name="Edu-coexistence-login.Done" label=""/>
   <suffix name="Eula.AcceptedWithoutStats" label=""/>
   <suffix name="Eula.AcceptedWithStats" label=""/>
   <suffix name="Eula.Back" label=""/>

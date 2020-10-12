@@ -23,6 +23,8 @@ namespace chromeos {
 class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
                                   public web_modal::WebContentsModalDialogHost {
  public:
+  static const char kAccountAdditionSource[];
+
   // The source UX surface used for launching the account addition /
   // re-authentication dialog. This should be as specific as possible.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -43,8 +45,10 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
     kPrintPreviewDialog = 4,
     // Account Manager migration welcome screen.
     kAccountManagerMigrationWelcomeScreen = 5,
+    // Onboarding.
+    kOnboarding = 6,
 
-    kMaxValue = kAccountManagerMigrationWelcomeScreen
+    kMaxValue = kOnboarding
   };
 
   // Represents the last reached step in the flow.
@@ -87,6 +91,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   void SetEduCoexistenceFlowResult(EduCoexistenceFlowResult result);
 
  protected:
+  explicit InlineLoginDialogChromeOS(const Source& source);
   InlineLoginDialogChromeOS(const GURL& url, const Source& source);
   ~InlineLoginDialogChromeOS() override;
 

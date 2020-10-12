@@ -104,6 +104,9 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // |nullptr| if the dialog has not been created yet.
   gfx::NativeWindow dialog_window() const { return dialog_window_; }
 
+  // A setter for modal type.
+  void set_modal_type(ui::ModalType modal_type) { modal_type_ = modal_type; }
+
  private:
   GURL gurl_;
   base::string16 title_;

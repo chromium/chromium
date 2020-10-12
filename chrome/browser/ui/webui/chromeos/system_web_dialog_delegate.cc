@@ -114,7 +114,7 @@ SystemWebDialogDelegate::SystemWebDialogDelegate(const GURL& gurl,
     case session_manager::SessionState::LOGIN_PRIMARY:
     case session_manager::SessionState::LOCKED:
     case session_manager::SessionState::LOGIN_SECONDARY:
-      modal_type_ = ui::MODAL_TYPE_SYSTEM;
+      set_modal_type(ui::MODAL_TYPE_SYSTEM);
       break;
   }
   GetInstances()->push_back(this);

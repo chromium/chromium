@@ -12,7 +12,9 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/chromeos/login/security_token_pin_dialog_host_ash_impl.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_common.h"
@@ -21,6 +23,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/challenge_response_key.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace chromeos {
 
@@ -36,7 +44,8 @@ class MojoSystemInfoDispatcher;
 class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public LoginScreenClient::Delegate,
                              public AuthStatusConsumer,
-                             public OobeUI::Observer {
+                             public OobeUI::Observer,
+                             public views::ViewObserver {
  public:
   enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN };
 
@@ -89,6 +98,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
+  void AddObserver(LoginDisplayHost::Observer* observer) override;
+  void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 
   // LoginScreenClient::Delegate:
   void HandleAuthenticateUserWithPasswordOrPin(
@@ -121,6 +132,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnCurrentScreenChanged(OobeScreenId current_screen,
                               OobeScreenId new_screen) override;
   void OnDestroyingOobeUI() override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // TODO(https://crbug.com/1103564) This function needed to isolate error
   // messages on the Views and WebUI side. Consider removing.
@@ -202,6 +217,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Store which screen is currently displayed.
   DisplayedScreen displayed_screen_ = DisplayedScreen::SIGN_IN_SCREEN;
+
+  ScopedObserver<views::View, views::ViewObserver> scoped_observer_{this};
+
+  base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostMojo> weak_factory_{this};
 

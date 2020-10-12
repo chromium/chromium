@@ -94,6 +94,12 @@ class OobeUI : public ui::MojoWebUIController {
   // Resets the delegate set in ShowSigninScreen.
   void ResetSigninScreenHandlerDelegate();
 
+  gfx::NativeView GetNativeView();
+
+  gfx::NativeWindow GetTopLevelNativeWindow();
+
+  gfx::Size GetViewSize();
+
   // Add and remove observers for screen change events.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -139,4 +139,9 @@ bool FakeLoginDisplayHost::HasUserPods() {
   return false;
 }
 
+void FakeLoginDisplayHost::AddObserver(LoginDisplayHost::Observer* observer) {}
+
+void FakeLoginDisplayHost::RemoveObserver(
+    LoginDisplayHost::Observer* observer) {}
+
 }  // namespace chromeos

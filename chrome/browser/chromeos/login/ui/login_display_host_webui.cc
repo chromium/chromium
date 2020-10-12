@@ -1028,6 +1028,11 @@ bool LoginDisplayHostWebUI::HasUserPods() {
   return false;
 }
 
+void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {}
+
+void LoginDisplayHostWebUI::RemoveObserver(
+    LoginDisplayHost::Observer* observer) {}
+
 void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
   if (!need_to_play_startup_sound_ || oobe_startup_sound_played_)
     return;

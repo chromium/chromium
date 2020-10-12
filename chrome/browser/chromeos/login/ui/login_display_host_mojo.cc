@@ -43,6 +43,7 @@
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/aura/window.h"
+#include "ui/views/view.h"
 
 namespace chromeos {
 
@@ -360,6 +361,15 @@ bool LoginDisplayHostMojo::HasUserPods() {
   return user_count_ > 0;
 }
 
+void LoginDisplayHostMojo::AddObserver(LoginDisplayHost::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void LoginDisplayHostMojo::RemoveObserver(
+    LoginDisplayHost::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
   HideOobeDialog();
 }
@@ -505,6 +515,18 @@ void LoginDisplayHostMojo::OnDestroyingOobeUI() {
   StopObservingOobeUI();
 }
 
+// views::ViewObserver:
+void LoginDisplayHostMojo::OnViewBoundsChanged(views::View* observed_view) {
+  DCHECK(scoped_observer_.IsObserving(observed_view));
+  for (auto& observer : observers_)
+    observer.WebDialogViewBoundsChanged(observed_view->GetBoundsInScreen());
+}
+
+void LoginDisplayHostMojo::OnViewIsDeleting(views::View* observed_view) {
+  DCHECK(scoped_observer_.IsObserving(observed_view));
+  scoped_observer_.Remove(observed_view);
+}
+
 bool LoginDisplayHostMojo::IsOobeUIDialogVisible() const {
   return dialog_ && dialog_->IsVisible();
 }
@@ -516,6 +538,9 @@ void LoginDisplayHostMojo::LoadOobeDialog() {
   dialog_ = new OobeUIDialogDelegate(weak_factory_.GetWeakPtr());
   dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(
       login_display_.get());
+
+  views::View* web_dialog_view = dialog_->GetWebDialogView();
+  scoped_observer_.Add(web_dialog_view);
 }
 
 void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(

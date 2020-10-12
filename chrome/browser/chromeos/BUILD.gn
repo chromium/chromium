@@ -1685,6 +1685,8 @@ source_set("chromeos") {
     "login/screens/device_disabled_screen.h",
     "login/screens/discover_screen.cc",
     "login/screens/discover_screen.h",
+    "login/screens/edu_coexistence_login_screen.cc",
+    "login/screens/edu_coexistence_login_screen.h",
     "login/screens/enable_adb_sideloading_screen.cc",
     "login/screens/enable_adb_sideloading_screen.h",
     "login/screens/enable_debugging_screen.cc",

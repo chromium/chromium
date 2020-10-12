@@ -83,6 +83,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   OobeUI* GetOobeUI() const;
   gfx::NativeWindow GetNativeWindow() const;
 
+  views::View* GetWebDialogView();
+
  private:
   // ui::WebDialogDelegate:
   ui::ModalType GetDialogModalType() const override;

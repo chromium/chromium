@@ -11,6 +11,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/chromeos/login/auth/auth_prewarmer.h"
@@ -29,6 +30,10 @@ enum class OobeDialogState;
 namespace content {
 class WebContents;
 }
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace chromeos {
 
@@ -60,6 +65,12 @@ class KioskAppId;
 // - LoginDisplayHostWebUI is for OOBE, which is written in HTML/JS/CSS.
 class LoginDisplayHost {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // |bounds| is the WebDialogView's bounds in screen coordinate system.
+    virtual void WebDialogViewBoundsChanged(const gfx::Rect& bounds) = 0;
+  };
+
   // Returns the default LoginDisplayHost instance if it has been created.
   static LoginDisplayHost* default_host() { return default_host_; }
 
@@ -201,6 +212,10 @@ class LoginDisplayHost {
 
   // Returns if the device has any user after filtering based on policy.
   virtual bool HasUserPods() = 0;
+
+  // Used to add an observer for the changes in the web dilaog login view.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
  protected:
   LoginDisplayHost();

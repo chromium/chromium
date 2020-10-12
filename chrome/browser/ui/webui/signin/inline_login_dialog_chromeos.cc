@@ -10,12 +10,14 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
@@ -41,9 +43,6 @@ namespace {
 InlineLoginDialogChromeOS* dialog = nullptr;
 constexpr int kSigninDialogWidth = 768;
 constexpr int kSigninDialogHeight = 640;
-
-constexpr char kAccountAdditionSource[] =
-    "AccountManager.AccountAdditionSource";
 
 // Keep in sync with resources/chromeos/account_manager_error.js
 enum class AccountManagerErrorType {
@@ -93,6 +92,10 @@ GURL GetInlineLoginUrl(const std::string& email,
 }
 
 }  // namespace
+
+// static
+const char InlineLoginDialogChromeOS::kAccountAdditionSource[] =
+    "AccountManager.AccountAdditionSource";
 
 // static
 void InlineLoginDialogChromeOS::Show(const std::string& email,
@@ -166,12 +169,19 @@ void InlineLoginDialogChromeOS::SetEduCoexistenceFlowResult(
   edu_coexistence_flow_result_ = result;
 }
 
+InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const Source& source)
+    : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string(), source),
+                                source) {}
+
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url,
                                                      const Source& source)
     : SystemWebDialogDelegate(url, base::string16() /* title */),
       delegate_(this),
       source_(source),
-      url_(url) {}
+      url_(url) {
+  DCHECK(!dialog);
+  dialog = this;
+}
 
 InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
   DCHECK_EQ(this, dialog);
@@ -221,7 +231,8 @@ void InlineLoginDialogChromeOS::OnDialogShown(content::WebUI* webui) {
 }
 
 void InlineLoginDialogChromeOS::OnDialogClosed(const std::string& json_retval) {
-  if (ProfileManager::GetActiveUserProfile()->IsChild()) {
+  if (ProfileManager::GetActiveUserProfile()->IsChild() &&
+      !base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
     DCHECK(edu_coexistence_flow_result_.has_value());
     base::UmaHistogramEnumeration("AccountManager.EduCoexistence.FlowResult",
                                   edu_coexistence_flow_result_.value());

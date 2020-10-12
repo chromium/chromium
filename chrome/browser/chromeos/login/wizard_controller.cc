@@ -58,6 +58,7 @@
 #include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/device_disabled_screen.h"
 #include "chrome/browser/chromeos/login/screens/discover_screen.h"
+#include "chrome/browser/chromeos/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/chromeos/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/chromeos/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_screen.h"
@@ -670,6 +671,10 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnActiveDirectoryLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<EduCoexistenceLoginScreen>(
+      base::BindRepeating(&WizardController::OnEduCoexistenceLoginScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
@@ -847,6 +852,10 @@ void WizardController::ShowPackagedLicenseScreen() {
   SetCurrentScreen(GetScreen(PackagedLicenseView::kScreenId));
 }
 
+void WizardController::ShowEduCoexistenceLoginScreen() {
+  SetCurrentScreen(GetScreen(EduCoexistenceLoginScreen::kScreenId));
+}
+
 void WizardController::ShowActiveDirectoryPasswordChangeScreen(
     const std::string& username) {
   ActiveDirectoryPasswordChangeScreen::Get(screen_manager())
@@ -908,6 +917,13 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
 void WizardController::OnActiveDirectoryLoginScreenExit() {
   OnScreenExit(ActiveDirectoryLoginView::kScreenId, kDefaultExitReason);
   LoginDisplayHost::default_host()->HideOobeDialog();
+}
+
+void WizardController::OnEduCoexistenceLoginScreenExit(
+    EduCoexistenceLoginScreen::Result result) {
+  OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
+               EduCoexistenceLoginScreen::GetResultString(result));
+  ShowSyncConsentScreen();
 }
 
 void WizardController::SkipToLoginForTesting() {
@@ -1279,7 +1295,8 @@ void WizardController::OnFamilyLinkNoticeScreenExit(
     FamilyLinkNoticeScreen::Result result) {
   OnScreenExit(FamilyLinkNoticeView::kScreenId,
                FamilyLinkNoticeScreen::GetResultString(result));
-  ShowSyncConsentScreen();
+
+  ShowEduCoexistenceLoginScreen();
 }
 
 void WizardController::OnSyncConsentScreenExit(
@@ -1873,6 +1890,7 @@ void WizardController::SkipPostLoginScreensForTesting() {
       default_controller()->current_screen()->screen_id();
   if (current_screen_id == TermsOfServiceScreenView::kScreenId ||
       current_screen_id == FamilyLinkNoticeView::kScreenId ||
+      current_screen_id == EduCoexistenceLoginScreen::kScreenId ||
       current_screen_id == SyncConsentScreenView::kScreenId ||
       current_screen_id == FingerprintSetupScreenView::kScreenId ||
       current_screen_id == ArcTermsOfServiceScreenView::kScreenId ||

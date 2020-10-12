@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/discover_screen.h"
+#include "chrome/browser/chromeos/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/chromeos/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/chromeos/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/chromeos/login/screens/eula_screen.h"
@@ -248,6 +249,7 @@ class WizardController {
   void ShowDiscoverScreen();
   void ShowMarketingOptInScreen();
   void ShowPackagedLicenseScreen();
+  void ShowEduCoexistenceLoginScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -306,6 +308,8 @@ class WizardController {
   void OnUserCreationScreenExit(UserCreationScreen::Result result);
   void OnGaiaScreenExit(GaiaScreen::Result result);
   void OnActiveDirectoryLoginScreenExit();
+  void OnEduCoexistenceLoginScreenExit(
+      EduCoexistenceLoginScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

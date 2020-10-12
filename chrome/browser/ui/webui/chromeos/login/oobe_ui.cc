@@ -733,6 +733,17 @@ void OobeUI::ResetSigninScreenHandlerDelegate() {
   signin_screen_handler_->SetDelegate(nullptr);
 }
 
+gfx::NativeView OobeUI::GetNativeView() {
+  return web_ui()->GetWebContents()->GetNativeView();
+}
+
+gfx::NativeWindow OobeUI::GetTopLevelNativeWindow() {
+  return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
+}
+
+gfx::Size OobeUI::GetViewSize() {
+  return web_ui()->GetWebContents()->GetSize();
+}
 
 void OobeUI::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
