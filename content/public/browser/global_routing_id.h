@@ -8,6 +8,8 @@
 #include <tuple>
 
 #include "base/hash/hash.h"
+#include "base/i18n/number_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "ipc/ipc_message.h"
 
 namespace content {
@@ -37,6 +39,11 @@ struct GlobalRoutingID {
     return !(*this == other);
   }
 };
+
+inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
+  os << "GlobalRoutingID(" << id.child_id << ", " << id.route_id << ")";
+  return os;
+}
 
 // Same as GlobalRoutingID except the route_id must be a RenderFrameHost routing
 // id.
