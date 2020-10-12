@@ -25,14 +25,14 @@ tools and is not distributed.
 # Upgrade to a new SQLite release.
 
 **Note** SQLite tags all releases `version-<release number>`, e.g.
-`version-3.32.1`. The Chromium project prefixes all tags/branches with
-"chromium-", e.g.  `chromium-version-3.32.1`.
+`version-3.33.0`. The Chromium project prefixes all tags/branches with
+"chromium-", e.g.  `chromium-version-3.33.0`.
 
 1. Create new release branch
 
    Use the SQLite commit ID when creating a branch. For example
    "562fd18b9dc27216191c0a6477bba9b175f7f0d2" corresponds to the
-   3.32.1 release. The commit is used, instead of the tag name, because
+   3.33.0 release. The commit is used, instead of the tag name, because
    we do not mirror the SQLite tags along with the commits. The correct
    commit ID can be found at
    [sqlite/releases](https://github.com/sqlite/sqlite/releases).
@@ -45,7 +45,7 @@ tools and is not distributed.
     ```sh
     cd //third_party/sqlite/src
     git fetch origin
-    export VERSION=3.32.1
+    export VERSION=3.33.0
     git checkout -b chromium-version-$VERSION \
         --track origin/chromum-version-$VERSION
     ```
@@ -90,7 +90,7 @@ following:
 1. Checkout the current release branch.
 
     ```sh
-    export VERSION=3.32.1
+    export VERSION=3.33.0
     cd //third_party/sqlite/src
     git checkout -b chromium-version-$VERSION \
       --track origin/chromium-version-$VERSION
