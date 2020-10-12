@@ -40,9 +40,6 @@ def create_argument_parser():
   parser.add_argument(
       '--system-webview-pathmap',
       help='The system webview APK resources pathmap path.')
-  parser.add_argument(
-      '--avd-config',
-      help='Workaround for crbug.com/1137405, do not use.')
 
   return parser
 
@@ -52,12 +49,6 @@ def main(argv):
 
   runner = typ.Runner()
   runner.parse_args(argument_parser, argv[1:])
-  # Disable all checks when --avd-config is provided because it is not supported
-  # by the typ.ArgumentParser(). This should happen only with tests running on
-  # Android emulator. TODO(crbug.com/1137405): Add support for --avd-config to
-  # typ.
-  if runner.args.avd_config:
-    return 0
   runner.args.top_level_dirs = [ os.path.dirname(__file__) ]
   runner.context = runner.args
 
