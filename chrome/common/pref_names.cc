@@ -3086,4 +3086,11 @@ const char kShowCaretBrowsingDialog[] =
     "settings.a11y.caretbrowsing.show_dialog";
 #endif
 
+#if BUILDFLAG(IS_ASH)
+// Boolean pref indicating whether the Lacros browser is allowed. This is set by
+// a policy, and the default value for managed users is false. Admins willing to
+// give rights to use Lacros can set the policy to true.
+const char kLacrosAllowed[] = "lacros_allowed";
+#endif
+
 }  // namespace prefs

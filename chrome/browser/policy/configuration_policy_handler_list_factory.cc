@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
 #include "chrome/browser/net/referrer_policy_policy_handler.h"
@@ -1337,6 +1338,13 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     first_run::kCCTToSDialogEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_ASH)
+  { key::kLacrosAllowed,
+    prefs::kLacrosAllowed,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_ASH)
+
 };
 // clang-format on
 

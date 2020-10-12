@@ -8253,5 +8253,17 @@
         "prefs": { "browsing_data_lifetime": { "value": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}]} }
       }
     ]
+  },
+  "LacrosAllowed": {
+    "os": ["chromeos"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "LacrosAllowed": false },
+        "prefs": {
+          "lacros_allowed": { "local_state": true }
+        }
+      }
+    ]
   }
 }

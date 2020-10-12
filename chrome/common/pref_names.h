@@ -11,6 +11,7 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -1076,6 +1077,10 @@ extern const char kAdbSideloadingPowerwashOnNextRebootNotificationShown[];
 #if !defined(OS_ANDROID)
 extern const char kCaretBrowsingEnabled[];
 extern const char kShowCaretBrowsingDialog[];
+#endif
+
+#if BUILDFLAG(IS_ASH)
+extern const char kLacrosAllowed[];
 #endif
 
 }  // namespace prefs

@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/exo/shell_surface_util.h"
@@ -104,19 +105,13 @@ bool IsLacrosAllowed(Channel channel) {
   if (!IsUserTypeAllowed(user))
     return false;
 
-  const Profile* const profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
-  DCHECK(profile);
+  // TODO(https://crbug.com/1135494): Remove the free ticket for
+  // Channel::UNKNOWN after the policy is set on server side for developers.
+  if (channel == Channel::UNKNOWN)
+    return true;
 
-  // TODO(https://crbug.com/1135494): Disable Lacros for managed users that
-  // aren't @google using more robust mechanism.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    const std::string canonical_email = user->GetAccountId().GetUserEmail();
-    if (!base::EndsWith(canonical_email, "@google.com",
-                        base::CompareCase::INSENSITIVE_ASCII)) {
-      return false;
-    }
-  }
+  if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed))
+    return false;
 
   switch (channel) {
     case Channel::UNKNOWN:

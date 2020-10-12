@@ -22237,6 +22237,7 @@ Called by update_document_policy_enum.py.-->
   <int value="790" label="EduCoexistenceToSVersion"/>
   <int value="791" label="BrowsingDataLifetime"/>
   <int value="792" label="IntranetRedirectBehavior"/>
+  <int value="793" label="LacrosAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

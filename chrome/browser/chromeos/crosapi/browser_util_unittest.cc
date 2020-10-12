@@ -4,10 +4,14 @@
 
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -22,7 +26,7 @@ namespace crosapi {
 
 class LacrosUtilTest : public testing::Test {
  public:
-  LacrosUtilTest() = default;
+  LacrosUtilTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
   ~LacrosUtilTest() override = default;
 
   void SetUp() override {
@@ -47,6 +51,8 @@ class LacrosUtilTest : public testing::Test {
   TestingProfile testing_profile_;
   chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+
+  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LacrosUtilTest, ChannelTest) {
@@ -59,26 +65,20 @@ TEST_F(LacrosUtilTest, ChannelTest) {
   EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::STABLE));
 }
 
-TEST_F(LacrosUtilTest, ManagedAccountGoogle) {
-  AddRegularUser("user@google.com");
+TEST_F(LacrosUtilTest, ManagedAccountLacrosAllowed) {
+  AddRegularUser("user@managedchrome.com");
   testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
+  g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, true);
 
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::CANARY));
 }
 
-TEST_F(LacrosUtilTest, ManagedAccountFakeGoogle) {
-  AddRegularUser("user@thisisnotgoogle.com");
+TEST_F(LacrosUtilTest, ManagedAccountLacrosNotAllowed) {
+  AddRegularUser("user@managedchrome.com");
   testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
-
-  EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::CANARY));
-}
-
-TEST_F(LacrosUtilTest, ManagedAccountNonGoogle) {
-  AddRegularUser("user@foople.com");
-  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-      true);
+  g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, false);
 
   EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::CANARY));
 }

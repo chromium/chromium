@@ -23577,7 +23577,30 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       The available data types are the <ph name="DATA_TYPE_BROWSING_HISTORY">'browsing_history'</ph>, <ph name="DATA_TYPE_DOWNLOAD_HISTORY">'download_history'</ph>, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">'cookies_and_other_site_data'</ph>, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES">'cached_images_and_files'</ph>, <ph name="DATA_TYPE_PASSWORD">'password_signin'</ph>, <ph name="DATA_TYPE_AUTOFILL">'autofill'</ph>, <ph name="DATA_TYPE_SITE_SETTINGS">'site_settings'</ph> and <ph name="DATA_TYPE_HOSTED_APP_DATA">'hosted_app_data'</ph>.
       Chrome will regularly remove data of selected types that is older than <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>. As this deletion only happens in certain intervals, some data might live for slightly longer but never more than twice its expected <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>.
       '''
-    }
+    },
+    {
+      'name': 'LacrosAllowed',
+      'owners': ['igorcov@chromium.org', 'okalitova@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:88-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': False,
+      'id': 793,
+      'default_for_enterprise_users': False,
+      'caption': '''Allow usage of Lacros''',
+      'tags': [],
+      'desc': '''This setting allows users to use the Lacros browser.
+
+      If this policy is set to false, the user cannot use Lacros.
+
+      If this policy is set to true, the user can use the Lacros browser.
+
+      If this policy is unset, the user cannot use the Lacros browser.''',
+    },
   ],
 
   'messages': {
@@ -24508,6 +24531,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
   'deleted_atomic_policy_group_ids': [],
-  'highest_id_currently_used': 792,
+  'highest_id_currently_used': 793,
   'highest_atomic_group_id_currently_used': 40
 }
