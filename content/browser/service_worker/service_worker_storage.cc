@@ -1130,6 +1130,29 @@ void ServiceWorkerStorage::SetPurgingCompleteCallbackForTest(
   purging_complete_callback_for_test_ = std::move(callback);
 }
 
+void ServiceWorkerStorage::GetPurgingResourceIdsForTest(
+    ResourceIdsCallback callback) {
+  std::move(callback).Run(ServiceWorkerDatabase::Status::kOk,
+                          std::vector<int64_t>(purgeable_resource_ids_.begin(),
+                                               purgeable_resource_ids_.end()));
+}
+
+void ServiceWorkerStorage::GetPurgeableResourceIdsForTest(
+    ResourceIdsCallback callback) {
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetPurgeableResourceIdsFromDB, database_.get(),
+                     base::ThreadTaskRunnerHandle::Get(), std::move(callback)));
+}
+
+void ServiceWorkerStorage::GetUncommittedResourceIdsForTest(
+    ResourceIdsCallback callback) {
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetUncommittedResourceIdsFromDB, database_.get(),
+                     base::ThreadTaskRunnerHandle::Get(), std::move(callback)));
+}
+
 void ServiceWorkerStorage::LazyInitialize(base::OnceClosure callback) {
   DCHECK(state_ == STORAGE_STATE_UNINITIALIZED ||
          state_ == STORAGE_STATE_INITIALIZING)
@@ -1737,6 +1760,32 @@ void ServiceWorkerStorage::PerformStorageCleanupInDB(
     ServiceWorkerDatabase* database) {
   DCHECK(database);
   database->RewriteDB();
+}
+
+// static
+void ServiceWorkerStorage::GetPurgeableResourceIdsFromDB(
+    ServiceWorkerDatabase* database,
+    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+    ServiceWorkerStorage::ResourceIdsCallback callback) {
+  std::vector<int64_t> resource_ids;
+  ServiceWorkerDatabase::Status status =
+      database->GetPurgeableResourceIds(&resource_ids);
+  original_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), status, std::move(resource_ids)));
+}
+
+// static
+void ServiceWorkerStorage::GetUncommittedResourceIdsFromDB(
+    ServiceWorkerDatabase* database,
+    scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+    ServiceWorkerStorage::ResourceIdsCallback callback) {
+  std::vector<int64_t> resource_ids;
+  ServiceWorkerDatabase::Status status =
+      database->GetUncommittedResourceIds(&resource_ids);
+  original_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), status, std::move(resource_ids)));
 }
 
 void ServiceWorkerStorage::DidDeleteDatabase(

@@ -150,6 +150,12 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
   void ApplyPolicyUpdates(
       const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
           policy_updates) override;
+  void GetPurgingResourceIdsForTest(
+      GetPurgingResourceIdsForTestCallback callback) override;
+  void GetPurgeableResourceIdsForTest(
+      GetPurgeableResourceIdsForTestCallback callback) override;
+  void GetUncommittedResourceIdsForTest(
+      GetUncommittedResourceIdsForTestCallback callback) override;
   void SetPurgingCompleteCallbackForTest(
       SetPurgingCompleteCallbackForTestCallback callback) override;
 

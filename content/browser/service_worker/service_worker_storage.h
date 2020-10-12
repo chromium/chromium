@@ -91,6 +91,9 @@ class CONTENT_EXPORT ServiceWorkerStorage {
       OriginState origin_state,
       int64_t deleted_version_id,
       const std::vector<int64_t>& newly_purgeable_resources)>;
+  using ResourceIdsCallback =
+      base::OnceCallback<void(ServiceWorkerDatabase::Status status,
+                              const std::vector<int64_t>& resource_ids)>;
 
   using DatabaseStatusCallback =
       base::OnceCallback<void(ServiceWorkerDatabase::Status status)>;
@@ -286,6 +289,10 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   void LazyInitializeForTest();
 
   void SetPurgingCompleteCallbackForTest(base::OnceClosure callback);
+
+  void GetPurgingResourceIdsForTest(ResourceIdsCallback callback);
+  void GetPurgeableResourceIdsForTest(ResourceIdsCallback callback);
+  void GetUncommittedResourceIdsForTest(ResourceIdsCallback callback);
 
  private:
   friend class ServiceWorkerStorageControlImplTest;
@@ -493,6 +500,14 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   static void DeleteAllDataForOriginsFromDB(ServiceWorkerDatabase* database,
                                             const std::set<GURL>& origins);
   static void PerformStorageCleanupInDB(ServiceWorkerDatabase* database);
+  static void GetPurgeableResourceIdsFromDB(
+      ServiceWorkerDatabase* database,
+      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+      ServiceWorkerStorage::ResourceIdsCallback callback);
+  static void GetUncommittedResourceIdsFromDB(
+      ServiceWorkerDatabase* database,
+      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
+      ServiceWorkerStorage::ResourceIdsCallback callback);
 
   // Posted by the underlying cache implementation after it finishes making
   // disk changes upon its destruction.

@@ -268,6 +268,15 @@ interface ServiceWorkerStorageControl {
   // This is analogous to LocalStorageControl::ApplyPolicyUpdates.
   ApplyPolicyUpdates(array<LocalStoragePolicyUpdate> policy_updates);
 
+  // Get resource ids which are scheduled to purge.
+  GetPurgingResourceIdsForTest() => (ServiceWorkerDatabaseStatus status,
+                                     array<int64> resource_ids);
+  // Gets resource ids which are purgeable.
+  GetPurgeableResourceIdsForTest() => (ServiceWorkerDatabaseStatus status,
+                                       array<int64> resource_ids);
+  // Gets resource ids which are uncommitted.
+  GetUncommittedResourceIdsForTest() => (ServiceWorkerDatabaseStatus status,
+                                         array<int64> resource_ids);
   // Sets a callback which is executed when purging resources completes.
   // Only a single callback can be set at a time. Overlapped calls are not
   // allowed.

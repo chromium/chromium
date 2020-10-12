@@ -368,6 +368,21 @@ void ServiceWorkerStorageControlImpl::ApplyPolicyUpdates(
   storage_->ApplyPolicyUpdates(std::move(policy_updates));
 }
 
+void ServiceWorkerStorageControlImpl::GetPurgingResourceIdsForTest(
+    GetPurgeableResourceIdsForTestCallback callback) {
+  storage_->GetPurgingResourceIdsForTest(std::move(callback));  // IN-TEST
+}
+
+void ServiceWorkerStorageControlImpl::GetPurgeableResourceIdsForTest(
+    GetPurgeableResourceIdsForTestCallback callback) {
+  storage_->GetPurgeableResourceIdsForTest(std::move(callback));  // IN-TEST
+}
+
+void ServiceWorkerStorageControlImpl::GetUncommittedResourceIdsForTest(
+    GetPurgeableResourceIdsForTestCallback callback) {
+  storage_->GetUncommittedResourceIdsForTest(std::move(callback));  // IN-TEST
+}
+
 void ServiceWorkerStorageControlImpl::SetPurgingCompleteCallbackForTest(
     SetPurgingCompleteCallbackForTestCallback callback) {
   storage_->SetPurgingCompleteCallbackForTest(std::move(callback));  // IN-TEST

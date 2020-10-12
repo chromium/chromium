@@ -621,8 +621,18 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  base::circular_deque<int64_t> GetPurgingResources() {
-    return storage()->purgeable_resource_ids_;
+  std::vector<int64_t> GetPurgingResources() {
+    std::vector<int64_t> ids;
+    base::RunLoop loop;
+    storage()->GetPurgingResourceIdsForTest(base::BindLambdaForTesting(
+        [&](ServiceWorkerDatabase::Status status,
+            const std::vector<int64_t>& resource_ids) {
+          EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
+          ids = resource_ids;
+          loop.Quit();
+        }));
+    loop.Run();
+    return ids;
   }
 
   // Directly writes a registration using
@@ -647,11 +657,11 @@ class ServiceWorkerStorageTest : public testing::Test {
   std::vector<int64_t> GetPurgeableResourceIdsFromDB() {
     std::vector<int64_t> ids;
     base::RunLoop loop;
-    ServiceWorkerDatabase* database_raw = database();
-    storage()->database_task_runner_->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-                    database_raw->GetPurgeableResourceIds(&ids));
+    storage()->GetPurgeableResourceIdsForTest(base::BindLambdaForTesting(
+        [&](ServiceWorkerDatabase::Status status,
+            const std::vector<int64_t>& resource_ids) {
+          EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
+          ids = resource_ids;
           loop.Quit();
         }));
     loop.Run();
@@ -661,11 +671,11 @@ class ServiceWorkerStorageTest : public testing::Test {
   std::vector<int64_t> GetUncommittedResourceIdsFromDB() {
     std::vector<int64_t> ids;
     base::RunLoop loop;
-    ServiceWorkerDatabase* database_raw = database();
-    storage()->database_task_runner_->PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
-          EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-                    database_raw->GetUncommittedResourceIds(&ids));
+    storage()->GetUncommittedResourceIdsForTest(base::BindLambdaForTesting(
+        [&](ServiceWorkerDatabase::Status status,
+            const std::vector<int64_t>& resource_ids) {
+          EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
+          ids = resource_ids;
           loop.Quit();
         }));
     loop.Run();
