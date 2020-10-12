@@ -1189,7 +1189,7 @@ if (!is_ios) {
     script = _common_web_test_script
 
     args = _common_web_test_args + [
-             "--layout-test-directory=@WrappedPath(" + rebase_path(
+             "--layout-tests-directory=@WrappedPath(" + rebase_path(
                      "//third_party/devtools-frontend/src/test/webtests",
                      root_out_dir) + ")",
              "http/tests/devtools",
