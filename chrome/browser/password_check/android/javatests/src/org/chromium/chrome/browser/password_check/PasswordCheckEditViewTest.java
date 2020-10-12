@@ -10,10 +10,12 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static junit.framework.Assert.assertTrue;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -119,6 +121,14 @@ public class PasswordCheckEditViewTest {
         assertNotNull(password.getText().toString());
         assertThat(password.getText().toString(), equalTo(ANA.getPassword()));
         assertTrue((password.getInputType() & TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) != 0);
+    }
+
+    @Test
+    @MediumTest
+    public void testSiteAndUsernameDisabled() {
+        onView(withId(R.id.site_edit)).check(matches(allOf(not(isEnabled()), not(isFocusable()))));
+        onView(withId(R.id.username_edit))
+                .check(matches(allOf(not(isEnabled()), not(isFocusable()))));
     }
 
     @Test
