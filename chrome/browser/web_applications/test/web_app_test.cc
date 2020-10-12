@@ -9,16 +9,6 @@
 
 namespace web_app {
 
-std::string ProviderTypeParamToString(
-    const ::testing::TestParamInfo<ProviderType>& provider_type) {
-  switch (provider_type.param) {
-    case ProviderType::kBookmarkApps:
-      return "BookmarkApps";
-    case ProviderType::kWebApps:
-      return "WebApps";
-  }
-}
-
 void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
