@@ -1101,7 +1101,7 @@
 
       Примітка: елементи в цей список можна також додати через правила <ph name="USE_IE_SITELIST_POLICY_NAME" /> та <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="264093234299818170">Відображаються всі принтери, крім тих, які є в чорному списку.</translation>
-<translation id="264252574246191885">Не для всіх</translation>
+<translation id="264252574246191885">Не опубліковане</translation>
 <translation id="2647069081229792812">Увімкнути або вимкнути редагування закладок</translation>
 <translation id="2649896281375932517">Вирішують користувачі</translation>
 <translation id="2650049181907741121">Дія, яка має виконуватися, коли користувач закриває кришку</translation>

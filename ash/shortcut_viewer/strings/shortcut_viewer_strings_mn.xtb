@@ -46,7 +46,7 @@
 <translation id="2480851840841871861">Google Туслахыг нээх</translation>
 <translation id="2488661730534396940">Зүүн талын дэлгэцийг идэвхжүүлэх</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2530339807289914946">Вэб хуудсыг доош гүйлгэх</translation>
+<translation id="2530339807289914946">Веб хуудсыг доош гүйлгэх</translation>
 <translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
 <translation id="2574014812750545982">Хуудас дахь томруулалтын түвшинг шинэчлэх</translation>
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
@@ -122,7 +122,7 @@
 <translation id="5541719484267030947">Чихтэй хуудсыг чирэх үедээ <ph name="ESC" />-г дарах</translation>
 <translation id="5554139136362089836">Одоогийн хуудсыг хайх</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />-г дараад холбоосыг дарах</translation>
-<translation id="561814908794220892">Чихтэй хуудсанд вэб хуудсыг нээх</translation>
+<translation id="561814908794220892">Чихтэй хуудсанд веб хуудсыг нээх</translation>
 <translation id="5620219513321115856">Идэвхтэй цонхыг баруун талын дэлгэц рүү шилжүүлэх</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> эсвэл <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Чихтэй хуудсанд холбоос нээх</translation>
@@ -165,7 +165,7 @@
 <translation id="7025325401470358758">Дараагийн самбар</translation>
 <translation id="7076878155205969899">Дууны дууг хаах</translation>
 <translation id="7077383985738259936">Хавчуургын хэсгийг сонгох эсвэл тодруулах (хэрэв харагдаж байгаа бол)</translation>
-<translation id="7237562915163138771">Хаяг оруулах хэсэгт вэб хаягийг оруулаад <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" />-г дарах</translation>
+<translation id="7237562915163138771">Хаяг оруулах хэсэгт веб хаягийг оруулаад <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" />-г дарах</translation>
 <translation id="7254764037241667478">Төхөөрөмжийг амраах горимд оруулах (түр хаах)</translation>
 <translation id="7422707470576323858">Дараагийн боломжтой оруулах арга руу сэлгэх</translation>
 <translation id="743754632698445141">Аппыг тогтоосныг нь болиулах</translation>
@@ -209,7 +209,7 @@
 <translation id="906458777597946297">Цонхыг томсгох</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, дараа нь <ph name="LEFT" /> эсвэл <ph name="RIGHT" /> эсвэл <ph name="UP" /> эсвэл <ph name="DOWN" /></translation>
 <translation id="9091855755813503076">Мөрийн эхлэл рүү очно уу</translation>
-<translation id="9106898733795143799">Хуудас болон вэб хөтөч</translation>
+<translation id="9106898733795143799">Хуудас болон веб хөтөч</translation>
 <translation id="9162942292291287644"><ph name="QUERY" />-н хайлтын илэрц алга</translation>
 <translation id="9179672198516322668">Нийтлэг товчлолууд</translation>
 <translation id="93603345341560814"><ph name="SHIFT" />-г дараад холбоосыг дарах</translation>
