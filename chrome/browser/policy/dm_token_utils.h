@@ -13,9 +13,11 @@ namespace policy {
 
 // Returns a platform specific DM Token:
 //  - Browser platforms get the CBCM DM Token.
-//  - Chrome OS gets the DM token for the |profile| if it's an affiliated user.
-//    If a nullptr is passed for |profile|, an empty test DM Token is returned.
-DMToken GetDMToken(Profile* const profile = nullptr);
+//  - Unless only_affiliated is set to false, Chrome OS only gets the DM token
+//  for the |profile| if it's an affiliated user.  If a nullptr is passed for
+//  |profile|, an empty test DM Token is returned.
+DMToken GetDMToken(Profile* const profile = nullptr,
+                   bool only_affiliated = true);
 
 // Overrides the DM token returned by |GetDMToken|, used for testing purposes.
 void SetDMTokenForTesting(const DMToken& dm_token);
