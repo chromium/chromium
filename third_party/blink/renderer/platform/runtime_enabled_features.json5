@@ -762,7 +762,7 @@
     {
       name: "ExperimentalIsInputPending",
       origin_trial_feature_name: "ExperimentalIsInputPending",
-      status: "experimental"
+      status: "stable"
     },
     // Enables a DOM-exposed interface to profile client JS.
     // https://github.com/WICG/js-self-profiling
