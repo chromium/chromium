@@ -8,32 +8,32 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 class SingleClientDictionarySyncTest : public SyncTest {
  public:
   SingleClientDictionarySyncTest() : SyncTest(SINGLE_CLIENT) {}
-
-  ~SingleClientDictionarySyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientDictionarySyncTest);
+  ~SingleClientDictionarySyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientDictionarySyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(dictionary_helper::DictionariesMatch());
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
 
-  std::string word = "foo";
-  ASSERT_TRUE(dictionary_helper::AddWord(0, word));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(dictionary_helper::DictionariesMatch());
+  const std::string word = "foo";
+  EXPECT_TRUE(dictionary_helper::AddWord(0, word));
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), ElementsAre(word));
 
-  ASSERT_TRUE(dictionary_helper::RemoveWord(0, word));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(dictionary_helper::DictionariesMatch());
+  EXPECT_TRUE(dictionary_helper::RemoveWord(0, word));
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
 }
 
 }  // namespace

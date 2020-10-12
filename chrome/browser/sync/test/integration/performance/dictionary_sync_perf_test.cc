@@ -34,7 +34,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 class DictionarySyncPerfTest : public SyncTest {
  public:
   DictionarySyncPerfTest() : SyncTest(TWO_CLIENT) {}
-  ~DictionarySyncPerfTest() override {}
+  ~DictionarySyncPerfTest() override = default;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DictionarySyncPerfTest);
@@ -43,7 +43,8 @@ class DictionarySyncPerfTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(dictionary_helper::DictionariesMatch());
+  ASSERT_TRUE(
+      dictionary_helper::DictionaryChecker(/*expected_words=*/{}).Wait());
 
   auto reporter = SetUpReporter(
       base::NumberToString(spellcheck::kMaxSyncableDictionaryWords) + "_words");

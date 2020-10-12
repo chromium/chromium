@@ -16,122 +16,106 @@
 
 namespace {
 
+using dictionary_helper::AddWord;
+using dictionary_helper::AddWords;
+using dictionary_helper::DictionaryChecker;
+using dictionary_helper::GetDictionarySize;
+using dictionary_helper::LoadDictionaries;
+using dictionary_helper::NumDictionaryEntriesChecker;
+using dictionary_helper::RemoveWord;
 using spellcheck::kMaxSyncableDictionaryWords;
 
 class TwoClientDictionarySyncTest : public SyncTest {
  public:
   TwoClientDictionarySyncTest() : SyncTest(TWO_CLIENT) {}
-
-  ~TwoClientDictionarySyncTest() override {}
+  ~TwoClientDictionarySyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientDictionarySyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  LoadDictionaries();
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  std::vector<std::string> words;
-  words.push_back("foo");
-  words.push_back("bar");
+  const std::vector<std::string> words{"foo", "bar"};
   ASSERT_EQ(num_clients(), static_cast<int>(words.size()));
 
   for (int i = 0; i < num_clients(); ++i) {
-    ASSERT_TRUE(dictionary_helper::AddWord(i, words[i]));
+    EXPECT_TRUE(AddWord(i, words[i]));
   }
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(words.size(), dictionary_helper::GetDictionarySize(0));
+  EXPECT_TRUE(DictionaryChecker(words).Wait());
 
   for (int i = 0; i < num_clients(); ++i) {
-    ASSERT_TRUE(dictionary_helper::RemoveWord(i, words[i]));
+    EXPECT_TRUE(RemoveWord(i, words[i]));
   }
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(0UL, dictionary_helper::GetDictionarySize(0));
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  DisableVerifier();
-  for (int i = 0; i < num_clients(); ++i)
-    ASSERT_TRUE(dictionary_helper::AddWord(i, words[i]));
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(words.size(), dictionary_helper::GetDictionarySize(0));
+  for (int i = 0; i < num_clients(); ++i) {
+    EXPECT_TRUE(AddWord(i, words[i]));
+  }
+  EXPECT_TRUE(DictionaryChecker(words).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousAdd)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  LoadDictionaries();
+  ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  for (int i = 0; i < num_clients(); ++i)
-    dictionary_helper::AddWord(i, "foo");
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(1UL, dictionary_helper::GetDictionarySize(0));
+  const std::string word = "foo";
+  for (int i = 0; i < num_clients(); ++i) {
+    dictionary_helper::AddWord(i, word);
+  }
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{word}).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
                        E2E_ENABLED(SimultaneousRemove)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  LoadDictionaries();
+  ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  for (int i = 0; i < num_clients(); ++i)
-    dictionary_helper::AddWord(i, "foo");
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(1UL, dictionary_helper::GetDictionarySize(0));
+  const std::string word = "foo";
+  for (int i = 0; i < num_clients(); ++i) {
+    AddWord(i, word);
+  }
+  ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{word}).Wait());
 
-  for (int i = 0; i < num_clients(); ++i)
-    dictionary_helper::RemoveWord(i, "foo");
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(0UL, dictionary_helper::GetDictionarySize(0));
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
-                       E2E_ENABLED(AddDifferentToEach)) {
-  ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-
-  for (int i = 0; i < num_clients(); ++i)
-    dictionary_helper::AddWord(i, "foo" + base::NumberToString(i));
-
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(num_clients(),
-            static_cast<int>(dictionary_helper::GetDictionarySize(0)));
+  for (int i = 0; i < num_clients(); ++i) {
+    RemoveWord(i, word);
+  }
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest,
                        E2E_ENABLED(RemoveOnAAddOnB)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  LoadDictionaries();
+  ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  std::string word = "foo";
+  const std::string word = "foo";
   // Add on client A, check it appears on B.
-  ASSERT_TRUE(dictionary_helper::AddWord(0, word));
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  ASSERT_TRUE(AddWord(0, word));
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{word}).Wait());
   // Remove on client A, check it disappears on B.
-  ASSERT_TRUE(dictionary_helper::RemoveWord(0, word));
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  EXPECT_TRUE(RemoveWord(0, word));
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
   // Add on client B, check it appears on A.
-  ASSERT_TRUE(dictionary_helper::AddWord(1, word));
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
-  ASSERT_EQ(1UL, dictionary_helper::GetDictionarySize(0));
+  EXPECT_TRUE(AddWord(1, word));
+  EXPECT_TRUE(DictionaryChecker(/*expected_words=*/{word}).Wait());
 }
 
 // Tests the case where a client has more words added than the
 // kMaxSyncableDictionaryWords limit.
 IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  dictionary_helper::LoadDictionaries();
-  ASSERT_TRUE(DictionaryMatchChecker().Wait());
+  LoadDictionaries();
+  ASSERT_TRUE(DictionaryChecker(/*expected_words=*/{}).Wait());
 
   // Disable client #1 before client #0 starts adding anything.
   GetClient(1)->DisableSyncForAllDatatypes();
@@ -142,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
   // on the limit.
   size_t chunk_size = kMaxSyncableDictionaryWords * 2 / 5;
 
-  ASSERT_TRUE(dictionary_helper::AddWords(0, chunk_size, "foo-0-"));
-  ASSERT_EQ(chunk_size, dictionary_helper::GetDictionarySize(0));
+  ASSERT_TRUE(AddWords(0, chunk_size, "foo-0-"));
+  ASSERT_EQ(chunk_size, GetDictionarySize(0));
 
   // We must wait for the server here. This test was originally an n-client test
   // where n-1 clients waited to have the same state. We cannot do that on 2
@@ -157,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientDictionarySyncTest, Limit) {
   ASSERT_TRUE(
       ServerCountMatchStatusChecker(syncer::DICTIONARY, chunk_size).Wait());
 
-  ASSERT_TRUE(dictionary_helper::AddWords(1, 2 * chunk_size, "foo-1-"));
-  ASSERT_EQ(2 * chunk_size, dictionary_helper::GetDictionarySize(1));
+  ASSERT_TRUE(AddWords(1, 2 * chunk_size, "foo-1-"));
+  ASSERT_EQ(2 * chunk_size, GetDictionarySize(1));
 
   // Client #1 should first pull remote changes, apply them, without capping at
   // any sort of limit. This will cause client #1 to have 3 * chunk_size. When
