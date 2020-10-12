@@ -1,0 +1,13 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("link_to_text") {
+  sources = [
+    "link_to_text_tab_helper.h",
+    "link_to_text_tab_helper.mm",
+    "shared_highlight.h",
+  ]
+  deps = [ "//ios/web/public" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

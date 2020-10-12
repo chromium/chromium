@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/screen_time/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #include "url/gurl.h"
 
@@ -31,6 +32,8 @@
     BrowserContainerViewController* viewController;
 // The mediator used to configure the BrowserContainerConsumer.
 @property(nonatomic, strong) BrowserContainerMediator* mediator;
+// The mediator used for the Link to Text feature.
+@property(nonatomic, strong) LinkToTextMediator* linkToTextMediator;
 // The overlay container coordinator for OverlayModality::kWebContentArea.
 @property(nonatomic, strong)
     OverlayContainerCoordinator* webContentAreaOverlayContainerCoordinator;
@@ -62,6 +65,9 @@
   self.mediator = [[BrowserContainerMediator alloc]
                 initWithWebStateList:self.browser->GetWebStateList()
       webContentAreaOverlayPresenter:overlayPresenter];
+  self.linkToTextMediator = [[LinkToTextMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()];
+  self.viewController.linkToTextDelegate = self.linkToTextMediator;
   self.mediator.consumer = self.viewController;
 
   [self setUpScreenTimeIfEnabled];
@@ -77,6 +83,7 @@
   [self.screenTimeCoordinator stop];
   self.viewController = nil;
   self.mediator = nil;
+  self.linkToTextMediator = nil;
   [super stop];
 }
 

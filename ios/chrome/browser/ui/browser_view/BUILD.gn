@@ -49,6 +49,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/geolocation:geolocation_internal",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/language",
+    "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/metrics:metrics_browser_agent",
     "//ios/chrome/browser/metrics:metrics_internal",
