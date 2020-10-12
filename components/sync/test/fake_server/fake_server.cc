@@ -360,12 +360,6 @@ FakeServer::GetPermanentSyncEntitiesByModelType(ModelType model_type) {
   return loopback_server_->GetPermanentSyncEntitiesByModelType(model_type);
 }
 
-std::string FakeServer::GetTopLevelPermanentItemId(
-    syncer::ModelType model_type) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return loopback_server_->GetTopLevelPermanentItemId(model_type);
-}
-
 const std::vector<std::vector<uint8_t>>& FakeServer::GetKeystoreKeys() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   return loopback_server_->GetKeystoreKeysForTesting();
@@ -379,9 +373,9 @@ void FakeServer::TriggerKeystoreKeyRotation() {
       loopback_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
 
   DCHECK_EQ(nigori_entities.size(), 1U);
-  bool success = ModifyEntitySpecifics(
-      loopback_server_->GetTopLevelPermanentItemId(syncer::NIGORI),
-      nigori_entities[0].specifics());
+  bool success =
+      ModifyEntitySpecifics(LoopbackServerEntity::GetTopLevelId(syncer::NIGORI),
+                            nigori_entities[0].specifics());
   DCHECK(success);
 }
 

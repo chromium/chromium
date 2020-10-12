@@ -93,10 +93,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   std::vector<sync_pb::SyncEntity> GetPermanentSyncEntitiesByModelType(
       syncer::ModelType model_type);
 
-  // Returns an empty string if no top-level permanent item of the given type
-  // was created.
-  std::string GetTopLevelPermanentItemId(syncer::ModelType model_type);
-
   // Returns all keystore keys from the server.
   const std::vector<std::vector<uint8_t>>& GetKeystoreKeys() const;
 

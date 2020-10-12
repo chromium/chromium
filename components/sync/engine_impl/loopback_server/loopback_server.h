@@ -119,10 +119,6 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   // Inserts the default permanent items in |entities_|.
   bool CreateDefaultPermanentItems();
 
-  // Returns an empty string if no top-level permanent item of the given type
-  // was created.
-  std::string GetTopLevelPermanentItemId(syncer::ModelType model_type);
-
   // Returns generated key which may contain any bytes (not necessarily UTF-8).
   std::vector<uint8_t> GenerateNewKeystoreKey() const;
 
@@ -240,7 +236,6 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   int max_get_updates_batch_size_ = 1000000;
 
   EntityMap entities_;
-  std::map<ModelType, std::string> top_level_permanent_item_ids_;
   std::vector<std::vector<uint8_t>> keystore_keys_;
 
   // The file used to store the local sync data.

@@ -293,20 +293,10 @@ bool LoopbackServer::CreateDefaultPermanentItems() {
     if (!top_level_entity) {
       return false;
     }
-    top_level_permanent_item_ids_[model_type] = top_level_entity->GetId();
     SaveEntity(std::move(top_level_entity));
   }
 
   return true;
-}
-
-std::string LoopbackServer::GetTopLevelPermanentItemId(
-    syncer::ModelType model_type) {
-  auto it = top_level_permanent_item_ids_.find(model_type);
-  if (it == top_level_permanent_item_ids_.end()) {
-    return std::string();
-  }
-  return it->second;
 }
 
 void LoopbackServer::UpdateEntityVersion(LoopbackServerEntity* entity) {
