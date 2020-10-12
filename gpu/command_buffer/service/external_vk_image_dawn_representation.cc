@@ -62,8 +62,19 @@ WGPUTexture ExternalVkImageDawnRepresentation::BeginAccess(
   descriptor.memoryTypeIndex = backing_impl()->image()->memory_type_index();
   descriptor.memoryFD = dup(memory_fd_.get());
 
-  // TODO(http://crbug.com/dawn/200): We may not be obeying all of the rules
-  // specified by Vulkan for external queue transfer barriers. Investigate this.
+  const GrBackendTexture& backend_texture = backing_impl()->backend_texture();
+  GrVkImageInfo image_info;
+  backend_texture.getVkImageInfo(&image_info);
+  // We should either be importing the image from the external queue, or it
+  // was just created with no queue ownership.
+  DCHECK(image_info.fCurrentQueueFamily == VK_QUEUE_FAMILY_IGNORED ||
+         image_info.fCurrentQueueFamily == VK_QUEUE_FAMILY_EXTERNAL);
+
+  // Note: This assumes the previous owner of the shared image did not do a
+  // layout transition on EndAccess, and saved the exported layout on the
+  // GrBackendTexture.
+  descriptor.releasedOldLayout = image_info.fImageLayout;
+  descriptor.releasedNewLayout = image_info.fImageLayout;
 
   for (auto& external_semaphore : begin_access_semaphores_) {
     descriptor.waitFDs.push_back(
@@ -88,6 +99,16 @@ void ExternalVkImageDawnRepresentation::EndAccess() {
     if (export_info.isInitialized) {
       SetCleared();
     }
+
+    // Exporting to VK_IMAGE_LAYOUT_UNDEFINED means no transition should be
+    // done. The old/new layouts are the same.
+    DCHECK_EQ(export_info.releasedOldLayout, export_info.releasedNewLayout);
+
+    // Save the layout on the GrBackendTexture. Other shared image
+    // representations read it from here.
+    GrBackendTexture backend_texture = backing_impl()->backend_texture();
+    backend_texture.setMutableState(GrBackendSurfaceMutableState(
+        export_info.releasedNewLayout, VK_QUEUE_FAMILY_EXTERNAL));
 
     // TODO(enga): Handle waiting on multiple semaphores from dawn
     DCHECK(export_info.semaphoreHandles.size() == 1);

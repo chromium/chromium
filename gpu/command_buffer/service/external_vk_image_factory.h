@@ -10,6 +10,7 @@
 
 #include "gpu/command_buffer/service/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 class SharedContextState;
@@ -20,7 +21,8 @@ class VulkanCommandPool;
 // can be exported out of Vulkan and be used in GL. Synchronization between
 // Vulkan and GL is done using VkSemaphores that are created with special flags
 // that allow it to be exported out and shared with GL.
-class ExternalVkImageFactory : public SharedImageBackingFactory {
+class GPU_GLES2_EXPORT ExternalVkImageFactory
+    : public SharedImageBackingFactory {
  public:
   explicit ExternalVkImageFactory(
       scoped_refptr<SharedContextState> context_state);

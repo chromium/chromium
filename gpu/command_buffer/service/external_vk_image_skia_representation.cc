@@ -80,7 +80,7 @@ sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
 
   access_mode_ = kWrite;
 
-  // If Vulkan and GL (or Dawn) share the same memory backing, we need set
+  // If Vulkan/GL/Dawn share the same memory backing, we need set
   // |end_state| VK_QUEUE_FAMILY_EXTERNAL, and then the caller will set the
   // VkImage to VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
   if (backing_impl()->need_synchronization()) {
@@ -120,10 +120,10 @@ sk_sp<SkPromiseImageTexture> ExternalVkImageSkiaRepresentation::BeginReadAccess(
     return nullptr;
   }
 
-  // If Vulkan and GLSet share the same memory backing, we need set |end_state|
+  // If Vulkan/GL/Dawn share the same memory backing, we need set |end_state|
   // VK_QUEUE_FAMILY_EXTERNAL, and then the caller will set the VkImage to
   // VK_QUEUE_FAMILY_EXTERNAL before calling EndAccess().
-  if (!backing_impl()->use_separate_gl_texture()) {
+  if (backing_impl()->need_synchronization()) {
     *end_state = std::make_unique<GrBackendSurfaceMutableState>(
         VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
   }

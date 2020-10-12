@@ -218,6 +218,15 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     }
   }
 
+  if (is_external && (usage & SHARED_IMAGE_USAGE_WEBGPU)) {
+    // The following additional usage flags are provided for Dawn:
+    //
+    // - TRANSFER_SRC: Used for copies from this image.
+    // - TRANSFER_DST: Used for copies to this image or clears.
+    vk_usage |=
+        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+  }
+
   auto* vulkan_implementation =
       context_state->vk_context_provider()->GetVulkanImplementation();
   VkImageCreateFlags vk_flags = 0;
