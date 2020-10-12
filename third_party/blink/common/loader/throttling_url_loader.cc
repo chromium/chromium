@@ -523,8 +523,9 @@ void ThrottlingURLLoader::StartNow() {
 
   DCHECK(start_info_->url_loader_factory);
   start_info_->url_loader_factory->CreateLoaderAndStart(
-      url_loader_.BindNewPipeAndPassReceiver(), start_info_->routing_id,
-      start_info_->request_id, start_info_->options, start_info_->url_request,
+      url_loader_.BindNewPipeAndPassReceiver(start_info_->task_runner),
+      start_info_->routing_id, start_info_->request_id, start_info_->options,
+      start_info_->url_request,
       client_receiver_.BindNewPipeAndPassRemote(start_info_->task_runner),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_));
 
