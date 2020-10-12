@@ -145,6 +145,47 @@ virtual/composite-after-paint/paint/frames/* [ Pass ]
 virtual/composite-after-paint/scrollingcoordinator/* [ Pass ]
 # --- End CompositeAfterPaint Tests --
 
+# --- BEGIN OOP-R Canvas tests --- 
+crbug.com/1081534 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clearRect-first.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clearRect-with-clip.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clip-stack-persistence.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-fill-repaint.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-immutable.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-webgl.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-video.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-imageSmoothingEnabled-patterns.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-partial-clearRect.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-partial-invalidation-zoomed.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-path-context-fill.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-state-persistence-no-dirty.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-transform-skewed.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-unbalanced-save.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/color-space/transferFromImageBitmap.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/drawImage-with-globalAlpha.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-Bitmaprenderer-TransferToImageBitmapResetsToBlack.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-text-FontFace.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/webgl/draw-webgl-to-canvas-2d-after-to-data-url-without-context.html [ Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/webgl/draw-webgl-to-canvas-2d.html [ Failure ]
+
+# Flakey tests
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clearRect.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-getImageData.html [ Pass Failure ]
+crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-createImageBitmap-recursive.html [ Pass Failure ]
+
+# We're rolling these tests out on Windows first, other platforms to follow. When removing [ Skip ]
+# for a platform please add the platform tag to the failing tests above.
+crbug.com/1081534 [ Android ] virtual/oopr-canvas2d/* [ Skip ]
+crbug.com/1081534 [ Fuchsia ] virtual/oopr-canvas2d/* [ Skip ]
+crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/* [ Skip ]
+crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/* [ Skip ]
+# --- END OOP-R Canvas Tests
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]

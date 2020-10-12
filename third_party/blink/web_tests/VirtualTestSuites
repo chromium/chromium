@@ -739,6 +739,14 @@
              "--disable-auto-wpt-origin-isolation"]
   },
   {
+    "prefix": "oopr-canvas2d",
+    "bases": [ "fast/canvas" ],
+    "args": [ "--enable-features=CanvasOopRasterization",
+              "--enable-accelerated-2d-canvas",
+              "--enable-oop-rasterization",
+              "--enable-gpu-rasterization" ]
+  },
+  {
     "prefix": "scroll-unification",
     "bases": ["fast/scrolling/scrollbars"],
     "args": ["--enable-features=ScrollUnification",
