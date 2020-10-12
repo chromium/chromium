@@ -64,7 +64,9 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
       /*is_enhanced_protection_enabled=*/false,
       prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
       /*should_open_links_in_new_tab=*/false,
-      /*always_show_back_to_safety=*/true, "cpn_safe_browsing");
+      /*always_show_back_to_safety=*/true,
+      /*is_enhanced_protection_message_enabled=*/false,
+      /*is_safe_browsing_managed=*/false, "cpn_safe_browsing");
 }
 }  // namespace
 

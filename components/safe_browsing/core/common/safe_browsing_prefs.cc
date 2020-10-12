@@ -186,6 +186,11 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs) {
          prefs.IsManagedPreference(prefs::kSafeBrowsingEnhanced);
 }
 
+bool IsEnhancedProtectionMessageInInterstitialsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kEnhancedProtectionMessageInInterstitials);
+}
+
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // This metric tracks the extended browsing opt-in based on whichever setting
   // the user is currently seeing. It tells us whether extended reporting is

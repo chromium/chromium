@@ -36,6 +36,8 @@ class BaseSafeBrowsingErrorUI {
                           bool is_proceed_anyway_disabled,
                           bool should_open_links_in_new_tab,
                           bool always_show_back_to_safety,
+                          bool is_enhanced_protection_message_enabled,
+                          bool is_safe_browsing_managed,
                           const std::string& help_center_article_link);
 
     SBErrorDisplayOptions(const SBErrorDisplayOptions& other);
@@ -70,6 +72,13 @@ class BaseSafeBrowsingErrorUI {
     // a proper page to navigate back to. Chrome and Chromium builds should
     // always set this option to true,
     bool always_show_back_to_safety;
+
+    // Indicates if the feature to show enhanced protection message on the
+    // interstitial is enabled.
+    bool is_enhanced_protection_message_enabled;
+
+    // Indicates if Safe Browsing is managed.
+    bool is_safe_browsing_managed;
 
     // The p= query parameter used when visiting the Help Center. If this is
     // nullptr, then a default value will be used for the SafeBrowsing article.
@@ -128,6 +137,14 @@ class BaseSafeBrowsingErrorUI {
     return display_options_.help_center_article_link;
   }
 
+  bool is_enhanced_protection_message_enabled() const {
+    return display_options_.is_enhanced_protection_message_enabled;
+  }
+
+  bool is_safe_browsing_managed() const {
+    return display_options_.is_safe_browsing_managed;
+  }
+
   const SBErrorDisplayOptions& get_error_display_options() const {
     return display_options_;
   }
@@ -144,10 +161,16 @@ class BaseSafeBrowsingErrorUI {
            !is_enhanced_protection_enabled();
   }
 
+  // Checks if we should even show the enhanced protection message.
+  // We don't show it:
+  // - in incognito mode, OR
+  // - if kEnhancedProtectionMessageInInterstitials flag is disabled, OR
+  // - if kSafeBrowsingEnabled or kSafeBrowsingEnhanced is managed by enterprise
+  // policy, OR
+  // - if enhanced protection is on
   bool CanShowEnhancedProtectionMessage() {
-    // TODO(crbug.com/1130721): Check feature flag, check ep not managed, check
-    // not already in ep. Check not in incognito.
-    return false;
+    return !is_off_the_record() && is_enhanced_protection_message_enabled() &&
+           !is_safe_browsing_managed() && !is_enhanced_protection_enabled();
   }
 
   SBInterstitialReason interstitial_reason() const {

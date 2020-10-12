@@ -86,6 +86,8 @@ BaseBlockingPage::CreateDefaultDisplayOptions(
       false,                 // kSafeBrowsingProceedAnywayDisabled
       false,                 // should_open_links_in_new_tab
       true,                  // always_show_back_to_safety
+      false,                 // is_enhanced_protection_message_enabled
+      false,                 // is_safe_browsing_managed
       "cpn_safe_browsing");  // help_center_article_link
 }
 

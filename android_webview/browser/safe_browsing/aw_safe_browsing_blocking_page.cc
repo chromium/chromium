@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/triggers/trigger_manager.h"
@@ -96,6 +97,8 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   AwBrowserContext* browser_context =
       AwBrowserContext::FromWebContents(web_contents);
   PrefService* pref_service = browser_context->GetPrefService();
+  // TODO(crbug.com/1134678): Set is_enhanced_protection_message_enabled once
+  // enhanced protection is supported on aw.
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
           IsMainPageLoadBlocked(unsafe_resources),
@@ -105,8 +108,10 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
           safe_browsing::IsExtendedReportingPolicyManaged(*pref_service),
           safe_browsing::IsEnhancedProtectionEnabled(*pref_service),
           pref_service->GetBoolean(::prefs::kSafeBrowsingProceedAnywayDisabled),
-          false,                    // should_open_links_in_new_tab
-          false,                    // always_show_back_to_safety
+          false,  // should_open_links_in_new_tab
+          false,  // always_show_back_to_safety
+          false,  // is_enhanced_protection_message_enabled
+          safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service),
           "cpn_safe_browsing_wv");  // help_center_article_link
 
   ErrorUiType errorType =
