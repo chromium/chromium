@@ -27,6 +27,7 @@ class PersonalDataManager;
 
 namespace sync_pb {
 class SyncEntity;
+class ModelType;
 class ModelTypeState;
 }
 
@@ -79,7 +80,9 @@ std::map<std::string, autofill::AutofillMetadata> GetServerCardsMetadata(
 std::map<std::string, autofill::AutofillMetadata> GetServerAddressesMetadata(
     int profile);
 
-sync_pb::ModelTypeState GetWalletDataModelTypeState(int profile);
+// Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
+sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,
+                                                int profile);
 
 void UnmaskServerCard(int profile,
                       const autofill::CreditCard& credit_card,
@@ -187,6 +190,37 @@ class AutofillWalletMetadataSizeChecker
   const int profile_a_;
   const int profile_b_;
   bool checking_exit_condition_in_flight_ = false;
+};
+
+// Checker to block until a new progress marker with correct timestamp is
+// received.
+class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
+                                            public syncer::SyncServiceObserver {
+ public:
+  FullUpdateTypeProgressMarkerChecker(
+      base::Time min_required_progress_marker_timestamp,
+      syncer::SyncService* service,
+      syncer::ModelType model_type);
+  ~FullUpdateTypeProgressMarkerChecker() override;
+
+  FullUpdateTypeProgressMarkerChecker(
+      const FullUpdateTypeProgressMarkerChecker&) = delete;
+  FullUpdateTypeProgressMarkerChecker& operator=(
+      const FullUpdateTypeProgressMarkerChecker&) = delete;
+
+  // StatusChangeChecker:
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // syncer::SyncServiceObserver:
+  void OnSyncCycleCompleted(syncer::SyncService* sync) override;
+
+ private:
+  const base::Time min_required_progress_marker_timestamp_;
+  const syncer::SyncService* const service_;
+  const syncer::ModelType model_type_;
+
+  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
+      scoped_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_WALLET_HELPER_H_

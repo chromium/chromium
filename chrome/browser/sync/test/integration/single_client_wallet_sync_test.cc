@@ -63,7 +63,7 @@ using wallet_helper::GetPersonalDataManager;
 using wallet_helper::GetProfileWebDataService;
 using wallet_helper::GetServerAddressesMetadata;
 using wallet_helper::GetServerCardsMetadata;
-using wallet_helper::GetWalletDataModelTypeState;
+using wallet_helper::GetWalletModelTypeState;
 using wallet_helper::kDefaultBillingAddressID;
 using wallet_helper::kDefaultCardID;
 using wallet_helper::kDefaultCreditCardCloudTokenDataID;
@@ -108,62 +108,6 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
   base::RunLoop run_loop_;
   T result_;
   DISALLOW_COPY_AND_ASSIGN(AutofillWebDataServiceConsumer);
-};
-
-class WaitForWalletUpdateChecker : public StatusChangeChecker,
-                                   public syncer::SyncServiceObserver {
- public:
-  WaitForWalletUpdateChecker(base::Time min_required_progress_marker_timestamp,
-                             syncer::SyncService* service)
-      : min_required_progress_marker_timestamp_(
-            min_required_progress_marker_timestamp),
-        service_(service) {
-    scoped_observer_.Add(service);
-  }
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    // GetLastCycleSnapshot() returns by value, so make sure to capture it for
-    // iterator use.
-    const syncer::SyncCycleSnapshot snap =
-        service_->GetLastCycleSnapshotForDebugging();
-    const syncer::ProgressMarkerMap& progress_markers =
-        snap.download_progress_markers();
-    auto marker_it = progress_markers.find(syncer::AUTOFILL_WALLET_DATA);
-    if (marker_it == progress_markers.end()) {
-      *os << "Waiting for an updated Wallet progress marker timestamp "
-          << min_required_progress_marker_timestamp_
-          << "; actual: no progress marker in last sync cycle";
-      return false;
-    }
-
-    sync_pb::DataTypeProgressMarker progress_marker;
-    bool success = progress_marker.ParseFromString(marker_it->second);
-    DCHECK(success);
-
-    const base::Time actual_timestamp =
-        fake_server::FakeServer::GetWalletProgressMarkerTimestamp(
-            progress_marker);
-
-    *os << "Waiting for an updated Wallet progress marker timestamp "
-        << min_required_progress_marker_timestamp_ << "; actual "
-        << actual_timestamp;
-
-    return actual_timestamp >= min_required_progress_marker_timestamp_;
-  }
-
-  // syncer::SyncServiceObserver implementation.
-  void OnSyncCycleCompleted(syncer::SyncService* sync) override {
-    CheckExitCondition();
-  }
-
- private:
-  const base::Time min_required_progress_marker_timestamp_;
-  const syncer::SyncService* const service_;
-
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForWalletUpdateChecker);
 };
 
 std::vector<std::unique_ptr<CreditCard>> GetServerCards(
@@ -264,7 +208,9 @@ class SingleClientWalletSyncTest : public SyncTest {
     // Trigger a sync and wait for the new data to arrive.
     TriggerSyncForModelTypes(
         0, syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
-    return WaitForWalletUpdateChecker(now, GetSyncService(0)).Wait();
+    return FullUpdateTypeProgressMarkerChecker(now, GetSyncService(0),
+                                               syncer::AUTOFILL_WALLET_DATA)
+        .Wait();
   }
 
   void AdvanceAutofillClockByOneDay() {
@@ -670,12 +616,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   EXPECT_EQ("data-1", cloud_token_data[0]->instrument_token);
 
   // Trigger a sync and wait for the new data to arrive.
-  sync_pb::ModelTypeState state_before = GetWalletDataModelTypeState(0);
+  sync_pb::ModelTypeState state_before =
+      GetWalletModelTypeState(syncer::AUTOFILL_WALLET_DATA, 0);
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
   // regression check for crbug.com/924447.
-  sync_pb::ModelTypeState state_after = GetWalletDataModelTypeState(0);
+  sync_pb::ModelTypeState state_after =
+      GetWalletModelTypeState(syncer::AUTOFILL_WALLET_DATA, 0);
   EXPECT_NE(state_before.progress_marker().token(),
             state_after.progress_marker().token());
 

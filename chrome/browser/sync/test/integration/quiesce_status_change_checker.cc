@@ -32,9 +32,11 @@ bool AreProgressMarkersEquivalent(const std::string& serialized1,
   DCHECK(marker1.data_type_id() == marker2.data_type_id());
 
   if (syncer::GetModelTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
-      syncer::AUTOFILL_WALLET_DATA) {
-    return fake_server::AreWalletDataProgressMarkersEquivalent(marker1,
-                                                               marker2);
+          syncer::AUTOFILL_WALLET_DATA ||
+      syncer::GetModelTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
+          syncer::AUTOFILL_WALLET_OFFER) {
+    return fake_server::AreFullUpdateTypeDataProgressMarkersEquivalent(marker1,
+                                                                       marker2);
   }
   return marker1.SerializeAsString() == marker2.SerializeAsString();
 }
