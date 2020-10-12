@@ -48,6 +48,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
@@ -125,6 +126,7 @@ public class AccountPickerBottomSheetTest {
     @Before
     public void setUp() {
         initMocks(this);
+        IncognitoUtils.setEnabledForTesting(true);
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
     }
@@ -140,6 +142,27 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testExpandedSheet() {
         buildAndShowExpandedBottomSheet();
+        // Since PROFILE_DATA1 exists also in the hidden view of the selected account,
+        // withEffectiveVisibility(VISIBLE) is needed here
+        onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withText(PROFILE_DATA1.getFullName()), withEffectiveVisibility(VISIBLE)))
+                .check(matches(isDisplayed()));
+        onView(withText(PROFILE_DATA2.getAccountName())).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_incognito_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_continue_as_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandedSheetWithIncognitoModeDisabled() {
+        IncognitoUtils.setEnabledForTesting(false);
+        buildAndShowExpandedBottomSheet();
+        // Since PROFILE_DATA1 exists also in the hidden view of the selected account,
+        // withEffectiveVisibility(VISIBLE) is needed here
         onView(allOf(withText(PROFILE_DATA1.getAccountName()), withEffectiveVisibility(VISIBLE)))
                 .check(matches(isDisplayed()));
         onView(allOf(withText(PROFILE_DATA1.getFullName()), withEffectiveVisibility(VISIBLE)))
@@ -149,6 +172,7 @@ public class AccountPickerBottomSheetTest {
 
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_continue_as_button)).check(matches(not(isDisplayed())));
+        onView(withText(R.string.signin_incognito_button)).check(doesNotExist());
     }
 
     @Test

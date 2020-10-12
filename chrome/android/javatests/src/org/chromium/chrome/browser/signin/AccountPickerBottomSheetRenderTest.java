@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
@@ -114,6 +115,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Before
     public void setUp() {
         initMocks(this);
+        IncognitoUtils.setEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
