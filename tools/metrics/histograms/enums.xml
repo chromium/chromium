@@ -35611,10 +35611,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Training Mode"/>
 </enum>
 
+<enum name="HrefTranslatePrefsFilterStatus">
+  <int value="0" label="Not in blocklists"/>
+  <int value="1" label="Language in blocklist"/>
+  <int value="2" label="Site in blocklist"/>
+  <int value="3" label="Both language and site in blocklist"/>
+</enum>
+
 <enum name="HrefTranslateStatus">
   <int value="0" label="Auto translated"/>
   <int value="1" label="Auto translated using a different target language"/>
-  <int value="2" label="Not auto translated"/>
+  <int value="2" label="Not auto translated (Deprecated in M87)"/>
+  <int value="3" label="UI shown and not auto translated"/>
+  <int value="4" label="UI not shown and not auto translated"/>
 </enum>
 
 <enum name="Hresult">

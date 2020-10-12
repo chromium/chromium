@@ -101,7 +101,8 @@ class MetricsRecorder {
   void CheckTranslateHrefHintStatus(
       int expected_auto_translated,
       int expected_auto_translated_different_target_language,
-      int expected_not_auto_translated) {
+      int expected_ui_shown_not_auto_translated,
+      int expected_no_ui_shown_not_auto_translated) {
     Snapshot();
 
     EXPECT_EQ(expected_auto_translated,
@@ -112,10 +113,40 @@ class MetricsRecorder {
               GetCountWithoutSnapshot(static_cast<int>(
                   translate::TranslateBrowserMetrics::HrefTranslateStatus::
                       kAutoTranslatedDifferentTargetLanguage)));
-    EXPECT_EQ(expected_not_auto_translated,
+    EXPECT_EQ(expected_ui_shown_not_auto_translated,
               GetCountWithoutSnapshot(static_cast<int>(
                   translate::TranslateBrowserMetrics::HrefTranslateStatus::
-                      kNotAutoTranslated)));
+                      kUiShownNotAutoTranslated)));
+    EXPECT_EQ(expected_no_ui_shown_not_auto_translated,
+              GetCountWithoutSnapshot(static_cast<int>(
+                  translate::TranslateBrowserMetrics::HrefTranslateStatus::
+                      kNoUiShownNotAutoTranslated)));
+  }
+
+  void CheckTranslateHrefHintPrefsFilterStatus(
+      int expected_not_in_blocklists,
+      int expected_language_in_blocklist,
+      int expected_site_in_blocklist,
+      int expected_both_language_and_site_in_blocklist) {
+    Snapshot();
+
+    EXPECT_EQ(expected_not_in_blocklists,
+              GetCountWithoutSnapshot(static_cast<int>(
+                  translate::TranslateBrowserMetrics::
+                      HrefTranslatePrefsFilterStatus::kNotInBlocklists)));
+    EXPECT_EQ(expected_language_in_blocklist,
+              GetCountWithoutSnapshot(static_cast<int>(
+                  translate::TranslateBrowserMetrics::
+                      HrefTranslatePrefsFilterStatus::kLanguageInBlocklist)));
+    EXPECT_EQ(expected_site_in_blocklist,
+              GetCountWithoutSnapshot(static_cast<int>(
+                  translate::TranslateBrowserMetrics::
+                      HrefTranslatePrefsFilterStatus::kSiteInBlocklist)));
+    EXPECT_EQ(
+        expected_both_language_and_site_in_blocklist,
+        GetCountWithoutSnapshot(static_cast<int>(
+            translate::TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+                kBothLanguageAndSiteInBlocklist)));
   }
 
   void CheckTranslateTargetLanugageOrigin(int expected_recent_target,
@@ -311,18 +342,43 @@ TEST(TranslateBrowserMetricsTest, ReportedTranslateTargetLanguage) {
 
 TEST(TranslateBrowserMetricsTest, ReportTranslateHrefHintStatus) {
   MetricsRecorder recorder("Translate.HrefHint.Status");
-  recorder.CheckTranslateHrefHintStatus(0, 0, 0);
+  recorder.CheckTranslateHrefHintStatus(0, 0, 0, 0);
   translate::TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
       translate::TranslateBrowserMetrics::HrefTranslateStatus::kAutoTranslated);
-  recorder.CheckTranslateHrefHintStatus(1, 0, 0);
+  recorder.CheckTranslateHrefHintStatus(1, 0, 0, 0);
   translate::TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
       translate::TranslateBrowserMetrics::HrefTranslateStatus::
           kAutoTranslatedDifferentTargetLanguage);
-  recorder.CheckTranslateHrefHintStatus(1, 1, 0);
+  recorder.CheckTranslateHrefHintStatus(1, 1, 0, 0);
   translate::TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
       translate::TranslateBrowserMetrics::HrefTranslateStatus::
-          kNotAutoTranslated);
-  recorder.CheckTranslateHrefHintStatus(1, 1, 1);
+          kUiShownNotAutoTranslated);
+  recorder.CheckTranslateHrefHintStatus(1, 1, 1, 0);
+  translate::TranslateBrowserMetrics::ReportTranslateHrefHintStatus(
+      translate::TranslateBrowserMetrics::HrefTranslateStatus::
+          kNoUiShownNotAutoTranslated);
+  recorder.CheckTranslateHrefHintStatus(1, 1, 1, 1);
+}
+
+TEST(TranslateBrowserMetricsTest, ReportTranslateHrefHintPrefsFilterStatus) {
+  MetricsRecorder recorder("Translate.HrefHint.PrefsFilterStatus");
+  recorder.CheckTranslateHrefHintPrefsFilterStatus(0, 0, 0, 0);
+  translate::TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+      translate::TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+          kNotInBlocklists);
+  recorder.CheckTranslateHrefHintPrefsFilterStatus(1, 0, 0, 0);
+  translate::TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+      translate::TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+          kLanguageInBlocklist);
+  recorder.CheckTranslateHrefHintPrefsFilterStatus(1, 1, 0, 0);
+  translate::TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+      translate::TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+          kSiteInBlocklist);
+  recorder.CheckTranslateHrefHintPrefsFilterStatus(1, 1, 1, 0);
+  translate::TranslateBrowserMetrics::ReportTranslateHrefHintPrefsFilterStatus(
+      translate::TranslateBrowserMetrics::HrefTranslatePrefsFilterStatus::
+          kBothLanguageAndSiteInBlocklist);
+  recorder.CheckTranslateHrefHintPrefsFilterStatus(1, 1, 1, 1);
 }
 
 TEST(TranslateBrowserMetricsTest, ReportTranslateTargetLanguageOrigin) {

@@ -29,6 +29,8 @@ const char kTranslateUnsupportedLanguageAtInitiation[] =
 const char kTranslateSourceLanguage[] = "Translate.SourceLanguage";
 const char kTranslateTargetLanguage[] = "Translate.TargetLanguage";
 const char kTranslateHrefHintStatus[] = "Translate.HrefHint.Status";
+const char kTranslateHrefHintPrefsFilterStatus[] =
+    "Translate.HrefHint.PrefsFilterStatus";
 const char kTranslateTargetLanguageOrigin[] = "Translate.TargetLanguage.Origin";
 
 }  // namespace
@@ -80,6 +82,11 @@ void ReportTranslateTargetLanguage(base::StringPiece language) {
 
 void ReportTranslateHrefHintStatus(HrefTranslateStatus status) {
   base::UmaHistogramEnumeration(kTranslateHrefHintStatus, status);
+}
+
+void ReportTranslateHrefHintPrefsFilterStatus(
+    HrefTranslatePrefsFilterStatus status) {
+  base::UmaHistogramEnumeration(kTranslateHrefHintPrefsFilterStatus, status);
 }
 
 void ReportTranslateTargetLanguageOrigin(TargetLanguageOrigin origin) {
