@@ -61,4 +61,16 @@ float DeprecatedGetShelfInkDropOpacity(float default_opacity) {
   return AshColorProvider::Get()->GetRippleAttributes().inkdrop_opacity;
 }
 
+SkColor DeprecatedGetAppStateIndicatorColor(bool active,
+                                            SkColor active_color,
+                                            SkColor default_color) {
+  if (!features::IsDarkLightModeEnabled())
+    return active ? active_color : default_color;
+
+  return AshColorProvider::Get()->GetContentLayerColor(
+      active ? AshColorProvider::ContentLayerType::kAppStateIndicatorColor
+             : AshColorProvider::ContentLayerType::
+                   kAppStateIndicatorColorInactive);
+}
+
 }  // namespace ash

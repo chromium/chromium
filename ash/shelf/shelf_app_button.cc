@@ -13,6 +13,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_view.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -245,13 +247,8 @@ class ShelfAppButton::AppStatusIndicatorView
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
     // Active and running indicators look a little different in the new UI.
-    AshColorProvider* ash_color_provider = AshColorProvider::Get();
-    auto content_layer_type =
-        active_ ? AshColorProvider::ContentLayerType::kAppStateIndicatorColor
-                : AshColorProvider::ContentLayerType::
-                      kAppStateIndicatorColorInactive;
-    flags.setColor(
-        ash_color_provider->GetContentLayerColor(content_layer_type));
+    flags.setColor(DeprecatedGetAppStateIndicatorColor(
+        active_, kIndicatorColorActive, kInicatorColorRunning));
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
     flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);

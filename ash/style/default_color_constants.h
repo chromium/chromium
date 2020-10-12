@@ -24,5 +24,7 @@ constexpr SkColor kLoginBackgroundBaseColor = SK_ColorBLACK;
 constexpr SkColor kDefaultShelfInkDropColor = SK_ColorBLACK;
 constexpr float kDefaultShelfInkDropOpacity = 0.2f;
 constexpr SkColor kShelfButtonColor = SK_ColorWHITE;
+constexpr SkColor kIndicatorColorActive = SK_ColorWHITE;
+constexpr SkColor kInicatorColorRunning = SkColorSetA(SK_ColorWHITE, 0x7F);
 
 #endif  // ASH_STYLE_DEFAULT_COLOR_CONSTANTS_H_
