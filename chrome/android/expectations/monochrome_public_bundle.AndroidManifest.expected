@@ -1081,7 +1081,6 @@
         <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
         <category android:name="androidx.browser.trusted.category.ImmersiveMode"/>
         <category android:name="androidx.browser.trusted.category.LaunchSiteSettings"/>
-        <category android:name="androidx.browser.trusted.category.LaunchWebApkSiteSettings"/>
         <category android:name="androidx.browser.trusted.category.TrustedWebActivities"/>
         <category android:name="androidx.browser.trusted.category.TrustedWebActivitySplashScreensV1"/>
         <category android:name="androidx.browser.trusted.category.WebShareTargetV2"/>
