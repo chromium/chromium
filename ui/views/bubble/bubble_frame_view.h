@@ -46,9 +46,13 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
       const base::string16& title_text);
 
   // Creates a close button used in the corner of the dialog.
+  static std::unique_ptr<Button> CreateCloseButton(
+      Button::PressedCallback callback);
   static std::unique_ptr<Button> CreateCloseButton(ButtonListener* listener);
 
   // Creates a minimize button used in the corner of the dialog.
+  static std::unique_ptr<Button> CreateMinimizeButton(
+      Button::PressedCallback callback);
   static std::unique_ptr<Button> CreateMinimizeButton(ButtonListener* listener);
 
   // NonClientFrameView:

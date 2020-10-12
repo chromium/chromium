@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
-#include "ui/views/controls/button/button.h"
 
 class Profile;
 
@@ -20,15 +19,10 @@ namespace extensions {
 class Extension;
 }
 
-namespace ui {
-class Event;
-}
-
 // A small summary panel with buttons to control the app that is displayed at
 // the bottom of the app info dialog.
 class AppInfoFooterPanel
     : public AppInfoPanel,
-      public views::ButtonListener,
       public extensions::ExtensionUninstallDialog::Delegate,
       public base::SupportsWeakPtr<AppInfoFooterPanel> {
  public:
@@ -53,9 +47,6 @@ class AppInfoFooterPanel
   // now visible.
   void UpdatePinButtons(bool focus_visible_button);
 #endif  // OS_CHROMEOS
-
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // Overridden from ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,

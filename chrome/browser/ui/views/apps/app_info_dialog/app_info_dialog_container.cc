@@ -20,7 +20,6 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
@@ -106,14 +105,18 @@ class BaseDialogContainer : public views::DialogDelegateView {
 
 // The contents view for an App List Dialog, which covers the entire app list
 // and adds a close button.
-class AppListDialogContainer : public BaseDialogContainer,
-                               public views::ButtonListener {
+class AppListDialogContainer : public BaseDialogContainer {
  public:
   explicit AppListDialogContainer(std::unique_ptr<views::View> dialog_body)
       : BaseDialogContainer(std::move(dialog_body), base::RepeatingClosure()) {
     SetBackground(std::make_unique<AppListOverlayBackground>());
-    close_button_ =
-        AddChildView(views::BubbleFrameView::CreateCloseButton(this));
+    close_button_ = AddChildView(
+        views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
+            [](AppListDialogContainer* container) {
+              container->GetWidget()->CloseWithReason(
+                  views::Widget::ClosedReason::kCloseButtonClicked);
+            },
+            base::Unretained(this))));
   }
   ~AppListDialogContainer() override {}
 
@@ -135,16 +138,6 @@ class AppListDialogContainer : public BaseDialogContainer,
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return std::make_unique<views::NativeFrameView>(widget);
-  }
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    if (sender == close_button_) {
-      GetWidget()->CloseWithReason(
-          views::Widget::ClosedReason::kCloseButtonClicked);
-    } else {
-      NOTREACHED();
-    }
   }
 
   views::Button* close_button_;

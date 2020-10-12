@@ -62,24 +62,31 @@ void AppInfoFooterPanel::CreateButtons() {
   if (CanCreateShortcuts(app_)) {
     create_shortcuts_button_ =
         AddChildView(std::make_unique<views::MdTextButton>(
-            this, l10n_util::GetStringUTF16(
-                      IDS_APPLICATION_INFO_CREATE_SHORTCUTS_BUTTON_TEXT)));
+            base::BindRepeating(&AppInfoFooterPanel::CreateShortcuts,
+                                base::Unretained(this)),
+            l10n_util::GetStringUTF16(
+                IDS_APPLICATION_INFO_CREATE_SHORTCUTS_BUTTON_TEXT)));
   }
 
 #if defined(OS_CHROMEOS)
   if (CanSetPinnedToShelf(profile_, app_)) {
     pin_to_shelf_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-        this, l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN)));
+        base::BindRepeating(&AppInfoFooterPanel::SetPinnedToShelf,
+                            base::Unretained(this), true),
+        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN)));
     unpin_from_shelf_button_ =
         AddChildView(std::make_unique<views::MdTextButton>(
-            this, l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_UNPIN)));
+            base::BindRepeating(&AppInfoFooterPanel::SetPinnedToShelf,
+                                base::Unretained(this), false),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_UNPIN)));
     UpdatePinButtons(false);
   }
 #endif
 
   if (CanUninstallApp(profile_, app_)) {
     remove_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-        this,
+        base::BindRepeating(&AppInfoFooterPanel::UninstallApp,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_UNINSTALL_BUTTON_TEXT)));
   }
 }
@@ -101,23 +108,6 @@ void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
   }
 }
 #endif
-
-void AppInfoFooterPanel::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  if (sender == create_shortcuts_button_) {
-    CreateShortcuts();
-#if defined(OS_CHROMEOS)
-  } else if (sender == pin_to_shelf_button_) {
-    SetPinnedToShelf(true);
-  } else if (sender == unpin_from_shelf_button_) {
-    SetPinnedToShelf(false);
-#endif
-  } else if (sender == remove_button_) {
-    UninstallApp();
-  } else {
-    NOTREACHED();
-  }
-}
 
 void AppInfoFooterPanel::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,

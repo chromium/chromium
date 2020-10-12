@@ -28,7 +28,6 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -49,11 +48,11 @@ const int kIndentationBeforeNestedBullet = 13;
 // Creates a close button that calls |callback| on click and can be placed to
 // the right of a bullet in the permissions list. The alt-text is set to a
 // revoke message containing the given |permission_message|.
-class RevokeButton : public views::ImageButton, public views::ButtonListener {
+class RevokeButton : public views::ImageButton {
  public:
-  explicit RevokeButton(const base::Closure& callback,
+  explicit RevokeButton(PressedCallback callback,
                         base::string16 permission_message)
-      : views::ImageButton(this), callback_(callback) {
+      : views::ImageButton(std::move(callback)) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     SetImage(views::Button::STATE_NORMAL,
              rb.GetImageNamed(IDR_DISABLE).ToImageSkia());
@@ -71,19 +70,9 @@ class RevokeButton : public views::ImageButton, public views::ButtonListener {
     SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_APPLICATION_INFO_REVOKE_PERMISSION_ALT_TEXT, permission_message));
   }
-  ~RevokeButton() override {}
-
- private:
-  // Overridden from views::ButtonListener.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    DCHECK_EQ(this, sender);
-    if (!callback_.is_null())
-      callback_.Run();
-  }
-
-  const base::Closure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokeButton);
+  RevokeButton(const RevokeButton&) = delete;
+  RevokeButton& operator=(const RevokeButton&) = delete;
+  ~RevokeButton() override = default;
 };
 
 // A bulleted list of permissions.

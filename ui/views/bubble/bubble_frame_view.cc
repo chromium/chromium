@@ -132,6 +132,20 @@ std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
 
 // static
 std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
+    Button::PressedCallback callback) {
+  auto close_button = CreateVectorImageButtonWithNativeTheme(
+      std::move(callback), vector_icons::kCloseRoundedIcon);
+  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button->SizeToPreferredSize();
+  close_button->SetFocusForPlatform();
+
+  InstallCircleHighlightPathGenerator(close_button.get());
+
+  return close_button;
+}
+
+// static
+std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
     ButtonListener* listener) {
   auto close_button = CreateVectorImageButtonWithNativeTheme(
       listener, vector_icons::kCloseRoundedIcon);
@@ -142,6 +156,21 @@ std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
   InstallCircleHighlightPathGenerator(close_button.get());
 
   return close_button;
+}
+
+// static
+std::unique_ptr<Button> BubbleFrameView::CreateMinimizeButton(
+    Button::PressedCallback callback) {
+  auto minimize_button = CreateVectorImageButtonWithNativeTheme(
+      std::move(callback), kWindowControlMinimizeIcon);
+  minimize_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
+  minimize_button->SizeToPreferredSize();
+  minimize_button->SetFocusForPlatform();
+
+  InstallCircleHighlightPathGenerator(minimize_button.get());
+
+  return minimize_button;
 }
 
 // static
