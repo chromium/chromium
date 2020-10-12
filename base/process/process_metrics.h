@@ -333,7 +333,7 @@ BASE_EXPORT void IncreaseFdLimitTo(unsigned int max_descriptors);
 // GetSystemMemoryInfo(). Total/free swap memory are available on all platforms
 // except on Mac. Buffers/cached/active_anon/inactive_anon/active_file/
 // inactive_file/dirty/reclaimable/pswpin/pswpout/pgmajfault are available on
-// Linux/Android/Chrome OS. Shmem/slab/gem_objects/gem_size are Chrome OS only.
+// Linux/Android/Chrome OS. Shmem/slab are Chrome OS only.
 // Speculative/file_backed/purgeable are Mac and iOS only.
 // Free is absent on Windows (see "avail_phys" below).
 struct BASE_EXPORT SystemMemoryInfoKB {
@@ -389,9 +389,6 @@ struct BASE_EXPORT SystemMemoryInfoKB {
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   int shmem = 0;
   int slab = 0;
-  // Gem data will be -1 if not supported.
-  int gem_objects = -1;
-  long long gem_size = -1;
 #endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 
 #if defined(OS_APPLE)
@@ -528,6 +525,22 @@ BASE_EXPORT bool ParseZramStat(StringPiece stat_data, SwapInfo* swap_info);
 // Fills in the provided |swap_data| structure.
 // Returns true on success or false for a parsing error.
 BASE_EXPORT bool GetSwapInfo(SwapInfo* swap_info);
+
+// Data about GPU memory usage. These fields will be -1 if not supported.
+struct BASE_EXPORT GraphicsMemoryInfoKB {
+  // Serializes the platform specific fields to value.
+  std::unique_ptr<Value> ToValue() const;
+
+  int gpu_objects = -1;
+  int64_t gpu_memory_size = -1;
+};
+
+// Report on Chrome OS graphics memory. Returns true on success.
+// /run/debugfs_gpu is a bind mount into /sys/kernel/debug and synchronously
+// reading the in-memory files in /sys is fast in most cases. On platform that
+// reading the graphics memory info is slow, this function returns false.
+BASE_EXPORT bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo);
+
 #endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 
 struct BASE_EXPORT SystemPerformanceInfo {
@@ -591,6 +604,7 @@ class BASE_EXPORT SystemMetrics {
 #endif
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   SwapInfo swap_info_;
+  GraphicsMemoryInfoKB gpu_memory_info_;
 #endif
 #if defined(OS_WIN)
   SystemPerformanceInfo performance_;

@@ -31,57 +31,72 @@ namespace metrics {
   UMA_HISTOGRAM_LINEAR(name, sample, 2500, 50)
 
 void RecordMemoryStats(RecordMemoryStatsType type) {
-  base::SystemMemoryInfoKB memory;
-  if (!base::GetSystemMemoryInfo(&memory))
-    return;
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   // Record graphics GEM object size in a histogram with 50 MB buckets.
-  int mem_graphics_gem_mb = 0;
-  if (memory.gem_size != -1)
-    mem_graphics_gem_mb = memory.gem_size / 1024 / 1024;
+  int mem_gpu_mb = 0;
+  bool mem_gpu_result = false;
+  base::GraphicsMemoryInfoKB gpu_memory;
+  mem_gpu_result = base::GetGraphicsMemoryInfo(&gpu_memory);
 
-  // Record shared memory (used by renderer/GPU buffers).
-  int mem_shmem_mb = memory.shmem / 1024;
+  if (mem_gpu_result) {
+    mem_gpu_mb = gpu_memory.gpu_memory_size / 1024 / 1024;
+    switch (type) {
+      case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED:
+        UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Contents.MemGraphicsMB",
+                                       mem_gpu_mb);
+        break;
+      case RECORD_MEMORY_STATS_EXTENSIONS_OOM_KILLED:
+        UMA_HISTOGRAM_MEGABYTES_LINEAR(
+            "Memory.OOMKill.Extensions.MemGraphicsMB", mem_gpu_mb);
+        break;
+    }
+  }
 #endif
 
-  // On Intel, graphics objects are in anonymous pages, but on ARM they are
-  // not. For a total "allocated count" add in graphics pages on ARM.
-  int mem_allocated_mb = (memory.active_anon + memory.inactive_anon) / 1024;
+  base::SystemMemoryInfoKB memory;
+  if (base::GetSystemMemoryInfo(&memory)) {
+    // On Intel, graphics objects are in anonymous pages, but on ARM they are
+    // not. For a total "allocated count" add in graphics pages on ARM.
+    int mem_allocated_mb = (memory.active_anon + memory.inactive_anon) / 1024;
 #if (defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)) && \
     defined(ARCH_CPU_ARM_FAMILY)
-  mem_allocated_mb += mem_graphics_gem_mb;
+    mem_allocated_mb += mem_gpu_mb;
 #endif
 
-  int mem_available_mb =
-      (memory.active_file + memory.inactive_file + memory.free) / 1024;
+    int mem_available_mb =
+        (memory.active_file + memory.inactive_file + memory.free) / 1024;
 
-  switch (type) {
-    case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED: {
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
-      UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Contents.MemGraphicsMB",
-                                     mem_graphics_gem_mb);
-      UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Contents.MemShmemMB",
-                                     mem_shmem_mb);
-#endif
-      UMA_HISTOGRAM_ALLOCATED_MEGABYTES(
-          "Memory.OOMKill.Contents.MemAllocatedMB", mem_allocated_mb);
-      UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.OOMKill.Contents.MemAvailableMB",
-                                    mem_available_mb);
-      break;
+    switch (type) {
+      case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED: {
+        UMA_HISTOGRAM_ALLOCATED_MEGABYTES(
+            "Memory.OOMKill.Contents.MemAllocatedMB", mem_allocated_mb);
+        UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.OOMKill.Contents.MemAvailableMB",
+                                      mem_available_mb);
+        break;
+      }
+      case RECORD_MEMORY_STATS_EXTENSIONS_OOM_KILLED: {
+        UMA_HISTOGRAM_ALLOCATED_MEGABYTES(
+            "Memory.OOMKill.Extensions.MemAllocatedMB", mem_allocated_mb);
+        UMA_HISTOGRAM_LARGE_MEMORY_MB(
+            "Memory.OOMKill.Extensions.MemAvailableMB", mem_available_mb);
+        break;
+      }
     }
-    case RECORD_MEMORY_STATS_EXTENSIONS_OOM_KILLED: {
+
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
-      UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Extensions.MemGraphicsMB",
-                                     mem_graphics_gem_mb);
-      UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Extensions.MemShmemMB",
-                                     mem_shmem_mb);
-#endif
-      UMA_HISTOGRAM_ALLOCATED_MEGABYTES(
-          "Memory.OOMKill.Extensions.MemAllocatedMB", mem_allocated_mb);
-      UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.OOMKill.Extensions.MemAvailableMB",
-                                    mem_available_mb);
-      break;
+    // Record shared memory (used by renderer/GPU buffers).
+    int mem_shmem_mb = memory.shmem / 1024;
+    switch (type) {
+      case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED:
+        UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Contents.MemShmemMB",
+                                       mem_shmem_mb);
+        break;
+      case RECORD_MEMORY_STATS_EXTENSIONS_OOM_KILLED:
+        UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Extensions.MemShmemMB",
+                                       mem_shmem_mb);
+        break;
     }
+#endif
   }
 }
 

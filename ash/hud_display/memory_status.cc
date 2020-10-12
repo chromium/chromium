@@ -168,7 +168,12 @@ void MemoryStatus::UpdateMeminfo() {
   base::GetSystemMemoryInfo(&meminfo);
   total_ram_size_ = meminfo.total * 1024LL;
   total_free_ = meminfo.free * 1024LL;
-  gpu_kernel_ = std::max(meminfo.gem_size, 0LL);  // == -1 when not supported.
+
+  base::GraphicsMemoryInfoKB gpu_meminfo;
+  if (base::GetGraphicsMemoryInfo(&gpu_meminfo))
+    gpu_kernel_ = gpu_meminfo.gpu_memory_size;
+  else
+    gpu_kernel_ = 0LL;
 }
 
 }  // namespace hud_display
