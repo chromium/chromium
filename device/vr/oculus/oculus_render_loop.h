@@ -37,6 +37,10 @@ class OculusRenderLoop : public XRCompositorCommon {
   bool PreComposite() override;
   bool SubmitCompositedFrame() override;
   void OnLayerBoundsChanged() override;
+  device::mojom::XREnvironmentBlendMode GetEnvironmentBlendMode(
+      device::mojom::XRSessionMode session_mode) override;
+  device::mojom::XRInteractionMode GetInteractionMode(
+      device::mojom::XRSessionMode session_mode) override;
 
   // Helpers to implement XRDeviceAbstraction:
   void CreateOvrSwapChain();

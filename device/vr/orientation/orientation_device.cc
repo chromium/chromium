@@ -140,6 +140,9 @@ void VROrientationDevice::RequestSession(
     session->display_info = display_info_.Clone();
   }
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
+  session->enviroment_blend_mode =
+      device::mojom::XREnvironmentBlendMode::kOpaque;
+  session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
   std::move(callback).Run(std::move(session), std::move(controller));
 

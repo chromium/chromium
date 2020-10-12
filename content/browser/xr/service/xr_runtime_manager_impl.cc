@@ -166,7 +166,7 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetRuntimeForOptions(
   BrowserXRRuntimeImpl* runtime = nullptr;
   switch (options->mode) {
     case device::mojom::XRSessionMode::kImmersiveAr:
-      runtime = GetRuntime(device::mojom::XRDeviceId::ARCORE_DEVICE_ID);
+      runtime = GetImmersiveArRuntime();
       break;
     case device::mojom::XRSessionMode::kImmersiveVr:
       runtime = GetImmersiveVrRuntime();
@@ -214,9 +214,20 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
 }
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
-  device::mojom::XRSessionOptions options = {};
-  options.mode = device::mojom::XRSessionMode::kImmersiveAr;
-  return GetRuntimeForOptions(&options);
+#if defined(OS_ANDROID)
+  auto* arcore_runtime =
+      GetRuntime(device::mojom::XRDeviceId::ARCORE_DEVICE_ID);
+  if (arcore_runtime && arcore_runtime->SupportsArBlendMode())
+    return arcore_runtime;
+#endif
+
+#if BUILDFLAG(ENABLE_OPENXR)
+  auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
+  if (openxr && openxr->SupportsArBlendMode())
+    return openxr;
+#endif
+
+  return nullptr;
 }
 
 device::mojom::VRDisplayInfoPtr XRRuntimeManagerImpl::GetCurrentVRDisplayInfo(

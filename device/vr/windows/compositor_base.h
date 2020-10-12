@@ -39,6 +39,10 @@ class XRDeviceAbstraction {
   virtual bool SubmitCompositedFrame() = 0;
   virtual void HandleDeviceLost();
   virtual void OnLayerBoundsChanged();
+  virtual device::mojom::XREnvironmentBlendMode GetEnvironmentBlendMode(
+      device::mojom::XRSessionMode session_mode);
+  virtual device::mojom::XRInteractionMode GetInteractionMode(
+      device::mojom::XRSessionMode session_mode);
 };
 
 class XRCompositorCommon : public base::Thread,

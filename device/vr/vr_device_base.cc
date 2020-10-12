@@ -11,7 +11,9 @@
 
 namespace device {
 
-VRDeviceBase::VRDeviceBase(mojom::XRDeviceId id) : id_(id) {}
+VRDeviceBase::VRDeviceBase(mojom::XRDeviceId id) : id_(id) {
+  device_data_.is_ar_blend_mode_supported = false;
+}
 
 VRDeviceBase::~VRDeviceBase() = default;
 
@@ -76,6 +78,10 @@ void VRDeviceBase::OnVisibilityStateChanged(
     mojom::XRVisibilityState visibility_state) {
   if (listener_)
     listener_->OnVisibilityStateChanged(visibility_state);
+}
+
+void VRDeviceBase::SetArBlendModeSupported(bool is_ar_blend_mode_supported) {
+  device_data_.is_ar_blend_mode_supported = is_ar_blend_mode_supported;
 }
 
 #if defined(OS_WIN)
