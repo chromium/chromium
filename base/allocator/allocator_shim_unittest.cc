@@ -637,6 +637,15 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
 
   InsertAllocatorDispatch(&g_mock_dispatch);
 
+  // <stdlib.h>
+  counts_before = counts_after;
+  ptr = realpath(".", nullptr);
+  EXPECT_NE(nullptr, ptr);
+  free(ptr);
+  counts_after = total_counts(allocs_intercepted_by_size);
+  EXPECT_GT(counts_after, counts_before);
+
+  // <string.h>
   counts_before = counts_after;
   ptr = strdup("hello, world");
   EXPECT_NE(nullptr, ptr);
@@ -646,6 +655,14 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
 
   counts_before = counts_after;
   ptr = strndup("hello, world", 5);
+  EXPECT_NE(nullptr, ptr);
+  free(ptr);
+  counts_after = total_counts(allocs_intercepted_by_size);
+  EXPECT_GT(counts_after, counts_before);
+
+  // <unistd.h>
+  counts_before = counts_after;
+  ptr = getcwd(nullptr, 0);
   EXPECT_NE(nullptr, ptr);
   free(ptr);
   counts_after = total_counts(allocs_intercepted_by_size);

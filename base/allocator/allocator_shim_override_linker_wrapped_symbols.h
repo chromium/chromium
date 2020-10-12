@@ -54,6 +54,26 @@ SHIM_ALWAYS_EXPORT void* __wrap_valloc(size_t size) {
   return ShimValloc(size, nullptr);
 }
 
+const size_t kPathMaxSize = 8192;
+static_assert(kPathMaxSize >= PATH_MAX, "");
+
+extern char* __wrap_strdup(const char* str);
+
+// Override <stdlib.h>
+
+extern char* __real_realpath(const char* path, char* resolved_path);
+
+SHIM_ALWAYS_EXPORT char* __wrap_realpath(const char* path,
+                                         char* resolved_path) {
+  if (resolved_path)
+    return __real_realpath(path, resolved_path);
+
+  char buffer[kPathMaxSize];
+  if (!__real_realpath(path, buffer))
+    return nullptr;
+  return __wrap_strdup(buffer);
+}
+
 // Override <string.h> functions
 
 SHIM_ALWAYS_EXPORT char* __wrap_strdup(const char* str) {
@@ -72,6 +92,22 @@ SHIM_ALWAYS_EXPORT char* __wrap_strndup(const char* str, size_t n) {
   std::memcpy(buffer, str, length);
   buffer[length] = '\0';
   return buffer;
+}
+
+// Override <unistd.h>
+
+extern char* __real_getcwd(char* buffer, size_t size);
+
+SHIM_ALWAYS_EXPORT char* __wrap_getcwd(char* buffer, size_t size) {
+  if (buffer)
+    return __real_getcwd(buffer, size);
+
+  if (!size)
+    size = kPathMaxSize;
+  char local_buffer[size];
+  if (!__real_getcwd(local_buffer, size))
+    return nullptr;
+  return __wrap_strdup(local_buffer);
 }
 
 }  // extern "C"

@@ -306,8 +306,14 @@ config("wrap_malloc_symbols") {
     "-Wl,-wrap,realloc",
     "-Wl,-wrap,valloc",
 
+    # <stdlib.h> functions
+    "-Wl,-wrap,realpath",
+
     # <string.h> functions
     "-Wl,-wrap,strdup",
     "-Wl,-wrap,strndup",
+
+    # <unistd.h> functions
+    "-Wl,-wrap,getcwd",
   ]
 }
