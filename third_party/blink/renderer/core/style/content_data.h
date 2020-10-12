@@ -175,7 +175,7 @@ class AltTextContentData final : public ContentData {
 
  private:
   ContentData* CloneInternal() const override {
-    return MakeGarbageCollected<TextContentData>(GetText());
+    return MakeGarbageCollected<AltTextContentData>(GetText());
   }
   String text_;
 };
