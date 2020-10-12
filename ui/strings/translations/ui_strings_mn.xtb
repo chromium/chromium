@@ -37,7 +37,7 @@
 <translation id="1842960171412779397">сонгох</translation>
 <translation id="1859234291848436338">Чиглэл бичих</translation>
 <translation id="1860796786778352021">Мэдэгдлийг хаах</translation>
-<translation id="186476001994626254">Вэбийн ухаалгаар буулгах контент</translation>
+<translation id="186476001994626254">Вебийн ухаалгаар буулгах контент</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">Бүгдийг сонго &amp;</translation>
@@ -161,12 +161,12 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6119846243427417423">идэвхжүүлэх</translation>
 <translation id="6129953537138746214">Space</translation>
-<translation id="6134259848159370930">Төхөөрөмж, апп, тохиргоо, вэбээс хайна уу.</translation>
+<translation id="6134259848159370930">Төхөөрөмж, апп, тохиргоо, вебээс хайна уу.</translation>
 <translation id="6135826906199951471">Устгах</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6156262341071374681">Бүх аппыг харуулах</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
-<translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вэбээс хайх...</translation>
+<translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вебээс хайх...</translation>
 <translation id="6264365405983206840">Бүгдийг сонгох</translation>
 <translation id="6351032674660237738">АППЫН ЗӨВЛӨМЖ</translation>
 <translation id="6364916375976753737">Зүүн тийш гүйлгэх</translation>
@@ -190,7 +190,7 @@
 <translation id="6845383723252244143">Folder сонгох</translation>
 <translation id="6845533974506654842">Дарах</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 цаг үлдсэн}other{# цаг үлдсэн}}</translation>
-<translation id="688711909580084195">Гарчиггүй вэб хуудас</translation>
+<translation id="688711909580084195">Гарчиггүй веб хуудас</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ПБ/с</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 жил үлдсэн}other{# жил үлдсэн}}</translation>
 <translation id="6945221475159498467">Сонгох</translation>
@@ -241,7 +241,7 @@
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Файл (. <ph name="SAVEAS_EXTENSION_NAME" /> )</translation>
 <translation id="8649597172973390955">Shelf-г тогтмол харуулна</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/с</translation>
-<translation id="8685326675965865247">Төхөөрөмж, апп, тохиргоо, вэбээ хайна уу. Аппуудын хооронд шилжихийн тулд сумтай товчлууруудыг ашиглана уу.</translation>
+<translation id="8685326675965865247">Төхөөрөмж, апп, тохиргоо, вебээ хайна уу. Аппуудын хооронд шилжихийн тулд сумтай товчлууруудыг ашиглана уу.</translation>
 <translation id="8725488761726303204">бусад +<ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 цаг}other{# цаг}}</translation>
