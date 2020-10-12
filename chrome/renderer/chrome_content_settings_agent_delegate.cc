@@ -12,6 +12,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/metrics/histogram_functions.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -73,6 +74,16 @@ ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
       extension_dispatcher_->script_context_set().GetCurrent();
   if (current_context && current_context->HasAPIPermission(
                              extensions::APIPermission::kClipboardRead)) {
+    if (current_context->context_type() ==
+        extensions::Feature::CONTENT_SCRIPT_CONTEXT) {
+      bool has_user_activation =
+          render_frame_->GetWebFrame()->HasTransientUserActivation();
+      // TODO(https://crbug.com/1051198): Evaluate and deprecate content script
+      // read without user activation after enough data is gathered.
+      base::UmaHistogramBoolean(
+          "Clipboard.ExtensionContentScriptReadHasUserActivation",
+          has_user_activation);
+    }
     return true;
   }
 #endif

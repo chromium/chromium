@@ -28151,6 +28151,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Clipboard.ExtensionContentScriptReadHasUserActivation"
+    units="proportion" expires_after="2021-04-01">
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/clipboard/OWNERS</owner>
+  <summary>
+    For calls to document.execCommand('paste') by extensions via content
+    scripts, record the proportion of calls with user activation.
+  </summary>
+</histogram>
+
 <histogram name="Clipboard.IncognitoUseCase" enum="ClipboardAction"
     expires_after="2013-04-08">
   <obsolete>
