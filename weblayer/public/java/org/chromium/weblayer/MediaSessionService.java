@@ -74,9 +74,11 @@ public class MediaSessionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            if (WebLayer.hasWebLayerInitializationStarted()) {
-                getWebLayer().getImpl().onMediaSessionServiceStarted(
-                        ObjectWrapper.wrap(this), intent);
+            WebLayer webLayer = getWebLayer();
+            if (webLayer == null) {
+                stopSelf();
+            } else {
+                webLayer.getImpl().onMediaSessionServiceStarted(ObjectWrapper.wrap(this), intent);
             }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -91,9 +93,6 @@ public class MediaSessionService extends Service {
             webLayer = WebLayer.getLoadedWebLayer(getApplication());
         } catch (UnsupportedVersionException e) {
             throw new RuntimeException(e);
-        }
-        if (webLayer == null) {
-            throw new IllegalStateException("WebLayer not initialized");
         }
         return webLayer;
     }
