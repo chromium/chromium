@@ -5,8 +5,8 @@
 #include "chrome/browser/android/vr/chrome_arcore_install_helper.h"
 
 #include "chrome/browser/android/vr/android_vr_utils.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_install_helper.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "components/webxr/android/arcore_install_helper.h"
 
 using base::android::AttachCurrentThread;
 

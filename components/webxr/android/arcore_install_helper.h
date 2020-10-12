@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_INSTALL_HELPER_H_
-#define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_INSTALL_HELPER_H_
+#ifndef COMPONENTS_WEBXR_ANDROID_ARCORE_INSTALL_HELPER_H_
+#define COMPONENTS_WEBXR_ANDROID_ARCORE_INSTALL_HELPER_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -14,11 +14,11 @@ namespace infobars {
 class InfoBarManager;
 }
 
-namespace vr {
+namespace webxr {
 // Equivalent of ArCoreApk.Availability enum.
 // For detailed description, please see:
 // https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk.Availability
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.vr
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webxr
 enum class ArCoreAvailability : int {
   kSupportedApkTooOld = 0,
   kSupportedInstalled = 1,
@@ -61,6 +61,6 @@ class ArCoreInstallHelper {
   base::WeakPtrFactory<ArCoreInstallHelper> weak_ptr_factory_{this};
 };
 
-}  // namespace vr
+}  // namespace webxr
 
-#endif  // CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_ARCORE_INSTALL_HELPER_H_
+#endif  // COMPONENTS_WEBXR_ANDROID_ARCORE_INSTALL_HELPER_H_

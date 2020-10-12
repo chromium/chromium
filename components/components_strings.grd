@@ -330,6 +330,9 @@
       <if expr="is_ios">
         <part file="management_ios_strings.grdp" />
       </if>
+      <if expr="enable_vr">
+        <part file="webxr_strings.grdp" />
+      </if>
 
       <!-- Generic terms -->
       <message name="IDS_CANCEL" desc="Used for Cancel on buttons">
@@ -364,6 +367,12 @@
       </message>
       <message name="IDS_MENU" desc="The accessible name for the Menu. This is used as the aria-roledescription for context menus.">
         Menu
+      </message>
+      <message name="IDS_INSTALL" desc="Text to be displayed when an action will trigger an installation (of a component, app from the Play Store, etc.).">
+        Install
+      </message>
+      <message name="IDS_UPDATE" desc="Text to be displayed when an action will trigger an update of an existing item (e.g. a component, app from the Play Store, etc.).">
+        Update
       </message>
       <if expr="is_android">
         <message name="IDS_SHOW_CONTENT" desc="Generic label to show content for a feature. [CHAR-LIMIT=20]" formatter_data="android_java">

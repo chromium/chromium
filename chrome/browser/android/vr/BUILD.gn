@@ -61,16 +61,13 @@ static_library("vr_android") {
     "vr_shell_delegate.h",
     "vrcore_install_helper.cc",
     "vrcore_install_helper.h",
-    "xr_install_infobar.cc",
-    "xr_install_infobar.h",
   ]
 
   if (enable_arcore) {
     sources += [
       "arcore_device/arcore_device_provider.cc",
       "arcore_device/arcore_device_provider.h",
-      "arcore_device/arcore_install_helper.cc",
-      "arcore_device/arcore_install_helper.h",
+      "arcore_device/arcore_device_utils.cc",
       "arcore_device/arcore_java_utils.cc",
       "arcore_device/arcore_java_utils.h",
       "chrome_arcore_install_helper.cc",
@@ -89,7 +86,6 @@ static_library("vr_android") {
     "//chrome/common:constants",
     "//components/browser_ui/util/android",
     "//components/content_settings/core/browser",
-    "//components/infobars/core",
     "//components/language/core/browser",
     "//components/omnibox/browser",
     "//components/page_info",
@@ -97,6 +93,7 @@ static_library("vr_android") {
     "//components/rappor",
     "//components/search_engines:search_engines",
     "//components/webxr:webxr",
+    "//components/webxr/android",
     "//content/public/browser",
     "//content/public/common",
     "//device/vr",
@@ -178,20 +175,10 @@ group("module_factory") {
   }
 }
 
-android_library("ar_java") {
-  deps = [
-    "//base:base_java",
-    "//chrome/android:chrome_java",
-    "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-  ]
-
-  sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreShimImpl.java" ]
-}
-
 if (enable_arcore) {
   generate_jni("ar_jni_headers") {
     sources = [
-      "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreInstallUtils.java",
+      "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreDeviceUtils.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCoreJavaUtils.java",
     ]
   }

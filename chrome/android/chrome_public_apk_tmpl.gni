@@ -504,7 +504,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
 
         if (!enable_chrome_module) {
           deps += [
-            "//chrome/browser/android/vr:ar_java",
+            "//components/webxr/android:ar_java",
             "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
           ]
         }

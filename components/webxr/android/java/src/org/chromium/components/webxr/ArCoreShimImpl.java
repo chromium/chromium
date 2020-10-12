@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.vr;
+package org.chromium.components.webxr;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,11 +11,11 @@ import com.google.ar.core.ArCoreApk;
 
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.chrome.browser.vr.ArCoreShim.InstallStatus;
+import org.chromium.components.webxr.ArCoreShim.InstallStatus;
 
-@UsedByReflection("ArCoreJavaUtils.java")
+@UsedByReflection("ArCoreInstallUtils.java")
 class ArCoreShimImpl implements ArCoreShim {
-    @UsedByReflection("ArCoreJavaUtils.java")
+    @UsedByReflection("ArCoreInstallUtils.java")
     public ArCoreShimImpl() {}
 
     @Override

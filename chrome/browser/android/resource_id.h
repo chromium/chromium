@@ -46,9 +46,6 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_TRANSLATE, R.drawable.infobar_translate)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
                  R.drawable.google_pay_with_divider)
 
-DECLARE_RESOURCE_ID(IDR_ERROR_OUTLINE_GOOGBLUE_24DP,
-                    R.drawable.ic_error_outline_googblue_24dp)
-
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
 // displayed using |DropdownAdapter|.

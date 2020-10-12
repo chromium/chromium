@@ -76,7 +76,7 @@ template("chrome_bundle") {
       java_deps = [ "//chrome/android:chrome_all_java" ] + _java_deps
       if (enable_arcore) {
         java_deps += [
-          "//chrome/browser/android/vr:ar_java",
+          "//components/webxr/android:ar_java",
           "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
         ]
       }

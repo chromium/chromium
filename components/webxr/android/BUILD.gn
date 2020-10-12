@@ -1,0 +1,84 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//device/vr/buildflags/buildflags.gni")
+
+assert(enable_vr)
+
+source_set("android") {
+  sources = [
+    "xr_install_infobar.cc",
+    "xr_install_infobar.h",
+  ]
+
+  if (enable_arcore) {
+    sources += [
+      "arcore_install_helper.cc",
+      "arcore_install_helper.h",
+    ]
+  }
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//components/resources:android_resources",
+    "//components/strings",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+
+  if (enable_arcore) {
+    deps += [ ":ar_jni_headers" ]
+  }
+
+  libs = [ "android" ]
+}
+
+android_library("ar_java_base") {
+  deps = [
+    ":webxr_android_enums_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_appcompat_appcompat_java",
+    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.components.webxr"
+}
+
+android_library("ar_java") {
+  deps = [
+    ":ar_java_base",
+    ":webxr_android_enums_java",
+    "//base:base_java",
+    "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+  ]
+
+  sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShimImpl.java" ]
+}
+
+if (enable_arcore) {
+  generate_jni("ar_jni_headers") {
+    sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java" ]
+  }
+}
+
+java_cpp_enum("webxr_android_enums") {
+  sources = [ "arcore_install_helper.h" ]
+}
+
+android_library("webxr_android_enums_java") {
+  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+
+  srcjar_deps = [ ":webxr_android_enums" ]
+}

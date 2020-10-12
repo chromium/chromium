@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_VR_XR_INSTALL_INFOBAR_H_
-#define CHROME_BROWSER_ANDROID_VR_XR_INSTALL_INFOBAR_H_
+#ifndef COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_
+#define COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_
 
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 
-namespace vr {
+namespace webxr {
 
 // An interface derived from InfoBarDelegate implemented by objects wishing to
 // control a ConfirmInfoBar.
@@ -49,6 +49,6 @@ class XrInstallInfoBar : public ConfirmInfoBarDelegate {
   const int ok_button_id_;
   base::OnceCallback<void(bool)> install_callback_;
 };
-}  // namespace vr
+}  // namespace webxr
 
-#endif  // CHROME_BROWSER_ANDROID_VR_XR_INSTALL_INFOBAR_H_
+#endif  // COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_

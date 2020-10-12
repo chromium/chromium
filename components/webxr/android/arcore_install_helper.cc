@@ -2,45 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/arcore_device/arcore_install_helper.h"
+#include "components/webxr/android/arcore_install_helper.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/android/vr/android_vr_utils.h"
-#include "chrome/browser/android/vr/ar_jni_headers/ArCoreInstallUtils_jni.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_device_provider.h"
-#include "chrome/browser/android/vr/xr_install_infobar.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "device/vr/android/arcore/arcore_device_provider_factory.h"
+#include "components/resources/android/theme_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/webxr/android/ar_jni_headers/ArCoreInstallUtils_jni.h"
+#include "components/webxr/android/xr_install_infobar.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 using base::android::AttachCurrentThread;
 
-namespace vr {
-
+namespace webxr {
 namespace {
-class ArCoreDeviceProviderFactoryImpl
-    : public device::ArCoreDeviceProviderFactory {
- public:
-  ArCoreDeviceProviderFactoryImpl() = default;
-  ~ArCoreDeviceProviderFactoryImpl() override = default;
-  std::unique_ptr<device::VRDeviceProvider> CreateDeviceProvider() override;
+content::WebContents* GetWebContents(int render_process_id,
+                                     int render_frame_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  DCHECK(render_frame_host);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArCoreDeviceProviderFactoryImpl);
-};
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  DCHECK(web_contents);
 
-std::unique_ptr<device::VRDeviceProvider>
-ArCoreDeviceProviderFactoryImpl::CreateDeviceProvider() {
-  return std::make_unique<device::ArCoreDeviceProvider>();
+  return web_contents;
 }
 
+base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
+    int render_process_id,
+    int render_frame_id) {
+  return GetWebContents(render_process_id, render_frame_id)
+      ->GetJavaWebContents();
+}
 }  // namespace
 
 ArCoreInstallHelper::ArCoreInstallHelper() {
@@ -117,12 +118,12 @@ void ArCoreInstallHelper::ShowInfoBar(
     case ArCoreAvailability::kUnknownTimedOut:
     case ArCoreAvailability::kSupportedNotInstalled: {
       message_text = IDS_AR_CORE_CHECK_INFOBAR_INSTALL_TEXT;
-      button_text = IDS_AR_CORE_CHECK_INFOBAR_INSTALL_BUTTON;
+      button_text = IDS_INSTALL;
       break;
     }
     case ArCoreAvailability::kSupportedApkTooOld: {
       message_text = IDS_AR_CORE_CHECK_INFOBAR_UPDATE_TEXT;
-      button_text = IDS_AR_CORE_CHECK_INFOBAR_UPDATE_BUTTON;
+      button_text = IDS_UPDATE;
       break;
     }
     case ArCoreAvailability::kSupportedInstalled:
@@ -139,7 +140,7 @@ void ArCoreInstallHelper::ShowInfoBar(
   // TODO(ijamardo, https://crbug.com/838833): Add icon for AR info bar.
   auto delegate = std::make_unique<XrInstallInfoBar>(
       infobars::InfoBarDelegate::InfoBarIdentifier::AR_CORE_UPGRADE_ANDROID,
-      IDR_ERROR_OUTLINE_GOOGBLUE_24DP, message_text, button_text,
+      IDR_ANDROID_AR_CORE_INSALL_ICON, message_text, button_text,
       base::BindOnce(&ArCoreInstallHelper::OnInfoBarResponse,
                      weak_ptr_factory_.GetWeakPtr(), render_process_id,
                      render_frame_id));
@@ -176,10 +177,4 @@ void ArCoreInstallHelper::RunInstallFinishedCallback(bool succeeded) {
   }
 }
 
-static void JNI_ArCoreInstallUtils_InstallArCoreDeviceProviderFactory(
-    JNIEnv* env) {
-  device::ArCoreDeviceProviderFactory::Install(
-      std::make_unique<ArCoreDeviceProviderFactoryImpl>());
-}
-
-}  // namespace vr
+}  // namespace webxr

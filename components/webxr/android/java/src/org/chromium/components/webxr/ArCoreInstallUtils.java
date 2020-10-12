@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.vr;
+package org.chromium.components.webxr;
 
 import android.app.Activity;
 import android.app.Application;
@@ -21,7 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Installs AR DFM and ArCore runtimes.
  */
-@JNINamespace("vr")
+@JNINamespace("webxr")
 public class ArCoreInstallUtils {
     /**
      * Helper class to store a reference to the ArCoreInstallUtils instance and activity
@@ -99,7 +99,7 @@ public class ArCoreInstallUtils {
 
         try {
             sArCoreInstance =
-                    (ArCoreShim) Class.forName("org.chromium.chrome.browser.vr.ArCoreShimImpl")
+                    (ArCoreShim) Class.forName("org.chromium.components.webxr.ArCoreShimImpl")
                             .newInstance();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -217,13 +217,8 @@ public class ArCoreInstallUtils {
         sInstallRequest = null;
     }
 
-    public static void installArCoreDeviceProviderFactory() {
-        ArCoreInstallUtilsJni.get().installArCoreDeviceProviderFactory();
-    }
-
     @NativeMethods
     /* package */ interface ArInstallHelperNative {
         void onRequestInstallSupportedArCoreResult(long nativeArCoreInstallHelper, boolean success);
-        void installArCoreDeviceProviderFactory();
     }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/xr_install_infobar.h"
+#include "components/webxr/android/xr_install_infobar.h"
 
 #include "base/callback.h"
 #include "base/strings/string16.h"
@@ -10,7 +10,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace vr {
+namespace webxr {
 
 XrInstallInfoBar::XrInstallInfoBar(
     InfoBarIdentifier identifier,
@@ -61,4 +61,4 @@ bool XrInstallInfoBar::Cancel() {
 void XrInstallInfoBar::InfoBarDismissed() {
   std::move(install_callback_).Run(false);
 }
-}  // namespace vr
+}  // namespace webxr

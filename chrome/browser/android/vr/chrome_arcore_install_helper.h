@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ANDROID_VR_CHROME_ARCORE_INSTALL_HELPER_H_
 
 #include "base/callback.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_install_helper.h"
 #include "chrome/browser/vr/vr_export.h"
+#include "components/webxr/android/arcore_install_helper.h"
 #include "content/public/browser/xr_install_helper.h"
 
 namespace vr {
@@ -29,7 +29,7 @@ class VR_EXPORT ChromeArCoreInstallHelper : public content::XrInstallHelper {
       base::OnceCallback<void(bool)> install_callback) override;
 
  private:
-  ArCoreInstallHelper arcore_install_helper_;
+  webxr::ArCoreInstallHelper arcore_install_helper_;
 };
 
 }  // namespace vr
