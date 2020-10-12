@@ -3,7 +3,12 @@
 # found in the LICENSE file.
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+
+# Includes default args like 'enable_js_protobuf'.
+import("proto_library.gni")
+if (enable_js_protobuf) {
+  import("//third_party/closure_compiler/compile_js.gni")
+}
 
 config("protobuf_config") {
   include_dirs = [ "src" ]
@@ -225,10 +230,10 @@ static_library("protobuf_full") {
 
     # The protobuf-based SQLite and GPU fuzzers need protobuf_full and are not
     # included in Chrome.
-    "//third_party/sqlite:sqlite3_lpm_corpus_gen",
     "//gpu:gl_lpm_fuzzer_proto",
     "//gpu:gl_lpm_fuzzer_proto_gen",
     "//gpu:gl_lpm_shader_to_string_unittest",
+    "//third_party/sqlite:sqlite3_lpm_corpus_gen",
 
     # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not included
     # in Chrome.
@@ -680,58 +685,60 @@ group("py_proto_runtime") {
 }
 
 # JS protobuf library.
-js_library("js_proto") {
-  sources = [
-    "//third_party/google-closure-library/closure/goog/array/array.js",
-    "//third_party/google-closure-library/closure/goog/asserts/asserts.js",
-    "//third_party/google-closure-library/closure/goog/base.js",
-    "//third_party/google-closure-library/closure/goog/crypt/base64.js",
-    "//third_party/google-closure-library/closure/goog/crypt/crypt.js",
-    "//third_party/google-closure-library/closure/goog/debug/error.js",
-    "//third_party/google-closure-library/closure/goog/dom/asserts.js",
-    "//third_party/google-closure-library/closure/goog/dom/browserfeature.js",
-    "//third_party/google-closure-library/closure/goog/dom/dom.js",
-    "//third_party/google-closure-library/closure/goog/dom/htmlelement.js",
-    "//third_party/google-closure-library/closure/goog/dom/nodetype.js",
-    "//third_party/google-closure-library/closure/goog/dom/safe.js",
-    "//third_party/google-closure-library/closure/goog/dom/tagname.js",
-    "//third_party/google-closure-library/closure/goog/dom/tags.js",
-    "//third_party/google-closure-library/closure/goog/fs/url.js",
-    "//third_party/google-closure-library/closure/goog/functions/functions.js",
-    "//third_party/google-closure-library/closure/goog/goog.js",
-    "//third_party/google-closure-library/closure/goog/html/safehtml.js",
-    "//third_party/google-closure-library/closure/goog/html/safescript.js",
-    "//third_party/google-closure-library/closure/goog/html/safestyle.js",
-    "//third_party/google-closure-library/closure/goog/html/safestylesheet.js",
-    "//third_party/google-closure-library/closure/goog/html/safeurl.js",
-    "//third_party/google-closure-library/closure/goog/html/trustedresourceurl.js",
-    "//third_party/google-closure-library/closure/goog/html/trustedtypes.js",
-    "//third_party/google-closure-library/closure/goog/html/uncheckedconversions.js",
-    "//third_party/google-closure-library/closure/goog/i18n/bidi.js",
-    "//third_party/google-closure-library/closure/goog/labs/useragent/browser.js",
-    "//third_party/google-closure-library/closure/goog/labs/useragent/engine.js",
-    "//third_party/google-closure-library/closure/goog/labs/useragent/platform.js",
-    "//third_party/google-closure-library/closure/goog/labs/useragent/util.js",
-    "//third_party/google-closure-library/closure/goog/math/coordinate.js",
-    "//third_party/google-closure-library/closure/goog/math/math.js",
-    "//third_party/google-closure-library/closure/goog/math/size.js",
-    "//third_party/google-closure-library/closure/goog/memoize/memoize.js",
-    "//third_party/google-closure-library/closure/goog/object/object.js",
-    "//third_party/google-closure-library/closure/goog/reflect/reflect.js",
-    "//third_party/google-closure-library/closure/goog/string/const.js",
-    "//third_party/google-closure-library/closure/goog/string/internal.js",
-    "//third_party/google-closure-library/closure/goog/string/string.js",
-    "//third_party/google-closure-library/closure/goog/string/typedstring.js",
-    "//third_party/google-closure-library/closure/goog/useragent/product.js",
-    "//third_party/google-closure-library/closure/goog/useragent/useragent.js",
-    "js/binary/arith.js",
-    "js/binary/constants.js",
-    "js/binary/decoder.js",
-    "js/binary/encoder.js",
-    "js/binary/reader.js",
-    "js/binary/utils.js",
-    "js/binary/writer.js",
-    "js/map.js",
-    "js/message.js",
-  ]
+if (enable_js_protobuf) {
+  js_library("js_proto") {
+    sources = [
+      "//third_party/google-closure-library/closure/goog/array/array.js",
+      "//third_party/google-closure-library/closure/goog/asserts/asserts.js",
+      "//third_party/google-closure-library/closure/goog/base.js",
+      "//third_party/google-closure-library/closure/goog/crypt/base64.js",
+      "//third_party/google-closure-library/closure/goog/crypt/crypt.js",
+      "//third_party/google-closure-library/closure/goog/debug/error.js",
+      "//third_party/google-closure-library/closure/goog/dom/asserts.js",
+      "//third_party/google-closure-library/closure/goog/dom/browserfeature.js",
+      "//third_party/google-closure-library/closure/goog/dom/dom.js",
+      "//third_party/google-closure-library/closure/goog/dom/htmlelement.js",
+      "//third_party/google-closure-library/closure/goog/dom/nodetype.js",
+      "//third_party/google-closure-library/closure/goog/dom/safe.js",
+      "//third_party/google-closure-library/closure/goog/dom/tagname.js",
+      "//third_party/google-closure-library/closure/goog/dom/tags.js",
+      "//third_party/google-closure-library/closure/goog/fs/url.js",
+      "//third_party/google-closure-library/closure/goog/functions/functions.js",
+      "//third_party/google-closure-library/closure/goog/goog.js",
+      "//third_party/google-closure-library/closure/goog/html/safehtml.js",
+      "//third_party/google-closure-library/closure/goog/html/safescript.js",
+      "//third_party/google-closure-library/closure/goog/html/safestyle.js",
+      "//third_party/google-closure-library/closure/goog/html/safestylesheet.js",
+      "//third_party/google-closure-library/closure/goog/html/safeurl.js",
+      "//third_party/google-closure-library/closure/goog/html/trustedresourceurl.js",
+      "//third_party/google-closure-library/closure/goog/html/trustedtypes.js",
+      "//third_party/google-closure-library/closure/goog/html/uncheckedconversions.js",
+      "//third_party/google-closure-library/closure/goog/i18n/bidi.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/browser.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/engine.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/platform.js",
+      "//third_party/google-closure-library/closure/goog/labs/useragent/util.js",
+      "//third_party/google-closure-library/closure/goog/math/coordinate.js",
+      "//third_party/google-closure-library/closure/goog/math/math.js",
+      "//third_party/google-closure-library/closure/goog/math/size.js",
+      "//third_party/google-closure-library/closure/goog/memoize/memoize.js",
+      "//third_party/google-closure-library/closure/goog/object/object.js",
+      "//third_party/google-closure-library/closure/goog/reflect/reflect.js",
+      "//third_party/google-closure-library/closure/goog/string/const.js",
+      "//third_party/google-closure-library/closure/goog/string/internal.js",
+      "//third_party/google-closure-library/closure/goog/string/string.js",
+      "//third_party/google-closure-library/closure/goog/string/typedstring.js",
+      "//third_party/google-closure-library/closure/goog/useragent/product.js",
+      "//third_party/google-closure-library/closure/goog/useragent/useragent.js",
+      "js/binary/arith.js",
+      "js/binary/constants.js",
+      "js/binary/decoder.js",
+      "js/binary/encoder.js",
+      "js/binary/reader.js",
+      "js/binary/utils.js",
+      "js/binary/writer.js",
+      "js/map.js",
+      "js/message.js",
+    ]
+  }
 }

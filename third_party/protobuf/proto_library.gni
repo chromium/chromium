@@ -120,7 +120,16 @@
 
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/kythe.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+
+declare_args() {
+  # Allows subprojects to omit javascript dependencies (e.g.) closure_compiler
+  # and google-closure-library.
+  enable_js_protobuf = true
+}
+
+if (enable_js_protobuf) {
+  import("//third_party/closure_compiler/compile_js.gni")
+}
 
 if (host_os == "win") {
   _host_executable_suffix = ".exe"
