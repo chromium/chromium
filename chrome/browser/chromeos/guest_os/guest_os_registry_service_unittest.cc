@@ -17,7 +17,6 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/fake_plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"

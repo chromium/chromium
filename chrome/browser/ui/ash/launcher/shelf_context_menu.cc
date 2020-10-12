@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/extension_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/extension_uninstaller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"

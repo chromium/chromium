@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"

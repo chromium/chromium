@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observer.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_impl.h"

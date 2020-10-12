@@ -27,7 +27,6 @@
 #include "chrome/browser/chromeos/policy/device_local_account_policy_store.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
