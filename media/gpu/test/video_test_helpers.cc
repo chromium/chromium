@@ -15,7 +15,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/format_utils.h"
-#include "media/base/video_decoder_config.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/test/video.h"

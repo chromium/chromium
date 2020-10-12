@@ -19,7 +19,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/video_bitrate_allocation.h"
-#include "media/base/video_decoder_config.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/video/h264_parser.h"
 #include "media/video/video_encoder_info.h"

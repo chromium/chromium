@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "media/base/color_plane_layout.h"
-#include "media/base/video_decoder_config.h"
+#include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"

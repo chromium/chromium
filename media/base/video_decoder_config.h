@@ -24,9 +24,6 @@
 
 namespace media {
 
-MEDIA_EXPORT VideoCodec
-VideoCodecProfileToVideoCodec(VideoCodecProfile profile);
-
 // Describes the content of a video stream, as described by the media container
 // (or otherwise determined by the demuxer).
 class MEDIA_EXPORT VideoDecoderConfig {
