@@ -852,6 +852,10 @@ enum SortDirectionType {
     // The purpose of the node, other than the role, if any.
     DOMString? description;
 
+    // Description of the state of the checkbox.
+    // Used only when the node is checkable.
+    DOMString? checkedStateDescription;
+
     // The placeholder for this text field, if any.
     DOMString? placeholder;
 

@@ -1361,3 +1361,23 @@ TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', function() {
     assertFalse(called);
   });
 });
+
+TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
+  this.runWithLoadedTree('<input type="checkbox">', function(root) {
+    const checkbox = root.firstChild.firstChild;
+    Object.defineProperty(checkbox, 'checkedStateDescription', {
+      value: 'checked state description',
+    });
+    const range = cursors.Range.fromNode(checkbox);
+    const o = new Output().withoutHints().withSpeechAndBraille(
+        range, null, 'navigate');
+    checkSpeechOutput(
+        '|Check box|checked state description',
+        [
+          {value: new Output.EarconAction('CHECK_OFF'), start: 0, end: 0},
+          {value: 'role', start: 1, end: 10},
+          {value: 'checkedStateDescription', start: 11, end: 36}
+        ],
+        o);
+  });
+});

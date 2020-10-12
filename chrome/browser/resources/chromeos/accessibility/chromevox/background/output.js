@@ -2477,7 +2477,8 @@ Output.RULES = {
     },
     checkBox: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
-          $name $role $checked $description $state $restriction`
+          $name $role $if($checkedStateDescription, $checkedStateDescription, $checked)
+          $description $state $restriction`
     },
     client: {speak: `$name`},
     comboBoxMenuButton: {

@@ -550,6 +550,11 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
   ASSERT_FALSE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
 
+  std::string checked_state_description;
+  ASSERT_FALSE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription,
+      &checked_state_description));
+
   // State Description without Range Value should be stored as kDescription
   SetProperty(&node, AXStringProperty::STATE_DESCRIPTION, "state description");
 
@@ -559,6 +564,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
   EXPECT_EQ("state description", description);
   ASSERT_FALSE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
+  ASSERT_FALSE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription,
+      &checked_state_description));
 
   // State Description with Range Value should be stored as kValue
   node.range_info = AXRangeInfoData::New();
@@ -569,6 +577,24 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
   ASSERT_TRUE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
   EXPECT_EQ("state description", value);
+  ASSERT_FALSE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription,
+      &checked_state_description));
+
+  // State Description for compound button should be stores as
+  // checkedDescription.
+  node.range_info.reset();
+  SetProperty(&node, AXBooleanProperty::CHECKABLE, true);
+
+  data = CallSerialize(wrapper);
+  ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
+                                       &description));
+  ASSERT_FALSE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
+  ASSERT_TRUE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription,
+      &checked_state_description));
+  EXPECT_EQ("state description", checked_state_description);
 }
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, LabeledByLoop) {

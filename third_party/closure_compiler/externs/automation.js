@@ -1168,6 +1168,14 @@ chrome.automation.AutomationNode.prototype.unclippedLocation;
 chrome.automation.AutomationNode.prototype.description;
 
 /**
+ * Description of the state of the checkbox. Used only when the node is
+ * checkable.
+ * @type {(string|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-checkedStateDescription
+ */
+chrome.automation.AutomationNode.prototype.checkedStateDescription;
+
+/**
  * The placeholder for this text field, if any.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-placeholder
@@ -1594,6 +1602,13 @@ chrome.automation.AutomationNode.prototype.selectionEndOffset;
  * @see https://developer.chrome.com/extensions/automation#type-selectionEndAffinity
  */
 chrome.automation.AutomationNode.prototype.selectionEndAffinity;
+
+/**
+ * Indicates that the node is marked user-select:none
+ * @type {(boolean|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-notUserSelectableStyle
+ */
+chrome.automation.AutomationNode.prototype.notUserSelectableStyle;
 
 /**
  * The current value for this range.

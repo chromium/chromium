@@ -1436,6 +1436,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kAriaInvalidValue:
         result += " aria_invalid_value=" + value;
         break;
+      case ax::mojom::StringAttribute::kCheckedStateDescription:
+        result += " checked_state_description=" + value;
+        break;
       case ax::mojom::StringAttribute::kAutoComplete:
         result += " autocomplete=" + value;
         break;

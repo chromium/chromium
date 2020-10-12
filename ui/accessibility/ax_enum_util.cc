@@ -760,6 +760,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "ariaInvalidValue";
     case ax::mojom::StringAttribute::kAutoComplete:
       return "autoComplete";
+    case ax::mojom::StringAttribute::kCheckedStateDescription:
+      return "checkedStateDescription";
     case ax::mojom::StringAttribute::kChildTreeId:
       return "childTreeId";
     case ax::mojom::StringAttribute::kClassName:

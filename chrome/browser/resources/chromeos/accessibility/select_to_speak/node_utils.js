@@ -61,9 +61,10 @@ class NodeUtils {
    * @return {boolean} whether this node was marked user-select:none
    */
   static isNotSelectable(node) {
-    return node &&
+    return !!(
+        node &&
         (node.notUserSelectableStyle ||
-         (node.parent && node.parent.notUserSelectableStyle));
+         (node.parent && node.parent.notUserSelectableStyle)));
   }
 
   /**

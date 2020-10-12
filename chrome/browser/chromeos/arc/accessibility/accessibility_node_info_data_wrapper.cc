@@ -374,6 +374,10 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
     if (node_ptr_->range_info) {
       out_data->AddStringAttribute(ax::mojom::StringAttribute::kValue,
                                    state_description);
+    } else if (GetProperty(AXBooleanProperty::CHECKABLE)) {
+      out_data->AddStringAttribute(
+          ax::mojom::StringAttribute::kCheckedStateDescription,
+          state_description);
     } else {
       descriptions.push_back(state_description);
     }

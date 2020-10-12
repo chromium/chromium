@@ -502,6 +502,7 @@ enum StringAttribute {
   // Only used when invalid_state == invalid_state_other.
   kAriaInvalidValue,
   kAutoComplete,
+  kCheckedStateDescription,
   kChildTreeId,
   kClassName,
   kContainerLiveRelevant,
