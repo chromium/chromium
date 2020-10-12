@@ -105,6 +105,7 @@ class AmbientAshTestBase : public AshTestBase {
 
   // Advance the task environment timer to ambient mode lock screen delay.
   void FastForwardToLockScreen();
+  void FastForwardHalfLockScreenDelay();
 
   void SetPowerStateCharging();
   void SetPowerStateDischarging();

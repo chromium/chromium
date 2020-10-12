@@ -291,6 +291,11 @@ void AmbientAshTestBase::FastForwardToLockScreen() {
   task_environment()->FastForwardBy(kFastForwardFactor * kLockScreenDelay);
 }
 
+void AmbientAshTestBase::FastForwardHalfLockScreenDelay() {
+  task_environment()->FastForwardBy(0.5 * kFastForwardFactor *
+                                    kLockScreenDelay);
+}
+
 void AmbientAshTestBase::SetPowerStateCharging() {
   power_manager::PowerSupplyProperties proto;
   proto.set_battery_state(

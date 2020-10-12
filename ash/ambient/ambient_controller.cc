@@ -476,7 +476,8 @@ void AmbientController::AcquireWakeLock() {
   auto* session_controller = Shell::Get()->session_controller();
   if (session_controller->CanLockScreen() &&
       session_controller->ShouldLockScreenAutomatically()) {
-    if (!session_controller->IsScreenLocked()) {
+    if (!session_controller->IsScreenLocked() &&
+        !delayed_lock_timer_.IsRunning()) {
       delayed_lock_timer_.Start(
           FROM_HERE, kLockScreenDelay, base::BindOnce([]() {
             Shell::Get()->session_controller()->LockScreen();
