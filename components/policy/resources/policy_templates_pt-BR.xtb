@@ -1282,8 +1282,8 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se esta política não for definida, a filtragem será omitida, e todos os servidores de impressão serão considerados.</translation>
 <translation id="2877225735001246144">Desativar consulta CNAME ao negociar a autenticação do Kerberos</translation>
-<translation id="2886215882246310669">Controla se o <ph name="PRODUCT_OS_NAME" /> permite que novas contas de usuário do Family Link sejam adicionadas ao dispositivo.
-      Esta política só será usada junto com <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Ela permite mais contas do Family Link, além daquelas definidas na lista de permissões.
+<translation id="2886215882246310669">Controla se o <ph name="PRODUCT_OS_NAME" /> permite que novas contas de usuários do Family Link sejam adicionadas ao dispositivo.
+      Esta política só será usada junto com <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />. Ela permite mais contas do Family Link, além das contas definidas na lista de permissões.
       Esta política não afeta o comportamento de outras políticas de login. Ela não terá nenhum efeito quando:
       - a adição de novos usuários ao dispositivo estiver desativada com a política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />;
       - a adição de todos os usuários for permitida com a política <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />.
@@ -1318,7 +1318,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2919544577647246857">Define a lista de usuários que têm permissão para fazer login no dispositivo. As entradas são feitas no formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, como <ph name="USER_WHITELIST_ENTRY_EXAMPLE" />. Para permitir usuários arbitrários em um domínio, use entradas no formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
       Se esta política não for configurada, não haverá restrições quanto aos usuários autorizados a fazer login. Ainda assim, a criação de novos usuários exigirá que a política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> seja configurada de forma adequada.
-      Se <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> estiver ativada, outros usuários do Family Link também poderão ser adicionados, além das contas já definidas nesta política.</translation>
+      Se <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> estiver ativada, contas de usuários do Family Link também poderão ser adicionadas ao dispositivo, além das contas já definidas nesta política.</translation>
 <translation id="2921222258441684334">Se a política for definida como 1, os sites poderão rastrear a localização física dos usuários como o estado padrão. Se a política for definida como 2, será negado o rastreamento como padrão. É possível definir a política para perguntar sempre que um site quiser rastrear a localização física dos usuários.
 
       Se a política não for definida, a <ph name="ASK_GEOLOCATION_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
@@ -4812,7 +4812,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
           Se esta política não for definida, os atalhos de recursos de acessibilidade serão ativados por padrão na tela de login.</translation>
 <translation id="7777535871204167559">Tratar dispositivos de armazenamento externo como somente leitura</translation>
 <translation id="7788511847830146438">Por perfil</translation>
-<translation id="780629758750905699">Permitir outras contas do Family Link no dispositivo</translation>
+<translation id="780629758750905699">Permitir adicionar contas do Family Link no dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos a serem excluídos da sincronização</translation>
 <translation id="7815699949432723208">Esta política está obsoleta. Use <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
