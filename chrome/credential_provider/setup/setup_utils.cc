@@ -63,7 +63,7 @@ void StandaloneInstallerConfigurator::ConfigureInstallationType(
     HRESULT hr = SetUpdaterClientsAppPathFlag(standalone_install16, 1);
     if (FAILED(hr))
       LOGFN(ERROR) << "SetGlobalFlag failed" << putHR(hr);
-  } else if (GetUpdaterClientsAppPathFlag(standalone_install16, 0)) {
+  } else if (GetUpdaterClientsAppPathFlagOrDefault(standalone_install16, 0)) {
     is_standalone_installation_ = true;
   }
 }

@@ -406,8 +406,30 @@ TEST_F(GcpSetupTest, DoInstallWithExtension) {
       fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaUsername]);
 }
 
-TEST_F(GcpSetupTest, DoInstallOverOldInstall) {
+// Tests install over old install for different types of installations.
+// 0 - Indicates that initial installation isn't standalone.
+// 1 - Indicates that the initial installation is through a standalone
+// installer.
+class GcpInstallOverOldInstallTest : public GcpSetupTest,
+                                     public ::testing::WithParamInterface<int> {
+ public:
+  void SetInstallerConfig(bool append_standalone_flag) {
+    if (append_standalone_flag) {
+      base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+      command_line.AppendSwitch(switches::kStandaloneInstall);
+
+      StandaloneInstallerConfigurator::Get()->ConfigureInstallationType(
+          command_line);
+    }
+  }
+};
+
+TEST_P(GcpInstallOverOldInstallTest, DoInstallOverOldInstall) {
   logging::ResetEventSourceForTesting();
+
+  // Set installer config as if --standalone flag was provided as indicated by
+  // test parameter.
+  SetInstallerConfig(GetParam());
 
   // Install using some old version.
   const base::string16 old_version(L"1.0.0.0");
@@ -426,6 +448,13 @@ TEST_F(GcpSetupTest, DoInstallOverOldInstall) {
   EXPECT_EQ(old_username, kDefaultGaiaAccountName);
 
   logging::ResetEventSourceForTesting();
+
+  // Don't include standalone flag as it should have already been indicated in
+  // the registry the first time this is called.
+  SetInstallerConfig(false);
+  EXPECT_TRUE(
+      StandaloneInstallerConfigurator::Get()->IsStandaloneInstallation() ==
+      GetParam());
 
   // Now install a newer version.
   ASSERT_EQ(S_OK,
@@ -446,6 +475,10 @@ TEST_F(GcpSetupTest, DoInstallOverOldInstall) {
       old_username,
       fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaUsername]);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GcpInstallOverOldInstallTest,
+                         ::testing::Values(0, 1));
 
 TEST_F(GcpSetupTest, DoInstallOverOldLockedInstall) {
   logging::ResetEventSourceForTesting();
