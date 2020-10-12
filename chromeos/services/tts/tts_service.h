@@ -54,6 +54,8 @@ class TtsService : public mojom::TtsService,
   // Handles stopping tts.
   void StopLocked() EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
 
+  void ReadMoreFrames(bool is_first_buffer);
+
   // Connection to tts in the browser.
   mojo::Receiver<mojom::TtsService> service_receiver_;
 
@@ -61,21 +63,35 @@ class TtsService : public mojom::TtsService,
   base::Lock state_lock_;
 
   // Prebuilt.
-  LibChromeTtsLoader libchrometts_ GUARDED_BY(state_lock_);
+  LibChromeTtsLoader libchrometts_;
 
   // Connection to tts in the component extension.
-  mojo::Receiver<mojom::TtsStream> stream_receiver_ GUARDED_BY(state_lock_);
+  mojo::Receiver<mojom::TtsStream> stream_receiver_;
 
   // Connection to send tts events to component extension.
-  mojo::Remote<mojom::TtsEventObserver> tts_event_observer_
-      GUARDED_BY(state_lock_);
+  mojo::Remote<mojom::TtsEventObserver> tts_event_observer_;
 
   // Outputs speech synthesis to audio.
-  std::unique_ptr<audio::OutputDevice> output_device_ GUARDED_BY(state_lock_);
+  std::unique_ptr<audio::OutputDevice> output_device_;
 
-  // Tracks whether any audio data came as a result of |Speak|. Reset for every
-  // call to |Speak|.
-  bool got_first_buffer_ GUARDED_BY(state_lock_);
+  // Helper group of state to pass from main thread to audio thread.
+  struct AudioBuffer {
+    AudioBuffer();
+    ~AudioBuffer();
+    AudioBuffer(const AudioBuffer& other) = delete;
+    AudioBuffer(AudioBuffer&& other);
+
+    std::vector<float> frames;
+    int char_index;
+    int status;
+    bool is_first_buffer;
+  };
+
+  // The queue of audio buffers to be played by the audio thread.
+  std::deque<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
+
+  // Tracks whether the output device is playing audio.
+  bool is_playing_ = false;
 };
 
 }  // namespace tts
