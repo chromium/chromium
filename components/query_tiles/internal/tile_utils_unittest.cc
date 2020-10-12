@@ -4,6 +4,7 @@
 
 #include "components/query_tiles/internal/tile_utils.h"
 
+#include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,9 +57,13 @@ TEST(TileUtilsTest, SortWithNewTilesAtTheFront) {
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[0]->sub_tiles[0]->id, "guid-2-1");
   EXPECT_EQ(group.tiles[0]->sub_tiles[1]->id, "guid-2-2");
-  EXPECT_EQ(tile_stats["guid-1-1"].score, 0.7);
-  EXPECT_EQ(tile_stats["guid-1-2"].score, 0.7);
-  EXPECT_EQ(tile_stats["guid-2-1"].score, 0.6);
+  // Front tiles should have the minimum score.
+  EXPECT_EQ(tile_stats["guid-1-1"].score,
+            TileConfig::GetMinimumScoreForNewFrontTiles());
+  EXPECT_EQ(tile_stats["guid-1-2"].score,
+            TileConfig::GetMinimumScoreForNewFrontTiles());
+  EXPECT_EQ(tile_stats["guid-2-1"].score,
+            TileConfig::GetMinimumScoreForNewFrontTiles());
 }
 
 // If new tiles are at the end, tile ordering should be kept after
