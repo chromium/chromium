@@ -1460,7 +1460,7 @@ TEST_F(ServiceWorkerResourceStorageTest, DeleteRegistration_NoLiveVersion) {
   // purgeable list and then doomed in the disk cache and removed from that
   // list.
   base::RunLoop loop;
-  storage()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             DeleteRegistration(registration_, scope_.GetOrigin()));
   // At this point registration_->waiting_version() has a remote reference, so
@@ -1490,7 +1490,7 @@ TEST_F(ServiceWorkerResourceStorageTest, DeleteRegistration_WaitingVersion) {
 
   // Doom the version. The resources should be purged.
   base::RunLoop loop;
-  storage()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   registration_->waiting_version()->Doom();
   loop.Run();
   EXPECT_TRUE(GetPurgeableResourceIdsFromDB().empty());
@@ -1524,7 +1524,7 @@ TEST_F(ServiceWorkerResourceStorageTest, DeleteRegistration_ActiveVersion) {
 
   // Dooming the version should cause the resources to be deleted.
   base::RunLoop loop;
-  storage()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   registration_->active_version()->RemoveControllee(
       container_host->client_uuid());
   registration_->active_version()->Doom();
@@ -1579,7 +1579,7 @@ TEST_F(ServiceWorkerResourceStorageDiskTest, CleanupOnRestart) {
 
   // Store a new uncommitted resource. This triggers stale resource cleanup.
   base::RunLoop loop;
-  storage()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   int64_t kNewResourceId = GetNewResourceIdSync(storage_control());
   WriteBasicResponse(storage_control(), kNewResourceId);
   registry()->StoreUncommittedResourceId(kNewResourceId,
@@ -1716,7 +1716,7 @@ TEST_F(ServiceWorkerResourceStorageTest, UpdateRegistration) {
   // Remove the controllee to allow the new version to become active, making the
   // old version redundant.
   base::RunLoop loop;
-  storage()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   scoped_refptr<ServiceWorkerVersion> old_version(
       registration_->active_version());
   old_version->RemoveControllee(container_host->client_uuid());
@@ -1752,7 +1752,7 @@ TEST_F(ServiceWorkerResourceStorageTest, UpdateRegistration_NoLiveVersion) {
   // Writing the registration should purge the old version's resources,
   // since it's not live.
   base::RunLoop loop;
-  storage()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kOk,
       StoreRegistration(registration_.get(), registration_->waiting_version()));

@@ -1126,6 +1126,7 @@ void ServiceWorkerStorage::LazyInitializeForTest() {
 
 void ServiceWorkerStorage::SetPurgingCompleteCallbackForTest(
     base::OnceClosure callback) {
+  DCHECK(!purging_complete_callback_for_test_);
   purging_complete_callback_for_test_ = std::move(callback);
 }
 

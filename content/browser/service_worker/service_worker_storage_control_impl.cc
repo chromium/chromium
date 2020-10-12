@@ -368,6 +368,11 @@ void ServiceWorkerStorageControlImpl::ApplyPolicyUpdates(
   storage_->ApplyPolicyUpdates(std::move(policy_updates));
 }
 
+void ServiceWorkerStorageControlImpl::SetPurgingCompleteCallbackForTest(
+    SetPurgingCompleteCallbackForTestCallback callback) {
+  storage_->SetPurgingCompleteCallbackForTest(std::move(callback));  // IN-TEST
+}
+
 void ServiceWorkerStorageControlImpl::DidFindRegistration(
     base::OnceCallback<
         void(storage::mojom::ServiceWorkerDatabaseStatus status,
