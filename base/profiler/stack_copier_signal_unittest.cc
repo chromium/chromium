@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/debug/alias.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
@@ -100,11 +101,11 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
   ASSERT_TRUE(thread_delegate);
   StackCopierSignal copier(std::move(thread_delegate));
 
-  // Copy the sentinel values onto the stack. Volatile to defeat compiler
-  // optimizations.
-  volatile uint32_t sentinels[size(kStackSentinels)];
+  // Copy the sentinel values onto the stack.
+  uint32_t sentinels[size(kStackSentinels)];
   for (size_t i = 0; i < size(kStackSentinels); ++i)
     sentinels[i] = kStackSentinels[i];
+  base::debug::Alias((void*)sentinels);  // Defeat compiler optimizations.
 
   bool result = copier.CopyStack(&stack_buffer, &stack_top, &timestamp,
                                  &context, &stack_copier_delegate);
