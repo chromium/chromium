@@ -344,6 +344,11 @@ crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orienta
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-position.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties.html [ Failure ]
 
+# These have filtering antialiasing artifacts on one side only, but otherwise are passing. The tests
+# should be updated with the fuzzy meta data once enabled in the test driver.
+crbug.com/997202 external/wpt/css/css-backgrounds/border-image-slice-007.htm [ Failure ]
+crbug.com/997202 external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
+
 # Ref results are wrong on the background and list case, not sure on border result
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-list-style-image.html [ Failure ]
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-border-image.html [ Failure ]
@@ -2608,8 +2613,6 @@ crbug.com/626703 external/wpt/infrastructure/testdriver/actions/iframe.html [ Ti
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-during-and-after-dispatch.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-007.htm [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/scroll-to-text-fragment/redirects.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/operator-dictionary-symmetric-005.html [ Failure Crash ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Backspace [ Timeout ]
