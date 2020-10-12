@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"

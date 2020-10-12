@@ -4,7 +4,6 @@
 
 #include "content/renderer/peripheral_content_heuristic.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"

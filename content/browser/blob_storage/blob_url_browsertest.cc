@@ -4,7 +4,6 @@
 
 #include "base/macros.h"
 #include "base/strings/pattern.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"

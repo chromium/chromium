@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"

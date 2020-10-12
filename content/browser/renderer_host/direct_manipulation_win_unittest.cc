@@ -6,7 +6,6 @@
 
 #include <objbase.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "testing/gtest/include/gtest/gtest.h"

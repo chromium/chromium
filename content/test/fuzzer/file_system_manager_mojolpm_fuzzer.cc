@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/icu_util.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"

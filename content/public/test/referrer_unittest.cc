@@ -5,7 +5,6 @@
 #include "content/public/common/referrer.h"
 
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/url_request/referrer_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
