@@ -519,7 +519,8 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   DCHECK(priority.GetOrigin() < CascadeOrigin::kAnimation);
   const CSSValue* value = ValueAt(match_result_, priority.GetPosition());
   DCHECK(value);
-  value = Resolve(property, *value, priority.GetOrigin(), resolver);
+  CascadeOrigin origin = priority.GetOrigin();
+  value = Resolve(property, *value, origin, resolver);
   DCHECK(!value->IsVariableReferenceValue());
   DCHECK(!value->IsPendingSubstitutionValue());
   StyleBuilder::ApplyProperty(property, state_, *value);
@@ -684,7 +685,7 @@ StyleCascade::TokenSequence::BuildVariableData() {
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
                                       const CSSValue& value,
-                                      CascadeOrigin origin,
+                                      CascadeOrigin& origin,
                                       CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
   if (IsRevert(value))
@@ -832,7 +833,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
 const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
                                             const CSSValue& value,
-                                            CascadeOrigin origin,
+                                            CascadeOrigin& origin,
                                             CascadeResolver& resolver) {
   MaybeUseCountRevert(value);
 
@@ -848,10 +849,13 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
     case CascadeOrigin::kAnimation: {
       CascadePriority* p =
           map_.Find(property.GetCSSPropertyName(), target_origin);
-      if (!p)
+      if (!p) {
+        origin = CascadeOrigin::kNone;
         return cssvalue::CSSUnsetValue::Create();
+      }
+      origin = p->GetOrigin();
       return Resolve(property, *ValueAt(match_result_, p->GetPosition()),
-                     target_origin, resolver);
+                     origin, resolver);
     }
   }
 }
