@@ -21,7 +21,6 @@
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "chrome/browser/vr/sounds_manager_audio_delegate.h"
 #include "chrome/browser/vr/ui_test_input.h"
-#include "chrome/common/chrome_features.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

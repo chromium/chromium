@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/flags_ui/pref_service_flags_storage.h"

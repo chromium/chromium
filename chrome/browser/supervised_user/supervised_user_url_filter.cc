@@ -31,7 +31,6 @@
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/url_formatter/url_formatter.h"

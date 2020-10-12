@@ -122,7 +122,6 @@
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"

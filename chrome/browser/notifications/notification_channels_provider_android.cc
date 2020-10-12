@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/NotificationSettingsBridge_jni.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"

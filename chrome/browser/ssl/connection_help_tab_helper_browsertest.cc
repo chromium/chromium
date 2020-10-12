@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/strings/grit/components_strings.h"

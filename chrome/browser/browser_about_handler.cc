@@ -15,7 +15,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/url_formatter/url_fixer.h"

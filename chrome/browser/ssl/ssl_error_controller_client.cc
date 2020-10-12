@@ -18,7 +18,6 @@
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

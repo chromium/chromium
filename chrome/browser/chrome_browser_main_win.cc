@@ -69,7 +69,6 @@
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"

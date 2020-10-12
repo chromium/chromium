@@ -16,7 +16,6 @@
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/core/browser/cookie_settings_util.h"

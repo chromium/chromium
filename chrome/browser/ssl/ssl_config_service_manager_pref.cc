@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"

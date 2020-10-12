@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/ipp_validator.h"
 #include "chrome/services/cups_proxy/printer_installer.h"

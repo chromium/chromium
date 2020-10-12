@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/render_messages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/renderer_resources.h"

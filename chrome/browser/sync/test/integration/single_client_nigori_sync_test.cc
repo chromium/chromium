@@ -24,7 +24,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"

@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"

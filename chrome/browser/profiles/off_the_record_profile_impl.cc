@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/background_sync/background_sync_controller_impl.h"

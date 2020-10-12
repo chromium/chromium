@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/render_messages.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"

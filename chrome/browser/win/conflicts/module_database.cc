@@ -23,7 +23,6 @@
 #include "chrome/browser/win/conflicts/module_load_attempt_log_listener.h"
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"

@@ -28,7 +28,6 @@
 #include "chrome/browser/chromeos/system/timezone_resolver_manager.h"
 #include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

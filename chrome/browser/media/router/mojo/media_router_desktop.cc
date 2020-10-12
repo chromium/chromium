@@ -15,7 +15,6 @@
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/media_source.h"

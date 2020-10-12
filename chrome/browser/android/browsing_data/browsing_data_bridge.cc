@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"

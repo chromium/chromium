@@ -17,7 +17,6 @@
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/content_settings_mock_observer.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_pref.h"

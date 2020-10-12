@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/clipboard/clipboard_read_write_permission_context.h"
 
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"

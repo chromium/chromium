@@ -21,7 +21,6 @@
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/ntp_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"

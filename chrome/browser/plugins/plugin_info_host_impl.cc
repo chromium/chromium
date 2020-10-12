@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/plugin.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_service.h"

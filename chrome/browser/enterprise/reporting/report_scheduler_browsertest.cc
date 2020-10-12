@@ -12,7 +12,6 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"

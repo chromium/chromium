@@ -4,7 +4,6 @@
 
 #include "chrome/browser/net/profile_network_context_service_test_utils.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "services/network/public/mojom/network_context.mojom.h"

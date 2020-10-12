@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"

@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"

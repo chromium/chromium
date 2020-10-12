@@ -15,7 +15,6 @@
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

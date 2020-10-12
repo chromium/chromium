@@ -16,7 +16,6 @@
 #include "chrome/browser/search/search_suggest/search_suggest_loader_impl.h"
 #include "chrome/browser/search/search_suggest/search_suggest_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"

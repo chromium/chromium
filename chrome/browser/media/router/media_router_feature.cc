@@ -16,7 +16,6 @@
 #include "ui/base/buildflags.h"
 
 #if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
