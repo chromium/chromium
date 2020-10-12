@@ -12,6 +12,8 @@ static_library("backend") {
     "power_manager_client_conversions.h",
     "system_data_provider.cc",
     "system_data_provider.h",
+    "system_routine_controller.cc",
+    "system_routine_controller.h",
   ]
 
   deps = [
@@ -30,6 +32,7 @@ source_set("unit_tests") {
   sources = [
     "power_manager_client_conversions_unittest.cc",
     "system_data_provider_unittest.cc",
+    "system_routine_controller_unittest.cc",
   ]
 
   deps = [
