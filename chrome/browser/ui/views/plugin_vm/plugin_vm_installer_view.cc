@@ -583,5 +583,8 @@ void PluginVmInstallerView::StartInstallation() {
   OnStateUpdated();
 
   plugin_vm_installer_->SetObserver(this);
-  plugin_vm_installer_->Start();
+  base::Optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
+      plugin_vm_installer_->Start();
+  if (failure_reason)
+    OnError(failure_reason.value());
 }
