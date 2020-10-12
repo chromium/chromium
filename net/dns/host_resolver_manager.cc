@@ -1497,7 +1497,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                                                 HostCache::Entry* out_results) {
     base::Optional<base::TimeDelta> response_ttl;
     const HostCache::Entry default_entry(
-        OK, std::vector<bool>(), HostCache::Entry::SOURCE_DNS, response_ttl);
+        ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
+        HostCache::Entry::SOURCE_DNS, response_ttl);
 
     if (response == nullptr) {
       *out_results = default_entry;
@@ -1523,8 +1524,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       condensed_results.push_back(rdata.IsIntact());
     }
 
-    *out_results = HostCache::Entry(OK, std::move(condensed_results),
-                                    HostCache::Entry::SOURCE_DNS, response_ttl);
+    *out_results =
+        HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::move(condensed_results),
+                         HostCache::Entry::SOURCE_DNS, response_ttl);
     DCHECK_EQ(parse_result, DnsResponse::DNS_PARSE_OK);
     return parse_result;
   }

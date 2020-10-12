@@ -8909,6 +8909,69 @@ TEST_F(HostResolverManagerDnsTestIntegrity, IntegrityQueryCompletesLast) {
               Optional(UnorderedElementsAre(true)));
 }
 
+// Ensure that a successful INTEGRITY query cannot mask the appropriate
+// ERR_NAME_NOT_RESOLVED of A/AAAA responses with empty bodies.
+TEST_F(HostResolverManagerDnsTestIntegrity,
+       IntegrityQueryCannotMaskAddressNodata) {
+  net::MockDnsClientRuleList rules;
+  AddSecureDnsRule(&rules, "host", dns_protocol::kTypeA,
+                   MockDnsClientRule::EMPTY, true /* delay */);
+  AddSecureDnsRule(&rules, "host", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::EMPTY, true /* delay */);
+
+  IntegrityAddRulesOptions rules_options;
+  rules_options.add_a = false;
+  rules_options.add_aaaa = false;
+  rules_options.add_integrity = true;
+  rules_options.delay_integrity = true;
+
+  AddRules(std::move(rules), rules_options);
+
+  std::unique_ptr<ResolveHostResponseHelper> response =
+      DoIntegrityQuery(true /* use_secure */);
+
+  ASSERT_TRUE(dns_client_->CompleteOneDelayedTransactionOfType(
+      DnsQueryType::INTEGRITY));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  ASSERT_EQ(response->result_error(), net::ERR_NAME_NOT_RESOLVED);
+}
+
+// Ensure that a successful INTEGRITY query cannot mask the appropriate
+// ERR_NAME_NOT_RESOLVED of A/AAAA queries that fail.
+TEST_F(HostResolverManagerDnsTestIntegrity,
+       IntegrityQueryCannotMaskAddressFail) {
+  net::MockDnsClientRuleList rules;
+  AddSecureDnsRule(&rules, "host", dns_protocol::kTypeA,
+                   MockDnsClientRule::FAIL, true /* delay */);
+  AddSecureDnsRule(&rules, "host", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::FAIL, true /* delay */);
+
+  IntegrityAddRulesOptions rules_options;
+  rules_options.add_a = false;
+  rules_options.add_aaaa = false;
+  rules_options.add_integrity = true;
+  rules_options.delay_integrity = true;
+
+  AddRules(std::move(rules), rules_options);
+
+  std::unique_ptr<ResolveHostResponseHelper> response =
+      DoIntegrityQuery(true /* use_secure */);
+
+  ASSERT_TRUE(dns_client_->CompleteOneDelayedTransactionOfType(
+      DnsQueryType::INTEGRITY));
+  ASSERT_TRUE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  // After the A query fails, the pending AAAA query is cleared.
+  ASSERT_FALSE(
+      dns_client_->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  ASSERT_EQ(response->result_error(), net::ERR_NAME_NOT_RESOLVED);
+}
+
 // For symmetry with |IntegrityQueryCompletesLast|, test the case where the
 // INTEGRITY query completes first.
 TEST_F(HostResolverManagerDnsTestIntegrity, IntegrityQueryCompletesFirst) {
