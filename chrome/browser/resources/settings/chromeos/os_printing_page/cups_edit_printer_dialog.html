@@ -32,11 +32,13 @@
               value="{{pendingPrinter_.printerName}}"
               on-input="onPrinterInfoChange_"
               label="$i18n{printerName}"
+              aria-label="$i18n{printerName}"
               maxlength=64>
           </cr-input>
         </div>
         <div class="settings-box two-line">
           <cr-input label="$i18n{printerAddress}"
+              aria-label="$i18n{printerAddress}"
               id="printerAddress"
               on-input="onPrinterInfoChange_"
               value="{{pendingPrinter_.printerAddress}}"
@@ -93,6 +95,7 @@
         </div>
         <div class="settings-box two-line">
           <cr-input id="printerQueue" label="$i18n{printerQueue}"
+              aria-label="$i18n{printerQueue}"
               value="{{pendingPrinter_.printerQueue}}"
               on-input="onPrinterInfoChange_"
               maxlength=64
@@ -103,6 +106,7 @@
         </div>
         <div class="settings-box two-line">
           <cr-input label="$i18n{printerURI}" readonly
+              aria-label="$i18n{printerURI}"
               value="[[getPrinterURI_(pendingPrinter_)]]"
               disabled="[[!isInputFieldEnabled_(networkProtocolActive_,
                   pendingPrinter_.printServerUri)]]">
@@ -114,6 +118,7 @@
             <cr-searchable-drop-down items="[[manufacturerList]]"
                 id="printerPPDManufacturer"
                 label="$i18n{printerManufacturer}"
+                aria-label="$i18n{printerManufacturer}"
                 value="{{pendingPrinter_.ppdManufacturer}}"
                 readonly="[[!isOnline_]]"
                 invalid="{{isManufacturerInvalid_}}">
