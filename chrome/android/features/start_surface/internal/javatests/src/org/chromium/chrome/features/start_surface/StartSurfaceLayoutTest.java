@@ -1582,7 +1582,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.page_info_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -1615,7 +1615,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.page_info_button)).check(matches(not(isDisplayed())));
         Espresso.pressBack();
 
         // Navigate, and verify the chip is shown.
@@ -1624,7 +1624,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button))
+        onView(withId(R.id.page_info_button))
                 .check(waitForView(allOf(withText(expectedTerm), isDisplayed())));
         Espresso.pressBack();
 
@@ -1640,7 +1640,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.page_info_button)).check(matches(not(isDisplayed())));
         Espresso.pressBack();
 
         // Back to previous page, and verify the chip is back.
@@ -1649,15 +1649,15 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button))
+        onView(withId(R.id.page_info_button))
                 .check(waitForView(allOf(withText(expectedTerm), isDisplayed())));
 
         // Click the chip and check the tab navigates back to the search result page.
         assertEquals(mUrl, ChromeTabUtils.getUrlStringOnUiThread(currentTab));
         OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
-        onView(withId(R.id.search_button))
+        onView(withId(R.id.page_info_button))
                 .check(waitForView(allOf(withText(expectedTerm), isDisplayed())));
-        onView(withId(R.id.search_button)).perform(click());
+        onView(withId(R.id.page_info_button)).perform(click());
         hideWatcher.waitForBehavior();
         ChromeTabUtils.waitForTabPageLoaded(currentTab, searchUrl.get());
 
@@ -1666,7 +1666,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.page_info_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -1695,7 +1695,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.page_info_button)).check(matches(not(isDisplayed())));
         Espresso.pressBack();
 
         // Navigate, and verify the chip is shown.
@@ -1704,7 +1704,7 @@ public class StartSurfaceLayoutTest {
         enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.tab_list_view)).check(TabCountAssertion.havingTabCount(1));
-        onView(withId(R.id.search_button))
+        onView(withId(R.id.page_info_button))
                 .check(waitForView(allOf(withText(searchTerm), isDisplayed())));
 
         // Switch the default search engine from google.com to yahoo.com, the search chip icon
@@ -1712,7 +1712,7 @@ public class StartSurfaceLayoutTest {
         RecyclerView tabListRecyclerView = cta.findViewById(R.id.tab_list_view);
         ChipView chipView =
                 tabListRecyclerView.findViewHolderForAdapterPosition(0).itemView.findViewById(
-                        R.id.search_button);
+                        R.id.page_info_button);
         ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
         Drawable googleDrawable = iconImageView.getDrawable();
 

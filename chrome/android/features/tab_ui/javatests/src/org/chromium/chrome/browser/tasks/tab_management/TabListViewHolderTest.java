@@ -54,6 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
+    private static final String EXPECTED_PRICE_STRING = "$2.87";
 
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
@@ -536,38 +537,54 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         String searchTerm = "hello world";
 
         testGridSelected(mTabGridView, mGridModel);
-        ChipView searchButton = mTabGridView.findViewById(R.id.search_button);
+        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
 
         mGridModel.set(TabProperties.SEARCH_QUERY, searchTerm);
-        Assert.assertEquals(View.VISIBLE, searchButton.getVisibility());
-        Assert.assertEquals(searchTerm, searchButton.getPrimaryTextView().getText());
+        Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
+        Assert.assertEquals(searchTerm, pageInfoButton.getPrimaryTextView().getText());
 
         mGridModel.set(TabProperties.SEARCH_QUERY, null);
-        Assert.assertEquals(View.GONE, searchButton.getVisibility());
+        Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
 
         mGridModel.set(TabProperties.SEARCH_QUERY, searchTerm);
-        Assert.assertEquals(View.VISIBLE, searchButton.getVisibility());
+        Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
 
         mGridModel.set(TabProperties.SEARCH_QUERY, null);
-        Assert.assertEquals(View.GONE, searchButton.getVisibility());
+        Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testPriceString() {
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        testGridSelected(mTabGridView, mGridModel);
+        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
+
+        mGridModel.set(TabProperties.PRICE_STRING, EXPECTED_PRICE_STRING);
+        Assert.assertEquals(View.VISIBLE, pageInfoButton.getVisibility());
+        Assert.assertEquals(EXPECTED_PRICE_STRING, pageInfoButton.getPrimaryTextView().getText());
+
+        mGridModel.set(TabProperties.PRICE_STRING, null);
+        Assert.assertEquals(View.GONE, pageInfoButton.getVisibility());
     }
 
     @Test
     @MediumTest
     @UiThreadTest
     public void testSearchListener() {
-        ChipView searchButton = mTabGridView.findViewById(R.id.search_button);
+        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
 
         AtomicInteger clickedTabId = new AtomicInteger(Tab.INVALID_TAB_ID);
         TabListMediator.TabActionListener searchListener = clickedTabId::set;
-        mGridModel.set(TabProperties.SEARCH_LISTENER, searchListener);
+        mGridModel.set(TabProperties.PAGE_INFO_LISTENER, searchListener);
 
-        searchButton.performClick();
+        pageInfoButton.performClick();
         Assert.assertEquals(TAB1_ID, clickedTabId.get());
 
         clickedTabId.set(Tab.INVALID_TAB_ID);
-        mGridModel.set(TabProperties.SEARCH_LISTENER, null);
-        searchButton.performClick();
+        mGridModel.set(TabProperties.PAGE_INFO_LISTENER, null);
+        pageInfoButton.performClick();
         Assert.assertEquals(Tab.INVALID_TAB_ID, clickedTabId.get());
     }
 
@@ -575,15 +592,15 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testSearchChipIcon() {
-        ChipView searchButton = mTabGridView.findViewById(R.id.search_button);
-        View iconView = searchButton.getChildAt(0);
+        ChipView pageInfoButton = mTabGridView.findViewById(R.id.page_info_button);
+        View iconView = pageInfoButton.getChildAt(0);
         Assert.assertTrue(iconView instanceof ChromeImageView);
         ChromeImageView iconImageView = (ChromeImageView) iconView;
 
-        mGridModel.set(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID, R.drawable.ic_logo_googleg_24dp);
+        mGridModel.set(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID, R.drawable.ic_logo_googleg_24dp);
         Drawable googleDrawable = iconImageView.getDrawable();
 
-        mGridModel.set(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID, R.drawable.ic_search);
+        mGridModel.set(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID, R.drawable.ic_search);
         Drawable magnifierDrawable = iconImageView.getDrawable();
 
         Assert.assertNotEquals(magnifierDrawable, googleDrawable);

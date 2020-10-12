@@ -241,7 +241,7 @@ public class TabListCoordinator implements Destroyable {
         TabListFaviconProvider tabListFaviconProvider =
                 new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP);
 
-        mMediator = new TabListMediator(context, mModel, tabModelSelector, thumbnailProvider,
+        mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
                 selectionDelegateProvider, gridCardOnClickListenerProvider, dialogHandler,
                 componentName, itemType);

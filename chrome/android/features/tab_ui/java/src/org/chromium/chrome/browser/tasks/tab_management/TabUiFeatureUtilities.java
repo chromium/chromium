@@ -51,6 +51,11 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SEARCH_CHIP_PARAM, false);
 
+    private static final String PRICE_TRACKING_PARAM = "enable_price_tracking";
+    public static final BooleanCachedFieldTrialParameter ENABLE_PRICE_TRACKING =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, PRICE_TRACKING_PARAM, false);
+
     private static final String SEARCH_CHIP_ADAPTIVE_PARAM =
             "enable_search_term_chip_adaptive_icon";
     public static final BooleanCachedFieldTrialParameter ENABLE_SEARCH_CHIP_ADAPTIVE =

@@ -13,6 +13,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.tab.Tab;
@@ -95,7 +96,7 @@ public abstract class PersistedTabData implements UserData {
      * @return {@link PersistedTabData} from storage
      */
     protected static <T extends PersistedTabData> void from(Tab tab,
-            PersistedTabDataFactory<T> factory, Supplier<T> supplier, Class<T> clazz,
+            PersistedTabDataFactory<T> factory, OneshotSupplier<T> supplier, Class<T> clazz,
             Callback<T> callback) {
         ThreadUtils.assertOnUiThread();
         // TODO(crbug.com/1059602) cache callbacks
@@ -114,18 +115,23 @@ public abstract class PersistedTabData implements UserData {
         config.storage.restore(tab.getId(), config.id, (data) -> {
             T persistedTabData;
             if (data == null) {
-                persistedTabData = supplier.get();
+                supplier.onAvailable((ptd) -> { onPersistedTabDataResult(ptd, tab, clazz, key); });
             } else {
                 persistedTabData = factory.create(data, config.storage, config.id);
+                onPersistedTabDataResult(persistedTabData, tab, clazz, key);
             }
-            if (persistedTabData != null) {
-                setUserData(tab, clazz, persistedTabData);
-            }
-            for (Callback cachedCallback : sCachedCallbacks.get(key)) {
-                cachedCallback.onResult(persistedTabData);
-            }
-            sCachedCallbacks.remove(key);
         });
+    }
+
+    private static <T extends PersistedTabData> void onPersistedTabDataResult(
+            T persistedTabData, Tab tab, Class<T> clazz, String key) {
+        if (persistedTabData != null) {
+            setUserData(tab, clazz, persistedTabData);
+        }
+        for (Callback cachedCallback : sCachedCallbacks.get(key)) {
+            cachedCallback.onResult(persistedTabData);
+        }
+        sCachedCallbacks.remove(key);
     }
 
     /**

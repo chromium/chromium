@@ -18,7 +18,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doAnswer;
@@ -75,6 +77,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -82,6 +86,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
+import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
+import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -96,6 +103,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -105,6 +113,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
@@ -126,7 +135,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Tests for {@link TabListMediator}.
@@ -165,6 +176,10 @@ public class TabListMediatorUnitTest {
     private static final int TAB3_ID = 123;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
+    private static final String EMPTY_ENDPOINT_RESPONSE = "{}";
+    private static final String ENDPOINT_RESPONSE =
+            "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
+            + "\"price\" : 3.14, \"currency\" : \"USD\"}]}";
 
     @IntDef({TabListMediatorType.TAB_SWITCHER, TabListMediatorType.TAB_STRIP,
             TabListMediatorType.TAB_GRID_DIALOG})
@@ -235,6 +250,8 @@ public class TabListMediatorUnitTest {
     ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
     @Captor
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
+    @Mock
+    EndpointFetcher.Natives mEndpointFetcherJniMock;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -254,6 +271,7 @@ public class TabListMediatorUnitTest {
 
         MockitoAnnotations.initMocks(this);
         mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
 
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, false);
         TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.setForTesting(true);
@@ -322,7 +340,7 @@ public class TabListMediatorUnitTest {
 
         mModel = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        mMediator = new TabListMediator(mContext, mModel, mTabModelSelector,
+        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, false, null, mGridCardOnClickListenerProvider, null,
                 getClass().getSimpleName(), UiType.CLOSABLE);
@@ -1828,6 +1846,26 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testPriceTrackingProperty() {
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        Map<String, String> responses = new HashMap<>();
+        responses.put(TAB1_URL, ENDPOINT_RESPONSE);
+        responses.put(TAB2_URL, EMPTY_ENDPOINT_RESPONSE);
+        mockEndpointResponse(responses);
+        PersistedTabDataConfiguration.setUseTestConfig(true);
+        initAndAssertAllProperties();
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTabModel.getTabAt(0));
+        tabs.add(mTabModel.getTabAt(1));
+
+        mMediator.resetWithListOfTabs(
+                PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/false);
+        assertThat(mModel.get(0).model.get(TabProperties.PRICE_STRING), equalTo("$3.14"));
+        assertThat(mModel.get(1).model.get(TabProperties.PRICE_STRING), equalTo(null));
+    }
+
+    @Test
     public void testSearchTermProperty_TabGroups_TabSwitcher() {
         setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER);
         String searchTerm1 = "hello world";
@@ -1975,7 +2013,7 @@ public class TabListMediatorUnitTest {
         doReturn(searchUrl).when(navigationEntry0).getOriginalUrl();
 
         mModel.get(0)
-                .model.get(TabProperties.SEARCH_LISTENER)
+                .model.get(TabProperties.PAGE_INFO_LISTENER)
                 .run(mModel.get(0).model.get(TabProperties.TAB_ID));
 
         verify(mGridCardOnClickListenerProvider)
@@ -2006,7 +2044,7 @@ public class TabListMediatorUnitTest {
         doReturn(searchUrl).when(navigationEntry).getOriginalUrl();
 
         mModel.get(0)
-                .model.get(TabProperties.SEARCH_LISTENER)
+                .model.get(TabProperties.PAGE_INFO_LISTENER)
                 .run(mModel.get(0).model.get(TabProperties.TAB_ID));
 
         verify(mGridCardOnClickListenerProvider)
@@ -2026,7 +2064,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
-        mMediator = new TabListMediator(mContext, mModel, mTabModelSelector,
+        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
@@ -2037,7 +2075,7 @@ public class TabListMediatorUnitTest {
         // When the search chip adaptive icon is turned off, the search chip icon is initialized as
         // R.drawable.ic_search even if the default search engine is google.
         for (int i = 0; i < mModel.size(); i++) {
-            assertThat(mModel.get(i).model.get(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID),
+            assertThat(mModel.get(i).model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID),
                     equalTo(R.drawable.ic_search));
         }
     }
@@ -2050,7 +2088,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
-        mMediator = new TabListMediator(mContext, mModel, mTabModelSelector,
+        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
@@ -2060,7 +2098,7 @@ public class TabListMediatorUnitTest {
 
         // The search chip icon should be initialized as R.drawable.ic_logo_googleg_24dp.
         for (int i = 0; i < mModel.size(); i++) {
-            assertThat(mModel.get(i).model.get(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID),
+            assertThat(mModel.get(i).model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID),
                     equalTo(R.drawable.ic_logo_googleg_24dp));
         }
 
@@ -2070,7 +2108,7 @@ public class TabListMediatorUnitTest {
 
         // The search chip icon should be updated to R.drawable.ic_search.
         for (int i = 0; i < mModel.size(); i++) {
-            assertThat(mModel.get(i).model.get(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID),
+            assertThat(mModel.get(i).model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID),
                     equalTo(R.drawable.ic_search));
         }
 
@@ -2080,7 +2118,7 @@ public class TabListMediatorUnitTest {
 
         // The search chip icon should be updated as R.drawable.ic_logo_googleg_24dp.
         for (int i = 0; i < mModel.size(); i++) {
-            assertThat(mModel.get(i).model.get(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID),
+            assertThat(mModel.get(i).model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID),
                     equalTo(R.drawable.ic_logo_googleg_24dp));
         }
     }
@@ -2416,7 +2454,7 @@ public class TabListMediatorUnitTest {
         // TODO(crbug.com/1058196): avoid re-instanciate TabListMediator by using annotation.
         CachedFeatureFlags.setForTesting(TAB_GROUPS_ANDROID, true);
 
-        mMediator = new TabListMediator(mContext, mModel, mTabModelSelector,
+        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler,
                 getClass().getSimpleName(), uiType);
@@ -2441,6 +2479,23 @@ public class TabListMediatorUnitTest {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
             CriticalPersistedTabData criticalPersistedTabData = CriticalPersistedTabData.from(tab);
             doReturn(rootId).when(criticalPersistedTabData).getRootId();
+        }
+    }
+
+    private void mockEndpointResponse(Map<String, String> responses) {
+        for (Map.Entry<String, String> entry : responses.entrySet()) {
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock invocation) {
+                    Callback callback = (Callback) invocation.getArguments()[8];
+                    callback.onResult(new EndpointResponse(entry.getValue()));
+                    return null;
+                }
+            })
+                    .when(mEndpointFetcherJniMock)
+                    .nativeFetchOAuth(any(Profile.class), anyString(), contains(entry.getKey()),
+                            anyString(), anyString(), any(String[].class), anyString(), anyLong(),
+                            any(Callback.class));
         }
     }
 }

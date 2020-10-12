@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -138,12 +139,12 @@ public class CriticalPersistedTabData extends PersistedTabData {
         PersistedTabData.from(tab,
                 (data, storage, id)
                         -> { return new CriticalPersistedTabData(tab, data, storage, id); },
-                ()
-                        -> {
-                    if (tab.isInitialized()) {
-                        return CriticalPersistedTabData.build(tab);
+                new OneshotSupplierImpl<CriticalPersistedTabData>() {
+                    @Override
+                    public void onAvailable(Callback<CriticalPersistedTabData> supplierCallback) {
+                        supplierCallback.onResult(
+                                tab.isInitialized() ? CriticalPersistedTabData.build(tab) : null);
                     }
-                    return null;
                 },
                 CriticalPersistedTabData.class, callback);
     }

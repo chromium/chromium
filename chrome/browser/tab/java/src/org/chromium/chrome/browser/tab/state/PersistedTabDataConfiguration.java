@@ -20,6 +20,8 @@ public enum PersistedTabDataConfiguration {
     ENCRYPTED_CRITICAL_PERSISTED_TAB_DATA("ECPTD", new EncryptedFilePersistedTabDataStorage()),
     MOCK_PERSISTED_TAB_DATA("MPTD", new FilePersistedTabDataStorage()),
     ENCRYPTED_MOCK_PERSISTED_TAB_DATA("EMPTD", new EncryptedFilePersistedTabDataStorage()),
+    // TODO(crbug.com/1129626) Move Shopping to Level DB based storage
+    SHOPPING_PERSISTED_TAB_DATA("SPTD", new FilePersistedTabDataStorage()),
     // TODO(crbug.com/1113828) investigate separating test from prod test implementations
     TEST_CONFIG("TC", new MockPersistedTabDataStorage());
 
@@ -36,6 +38,8 @@ public enum PersistedTabDataConfiguration {
         sEncryptedLookup.put(CriticalPersistedTabData.class, ENCRYPTED_CRITICAL_PERSISTED_TAB_DATA);
         sLookup.put(MockPersistedTabData.class, MOCK_PERSISTED_TAB_DATA);
         sEncryptedLookup.put(MockPersistedTabData.class, ENCRYPTED_MOCK_PERSISTED_TAB_DATA);
+        sLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
+        sEncryptedLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
     }
 
     public final String id;
@@ -65,7 +69,7 @@ public enum PersistedTabDataConfiguration {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static void setUseTestConfig(boolean useTestConfig) {
+    public static void setUseTestConfig(boolean useTestConfig) {
         sUseTestConfig = useTestConfig;
     }
 

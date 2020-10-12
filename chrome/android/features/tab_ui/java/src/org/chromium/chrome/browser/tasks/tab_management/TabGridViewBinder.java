@@ -128,12 +128,13 @@ class TabGridViewBinder {
                 view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
             }
             if (TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.getValue()) {
-                ChipView searchButton = (ChipView) view.fastFindViewById(R.id.search_button);
-                searchButton.getPrimaryTextView().setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
-                searchButton.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
+                ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
+                pageInfoButton.getPrimaryTextView().setTextAlignment(
+                        View.TEXT_ALIGNMENT_VIEW_START);
+                pageInfoButton.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
                 // TODO(crbug.com/1048255): The selected state of ChipView doesn't look elevated.
                 //  Fix the elevation in style instead.
-                searchButton.setSelected(false);
+                pageInfoButton.setSelected(false);
             }
         } else if (TabProperties.FAVICON == propertyKey) {
             Drawable favicon = model.get(TabProperties.FAVICON);
@@ -207,29 +208,43 @@ class TabGridViewBinder {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.SEARCH_QUERY == propertyKey) {
             String query = model.get(TabProperties.SEARCH_QUERY);
-            ChipView searchButton = (ChipView) view.fastFindViewById(R.id.search_button);
+            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
             if (TextUtils.isEmpty(query)) {
-                searchButton.setVisibility(View.GONE);
+                pageInfoButton.setVisibility(View.GONE);
             } else {
-                searchButton.setVisibility(View.VISIBLE);
-                searchButton.getPrimaryTextView().setText(query);
+                // Search query and price string are mutually exclusive
+                assert TextUtils.isEmpty(model.get(TabProperties.PRICE_STRING));
+                pageInfoButton.setVisibility(View.VISIBLE);
+                pageInfoButton.getPrimaryTextView().setText(query);
             }
-        } else if (TabProperties.SEARCH_LISTENER == propertyKey) {
-            TabListMediator.TabActionListener listener = model.get(TabProperties.SEARCH_LISTENER);
-            ChipView searchButton = (ChipView) view.fastFindViewById(R.id.search_button);
+        } else if (TabProperties.PRICE_STRING == propertyKey) {
+            String priceString = model.get(TabProperties.PRICE_STRING);
+            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
+            if (TextUtils.isEmpty(priceString)) {
+                pageInfoButton.setVisibility(View.GONE);
+            } else {
+                // Price string and search query are mutually exclusive
+                assert TextUtils.isEmpty(model.get(TabProperties.SEARCH_QUERY));
+                pageInfoButton.setVisibility(View.VISIBLE);
+                pageInfoButton.getPrimaryTextView().setText(priceString);
+            }
+        } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {
+            TabListMediator.TabActionListener listener =
+                    model.get(TabProperties.PAGE_INFO_LISTENER);
+            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
             if (listener == null) {
-                searchButton.setOnClickListener(null);
+                pageInfoButton.setOnClickListener(null);
                 return;
             }
-            searchButton.setOnClickListener(v -> {
+            pageInfoButton.setOnClickListener(v -> {
                 int tabId = model.get(TabProperties.TAB_ID);
                 listener.run(tabId);
             });
-        } else if (TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID == propertyKey) {
-            ChipView searchButton = (ChipView) view.fastFindViewById(R.id.search_button);
-            int iconDrawableId = model.get(TabProperties.SEARCH_CHIP_ICON_DRAWABLE_ID);
+        } else if (TabProperties.PAGE_INFO_ICON_DRAWABLE_ID == propertyKey) {
+            ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
+            int iconDrawableId = model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID);
             boolean shouldTint = iconDrawableId != R.drawable.ic_logo_googleg_24dp;
-            searchButton.setIcon(iconDrawableId, shouldTint);
+            pageInfoButton.setIcon(iconDrawableId, shouldTint);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             view.setSelected(model.get(TabProperties.IS_SELECTED));
         } else if (TabUiFeatureUtilities.isLaunchPolishEnabled()
