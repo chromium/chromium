@@ -196,6 +196,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     return;
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this = GetWeakPtr();
+  CHECK(driver_);
   driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
                                      current_password_);
   // |this| can be destroyed here because GeneratedPasswordAccepted pops up
