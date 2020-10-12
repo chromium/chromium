@@ -61,7 +61,7 @@ ModelTypeController::ModelTypeController(
                           std::move(delegate_for_transport_mode));
 }
 
-ModelTypeController::~ModelTypeController() {}
+ModelTypeController::~ModelTypeController() = default;
 
 void ModelTypeController::InitModelTypeController(
     std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,
@@ -82,7 +82,6 @@ ModelTypeController::ActivateManuallyForNigori() {
   DCHECK_EQ(MODEL_LOADED, state_);
   DCHECK(activation_response_);
   state_ = RUNNING;
-  activated_ = true;  // Not relevant, but for consistency.
   return std::move(activation_response_);
 }
 
