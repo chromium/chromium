@@ -29,7 +29,8 @@ import java.util.Locale;
 /** Tests that translations work correctly for Java strings inside bundles. */
 @RunWith(WebLayerJUnit4ClassRunner.class)
 public class BundleLanguageTest {
-    private static final String WEBLAYER_SPECIFIC_STRING = "string/geolocation_permission_title";
+    private static final String WEBLAYER_SPECIFIC_STRING =
+            "string/infobar_missing_location_permission_text";
     private static final String SHARED_STRING = "string/color_picker_dialog_title";
 
     @Rule

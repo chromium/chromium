@@ -843,9 +843,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
      */
     private void setUpPreferenceCommon(Preference preference) {
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
-        int explanationResourceId = ContentSettingsResources.getExplanation(contentType);
-        if (explanationResourceId != 0) {
-            preference.setTitle(explanationResourceId);
+        int titleResourceId = ContentSettingsResources.getTitle(contentType);
+        if (titleResourceId != 0) {
+            preference.setTitle(titleResourceId);
         }
         if (!preference.isEnabled()) {
             preference.setIcon(
