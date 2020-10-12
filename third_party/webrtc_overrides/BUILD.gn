@@ -45,7 +45,6 @@ component("webrtc_component") {
     "//third_party/webrtc/api/video:recordable_encoded_frame",
     "//third_party/webrtc/api/video:video_bitrate_allocation",
     "//third_party/webrtc/api/video:video_frame",
-    "//third_party/webrtc/api/video:video_frame_i420",
     "//third_party/webrtc/api/video:video_frame_metadata",
     "//third_party/webrtc/api/video:video_rtp_headers",
     "//third_party/webrtc/api/video_codecs:builtin_video_decoder_factory",
