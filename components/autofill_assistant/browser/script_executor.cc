@@ -583,6 +583,15 @@ void ScriptExecutor::GetFieldValue(
   delegate_->GetWebController()->GetFieldValue(selector, std::move(callback));
 }
 
+void ScriptExecutor::GetStringAttribute(
+    const std::vector<std::string>& attributes,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)>
+        callback) {
+  delegate_->GetWebController()->GetStringAttribute(element, attributes,
+                                                    std::move(callback));
+}
+
 void ScriptExecutor::SetFieldValue(
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,

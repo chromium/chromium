@@ -189,6 +189,12 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)>& callback));
 
+  MOCK_METHOD3(GetStringAttribute,
+               void(const std::vector<std::string>& attributes,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&,
+                                            const std::string&)> callback));
+
   void SetFieldValue(const std::string& value,
                      KeyboardValueFillStrategy fill_strategy,
                      int key_press_delay_in_millisecond,

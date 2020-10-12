@@ -151,6 +151,15 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
+  // Get the value of a nested |attribute| from an |element| and return the
+  // result through |callback|. If the lookup fails, the value will be empty.
+  // An empty result does not mean an error.
+  virtual void GetStringAttribute(
+      const ElementFinder::Result& element,
+      const std::vector<std::string>& attributes,
+      base::OnceCallback<void(const ClientStatus&, const std::string&)>
+          callback);
+
   // Set the |value| of field |element| and return the result through
   // |callback|. The strategy used to fill the value is defined by
   // |fill_strategy|, see the proto for further explanation.
@@ -281,6 +290,11 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnJavaScriptResultForString(
+      base::OnceCallback<void(const ClientStatus&, const std::string&)>
+          callback,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnWaitForDocumentToBecomeInteractive(
       base::OnceCallback<void(const ClientStatus&)> callback,
       bool result);
@@ -360,11 +374,6 @@ class WebController {
           callback,
       const ClientStatus& status,
       std::unique_ptr<ElementFinder::Result> element_result);
-  void OnGetValueAttribute(
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnClearFieldForSetFieldValue(
       const ElementFinder::Result& element,
       const std::vector<UChar32>& codepoints,
@@ -420,14 +429,6 @@ class WebController {
       const ElementFinder::Result& element,
       const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnGetOuterHtml(base::OnceCallback<void(const ClientStatus&,
-                                              const std::string&)> callback,
-                      const DevtoolsClient::ReplyStatus& reply_status,
-                      std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnGetElementTag(base::OnceCallback<void(const ClientStatus&,
-                                               const std::string&)> callback,
-                       const DevtoolsClient::ReplyStatus& reply_status,
-                       std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnFindElementForPosition(
       base::OnceCallback<void(bool, const RectF&)> callback,
       const ClientStatus& status,

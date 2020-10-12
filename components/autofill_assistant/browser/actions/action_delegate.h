@@ -231,6 +231,15 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
 
+  // Get the value of a nested |attribute| from an |element| and return the
+  // result through |callback|. If the lookup fails, the value will be empty.
+  // An empty result does not mean an error.
+  virtual void GetStringAttribute(
+      const std::vector<std::string>& attributes,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&, const std::string&)>
+          callback) = 0;
+
   // Set the |value| of field |element| and return the result through
   // |callback|. If |simulate_key_presses| is true, the value will be set by
   // clicking the field and then simulating key presses, otherwise the `value`

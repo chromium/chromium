@@ -112,6 +112,18 @@ const char* const kHighlightElementScript =
 const char* const kGetValueAttributeScript =
     "function () { return this.value; }";
 
+// Javascript code to retrieve the nested |attribute| of a node.
+// The function intentionally has no "has value" check, such that a bad access
+// will return an error.
+const char* const kGetElementAttributeScript =
+    R"(function (attributes) {
+        let it = this;
+        for (let i = 0; i < attributes.length; ++i) {
+          it = it[attributes[i]];
+        }
+        return it;
+      })";
+
 // Javascript code to select the current value.
 const char* const kSelectFieldValue = "function() { this.select(); }";
 
@@ -126,6 +138,8 @@ const char* const kSetValueAttributeScript =
        })";
 
 // Javascript code to set an attribute of a node to a given value.
+// The function intentionally has no "has value" check, such that a bad access
+// will return an error.
 const char* const kSetAttributeScript =
     R"(function (attribute, value) {
          let receiver = this;
@@ -288,9 +302,23 @@ void WebController::OnJavaScriptResult(
   ClientStatus status =
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed JavaScript.";
+    VLOG(1) << __func__ << " Failed JavaScript with status: " << status;
   }
   std::move(callback).Run(status);
+}
+
+void WebController::OnJavaScriptResultForString(
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::CallFunctionOnResult> result) {
+  std::string value;
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok()) {
+    VLOG(1) << __func__ << "Failed JavaScript with status: " << status;
+  }
+  SafeGetStringValue(result->GetResult(), &value);
+  std::move(callback).Run(status, value);
 }
 
 void WebController::ScrollIntoView(
@@ -902,7 +930,6 @@ void WebController::OnFindElementForGetFieldValue(
     base::OnceCallback<void(const ClientStatus&, const std::string&)> callback,
     const ClientStatus& status,
     std::unique_ptr<ElementFinder::Result> element_result) {
-  const std::string object_id = element_result->object_id;
   if (!status.ok()) {
     std::move(callback).Run(status, "");
     return;
@@ -910,28 +937,44 @@ void WebController::OnFindElementForGetFieldValue(
 
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(object_id)
+          .SetObjectId(element_result->object_id)
           .SetFunctionDeclaration(std::string(kGetValueAttributeScript))
           .SetReturnByValue(true)
           .Build(),
       element_result->node_frame_id,
-      base::BindOnce(&WebController::OnGetValueAttribute,
+      base::BindOnce(&WebController::OnJavaScriptResultForString,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebController::OnGetValueAttribute(
-    base::OnceCallback<void(const ClientStatus& element_status,
-                            const std::string&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  std::string value;
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  // Read the result returned from Javascript code.
-  VLOG_IF(1, !status.ok()) << __func__
-                           << "Failed to get attribute value: " << status;
-  SafeGetStringValue(result->GetResult(), &value);
-  std::move(callback).Run(status, value);
+void WebController::GetStringAttribute(
+    const ElementFinder::Result& element,
+    const std::vector<std::string>& attributes,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)>
+        callback) {
+  VLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
+          << "]";
+
+  if (attributes.empty()) {
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), "");
+    return;
+  }
+  base::Value::ListStorage attribute_values;
+  for (const std::string& attribute : attributes) {
+    attribute_values.emplace_back(base::Value(attribute));
+  }
+
+  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
+  AddRuntimeCallArgument(attribute_values, &arguments);
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(element.object_id)
+          .SetArguments(std::move(arguments))
+          .SetFunctionDeclaration(std::string(kGetElementAttributeScript))
+          .SetReturnByValue(true)
+          .Build(),
+      element.node_frame_id,
+      base::BindOnce(&WebController::OnJavaScriptResultForString,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebController::SetFieldValue(
@@ -1193,17 +1236,16 @@ void WebController::SetAttribute(
     const std::vector<std::string>& attributes,
     const std::string& value,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-#ifdef NDEBUG
-  VLOG(3) << __func__ << " attributes=(redacted), value=(redacted)";
-#else
   DVLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
            << "], value=" << value;
-#endif
 
-  DCHECK_GT(attributes.size(), 0u);
+  if (attributes.empty()) {
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
+    return;
+  }
   base::Value::ListStorage attribute_values;
-  for (const std::string& string : attributes) {
-    attribute_values.emplace_back(base::Value(string));
+  for (const std::string& attribute : attributes) {
+    attribute_values.emplace_back(base::Value(attribute));
   }
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
@@ -1336,25 +1378,8 @@ void WebController::GetOuterHtml(
           .SetReturnByValue(true)
           .Build(),
       element.node_frame_id,
-      base::BindOnce(&WebController::OnGetOuterHtml,
+      base::BindOnce(&WebController::OnJavaScriptResultForString,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnGetOuterHtml(
-    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  if (!status.ok()) {
-    VLOG(2) << __func__ << " Failed to get HTML content for GetOuterHtml";
-    std::move(callback).Run(status, "");
-    return;
-  }
-
-  std::string value;
-  SafeGetStringValue(result->GetResult(), &value);
-  std::move(callback).Run(OkClientStatus(), value);
 }
 
 void WebController::GetElementTag(
@@ -1368,24 +1393,8 @@ void WebController::GetElementTag(
           .SetReturnByValue(true)
           .Build(),
       element.node_frame_id,
-      base::BindOnce(&WebController::OnGetElementTag,
+      base::BindOnce(&WebController::OnJavaScriptResultForString,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnGetElementTag(
-    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  if (!status.ok()) {
-    VLOG(2) << __func__ << " Failed to get element tag for GetElementTag";
-    std::move(callback).Run(status, "");
-    return;
-  }
-  std::string value;
-  SafeGetStringValue(result->GetResult(), &value);
-  std::move(callback).Run(OkClientStatus(), value);
 }
 
 void WebController::InternalWaitForDocumentToBecomeInteractive(

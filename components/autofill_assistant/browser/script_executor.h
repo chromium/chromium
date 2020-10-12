@@ -185,6 +185,11 @@ class ScriptExecutor : public ActionDelegate,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) override;
+  void GetStringAttribute(
+      const std::vector<std::string>& attributes,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&, const std::string&)>
+          callback) override;
   void SetFieldValue(
       const std::string& value,
       KeyboardValueFillStrategy fill_strategy,

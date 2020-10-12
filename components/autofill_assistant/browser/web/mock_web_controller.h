@@ -77,6 +77,19 @@ class MockWebController : public WebController {
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)>& callback));
 
+  void GetStringAttribute(
+      const ElementFinder::Result& element,
+      const std::vector<std::string>& attributes,
+      base::OnceCallback<void(const ClientStatus&, const std::string&)>
+          callback) override {
+    OnGetStringAttribute(element, attributes, callback);
+  }
+  MOCK_METHOD3(OnGetStringAttribute,
+               void(const ElementFinder::Result& element,
+                    const std::vector<std::string>& attributes,
+                    base::OnceCallback<void(const ClientStatus&,
+                                            const std::string&)>& callback));
+
   void GetVisualViewport(
       base::OnceCallback<void(bool, const RectF&)> callback) override {
     OnGetVisualViewport(callback);
