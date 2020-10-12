@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #import "ios/net/protocol_handler_util.h"
 #include "ios/web/common/features.h"
