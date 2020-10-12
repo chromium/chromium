@@ -47,6 +47,7 @@ class AppsGridViewTestApi;
 
 class ApplicationDragAndDropHost;
 class AppListConfig;
+class AppListItem;
 class AppListItemView;
 class AppsGridViewFolderDelegate;
 class ContentsView;
@@ -378,6 +379,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // Updates the number of pulsing block views based on AppListModel status and
   // number of apps.
   void UpdatePulsingBlockViews();
+
+  std::unique_ptr<AppListItemView> CreateViewForItem(AppListItem* item,
+                                                     bool is_in_folder = false);
 
   std::unique_ptr<AppListItemView> CreateViewForItemAtIndex(size_t index);
 

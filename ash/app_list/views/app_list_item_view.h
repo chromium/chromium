@@ -47,9 +47,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   AppListItemView(AppsGridView* apps_grid_view,
                   AppListItem* item,
-                  AppListViewDelegate* delegate);
-  AppListItemView(AppsGridView* apps_grid_view,
-                  AppListItem* item,
                   AppListViewDelegate* delegate,
                   bool is_in_folder);
   ~AppListItemView() override;

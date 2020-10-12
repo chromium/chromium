@@ -943,10 +943,7 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
 
   // Create a new AppListItemView to duplicate the original_drag_view in the
   // folder's grid view.
-  auto view = std::make_unique<AppListItemView>(
-      this, original_drag_view->item(),
-      contents_view_->GetAppListMainView()->view_delegate(),
-      false /* is_in_folder */);
+  auto view = CreateViewForItem(original_drag_view->item());
   items_need_layer_for_drag_ = true;
   auto* view_ptr = items_container_->AddChildView(std::move(view));
   for (const auto& entry : view_model_.entries())
@@ -1388,18 +1385,25 @@ void AppsGridView::UpdatePulsingBlockViews() {
   }
 }
 
+std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItem(
+    AppListItem* item,
+    bool is_in_folder) {
+  std::unique_ptr<AppListItemView> view = std::make_unique<AppListItemView>(
+      this, item, contents_view_->GetAppListMainView()->view_delegate(),
+      is_in_folder);
+  view->set_callback(base::BindRepeating(
+      &AppsGridView::OnAppListItemViewPressed, base::Unretained(this),
+      base::Unretained(view.get())));
+  return view;
+}
+
 std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
     size_t index) {
   // The |drag_view_| might be pending for deletion, therefore |view_model_|
   // may have one more item than |item_list_|.
   DCHECK_LE(index, item_list_->item_count());
-  std::unique_ptr<AppListItemView> view = std::make_unique<AppListItemView>(
-      this, item_list_->item_at(index),
-      contents_view_->GetAppListMainView()->view_delegate());
-  view->set_callback(base::BindRepeating(
-      &AppsGridView::OnAppListItemViewPressed, base::Unretained(this),
-      base::Unretained(view.get())));
-  return view;
+  auto* item = item_list_->item_at(index);
+  return CreateViewForItem(item, item->IsInFolder());
 }
 
 bool AppsGridView::HandleScroll(const gfx::Vector2d& offset,
@@ -2208,15 +2212,10 @@ void AppsGridView::HandleKeyboardReparent(AppListItemView* reparented_view,
   DCHECK(!folder_delegate_);
   DCHECK(activated_folder_item_view_);
 
-  auto reparented_view_in_root_grid = std::make_unique<AppListItemView>(
-      this, reparented_view->item(),
-      contents_view_->GetAppListMainView()->view_delegate(),
-      false /* is_in_folder */);
-
-  auto* reparented_view_in_root_grid_ptr =
-      items_container_->AddChildView(std::move(reparented_view_in_root_grid));
-  view_model_.Add(reparented_view_in_root_grid_ptr, view_model_.view_size());
-  view_structure_.Add(reparented_view_in_root_grid_ptr, GetLastTargetIndex());
+  auto* reparented_view_in_root_grid = items_container_->AddChildView(
+      CreateViewForItem(reparented_view->item()));
+  view_model_.Add(reparented_view_in_root_grid, view_model_.view_size());
+  view_structure_.Add(reparented_view_in_root_grid, GetLastTargetIndex());
 
   // Set |activated_folder_item_view_| selected so |target_index| will be
   // computed relative to the open folder.
@@ -2224,7 +2223,7 @@ void AppsGridView::HandleKeyboardReparent(AppListItemView* reparented_view,
   const GridIndex target_index =
       GetTargetGridIndexForKeyboardReparent(key_code);
   AnnounceReorder(target_index);
-  ReparentItemForReorder(reparented_view_in_root_grid_ptr, target_index);
+  ReparentItemForReorder(reparented_view_in_root_grid, target_index);
 
   GetViewAtIndex(target_index)->RequestFocus();
   Layout();
