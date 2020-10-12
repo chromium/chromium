@@ -8,15 +8,18 @@ import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -25,24 +28,29 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * distinctly created.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ProfileTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     public Profile mRegularProfile;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
         createRegularProfileOnUiThread();
     }
 
     private void createRegularProfileOnUiThread() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getTabCreator(false).createNewTab(
+            sActivityTestRule.getActivity().getTabCreator(false).createNewTab(
                     new LoadUrlParams("about:blank"), TabLaunchType.FROM_CHROME_UI, null);
-            mRegularProfile = mActivityTestRule.getActivity()
+            mRegularProfile = sActivityTestRule.getActivity()
                                       .getTabModelSelector()
                                       .getModel(false)
                                       .getProfile();
