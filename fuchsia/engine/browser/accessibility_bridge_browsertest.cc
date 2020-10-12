@@ -73,6 +73,16 @@ content::AXEventNotificationDetails CreateAccessibilityEventWithUpdate(
   return event;
 }
 
+// Returns whether or not the given node supports the given action.
+bool HasAction(const fuchsia::accessibility::semantics::Node& node,
+               fuchsia::accessibility::semantics::Action action) {
+  for (const auto& node_action : node.actions()) {
+    if (node_action == action)
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
@@ -249,6 +259,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, PerformDefaultAction) {
   fuchsia::accessibility::semantics::Node* button3 =
       semantics_manager_.semantic_tree()->GetNodeFromLabel(kButtonName3);
   EXPECT_TRUE(button3);
+
+  EXPECT_TRUE(
+      HasAction(*button1, fuchsia::accessibility::semantics::Action::DEFAULT));
+  EXPECT_TRUE(
+      HasAction(*button2, fuchsia::accessibility::semantics::Action::DEFAULT));
+  EXPECT_TRUE(
+      HasAction(*button3, fuchsia::accessibility::semantics::Action::DEFAULT));
 
   // Perform the default action (click) on multiple buttons.
   semantics_manager_.RequestAccessibilityAction(
