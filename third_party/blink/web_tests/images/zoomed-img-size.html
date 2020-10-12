@@ -1,65 +1,43 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script type="text/javascript">
-      if (window.testRunner)
-        testRunner.dumpAsText();
-
-      function update() {
-    
-        // These arrays will become unnecessary if we fix the rounding issues that make us not always report "37x33".
-        var expectedWidths, expectedHeights;
-        expectedWidths = [100, 50, 33, 25, 40, 36, 36, 38, 37, 37, 37, 37, 37, 37, 37];
-        expectedHeights = [100, 50, 33, 25, 40, 33, 33, 34, 32, 33, 33, 33, 33, 33, 33];
-        for (i = 0; i < 15; ++i) {
-          var oval = document.getElementById('oval' + i);
-          var status = document.getElementById('status' + i);
-          var sizes = document.getElementById('sizes' + i);
-          if ((oval.width == expectedWidths[i]) && (oval.height == expectedHeights[i])) {
-            status.style.color = "green";
-            status.innerHTML = "PASS";
-            sizes.innerHTML = oval.width + "x" + oval.height + (((oval.width != 37) || (oval.height != 33)) ? " close enough to 37x33" : "");
-          } else {
-            status.style.color = "red";
-            status.innerHTML = "FAIL";
-            sizes.innerHTML = oval.width + "x" + oval.height + " not close enough to 37x33";
-          }
-        }
-      }
-      window.onload = update;
-    </script>
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
   </head>
   <body>
-    <p>Ideally, all ovals below should be reported as having width=37, height=33.  Currently rounding prevents us from doing this.</p>
     <img id="oval0" src="resources/oval.png" style="zoom: 1%">
-    <p>Zoom 1% <span id="status0"></span>: <span id="sizes0"></span></p>
     <img id="oval1" src="resources/oval.png" style="zoom: 2%">
-    <p>Zoom 2% <span id="status1"></span>: <span id="sizes1"></span></p>
     <img id="oval2" src="resources/oval.png" style="zoom: 3%">
-    <p>Zoom 3% <span id="status2"></span>: <span id="sizes2"></span></p>
     <img id="oval3" src="resources/oval.png" style="zoom: 4%">
-    <p>Zoom 4% <span id="status3"></span>: <span id="sizes3"></span></p>
     <img id="oval4" src="resources/oval.png" style="zoom: 5%">
-    <p>Zoom 5% <span id="status4"></span>: <span id="sizes4"></span></p>
     <img id="oval5" src="resources/oval.png" style="zoom: 30%">
-    <p>Zoom 30% <span id="status5"></span>: <span id="sizes5"></span></p>
     <img id="oval6" src="resources/oval.png" style="zoom: 33%">
-    <p>Zoom 33% <span id="status6"></span>: <span id="sizes6"></span></p>
     <img id="oval7" src="resources/oval.png" style="zoom: 50%">
-    <p>Zoom 50% <span id="status7"></span>: <span id="sizes7"></span></p>
     <img id="oval8" src="resources/oval.png" style="zoom: 70%">
-    <p>Zoom 70% <span id="status8"></span>: <span id="sizes8"></span></p>
     <img id="oval9" src="resources/oval.png" style="zoom: 100%">
-    <p>Zoom 100% <span id="status9"></span>: <span id="sizes9"></span></p>
     <img id="oval10" src="resources/oval.png" style="zoom: 111%">
-    <p>Zoom 111% <span id="status10"></span>: <span id="sizes10"></span></p>
     <img id="oval11" src="resources/oval.png" style="zoom: 150%">
-    <p>Zoom 150% <span id="status11"></span>: <span id="sizes11"></span></p>
     <img id="oval12" src="resources/oval.png" style="zoom: 333%">
-    <p>Zoom 333% <span id="status12"></span>: <span id="sizes12"></span></p>
     <img id="oval13" src="resources/oval.png" style="zoom: 400%">
-    <p>Zoom 400% <span id="status13"></span>: <span id="sizes13"></span></p>
     <img id="oval14" src="resources/oval.png" style="zoom: 1234%">
-    <p>Zoom 1234% <span id="status14"></span>: <span id="sizes14"></span></p>
+<script>
+const EXPECTED_WIDTH = 37;
+const EXPECTED_HEIGHT = 33;
+for (i = 0; i < 15; ++i) {
+  const oval = document.getElementById('oval' + i);
+  const testDesc = `Zoom ${oval.style.zoom} should not affect width/height of images.`;
+  const testBody = () => {
+    assert_equals(oval.width, EXPECTED_WIDTH, oval.getAttribute('style'));
+    assert_equals(oval.height, EXPECTED_HEIGHT, oval.getAttribute('style'));
+  };
+  if (oval.complete) {
+    test(testBody, testDesc);
+  } else {
+    async_test(t => {
+      oval.onload = t.step_func_done(testBody);
+    }, testDesc);
+  }
+}
+</script>
   </body>
 </html>
