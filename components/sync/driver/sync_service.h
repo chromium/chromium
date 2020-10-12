@@ -31,7 +31,6 @@ class ProtocolEventObserver;
 class SyncCycleSnapshot;
 struct SyncTokenStatus;
 class SyncUserSettings;
-class TypeDebugInfoObserver;
 struct SyncStatus;
 
 // UIs that need to prevent Sync startup should hold an instance of this class
@@ -436,9 +435,6 @@ class SyncService : public KeyedService {
 
   virtual void AddProtocolEventObserver(ProtocolEventObserver* observer) = 0;
   virtual void RemoveProtocolEventObserver(ProtocolEventObserver* observer) = 0;
-
-  virtual void AddTypeDebugInfoObserver(TypeDebugInfoObserver* observer) = 0;
-  virtual void RemoveTypeDebugInfoObserver(TypeDebugInfoObserver* observer) = 0;
 
   virtual base::WeakPtr<JsController> GetJsController() = 0;
 

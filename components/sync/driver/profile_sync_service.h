@@ -56,10 +56,6 @@ namespace syncer {
 
 class BackendMigrator;
 class SyncAuthManager;
-class TypeDebugInfoObserver;
-struct CommitCounters;
-struct StatusCounters;
-struct UpdateCounters;
 
 // Look at the SyncService interface for information on how to use this class.
 // You should not need to know about ProfileSyncService directly.
@@ -158,8 +154,6 @@ class ProfileSyncService : public SyncService,
   base::Location GetUnrecoverableErrorLocationForDebugging() const override;
   void AddProtocolEventObserver(ProtocolEventObserver* observer) override;
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
-  void AddTypeDebugInfoObserver(TypeDebugInfoObserver* observer) override;
-  void RemoveTypeDebugInfoObserver(TypeDebugInfoObserver* observer) override;
   base::WeakPtr<JsController> GetJsController() override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback)
@@ -175,14 +169,6 @@ class ProfileSyncService : public SyncService,
       bool success) override;
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
-  void OnDirectoryTypeCommitCounterUpdated(
-      ModelType type,
-      const CommitCounters& counters) override;
-  void OnDirectoryTypeUpdateCounterUpdated(
-      ModelType type,
-      const UpdateCounters& counters) override;
-  void OnDatatypeStatusCounterUpdated(ModelType type,
-                                      const StatusCounters& counters) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
   void OnMigrationNeededForTypes(ModelTypeSet types) override;
   void OnActionableError(const SyncProtocolError& error) override;
@@ -456,8 +442,6 @@ class ProfileSyncService : public SyncService,
   base::ObserverList<SyncServiceObserver>::Unchecked observers_;
   base::ObserverList<ProtocolEventObserver>::Unchecked
       protocol_event_observers_;
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked
-      type_debug_info_observers_;
 
   SyncJsController sync_js_controller_;
 

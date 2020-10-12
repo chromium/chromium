@@ -21,10 +21,7 @@
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/engine/cycle/commit_counters.h"
-#include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/cycle/update_counters.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -162,36 +159,6 @@ void SyncEngineBackend::OnConnectionStatusChange(ConnectionStatus status) {
   host_.Call(FROM_HERE,
              &SyncEngineImpl::HandleConnectionStatusChangeOnFrontendLoop,
              status);
-}
-
-void SyncEngineBackend::OnCommitCountersUpdated(
-    ModelType type,
-    const CommitCounters& counters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_.Call(
-      FROM_HERE,
-      &SyncEngineImpl::HandleDirectoryCommitCountersUpdatedOnFrontendLoop, type,
-      counters);
-}
-
-void SyncEngineBackend::OnUpdateCountersUpdated(
-    ModelType type,
-    const UpdateCounters& counters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_.Call(
-      FROM_HERE,
-      &SyncEngineImpl::HandleDirectoryUpdateCountersUpdatedOnFrontendLoop, type,
-      counters);
-}
-
-void SyncEngineBackend::OnStatusCountersUpdated(
-    ModelType type,
-    const StatusCounters& counters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_.Call(
-      FROM_HERE,
-      &SyncEngineImpl::HandleDirectoryStatusCountersUpdatedOnFrontendLoop, type,
-      counters);
 }
 
 void SyncEngineBackend::OnSyncStatusChanged(const SyncStatus& status) {
@@ -457,7 +424,6 @@ void SyncEngineBackend::DoDestroySyncManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (sync_manager_) {
-    DisableDirectoryTypeDebugInfoForwarding();
     sync_manager_->RemoveObserver(this);
     sync_manager_->ShutdownOnSyncThread();
     sync_manager_.reset();
@@ -538,30 +504,6 @@ void SyncEngineBackend::SendBufferedProtocolEventsAndEnableForwarding() {
 void SyncEngineBackend::DisableProtocolEventForwarding() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   forward_protocol_events_ = false;
-}
-
-void SyncEngineBackend::EnableDirectoryTypeDebugInfoForwarding() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_manager_);
-
-  forward_type_info_ = true;
-
-  if (!sync_manager_->HasDirectoryTypeDebugInfoObserver(this))
-    sync_manager_->RegisterDirectoryTypeDebugInfoObserver(this);
-  sync_manager_->RequestEmitDebugInfo();
-}
-
-void SyncEngineBackend::DisableDirectoryTypeDebugInfoForwarding() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_manager_);
-
-  if (!forward_type_info_)
-    return;
-
-  forward_type_info_ = false;
-
-  if (sync_manager_->HasDirectoryTypeDebugInfoObserver(this))
-    sync_manager_->UnregisterDirectoryTypeDebugInfoObserver(this);
 }
 
 void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,

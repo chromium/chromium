@@ -168,19 +168,6 @@ void FakeSyncManager::RefreshTypes(ModelTypeSet types) {
   last_refresh_request_types_ = types;
 }
 
-void FakeSyncManager::RegisterDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
-void FakeSyncManager::UnregisterDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
-bool FakeSyncManager::HasDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {
-  return false;
-}
-
-void FakeSyncManager::RequestEmitDebugInfo() {}
-
 void FakeSyncManager::OnIncomingInvalidation(
     ModelType type,
     std::unique_ptr<InvalidationInterface> invalidation) {

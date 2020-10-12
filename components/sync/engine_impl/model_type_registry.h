@@ -12,10 +12,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/engine/cycle/type_debug_info_observer.h"
 #include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine/model_type_connector.h"
 #include "components/sync/engine/non_blocking_sync_common.h"
@@ -85,13 +83,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   CommitContributorMap* commit_contributor_map();
   KeystoreKeysHandler* keystore_keys_handler();
 
-  void RegisterDirectoryTypeDebugInfoObserver(TypeDebugInfoObserver* observer);
-  void UnregisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer);
-  bool HasDirectoryTypeDebugInfoObserver(
-      const TypeDebugInfoObserver* observer) const;
-  void RequestEmitDebugInfo();
-
   bool HasUnsyncedItems() const;
 
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
@@ -141,15 +132,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   CancelationSignal* const cancelation_signal_;
 
   KeystoreKeysHandler* const keystore_keys_handler_;
-
-  // The set of observers of per-type debug info.
-  //
-  // Each of the DataTypeDebugInfoEmitter needs such a list. There's
-  // a lot of them, and their lifetimes are unpredictable, so it makes the
-  // book-keeping easier if we just store the list here.  That way it's
-  // guaranteed to live as long as this sync backend.
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked
-      type_debug_info_observers_;
 
   base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
 

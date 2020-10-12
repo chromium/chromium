@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/commit_counters.h"
 #include "components/sync/engine/cycle/update_counters.h"
@@ -19,10 +18,11 @@ class HistogramBase;
 
 namespace syncer {
 
-class TypeDebugInfoObserver;
-
 // Supports various kinds of debugging requests for a certain directory type.
 //
+// TODO(crbug.com/1102849): Merge with NonBlockingDataTypeDebugInfoEmitter.
+// TODO(crbug.com/1102849): Rename Emit*() methods to mention UMA, and update
+// the documentation to not mention any observers.
 // The Emit*() functions send updates to registered TypeDebugInfoObservers.
 // The DataTypeDebugInfoEmitter does not directly own that list; it is
 // managed by the ModelTypeRegistry.
@@ -33,11 +33,7 @@ class TypeDebugInfoObserver;
 // information on demand.
 class DataTypeDebugInfoEmitter {
  public:
-  using ObserverListType = base::ObserverList<TypeDebugInfoObserver>::Unchecked;
-
-  // The |observers| is not owned.  |observers| may be modified outside of this
-  // object and is expected to outlive this object.
-  DataTypeDebugInfoEmitter(ModelType type, ObserverListType* observers);
+  explicit DataTypeDebugInfoEmitter(ModelType type);
 
   virtual ~DataTypeDebugInfoEmitter();
 
@@ -66,12 +62,6 @@ class DataTypeDebugInfoEmitter {
 
  protected:
   const ModelType type_;
-
-  // Because there are so many emitters that come into and out of existence, it
-  // doesn't make sense to have them manage their own observer list.  They all
-  // share one observer list that is provided by their owner and which is
-  // guaranteed to outlive them.
-  ObserverListType* type_debug_info_observers_;
 
  private:
   // The actual up-to-date counters.

@@ -18,9 +18,6 @@ namespace syncer {
 class DataTypeDebugInfoListener;
 class JsBackend;
 class ProtocolEvent;
-struct CommitCounters;
-struct StatusCounters;
-struct UpdateCounters;
 
 // SyncEngineHost is the interface used by SyncEngine to communicate with the
 // entity that created it. It's essentially an observer interface except the
@@ -54,30 +51,6 @@ class SyncEngineHost {
   // It's disabled by default to avoid copying data across threads when no one
   // is listening for it.
   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
-
-  // Called when we receive an updated commit counter for a directory type.
-  //
-  // Disabled by default.  Enable by calling
-  // EnableDirectoryTypeDebugInfoForwarding() on the engine.
-  virtual void OnDirectoryTypeCommitCounterUpdated(
-      ModelType type,
-      const CommitCounters& counters) = 0;
-
-  // Called when we receive an updated update counter for a directory type.
-  //
-  // Disabled by default.  Enable by calling
-  // EnableDirectoryTypeDebugInfoForwarding() on the engine.
-  virtual void OnDirectoryTypeUpdateCounterUpdated(
-      ModelType type,
-      const UpdateCounters& counters) = 0;
-
-  // Called when we receive an updated status counter for a datatype.
-  //
-  // Disabled by default.  Enable by calling
-  // EnableDirectoryTypeDebugInfoForwarding() on the engine.
-  virtual void OnDatatypeStatusCounterUpdated(
-      ModelType type,
-      const StatusCounters& counters) = 0;
 
   // The status of the connection to the sync server has changed.
   virtual void OnConnectionStatusChange(ConnectionStatus status) = 0;

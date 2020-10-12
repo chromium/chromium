@@ -283,12 +283,6 @@ void TestSyncService::AddProtocolEventObserver(
 void TestSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
-void TestSyncService::AddTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
-void TestSyncService::RemoveTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
 base::WeakPtr<JsController> TestSyncService::GetJsController() {
   return base::WeakPtr<JsController>();
 }

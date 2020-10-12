@@ -22,18 +22,6 @@ void SyncEngineHostStub::OnSyncCycleCompleted(
 
 void SyncEngineHostStub::OnProtocolEvent(const ProtocolEvent& event) {}
 
-void SyncEngineHostStub::OnDirectoryTypeCommitCounterUpdated(
-    ModelType type,
-    const CommitCounters& counters) {}
-
-void SyncEngineHostStub::OnDirectoryTypeUpdateCounterUpdated(
-    ModelType type,
-    const UpdateCounters& counters) {}
-
-void SyncEngineHostStub::OnDatatypeStatusCounterUpdated(
-    ModelType type,
-    const StatusCounters& counters) {}
-
 void SyncEngineHostStub::OnConnectionStatusChange(ConnectionStatus status) {}
 
 void SyncEngineHostStub::OnMigrationNeededForTypes(ModelTypeSet types) {}

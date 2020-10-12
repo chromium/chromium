@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/histogram.h"
-#include "components/sync/engine/cycle/type_debug_info_observer.h"
 
 namespace syncer {
 
@@ -55,11 +54,8 @@ base::HistogramBase* GetModelTypeEntityChangeHistogram(ModelType type) {
 
 }  // namespace
 
-DataTypeDebugInfoEmitter::DataTypeDebugInfoEmitter(ModelType type,
-                                                   ObserverListType* observers)
-    : type_(type),
-      type_debug_info_observers_(observers),
-      histogram_(GetModelTypeEntityChangeHistogram(type)) {
+DataTypeDebugInfoEmitter::DataTypeDebugInfoEmitter(ModelType type)
+    : type_(type), histogram_(GetModelTypeEntityChangeHistogram(type)) {
   DCHECK(histogram_);
 }
 
@@ -74,9 +70,6 @@ CommitCounters* DataTypeDebugInfoEmitter::GetMutableCommitCounters() {
 }
 
 void DataTypeDebugInfoEmitter::EmitCommitCountersUpdate() {
-  for (auto& observer : *type_debug_info_observers_)
-    observer.OnCommitCountersUpdated(type_, commit_counters_);
-
   // Emit the newly added counts to UMA.
   EmitNewChangesToUma(
       /*count=*/commit_counters_.num_creation_commits_attempted -
@@ -104,9 +97,6 @@ UpdateCounters* DataTypeDebugInfoEmitter::GetMutableUpdateCounters() {
 }
 
 void DataTypeDebugInfoEmitter::EmitUpdateCountersUpdate() {
-  for (auto& observer : *type_debug_info_observers_)
-    observer.OnUpdateCountersUpdated(type_, update_counters_);
-
   // Emit the newly added counts to UMA.
   EmitNewChangesToUma(
       /*count=*/update_counters_.num_initial_updates_received -

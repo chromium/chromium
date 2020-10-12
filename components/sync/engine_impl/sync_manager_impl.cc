@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/observer_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/sync/base/cancelation_signal.h"
@@ -532,25 +531,6 @@ SyncEncryptionHandler* SyncManagerImpl::GetEncryptionHandler() {
 std::vector<std::unique_ptr<ProtocolEvent>>
 SyncManagerImpl::GetBufferedProtocolEvents() {
   return protocol_event_buffer_.GetBufferedProtocolEvents();
-}
-
-void SyncManagerImpl::RegisterDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {
-  model_type_registry_->RegisterDirectoryTypeDebugInfoObserver(observer);
-}
-
-void SyncManagerImpl::UnregisterDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {
-  model_type_registry_->UnregisterDirectoryTypeDebugInfoObserver(observer);
-}
-
-bool SyncManagerImpl::HasDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {
-  return model_type_registry_->HasDirectoryTypeDebugInfoObserver(observer);
-}
-
-void SyncManagerImpl::RequestEmitDebugInfo() {
-  model_type_registry_->RequestEmitDebugInfo();
 }
 
 void SyncManagerImpl::OnCookieJarChanged(bool account_mismatch,

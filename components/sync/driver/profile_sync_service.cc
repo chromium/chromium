@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/stop_source.h"
@@ -40,7 +39,6 @@
 #include "components/sync/driver/sync_auth_manager.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
-#include "components/sync/engine/cycle/type_debug_info_observer.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -472,30 +470,6 @@ void ProfileSyncService::OnProtocolEvent(const ProtocolEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : protocol_event_observers_)
     observer.OnProtocolEvent(event);
-}
-
-void ProfileSyncService::OnDirectoryTypeCommitCounterUpdated(
-    ModelType type,
-    const CommitCounters& counters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : type_debug_info_observers_)
-    observer.OnCommitCountersUpdated(type, counters);
-}
-
-void ProfileSyncService::OnDirectoryTypeUpdateCounterUpdated(
-    ModelType type,
-    const UpdateCounters& counters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : type_debug_info_observers_)
-    observer.OnUpdateCountersUpdated(type, counters);
-}
-
-void ProfileSyncService::OnDatatypeStatusCounterUpdated(
-    ModelType type,
-    const StatusCounters& counters) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : type_debug_info_observers_)
-    observer.OnStatusCountersUpdated(type, counters);
 }
 
 void ProfileSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {
@@ -943,10 +917,6 @@ void ProfileSyncService::OnEngineInitialized(
 
   if (protocol_event_observers_.might_have_observers()) {
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
-  }
-
-  if (type_debug_info_observers_.might_have_observers()) {
-    engine_->EnableDirectoryTypeDebugInfoForwarding();
   }
 
   if (is_first_time_sync_configure_) {
@@ -1554,15 +1524,6 @@ ProfileSyncService::GetTypeStatusMapForDebugging() {
     if (dtc_iter != data_type_controllers_.end()) {
       type_status->SetString("state", DataTypeController::StateToString(
                                           dtc_iter->second->state()));
-      if (dtc_iter->second->state() != DataTypeController::NOT_RUNNING) {
-        // We use BindToCurrentSequence() to make sure observers (i.e.
-        // |type_debug_info_observers_|) are not notified synchronously, which
-        // the UI code (chrome://sync-internals) doesn't handle well.
-        dtc_iter->second->GetStatusCounters(
-            BindToCurrentSequence(base::BindRepeating(
-                &ProfileSyncService::OnDatatypeStatusCounterUpdated,
-                base::Unretained(this))));
-      }
     }
 
     result->Append(std::move(type_status));
@@ -1678,26 +1639,6 @@ void ProfileSyncService::RemoveProtocolEventObserver(
   protocol_event_observers_.RemoveObserver(observer);
   if (engine_ && !protocol_event_observers_.might_have_observers()) {
     engine_->DisableProtocolEventForwarding();
-  }
-}
-
-void ProfileSyncService::AddTypeDebugInfoObserver(
-    TypeDebugInfoObserver* type_debug_info_observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  type_debug_info_observers_.AddObserver(type_debug_info_observer);
-  if (type_debug_info_observers_.might_have_observers() && engine_ &&
-      engine_->IsInitialized()) {
-    engine_->EnableDirectoryTypeDebugInfoForwarding();
-  }
-}
-
-void ProfileSyncService::RemoveTypeDebugInfoObserver(
-    TypeDebugInfoObserver* type_debug_info_observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  type_debug_info_observers_.RemoveObserver(type_debug_info_observer);
-  if (!type_debug_info_observers_.might_have_observers() && engine_ &&
-      engine_->IsInitialized()) {
-    engine_->DisableDirectoryTypeDebugInfoForwarding();
   }
 }
 

@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/sync_manager.h"
@@ -34,7 +35,6 @@ namespace syncer {
 class Cryptographer;
 class ModelTypeRegistry;
 class SyncCycleContext;
-class TypeDebugInfoObserver;
 
 // Unless stated otherwise, all methods of SyncManager should be called on the
 // same thread.
@@ -81,13 +81,6 @@ class SyncManagerImpl
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
       override;
-  void RegisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) override;
-  void UnregisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) override;
-  bool HasDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) override;
-  void RequestEmitDebugInfo() override;
   void OnCookieJarChanged(bool account_mismatch, bool empty_jar) override;
   void UpdateInvalidationClientId(const std::string& client_id) override;
 

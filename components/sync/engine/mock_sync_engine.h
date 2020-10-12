@@ -54,8 +54,6 @@ class MockSyncEngine : public SyncEngine {
   MOCK_CONST_METHOD1(GetModelSafeRoutingInfo, void(ModelSafeRoutingInfo*));
   MOCK_METHOD0(RequestBufferedProtocolEventsAndEnableForwarding, void());
   MOCK_METHOD0(DisableProtocolEventForwarding, void());
-  MOCK_METHOD0(EnableDirectoryTypeDebugInfoForwarding, void());
-  MOCK_METHOD0(DisableDirectoryTypeDebugInfoForwarding, void());
   MOCK_METHOD1(ClearServerData, void(base::OnceClosure));
   MOCK_METHOD3(OnCookieJarChanged, void(bool, bool, base::OnceClosure));
   MOCK_METHOD1(SetInvalidationsForSessionsEnabled, void(bool));

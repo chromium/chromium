@@ -21,7 +21,6 @@
 #include "components/sync/base/cancelation_signal.h"
 #include "components/sync/base/system_encryptor.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
-#include "components/sync/engine/cycle/type_debug_info_observer.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -35,7 +34,6 @@ class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
                           public SyncManager::Observer,
-                          public TypeDebugInfoObserver,
                           public SyncStatusObserver {
  public:
   using AllNodesCallback =
@@ -58,14 +56,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
-
-  // TypeDebugInfoObserver implementation
-  void OnCommitCountersUpdated(ModelType type,
-                               const CommitCounters& counters) override;
-  void OnUpdateCountersUpdated(ModelType type,
-                               const UpdateCounters& counters) override;
-  void OnStatusCountersUpdated(ModelType type,
-                               const StatusCounters& counters) override;
 
   // SyncStatusObserver implementation.
   void OnSyncStatusChanged(const SyncStatus& status) override;
@@ -149,14 +139,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void SendBufferedProtocolEventsAndEnableForwarding();
   void DisableProtocolEventForwarding();
 
-  // Enables the forwarding of directory type debug counters to the
-  // SyncEngineHost. Also requests that updates to all counters be emitted right
-  // away to initialize any new listeners' states.
-  void EnableDirectoryTypeDebugInfoForwarding();
-
-  // Disables forwarding of directory type debug counters.
-  void DisableDirectoryTypeDebugInfoForwarding();
-
   // Notify the syncer that the cookie jar has changed.
   void DoOnCookieJarChanged(bool account_mismatch,
                             bool empty_jar,
@@ -229,9 +211,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Set when we've been asked to forward sync protocol events to the frontend.
   bool forward_protocol_events_ = false;
-
-  // Set when the forwarding of per-type debug counters is enabled.
-  bool forward_type_info_ = false;
 
   // A map of data type -> invalidation version to track the most recently
   // received invalidation version for each type.

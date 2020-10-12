@@ -12,7 +12,7 @@ namespace syncer {
 
 class NonBlockingTypeDebugInfoEmitter : public DataTypeDebugInfoEmitter {
  public:
-  NonBlockingTypeDebugInfoEmitter(ModelType type, ObserverListType* observers);
+  explicit NonBlockingTypeDebugInfoEmitter(ModelType type);
 
   ~NonBlockingTypeDebugInfoEmitter() override;
 

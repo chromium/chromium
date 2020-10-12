@@ -166,8 +166,7 @@ TEST(NonBlockingTypeCommitContributionTest,
                      &request_data->specifics_hash);
   request_data->entity = std::move(data);
 
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS, &observers);
+  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS);
 
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::FromSingleKeyForTesting("dummy");
@@ -233,8 +232,7 @@ TEST(NonBlockingTypeCommitContributionTest,
                      &request_data->specifics_hash);
   request_data->entity = std::move(data);
 
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS, &observers);
+  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS);
 
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::FromSingleKeyForTesting("dummy");
@@ -280,8 +278,7 @@ TEST(NonBlockingTypeCommitContributionTest,
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
 
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS, &observers);
+  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS);
 
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
@@ -337,8 +334,7 @@ TEST(NonBlockingTypeCommitContributionTest,
 }
 
 TEST(NonBlockingTypeCommitContributionTest, ShouldPropagateFullCommitFailure) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter debug_info_emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter debug_info_emitter(BOOKMARKS);
 
   base::MockOnceCallback<void(SyncCommitError commit_error)>
       on_commit_failure_callback;

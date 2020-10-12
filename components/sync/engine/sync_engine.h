@@ -167,14 +167,6 @@ class SyncEngine : public ModelTypeConfigurer {
   // Disables protocol event forwarding.
   virtual void DisableProtocolEventForwarding() = 0;
 
-  // Enables the sending of directory type debug counters.  Also, for every
-  // time it is called, it makes an explicit request that updates to an update
-  // for all counters be emitted.
-  virtual void EnableDirectoryTypeDebugInfoForwarding() = 0;
-
-  // Disables the sending of directory type debug counters.
-  virtual void DisableDirectoryTypeDebugInfoForwarding() = 0;
-
   // Notify the syncer that the cookie jar has changed.
   // See SyncManager::OnCookieJarChanged.
   virtual void OnCookieJarChanged(bool account_mismatch,

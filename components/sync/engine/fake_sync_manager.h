@@ -94,13 +94,6 @@ class FakeSyncManager : public SyncManager {
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
       override;
   void RefreshTypes(ModelTypeSet types) override;
-  void RegisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) override;
-  void UnregisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) override;
-  bool HasDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) override;
-  void RequestEmitDebugInfo() override;
   void OnCookieJarChanged(bool account_mismatch, bool empty_jar) override;
   void UpdateInvalidationClientId(const std::string&) override;
 

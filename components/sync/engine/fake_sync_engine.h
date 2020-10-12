@@ -78,9 +78,6 @@ class FakeSyncEngine : public SyncEngine {
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
 
-  void EnableDirectoryTypeDebugInfoForwarding() override;
-  void DisableDirectoryTypeDebugInfoForwarding() override;
-
   void OnCookieJarChanged(bool account_mismatch,
                           bool empty_jar,
                           base::OnceClosure callback) override;

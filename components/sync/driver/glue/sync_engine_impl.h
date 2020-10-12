@@ -25,7 +25,6 @@
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/cycle/type_debug_info_observer.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_engine.h"
@@ -88,8 +87,6 @@ class SyncEngineImpl : public SyncEngine,
   void GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) const override;
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
-  void EnableDirectoryTypeDebugInfoForwarding() override;
-  void DisableDirectoryTypeDebugInfoForwarding() override;
   void OnCookieJarChanged(bool account_mismatch,
                           bool empty_jar,
                           base::OnceClosure callback) override;
@@ -134,27 +131,6 @@ class SyncEngineImpl : public SyncEngine,
   // SetForwardProtocolEvents() explicitly requested that we start forwarding
   // these events.
   void HandleProtocolEventOnFrontendLoop(std::unique_ptr<ProtocolEvent> event);
-
-  // Forwards a directory commit counter update to the frontend loop.  Will not
-  // be called unless a call to EnableDirectoryTypeDebugInfoForwarding()
-  // explicitly requested that we start forwarding these events.
-  void HandleDirectoryCommitCountersUpdatedOnFrontendLoop(
-      ModelType type,
-      const CommitCounters& counters);
-
-  // Forwards a directory update counter update to the frontend loop.  Will not
-  // be called unless a call to EnableDirectoryTypeDebugInfoForwarding()
-  // explicitly requested that we start forwarding these events.
-  void HandleDirectoryUpdateCountersUpdatedOnFrontendLoop(
-      ModelType type,
-      const UpdateCounters& counters);
-
-  // Forwards a directory status counter update to the frontend loop.  Will not
-  // be called unless a call to EnableDirectoryTypeDebugInfoForwarding()
-  // explicitly requested that we start forwarding these events.
-  void HandleDirectoryStatusCountersUpdatedOnFrontendLoop(
-      ModelType type,
-      const StatusCounters& counters);
 
   // Overwrites the kSyncInvalidationVersions preference with the most recent
   // set of invalidation versions for each type.

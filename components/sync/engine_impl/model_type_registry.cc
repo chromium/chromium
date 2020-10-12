@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/observer_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -86,8 +85,7 @@ void ModelTypeRegistry::ConnectNonBlockingType(
 
   DataTypeDebugInfoEmitter* emitter = GetEmitter(type);
   if (emitter == nullptr) {
-    auto new_emitter = std::make_unique<NonBlockingTypeDebugInfoEmitter>(
-        type, &type_debug_info_observers_);
+    auto new_emitter = std::make_unique<NonBlockingTypeDebugInfoEmitter>(type);
     emitter = new_emitter.get();
     data_type_debug_info_emitter_map_.insert(
         std::make_pair(type, std::move(new_emitter)));
@@ -174,32 +172,6 @@ CommitContributorMap* ModelTypeRegistry::commit_contributor_map() {
 
 KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
   return keystore_keys_handler_;
-}
-
-void ModelTypeRegistry::RegisterDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {
-  if (!type_debug_info_observers_.HasObserver(observer))
-    type_debug_info_observers_.AddObserver(observer);
-}
-
-void ModelTypeRegistry::UnregisterDirectoryTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {
-  type_debug_info_observers_.RemoveObserver(observer);
-}
-
-bool ModelTypeRegistry::HasDirectoryTypeDebugInfoObserver(
-    const TypeDebugInfoObserver* observer) const {
-  return type_debug_info_observers_.HasObserver(observer);
-}
-
-void ModelTypeRegistry::RequestEmitDebugInfo() {
-  for (const auto& kv : data_type_debug_info_emitter_map_) {
-    kv.second->EmitCommitCountersUpdate();
-    kv.second->EmitUpdateCountersUpdate();
-    // Although this breaks encapsulation, don't emit status counters here.
-    // They've already been asked for manually on the UI thread because USS
-    // emitters don't have a working implementation yet.
-  }
 }
 
 bool ModelTypeRegistry::HasUnsyncedItems() const {

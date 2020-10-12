@@ -44,7 +44,6 @@ class JsEventHandler;
 class ProtocolEvent;
 class SyncCycleSnapshot;
 class SyncStatusObserver;
-class TypeDebugInfoObserver;
 
 // Unless stated otherwise, all methods of SyncManager should be called on the
 // same thread.
@@ -234,19 +233,6 @@ class SyncManager {
   // Returns any buffered protocol events.  Does not clear the buffer.
   virtual std::vector<std::unique_ptr<ProtocolEvent>>
   GetBufferedProtocolEvents() = 0;
-
-  // Functions to manage registrations of DebugInfoObservers.
-  // TODO(crbug.com/923287): Delete because they no longer make any difference.
-  virtual void RegisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) = 0;
-  virtual void UnregisterDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) = 0;
-  virtual bool HasDirectoryTypeDebugInfoObserver(
-      TypeDebugInfoObserver* observer) = 0;
-
-  // Request that all current counter values be emitted as though they had just
-  // been updated.  Useful for initializing new observers' state.
-  virtual void RequestEmitDebugInfo() = 0;
 
   // Updates Sync's tracking of whether the cookie jar has a mismatch with the
   // chrome account. See ClientConfigParams proto message for more info.

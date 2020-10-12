@@ -83,9 +83,6 @@ class MockSyncService : public SyncService {
   MOCK_METHOD1(AddProtocolEventObserver, void(ProtocolEventObserver* observer));
   MOCK_METHOD1(RemoveProtocolEventObserver,
                void(ProtocolEventObserver* observer));
-  MOCK_METHOD1(AddTypeDebugInfoObserver, void(TypeDebugInfoObserver* observer));
-  MOCK_METHOD1(RemoveTypeDebugInfoObserver,
-               void(TypeDebugInfoObserver* observer));
   MOCK_METHOD0(GetJsController, base::WeakPtr<JsController>());
   MOCK_METHOD1(GetAllNodesForDebugging,
                void(base::OnceCallback<void(std::unique_ptr<base::ListValue>)>

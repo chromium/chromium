@@ -150,9 +150,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
         mock_type_processor_(nullptr),
         mock_server_(std::make_unique<SingleTypeMockServer>(model_type)),
         is_processor_disconnected_(false),
-        emitter_(std::make_unique<NonBlockingTypeDebugInfoEmitter>(
-            model_type,
-            &type_observers_)) {}
+        emitter_(
+            std::make_unique<NonBlockingTypeDebugInfoEmitter>(model_type)) {}
 
   ~ModelTypeWorkerTest() override {}
 
@@ -188,8 +187,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   void InitializeCommitOnly() {
     mock_server_ = std::make_unique<SingleTypeMockServer>(USER_EVENTS);
-    emitter_ = std::make_unique<NonBlockingTypeDebugInfoEmitter>(
-        USER_EVENTS, &type_observers_);
+    emitter_ = std::make_unique<NonBlockingTypeDebugInfoEmitter>(USER_EVENTS);
 
     // Don't set progress marker, commit only types don't use them.
     ModelTypeState initial_state;
@@ -509,8 +507,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
   MockNudgeHandler mock_nudge_handler_;
 
   bool is_processor_disconnected_;
-
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked type_observers_;
 
   std::unique_ptr<NonBlockingTypeDebugInfoEmitter> emitter_;
 

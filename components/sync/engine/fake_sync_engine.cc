@@ -81,10 +81,6 @@ void FakeSyncEngine::RequestBufferedProtocolEventsAndEnableForwarding() {}
 
 void FakeSyncEngine::DisableProtocolEventForwarding() {}
 
-void FakeSyncEngine::EnableDirectoryTypeDebugInfoForwarding() {}
-
-void FakeSyncEngine::DisableDirectoryTypeDebugInfoForwarding() {}
-
 void FakeSyncEngine::set_fail_initial_download(bool should_fail) {
   fail_initial_download_ = should_fail;
 }

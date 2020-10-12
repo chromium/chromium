@@ -11,8 +11,7 @@ namespace syncer {
 namespace {
 
 TEST(DataTypeDebugInfoEmitterTest, ShouldEmitCommitsToUMAIfChanged) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter emitter(BOOKMARKS);
 
   CommitCounters* counters = emitter.GetMutableCommitCounters();
   counters->num_deletion_commits_attempted += 3;
@@ -32,8 +31,7 @@ TEST(DataTypeDebugInfoEmitterTest, ShouldEmitCommitsToUMAIfChanged) {
 }
 
 TEST(DataTypeDebugInfoEmitterTest, ShouldNotEmitCommitsToUMAIfNotChanged) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter emitter(BOOKMARKS);
 
   base::HistogramTester histogram_tester;
   emitter.EmitCommitCountersUpdate();
@@ -43,8 +41,7 @@ TEST(DataTypeDebugInfoEmitterTest, ShouldNotEmitCommitsToUMAIfNotChanged) {
 // Tests that at each EmitCommitCountersUpdate() call, only the changes since
 // the last call to EmitCommitCountersUpdate() are reported to UMA.
 TEST(DataTypeDebugInfoEmitterTest, ShouldEmitCommitsToUMAIncrementally) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter emitter(BOOKMARKS);
 
   CommitCounters* counters = emitter.GetMutableCommitCounters();
   counters->num_deletion_commits_attempted += 3;
@@ -73,8 +70,7 @@ TEST(DataTypeDebugInfoEmitterTest, ShouldEmitCommitsToUMAIncrementally) {
 }
 
 TEST(DataTypeDebugInfoEmitterTest, ShouldEmitUpdatesToUMAIfChanged) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter emitter(BOOKMARKS);
 
   UpdateCounters* counters = emitter.GetMutableUpdateCounters();
   counters->num_initial_updates_received += 5;
@@ -95,8 +91,7 @@ TEST(DataTypeDebugInfoEmitterTest, ShouldEmitUpdatesToUMAIfChanged) {
 }
 
 TEST(DataTypeDebugInfoEmitterTest, ShouldNotEmitUpdatesToUMAIfNotChanged) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter emitter(BOOKMARKS);
 
   base::HistogramTester histogram_tester;
   emitter.EmitUpdateCountersUpdate();
@@ -106,8 +101,7 @@ TEST(DataTypeDebugInfoEmitterTest, ShouldNotEmitUpdatesToUMAIfNotChanged) {
 // Tests that at each EmitUpdateCountersUpdate() call, only the changes since
 // the last call to EmitUpdateCountersUpdate() are reported to UMA.
 TEST(DataTypeDebugInfoEmitterTest, ShouldEmitUpdatesToUMAIncrementally) {
-  base::ObserverList<TypeDebugInfoObserver>::Unchecked observers;
-  DataTypeDebugInfoEmitter emitter(BOOKMARKS, &observers);
+  DataTypeDebugInfoEmitter emitter(BOOKMARKS);
 
   UpdateCounters* counters = emitter.GetMutableUpdateCounters();
   counters->num_initial_updates_received += 5;

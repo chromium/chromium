@@ -140,12 +140,6 @@ void FakeSyncService::AddProtocolEventObserver(
 void FakeSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
-void FakeSyncService::AddTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
-void FakeSyncService::RemoveTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
 base::WeakPtr<JsController> FakeSyncService::GetJsController() {
   return base::WeakPtr<JsController>();
 }

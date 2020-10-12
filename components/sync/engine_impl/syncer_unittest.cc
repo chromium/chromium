@@ -29,9 +29,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/cycle/commit_counters.h"
-#include "components/sync/engine/cycle/status_counters.h"
-#include "components/sync/engine/cycle/update_counters.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
 #include "components/sync/engine/model_safe_worker.h"
@@ -63,82 +60,6 @@ sync_pb::EntitySpecifics MakeSpecifics(ModelType model_type) {
   sync_pb::EntitySpecifics specifics;
   AddDefaultFieldValue(model_type, &specifics);
   return specifics;
-}
-
-// A helper to hold on to the counters emitted by the sync engine.
-class TypeDebugInfoCache : public TypeDebugInfoObserver {
- public:
-  TypeDebugInfoCache();
-  ~TypeDebugInfoCache() override;
-
-  CommitCounters GetLatestCommitCounters(ModelType type) const;
-  UpdateCounters GetLatestUpdateCounters(ModelType type) const;
-  StatusCounters GetLatestStatusCounters(ModelType type) const;
-
-  // TypeDebugInfoObserver implementation.
-  void OnCommitCountersUpdated(ModelType type,
-                               const CommitCounters& counters) override;
-  void OnUpdateCountersUpdated(ModelType type,
-                               const UpdateCounters& counters) override;
-  void OnStatusCountersUpdated(ModelType type,
-                               const StatusCounters& counters) override;
-
- private:
-  std::map<ModelType, CommitCounters> commit_counters_map_;
-  std::map<ModelType, UpdateCounters> update_counters_map_;
-  std::map<ModelType, StatusCounters> status_counters_map_;
-};
-
-TypeDebugInfoCache::TypeDebugInfoCache() {}
-
-TypeDebugInfoCache::~TypeDebugInfoCache() {}
-
-CommitCounters TypeDebugInfoCache::GetLatestCommitCounters(
-    ModelType type) const {
-  auto it = commit_counters_map_.find(type);
-  if (it == commit_counters_map_.end()) {
-    return CommitCounters();
-  } else {
-    return it->second;
-  }
-}
-
-UpdateCounters TypeDebugInfoCache::GetLatestUpdateCounters(
-    ModelType type) const {
-  auto it = update_counters_map_.find(type);
-  if (it == update_counters_map_.end()) {
-    return UpdateCounters();
-  } else {
-    return it->second;
-  }
-}
-
-StatusCounters TypeDebugInfoCache::GetLatestStatusCounters(
-    ModelType type) const {
-  auto it = status_counters_map_.find(type);
-  if (it == status_counters_map_.end()) {
-    return StatusCounters();
-  } else {
-    return it->second;
-  }
-}
-
-void TypeDebugInfoCache::OnCommitCountersUpdated(
-    ModelType type,
-    const CommitCounters& counters) {
-  commit_counters_map_[type] = counters;
-}
-
-void TypeDebugInfoCache::OnUpdateCountersUpdated(
-    ModelType type,
-    const UpdateCounters& counters) {
-  update_counters_map_[type] = counters;
-}
-
-void TypeDebugInfoCache::OnStatusCountersUpdated(
-    ModelType type,
-    const StatusCounters& counters) {
-  status_counters_map_[type] = counters;
 }
 
 }  // namespace
@@ -241,8 +162,6 @@ class SyncerTest : public testing::Test,
     model_type_registry_ = std::make_unique<ModelTypeRegistry>(
         workers_, &mock_nudge_handler_, &cancelation_signal_,
         &encryption_handler_);
-    model_type_registry_->RegisterDirectoryTypeDebugInfoObserver(
-        &debug_info_cache_);
 
     EnableDatatype(BOOKMARKS);
     EnableDatatype(EXTENSIONS);
@@ -266,8 +185,6 @@ class SyncerTest : public testing::Test,
   }
 
   void TearDown() override {
-    model_type_registry_->UnregisterDirectoryTypeDebugInfoObserver(
-        &debug_info_cache_);
     mock_server_.reset();
     scheduler_.reset();
   }
@@ -278,18 +195,6 @@ class SyncerTest : public testing::Test,
     const sync_pb::ClientStatus& client_status = message.client_status();
     EXPECT_TRUE(client_status.has_hierarchy_conflict_detected());
     EXPECT_FALSE(client_status.hierarchy_conflict_detected());
-  }
-
-  CommitCounters GetCommitCounters(ModelType type) {
-    return debug_info_cache_.GetLatestCommitCounters(type);
-  }
-
-  UpdateCounters GetUpdateCounters(ModelType type) {
-    return debug_info_cache_.GetLatestUpdateCounters(type);
-  }
-
-  StatusCounters GetStatusCounters(ModelType type) {
-    return debug_info_cache_.GetLatestStatusCounters(type);
   }
 
   const std::string local_cache_guid() { return "lD16ebCGCZh+zkiZ68gWDw=="; }
@@ -345,7 +250,6 @@ class SyncerTest : public testing::Test,
   Syncer* syncer_;
 
   std::unique_ptr<SyncCycle> cycle_;
-  TypeDebugInfoCache debug_info_cache_;
   MockNudgeHandler mock_nudge_handler_;
   std::unique_ptr<ModelTypeRegistry> model_type_registry_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
