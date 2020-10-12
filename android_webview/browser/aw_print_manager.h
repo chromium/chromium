@@ -19,15 +19,6 @@ namespace android_webview {
 class AwPrintManager : public printing::PrintManager,
     public content::WebContentsUserData<AwPrintManager> {
  public:
-  // Creates an AwPrintManager for the provided WebContents. If the
-  // AwPrintManager already exists, it is destroyed and a new one is created.
-  // The returned pointer is owned by |contents|.
-  static AwPrintManager* CreateForWebContents(
-      content::WebContents* contents,
-      std::unique_ptr<printing::PrintSettings> settings,
-      int file_descriptor,
-      PdfWritingDoneCallback callback);
-
   ~AwPrintManager() override;
 
   // mojom::PrintManagerHost:
@@ -39,13 +30,15 @@ class AwPrintManager : public printing::PrintManager,
 
   bool PrintNow();
 
+  // Updates the parameters for printing.
+  void UpdateParam(std::unique_ptr<printing::PrintSettings> settings,
+                   int file_descriptor,
+                   PdfWritingDoneCallback callback);
+
  private:
   friend class content::WebContentsUserData<AwPrintManager>;
 
-  AwPrintManager(content::WebContents* contents,
-                 std::unique_ptr<printing::PrintSettings> settings,
-                 int file_descriptor,
-                 PdfWritingDoneCallback callback);
+  explicit AwPrintManager(content::WebContents* contents);
 
   // printing::PrintManager:
   void OnDidPrintDocument(
@@ -61,10 +54,10 @@ class AwPrintManager : public printing::PrintManager,
       std::unique_ptr<DelayedFrameDispatchHelper> helper,
       uint32_t page_count);
 
-  const std::unique_ptr<printing::PrintSettings> settings_;
+  std::unique_ptr<printing::PrintSettings> settings_;
 
   // The file descriptor into which the PDF of the document will be written.
-  int fd_;
+  int fd_ = -1;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
