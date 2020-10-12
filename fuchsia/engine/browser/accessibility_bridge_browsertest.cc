@@ -33,6 +33,8 @@ const char kParagraphName[] = "a third paragraph";
 const char kOffscreenNodeName[] = "offscreen node";
 const size_t kPage1NodeCount = 9;
 const size_t kPage2NodeCount = 190;
+const size_t kInitialRangeValue = 51;
+const size_t kStepSize = 3;
 
 fuchsia::math::PointF GetCenterOfBox(fuchsia::ui::gfx::BoundingBox box) {
   fuchsia::math::PointF center;
@@ -306,4 +308,38 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, PerformScrollToMakeVisible) {
   bridge->ax_tree_for_test()->GetTreeBounds(ax_node, &is_offscreen);
 
   EXPECT_FALSE(is_offscreen);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, Slider) {
+  GURL page_url(embedded_test_server()->GetURL(kPage1Path));
+  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
+      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
+      page_url.spec()));
+  navigation_listener_.RunUntilUrlAndTitleEquals(page_url, kPage1Title);
+  semantics_manager_.semantic_tree()->RunUntilNodeCountAtLeast(kPage1NodeCount);
+
+  fuchsia::accessibility::semantics::Node* node =
+      semantics_manager_.semantic_tree()->GetNodeFromRole(
+          fuchsia::accessibility::semantics::Role::SLIDER);
+  EXPECT_TRUE(node);
+  EXPECT_TRUE(node->has_states() && node->states().has_range_value());
+  EXPECT_EQ(node->states().range_value(), kInitialRangeValue);
+
+  AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
+  base::RunLoop run_loop;
+  bridge->set_event_received_callback_for_test(run_loop.QuitClosure());
+  semantics_manager_.RequestAccessibilityAction(
+      node->node_id(), fuchsia::accessibility::semantics::Action::INCREMENT);
+  semantics_manager_.RunUntilNumActionsHandledEquals(1);
+  run_loop.Run();
+
+  // Wait for the slider node to be updated, then check the value.
+  base::RunLoop run_loop2;
+  semantics_manager_.semantic_tree()->SetNodeUpdatedCallback(
+      node->node_id(), run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  node = semantics_manager_.semantic_tree()->GetNodeWithId(node->node_id());
+  EXPECT_TRUE(node->has_states() && node->states().has_range_value());
+  EXPECT_EQ(node->states().range_value(), kInitialRangeValue + kStepSize);
 }

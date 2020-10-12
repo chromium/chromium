@@ -26,6 +26,8 @@ fuchsia::accessibility::semantics::Role ConvertRole(ax::mojom::Role role) {
     return fuchsia::accessibility::semantics::Role::HEADER;
   if (role == ax::mojom::Role::kImage)
     return fuchsia::accessibility::semantics::Role::IMAGE;
+  if (role == ax::mojom::Role::kSlider)
+    return fuchsia::accessibility::semantics::Role::SLIDER;
   if (role == ax::mojom::Role::kTextField)
     return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
 
@@ -45,6 +47,23 @@ fuchsia::accessibility::semantics::Attributes ConvertAttributes(
     const std::string& description =
         node.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
     attributes.set_secondary_label(description.substr(0, MAX_LABEL_SIZE));
+  }
+
+  if (node.IsRangeValueSupported()) {
+    fuchsia::accessibility::semantics::RangeAttributes range_attributes;
+    if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange)) {
+      range_attributes.set_min_value(
+          node.GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange));
+    }
+    if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange)) {
+      range_attributes.set_max_value(
+          node.GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange));
+    }
+    if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kStepValueForRange)) {
+      range_attributes.set_step_delta(node.GetFloatAttribute(
+          ax::mojom::FloatAttribute::kStepValueForRange));
+    }
+    attributes.set_range(std::move(range_attributes));
   }
 
   return attributes;
@@ -94,6 +113,12 @@ fuchsia::accessibility::semantics::States ConvertStates(
     const std::string& value =
         node.GetStringAttribute(ax::mojom::StringAttribute::kValue);
     states.set_value(value.substr(0, MAX_LABEL_SIZE));
+  }
+
+  // The value a range element currently has.
+  if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange)) {
+    states.set_range_value(
+        node.GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange));
   }
 
   return states;
@@ -177,6 +202,12 @@ bool ConvertAction(fuchsia::accessibility::semantics::Action fuchsia_action,
   switch (fuchsia_action) {
     case fuchsia::accessibility::semantics::Action::DEFAULT:
       *mojom_action = ax::mojom::Action::kDoDefault;
+      return true;
+    case fuchsia::accessibility::semantics::Action::DECREMENT:
+      *mojom_action = ax::mojom::Action::kDecrement;
+      return true;
+    case fuchsia::accessibility::semantics::Action::INCREMENT:
+      *mojom_action = ax::mojom::Action::kIncrement;
       return true;
     case fuchsia::accessibility::semantics::Action::SHOW_ON_SCREEN:
       *mojom_action = ax::mojom::Action::kScrollToMakeVisible;
