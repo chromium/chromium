@@ -50,7 +50,7 @@ class PrivacyInfoView : public SearchResultBaseView {
   PrivacyInfoView(int info_string_id, int link_string_id);
 
  private:
-  enum class Action { kNone, kDefault, kTextLink, kCloseButton };
+  enum class Action { kNone, kTextLink, kCloseButton };
 
   void InitLayout();
   void InitInfoIcon();
