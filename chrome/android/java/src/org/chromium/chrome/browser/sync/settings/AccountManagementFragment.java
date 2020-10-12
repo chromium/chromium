@@ -211,11 +211,20 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                     SigninUtils.logEvent(
                             ProfileAccountManagementMetrics.TOGGLE_SIGNOUT, mGaiaServiceType);
 
-                    SignOutDialogFragment signOutFragment =
-                            SignOutDialogFragment.create(mGaiaServiceType);
-                    signOutFragment.setTargetFragment(AccountManagementFragment.this, 0);
-                    signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
-
+                    if (IdentityServicesProvider.get()
+                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                    .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                            != null) {
+                        // Only show the sign-out dialog if the user has given sync consent.
+                        SignOutDialogFragment signOutFragment =
+                                SignOutDialogFragment.create(mGaiaServiceType);
+                        signOutFragment.setTargetFragment(AccountManagementFragment.this, 0);
+                        signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
+                    } else {
+                        IdentityServicesProvider.get()
+                                .getSigninManager(Profile.getLastUsedRegularProfile())
+                                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, null, false);
+                    }
                     return true;
                 }
 
