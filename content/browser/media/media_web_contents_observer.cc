@@ -250,7 +250,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
         OnAudioOutputSinkChangingDisabled)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnBufferUnderflow,
                         OnBufferUnderflow)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnSeek, OnSeek)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -452,12 +451,6 @@ void MediaWebContentsObserver::OnBufferUnderflow(
     int delegate_id) {
   const MediaPlayerId id(render_frame_host, delegate_id);
   web_contents_impl()->MediaBufferUnderflow(id);
-}
-
-void MediaWebContentsObserver::OnSeek(RenderFrameHost* render_frame_host,
-                                      int delegate_id) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-  web_contents_impl()->MediaPlayerSeek(id);
 }
 
 device::mojom::WakeLock* MediaWebContentsObserver::GetAudioWakeLock() {

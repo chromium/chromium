@@ -976,11 +976,6 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   if (watch_time_reporter_)
     watch_time_reporter_->OnSeeking();
 
-  // Send the seek updates only when the seek pipeline hasn't started,
-  // OnPipelineSeeked is not called yet.
-  if (!seeking_)
-    delegate_->DidSeek(delegate_id_);
-
   // TODO(sandersd): Move |seeking_| to PipelineController.
   // TODO(sandersd): Do we want to reset the idle timer here?
   delegate_->SetIdle(delegate_id_, false);
