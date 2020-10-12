@@ -122,7 +122,9 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  void StopThrottling() { lite_video_hint_agent_->StopThrottling(); }
+  void StopThrottlingAndClearHints() {
+    lite_video_hint_agent_->StopThrottlingAndClearHints();
+  }
 
  protected:
   void SetUp() override {
@@ -278,7 +280,9 @@ TEST_F(LiteVideoHintAgentTest, MediaResponseThrottled) {
   EXPECT_TRUE(GetActiveThrottledResponses().empty());
 }
 
-TEST_F(LiteVideoHintAgentTest, StopThrottlingResumesResponsesImmediately) {
+// Permanent stop throttling should resume the responses immediately and any not
+// allow throttling for new requests.
+TEST_F(LiteVideoHintAgentTest, StopThrottlingPermanently) {
   histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
 
   // Initial response is not throttled, and the next two are throttled.
@@ -295,9 +299,15 @@ TEST_F(LiteVideoHintAgentTest, StopThrottlingResumesResponsesImmediately) {
   EXPECT_EQ(2U, GetActiveThrottledResponses().size());
 
   // Stop throttling will immediately resume.
-  StopThrottling();
+  StopThrottlingAndClearHints();
   EXPECT_FALSE(throttle_info2->is_throttled());
   EXPECT_FALSE(throttle_info3->is_throttled());
+
+  // The new responses should not be throttled.
+  EXPECT_FALSE(CreateLiteVideoURLLoaderThrottle(
+      blink::mojom::RequestContextType::FETCH));
+  EXPECT_FALSE(CreateLiteVideoURLLoaderThrottle(
+      blink::mojom::RequestContextType::FETCH));
 
   // When the throttle destroys it should get removed from active throttles.
   throttle_info2.reset();
