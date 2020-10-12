@@ -61,13 +61,6 @@ class RecordingModelTypeChangeProcessor : public FakeModelTypeChangeProcessor {
 
   MetadataBatch* metadata() const { return metadata_.get(); }
 
-  // Constructs the processor and assigns its raw pointer to the given address.
-  // This way, the tests can keep the raw pointer for verifying expectations
-  // while the unique pointer is owned by the bridge being tested.
-  static std::unique_ptr<ModelTypeChangeProcessor>
-  CreateProcessorAndAssignRawPointer(
-      RecordingModelTypeChangeProcessor** processor_address);
-
  private:
   std::multimap<std::string, std::unique_ptr<EntityData>> put_multimap_;
   std::multimap<std::string, std::unique_ptr<EntityData>> update_multimap_;

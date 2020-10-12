@@ -20,8 +20,10 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model/recording_model_type_change_processor.h"
 #include "components/sync/model/sync_metadata_store.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -34,7 +36,12 @@ using syncer::EntityData;
 using syncer::KeyAndData;
 using syncer::MetadataBatch;
 using syncer::MetadataChangeList;
+using syncer::MockModelTypeChangeProcessor;
 using syncer::RecordingModelTypeChangeProcessor;
+using testing::_;
+using testing::AllOf;
+using testing::NiceMock;
+using testing::Pointee;
 
 namespace history {
 
@@ -54,6 +61,24 @@ const char kTitle[] = "pie";
 const char kTitle2[] = "cookie";
 const char kURL[] = "http://pie.com/";
 const char kURL2[] = "http://cookie.com/";
+
+// Action SaveArgPointeeMove<k>(pointer) saves the value pointed to by the k-th
+// (0-based) argument of the mock function by moving it to *pointer.
+ACTION_TEMPLATE(SaveArgPointeeMove,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  *pointer = std::move(*testing::get<k>(args));
+}
+
+// Matches that TypedUrlSpecifics has expected URL.
+MATCHER_P(HasURLInSpecifics, url, "") {
+  return arg.specifics.typed_url().url() == url;
+}
+
+// Matches that TypedUrlSpecifics has expected title.
+MATCHER_P(HasTitleInSpecifics, title, "") {
+  return arg.specifics.typed_url().title() == title;
+}
 
 Time SinceEpoch(int64_t microseconds_since_epoch) {
   return Time::FromDeltaSinceWindowsEpoch(
@@ -277,11 +302,11 @@ class TypedURLSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     fake_history_backend_->Init(
         false, TestHistoryDatabaseParamsForPath(test_dir_.GetPath()));
-    std::unique_ptr<TypedURLSyncBridge> bridge = std::make_unique<
-        TypedURLSyncBridge>(
-        fake_history_backend_.get(), fake_history_backend_->db(),
-        RecordingModelTypeChangeProcessor::CreateProcessorAndAssignRawPointer(
-            &processor_));
+    mock_processor_.DelegateCallsByDefaultTo(&processor_);
+    std::unique_ptr<TypedURLSyncBridge> bridge =
+        std::make_unique<TypedURLSyncBridge>(
+            fake_history_backend_.get(), fake_history_backend_->db(),
+            mock_processor_.CreateForwardingProcessor());
     typed_url_sync_bridge_ = bridge.get();
     typed_url_sync_bridge_->Init();
     typed_url_sync_bridge_->history_backend_observer_.RemoveAll();
@@ -509,16 +534,20 @@ class TypedURLSyncBridgeTest : public testing::Test {
     return bridge()->sync_metadata_database_;
   }
 
-  RecordingModelTypeChangeProcessor& processor() { return *processor_; }
+  RecordingModelTypeChangeProcessor& processor() { return processor_; }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
   scoped_refptr<TestHistoryBackend> fake_history_backend_;
   TypedURLSyncBridge* typed_url_sync_bridge_;
-  // A non-owning pointer to the processor given to the bridge. Will be null
-  // before being given to the bridge, to make ownership easier.
-  RecordingModelTypeChangeProcessor* processor_ = nullptr;
+  // TODO(crbug.com/791939): should be removed after moving to
+  // |mock_processor_|.
+  RecordingModelTypeChangeProcessor processor_;
+
+  // |mock_processor_| is preferred to use instead of |processor_|. The
+  // |processor_| will be removed in following patches.
+  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 };
 
 // Add two typed urls locally and verify bridge can get them from GetAllData.
@@ -574,19 +603,16 @@ TEST_F(TypedURLSyncBridgeTest, MergeUrlNoChange) {
   sync_pb::TypedUrlSpecifics* typed_url = entity_specifics.mutable_typed_url();
   WriteToTypedUrlSpecifics(row, visits, typed_url);
 
-  StartSyncing({*typed_url});
-  EXPECT_TRUE(processor().put_multimap().empty());
+  EXPECT_CALL(mock_processor_, Put(_, _, _)).Times(0);
 
   // Even Sync already know the url, bridge still need to tell sync about
   // storage keys.
-  EXPECT_EQ(1u, processor().update_multimap().size());
-
-  // Verify processor receive correct upate storage key.
-  const auto& it = processor().update_multimap().begin();
-  EXPECT_EQ(it->first, IntToStroageKey(1));
-  EXPECT_TRUE(it->second->specifics.has_typed_url());
-  EXPECT_EQ(it->second->specifics.typed_url().url(), kURL);
-  EXPECT_EQ(it->second->specifics.typed_url().title(), kTitle);
+  const std::string expected_storage_key = IntToStroageKey(1);
+  EXPECT_CALL(mock_processor_,
+              UpdateStorageKey(
+                  AllOf(HasURLInSpecifics(kURL), HasTitleInSpecifics(kTitle)),
+                  expected_storage_key, _));
+  StartSyncing({*typed_url});
 
   // Check that the local cache was is still correct.
   VerifyAllLocalHistoryData({*typed_url});
@@ -1686,26 +1712,26 @@ TEST_F(TypedURLSyncBridgeTest, LocalExpiredTypedUrlDoNotSync) {
   row = MakeTypedUrlRow(kURL, kTitle, 1, kExpiredVisit, false, &visits);
   fake_history_backend_->SetVisitsForUrl(&row, visits);
 
-  StartSyncing(std::vector<TypedUrlSpecifics>());
-
   // Check change processor did not receive expired typed URL.
-  const auto& changes_multimap = processor().put_multimap();
-  ASSERT_EQ(0U, changes_multimap.size());
+  EXPECT_CALL(mock_processor_, Put(_, _, _)).Times(0);
+  StartSyncing(std::vector<TypedUrlSpecifics>());
 
   // Add a non expired typed URL to local.
   row = MakeTypedUrlRow(kURL, kTitle, 2, 1, false, &visits);
   fake_history_backend_->SetVisitsForUrl(&row, visits);
 
   changed_urls.push_back(row);
+  // Check change processor did not receive expired typed URL.
+  EntityData entity_data;
+  EXPECT_CALL(mock_processor_, Put(GetStorageKey(kURL), _, _))
+      .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   // Notify typed url sync service of the update.
   bridge()->OnURLsModified(fake_history_backend_.get(), changed_urls,
                            /*is_from_expiration=*/false);
 
-  // Check change processor did not receive expired typed URL.
-  ASSERT_EQ(1U, changes_multimap.size());
-
   // Get typed url specifics. Verify only a non-expired visit received.
-  sync_pb::TypedUrlSpecifics url_specifics = GetLastUpdateForURL(kURL);
+  const sync_pb::TypedUrlSpecifics& url_specifics =
+      entity_data.specifics.typed_url();
 
   EXPECT_TRUE(URLsEqual(row, url_specifics));
   ASSERT_EQ(1, url_specifics.visits_size());

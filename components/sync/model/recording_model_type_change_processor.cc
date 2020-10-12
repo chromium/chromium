@@ -61,15 +61,4 @@ std::string RecordingModelTypeChangeProcessor::TrackedAccountId() {
   return "";
 }
 
-// static
-std::unique_ptr<ModelTypeChangeProcessor>
-RecordingModelTypeChangeProcessor::CreateProcessorAndAssignRawPointer(
-    RecordingModelTypeChangeProcessor** processor_address) {
-  auto processor = std::make_unique<RecordingModelTypeChangeProcessor>();
-  *processor_address = processor.get();
-  // Not all compilers are smart enough to up cast during copy elision, so we
-  // explicitly create a correctly typed unique_ptr.
-  return base::WrapUnique(processor.release());
-}
-
 }  //  namespace syncer
