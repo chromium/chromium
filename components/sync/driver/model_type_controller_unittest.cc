@@ -175,11 +175,11 @@ class ModelTypeControllerTest : public testing::Test {
     return true;
   }
 
-  void RegisterWithBackend(bool expect_downloaded) {
+  void ActivateDataType(bool expect_downloaded) {
     auto result = expect_downloaded
                       ? DataTypeController::TYPE_ALREADY_DOWNLOADED
                       : DataTypeController::TYPE_NOT_YET_DOWNLOADED;
-    EXPECT_EQ(result, controller_.RegisterWithBackend(&configurer_));
+    EXPECT_EQ(result, controller_.ActivateDataType(&configurer_));
     // ModelTypeProcessorProxy does posting of tasks.
     base::RunLoop().RunUntilIdle();
   }
@@ -238,7 +238,7 @@ TEST_F(ModelTypeControllerTest, Activate) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(LoadModels());
   EXPECT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
-  RegisterWithBackend(/*expect_downloaded=*/false);
+  ActivateDataType(/*expect_downloaded=*/false);
   EXPECT_TRUE(processor()->is_connected());
   EXPECT_EQ(DataTypeController::RUNNING, controller()->state());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
@@ -248,7 +248,7 @@ TEST_F(ModelTypeControllerTest, ActivateWithInitialSyncDone) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(LoadModels(/*initial_sync_done=*/true));
   EXPECT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
-  RegisterWithBackend(/*expect_downloaded=*/true);
+  ActivateDataType(/*expect_downloaded=*/true);
   EXPECT_TRUE(processor()->is_connected());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
 }
@@ -282,7 +282,7 @@ TEST_F(ModelTypeControllerTest, ActivateWithError) {
 
 TEST_F(ModelTypeControllerTest, Stop) {
   ASSERT_TRUE(LoadModels());
-  RegisterWithBackend(/*expect_downloaded=*/false);
+  ActivateDataType(/*expect_downloaded=*/false);
   EXPECT_TRUE(processor()->is_connected());
   DeactivateDataTypeAndStop(STOP_SYNC);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
@@ -651,7 +651,7 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   std::move(start_callback).Run(std::move(activation_response));
   ASSERT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
 
-  RegisterWithBackend(/*expect_downloaded=*/false);
+  ActivateDataType(/*expect_downloaded=*/false);
   ASSERT_EQ(DataTypeController::RUNNING, controller()->state());
 
   // Now trigger the run-time error.

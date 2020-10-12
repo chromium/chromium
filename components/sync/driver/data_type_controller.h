@@ -40,8 +40,8 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
     FAILED           // The controller was started but encountered an error.
   };
 
-  // Returned from RegisterWithBackend.
-  enum RegisterWithBackendResult {
+  // Returned from ActivateDataType.
+  enum ActivateDataTypeResult {
     // Indicates that the initial download for this type is already complete, or
     // wasn't needed in the first place (e.g. for proxy types).
     TYPE_ALREADY_DOWNLOADED,
@@ -75,11 +75,10 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   virtual void LoadModels(const ConfigureContext& configure_context,
                           const ModelLoadCallback& model_load_callback) = 0;
 
-  // Registers with sync backend if needed. This function is called by
-  // DataTypeManager before downloading initial data. Returns whether the
-  // initial download for this type is already complete.
-  // TODO(crbug.com/647505): Rename this function to ActivateDataType().
-  virtual RegisterWithBackendResult RegisterWithBackend(
+  // Called by DataTypeManager once the local model has loaded, but before
+  // downloading initial data (if necessary). Returns whether the initial
+  // download for this type is already complete.
+  virtual ActivateDataTypeResult ActivateDataType(
       ModelTypeConfigurer* configurer) = 0;
 
   // Called by DataTypeManager to deactivate the controlled data type.

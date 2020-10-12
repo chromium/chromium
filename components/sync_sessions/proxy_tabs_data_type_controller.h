@@ -26,7 +26,7 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   // DataTypeController interface.
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  RegisterWithBackendResult RegisterWithBackend(
+  ActivateDataTypeResult ActivateDataType(
       syncer::ModelTypeConfigurer* configurer) override;
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;

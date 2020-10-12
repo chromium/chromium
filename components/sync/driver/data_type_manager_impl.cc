@@ -194,18 +194,18 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
   Restart();
 }
 
-void DataTypeManagerImpl::RegisterTypesWithBackend() {
+void DataTypeManagerImpl::ActivateDataTypes() {
   for (ModelType type : last_enabled_types_) {
     const auto& dtc_iter = controllers_->find(type);
     if (dtc_iter == controllers_->end())
       continue;
     DataTypeController* dtc = dtc_iter->second.get();
     if (dtc->state() == DataTypeController::MODEL_LOADED) {
-      // Only call RegisterWithBackend for types that completed LoadModels
+      // Only call ActivateDataType for types that completed LoadModels
       // successfully. Such types shouldn't be in an error state at the same
       // time.
       DCHECK(!data_type_status_table_.GetFailedTypes().Has(dtc->type()));
-      switch (dtc->RegisterWithBackend(configurer_)) {
+      switch (dtc->ActivateDataType(configurer_)) {
         case DataTypeController::TYPE_ALREADY_DOWNLOADED:
           // Proxy types (as opposed to protocol types) don't actually have any
           // data, so keep proxy types out of |downloaded_types_|.
@@ -348,7 +348,7 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // TODO(pavely): By now some of datatypes in |download_types_queue_| could
   // have failed loading and should be excluded from configuration. I need to
   // adjust |download_types_queue_| for such types.
-  RegisterTypesWithBackend();
+  ActivateDataTypes();
   StartNextDownload(ModelTypeSet());
 }
 

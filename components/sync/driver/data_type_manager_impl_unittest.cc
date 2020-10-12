@@ -1313,12 +1313,12 @@ TEST_F(SyncDataTypeManagerImplTest, DelayConfigureForUSSTypes) {
   // Bookmarks model isn't loaded yet and it is required to complete before
   // call to configure. Ensure that configure wasn't called.
   EXPECT_EQ(0, configurer_.configure_call_count());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->register_with_backend_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->activate_call_count());
 
   // Finishing model load should trigger configure.
   GetController(BOOKMARKS)->model()->SimulateModelStartFinished();
   EXPECT_EQ(1, configurer_.configure_call_count());
-  EXPECT_EQ(1, GetController(BOOKMARKS)->register_with_backend_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->activate_call_count());
 
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
@@ -1327,8 +1327,8 @@ TEST_F(SyncDataTypeManagerImplTest, DelayConfigureForUSSTypes) {
 }
 
 // Test that when encryption fails for a given type, the corresponding
-// controller is not told to register with its backend.
-TEST_F(SyncDataTypeManagerImplTest, RegisterWithBackendOnEncryptionError) {
+// data type is not activated.
+TEST_F(SyncDataTypeManagerImplTest, ActivateDataTypeOnEncryptionError) {
   AddController(BOOKMARKS);
   AddController(PASSWORDS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
@@ -1341,17 +1341,17 @@ TEST_F(SyncDataTypeManagerImplTest, RegisterWithBackendOnEncryptionError) {
   EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
   EXPECT_EQ(DataTypeController::MODEL_STARTING,
             GetController(PASSWORDS)->state());
-  EXPECT_EQ(0, GetController(BOOKMARKS)->register_with_backend_call_count());
-  EXPECT_EQ(0, GetController(PASSWORDS)->register_with_backend_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->activate_call_count());
+  EXPECT_EQ(0, GetController(PASSWORDS)->activate_call_count());
 
   GetController(PASSWORDS)->model()->SimulateModelStartFinished();
-  EXPECT_EQ(0, GetController(BOOKMARKS)->register_with_backend_call_count());
-  EXPECT_EQ(1, GetController(PASSWORDS)->register_with_backend_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->activate_call_count());
+  EXPECT_EQ(1, GetController(PASSWORDS)->activate_call_count());
 }
 
-// Test that RegisterWithBackend is not called for datatypes that failed
+// Test that ActivateDataType is not called for datatypes that failed
 // LoadModels().
-TEST_F(SyncDataTypeManagerImplTest, RegisterWithBackendAfterLoadModelsError) {
+TEST_F(SyncDataTypeManagerImplTest, ActivateDataTypeAfterLoadModelsError) {
   // Initiate configuration for two datatypes but block them at LoadModels.
   AddController(BOOKMARKS);
   AddController(PASSWORDS);
@@ -1369,9 +1369,9 @@ TEST_F(SyncDataTypeManagerImplTest, RegisterWithBackendAfterLoadModelsError) {
       ModelError(FROM_HERE, "test error"));
   GetController(PASSWORDS)->model()->SimulateModelStartFinished();
 
-  // RegisterWithBackend should be called for passwords, but not bookmarks.
-  EXPECT_EQ(0, GetController(BOOKMARKS)->register_with_backend_call_count());
-  EXPECT_EQ(1, GetController(PASSWORDS)->register_with_backend_call_count());
+  // ActivateDataType should be called for passwords, but not bookmarks.
+  EXPECT_EQ(0, GetController(BOOKMARKS)->activate_call_count());
+  EXPECT_EQ(1, GetController(PASSWORDS)->activate_call_count());
 }
 
 // Test that Stop with DISABLE_SYNC calls DTC Stop with CLEAR_METADATA for

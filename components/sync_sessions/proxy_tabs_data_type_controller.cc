@@ -30,8 +30,8 @@ void ProxyTabsDataTypeController::LoadModels(
   model_load_callback.Run(type(), syncer::SyncError());
 }
 
-syncer::DataTypeController::RegisterWithBackendResult
-ProxyTabsDataTypeController::RegisterWithBackend(
+syncer::DataTypeController::ActivateDataTypeResult
+ProxyTabsDataTypeController::ActivateDataType(
     syncer::ModelTypeConfigurer* configurer) {
   DCHECK(configurer);
   DCHECK_EQ(MODEL_LOADED, state_);

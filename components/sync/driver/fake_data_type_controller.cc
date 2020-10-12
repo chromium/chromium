@@ -39,10 +39,10 @@ FakeDataTypeController::GetPreconditionState() const {
   return precondition_state_;
 }
 
-DataTypeController::RegisterWithBackendResult
-FakeDataTypeController::RegisterWithBackend(ModelTypeConfigurer* configurer) {
-  ++register_with_backend_call_count_;
-  return ModelTypeController::RegisterWithBackend(configurer);
+DataTypeController::ActivateDataTypeResult
+FakeDataTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
+  ++activate_call_count_;
+  return ModelTypeController::ActivateDataType(configurer);
 }
 
 }  // namespace syncer

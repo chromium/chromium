@@ -120,8 +120,8 @@ void ModelTypeController::LoadModels(
                               base::AsWeakPtr(this)));
 }
 
-DataTypeController::RegisterWithBackendResult
-ModelTypeController::RegisterWithBackend(ModelTypeConfigurer* configurer) {
+DataTypeController::ActivateDataTypeResult
+ModelTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
   DCHECK(CalledOnValidThread());
   DCHECK(configurer);
   DCHECK(activation_response_);

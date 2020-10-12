@@ -160,8 +160,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ConfigureImpl(ModelTypeSet desired_types,
                      const ConfigureContext& context);
 
-  // Calls data type controllers of requested types to register with backend.
-  void RegisterTypesWithBackend();
+  // Calls data type controllers of requested types to activate.
+  void ActivateDataTypes();
 
   DataTypeConfigStateMap BuildDataTypeConfigStateMap(
       const ModelTypeSet& types_being_configured) const;

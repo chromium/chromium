@@ -25,18 +25,16 @@ class FakeDataTypeController : public ModelTypeController {
   // |enable_transport_only_model| is set upon construction.
   FakeModelTypeControllerDelegate* model(SyncMode sync_mode = SyncMode::kFull);
 
-  int register_with_backend_call_count() const {
-    return register_with_backend_call_count_;
-  }
+  int activate_call_count() const { return activate_call_count_; }
 
   // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;
-  RegisterWithBackendResult RegisterWithBackend(
+  ActivateDataTypeResult ActivateDataType(
       ModelTypeConfigurer* configurer) override;
 
  private:
   PreconditionState precondition_state_ = PreconditionState::kPreconditionsMet;
-  int register_with_backend_call_count_ = 0;
+  int activate_call_count_ = 0;
 };
 
 }  // namespace syncer
