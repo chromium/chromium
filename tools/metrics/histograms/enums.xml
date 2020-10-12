@@ -42016,6 +42016,7 @@ from previous Chrome versions.
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
+  <int value="-1532100164" label="WebViewMeasureScreenCoverage:enabled"/>
   <int value="-1532035450" label="DragTabsInTabletMode:disabled"/>
   <int value="-1532014193" label="disable-encryption-migration"/>
   <int value="-1530711962" label="PrivacyElevatedAndroid:disabled"/>
@@ -43839,6 +43840,7 @@ from previous Chrome versions.
   <int value="303252119" label="AutofillExpandedPopupViews:disabled"/>
   <int value="304588364" label="TextureLayerSkipWaitForActivation:enabled"/>
   <int value="304901781" label="NewUsbBackend:enabled"/>
+  <int value="305356014" label="WebViewMeasureScreenCoverage:disabled"/>
   <int value="306641800" label="AndroidSiteSettingsUIRefresh:disabled"/>
   <int value="306834044" label="webui-tab-strip"/>
   <int value="307543404" label="disable-team-drives"/>
@@ -76812,6 +76814,20 @@ Called by update_scheduler_enums.py.-->
   <int value="0" label="Same-origin redirect"/>
   <int value="1" label="Same-domain (but cross-origin) redirect"/>
   <int value="2" label="Cross-domain redirect"/>
+</enum>
+
+<enum name="WebViewOpenWebScreenPortion">
+  <int value="0" label="ZeroPercent"/>
+  <int value="1" label="TenPercent"/>
+  <int value="2" label="TwentyPercent"/>
+  <int value="3" label="ThirtyPercent"/>
+  <int value="4" label="FortyPercent"/>
+  <int value="5" label="FiftyPercent"/>
+  <int value="6" label="SixtyPercent"/>
+  <int value="7" label="SeventyPercent"/>
+  <int value="8" label="EightyPercent"/>
+  <int value="9" label="NinetyPercent"/>
+  <int value="10" label="OneHundredPercent"/>
 </enum>
 
 <enum name="WebViewOpenWebVisibility">

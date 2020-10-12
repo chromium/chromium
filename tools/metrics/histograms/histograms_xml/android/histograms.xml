@@ -2684,12 +2684,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the global visibility state of WebView in seconds. The Visible
-    bucket counts total seconds that any WebView was visible (the view itself
-    was visible, and was attached to the view hierarchy of a visible window).
-    The NotVisble bucket counts time since WebView initialization for which no
-    WebView was considered visible, or no WebView existed. The total of these
-    two buckets reflects the amount of time covered by metrics collection.
+    Records the global visibility state of WebView in seconds, updated with
+    every Metrics upload. The Visible bucket counts total seconds that any
+    WebView was visible (the view itself was visible, and was attached to the
+    view hierarchy of a visible window). The NotVisble bucket counts time since
+    WebView initialization for which no WebView was considered visible, or no
+    WebView existed. The total of these two buckets reflects the amount of time
+    covered by metrics collection.
   </summary>
 </histogram>
 
@@ -2698,14 +2699,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>idries@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records per-WebView visibility duration in seconds. The Visible bucket
-    counts the total time in seconds that each WebView was considered visible
-    (the view itself was visible, and was attached to the view hierarchy of a
-    visible window). If more than one WebView is considered visible, then each
-    WebView contributes independently. The NotVisible bucket counts the duration
-    that each WebView exists but not in a visible state. As with the Visible
-    bucket, each WebView contributes independently, and thus this bucket is not
-    incremented when no WebViews exist.
+    Records per-WebView visibility duration in seconds, updated with every
+    Metrics upload. The Visible bucket counts the total time in seconds that
+    each WebView was considered visible (the view itself was visible, and was
+    attached to the view hierarchy of a visible window). If more than one
+    WebView is considered visible, then each WebView contributes independently.
+    The NotVisible bucket counts the duration that each WebView exists but not
+    in a visible state. As with the Visible bucket, each WebView contributes
+    independently, and thus this bucket is not incremented when no WebViews
+    exist.
   </summary>
 </histogram>
 
@@ -2736,6 +2738,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     OpenWebContentNotVisible bucket records time when each WebView was not
     visible or not displaying contents which originate from an HTTP or HTTPS
     scheme.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.WebViewOpenWebVisible.ScreenPortion"
+    enum="WebViewOpenWebScreenPortion" expires_after="2021-01-01">
+  <owner>idries@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of seconds that WebView is displaying Open Web Content
+    for each bucket of screen proportion, updated with every Metrics upload. For
+    the purposes of bucketing this is rounded down.
   </summary>
 </histogram>
 

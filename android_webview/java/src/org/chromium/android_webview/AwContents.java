@@ -35,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.AnimationUtils;
 import android.view.autofill.AutofillValue;
@@ -47,11 +48,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.gfx.AwFunctor;
 import org.chromium.android_webview.gfx.AwGLFunctor;
 import org.chromium.android_webview.gfx.AwPicture;
+import org.chromium.android_webview.gfx.RectUtils;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
@@ -120,7 +123,9 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -174,6 +179,9 @@ public class AwContents implements SmartClipProvider {
     // DOM id grammar: https://www.w3.org/TR/1999/REC-html401-19991224/types.html#type-name
     private static final Pattern sDataURLWithSelectorPattern =
             Pattern.compile("^[^#]*(#[A-Za-z][A-Za-z0-9\\-_:.]*)$");
+
+    private static final HashMap<View, AwContents.AwOnPreDrawListener> sRootViewPreDrawListeners =
+            new HashMap<>();
 
     private static class ForceAuxiliaryBitmapRendering {
         private static final boolean sResult = lazyCheck();
@@ -853,6 +861,55 @@ public class AwContents implements SmartClipProvider {
             mSettings.setDIPScale(dipScale);
         }
     };
+
+    private static class AwOnPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
+        private View mRootView;
+        private List<AwContents> mAwContentsList = new ArrayList<AwContents>();
+
+        public AwOnPreDrawListener(View rootView) {
+            mRootView = rootView;
+        }
+
+        public boolean trackContents(AwContents contents) {
+            return mAwContentsList.add(contents);
+        }
+
+        public boolean unTrackContents(AwContents contents) {
+            return mAwContentsList.remove(contents);
+        }
+
+        public boolean isTracking() {
+            return mAwContentsList.size() > 0;
+        }
+
+        @Override
+        public boolean onPreDraw() {
+            if (TRACE) Log.i(TAG, "%s onPreDraw", this);
+            if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
+                List<Rect> openWebContentRects = new ArrayList<Rect>();
+                for (AwContents content : mAwContentsList) {
+                    assert !content.isDestroyed(NO_WARN);
+                    if (AwContentsJni.get().isDisplayingOpenWebContent(
+                                content.mNativeAwContents, content)) {
+                        openWebContentRects.add(content.getGlobalVisibleRect());
+                    }
+                }
+
+                Rect rootVisibleRect = new Rect((int) mRootView.getX(), (int) mRootView.getY(),
+                        (int) mRootView.getX() + mRootView.getWidth(),
+                        (int) mRootView.getY() + mRootView.getHeight());
+                int openWebPixelCoverage =
+                        RectUtils.calculatePixelsOfCoverage(rootVisibleRect, openWebContentRects);
+
+                float openWebVisiblePercentage =
+                        (float) openWebPixelCoverage / RectUtils.getRectArea(rootVisibleRect);
+
+                AwContentsJni.get().updateOpenWebScreenArea(
+                        openWebPixelCoverage, (int) openWebVisiblePercentage);
+            }
+            return true;
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
     /**
@@ -2929,6 +2986,39 @@ public class AwContents implements SmartClipProvider {
         mTemporarilyDetached = false;
         mAwViewMethods.onAttachedToWindow();
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
+
+        AwOnPreDrawListener listener = getOrCreateOnPreDrawListener(mContainerView);
+        listener.trackContents(this);
+    }
+
+    private AwOnPreDrawListener getOrCreateOnPreDrawListener(ViewGroup viewGroup) {
+        AwOnPreDrawListener listener = null;
+        View rootView = viewGroup.getRootView();
+        if (!sRootViewPreDrawListeners.containsKey(rootView)) {
+            if (TRACE) Log.i(TAG, "%s installing OnPreDraw Listener for %s", this, rootView);
+
+            ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
+            listener = new AwOnPreDrawListener(rootView);
+            viewTreeObserver.addOnPreDrawListener(listener);
+            sRootViewPreDrawListeners.put(rootView, listener);
+        } else {
+            listener = sRootViewPreDrawListeners.get(rootView);
+        }
+        return listener;
+    }
+
+    private void detachPreDrawListener() {
+        // Don't use getOrCreateOnPreDrawListener, if we have to create
+        // the listener at this point then something has gone wrong and
+        // we should fail rather than create a new one.
+        AwOnPreDrawListener listener = sRootViewPreDrawListeners.get(mContainerView.getRootView());
+        if (listener == null) return;
+
+        listener.unTrackContents(this);
+        if (listener.isTracking()) return;
+
+        if (TRACE) Log.i(TAG, "%s removing " + listener, this);
+        sRootViewPreDrawListeners.remove(mContainerView.getRootView());
     }
 
     /**
@@ -2937,6 +3027,7 @@ public class AwContents implements SmartClipProvider {
     @SuppressLint("MissingSuperCall")
     public void onDetachedFromWindow() {
         if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
+        detachPreDrawListener();
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
     }
@@ -4109,6 +4200,10 @@ public class AwContents implements SmartClipProvider {
         boolean isVisible(long nativeAwContents, AwContents caller);
         boolean isDisplayingInterstitialForTesting(long nativeAwContents, AwContents caller);
         void setDipScale(long nativeAwContents, AwContents caller, float dipScale);
+
+        boolean isDisplayingOpenWebContent(long nativeAwContents, AwContents caller);
+        void updateOpenWebScreenArea(int pixels, int percentage);
+
         void onInputEvent(long nativeAwContents, AwContents caller);
         // Returns null if save state fails.
         byte[] getOpaqueState(long nativeAwContents, AwContents caller);

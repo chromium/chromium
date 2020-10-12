@@ -83,6 +83,11 @@ public final class ProductionSupportedFlagList {
                     "Only allow extra headers added via loadUrl() to be sent to the same domain "
                             + "(eTLD+1) as the original request. Has no effect when the "
                             + "stricter same-origin feature is enabled."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE,
+                    "Measure the number of pixels occupied by one or more WebViews as a proportion "
+                            + "of the total screen size. Depending on the number of WebVieaws and "
+                            + "the size of the screen this might be expensive so hidden behind a "
+                            + "feature flag until the true runtime cost can be measured."),
             Flag.baseFeature("WebComponentsV0",
                     "Re-enables the deprecated Web Components v0 features (Shadow DOM v0, Custom "
                             + "Elements v0, and HTML Imports)."),

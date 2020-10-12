@@ -434,6 +434,14 @@ static void JNI_AwContents_SetAwDrawSWFunctionTable(JNIEnv* env,
 static void JNI_AwContents_SetAwDrawGLFunctionTable(JNIEnv* env,
                                                     jlong function_table) {}
 
+static void JNI_AwContents_UpdateOpenWebScreenArea(JNIEnv* env,
+                                                   jint pixels,
+                                                   jint percentage) {
+  AwBrowserProcess::GetInstance()
+      ->visibility_metrics_logger()
+      ->UpdateOpenWebScreenArea(pixels, percentage);
+}
+
 // static
 jint JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
   return base::subtle::NoBarrier_Load(&g_instance_count);
@@ -1197,6 +1205,12 @@ void AwContents::SetDipScale(JNIEnv* env,
                              jfloat dip_scale) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SetDipScaleInternal(dip_scale);
+}
+
+jboolean AwContents::IsDisplayingOpenWebContent(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  return GetVisibilityInfo().IsDisplayingOpenWebContent();
 }
 
 void AwContents::OnInputEvent(JNIEnv* env, const JavaParamRef<jobject>& obj) {
