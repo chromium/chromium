@@ -37,10 +37,8 @@ public class CableAuthenticatorModuleProvider extends Fragment {
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
     private static final String INSTANCE_ID_DRIVER_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.InstanceIDDriver";
-    private static final String SETTINGS_ACTIVITY_CLASS_NAME =
-            "org.chromium.chrome.modules.cablev2_authenticator.SettingsActivityClassName";
-    private static final String WRAPPER_CLASS_NAME =
-            "org.chromium.chrome.modules.cablev2_authenticator.WrapperClassName";
+    private static final String ACTIVITY_CLASS_NAME =
+            "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
     private TextView mStatus;
 
     @Override
@@ -100,10 +98,8 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         // top-level Activity in order to handle USB devices. For now, though,
         // it serves for testing.
         // TODO(agl): replace with custom top-level Activity.
-        arguments.putString(SETTINGS_ACTIVITY_CLASS_NAME,
-                "org.chromium.chrome.browser.settings.SettingsActivity");
-        arguments.putString(
-                WRAPPER_CLASS_NAME, CableAuthenticatorModuleProvider.class.getCanonicalName());
+        arguments.putString(ACTIVITY_CLASS_NAME,
+                "org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity");
         fragment.setArguments(arguments);
         transaction.replace(getId(), fragment);
         // This fragment is deliberately not added to the back-stack here so

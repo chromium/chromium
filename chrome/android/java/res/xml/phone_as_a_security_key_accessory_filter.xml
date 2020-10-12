@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This filter captures desktop Chrome (using AOA[1]) trying to use this phone
+as a security key over USB. The version string is a random, magic value
+that identifies such requests. On the desktop side this magic value is
+known as |kCableOverAOAVersion| in device/fido/fido_constants.h.
+
+[1] https://source.android.com/devices/accessories/aoa
+-->
+<resources>
+    <usb-accessory version="12eba9f901039b36"/>
+</resources>

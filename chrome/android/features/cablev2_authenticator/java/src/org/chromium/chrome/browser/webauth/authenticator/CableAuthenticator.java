@@ -107,8 +107,8 @@ class CableAuthenticator {
     }
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
-            long instanceIdDriver, String activityClassName, String fragmentClassName,
-            boolean isFcmNotification, UsbAccessory accessory) {
+            long instanceIdDriver, String activityClassName, boolean isFcmNotification,
+            UsbAccessory accessory) {
         mContext = context;
         mUi = ui;
         mCallback = ui;
@@ -129,7 +129,7 @@ class CableAuthenticator {
         assert mTaskRunner.belongsToCurrentThread();
 
         byte[] newStateBytes = CableAuthenticatorJni.get().setup(
-                instanceIdDriver, activityClassName, fragmentClassName, networkContext, stateBytes);
+                instanceIdDriver, activityClassName, networkContext, stateBytes);
         if (newStateBytes.length > 0) {
             Log.i(TAG, "Writing updated state");
             prefs.edit()
@@ -464,7 +464,7 @@ class CableAuthenticator {
     // TODO: localize
     @SuppressLint("SetTextI18n")
     @CalledByNative
-    public static void showNotification(String activityClassName, String fragmentClassName) {
+    public static void showNotification(String activityClassName) {
         Context context = ContextUtils.getApplicationContext();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -491,7 +491,6 @@ class CableAuthenticator {
         }
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra("show_fragment", fragmentClassName);
         Bundle bundle = new Bundle();
         bundle.putBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM", true);
         intent.putExtra("show_fragment_args", bundle);
@@ -519,8 +518,8 @@ class CableAuthenticator {
          * ignored. It returns an empty byte array if the given state is valid, or the new contents
          * of the persisted state otherwise.
          */
-        byte[] setup(long instanceIdDriver, String activityClassName, String fragmentClassName,
-                long networkContext, byte[] stateBytes);
+        byte[] setup(long instanceIdDriver, String activityClassName, long networkContext,
+                byte[] stateBytes);
 
         /**
          * Called to instruct the C++ code to start a new transaction using |usbDevice|.

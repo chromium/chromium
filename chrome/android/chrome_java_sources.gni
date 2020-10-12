@@ -1700,5 +1700,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webauth/Fido2CredentialRequest.java",
   "java/src/org/chromium/chrome/browser/webauth/Fido2Helper.java",
   "java/src/org/chromium/chrome/browser/webauth/HandlerResponseCallback.java",
+  "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorActivity.java",
   "java/src/org/chromium/chrome/browser/webshare/ShareServiceImplementationFactory.java",
 ]

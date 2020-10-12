@@ -95,9 +95,6 @@ struct GlobalData {
   // activity_class_name is the name of a Java class that should be the target
   // of any notifications shown.
   std::string activity_class_name;
-  // fragment_class_name is the name of a Java class that is passed to the
-  // |activity_class_name| when a notification is activated.
-  std::string fragment_class_name;
 
   // last_event stores the last cloud message received. Android strongly
   // discourages keeping state inside the notification itself. Thus
@@ -144,10 +141,8 @@ void OnContactEvent(
   global_data.last_event = std::move(event);
 
   Java_CableAuthenticator_showNotification(
-      global_data.env,
-      ConvertUTF8ToJavaString(global_data.env, global_data.activity_class_name),
-      ConvertUTF8ToJavaString(global_data.env,
-                              global_data.fragment_class_name));
+      global_data.env, ConvertUTF8ToJavaString(
+                           global_data.env, global_data.activity_class_name));
 }
 
 // AndroidBLEAdvert wraps a Java |BLEAdvert| object so that
@@ -321,7 +316,6 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
     JNIEnv* env,
     jlong instance_id_driver_long,
     const JavaParamRef<jstring>& activity_class_name,
-    const JavaParamRef<jstring>& fragment_class_name,
     jlong network_context_long,
     const JavaParamRef<jbyteArray>& state_bytes) {
   std::vector<uint8_t> serialized_state;
@@ -349,8 +343,6 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
   global_data.env = env;
   global_data.activity_class_name =
       ConvertJavaStringToUTF8(activity_class_name);
-  global_data.fragment_class_name =
-      ConvertJavaStringToUTF8(fragment_class_name);
 
   static_assert(sizeof(jlong) >= sizeof(void*), "");
   auto* instance_id_driver =

@@ -60,18 +60,15 @@ public class CableAuthenticatorUI extends Fragment
                 "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext");
         final long instanceIdDriver = arguments.getLong(
                 "org.chromium.chrome.modules.cablev2_authenticator.InstanceIDDriver");
-        final String settingsActivityClassName = arguments.getString(
-                "org.chromium.chrome.modules.cablev2_authenticator.SettingsActivityClassName");
-        final String wrapperClassName = arguments.getString(
-                "org.chromium.chrome.modules.cablev2_authenticator.WrapperClassName");
+        final String activityClassName = arguments.getString(
+                "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName");
         final boolean isFcmNotification =
                 arguments.getBoolean("org.chromium.chrome.modules.cablev2_authenticator.FCM");
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
-        mAuthenticator =
-                new CableAuthenticator(getContext(), this, networkContext, instanceIdDriver,
-                        settingsActivityClassName, wrapperClassName, isFcmNotification, accessory);
+        mAuthenticator = new CableAuthenticator(getContext(), this, networkContext,
+                instanceIdDriver, activityClassName, isFcmNotification, accessory);
     }
 
     @Override
