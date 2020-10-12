@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
@@ -19,7 +18,6 @@
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
 
 namespace base {
 
@@ -94,6 +92,10 @@ class BASE_EXPORT ThreadCacheRegistry {
   } while (0)
 #define GET_COUNTER(counter) 0
 #endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+
+ALWAYS_INLINE static constexpr int ConstexprLog2(size_t n) {
+  return n < 1 ? -1 : (n < 2 ? 0 : (1 + ConstexprLog2(n >> 1)));
+}
 
 // Per-thread cache. *Not* threadsafe, must only be accessed from a single
 // thread.
@@ -170,14 +172,11 @@ class BASE_EXPORT ThreadCache {
   };
 
   // TODO(lizeb): Optimize the threshold.
-#if defined(ARCH_CPU_64_BITS) || ENABLE_TAG_FOR_MTE_CHECKED_PTR
-  static constexpr size_t kBucketCount = 41;
-#else
-  static constexpr size_t kBucketCount = 49;
-#endif
-  // Checked in ThreadCache::Init(), not with static_assert() as the size is not
-  // set at compile-time.
   static constexpr size_t kSizeThreshold = 512;
+  static constexpr size_t kBucketCount =
+      ((ConstexprLog2(kSizeThreshold) - kMinBucketedOrder + 1)
+       << kNumBucketsPerOrderBits) +
+      1;
   static_assert(
       kBucketCount < kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
