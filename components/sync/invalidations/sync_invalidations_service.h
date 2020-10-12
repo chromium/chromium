@@ -42,7 +42,7 @@ class SyncInvalidationsService : public KeyedService {
   virtual void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) = 0;
 
   // Used to get an obtained FCM token. Returns empty string if it hasn't been
-  // received yet.
+  // received yet, or if the device has stopped listening to invalidations.
   virtual const std::string& GetFCMRegistrationToken() const = 0;
 
   // Set the interested data types change handler. |handler| can be nullptr to

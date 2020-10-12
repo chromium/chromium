@@ -51,8 +51,8 @@ class FCMHandler : public gcm::GCMAppHandler {
   // shutdown.
   void StopListening();
 
-  // Stop handling incoming invalidations and delete Instance ID. This method
-  // gets called during sign-out.
+  // Stop handling incoming invalidations and delete Instance ID. It clears the
+  // FCM registration token. This method gets called during sign-out.
   void StopListeningPermanently();
 
   // Returns if the handler is listening for incoming invalidations.
@@ -68,7 +68,7 @@ class FCMHandler : public gcm::GCMAppHandler {
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer);
 
   // Used to get an obtained FCM token. Returns empty string if it hasn't
-  // received yet.
+  // been received yet, or if the handler has stopped listening permanently.
   const std::string& GetFCMRegistrationToken() const;
 
   // GCMAppHandler overrides.

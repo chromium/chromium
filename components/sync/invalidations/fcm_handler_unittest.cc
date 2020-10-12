@@ -27,6 +27,7 @@ using instance_id::InstanceID;
 using testing::_;
 using testing::Invoke;
 using testing::NiceMock;
+using testing::Return;
 using testing::WithArg;
 
 namespace syncer {
@@ -210,6 +211,28 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
       })));
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(0);
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+}
+
+TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
+  // Check that the handler gets the token through GetToken.
+  EXPECT_CALL(mock_instance_id_, GetToken(_, _, _, _, _, _))
+      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+        std::move(callback).Run("token", InstanceID::Result::SUCCESS);
+      })));
+  fcm_handler_.StartListening();
+
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  EXPECT_CALL(mock_instance_id_driver_,
+              ExistsInstanceID(kSyncInvalidationsAppId))
+      .WillOnce(Return(true));
+  // Token should be cleared when StopListeningPermanently() is called.
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged());
+  fcm_handler_.StopListeningPermanently();
+  EXPECT_EQ("", fcm_handler_.GetFCMRegistrationToken());
 
   fcm_handler_.RemoveTokenObserver(&mock_token_observer);
 }
