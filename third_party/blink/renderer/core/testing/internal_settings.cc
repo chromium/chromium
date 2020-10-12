@@ -488,13 +488,13 @@ void InternalSettings::setImageAnimationPolicy(
   InternalSettingsGuardForSettings();
   if (EqualIgnoringASCIICase(policy, "allowed")) {
     GetSettings()->SetImageAnimationPolicy(
-        web_pref::kImageAnimationPolicyAllowed);
+        mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   } else if (EqualIgnoringASCIICase(policy, "once")) {
     GetSettings()->SetImageAnimationPolicy(
-        web_pref::kImageAnimationPolicyAnimateOnce);
+        mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   } else if (EqualIgnoringASCIICase(policy, "none")) {
     GetSettings()->SetImageAnimationPolicy(
-        web_pref::kImageAnimationPolicyNoAnimation);
+        mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

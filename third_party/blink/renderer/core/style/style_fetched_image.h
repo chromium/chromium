@@ -82,7 +82,7 @@ class StyleFetchedImage final : public StyleImage,
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;
-  bool GetImageAnimationPolicy(web_pref::ImageAnimationPolicy&) override;
+  bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) override;
 
   Member<ImageResourceContent> image_;
   Member<const Document> document_;

@@ -10,7 +10,6 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
-#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -30,16 +29,6 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::HoverType, ui::HoverType> {
   static blink::mojom::HoverType ToMojom(ui::HoverType type);
 
   static bool FromMojom(blink::mojom::HoverType input, ui::HoverType* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::ImageAnimationPolicy,
-                                      blink::web_pref::ImageAnimationPolicy> {
-  static blink::mojom::ImageAnimationPolicy ToMojom(
-      blink::web_pref::ImageAnimationPolicy policy);
-
-  static bool FromMojom(blink::mojom::ImageAnimationPolicy input,
-                        blink::web_pref::ImageAnimationPolicy* out);
 };
 
 template <>
@@ -493,7 +482,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.accelerated_video_decode_enabled;
   }
 
-  static blink::web_pref::ImageAnimationPolicy animation_policy(
+  static blink::mojom::ImageAnimationPolicy animation_policy(
       const blink::web_pref::WebPreferences& r) {
     return r.animation_policy;
   }

@@ -15,11 +15,10 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
-#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
-#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-forward.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
 
@@ -168,7 +167,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Defaults to false.
   bool accelerated_video_decode_enabled;
 
-  ImageAnimationPolicy animation_policy;
+  blink::mojom::ImageAnimationPolicy animation_policy =
+      blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
 
   bool user_gesture_required_for_presentation;
 

@@ -941,7 +941,7 @@ void ImageLoader::DispatchPendingErrorEvent(
 }
 
 bool ImageLoader::GetImageAnimationPolicy(
-    web_pref::ImageAnimationPolicy& policy) {
+    mojom::blink::ImageAnimationPolicy& policy) {
   if (!GetElement()->GetDocument().GetSettings())
     return false;
 

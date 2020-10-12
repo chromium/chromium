@@ -188,7 +188,7 @@ void StyleFetchedImage::LoadDeferredImage(const Document& document) {
 }
 
 bool StyleFetchedImage::GetImageAnimationPolicy(
-    web_pref::ImageAnimationPolicy& policy) {
+    mojom::blink::ImageAnimationPolicy& policy) {
   if (!document_ || !document_->GetSettings()) {
     return false;
   }

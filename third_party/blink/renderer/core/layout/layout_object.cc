@@ -4016,7 +4016,7 @@ bool LayoutObject::WillRenderImage() {
 }
 
 bool LayoutObject::GetImageAnimationPolicy(
-    web_pref::ImageAnimationPolicy& policy) {
+    mojom::blink::ImageAnimationPolicy& policy) {
   NOT_DESTROYED();
   if (!GetDocument().GetSettings())
     return false;

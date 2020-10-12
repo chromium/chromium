@@ -144,7 +144,8 @@ WebPreferences::WebPreferences()
       record_whole_document(false),
       cookie_enabled(true),
       accelerated_video_decode_enabled(false),
-      animation_policy(kImageAnimationPolicyAllowed),
+      animation_policy(
+          blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAllowed),
       user_gesture_required_for_presentation(true),
       text_tracks_enabled(false),
       text_track_margin_percentage(0.0f),

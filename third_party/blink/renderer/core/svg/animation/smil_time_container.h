@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_CONTAINER_H_
 
 #include "base/time/time.h"
-#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/animation/priority_queue.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time.h"
@@ -95,7 +95,7 @@ class CORE_EXPORT SMILTimeContainer final
   void ScheduleAnimationFrame(base::TimeDelta delay_time);
   void CancelAnimationFrame();
   void WakeupTimerFired(TimerBase*);
-  web_pref::ImageAnimationPolicy AnimationPolicy() const;
+  mojom::blink::ImageAnimationPolicy AnimationPolicy() const;
   bool AnimationsDisabled() const;
   class TimingUpdate;
   void UpdateAnimationsAndScheduleFrameIfNeeded(TimingUpdate&);

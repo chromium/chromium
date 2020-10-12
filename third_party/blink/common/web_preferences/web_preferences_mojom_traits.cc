@@ -77,50 +77,6 @@ bool EnumTraits<blink::mojom::HoverType, ui::HoverType>::FromMojom(
 }
 
 // static
-blink::mojom::ImageAnimationPolicy
-EnumTraits<blink::mojom::ImageAnimationPolicy,
-           blink::web_pref::ImageAnimationPolicy>::
-    ToMojom(blink::web_pref::ImageAnimationPolicy policy) {
-  switch (policy) {
-    case blink::web_pref::ImageAnimationPolicy::kImageAnimationPolicyAllowed:
-      return blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
-    case blink::web_pref::ImageAnimationPolicy::
-        kImageAnimationPolicyAnimateOnce:
-      return blink::mojom::ImageAnimationPolicy::
-          kImageAnimationPolicyAnimateOnce;
-    case blink::web_pref::ImageAnimationPolicy::
-        kImageAnimationPolicyNoAnimation:
-      return blink::mojom::ImageAnimationPolicy::
-          kImageAnimationPolicyNoAnimation;
-  }
-  NOTREACHED();
-  return blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation;
-}
-
-// static
-bool EnumTraits<blink::mojom::ImageAnimationPolicy,
-                blink::web_pref::ImageAnimationPolicy>::
-    FromMojom(blink::mojom::ImageAnimationPolicy input,
-              blink::web_pref::ImageAnimationPolicy* out) {
-  switch (input) {
-    case blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAllowed:
-      *out =
-          blink::web_pref::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
-      return true;
-    case blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce:
-      *out = blink::web_pref::ImageAnimationPolicy::
-          kImageAnimationPolicyAnimateOnce;
-      return true;
-    case blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation:
-      *out = blink::web_pref::ImageAnimationPolicy::
-          kImageAnimationPolicyNoAnimation;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 blink::mojom::ViewportStyle
 EnumTraits<blink::mojom::ViewportStyle, blink::web_pref::ViewportStyle>::
     ToMojom(blink::web_pref::ViewportStyle style) {

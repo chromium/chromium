@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNAL_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNAL_SETTINGS_H_
 
-#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -67,7 +66,7 @@ class InternalSettings final : public InternalSettingsGenerated,
     bool lang_attribute_aware_form_control_ui_enabled_;
     bool images_enabled_;
     String default_video_poster_url_;
-    web_pref::ImageAnimationPolicy original_image_animation_policy_;
+    mojom::blink::ImageAnimationPolicy original_image_animation_policy_;
     bool original_scroll_top_left_interop_enabled_;
   };
 

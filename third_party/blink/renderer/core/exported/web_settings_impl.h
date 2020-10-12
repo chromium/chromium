@@ -101,7 +101,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetHighlightAds(bool) override;
   void SetHyperlinkAuditingEnabled(bool) override;
   void SetIgnoreMainFrameOverflowHiddenQuirk(bool) override;
-  void SetImageAnimationPolicy(web_pref::ImageAnimationPolicy) override;
+  void SetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy) override;
   void SetImagesEnabled(bool) override;
   void SetInlineTextBoxAccessibilityEnabled(bool) override;
   void SetJavaScriptCanAccessClipboard(bool) override;

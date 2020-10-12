@@ -152,7 +152,7 @@ class WebSettings {
   virtual void SetHighlightAds(bool) = 0;
   virtual void SetHyperlinkAuditingEnabled(bool) = 0;
   virtual void SetIgnoreMainFrameOverflowHiddenQuirk(bool) = 0;
-  virtual void SetImageAnimationPolicy(web_pref::ImageAnimationPolicy) = 0;
+  virtual void SetImageAnimationPolicy(mojom::ImageAnimationPolicy) = 0;
   virtual void SetImagesEnabled(bool) = 0;
   virtual void SetInlineTextBoxAccessibilityEnabled(bool) = 0;
   virtual void SetJavaScriptCanAccessClipboard(bool) = 0;

@@ -235,7 +235,7 @@ void WebSettingsImpl::SetLoadsImagesAutomatically(
 }
 
 void WebSettingsImpl::SetImageAnimationPolicy(
-    web_pref::ImageAnimationPolicy policy) {
+    mojom::blink::ImageAnimationPolicy policy) {
   settings_->SetImageAnimationPolicy(policy);
 }
 

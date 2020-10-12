@@ -542,8 +542,8 @@ void ImageResourceContent::UpdateImageAnimationPolicy() {
   if (!image_)
     return;
 
-  web_pref::ImageAnimationPolicy new_policy =
-      web_pref::kImageAnimationPolicyAllowed;
+  mojom::blink::ImageAnimationPolicy new_policy =
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
   {
     ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
         this);

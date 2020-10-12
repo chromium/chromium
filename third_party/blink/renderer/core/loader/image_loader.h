@@ -135,7 +135,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   bool HadError() const { return !failed_load_url_.IsEmpty(); }
 
-  bool GetImageAnimationPolicy(web_pref::ImageAnimationPolicy&) final;
+  bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) final;
 
   ScriptPromise Decode(ScriptState*, ExceptionState&);
 

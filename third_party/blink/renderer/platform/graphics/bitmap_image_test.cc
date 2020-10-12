@@ -687,17 +687,20 @@ TEST_F(BitmapImageTestWithMockDecoder,
   // In all cases, the image shouldn't animate.
 
   // Only one loop allowed.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyAnimateOnce);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // No animation allowed.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyNoAnimation);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // Default policy.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyAllowed);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 }
@@ -716,17 +719,20 @@ TEST_F(BitmapImageTestWithMockDecoder,
   // other cases, it remains loop once.
 
   // Only one loop allowed.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyAnimateOnce);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationLoopOnce);
 
   // No animation allowed.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyNoAnimation);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // Default policy.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyAllowed);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationLoopOnce);
 }
@@ -744,17 +750,20 @@ TEST_F(BitmapImageTestWithMockDecoder,
   // The repetition count is determined by the animation policy.
 
   // Only one loop allowed.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyAnimateOnce);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationLoopOnce);
 
   // No animation allowed.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyNoAnimation);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // Default policy.
-  image_->SetAnimationPolicy(web_pref::kImageAnimationPolicyAllowed);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), repetition_count_);
 }

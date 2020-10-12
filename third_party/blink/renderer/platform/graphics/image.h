@@ -30,7 +30,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -155,9 +155,9 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool MaybeAnimated() { return false; }
 
   // Set animationPolicy
-  virtual void SetAnimationPolicy(web_pref::ImageAnimationPolicy) {}
-  virtual web_pref::ImageAnimationPolicy AnimationPolicy() {
-    return web_pref::kImageAnimationPolicyAllowed;
+  virtual void SetAnimationPolicy(mojom::blink::ImageAnimationPolicy) {}
+  virtual mojom::blink::ImageAnimationPolicy AnimationPolicy() {
+    return mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
   }
 
   // Advances an animated image. For BitmapImage (e.g., animated gifs) this

@@ -501,8 +501,8 @@
     },
     {
       name: "imageAnimationPolicy",
-      initial: "web_pref::kImageAnimationPolicyAllowed",
-      type: "web_pref::ImageAnimationPolicy",
+      initial: "mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed",
+      type: "mojom::blink::ImageAnimationPolicy",
     },
 
     // Html preload scanning is a fast, early scan of HTML documents to find loadable

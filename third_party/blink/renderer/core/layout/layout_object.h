@@ -2726,7 +2726,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   void ImageNotifyFinished(ImageResourceContent*) override;
   void NotifyImageFullyRemoved(ImageResourceContent*) override;
   bool WillRenderImage() final;
-  bool GetImageAnimationPolicy(web_pref::ImageAnimationPolicy&) final;
+  bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) final;
 
   void Remove() {
     NOT_DESTROYED();

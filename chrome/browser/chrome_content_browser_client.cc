@@ -352,10 +352,10 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
-#include "third_party/blink/public/common/web_preferences/image_animation_policy.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -3277,12 +3277,13 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       prefs->GetString(prefs::kAnimationPolicy);
   if (image_animation_policy == kAnimationPolicyOnce) {
     web_prefs->animation_policy =
-        blink::web_pref::kImageAnimationPolicyAnimateOnce;
+        blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce;
   } else if (image_animation_policy == kAnimationPolicyNone) {
     web_prefs->animation_policy =
-        blink::web_pref::kImageAnimationPolicyNoAnimation;
+        blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation;
   } else {
-    web_prefs->animation_policy = blink::web_pref::kImageAnimationPolicyAllowed;
+    web_prefs->animation_policy =
+        blink::mojom::ImageAnimationPolicy::kImageAnimationPolicyAllowed;
   }
 #endif
 
