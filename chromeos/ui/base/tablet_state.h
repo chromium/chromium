@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_BASE_TABLET_STATE_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 
 namespace ash {
 class TabletModeController;
@@ -31,12 +32,21 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
     kExitingTabletMode,
   };
 
+  class COMPONENT_EXPORT(CHROMEOS_UI_BASE) Observer {
+   public:
+    virtual void OnTabletStateChanged(State state) = 0;
+
+   protected:
+    virtual ~Observer() = default;
+  };
+
   TabletState();
   TabletState(const TabletState&) = delete;
   TabletState& operator=(const TabletState&) = delete;
   ~TabletState();
 
-  // TODO(http://crbug.com/1113900): Introduce Add|RemoveObserver support.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
@@ -48,7 +58,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState {
   // the tablet state.
   friend class ash::TabletModeController;
 
-  void SetState(State state) { state_ = state; }
+  void SetState(State state);
+
+  base::ObserverList<Observer>::Unchecked observers_;
 
   State state_ = State::kInClamshellMode;
 };
