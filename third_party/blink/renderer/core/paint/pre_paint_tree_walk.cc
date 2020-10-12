@@ -291,14 +291,6 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
   context_storage_.pop_back();
 }
 
-bool PrePaintTreeWalk::NeedsEffectiveAllowedTouchActionUpdate(
-    const LayoutObject& object,
-    PrePaintTreeWalk::PrePaintTreeWalkContext& context) const {
-  return context.effective_allowed_touch_action_changed ||
-         object.EffectiveAllowedTouchActionChanged() ||
-         object.DescendantEffectiveAllowedTouchActionChanged();
-}
-
 namespace {
 bool HasBlockingTouchEventHandler(const LocalFrame& frame,
                                   EventTarget& target) {

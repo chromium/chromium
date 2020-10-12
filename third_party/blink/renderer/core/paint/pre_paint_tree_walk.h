@@ -123,9 +123,6 @@ class CORE_EXPORT PrePaintTreeWalk {
                                      const PrePaintTreeWalkContext&);
   void UpdateAuxiliaryObjectProperties(const LayoutObject&,
                                        PrePaintTreeWalkContext&);
-
-  bool NeedsEffectiveAllowedTouchActionUpdate(const LayoutObject&,
-                                              PrePaintTreeWalkContext&) const;
   // Updates |LayoutObject::InsideBlockingTouchEventHandler|. Also ensures
   // |PrePaintTreeWalkContext.effective_allowed_touch_action_changed| is set
   // which will ensure the subtree is updated too.
