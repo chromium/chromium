@@ -114,6 +114,15 @@ VideoTrackRecorder::VideoTrackRecorder(
     base::OnceClosure on_track_source_ended_cb)
     : TrackRecorder(std::move(on_track_source_ended_cb)) {}
 
+VideoTrackRecorderImpl::CodecProfile::CodecProfile(CodecId codec_id)
+    : codec_id(codec_id) {}
+
+VideoTrackRecorderImpl::CodecProfile::CodecProfile(
+    CodecId codec_id,
+    media::VideoCodecProfile profile,
+    uint8_t level)
+    : codec_id(codec_id), profile(profile), level(level) {}
+
 VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
     const media::VideoEncodeAccelerator::SupportedProfiles&
         vea_supported_profiles) {
@@ -154,6 +163,22 @@ VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
 }
 
 VideoTrackRecorderImpl::CodecEnumerator::~CodecEnumerator() = default;
+
+media::VideoCodecProfile
+VideoTrackRecorderImpl::CodecEnumerator::FindSupportedVideoCodecProfile(
+    CodecId codec,
+    media::VideoCodecProfile profile) const {
+  const auto profiles = supported_profiles_.find(codec);
+  if (profiles == supported_profiles_.end()) {
+    return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+  }
+  for (const auto& p : profiles->value) {
+    if (p.profile == profile) {
+      return profile;
+    }
+  }
+  return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+}
 
 VideoTrackRecorderImpl::CodecId
 VideoTrackRecorderImpl::CodecEnumerator::GetPreferredCodecId() const {
@@ -483,7 +508,7 @@ bool VideoTrackRecorderImpl::CanUseAcceleratedEncoder(CodecId codec,
 }
 
 VideoTrackRecorderImpl::VideoTrackRecorderImpl(
-    CodecId codec,
+    CodecProfile codec_profile,
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
@@ -499,7 +524,7 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
 
   initialize_encoder_cb_ = WTF::BindRepeating(
       &VideoTrackRecorderImpl::InitializeEncoder, weak_factory_.GetWeakPtr(),
-      codec, std::move(on_encoded_video_cb), bits_per_second);
+      codec_profile, std::move(on_encoded_video_cb), bits_per_second);
 
   // InitializeEncoder() will be called on Render Main thread.
   ConnectToTrack(media::BindToCurrentLoop(WTF::BindRepeating(
@@ -541,7 +566,7 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
 }
 
 void VideoTrackRecorderImpl::InitializeEncoder(
-    CodecId codec,
+    CodecProfile codec_profile,
     const OnEncodedVideoCB& on_encoded_video_cb,
     int32_t bits_per_second,
     bool allow_vea_encoder,
@@ -558,22 +583,29 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   DisconnectFromTrack();
 
   const gfx::Size& input_size = frame->visible_rect().size();
-  if (allow_vea_encoder && CanUseAcceleratedEncoder(codec, input_size.width(),
-                                                    input_size.height())) {
+  if (allow_vea_encoder &&
+      CanUseAcceleratedEncoder(codec_profile.codec_id, input_size.width(),
+                               input_size.height())) {
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", true);
+
     const auto vea_profile =
-        GetCodecEnumerator()->GetFirstSupportedVideoCodecProfile(codec);
+        codec_profile.profile
+            ? GetCodecEnumerator()->FindSupportedVideoCodecProfile(
+                  codec_profile.codec_id, *codec_profile.profile)
+            : GetCodecEnumerator()->GetFirstSupportedVideoCodecProfile(
+                  codec_profile.codec_id);
+
     bool use_import_mode =
         frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
     encoder_ = VEAEncoder::Create(
         on_encoded_video_cb,
         media::BindToCurrentLoop(WTF::BindRepeating(
             &VideoTrackRecorderImpl::OnError, weak_factory_.GetWeakPtr())),
-        bits_per_second, vea_profile, input_size, use_import_mode,
-        main_task_runner_);
+        bits_per_second, vea_profile, codec_profile.level, input_size,
+        use_import_mode, main_task_runner_);
   } else {
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", false);
-    switch (codec) {
+    switch (codec_profile.codec_id) {
 #if BUILDFLAG(RTC_USE_H264)
       case CodecId::H264:
         encoder_ = base::MakeRefCounted<H264Encoder>(
@@ -583,11 +615,12 @@ void VideoTrackRecorderImpl::InitializeEncoder(
       case CodecId::VP8:
       case CodecId::VP9:
         encoder_ = base::MakeRefCounted<VpxEncoder>(
-            codec == CodecId::VP9, on_encoded_video_cb, bits_per_second,
-            main_task_runner_);
+            codec_profile.codec_id == CodecId::VP9, on_encoded_video_cb,
+            bits_per_second, main_task_runner_);
         break;
       default:
-        NOTREACHED() << "Unsupported codec " << static_cast<int>(codec);
+        NOTREACHED() << "Unsupported codec "
+                     << static_cast<int>(codec_profile.codec_id);
     }
   }
 

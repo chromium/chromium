@@ -82,6 +82,18 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     LAST
   };
 
+  // Video codec and its encoding profile/level.
+  struct MODULES_EXPORT CodecProfile {
+    CodecId codec_id;
+    base::Optional<media::VideoCodecProfile> profile;
+    base::Optional<uint8_t> level;
+
+    explicit CodecProfile(CodecId codec_id);
+    CodecProfile(CodecId codec_id,
+                 media::VideoCodecProfile profile,
+                 uint8_t level);
+  };
+
   using OnEncodedVideoCB = base::RepeatingCallback<void(
       const media::WebmMuxer::VideoParameters& params,
       std::string encoded_data,
@@ -237,6 +249,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // or VP8 if none available.
     CodecId GetPreferredCodecId() const;
 
+    // Returns supported VEA VideoCodecProfile which matches |codec| and
+    // |profile|.
+    media::VideoCodecProfile FindSupportedVideoCodecProfile(
+        CodecId codec,
+        media::VideoCodecProfile profile) const;
+
     // Returns VEA's first supported VideoCodedProfile for a given CodecId, or
     // VIDEO_CODEC_PROFILE_UNKNOWN otherwise.
     media::VideoCodecProfile GetFirstSupportedVideoCodecProfile(
@@ -287,7 +305,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
                                        double framerate = 0.0);
 
   VideoTrackRecorderImpl(
-      CodecId codec,
+      CodecProfile codec,
       MediaStreamComponent* track,
       OnEncodedVideoCB on_encoded_video_cb,
       base::OnceClosure on_track_source_ended_cb,
@@ -302,7 +320,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
 
  private:
   friend class VideoTrackRecorderTest;
-  void InitializeEncoder(CodecId codec,
+  void InitializeEncoder(CodecProfile codec,
                          const OnEncodedVideoCB& on_encoded_video_cb,
                          int32_t bits_per_second,
                          bool allow_vea_encoder,

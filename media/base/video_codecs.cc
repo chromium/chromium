@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/video_color_space.h"
 
 namespace media {
@@ -108,6 +109,50 @@ std::string GetProfileName(VideoCodecProfile profile) {
   }
   NOTREACHED();
   return "";
+}
+
+std::string BuildH264MimeSuffix(media::VideoCodecProfile profile,
+                                uint8_t level) {
+  std::string profile_str;
+  switch (profile) {
+    case media::VideoCodecProfile::H264PROFILE_BASELINE:
+      profile_str = "42";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_MAIN:
+      profile_str = "4d";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_SCALABLEBASELINE:
+      profile_str = "53";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_SCALABLEHIGH:
+      profile_str = "56";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_EXTENDED:
+      profile_str = "58";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_HIGH:
+      profile_str = "64";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_HIGH10PROFILE:
+      profile_str = "6e";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_MULTIVIEWHIGH:
+      profile_str = "76";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_HIGH422PROFILE:
+      profile_str = "7a";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_STEREOHIGH:
+      profile_str = "80";
+      break;
+    case media::VideoCodecProfile::H264PROFILE_HIGH444PREDICTIVEPROFILE:
+      profile_str = "f4";
+      break;
+    default:
+      return "";
+  }
+
+  return base::StringPrintf(".%s%04x", profile_str.c_str(), level);
 }
 
 bool ParseNewStyleVp9CodecID(const std::string& codec_id,

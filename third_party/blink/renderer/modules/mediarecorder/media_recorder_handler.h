@@ -80,7 +80,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   void Trace(Visitor*) const;
 
  private:
-  friend class MediaRecorderHandlerTest;
+  friend class MediaRecorderHandlerFixture;
   friend class MediaRecorderHandlerPassthroughTest;
 
   // Called to indicate there is encoded video data available. |encoded_alpha|
@@ -129,8 +129,8 @@ class MODULES_EXPORT MediaRecorderHandler final
   int32_t video_bits_per_second_;
   int32_t audio_bits_per_second_;
 
-  // Video Codec, VP8 is used by default.
-  VideoTrackRecorder::CodecId video_codec_id_;
+  // Video Codec and profile, VP8 is used by default.
+  VideoTrackRecorder::CodecProfile video_codec_profile_;
 
   // Audio Codec, OPUS is used by default.
   AudioTrackRecorder::CodecId audio_codec_id_;

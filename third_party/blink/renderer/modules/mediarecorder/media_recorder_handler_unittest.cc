@@ -108,11 +108,12 @@ class MockMediaRecorder : public MediaRecorder {
   MOCK_METHOD1(OnError, void(const String& message));
 };
 
-class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
-                                 public ScopedMockOverlayScrollbars {
+class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
  public:
-  MediaRecorderHandlerTest()
-      : media_recorder_handler_(MakeGarbageCollected<MediaRecorderHandler>(
+  MediaRecorderHandlerFixture(bool has_video, bool has_audio)
+      : has_video_(has_video),
+        has_audio_(has_audio),
+        media_recorder_handler_(MakeGarbageCollected<MediaRecorderHandler>(
             scheduler::GetSingleThreadTaskRunnerForTesting())),
         audio_source_(kTestAudioChannels,
                       440 /* freq */,
@@ -122,7 +123,7 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
     registry_.Init();
   }
 
-  ~MediaRecorderHandlerTest() {
+  ~MediaRecorderHandlerFixture() {
     registry_.reset();
     ThreadState::Current()->CollectAllGarbageForTesting();
   }
@@ -163,9 +164,9 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
 
   void AddTracks() {
     // Avoid issues with non-parameterized tests by calling this outside of ctr.
-    if (GetParam().has_video)
+    if (has_video_)
       AddVideoTrack();
-    if (GetParam().has_audio)
+    if (has_audio_)
       registry_.AddAudioTrack(kTestAudioTrackId);
   }
 
@@ -186,6 +187,10 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
 
   MockMediaStreamRegistry registry_;
 
+  bool has_video_;
+
+  bool has_audio_;
+
   // The Class under test. Needs to be scoped_ptr to force its destruction.
   Persistent<MediaRecorderHandler> media_recorder_handler_;
 
@@ -195,12 +200,23 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
   MockMediaStreamVideoSource* video_source_ = nullptr;
 
  private:
+  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerFixture);
+};
+
+class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
+                                 public MediaRecorderHandlerFixture {
+ public:
+  MediaRecorderHandlerTest()
+      : MediaRecorderHandlerFixture(GetParam().has_video,
+                                    GetParam().has_audio) {}
+
+ private:
   DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerTest);
 };
 
 // Checks that canSupportMimeType() works as expected, by sending supported
 // combinations and unsupported ones.
-TEST_F(MediaRecorderHandlerTest, CanSupportMimeType) {
+TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   const String unsupported_mime_type("video/mpeg");
   EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(
       unsupported_mime_type, String()));
@@ -579,6 +595,59 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   EXPECT_CALL(*recorder, WriteData(_, _, true, _)).Times(1);
   media_recorder_handler_ = nullptr;
 }
+
+#if BUILDFLAG(RTC_USE_H264)
+
+struct H264ProfileTestParams {
+  const bool has_audio;
+  const char* const mime_type;
+  const char* const codecs;
+};
+
+static const H264ProfileTestParams kH264ProfileTestParams[] = {
+    {false, "video/x-matroska", "avc1.42000c"},  // H264PROFILE_BASELINE
+    {false, "video/x-matroska", "avc1.4d000c"},  // H264PROFILE_MAIN
+    {false, "video/x-matroska", "avc1.64000c"},  // H264PROFILE_HIGH
+    {false, "video/x-matroska", "avc1.640029"},
+    {false, "video/x-matroska", "avc1.640034"},
+    {true, "video/x-matroska", "avc1.64000c,pcm"},
+};
+
+class MediaRecorderHandlerH264ProfileTest
+    : public TestWithParam<H264ProfileTestParams>,
+      public MediaRecorderHandlerFixture {
+ public:
+  MediaRecorderHandlerH264ProfileTest()
+      : MediaRecorderHandlerFixture(true, GetParam().has_audio) {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerH264ProfileTest);
+};
+
+TEST_P(MediaRecorderHandlerH264ProfileTest, ActualMimeType) {
+  AddTracks();
+
+  V8TestingScope scope;
+  auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
+
+  const String mime_type(GetParam().mime_type);
+  const String codecs(GetParam().codecs);
+  EXPECT_TRUE(media_recorder_handler_->Initialize(
+      recorder, registry_.test_stream(), mime_type, codecs, 0, 0));
+
+  String actual_mime_type =
+      String(GetParam().mime_type) + ";codecs=" + GetParam().codecs;
+
+  EXPECT_EQ(media_recorder_handler_->ActualMimeType(), actual_mime_type);
+
+  media_recorder_handler_ = nullptr;
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaRecorderHandlerH264ProfileTest,
+                         ValuesIn(kH264ProfileTestParams));
+
+#endif
 
 struct MediaRecorderPassthroughTestParams {
   const char* mime_type;

@@ -114,9 +114,13 @@ class VideoTrackRecorderTest
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  void InitializeRecorder(VideoTrackRecorder::CodecId codec) {
+  void InitializeRecorder(VideoTrackRecorder::CodecId codec_id) {
+    InitializeRecorder(VideoTrackRecorder::CodecProfile(codec_id));
+  }
+
+  void InitializeRecorder(VideoTrackRecorder::CodecProfile codec_profile) {
     video_track_recorder_ = std::make_unique<VideoTrackRecorderImpl>(
-        codec, WebMediaStreamTrack(component_.Get()),
+        codec_profile, WebMediaStreamTrack(component_.Get()),
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&VideoTrackRecorderTest::OnEncodedVideo,
                                      CrossThreadUnretained(this))),
@@ -665,6 +669,17 @@ class CodecEnumeratorTest : public ::testing::Test {
     return profiles;
   }
 
+  media::VideoEncodeAccelerator::SupportedProfiles MakeH264Profiles() {
+    media::VideoEncodeAccelerator::SupportedProfiles profiles;
+    profiles.emplace_back(media::H264PROFILE_BASELINE, gfx::Size(1920, 1080),
+                          24, 1);
+    profiles.emplace_back(media::H264PROFILE_MAIN, gfx::Size(1920, 1080), 30,
+                          1);
+    profiles.emplace_back(media::H264PROFILE_HIGH, gfx::Size(1920, 1080), 60,
+                          1);
+    return profiles;
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(CodecEnumeratorTest);
 };
@@ -718,5 +733,21 @@ TEST_F(CodecEnumeratorTest, GetFirstSupportedVideoCodecProfileNoVp8) {
   EXPECT_EQ(media::VIDEO_CODEC_PROFILE_UNKNOWN,
             emulator.GetFirstSupportedVideoCodecProfile(CodecId::VP8));
 }
+
+#if BUILDFLAG(RTC_USE_H264)
+TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileH264) {
+  const CodecEnumerator emulator(MakeH264Profiles());
+  EXPECT_EQ(media::H264PROFILE_HIGH,
+            emulator.FindSupportedVideoCodecProfile(CodecId::H264,
+                                                    media::H264PROFILE_HIGH));
+}
+
+TEST_F(CodecEnumeratorTest, FindSupportedVideoCodecProfileNoProfileH264) {
+  const CodecEnumerator emulator(MakeH264Profiles());
+  EXPECT_EQ(media::VIDEO_CODEC_PROFILE_UNKNOWN,
+            emulator.FindSupportedVideoCodecProfile(
+                CodecId::H264, media::H264PROFILE_HIGH422PROFILE));
+}
+#endif
 
 }  // namespace blink

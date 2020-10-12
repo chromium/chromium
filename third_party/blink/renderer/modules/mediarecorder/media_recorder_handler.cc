@@ -94,20 +94,36 @@ media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
 }
 
 // Extracts the first recognised CodecId of |codecs| or CodecId::LAST if none
-// of them is known.
-VideoTrackRecorder::CodecId VideoStringToCodecId(const String& codecs) {
+// of them is known. Sets codec profile and level if the information can be
+// parsed from codec suffix.
+VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
+    const String& codecs) {
   String codecs_str = codecs.LowerASCII();
+  VideoTrackRecorder::CodecId codec_id = VideoTrackRecorder::CodecId::LAST;
 
   if (codecs_str.Find("vp8") != kNotFound)
-    return VideoTrackRecorder::CodecId::VP8;
+    codec_id = VideoTrackRecorder::CodecId::VP8;
   if (codecs_str.Find("vp9") != kNotFound)
-    return VideoTrackRecorder::CodecId::VP9;
+    codec_id = VideoTrackRecorder::CodecId::VP9;
 #if BUILDFLAG(RTC_USE_H264)
-  if (codecs_str.Find("h264") != kNotFound ||
-      codecs_str.Find("avc1") != kNotFound)
-    return VideoTrackRecorder::CodecId::H264;
+  if (codecs_str.Find("h264") != kNotFound)
+    codec_id = VideoTrackRecorder::CodecId::H264;
+  wtf_size_t avc1_start = codecs_str.Find("avc1");
+  if (avc1_start != kNotFound) {
+    codec_id = VideoTrackRecorder::CodecId::H264;
+
+    wtf_size_t avc1_end = codecs_str.Find(",");
+    String avc1_str =
+        codecs_str
+            .Substring(avc1_start, avc1_end == kNotFound ? UINT_MAX : avc1_end)
+            .StripWhiteSpace();
+    media::VideoCodecProfile profile;
+    uint8_t level;
+    if (media::ParseAVCCodecId(avc1_str.Ascii(), &profile, &level))
+      return {codec_id, profile, level};
+  }
 #endif
-  return VideoTrackRecorder::CodecId::LAST;
+  return VideoTrackRecorder::CodecProfile(codec_id);
 }
 
 AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
@@ -128,7 +144,7 @@ MediaRecorderHandler::MediaRecorderHandler(
     : passthrough_enabled_(false),
       video_bits_per_second_(0),
       audio_bits_per_second_(0),
-      video_codec_id_(VideoTrackRecorder::CodecId::LAST),
+      video_codec_profile_(VideoTrackRecorder::CodecId::LAST),
       audio_codec_id_(AudioTrackRecorder::CodecId::LAST),
       recording_(false),
       recorder_(nullptr),
@@ -204,14 +220,13 @@ bool MediaRecorderHandler::Initialize(MediaRecorder* recorder,
   passthrough_enabled_ = type.IsEmpty();
 
   // Once established that we support the codec(s), hunt then individually.
-  const VideoTrackRecorder::CodecId video_codec_id =
-      VideoStringToCodecId(codecs);
-  video_codec_id_ = (video_codec_id != VideoTrackRecorder::CodecId::LAST)
-                        ? video_codec_id
-                        : VideoTrackRecorderImpl::GetPreferredCodecId();
-  DVLOG_IF(1, video_codec_id == VideoTrackRecorder::CodecId::LAST)
-      << "Falling back to preferred video codec id "
-      << static_cast<int>(video_codec_id_);
+  video_codec_profile_ = VideoStringToCodecProfile(codecs);
+  if (video_codec_profile_.codec_id == VideoTrackRecorder::CodecId::LAST) {
+    video_codec_profile_.codec_id =
+        VideoTrackRecorderImpl::GetPreferredCodecId();
+    DVLOG(1) << "Falling back to preferred video codec id "
+             << static_cast<int>(video_codec_profile_.codec_id);
+  }
 
   // Do the same for the audio codec(s).
   const AudioTrackRecorder::CodecId audio_codec_id =
@@ -303,9 +318,9 @@ bool MediaRecorderHandler::Start(int timeslice) {
           media::BindToCurrentLoop(WTF::BindRepeating(
               &MediaRecorderHandler::OnEncodedVideo, WrapWeakPersistent(this)));
       video_recorders_.emplace_back(std::make_unique<VideoTrackRecorderImpl>(
-          video_codec_id_, video_tracks_[0], std::move(on_encoded_video_cb),
-          std::move(on_track_source_changed_cb), video_bits_per_second_,
-          task_runner_));
+          video_codec_profile_, video_tracks_[0],
+          std::move(on_encoded_video_cb), std::move(on_track_source_changed_cb),
+          video_bits_per_second_, task_runner_));
     }
   }
 
@@ -397,7 +412,7 @@ void MediaRecorderHandler::EncodingInfo(
   if (configuration.video_configuration && info->supported) {
     const bool is_likely_accelerated =
         VideoTrackRecorderImpl::CanUseAcceleratedEncoder(
-            VideoStringToCodecId(codec),
+            VideoStringToCodecProfile(codec).codec_id,
             configuration.video_configuration->width,
             configuration.video_configuration->height,
             configuration.video_configuration->framerate);
@@ -437,7 +452,7 @@ String MediaRecorderHandler::ActualMimeType() {
   if (!has_video_tracks && has_audio_tracks) {
     mime_type.Append("audio/webm;codecs=");
   } else {
-    switch (video_codec_id_) {
+    switch (video_codec_profile_.codec_id) {
       case VideoTrackRecorder::CodecId::VP8:
       case VideoTrackRecorder::CodecId::VP9:
         mime_type.Append("video/webm;codecs=");
@@ -453,7 +468,7 @@ String MediaRecorderHandler::ActualMimeType() {
     }
   }
   if (has_video_tracks) {
-    switch (video_codec_id_) {
+    switch (video_codec_profile_.codec_id) {
       case VideoTrackRecorder::CodecId::VP8:
         mime_type.Append("vp8");
         break;
@@ -463,6 +478,12 @@ String MediaRecorderHandler::ActualMimeType() {
 #if BUILDFLAG(RTC_USE_H264)
       case VideoTrackRecorder::CodecId::H264:
         mime_type.Append("avc1");
+        if (video_codec_profile_.profile && video_codec_profile_.level) {
+          mime_type.Append(
+              media::BuildH264MimeSuffix(*video_codec_profile_.profile,
+                                         *video_codec_profile_.level)
+                  .c_str());
+        }
         break;
 #endif
       case VideoTrackRecorder::CodecId::LAST:
@@ -470,7 +491,7 @@ String MediaRecorderHandler::ActualMimeType() {
     }
   }
   if (has_video_tracks && has_audio_tracks) {
-    if (video_codec_id_ != VideoTrackRecorder::CodecId::LAST &&
+    if (video_codec_profile_.codec_id != VideoTrackRecorder::CodecId::LAST &&
         audio_codec_id_ != AudioTrackRecorder::CodecId::LAST) {
       mime_type.Append(",");
     }
@@ -484,7 +505,8 @@ String MediaRecorderHandler::ActualMimeType() {
         mime_type.Append("pcm");
         break;
       case AudioTrackRecorder::CodecId::LAST:
-        DCHECK_NE(video_codec_id_, VideoTrackRecorder::CodecId::LAST);
+        DCHECK_NE(video_codec_profile_.codec_id,
+                  VideoTrackRecorder::CodecId::LAST);
     }
   }
   return mime_type.ToString();
@@ -502,7 +524,8 @@ void MediaRecorderHandler::OnEncodedVideo(
     return;
 
   auto params_with_codec = params;
-  params_with_codec.codec = MediaVideoCodecFromCodecId(video_codec_id_);
+  params_with_codec.codec =
+      MediaVideoCodecFromCodecId(video_codec_profile_.codec_id);
   HandleEncodedVideo(params_with_codec, std::move(encoded_data),
                      std::move(encoded_alpha), timestamp, is_key_frame);
 }
@@ -515,8 +538,8 @@ void MediaRecorderHandler::OnPassthroughVideo(
     bool is_key_frame) {
   DCHECK(IsMainThread());
 
-  // Update |video_codec_id_| so that ActualMimeType() works.
-  video_codec_id_ = CodecIdFromMediaVideoCodec(params.codec);
+  // Update |video_codec_profile_| so that ActualMimeType() works.
+  video_codec_profile_.codec_id = CodecIdFromMediaVideoCodec(params.codec);
   HandleEncodedVideo(params, std::move(encoded_data), std::move(encoded_alpha),
                      timestamp, is_key_frame);
 }

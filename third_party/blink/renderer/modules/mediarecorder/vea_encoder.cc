@@ -40,12 +40,13 @@ scoped_refptr<VEAEncoder> VEAEncoder::Create(
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
     int32_t bits_per_second,
     media::VideoCodecProfile codec,
+    base::Optional<uint8_t> level,
     const gfx::Size& size,
     bool use_native_input,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   auto encoder = base::AdoptRef(new VEAEncoder(on_encoded_video_cb, on_error_cb,
-                                               bits_per_second, codec, size,
-                                               std::move(task_runner)));
+                                               bits_per_second, codec, level,
+                                               size, std::move(task_runner)));
   PostCrossThreadTask(
       *encoder->encoding_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&VEAEncoder::ConfigureEncoderOnEncodingTaskRunner,
@@ -62,6 +63,7 @@ VEAEncoder::VEAEncoder(
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
     int32_t bits_per_second,
     media::VideoCodecProfile codec,
+    base::Optional<uint8_t> level,
     const gfx::Size& size,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : Encoder(on_encoded_video_cb,
@@ -71,6 +73,7 @@ VEAEncoder::VEAEncoder(
               Platform::Current()->GetGpuFactories()->GetTaskRunner()),
       gpu_factories_(Platform::Current()->GetGpuFactories()),
       codec_(codec),
+      level_(level),
       error_notified_(false),
       num_frames_after_keyframe_(0),
       force_next_frame_to_be_keyframe_(false),
@@ -310,7 +313,7 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
 
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, codec_, bits_per_second_,
-      base::nullopt, base::nullopt, base::nullopt, false, storage_type,
+      base::nullopt, base::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ || !video_encoder_->Initialize(config, this))
     NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
