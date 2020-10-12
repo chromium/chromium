@@ -129,6 +129,7 @@ static_library("exo") {
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
+      "//chromeos/ui/frame",
       "//ui/events/ozone/layout",
     ]
     sources += [
@@ -302,6 +303,7 @@ source_set("unit_tests") {
       "//ash/keyboard/ui",
       "//ash/public/cpp",
       "//chromeos/constants",
+      "//chromeos/ui/frame",
       "//ui/base:test_support",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/base/dragdrop/mojom:mojom_shared",

@@ -26,9 +26,9 @@ class WebAppNonClientFrameViewAshTest;
 class ProfileIndicatorIcon;
 class TabIconView;
 
-namespace ash {
+namespace chromeos {
 class FrameCaptionButtonContainerView;
-}  // namespace ash
+}  // namespace chromeos
 
 // Provides the BrowserNonClientFrameView for Chrome OS.
 class BrowserNonClientFrameViewAsh
@@ -202,7 +202,8 @@ class BrowserNonClientFrameViewAsh
   aura::Window* GetFrameWindow();
 
   // View which contains the window controls.
-  ash::FrameCaptionButtonContainerView* caption_button_container_ = nullptr;
+  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
+      nullptr;
 
   // For popups, the window icon.
   TabIconView* window_icon_ = nullptr;

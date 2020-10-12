@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 
 #include <memory>
 
-#include "ash/public/cpp/caption_buttons/snap_controller.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -277,7 +277,7 @@ const views::FrameCaptionButton* FrameSizeButton::GetButtonToHover(
       HitTestButton(closest_button, event_location_in_screen)) {
     return closest_button;
   }
-  return NULL;
+  return nullptr;
 }
 
 bool FrameSizeButton::CommitSnap(const ui::LocatedEvent& event) {
@@ -313,4 +313,4 @@ void FrameSizeButton::SetButtonsToNormalMode(
   delegate_->SetButtonsToNormal(animate);
 }
 
-}  // namespace ash
+}  // namespace chromeos

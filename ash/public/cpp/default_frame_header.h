@@ -21,9 +21,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT DefaultFrameHeader : public FrameHeader {
  public:
   // DefaultFrameHeader does not take ownership of any of the parameters.
-  DefaultFrameHeader(views::Widget* target_widget,
-                     views::View* header_view,
-                     FrameCaptionButtonContainerView* caption_button_container);
+  DefaultFrameHeader(
+      views::Widget* target_widget,
+      views::View* header_view,
+      chromeos::FrameCaptionButtonContainerView* caption_button_container);
   ~DefaultFrameHeader() override;
 
   SkColor active_frame_color_for_testing() { return active_frame_color_; }

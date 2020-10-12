@@ -5,7 +5,7 @@
 #include "ash/assistant/assistant_web_view_delegate_impl.h"
 
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/views/window/non_client_view.h"
@@ -14,7 +14,8 @@ namespace ash {
 
 namespace {
 
-class AssistantWebContainerCaptionButtonModel : public CaptionButtonModel {
+class AssistantWebContainerCaptionButtonModel
+    : public chromeos::CaptionButtonModel {
  public:
   AssistantWebContainerCaptionButtonModel() = default;
   ~AssistantWebContainerCaptionButtonModel() override = default;

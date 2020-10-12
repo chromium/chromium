@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -17,6 +17,8 @@
 #include "ui/views/window/vector_icons/vector_icons.h"
 
 namespace ash {
+
+using ::chromeos::FrameCaptionButtonContainerView;
 
 class FrameCaptionButtonContainerViewTest : public AshTestBase {
  public:
@@ -212,7 +214,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonTrue) {
 // Test that the close button is not visible when
 // |ShouldShowCloseButton()| returns false.
 TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonFalse) {
-  FrameCaptionButtonContainerView container(CreateTestWidget(
+  chromeos::FrameCaptionButtonContainerView container(CreateTestWidget(
       MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_NOT_VISIBLE));
   InitContainer(&container);
   container.Layout();

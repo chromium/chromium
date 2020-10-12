@@ -6,7 +6,6 @@
 
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/window_properties.h"
@@ -15,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/display/display.h"
@@ -78,7 +78,7 @@ void WideFrameView::Init(ImmersiveFullscreenController* controller) {
 }
 
 void WideFrameView::SetCaptionButtonModel(
-    std::unique_ptr<CaptionButtonModel> model) {
+    std::unique_ptr<chromeos::CaptionButtonModel> model) {
   header_view_->caption_button_container()->SetModel(std::move(model));
   header_view_->UpdateCaptionButtons();
 }

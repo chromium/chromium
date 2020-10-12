@@ -5,12 +5,12 @@
 #include "ash/public/cpp/default_frame_header.h"
 
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/caption_buttons/caption_button_model.h"
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -64,7 +64,7 @@ namespace ash {
 DefaultFrameHeader::DefaultFrameHeader(
     views::Widget* target_widget,
     views::View* header_view,
-    FrameCaptionButtonContainerView* caption_button_container)
+    chromeos::FrameCaptionButtonContainerView* caption_button_container)
     : FrameHeader(target_widget, header_view) {
   DCHECK(caption_button_container);
   SetCaptionButtonContainer(caption_button_container);

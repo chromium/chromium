@@ -6,9 +6,9 @@
 #define ASH_FRAME_WIDE_FRAME_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -44,7 +44,8 @@ class ASH_EXPORT WideFrameView : public views::WidgetDelegateView,
   void Init(ImmersiveFullscreenController* controller);
 
   // Set the caption model for caption buttions on this frame.
-  void SetCaptionButtonModel(std::unique_ptr<CaptionButtonModel> mode);
+  void SetCaptionButtonModel(
+      std::unique_ptr<chromeos::CaptionButtonModel> mode);
 
   HeaderView* header_view() { return header_view_; }
 

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 
 #include <cmath>
 #include <map>
 
-#include "ash/public/cpp/caption_buttons/caption_button_model.h"
-#include "ash/public/cpp/caption_buttons/frame_size_button.h"
-#include "ash/public/cpp/caption_buttons/snap_controller.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,7 +31,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/frame_caption_button.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -473,7 +473,7 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
   views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
                                           size_button_, close_button_};
   int min_squared_distance = INT_MAX;
-  views::FrameCaptionButton* closest_button = NULL;
+  views::FrameCaptionButton* closest_button = nullptr;
   for (size_t i = 0; i < base::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
     if (!button->GetVisible())
@@ -520,4 +520,4 @@ void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
   SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap);
 }
 
-}  // namespace ash
+}  // namespace chromeos

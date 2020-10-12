@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_CAPTION_BUTTON_CONTAINER_VIEW_H_
-#define ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_CAPTION_BUTTON_CONTAINER_VIEW_H_
+#ifndef CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_CAPTION_BUTTON_CONTAINER_VIEW_H_
+#define CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_CAPTION_BUTTON_CONTAINER_VIEW_H_
 
 #include <map>
 
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/caption_buttons/caption_button_model.h"
-#include "ash/public/cpp/caption_buttons/frame_size_button_delegate.h"
-#include "ash/public/cpp/caption_buttons/snap_controller.h"
+#include "base/component_export.h"
 #include "base/macros.h"
+#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -26,11 +26,15 @@ namespace views {
 class Widget;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Container view for the frame caption buttons. It performs the appropriate
 // action when a caption button is clicked.
-class ASH_PUBLIC_EXPORT FrameCaptionButtonContainerView
+//
+// NOTE: The associated test (frame_caption_button_container_view_unittest.cc)
+// is in //ash because it needs ash test support (AshTestBase and its
+// utilities).
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
     : public views::View,
       public views::ButtonListener,
       public FrameSizeButtonDelegate,
@@ -43,7 +47,7 @@ class ASH_PUBLIC_EXPORT FrameCaptionButtonContainerView
   ~FrameCaptionButtonContainerView() override;
 
   // For testing.
-  class ASH_PUBLIC_EXPORT TestApi {
+  class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) TestApi {
    public:
     explicit TestApi(FrameCaptionButtonContainerView* container_view)
         : container_view_(container_view) {}
@@ -166,6 +170,6 @@ class ASH_PUBLIC_EXPORT FrameCaptionButtonContainerView
   DISALLOW_COPY_AND_ASSIGN(FrameCaptionButtonContainerView);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_CAPTION_BUTTON_CONTAINER_VIEW_H_
+#endif  // CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_CAPTION_BUTTON_CONTAINER_VIEW_H_
