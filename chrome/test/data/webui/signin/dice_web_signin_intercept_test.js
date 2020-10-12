@@ -35,6 +35,8 @@ suite('DiceWebSigninInterceptTest', function() {
       headerText: 'header_text',
       bodyTitle: 'body_title',
       bodyText: 'body_text',
+      confirmButtonLabel: 'confirm_label',
+      cancelButtonLabel: 'cancel_label',
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
@@ -55,13 +57,18 @@ suite('DiceWebSigninInterceptTest', function() {
    * @param {string} expectedBodyText
    */
   function checkTextValues(
-      expectedHeaderText, expectedBodyTitle, expectedBodyText) {
+      expectedHeaderText, expectedBodyTitle, expectedBodyText,
+      expectedConfirmLabel, expectedCancelLabel) {
     const headerTextElement = app.$$('#headerText');
     assertEquals(expectedHeaderText, headerTextElement.textContent);
     const titleElement = app.$$('#title');
     assertEquals(expectedBodyTitle, titleElement.textContent);
     const contentsElement = app.$$('#contents');
     assertEquals(expectedBodyText, contentsElement.textContent);
+    const confirmButton = app.$$('#acceptButton');
+    assertEquals(expectedConfirmLabel, confirmButton.textContent.trim());
+    const cancelButton = app.$$('#cancelButton');
+    assertEquals(expectedCancelLabel, cancelButton.textContent.trim());
   }
 
   function checkImageUrl(elementId, expectedUrl) {
@@ -84,18 +91,24 @@ suite('DiceWebSigninInterceptTest', function() {
 
   test('TextValues', function() {
     // Initial values.
-    checkTextValues('header_text', 'body_title', 'body_text');
+    checkTextValues(
+        'header_text', 'body_title', 'body_text', 'confirm_label',
+        'cancel_label');
 
     // Update the values.
     fireParametersChanged({
       headerText: 'new_header_text',
       bodyTitle: 'new_body_title',
       bodyText: 'new_body_text',
+      confirmButtonLabel: 'new_confirm_label',
+      cancelButtonLabel: 'new_cancel_label',
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
     });
-    checkTextValues('new_header_text', 'new_body_title', 'new_body_text');
+    checkTextValues(
+        'new_header_text', 'new_body_title', 'new_body_text',
+        'new_confirm_label', 'new_cancel_label');
   });
 
   test('Avatars', function() {
@@ -107,6 +120,8 @@ suite('DiceWebSigninInterceptTest', function() {
       headerText: 'header_text',
       bodyTitle: 'body_title',
       bodyText: 'body_text',
+      confirmButtonLabel: 'confirm_label',
+      cancelButtonLabel: 'cancel_label',
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},

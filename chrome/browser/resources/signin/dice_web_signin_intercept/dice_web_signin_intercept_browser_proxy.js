@@ -22,6 +22,8 @@ export let AccountInfo;
  *   headerText: string,
  *   bodyTitle: string,
  *   bodyText: string,
+ *   confirmButtonLabel: string,
+ *   cancelButtonLabel: string,
  *   headerTextColor: string,
  *   headerBackgroundColor: string,
  *   interceptedAccount: AccountInfo,

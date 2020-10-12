@@ -8,10 +8,8 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -31,17 +29,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
-
-  // Localized strings.
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"diceWebSigninInterceptAcceptLabel",
-       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL},
-      {"diceWebSigninInterceptCancelLabel",
-       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL},
-  };
-  webui::AddLocalizedStringsBulk(source, kLocalizedStrings);
 
   // Resources for testing.
   source->OverrideContentSecurityPolicy(

@@ -154,10 +154,25 @@ base::Value DiceWebSigninInterceptHandler::GetAccountInfoValue(
 }
 
 base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
+  bool is_switch =
+      bubble_parameters_.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
+  int confirmButtonStringID =
+      is_switch
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL;
+  int cancelButtonStringID =
+      is_switch
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL;
   base::Value parameters(base::Value::Type::DICTIONARY);
   parameters.SetStringKey("headerText", GetHeaderText());
   parameters.SetStringKey("bodyTitle", GetBodyTitle());
   parameters.SetStringKey("bodyText", GetBodyText());
+  parameters.SetStringKey("confirmButtonLabel",
+                          l10n_util::GetStringUTF8(confirmButtonStringID));
+  parameters.SetStringKey("cancelButtonLabel",
+                          l10n_util::GetStringUTF8(cancelButtonStringID));
   parameters.SetKey("interceptedAccount",
                     GetAccountInfoValue(intercepted_account()));
   parameters.SetStringKey("headerBackgroundColor",
@@ -194,8 +209,8 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
       return l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_TITLE);
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      // TODO: use localized string once it's available.
-      return "Switch profile";
+      return l10n_util::GetStringUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE);
   }
 }
 
@@ -222,10 +237,9 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
           IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
           base::UTF8ToUTF16(intercepted_account().given_name));
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      // TODO: use localized string once it's available.
-      return base::StringPrintf(
-          "This account is already signed in in a different profile. Would "
-          "you like to switch to %s's profile?",
-          intercepted_account().given_name.c_str());
+      return l10n_util::GetStringFUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC,
+          base::UTF8ToUTF16(intercepted_account().email),
+          base::UTF8ToUTF16(intercepted_account().given_name));
   }
 }
