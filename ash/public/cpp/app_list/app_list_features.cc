@@ -15,8 +15,6 @@ const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableSettingsShortcutSearch{
     "EnableSettingsShortcutSearch", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableZeroStateSuggestions{
-    "EnableZeroStateSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppListSearchAutocomplete{
     "EnableAppListSearchAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppRanker{"EnableAppRanker",
@@ -63,10 +61,6 @@ bool IsAppDataSearchEnabled() {
 
 bool IsSettingsShortcutSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableSettingsShortcutSearch);
-}
-
-bool IsZeroStateSuggestionsEnabled() {
-  return base::FeatureList::IsEnabled(kEnableZeroStateSuggestions);
 }
 
 bool IsAppListSearchAutocompleteEnabled() {

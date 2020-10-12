@@ -1291,48 +1291,31 @@ TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
 }
 
 // Tests that key event which is not handled by focused view will be redirected
-// to search box.
+// to search box when search box view is active (but not focused).
 TEST_F(AppListViewFocusTest, RedirectFocusToSearchBox) {
-  // UI behavior is different with Zero State enabled. This test is
-  // the expected UI behavior with zero state feature being disabled.
-  // TODO(jennyz): Add new test case for UI behavior for zero state.
-  // crbug.com/925195.
-  scoped_feature_list_.InitAndDisableFeature(
-      app_list_features::kEnableZeroStateSuggestions);
-  EXPECT_FALSE(app_list_features::IsZeroStateSuggestionsEnabled());
-
   Show();
 
   // Set focus to first suggestion app and type a character.
   GetAllSuggestions()[0]->RequestFocus();
-  SimulateKeyPress(ui::VKEY_SPACE, false);
-  EXPECT_EQ(search_box_view()->search_box(), focused_view());
-  EXPECT_EQ(search_box_view()->search_box()->GetText(), base::UTF8ToUTF16(" "));
-  EXPECT_FALSE(search_box_view()->search_box()->HasSelection());
-
-  // UI and Focus behavior is different with Zero State enabled.
-  // Set focus to expand arrow and type a character.
-  expand_arrow_view()->RequestFocus();
   SimulateKeyPress(ui::VKEY_A, false);
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
-  EXPECT_EQ(search_box_view()->search_box()->GetText(),
-            base::UTF8ToUTF16(" a"));
+  EXPECT_EQ(search_box_view()->search_box()->GetText(), base::UTF8ToUTF16("a"));
   EXPECT_FALSE(search_box_view()->search_box()->HasSelection());
 
   // Set focus to close button and type a character.
   search_box_view()->close_button()->RequestFocus();
+  EXPECT_NE(search_box_view()->search_box(), focused_view());
   SimulateKeyPress(ui::VKEY_B, false);
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(search_box_view()->search_box()->GetText(),
-            base::UTF8ToUTF16(" ab"));
+            base::UTF8ToUTF16("ab"));
   EXPECT_FALSE(search_box_view()->search_box()->HasSelection());
 
   // Set focus to close button and hitting backspace.
   search_box_view()->close_button()->RequestFocus();
   SimulateKeyPress(ui::VKEY_BACK, false);
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
-  EXPECT_EQ(search_box_view()->search_box()->GetText(),
-            base::UTF8ToUTF16(" a"));
+  EXPECT_EQ(search_box_view()->search_box()->GetText(), base::UTF8ToUTF16("a"));
   EXPECT_FALSE(search_box_view()->search_box()->HasSelection());
 }
 

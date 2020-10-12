@@ -20,7 +20,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/views_test_base.h"
@@ -36,15 +35,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
   // Overridden from testing::Test:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-
-    // Setting up the feature set.
-    // Zero State will affect the UI behavior significantly. This test works
-    // if zero state feature is disabled.
-    // TODO(crbug.com/925195): Add different test suites for zero state.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {app_list_features::kEnableZeroStateSuggestions});
-
-    ASSERT_FALSE(app_list_features::IsZeroStateSuggestionsEnabled());
 
     // Setting up views.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -83,7 +73,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
       nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultPageViewTest);
 };

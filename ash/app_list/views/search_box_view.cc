@@ -101,8 +101,7 @@ SearchBoxView::~SearchBoxView() {
 
 void SearchBoxView::Init(bool is_tablet_mode) {
   is_tablet_mode_ = is_tablet_mode;
-  if (app_list_features::IsZeroStateSuggestionsEnabled())
-    set_show_close_button_when_active(true);
+  set_show_close_button_when_active(true);
   SearchBoxViewBase::Init();
   UpdatePlaceholderTextAndAccessibleName();
   current_query_ = search_box()->GetText();

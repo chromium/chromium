@@ -1769,40 +1769,21 @@ void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
                                             bool triggered_by_contents_change) {
   switch (app_list_state_) {
     case AppListViewState::kPeeking:
-      if (app_list_features::IsZeroStateSuggestionsEnabled()) {
-        if (!search_box_is_empty || search_box_view()->is_search_box_active())
-          SetState(AppListViewState::kHalf);
-      } else {
-        if (!search_box_is_empty)
-          SetState(AppListViewState::kHalf);
-      }
+      if (!search_box_is_empty || search_box_view()->is_search_box_active())
+        SetState(AppListViewState::kHalf);
       break;
     case AppListViewState::kHalf:
-      if (app_list_features::IsZeroStateSuggestionsEnabled()) {
-        if (search_box_is_empty && !triggered_by_contents_change)
-          SetState(AppListViewState::kPeeking);
-      } else {
-        if (search_box_is_empty)
-          SetState(AppListViewState::kPeeking);
-      }
+      if (search_box_is_empty && !triggered_by_contents_change)
+        SetState(AppListViewState::kPeeking);
       break;
     case AppListViewState::kFullscreenSearch:
-      if (app_list_features::IsZeroStateSuggestionsEnabled()) {
-        if (search_box_is_empty && !triggered_by_contents_change)
-          SetState(AppListViewState::kFullscreenAllApps);
-      } else {
-        if (search_box_is_empty)
-          SetState(AppListViewState::kFullscreenAllApps);
-      }
+      if (search_box_is_empty && !triggered_by_contents_change)
+        SetState(AppListViewState::kFullscreenAllApps);
       break;
     case AppListViewState::kFullscreenAllApps:
-      if (app_list_features::IsZeroStateSuggestionsEnabled()) {
-        if (!search_box_is_empty ||
-            (search_box_is_empty && triggered_by_contents_change))
-          SetState(AppListViewState::kFullscreenSearch);
-      } else {
-        if (!search_box_is_empty)
-          SetState(AppListViewState::kFullscreenSearch);
+      if (!search_box_is_empty ||
+          (search_box_is_empty && triggered_by_contents_change)) {
+        SetState(AppListViewState::kFullscreenSearch);
       }
       break;
     case AppListViewState::kClosed:

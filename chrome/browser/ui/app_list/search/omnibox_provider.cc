@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
@@ -33,15 +32,10 @@ bool IsDriveUrl(const GURL& url) {
 OmniboxProvider::OmniboxProvider(Profile* profile,
                                  AppListControllerDelegate* list_controller)
     : profile_(profile),
-      is_zero_state_enabled_(
-          app_list_features::IsZeroStateSuggestionsEnabled()),
       list_controller_(list_controller),
       controller_(std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile),
-          is_zero_state_enabled_
-              ? AutocompleteClassifier::DefaultOmniboxProviders()
-              : AutocompleteClassifier::DefaultOmniboxProviders() &
-                    ~AutocompleteProvider::TYPE_ZERO_SUGGEST)) {
+          AutocompleteClassifier::DefaultOmniboxProviders())) {
   controller_->AddObserver(this);
 }
 
@@ -51,18 +45,14 @@ void OmniboxProvider::Start(const base::string16& query) {
   controller_->Stop(false);
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
   // to differentiate the suggest requests initiated by ChromeOS app_list from
-  // the ones by Chrome omnibox. Until we fully test the integration with
-  // suggest server with Zero State feature, we will keep the related change
-  // out of picture if zero state feature is not enabled.
-  AutocompleteInput input = AutocompleteInput(
-      query,
-      is_zero_state_enabled_ ? metrics::OmniboxEventProto::CHROMEOS_APP_LIST
-                             : metrics::OmniboxEventProto::INVALID_SPEC,
-      ChromeAutocompleteSchemeClassifier(profile_));
+  // the ones by Chrome omnibox.
+  AutocompleteInput input =
+      AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
+                        ChromeAutocompleteSchemeClassifier(profile_));
 
   // Sets the |from_omnibox_focus| flag to enable ZeroSuggestProvider to process
   // the requests from app_list.
-  if (is_zero_state_enabled_ && input.text().empty()) {
+  if (input.text().empty()) {
     input.set_focus_type(OmniboxFocusType::ON_FOCUS);
     is_zero_state_input_ = true;
   } else {

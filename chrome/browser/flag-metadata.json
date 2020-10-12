@@ -2409,11 +2409,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-zero-state-suggestions",
-    "owners": [ "jennyz", "xiyuan" ],
-    "expiry_milestone": 75
-  },
-  {
     "name": "enhanced_clipboard",
     "owners": ["newcomer@chromium.org", "tbarzic@chromium.org"],
     "expiry_milestone": 90

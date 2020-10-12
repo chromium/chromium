@@ -24,9 +24,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
 // Enables the Settings shortcut search.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableSettingsShortcutSearch;
 
-// Enables the feature to display zero state suggestions.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateSuggestions;
-
 // Enables the feature to autocomplete text typed in the AppList search box.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListSearchAutocomplete;
 
@@ -87,7 +84,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
 
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsSettingsShortcutSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsZeroStateSuggestionsEnabled();
 bool ASH_PUBLIC_EXPORT IsAppListSearchAutocompleteEnabled();
 bool ASH_PUBLIC_EXPORT IsAppRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsZeroStateAppsRankerEnabled();

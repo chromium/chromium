@@ -4017,11 +4017,6 @@ const char kTrimOnMemoryPressureName[] = "Trim Working Set on memory pressure";
 const char kTrimOnMemoryPressureDescription[] =
     "Trim Working Set periodically on memory pressure";
 
-const char kEnableZeroStateSuggestionsName[] = "Enable Zero State Suggetions";
-const char kEnableZeroStateSuggestionsDescription[] =
-    "Enable Zero State Suggestions feature in Launcher, which will show "
-    "suggestions when launcher search box is active with an empty query";
-
 const char kEnableSuggestedFilesName[] = "Enable Suggested Files";
 const char kEnableSuggestedFilesDescription[] =
     "Enable Suggested Files feature in Launcher, which will show file "

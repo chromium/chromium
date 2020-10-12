@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -185,18 +186,13 @@ void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
   base::string16 raw_query = search_model_->search_box()->text();
   base::string16 query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
-  bool should_show_search =
-      app_list_features::IsZeroStateSuggestionsEnabled()
-          ? search_box_view_->is_search_box_active() || !query.empty()
-          : !query.empty();
-  contents_view_->ShowSearchResults(should_show_search);
+  contents_view_->ShowSearchResults(search_box_view_->is_search_box_active() ||
+                                    !query.empty());
 
   delegate_->StartSearch(raw_query);
 }
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
-  if (!app_list_features::IsZeroStateSuggestionsEnabled())
-    return;
   // Do not update views on closing.
   if (app_list_view_->app_list_state() == AppListViewState::kClosed)
     return;

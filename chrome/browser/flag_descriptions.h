@@ -2328,9 +2328,6 @@ extern const char kTrimOnFreezeDescription[];
 extern const char kTrimOnMemoryPressureName[];
 extern const char kTrimOnMemoryPressureDescription[];
 
-extern const char kEnableZeroStateSuggestionsName[];
-extern const char kEnableZeroStateSuggestionsDescription[];
-
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 

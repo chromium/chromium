@@ -371,26 +371,11 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
 }
 
 // Browser Test for AppListClient that observes search result changes.
-class AppListClientSearchResultsBrowserTest
-    : public extensions::ExtensionBrowserTest {
- public:
-  AppListClientSearchResultsBrowserTest() {
-    // Zero state changes UI behavior. This test case tests the expected UI
-    // behavior with zero state being disabled.
-    // TODO(jennyz): write new test case for zero state, crbug.com/925195.
-    feature_list_.InitAndDisableFeature(
-        app_list_features::kEnableZeroStateSuggestions);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using AppListClientSearchResultsBrowserTest = extensions::ExtensionBrowserTest;
 
 // Test showing search results, and uninstalling one of them while displayed.
 IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
                        UninstallSearchResult) {
-  ASSERT_FALSE(app_list_features::IsZeroStateSuggestionsEnabled());
-
   base::FilePath test_extension_path;
   ASSERT_TRUE(
       base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_path));

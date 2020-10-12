@@ -58,24 +58,9 @@ class SearchResultTileItemListViewTest
 
  protected:
   void CreateSearchResultTileItemListView() {
-    std::vector<base::Feature> enabled_features, disabled_features;
-    // Zero State affects the UI behavior significantly. This test tests the
-    // UI behavior with zero state being disable.
-    // TODO(crbug.com/925195): Write new test cases for zero state.
-    if (IsReinstallAppRecommendationEnabled()) {
-      enabled_features.push_back(
-          app_list_features::kEnableAppReinstallZeroState);
-    } else {
-      disabled_features.push_back(
-          app_list_features::kEnableAppReinstallZeroState);
-    }
-
-    disabled_features.push_back(app_list_features::kEnableZeroStateSuggestions);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-
-    ASSERT_EQ(IsReinstallAppRecommendationEnabled(),
-              app_list_features::IsAppReinstallZeroStateEnabled());
+    scoped_feature_list_.InitWithFeatureState(
+        app_list_features::kEnableAppReinstallZeroState,
+        IsReinstallAppRecommendationEnabled());
 
     // Sets up the views.
     textfield_ = std::make_unique<views::Textfield>();
