@@ -1120,7 +1120,7 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
       }
     }
 
-    PostNotification(obj, ax::mojom::Event::kTextChanged);
+    MarkAXObjectDirty(obj, /*subtree=*/false);
   }
 
   if (optional_node_for_relation_update)

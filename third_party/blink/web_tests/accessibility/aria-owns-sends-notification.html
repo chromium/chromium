@@ -12,12 +12,16 @@ async_test(function(t) {
     var testRunner = function*() {
       assert_equals(axFutureParent.childrenCount, 0);
 
-      var notification = yield;
-      assert_equals(notification, "ChildrenChanged");
-      assert_equals(axFutureParent.childrenCount, 1);
+      var expected_notifications = new Set();
+      expected_notifications.add("ChildrenChanged");
+      expected_notifications.add("MarkDirty");
 
-      var notification = yield;
-      assert_equals(notification, "TextChanged");
+      while (expected_notifications.size) {
+        var notification = yield;
+        expected_notifications.delete(notification);
+      }
+
+      assert_equals(axFutureParent.childrenCount, 1);
     }();
     testRunner.next();
     var listener = function(notification) {

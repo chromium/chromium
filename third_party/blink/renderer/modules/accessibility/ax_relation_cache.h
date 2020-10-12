@@ -126,7 +126,6 @@ class AXRelationCache {
   AXObject* GetOrCreate(Node*);
   AXObject* Get(Node*);
   void ChildrenChanged(AXObject*);
-  void TextChanged(AXObject*);
 
   DISALLOW_COPY_AND_ASSIGN(AXRelationCache);
 };

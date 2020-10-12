@@ -6,4 +6,5 @@ AriaProperties changed on role=listitem, name=Orange
 SelectionItemIsSelected changed on role=combobox
 SelectionItemIsSelected changed on role=listitem, name=Orange
 SelectionItem_ElementSelected on role=listitem, name=Orange
+Text_TextChanged on role=document
 ValueValue changed on role=combobox

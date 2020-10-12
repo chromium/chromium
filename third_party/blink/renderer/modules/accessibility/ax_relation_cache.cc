@@ -294,7 +294,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     GetReverseRelated(node, related_sources);
     for (AXObject* related : related_sources) {
       if (related)
-        TextChanged(related);
+        object_cache_->MarkAXObjectDirty(related, /*subtree=*/false);
     }
 
     // Forward relation via <label for="[id]">.
@@ -331,10 +331,6 @@ void AXRelationCache::ChildrenChanged(AXObject* object) {
   object->ChildrenChanged();
 }
 
-void AXRelationCache::TextChanged(AXObject* object) {
-  object_cache_->PostNotification(object, ax::mojom::Event::kTextChanged);
-}
-
 void AXRelationCache::LabelChanged(Node* node) {
   const auto& id =
       To<HTMLElement>(node)->FastGetAttribute(html_names::kForAttr);
@@ -342,7 +338,7 @@ void AXRelationCache::LabelChanged(Node* node) {
     all_previously_seen_label_target_ids_.insert(id);
     if (auto* control = To<HTMLLabelElement>(node)->control()) {
       if (AXObject* obj = Get(control))
-        TextChanged(obj);
+        object_cache_->MarkAXObjectDirty(obj, /*subtree=*/false);
     }
   }
 }

@@ -118,6 +118,7 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
     case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
+    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
     case ui::AXEventGenerator::Event::ENABLED_CHANGED:
     case ui::AXEventGenerator::Event::EXPANDED:
     case ui::AXEventGenerator::Event::FOCUS_CHANGED:

@@ -37,27 +37,31 @@ async_test((t) => {
         t.done();
     });
 
-    accessibleElementById('aria-label').addNotificationListener(function(notification) {
-        assert_equals(notification, 'TextChanged');
+    accessibleElementById('aria-label').setNotificationListener(function(notification) {
+        assert_equals(notification, 'MarkDirty');
         gotSuccessfulNotification();
+        accessibleElementById('aria-label').unsetNotificationListener();
     });
     document.getElementById('aria-label').setAttribute('aria-label', 'New aria-label');
 
-    accessibleElementById('title').addNotificationListener(function(notification) {
-        assert_equals(notification, 'TextChanged');
+    accessibleElementById('title').setNotificationListener(function(notification) {
+        assert_equals(notification, 'MarkDirty');
         gotSuccessfulNotification();
+        accessibleElementById('title').unsetNotificationListener();
     });
     document.getElementById('title').title = 'New title';
 
-    accessibleElementById('labelledby').addNotificationListener(function(notification) {
-        assert_equals(notification, 'TextChanged');
+    accessibleElementById('labelledby').setNotificationListener(function(notification) {
+        assert_equals(notification, 'MarkDirty');
         gotSuccessfulNotification();
+        accessibleElementById('labelledby').unsetNotificationListener();
     });
     document.getElementById('labelledby').setAttribute('aria-labelledby', 'label2');
 
-    accessibleElementById('labeled').addNotificationListener(function(notification) {
-        assert_equals(notification, 'TextChanged');
+    accessibleElementById('labeled').setNotificationListener(function(notification) {
+        assert_equals(notification, 'MarkDirty');
         gotSuccessfulNotification();
+        accessibleElementById('labeled').unsetNotificationListener();
     });
     document.getElementById('label1').setAttribute('for', 'labeled');
 }, "This test ensures that a change to an element's accessible text, even if indirect, sends a notification.");
