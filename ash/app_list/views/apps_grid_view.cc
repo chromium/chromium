@@ -397,8 +397,7 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
                            AppsGridViewFolderDelegate* folder_delegate)
     : folder_delegate_(folder_delegate),
       contents_view_(contents_view),
-      page_flip_delay_in_ms_(kPageFlipDelayInMsFullscreen),
-      view_structure_(this) {
+      page_flip_delay_in_ms_(kPageFlipDelayInMsFullscreen) {
   DCHECK(contents_view_);
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   // Clip any icons that are outside the grid view's bounds. These icons would
@@ -1397,6 +1396,9 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   std::unique_ptr<AppListItemView> view = std::make_unique<AppListItemView>(
       this, item_list_->item_at(index),
       contents_view_->GetAppListMainView()->view_delegate());
+  view->set_callback(base::BindRepeating(
+      &AppsGridView::OnAppListItemViewPressed, base::Unretained(this),
+      base::Unretained(view.get())));
   return view;
 }
 
@@ -2891,12 +2893,9 @@ bool AppsGridView::IsPointWithinBottomDragBuffer(
          point_in_parent.y() < kBottomDragBufferMax;
 }
 
-void AppsGridView::ButtonPressed(views::Button* sender,
-                                 const ui::Event& event) {
+void AppsGridView::OnAppListItemViewPressed(AppListItemView* pressed_item_view,
+                                            const ui::Event& event) {
   if (dragging())
-    return;
-
-  if (strcmp(sender->GetClassName(), AppListItemView::kViewClassName))
     return;
 
   if (contents_view_->apps_container_view()
@@ -2909,7 +2908,6 @@ void AppsGridView::ButtonPressed(views::Button* sender,
   // prevents a case where the item would remain hidden due the
   // |activated_folder_item_view_| changing during the animation. We only
   // need to track |activated_folder_item_view_| in the root level grid view.
-  AppListItemView* pressed_item_view = static_cast<AppListItemView*>(sender);
   if (!folder_delegate_) {
     if (activated_folder_item_view_)
       activated_folder_item_view_->SetVisible(true);
