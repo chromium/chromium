@@ -74,6 +74,11 @@ mi {
   text-transform: math-auto;
 }
 
+/* Tables */
+mtable {
+  math-style: compact;
+}
+
 /* Fractions */
 mfrac {
   padding-inline-start: 1px;
@@ -121,4 +126,3 @@ mover[accent="true" i] > :first-child,
 munderover[accent="true" i] > :first-child {
   math-shift: compact;
 }
-

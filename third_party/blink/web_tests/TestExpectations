@@ -1193,7 +1193,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-001.html [ F
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/attribute-mapping-002.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-011.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-1.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/displaystyle-2.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
