@@ -329,7 +329,7 @@ public class FeedSurfaceMediator
         }
 
         View enhancedProtectionPromoView = null;
-        if (homepagePromoView == null && mSignInPromo == null) {
+        if (homepagePromoView == null && !signInPromoVisible) {
             enhancedProtectionPromoView = createEnhancedProtectionPromoIfNeeded();
         }
         // We are not going to show two promos at the same time.
