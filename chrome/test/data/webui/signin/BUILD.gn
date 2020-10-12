@@ -60,6 +60,8 @@ js_library("profile_picker_app_test") {
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/signin/profile_picker:profile_picker",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

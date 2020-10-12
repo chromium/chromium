@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
@@ -9,11 +10,11 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.js';
 import './profile_card.js';
 import './profile_picker_shared_css.js';
+import './strings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import './strings.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationBehavior, Routes} from './navigation_behavior.js';
@@ -33,6 +34,21 @@ Polymer({
      */
     profilesList_: {
       type: Object,
+      value: () => [],
+    },
+
+    /** @private */
+    profilesListLoaded_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    hideAskOnStartup_: {
+      type: Boolean,
+      value: true,
+      computed: 'computeHideAskOnStartup_(profilesList_.length)',
+
     },
 
     /** @private */
@@ -88,6 +104,7 @@ Polymer({
    * @private
    */
   handleProfilesListChanged_(profilesList) {
+    this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
   },
 
@@ -131,7 +148,7 @@ Polymer({
    * @return boolean
    * @private
    */
-  shouldHideAskOnStartup_() {
+  computeHideAskOnStartup_() {
     return !this.profilesList_ || (this.profilesList_.length < 2);
   },
 });
