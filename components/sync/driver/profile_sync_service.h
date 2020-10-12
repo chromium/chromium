@@ -411,9 +411,6 @@ class ProfileSyncService : public SyncService,
   // A utility object containing logic and state relating to encryption.
   SyncServiceCrypto crypto_;
 
-  // TODO(crbug.com/923287): Move out of this class. Possibly to SyncEngineImpl.
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
-
   // Our asynchronous engine to communicate with sync components living on
   // other threads.
   std::unique_ptr<SyncEngine> engine_;

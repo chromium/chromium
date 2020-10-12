@@ -237,9 +237,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
                               base::Unretained(this)),
           &sync_prefs_,
           sync_client_->GetTrustedVaultClient()),
-      backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       network_time_update_callback_(
           std::move(init_params.network_time_update_callback)),
       url_loader_factory_(std::move(init_params.url_loader_factory)),
@@ -580,7 +577,6 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   }
 
   SyncEngine::InitParams params;
-  params.sync_task_runner = backend_task_runner_;
   params.host = this;
   params.registrar = std::make_unique<SyncBackendRegistrar>(
       debug_identifier_,
@@ -663,8 +659,10 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
       // certain codepaths such as the user being signed out). To avoid that,
       // SyncPrefs is used to determine whether it's worth it.
       if (!sync_prefs_.GetCacheGuid().empty()) {
-        backend_task_runner_->PostTask(
+        base::ThreadPool::PostTask(
             FROM_HERE,
+            {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
             base::BindOnce(&DeleteLegacyDirectoryFilesAndNigoriStorage,
                            sync_client_->GetSyncDataPath()));
       }

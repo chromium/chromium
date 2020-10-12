@@ -21,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_logger.h"
@@ -183,8 +182,7 @@ std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
 class SyncEngineImplTest : public testing::Test {
  protected:
   SyncEngineImplTest()
-      : sync_thread_("SyncThreadForTest"),
-        host_(base::BindOnce(&SyncEngineImplTest::SetEngineTypes,
+      : host_(base::BindOnce(&SyncEngineImplTest::SetEngineTypes,
                              base::Unretained(this))),
         fake_manager_(nullptr) {}
 
@@ -196,7 +194,6 @@ class SyncEngineImplTest : public testing::Test {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
-    sync_thread_.StartAndWaitForTesting();
     ON_CALL(invalidator_, UpdateInterestedTopics(_, _))
         .WillByDefault(testing::Return(true));
     backend_ = std::make_unique<SyncEngineImpl>(
@@ -235,7 +232,6 @@ class SyncEngineImplTest : public testing::Test {
     host_.SetExpectSuccess(expect_success);
 
     SyncEngine::InitParams params;
-    params.sync_task_runner = sync_thread_.task_runner();
     params.host = &host_;
     params.registrar = std::make_unique<SyncBackendRegistrar>(
         std::string(), base::BindRepeating(&CreateModelWorkerForGroup));
@@ -311,7 +307,6 @@ class SyncEngineImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  base::Thread sync_thread_;
   TestSyncEngineHost host_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
   std::unique_ptr<SyncEngineImpl> backend_;
