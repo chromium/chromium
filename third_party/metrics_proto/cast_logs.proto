@@ -11,7 +11,7 @@ option java_outer_classname = "CastLogsProtos";
 
 package metrics;  // Cast-enabled device specific log data included in ChromeUserMetricsExtension.
 
-// Next tag: 7
+// Next tag: 8
 message CastLogsProto {
   // Cast specific device information.
   // Next tag: 7
@@ -331,4 +331,8 @@ message CastLogsProto {
   optional CastDeviceMutableInfo cast_device_mutable_info = 5;
 
   optional fixed64 receiver_metrics_id = 6;
+
+  // This ID is only ever recorded for Google-internal users (dogfooders). It
+  // is never recorded for external users."
+  optional uint64 ephemeral_id = 7;
 }
