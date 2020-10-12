@@ -30,7 +30,7 @@ FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
 }
 
 void FakeServerSyncInvalidationSender::OnCommit(
-    const std::string& committer_id,
+    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
   const std::map<std::string, syncer::ModelTypeSet>
       token_to_interested_data_types_map = GetTokenToInterestedDataTypesMap();

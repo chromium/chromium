@@ -28,7 +28,7 @@ class ServerDeviceInfoMatchChecker : public StatusChangeChecker,
       delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(const std::string& committer_id,
+  void OnCommit(const std::string& committer_invalidator_client_id,
                 syncer::ModelTypeSet committed_model_types) override;
 
   // StatusChangeChecker overrides.

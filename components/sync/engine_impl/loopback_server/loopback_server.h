@@ -39,7 +39,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
 
     // Called after the server has processed a successful commit. The types
     // updated as part of the commit are passed in |committed_model_types|.
-    virtual void OnCommit(const std::string& committer_id,
+    virtual void OnCommit(const std::string& committer_invalidator_client_id,
                           syncer::ModelTypeSet committed_model_types) = 0;
 
     // Called when a page URL is committed via SESSIONS and the user has

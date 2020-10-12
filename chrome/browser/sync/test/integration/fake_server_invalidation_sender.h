@@ -29,7 +29,7 @@ class FakeServerInvalidationSender : public FakeServer::Observer {
   ~FakeServerInvalidationSender() override;
 
   // FakeServer::Observer implementation.
-  void OnCommit(const std::string& committer_id,
+  void OnCommit(const std::string& committer_invalidator_client_id,
                 syncer::ModelTypeSet committed_model_types) override;
 
  private:

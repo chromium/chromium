@@ -389,7 +389,7 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   loopback_server_->SaveEntity(std::move(entity));
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_id=*/std::string(),
+  OnCommit(/*committer_invalidator_client_id=*/std::string(),
            /*committed_model_types=*/{model_type});
 }
 
@@ -412,7 +412,7 @@ base::Time FakeServer::SetWalletData(
     entity.set_version(version);
   }
 
-  OnCommit(/*committer_id=*/std::string(),
+  OnCommit(/*committer_invalidator_client_id=*/std::string(),
            /*committed_model_types=*/{syncer::AUTOFILL_WALLET_DATA});
 
   return now;
@@ -432,8 +432,9 @@ bool FakeServer::ModifyEntitySpecifics(
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_id=*/std::string(), /*committed_model_types=*/{
-               GetModelTypeFromSpecifics(updated_specifics)});
+  OnCommit(
+      /*committer_invalidator_client_id=*/std::string(),
+      /*committed_model_types=*/{GetModelTypeFromSpecifics(updated_specifics)});
 
   return true;
 }
@@ -448,7 +449,7 @@ bool FakeServer::ModifyBookmarkEntity(
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_id=*/std::string(),
+  OnCommit(/*committer_invalidator_client_id=*/std::string(),
            /*committed_model_types=*/{syncer::BOOKMARKS});
 
   return true;
@@ -556,10 +557,10 @@ void FakeServer::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeServer::OnCommit(const std::string& committer_id,
+void FakeServer::OnCommit(const std::string& committer_invalidator_client_id,
                           syncer::ModelTypeSet committed_model_types) {
   for (auto& observer : observers_)
-    observer.OnCommit(committer_id, committed_model_types);
+    observer.OnCommit(committer_invalidator_client_id, committed_model_types);
 }
 
 void FakeServer::OnHistoryCommit(const std::string& url) {

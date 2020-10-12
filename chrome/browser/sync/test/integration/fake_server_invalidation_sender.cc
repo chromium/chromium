@@ -27,9 +27,9 @@ FakeServerInvalidationSender::FakeServerInvalidationSender(
 FakeServerInvalidationSender::~FakeServerInvalidationSender() {}
 
 void FakeServerInvalidationSender::OnCommit(
-    const std::string& committer_id,
+    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
-  if (!self_notify_ && client_id_ == committer_id) {
+  if (!self_notify_ && client_id_ == committer_invalidator_client_id) {
     return;
   }
   syncer::FCMNetworkHandler* fcm_network_handler =
