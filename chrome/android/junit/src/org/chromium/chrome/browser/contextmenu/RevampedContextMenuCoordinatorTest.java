@@ -54,6 +54,8 @@ public class RevampedContextMenuCoordinatorTest {
 
     @Mock
     PerformanceHintsObserver.Natives mNativeMock;
+    @Mock
+    ContextMenuNativeDelegate mNativeDelegate;
 
     private RevampedContextMenuCoordinator mCoordinator;
     private Activity mActivity;
@@ -62,7 +64,7 @@ public class RevampedContextMenuCoordinatorTest {
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        mCoordinator = new RevampedContextMenuCoordinator(0);
+        mCoordinator = new RevampedContextMenuCoordinator(0, mNativeDelegate);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);
         when(mNativeMock.isContextMenuPerformanceInfoEnabled()).thenReturn(false);
@@ -87,7 +89,8 @@ public class RevampedContextMenuCoordinatorTest {
         groupTwo.add(createShareListItem(Item.SHARE_IMAGE));
         rawItems.add(new Pair<>(ContextMenuGroup.IMAGE, groupTwo));
 
-        mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
+        mCoordinator.initializeHeaderCoordinatorForTesting(
+                mActivity, params, mProfile, mNativeDelegate);
         ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
@@ -119,7 +122,8 @@ public class RevampedContextMenuCoordinatorTest {
         groupOne.add(createShareListItem(Item.SHARE_LINK));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
-        mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
+        mCoordinator.initializeHeaderCoordinatorForTesting(
+                mActivity, params, mProfile, mNativeDelegate);
         ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
@@ -140,7 +144,8 @@ public class RevampedContextMenuCoordinatorTest {
         groupOne.add(createListItem(Item.SAVE_VIDEO));
         rawItems.add(new Pair<>(ContextMenuGroup.LINK, groupOne));
 
-        mCoordinator.initializeHeaderCoordinatorForTesting(mActivity, params, mProfile);
+        mCoordinator.initializeHeaderCoordinatorForTesting(
+                mActivity, params, mProfile, mNativeDelegate);
         ModelList itemList = mCoordinator.getItemList(mActivity, rawItems, (i) -> {});
 
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));

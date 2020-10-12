@@ -36,6 +36,7 @@ public class ContextMenuHelper {
     private final WebContents mWebContents;
     private long mNativeContextMenuHelper;
 
+    private ContextMenuNativeDelegate mCurrentNativeDelegate;
     private ContextMenuPopulator mCurrentPopulator;
     private ContextMenuPopulatorFactory mPopulatorFactory;
     private ContextMenuParams mCurrentContextMenuParams;
@@ -64,7 +65,7 @@ public class ContextMenuHelper {
             mCurrentContextMenu.dismiss();
             mCurrentContextMenu = null;
         }
-        if (mCurrentPopulator != null) mCurrentPopulator.onDestroy();
+        if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         mNativeContextMenuHelper = 0;
     }
@@ -75,7 +76,7 @@ public class ContextMenuHelper {
             mCurrentContextMenu.dismiss();
             mCurrentContextMenu = null;
         }
-        if (mCurrentPopulator != null) mCurrentPopulator.onDestroy();
+        if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         mCurrentPopulator = null;
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         mPopulatorFactory = populatorFactory;
@@ -100,8 +101,10 @@ public class ContextMenuHelper {
             return;
         }
 
+        mCurrentNativeDelegate =
+                new ContextMenuNativeDelegateImpl(mWebContents, renderFrameHost, params);
         mCurrentPopulator = mPopulatorFactory.createContextMenuPopulator(
-                windowAndroid.getActivity().get(), params, renderFrameHost);
+                windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
         mIsIncognito = mCurrentPopulator.isIncognito();
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
@@ -122,9 +125,12 @@ public class ContextMenuHelper {
         mOnMenuClosed = () -> {
             recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss);
             mCurrentContextMenu = null;
+            if (mCurrentNativeDelegate != null) {
+                mCurrentNativeDelegate.destroy();
+                mCurrentNativeDelegate = null;
+            }
             if (mCurrentPopulator != null) {
                 mCurrentPopulator.onMenuClosed();
-                mCurrentPopulator.onDestroy();
                 mCurrentPopulator = null;
             }
             if (LensUtils.enableShoppyImageMenuItem() || LensUtils.enableImageChip(mIsIncognito)) {
@@ -141,11 +147,12 @@ public class ContextMenuHelper {
         // not be enabled under any circumstances on Stable Chrome builds due to potential
         // latency impact.
         if (LensUtils.enableShoppyImageMenuItem()) {
-            mCurrentPopulator.retrieveImage(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
-                LensController.getInstance().classifyImage(uri, (Boolean isShoppyImage) -> {
-                    displayRevampedContextMenu(topContentOffsetPx, isShoppyImage);
-                });
-            });
+            Callback<Uri> callback = (Uri uri) -> {
+                LensController.getInstance().classifyImage(uri,
+                        (Boolean isShoppyImage)
+                                -> displayRevampedContextMenu(topContentOffsetPx, isShoppyImage));
+            };
+            mCurrentNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, callback);
         } else {
             displayRevampedContextMenu(topContentOffsetPx, /* addShoppyMenuItem */ false);
         }
@@ -160,12 +167,12 @@ public class ContextMenuHelper {
         }
 
         final RevampedContextMenuCoordinator menuCoordinator =
-                new RevampedContextMenuCoordinator(topContentOffsetPx);
+                new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
 
         if (LensUtils.enableImageChip(mIsIncognito)) {
             LensAsyncManager lensAsyncManager =
-                    new LensAsyncManager(mCurrentContextMenuParams, mCurrentPopulator);
+                    new LensAsyncManager(mCurrentContextMenuParams, mCurrentNativeDelegate);
             menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,
                     mCurrentContextMenuParams, items, mCallback, mOnMenuShown, mOnMenuClosed,
                     lensAsyncManager);
@@ -176,10 +183,6 @@ public class ContextMenuHelper {
 
         if (sRevampedContextMenuShownCallback != null) {
             sRevampedContextMenuShownCallback.onResult(menuCoordinator);
-        }
-        // TODO(sinansahin): This could be pushed in to the header mediator.
-        if (mCurrentContextMenuParams.isImage()) {
-            mCurrentPopulator.getThumbnail(menuCoordinator.getOnImageThumbnailRetrievedReference());
         }
     }
 

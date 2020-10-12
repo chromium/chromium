@@ -111,12 +111,12 @@ class ScreenshotShareSheetMediator {
                     params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
         };
 
-        generateTemporaryUriFromBitmap(mContext, title, bitmap, callback);
+        generateTemporaryUriFromBitmap(title, bitmap, callback);
         mCloseDialogRunnable.run();
     }
 
     protected void generateTemporaryUriFromBitmap(
-            Context context, String fileName, Bitmap bitmap, Callback<Uri> callback) {
-        ShareImageFileUtils.generateTemporaryUriFromBitmap(context, fileName, bitmap, callback);
+            String fileName, Bitmap bitmap, Callback<Uri> callback) {
+        ShareImageFileUtils.generateTemporaryUriFromBitmap(fileName, bitmap, callback);
     }
 }

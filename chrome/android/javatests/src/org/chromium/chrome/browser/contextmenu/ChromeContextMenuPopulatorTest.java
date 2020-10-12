@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -67,7 +66,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock
     private ExternalAuthUtils mExternalAuthUtils;
     @Mock
-    private RenderFrameHost mRenderFrameHost;
+    private ContextMenuNativeDelegate mNativeDelegate;
 
     // Despite this being a spy, we add the @Mock annotation so that proguard doesn't strip the
     // spied class.
@@ -100,7 +99,7 @@ public class ChromeContextMenuPopulatorTest {
                 ()
                         -> mShareDelegate,
                 mode, mExternalAuthUtils, ContextUtils.getApplicationContext(), params,
-                mRenderFrameHost));
+                mNativeDelegate));
         doReturn(mTemplateUrlService).when(mPopulator).getTemplateUrlService();
         doReturn(false).when(mPopulator).shouldTriggerEphemeralTabHelpUi();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);

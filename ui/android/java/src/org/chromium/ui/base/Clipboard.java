@@ -70,13 +70,12 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
          * Saves the given set of image bytes and provides that URI to a callback for
          * sharing the image.
          *
-         * @param context The context used to trigger the action.
          * @param imageData The image data to be shared in |fileExtension| format.
          * @param fileExtension File extension which |imageData| encoded to.
          * @param callback A provided callback function which will act on the generated URI.
          */
-        void storeImageAndGenerateUri(final Context context, final byte[] imageData,
-                String fileExtension, Callback<Uri> callback);
+        void storeImageAndGenerateUri(
+                final byte[] imageData, String fileExtension, Callback<Uri> callback);
 
         /**
          * Store the last image uri we put in the sytstem clipboard, this is special case for
@@ -317,7 +316,7 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         }
 
         mImageFileProvider.storeImageAndGenerateUri(
-                mContext, imageData, extension, (Uri uri) -> { setImageUri(uri); });
+                imageData, extension, (Uri uri) -> { setImageUri(uri); });
     }
 
     /**

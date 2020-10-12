@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * A simple wrapper around a {@link ContextMenuPopulatorFactory} for creating
@@ -37,9 +37,9 @@ class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
 
     @Override
     public ContextMenuPopulator createContextMenuPopulator(
-            Context context, ContextMenuParams params, RenderFrameHost renderFrameHost) {
+            Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new TabContextMenuPopulator(
-                mPopulatorFactory.createContextMenuPopulator(context, params, renderFrameHost),
+                mPopulatorFactory.createContextMenuPopulator(context, params, nativeDelegate),
                 mTab);
     }
 }

@@ -1098,7 +1098,8 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
         String mockImageData = "randomdata";
         byte[] mockImageByteArray = mockImageData.getBytes();
         // See function javadoc for more context.
-        ChromeContextMenuPopulator.setHardcodedImageBytesForTesting(mockImageByteArray, extension);
+        ContextMenuNativeDelegateImpl.setHardcodedImageBytesForTesting(
+                mockImageByteArray, extension);
     }
 
     private void assertStringContains(String subString, String superString) {

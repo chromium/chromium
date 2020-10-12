@@ -2,37 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/context_menu/chrome_context_menu_populator.h"
+#include "chrome/browser/android/context_menu/context_menu_native_delegate_impl.h"
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/strings/string_util.h"
-#include "chrome/android/chrome_jni_headers/ChromeContextMenuPopulator_jni.h"
+#include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
-#include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/geometry/size.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace {
 
-class ContextMenuPopulatorImageRequest : public ImageDecoder::ImageRequest {
+class ContextMenuImageRequest : public ImageDecoder::ImageRequest {
  public:
   static void Start(const JavaRef<jobject>& jcallback,
                     const std::vector<uint8_t>& thumbnail_data) {
-    auto* request = new ContextMenuPopulatorImageRequest(jcallback);
+    auto* request = new ContextMenuImageRequest(jcallback);
     ImageDecoder::Start(request, thumbnail_data);
   }
 
@@ -50,12 +43,12 @@ class ContextMenuPopulatorImageRequest : public ImageDecoder::ImageRequest {
   }
 
  private:
-  explicit ContextMenuPopulatorImageRequest(const JavaRef<jobject>& jcallback)
+  explicit ContextMenuImageRequest(const JavaRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
 
   const base::android::ScopedJavaGlobalRef<jobject> jcallback_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ContextMenuPopulatorImageRequest);
+  DISALLOW_IMPLICIT_CONSTRUCTORS(ContextMenuImageRequest);
 };
 
 chrome::mojom::ImageFormat ToChromeMojomImageFormat(int image_format) {
@@ -85,7 +78,7 @@ void OnRetrieveImageForShare(
   auto j_extension =
       base::android::ConvertUTF8ToJavaString(env, image_extension);
   base::android::RunObjectCallbackAndroid(
-      jcallback, Java_ChromeContextMenuPopulator_createImageCallbackResult(
+      jcallback, Java_ContextMenuNativeDelegateImpl_createImageCallbackResult(
                      env, j_data, j_extension));
 }
 
@@ -96,20 +89,20 @@ void OnRetrieveImageForContextMenu(
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
     const std::string& filename_extension) {
-  ContextMenuPopulatorImageRequest::Start(jcallback, thumbnail_data);
+  ContextMenuImageRequest::Start(jcallback, thumbnail_data);
 }
 
 }  // namespace
 
-ChromeContextMenuPopulator::ChromeContextMenuPopulator(
-    content::WebContents* web_contents,
-    content::ContextMenuParams* context_menu_params,
-    content::RenderFrameHost* render_frame_host)
+ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
+    content::WebContents* const web_contents,
+    content::ContextMenuParams* const context_menu_params,
+    content::RenderFrameHost* const render_frame_host)
     : web_contents_(web_contents),
       context_menu_params_(context_menu_params),
       render_frame_host_(render_frame_host) {}
 
-void ChromeContextMenuPopulator::OnStartDownload(
+void ContextMenuNativeDelegateImpl::StartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean jis_link) {
@@ -118,7 +111,7 @@ void ChromeContextMenuPopulator::OnStartDownload(
       *context_menu_params_, web_contents_, jis_link, headers);
 }
 
-void ChromeContextMenuPopulator::SearchForImage(
+void ContextMenuNativeDelegateImpl::SearchForImage(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   if (!render_frame_host_)
@@ -129,19 +122,19 @@ void ChromeContextMenuPopulator::SearchForImage(
                               context_menu_params_->src_url);
 }
 
-void ChromeContextMenuPopulator::RetrieveImageForShare(
+void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
-    jint j_image_format) {
+    jint jimage_format) {
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForShare),
                         jcallback, max_width_px, max_height_px,
-                        ToChromeMojomImageFormat(j_image_format));
+                        ToChromeMojomImageFormat(jimage_format));
 }
 
-void ChromeContextMenuPopulator::RetrieveImageForContextMenu(
+void ContextMenuNativeDelegateImpl::RetrieveImageForContextMenu(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jcallback,
@@ -153,7 +146,7 @@ void ChromeContextMenuPopulator::RetrieveImageForContextMenu(
                         chrome::mojom::ImageFormat::PNG);
 }
 
-void ChromeContextMenuPopulator::RetrieveImageInternal(
+void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
     JNIEnv* env,
     ImageRetrieveCallback retrieve_callback,
     const JavaParamRef<jobject>& jcallback,
@@ -177,7 +170,7 @@ void ChromeContextMenuPopulator::RetrieveImageInternal(
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
-static jlong JNI_ChromeContextMenuPopulator_Init(
+static jlong JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     const JavaParamRef<jobject>& jcontext_menu_params,
@@ -190,6 +183,6 @@ static jlong JNI_ChromeContextMenuPopulator_Init(
       context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-  return reinterpret_cast<intptr_t>(
-      new ChromeContextMenuPopulator(web_contents, params, render_frame_host));
+  return reinterpret_cast<intptr_t>(new ContextMenuNativeDelegateImpl(
+      web_contents, params, render_frame_host));
 }

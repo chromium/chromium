@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.Contex
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * Factory for creating {@link ContextMenuPopulator}s.
@@ -40,8 +39,8 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
 
     @Override
     public ContextMenuPopulator createContextMenuPopulator(
-            Context context, ContextMenuParams params, RenderFrameHost renderFrameHost) {
+            Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new ChromeContextMenuPopulator(mItemDelegate, mShareDelegateSupplier,
-                mContextMenuMode, mExternalAuthUtils, context, params, renderFrameHost);
+                mContextMenuMode, mExternalAuthUtils, context, params, nativeDelegate);
     }
 }

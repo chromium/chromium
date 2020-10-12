@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share.clipboard;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CLIPBOARD_SHARED_URI;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -24,9 +23,8 @@ import org.chromium.ui.base.Clipboard;
 public class ClipboardImageFileProvider implements Clipboard.ImageFileProvider {
     @Override
     public void storeImageAndGenerateUri(
-            Context context, byte[] imageData, String fileExtension, Callback<Uri> callback) {
-        ShareImageFileUtils.generateTemporaryUriFromData(
-                context, imageData, fileExtension, callback);
+            byte[] imageData, String fileExtension, Callback<Uri> callback) {
+        ShareImageFileUtils.generateTemporaryUriFromData(imageData, fileExtension, callback);
     }
 
     @Override

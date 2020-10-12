@@ -78,7 +78,7 @@ public class ScreenshotShareSheetMediatorUnitTest {
         }
         @Override
         protected void generateTemporaryUriFromBitmap(
-                Context context, String fileName, Bitmap bitmap, Callback<Uri> callback) {
+                String fileName, Bitmap bitmap, Callback<Uri> callback) {
             mGenerateTemporaryUriFromBitmapCalled = true;
         }
 

@@ -121,7 +121,7 @@ public class ShareImageFileUtilsTest extends DummyUiActivityTestCase {
     private Uri generateAnImageToClipboard(String fileExtension) throws TimeoutException {
         GenerateUriCallback imageCallback = new GenerateUriCallback();
         ShareImageFileUtils.generateTemporaryUriFromData(
-                getActivity(), TEST_IMAGE_DATA, fileExtension, imageCallback);
+                TEST_IMAGE_DATA, fileExtension, imageCallback);
         imageCallback.waitForCallback(0, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         Clipboard.getInstance().setImageUri(imageCallback.getImageUri());
         CriteriaHelper.pollInstrumentationThread(() -> {

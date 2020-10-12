@@ -121,13 +121,12 @@ public class ShareImageFileUtils {
      * Temporarily saves the given set of image bytes and provides that URI to a callback for
      * sharing.
      *
-     * @param context The context used to trigger the share action.
      * @param imageData The image data to be shared in |fileExtension| format.
      * @param fileExtension File extension which |imageData| encoded to.
      * @param callback A provided callback function which will act on the generated URI.
      */
-    public static void generateTemporaryUriFromData(final Context context, final byte[] imageData,
-            String fileExtension, Callback<Uri> callback) {
+    public static void generateTemporaryUriFromData(
+            final byte[] imageData, String fileExtension, Callback<Uri> callback) {
         if (imageData.length == 0) {
             Log.w(TAG, "Share failed -- Received image contains no data.");
             return;
@@ -153,13 +152,12 @@ public class ShareImageFileUtils {
     /**
      * Temporarily saves the bitmap and provides that URI to a callback for sharing.
      *
-     * @param context The Context to use for determining download location.
      * @param filename The filename without extension.
      * @param bitmap The Bitmap to download.
      * @param callback A provided callback function which will act on the generated URI.
      */
     public static void generateTemporaryUriFromBitmap(
-            final Context context, String fileName, Bitmap bitmap, Callback<Uri> callback) {
+            String fileName, Bitmap bitmap, Callback<Uri> callback) {
         OnImageSaveListener listener = new OnImageSaveListener() {
             @Override
             public void onImageSaved(Uri uri, String displayName) {

@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.Pair;
 
-import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;
@@ -18,11 +15,6 @@ import java.util.List;
  * ContextMenuHelper.
  */
 public interface ContextMenuPopulator {
-    /**
-     *  Called when this ContextMenuPopulator is about to be destroyed.
-     */
-    void onDestroy();
-
     /**
      * Should be used to populate {@code menu} with the correct context menu items.
      * @param isShoppyImage Whether the selected item was a shoppy image.
@@ -40,20 +32,6 @@ public interface ContextMenuPopulator {
      * @return       Whether or not the selection was handled.
      */
     boolean onItemSelected(int itemId);
-
-    /**
-     * Gets the thumbnail of the current image that triggered the context menu.
-     * @param callback Called once the the thumbnail is received.
-     */
-    void getThumbnail(final Callback<Bitmap> callback);
-
-    /**
-     * Retrieves a URI for the selected image for sharing with external apps. If the function fails
-     * to retrieve the image bytes or generate a URI the callback will *not* be called.
-     * @param imageFormat The image format will be requested.
-     * @param callback Called once the image is generated and ready to be shared.
-     */
-    void retrieveImage(@ContextMenuImageFormat int imageFormat, Callback<Uri> callback);
 
     /**
      * Called when the context menu is closed.

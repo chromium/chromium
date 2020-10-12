@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWit
 import static org.chromium.chrome.browser.contextmenu.RevampedContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,14 +65,19 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     private float mTopContentOffsetPx;
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
+    private ContextMenuNativeDelegate mNativeDelegate;
 
     /**
      * Constructor that also sets the content offset.
      *
      * @param topContentOffsetPx content offset from the top.
+     * @param nativeDelegate The {@link ContextMenuNativeDelegate} to retrieve the thumbnail from
+     *         native.
      */
-    RevampedContextMenuCoordinator(float topContentOffsetPx) {
+    RevampedContextMenuCoordinator(
+            float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
         mTopContentOffsetPx = topContentOffsetPx;
+        mNativeDelegate = nativeDelegate;
     }
 
     @Override
@@ -135,8 +139,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 ? PerformanceHintsObserver.getPerformanceClassForURL(
                         webContents, params.getLinkUrl())
                 : PerformanceClass.PERFORMANCE_UNKNOWN;
-        mHeaderCoordinator = new RevampedContextMenuHeaderCoordinator(
-                activity, performanceClass, params, Profile.fromWebContents(mWebContents));
+        mHeaderCoordinator = new RevampedContextMenuHeaderCoordinator(activity, performanceClass,
+                params, Profile.fromWebContents(mWebContents), mNativeDelegate);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems = getItemList(activity, items, onItemClicked);
@@ -271,15 +275,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         mDialog.dismiss();
     }
 
-    Callback<Bitmap> getOnImageThumbnailRetrievedReference() {
-        return mHeaderCoordinator.getOnImageThumbnailRetrievedReference();
-    }
-
     @VisibleForTesting
-    void initializeHeaderCoordinatorForTesting(
-            Activity activity, ContextMenuParams params, Profile profile) {
+    void initializeHeaderCoordinatorForTesting(Activity activity, ContextMenuParams params,
+            Profile profile, ContextMenuNativeDelegate nativeDelegate) {
         mHeaderCoordinator = new RevampedContextMenuHeaderCoordinator(
-                activity, PerformanceClass.PERFORMANCE_UNKNOWN, params, profile);
+                activity, PerformanceClass.PERFORMANCE_UNKNOWN, params, profile, nativeDelegate);
     }
 
     @VisibleForTesting

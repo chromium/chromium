@@ -43,6 +43,8 @@ public class RevampedContextMenuHeaderMediatorTest {
 
     @Mock
     PerformanceHintsObserver.Natives mNativeMock;
+    @Mock
+    ContextMenuNativeDelegate mNativeDelegate;
 
     private Activity mActivity;
     private final Profile mProfile = Mockito.mock(Profile.class);
@@ -65,8 +67,9 @@ public class RevampedContextMenuHeaderMediatorTest {
         final ContextMenuParams params =
                 new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE, "https://example.org",
                         "https://example.org/sitemap", "", "", "", "", null, false, 0, 0, 0);
-        final RevampedContextMenuHeaderMediator mediator = new RevampedContextMenuHeaderMediator(
-                mActivity, model, PerformanceClass.PERFORMANCE_FAST, params, mProfile);
+        final RevampedContextMenuHeaderMediator mediator =
+                new RevampedContextMenuHeaderMediator(mActivity, model,
+                        PerformanceClass.PERFORMANCE_FAST, params, mProfile, mNativeDelegate);
         assertThat(model.get(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS),
                 equalTo(PerformanceClass.PERFORMANCE_FAST));
     }
@@ -82,8 +85,9 @@ public class RevampedContextMenuHeaderMediatorTest {
         final ContextMenuParams params =
                 new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE, "https://example.org",
                         "https://example.org/sitemap", "", "", "", "", null, false, 0, 0, 0);
-        final RevampedContextMenuHeaderMediator mediator = new RevampedContextMenuHeaderMediator(
-                mActivity, model, PerformanceClass.PERFORMANCE_FAST, params, mProfile);
+        final RevampedContextMenuHeaderMediator mediator =
+                new RevampedContextMenuHeaderMediator(mActivity, model,
+                        PerformanceClass.PERFORMANCE_FAST, params, mProfile, mNativeDelegate);
         assertThat(model.get(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS),
                 equalTo(PerformanceClass.PERFORMANCE_UNKNOWN));
     }
@@ -98,8 +102,9 @@ public class RevampedContextMenuHeaderMediatorTest {
                         .build();
         final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 "https://example.org", "", "", "", "", "", null, false, 0, 0, 0);
-        final RevampedContextMenuHeaderMediator mediator = new RevampedContextMenuHeaderMediator(
-                mActivity, model, PerformanceClass.PERFORMANCE_FAST, params, mProfile);
+        final RevampedContextMenuHeaderMediator mediator =
+                new RevampedContextMenuHeaderMediator(mActivity, model,
+                        PerformanceClass.PERFORMANCE_FAST, params, mProfile, mNativeDelegate);
         assertThat(model.get(RevampedContextMenuHeaderProperties.URL_PERFORMANCE_CLASS),
                 equalTo(PerformanceClass.PERFORMANCE_UNKNOWN));
     }

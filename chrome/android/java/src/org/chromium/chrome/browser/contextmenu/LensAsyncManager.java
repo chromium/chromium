@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import android.net.Uri;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -15,16 +17,16 @@ class LensAsyncManager {
     private static final String TAG = "LensAsyncManager";
 
     private ContextMenuParams mParams;
-    private ContextMenuPopulator mPopulator;
+    private ContextMenuNativeDelegate mNativeDelegate;
 
     /**
      * Construct a lens async manager.
      * @param params Context menu params used to retrieve additional metadata.
-     * @param populator A populator reference used to retrieve image bytes.
+     * @param nativeDelegate {@link ContextMenuNativeDelegate} used to retrieve image bytes.
      */
-    public LensAsyncManager(ContextMenuParams params, ContextMenuPopulator populator) {
+    public LensAsyncManager(ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         mParams = params;
-        mPopulator = populator;
+        mNativeDelegate = nativeDelegate;
     }
 
     /**
@@ -32,14 +34,12 @@ class LensAsyncManager {
      * @param replyCallback The function to callback with the classification.
      */
     public void classifyImageAsync(Callback<Boolean> replyCallback) {
+        Callback<Uri> callback = (uri)
+                -> LensController.getInstance().classifyImage(uri, mParams.getPageUrl(),
+                        mParams.getTitleText(), (isClassificationSuccessful) -> {
+                            replyCallback.onResult(isClassificationSuccessful);
+                        });
         // Must occur on UI thread.
-        mPopulator.retrieveImage(ContextMenuImageFormat.ORIGINAL, (uri) -> {
-            LensController.getInstance().classifyImage(uri,
-                    mParams.getPageUrl(),
-                    mParams.getTitleText(),
-                    (isClassificationSuccessful) -> {
-                        replyCallback.onResult(isClassificationSuccessful);
-                    });
-        });
+        mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, callback);
     }
 }
