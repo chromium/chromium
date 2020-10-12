@@ -794,6 +794,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "desktop-in-product-help-snooze",
+    "owners": [ "collinbaker", "kerenzhu", "chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "desktop-version-default",
     "owners": [ "gambard", "bling-flags" ],
     "expiry_milestone": 87

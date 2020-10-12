@@ -6661,6 +6661,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kKaleidoscopeModuleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kKaleidoscopeModule)},
 
+#if defined(TOOLKIT_VIEWS)
+    {"desktop-in-product-help-snooze",
+     flag_descriptions::kDesktopInProductHelpSnoozeName,
+     flag_descriptions::kDesktopInProductHelpSnoozeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(feature_engagement::kIPHDesktopSnoozeFeature)}
+#endif  // defined(TOOLKIT_VIEWS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

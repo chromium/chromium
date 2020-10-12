@@ -2611,6 +2611,9 @@ extern const char kZeroCopyVideoCaptureDescription[];
 
 #if defined(TOOLKIT_VIEWS)
 
+extern const char kDesktopInProductHelpSnoozeName[];
+extern const char kDesktopInProductHelpSnoozeDescription[];
+
 extern const char kEnableMDRoundedCornersOnDialogsName[];
 extern const char kEnableMDRoundedCornersOnDialogsDescription[];
 
