@@ -1426,9 +1426,16 @@ class CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling
   }
 };
 
+// TODO(http://crbug.com/1137425): Re-enable the test after it gets fixed on
+// Android O.
+#if defined(OS_ANDROID)
+#define MAYBE_ImplicitRootScroller DISABLED_ImplicitRootScroller
+#else
+#define MAYBE_ImplicitRootScroller ImplicitRootScroller
+#endif
 IN_PROC_BROWSER_TEST_F(
     CrossPlatformAccessibilityBrowserTestWithImplicitRootScrolling,
-    ImplicitRootScroller) {
+    MAYBE_ImplicitRootScroller) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/scrolling/implicit-root-scroller.html");
 
