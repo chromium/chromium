@@ -148,7 +148,10 @@ void TtsEngineExtensionObserver::BindTtsStream(
               .WithDisplayName("TtsService")
               .Pass());
 
-  tts_service_->BindTtsStream(std::move(receiver));
+  mojo::PendingRemote<audio::mojom::StreamFactory> factory_remote;
+  auto factory_receiver = factory_remote.InitWithNewPipeAndPassReceiver();
+  content::GetAudioService().BindStreamFactory(std::move(factory_receiver));
+  tts_service_->BindTtsStream(std::move(receiver), std::move(factory_remote));
 }
 #endif  // defined(OS_CHROMEOS)
 
