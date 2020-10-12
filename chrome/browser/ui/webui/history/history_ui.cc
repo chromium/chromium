@@ -120,7 +120,8 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("allowDeletingHistory", allow_deleting_history);
 
   source->AddBoolean(kShowMenuPromoKey, !MenuPromoShown(profile));
-  source->AddBoolean("isGuestSession", profile->IsGuestSession());
+  source->AddBoolean("isGuestSession", profile->IsGuestSession() ||
+                                           profile->IsEphemeralGuestProfile());
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
