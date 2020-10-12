@@ -252,7 +252,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
 
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback,
-      base::Unretained(task.get()), start_url, EnsureWebContentsCreated(),
+      task->GetWeakPtr(), start_url, EnsureWebContentsCreated(),
       base::Unretained(url_loader_.get()), WebappInstallSource::SYNC,
       base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
                      base::Unretained(this), task.get(),
@@ -284,7 +284,7 @@ void WebAppInstallManager::UpdateWebAppFromInfo(
       data_retriever_factory_.Run());
 
   base::OnceClosure start_task = base::BindOnce(
-      &WebAppInstallTask::UpdateWebAppFromInfo, base::Unretained(task.get()),
+      &WebAppInstallTask::UpdateWebAppFromInfo, task->GetWeakPtr(),
       EnsureWebContentsCreated(), app_id, std::move(web_application_info),
       base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
                      base::Unretained(this), task.get(), std::move(callback)));
@@ -381,7 +381,7 @@ void WebAppInstallManager::
 
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons,
-      base::Unretained(task.get()), EnsureWebContentsCreated(),
+      task->GetWeakPtr(), EnsureWebContentsCreated(),
       std::move(web_application_info), finalize_options,
       base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
                      base::Unretained(this), task.get(), std::move(callback)));
@@ -400,22 +400,26 @@ void WebAppInstallManager::EnqueueTask(std::unique_ptr<WebAppInstallTask> task,
 
   tasks_.insert(std::move(task));
 
-  if (web_contents_ready_)
-    MaybeStartQueuedTask();
+  MaybeStartQueuedTask();
 }
 
 void WebAppInstallManager::MaybeStartQueuedTask() {
-  DCHECK(web_contents_ready_);
-  DCHECK(!task_queue_.empty());
+  DCHECK(web_contents_);
 
   if (current_queued_task_)
     return;
 
+  DCHECK(!task_queue_.empty());
   PendingTask pending_task = std::move(task_queue_.front());
   task_queue_.pop();
   current_queued_task_ = pending_task.task;
 
-  std::move(pending_task.start).Run();
+  // Load about:blank to ensure ready and clean up any left over state.
+  url_loader_->LoadUrl(
+      GURL("about:blank"), web_contents_.get(),
+      WebAppUrlLoader::UrlComparison::kExact,
+      base::BindOnce(&WebAppInstallManager::OnWebContentsReadyRunTask,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(pending_task)));
 }
 
 void WebAppInstallManager::SetDataRetrieverFactoryForTesting(
@@ -446,23 +450,13 @@ void WebAppInstallManager::OnQueuedTaskCompleted(WebAppInstallTask* task,
   current_queued_task_ = nullptr;
 
   OnInstallTaskCompleted(task, std::move(callback), app_id, code);
+  // |task| is now destroyed.
   task = nullptr;
 
-  // |callback| may have started another task.
-  if (current_queued_task_)
-    return;
-
-  web_contents_ready_ = false;
-  if (task_queue_.empty()) {
+  if (task_queue_.empty() && !current_queued_task_)
     web_contents_.reset();
-  } else {
-    // Load about:blank to clean up the renderer process.
-    url_loader_->LoadUrl(
-        GURL("about:blank"), web_contents_.get(),
-        WebAppUrlLoader::UrlComparison::kExact,
-        base::BindOnce(&WebAppInstallManager::OnWebContentsReady,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  else
+    MaybeStartQueuedTask();
 }
 
 void WebAppInstallManager::OnLoadWebAppAndCheckManifestCompleted(
@@ -499,27 +493,16 @@ void WebAppInstallManager::OnWebAppUninstalledAfterSync(
 }
 
 content::WebContents* WebAppInstallManager::EnsureWebContentsCreated() {
-  if (web_contents_)
-    return web_contents_.get();
-
-  DCHECK(!web_contents_ready_);
-
-  web_contents_ = WebAppInstallTask::CreateWebContents(profile());
-
-  // Load about:blank so that the process actually starts.
-  url_loader_->LoadUrl(GURL("about:blank"), web_contents_.get(),
-                       WebAppUrlLoader::UrlComparison::kExact,
-                       base::BindOnce(&WebAppInstallManager::OnWebContentsReady,
-                                      weak_ptr_factory_.GetWeakPtr()));
-
+  if (!web_contents_)
+    web_contents_ = WebAppInstallTask::CreateWebContents(profile());
   return web_contents_.get();
 }
 
-void WebAppInstallManager::OnWebContentsReady(WebAppUrlLoader::Result result) {
+void WebAppInstallManager::OnWebContentsReadyRunTask(
+    PendingTask pending_task,
+    WebAppUrlLoader::Result result) {
   DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
-  web_contents_ready_ = true;
-
-  MaybeStartQueuedTask();
+  std::move(pending_task.start).Run();
 }
 
 WebAppInstallManager::PendingTask::PendingTask() = default;

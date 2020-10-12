@@ -815,7 +815,10 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   // Simulate if the web app publisher's website is down.
   url_loader().SetNextLoadUrlResult(
       url, WebAppUrlLoader::Result::kFailedPageTookTooLong);
-  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  // about:blank will be loaded twice, one for the initial attempt and one for
+  // the fallback attempt.
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
 
   install_manager().SetDataRetrieverFactoryForTesting(
       base::BindLambdaForTesting([]() {
@@ -1081,6 +1084,8 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_LoadFailed) {
   const auto url2 = GURL("https://example.org/");
 
   url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded,
                                          WebAppUrlLoader::Result::kUrlLoaded});
 
   // Induce a load failure:
@@ -1193,7 +1198,10 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_TwoIcons_Fallback) {
   const GURL icon1_url{"https://example.com/path/icon1.png"};
   const GURL icon2_url{"https://example.com/path/icon2.png"};
 
-  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  // about:blank will be loaded twice, one for the initial attempt and one for
+  // the fallback attempt.
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   // Induce a load failure:
   url_loader().SetNextLoadUrlResult(
       url, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
@@ -1254,7 +1262,10 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_NoIcons) {
 
   const GURL url{"https://example.com/path"};
 
-  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  // about:blank will be loaded twice, one for the initial attempt and one for
+  // the fallback attempt.
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   // Induce a load failure:
   url_loader().SetNextLoadUrlResult(
       url, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
@@ -1290,7 +1301,8 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_ExpectAppIdFailed) {
 
   const GURL old_url{"https://example.com/path"};
 
-  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(old_url,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -1505,8 +1517,9 @@ TEST_F(WebAppInstallManagerTest, SyncRace_InstallBookmarkAppFull_ThenWebApp) {
   const GURL url{"https://example.com/path"};
   const AppId app_id = GenerateAppIdFromURL(url);
 
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   // The web site url must be loaded only once.
-  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().AddNextLoadUrlResults(url,
                                      {WebAppUrlLoader::Result::kUrlLoaded});
 
@@ -1568,8 +1581,9 @@ TEST_F(WebAppInstallManagerTest,
   const GURL url{"https://example.com/path"};
   const AppId app_id = GenerateAppIdFromURL(url);
 
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   // We will try to load the web site url only once.
-  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   // The web site url will fail.
   url_loader().AddNextLoadUrlResults(
       url, {WebAppUrlLoader::Result::kFailedPageTookTooLong});

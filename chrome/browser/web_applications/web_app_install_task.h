@@ -152,6 +152,8 @@ class WebAppInstallTask : content::WebContentsObserver {
   static std::unique_ptr<content::WebContents> CreateWebContents(
       Profile* profile);
 
+  base::WeakPtr<WebAppInstallTask> GetWeakPtr();
+
   // WebContentsObserver:
   void WebContentsDestroyed() override;
 

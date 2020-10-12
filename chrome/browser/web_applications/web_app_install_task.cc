@@ -186,7 +186,7 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
       launch_url, contents,
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     GetWeakPtr()));
 }
 
 void WebAppInstallTask::InstallWebAppFromInfo(
@@ -277,7 +277,7 @@ void WebAppInstallTask::LoadAndRetrieveWebApplicationInfoWithIcons(
       start_url, web_contents(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     GetWeakPtr()));
 }
 
 // static
@@ -291,6 +291,10 @@ std::unique_ptr<content::WebContents> WebAppInstallTask::CreateWebContents(
   favicon::CreateContentFaviconDriverForWebContents(web_contents.get());
 
   return web_contents;
+}
+
+base::WeakPtr<WebAppInstallTask> WebAppInstallTask::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WebAppInstallTask::WebContentsDestroyed() {
@@ -555,9 +559,9 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
           instance->IsInstallable(
               id,
               base::BindOnce(&WebAppInstallTask::OnDidCheckForIntentToPlayStore,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(web_app_info), std::move(icon_urls),
-                             for_installable_site, skip_page_favicons, intent));
+                             GetWeakPtr(), std::move(web_app_info),
+                             std::move(icon_urls), for_installable_site,
+                             skip_page_favicons, intent));
           return;
         }
       }
@@ -646,8 +650,7 @@ void WebAppInstallTask::OnIconsRetrieved(
 
   install_finalizer_->FinalizeInstall(
       *web_app_info, finalize_options,
-      base::BindOnce(&WebAppInstallTask::OnInstallFinalized,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&WebAppInstallTask::OnInstallFinalized, GetWeakPtr()));
 }
 
 void WebAppInstallTask::OnIconsRetrievedShowDialog(
@@ -672,8 +675,7 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
     DCHECK(dialog_callback_);
     std::move(dialog_callback_)
         .Run(web_contents(), std::move(web_app_info), for_installable_site,
-             base::BindOnce(&WebAppInstallTask::OnDialogCompleted,
-                            weak_ptr_factory_.GetWeakPtr(),
+             base::BindOnce(&WebAppInstallTask::OnDialogCompleted, GetWeakPtr(),
                             for_installable_site));
   }
 }
@@ -690,8 +692,8 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
   FilterAndResizeIconsGenerateMissing(web_app_info.get(), &icons_map);
 
   install_finalizer_->FinalizeUpdate(
-      *web_app_info, base::BindOnce(&WebAppInstallTask::CallInstallCallback,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      *web_app_info,
+      base::BindOnce(&WebAppInstallTask::CallInstallCallback, GetWeakPtr()));
 }
 
 void WebAppInstallTask::OnDialogCompleted(
@@ -744,7 +746,7 @@ void WebAppInstallTask::OnDialogCompleted(
   install_finalizer_->FinalizeInstall(
       web_app_info_copy, finalize_options,
       base::BindOnce(&WebAppInstallTask::OnInstallFinalizedCreateShortcuts,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(web_app_info)));
+                     GetWeakPtr(), std::move(web_app_info)));
 
   // Check that the finalizer hasn't called OnInstallFinalizedCreateShortcuts
   // synchronously:
@@ -799,9 +801,9 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kShortcutsMenu] = true;
 
-  auto hooks_created_callback = base::BindOnce(
-      &WebAppInstallTask::OnOsHooksCreated, weak_ptr_factory_.GetWeakPtr(),
-      web_app_info->open_as_window, app_id);
+  auto hooks_created_callback =
+      base::BindOnce(&WebAppInstallTask::OnOsHooksCreated, GetWeakPtr(),
+                     web_app_info->open_as_window, app_id);
 
   os_integration_manager_->InstallOsHooks(app_id,
                                           std::move(hooks_created_callback),
