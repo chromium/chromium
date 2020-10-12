@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -392,11 +394,19 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                           ->GetLastCommittedURL());
 }
 
-// TODO(crbug.com/1109594): Update this when we decide if SWAs can be
-// link-captured to standalone incognito windows. Currently, the SWA gets
-// launched into a standalone browser window in incognito profile.
+// TODO(crbug.com/1135863): Decide and formalize this behavior. This test is
+// disabled in DCHECK builds, because it hits a DCHECK in LaunchSystemWebApp. In
+// production builds, SWA is link captured to the original profile. The goal is
+// to behave reasonably, and not crashing.
+#if DCHECK_IS_ON()
+#define MAYBE_IncognitoBrowserOmniboxLinkCapture \
+  DISABLED_IncognitoBrowserOmniboxLinkCapture
+#else
+#define MAYBE_IncognitoBrowserOmniboxLinkCapture \
+  IncognitoBrowserOmniboxLinkCapture
+#endif
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       IncognitoBrowserOmniboxLinkCapture) {
+                       MAYBE_IncognitoBrowserOmniboxLinkCapture) {
   WaitForTestSystemAppInstall();
 
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -410,8 +420,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       incognito_browser, maybe_installation_->GetAppUrl().spec());
   observer.Wait();
 
+  // We launch SWAs into the incognito profile's original profile.
   Browser* app_browser = FindSystemWebAppBrowser(
-      incognito_browser->profile(), maybe_installation_->GetType());
+      incognito_browser->profile()->GetOriginalProfile(),
+      maybe_installation_->GetType());
   EXPECT_TRUE(app_browser);
   EXPECT_EQ(app_browser, chrome::FindLastActive());
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
@@ -419,7 +431,94 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
+// The following tests are disabled in DCHECK builds. LaunchSystemWebApp DCHECKs
+// if the wrong profile is used. EXPECT_DCHECK_DEATH (or its variants) aren't
+// reliable in browsertests, so we don't test this. This is okay because these
+// tests are used to verify that in release builds, LaunchSystemWebApp doesn't
+// crash and behaves reasonably (pick an appropriate profile).
+#if defined(OS_CHROMEOS) && !DCHECK_IS_ON()
+using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
+                       LaunchFromNormalSessionIncognitoProfile) {
+  Profile* startup_profile = browser()->profile();
+  ASSERT_TRUE(startup_profile->IsRegularProfile());
+
+  WaitForTestSystemAppInstall();
+  Profile* incognito_profile = startup_profile->GetPrimaryOTRProfile();
+
+  Browser* result_browser =
+      LaunchSystemWebApp(incognito_profile, GetMockAppType(),
+                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
+  EXPECT_EQ(startup_profile, result_browser->profile());
+  EXPECT_TRUE(result_browser->profile()->IsRegularProfile());
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
+                       LaunchFromSignInProfile) {
+  WaitForTestSystemAppInstall();
+
+  Profile* signin_profile = chromeos::ProfileHelper::GetSigninProfile();
+
+  Browser* result_browser =
+      LaunchSystemWebApp(signin_profile, GetMockAppType(),
+                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
+  EXPECT_EQ(nullptr, result_browser);
+}
+
+using SystemWebAppLaunchProfileGuestSessionBrowserTest =
+    SystemWebAppLaunchProfileBrowserTest;
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
+                       LaunchFromGuestSessionOriginalProfile) {
+  // We should start into the guest session browsing profile.
+  Profile* startup_profile = browser()->profile();
+  ASSERT_TRUE(startup_profile->IsGuestSession());
+  ASSERT_TRUE(startup_profile->IsPrimaryOTRProfile());
+
+  WaitForTestSystemAppInstall();
+
+  // We typically don't get the original profile as an argument, but it is a
+  // valid input to LaunchSystemWebApp.
+  Profile* original_profile = browser()->profile()->GetOriginalProfile();
+
+  Browser* result_browser =
+      LaunchSystemWebApp(original_profile, GetMockAppType(),
+                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
+
+  EXPECT_EQ(startup_profile, result_browser->profile());
+  EXPECT_TRUE(result_browser->profile()->IsGuestSession());
+  EXPECT_TRUE(result_browser->profile()->IsPrimaryOTRProfile());
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
+                       LaunchFromGuestSessionPrimaryOTRProfile) {
+  // We should start into the guest session browsing profile.
+  Profile* startup_profile = browser()->profile();
+  ASSERT_TRUE(startup_profile->IsGuestSession());
+  ASSERT_TRUE(startup_profile->IsPrimaryOTRProfile());
+
+  WaitForTestSystemAppInstall();
+
+  Browser* result_browser =
+      LaunchSystemWebApp(startup_profile, GetMockAppType(),
+                         GetStartUrl(LaunchParamsForApp(GetMockAppType())));
+
+  EXPECT_EQ(startup_profile, result_browser->profile());
+  EXPECT_TRUE(result_browser->profile()->IsGuestSession());
+  EXPECT_TRUE(result_browser->profile()->IsPrimaryOTRProfile());
+}
+#endif  // defined(OS_CHROMEOS) && !DCHECK_IS_ON()
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
     SystemWebAppLinkCaptureBrowserTest);
+
+#if defined(OS_CHROMEOS) && !DCHECK_IS_ON()
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P(
+    SystemWebAppLaunchProfileBrowserTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
+    SystemWebAppLaunchProfileGuestSessionBrowserTest);
+#endif
 
 }  // namespace web_app
