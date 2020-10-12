@@ -43,9 +43,6 @@ class ServiceWorkerStorageControlImplTest;
 namespace service_worker_storage_unittest {
 class ServiceWorkerStorageTest;
 class ServiceWorkerStorageDiskTest;
-class ServiceWorkerResourceStorageTest;
-class ServiceWorkerResourceStorageDiskTest;
-FORWARD_DECLARE_TEST(ServiceWorkerResourceStorageDiskTest, CleanupOnRestart);
 FORWARD_DECLARE_TEST(ServiceWorkerStorageDiskTest, DeleteAndStartOver);
 FORWARD_DECLARE_TEST(ServiceWorkerStorageDiskTest,
                      DeleteAndStartOver_UnrelatedFileExists);
@@ -298,11 +295,6 @@ class CONTENT_EXPORT ServiceWorkerStorage {
  private:
   friend class ServiceWorkerStorageControlImplTest;
   friend class service_worker_storage_unittest::ServiceWorkerStorageTest;
-  friend class service_worker_storage_unittest::
-      ServiceWorkerResourceStorageTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      service_worker_storage_unittest::ServiceWorkerResourceStorageDiskTest,
-      CleanupOnRestart);
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_storage_unittest::ServiceWorkerStorageDiskTest,
       DeleteAndStartOver);
