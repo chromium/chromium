@@ -18,6 +18,9 @@
  *
  */
 
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {dispatchSimpleEvent} from '../../cr.m.js';
+
 cr.define('cr.ui', function() {
   // TODO(arv): Currently this only supports horizontal layout.
   // TODO(arv): This ignores min-width and max-width of the elements to the
@@ -58,7 +61,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLDivElement}
    */
-  const Splitter = cr.ui.define('div');
+  /* #export */ const Splitter = cr.ui.define('div');
 
   Splitter.prototype = {
     __proto__: HTMLDivElement.prototype,
@@ -274,5 +277,6 @@ cr.define('cr.ui', function() {
     },
   };
 
+  // #cr_define_end
   return {Splitter: Splitter};
 });

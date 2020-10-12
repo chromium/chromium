@@ -81,6 +81,33 @@ without changes to the corresponding grd file. -->
                file="images/throbber_medium.svg" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_THROBBER_SMALL_SVG"
                file="images/throbber_small.svg" type="BINDATA" />
+      <!-- Web UI JS module resources (used only in ChromeOS). -->
+      <if expr="chromeos">
+        <include name="IDR_WEBUI_JS_CR_UI_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/array_data_model.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_DIALOGS_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/dialogs.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_CONTROLLER_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_selection_controller.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_MODEL_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_selection_model.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_LIST_SINGLE_SELECTION_MODEL_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_single_selection_model.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_POSITION_UTIL_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/position_util.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_SPLITTER_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/splitter.m.js"
+                 use_base_dir="false" type="BINDATA" />
+      </if>
       <!-- Web UI shared JS module resources. -->
       <include name="IDR_WEBUI_JS_ASSERT_M_JS"
                file="${root_gen_dir}/ui/webui/resources/js/assert.m.js"

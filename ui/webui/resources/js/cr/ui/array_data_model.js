@@ -13,13 +13,15 @@
 // with a copyright comment anyway.
 
 // <include src="../../assert.js">
+// #import {assert} from '../../assert.m.js';
+// #import {NativeEventTarget as EventTarget} from '../event_target.m.js'
 
 cr.define('cr.ui', function() {
   /**
    * A data model that wraps a simple array and supports sorting by storing
    * initial indexes of elements for each position in sorted array.
    */
-  class ArrayDataModel extends cr.EventTarget {
+  /* #export */ class ArrayDataModel extends cr.EventTarget {
     /**
      * @param {!Array} array The underlying array.
      */
@@ -457,5 +459,6 @@ cr.define('cr.ui', function() {
     }
   }
 
+  // #cr_define_end
   return {ArrayDataModel: ArrayDataModel};
 });

@@ -18,7 +18,7 @@ cr.define('cr.ui', function() {
    * Enum for defining how to anchor a popup to an anchor element.
    * @enum {number}
    */
-  const AnchorType = {
+  /* #export */ const AnchorType = {
     /**
      * The popup's right edge is aligned with the left edge of the anchor.
      * The popup's top edge is aligned with the top edge of the anchor.
@@ -215,7 +215,7 @@ cr.define('cr.ui', function() {
    * @param {boolean=} opt_invertLeftRight Whether to invert the right/left
    *     alignment.
    */
-  function positionPopupAroundElement(
+  /* #export */ function positionPopupAroundElement(
       anchorElement, popupElement, type, opt_invertLeftRight) {
     const anchorRect = anchorElement.getBoundingClientRect();
     positionPopupAroundRect(
@@ -229,7 +229,8 @@ cr.define('cr.ui', function() {
    * @param {!HTMLElement} popupElement The popup element we are positioning.
    * @param {cr.ui.AnchorType=} opt_anchorType The type of anchoring we want.
    */
-  function positionPopupAtPoint(x, y, popupElement, opt_anchorType) {
+  /* #export */ function positionPopupAtPoint(
+      x, y, popupElement, opt_anchorType) {
     const rect = {left: x, top: y, width: 0, height: 0, right: x, bottom: y};
 
     const anchorType = opt_anchorType || AnchorType.BELOW;
@@ -237,6 +238,7 @@ cr.define('cr.ui', function() {
   }
 
   // Export
+  // #cr_define_end
   return {
     AnchorType: AnchorType,
     positionPopupAroundElement: positionPopupAroundElement,

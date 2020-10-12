@@ -14,7 +14,10 @@ js_type_check("closure_compile") {
 
 js_type_check("closure_compile_modules") {
   uses_js_modules = true
-  deps = [ ":event_target.m" ]
+  deps = [
+    ":event_target.m",
+    ":ui.m",
+  ]
 }
 
 js_library("event_target") {
@@ -30,7 +33,15 @@ js_library("event_target.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("ui.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_modulizer("modulize") {
-  input_files = [ "event_target.js" ]
+  input_files = [
+    "event_target.js",
+    "ui.js",
+  ]
   deps = [ "ui:modulize" ]
 }

@@ -6,7 +6,7 @@ cr.define('cr.ui.dialogs', function() {
   /**
    * @constructor
    */
-  function BaseDialog(parentNode) {
+  /* #export */ function BaseDialog(parentNode) {
     this.parentNode_ = parentNode;
     this.document_ = parentNode.ownerDocument;
 
@@ -329,7 +329,7 @@ cr.define('cr.ui.dialogs', function() {
    * @constructor
    * @extends {cr.ui.dialogs.BaseDialog}
    */
-  function AlertDialog(parentNode) {
+  /* #export */ function AlertDialog(parentNode) {
     BaseDialog.call(this, parentNode);
     this.cancelButton.style.display = 'none';
   }
@@ -351,7 +351,7 @@ cr.define('cr.ui.dialogs', function() {
    * @constructor
    * @extends {cr.ui.dialogs.BaseDialog}
    */
-  function ConfirmDialog(parentNode) {
+  /* #export */ function ConfirmDialog(parentNode) {
     BaseDialog.call(this, parentNode);
   }
 
@@ -363,7 +363,7 @@ cr.define('cr.ui.dialogs', function() {
    * @constructor
    * @extends {cr.ui.dialogs.BaseDialog}
    */
-  function PromptDialog(parentNode) {
+  /* #export */ function PromptDialog(parentNode) {
     BaseDialog.call(this, parentNode);
     this.input_ = this.document_.createElement('input');
     this.input_.setAttribute('type', 'text');
@@ -416,6 +416,7 @@ cr.define('cr.ui.dialogs', function() {
     }
   };
 
+  // #cr_define_end
   return {
     BaseDialog: BaseDialog,
     AlertDialog: AlertDialog,

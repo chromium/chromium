@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {isMac, isChromeOS} from '../../cr.m.js';
+// #import {ListSelectionModel} from './list_selection_model.m.js';
+
 cr.define('cr.ui', function() {
   /**
    * Creates a selection controller that is to be used with lists. This is
@@ -15,7 +18,7 @@ cr.define('cr.ui', function() {
    *
    * @constructor
    */
-  function ListSelectionController(selectionModel) {
+  /* #export */ function ListSelectionController(selectionModel) {
     this.selectionModel_ = selectionModel;
   }
 
@@ -304,5 +307,6 @@ cr.define('cr.ui', function() {
     }
   };
 
+  // #cr_define_end
   return {ListSelectionController: ListSelectionController};
 });

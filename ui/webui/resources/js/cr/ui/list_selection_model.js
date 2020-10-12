@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {NativeEventTarget as EventTarget} from '../event_target.m.js'
+// #import {isMac, isChromeOS, dispatchPropertyChange} from '../../cr.m.js';
+
 cr.define('cr.ui', function() {
   /**
    * Creates a new selection model that is to be used with lists.
    *
    */
-  class ListSelectionModel extends cr.EventTarget {
+  /* #export */ class ListSelectionModel extends cr.EventTarget {
     /**
      * @param {number=} opt_length The number items in the selection.
      */
@@ -393,5 +396,6 @@ cr.define('cr.ui', function() {
     }
   }
 
+  // #cr_define_end
   return {ListSelectionModel: ListSelectionModel};
 });
