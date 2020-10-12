@@ -13,6 +13,7 @@
 #include "base/scoped_observer.h"
 #include "base/test/bind_test_util.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_observer.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
@@ -135,12 +136,11 @@ class FileTasksNotifierTest : public testing::Test {
     observer_ = std::make_unique<MockFileTasksObserver>(notifier_.get());
 
     auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-    my_files_ = profile().GetPath().Append("MyFiles");
+    my_files_ = util::GetMyFilesFolderForProfile(profile_.get());
     ASSERT_TRUE(base::CreateDirectory(my_files_));
     base::WriteFile(my_files_.Append("file"), "data", 4);
     ASSERT_TRUE(mount_points->RegisterFileSystem(
-        "downloads", storage::kFileSystemTypeNativeLocal, {},
-        profile().GetPath().Append("MyFiles")));
+        "downloads", storage::kFileSystemTypeNativeLocal, {}, my_files_));
     ASSERT_TRUE(mount_points->RegisterFileSystem(
         "drivefs", storage::kFileSystemTypeDriveFs, {},
         base::FilePath("/media/fuse/drivefs")));
@@ -186,7 +186,7 @@ class FileTasksNotifierTest : public testing::Test {
 };
 
 TEST_F(FileTasksNotifierTest, FileTask_Local) {
-  base::FilePath path = profile().GetPath().Append("file");
+  base::FilePath path = my_files().Append("file");
   EXPECT_CALL(observer(),
               OnFilesOpenedImpl(path, FileTasksObserver::OpenType::kLaunch));
   notifier().NotifyFileTasks({CreateFileSystemUrl(path)});
@@ -234,7 +234,7 @@ TEST_F(FileTasksNotifierTest, FileTask_ArcDocumentsProvider) {
 }
 
 TEST_F(FileTasksNotifierTest, FileTask_Multiple) {
-  base::FilePath local_path = profile().GetPath().Append("file");
+  base::FilePath local_path = my_files().Append("file");
   base::FilePath drivefs_path("/media/fuse/drivefs-abcedf/root/file");
   base::FilePath arc_path("/run/arc/sdcard/write/emulated/0/file");
   base::FilePath crostini_path("/media/fuse/crostini-abcdef/file");
@@ -265,7 +265,7 @@ TEST_F(FileTasksNotifierTest, FileTask_Multiple) {
 }
 
 TEST_F(FileTasksNotifierTest, DialogSelection_Local) {
-  base::FilePath path = profile().GetPath().Append("file");
+  base::FilePath path = my_files().Append("file");
   EXPECT_CALL(observer(),
               OnFilesOpenedImpl(path, FileTasksObserver::OpenType::kOpen));
   notifier().NotifyFileDialogSelection({CreateSelectedFileInfo(path)}, true);
@@ -336,7 +336,7 @@ TEST_F(FileTasksNotifierTest, DialogSelection_ArcDocumentsProvider) {
 }
 
 TEST_F(FileTasksNotifierTest, DialogSelection_Multiple) {
-  base::FilePath local_path = profile().GetPath().Append("file");
+  base::FilePath local_path = my_files().Append("file");
   base::FilePath drivefs_path("/media/fuse/drivefs-abcdef/root/file");
   base::FilePath arc_path("/run/arc/sdcard/write/emulated/0/file");
   base::FilePath crostini_path("/media/fuse/crostini-abcdef/file");
@@ -385,7 +385,7 @@ TEST_F(FileTasksNotifierTest, DialogSelection_Multiple) {
 }
 
 TEST_F(FileTasksNotifierTest, Download_Local) {
-  base::FilePath path = profile().GetPath().Append("file");
+  base::FilePath path = my_files().Append("file");
   EXPECT_CALL(observer(),
               OnFilesOpenedImpl(path, FileTasksObserver::OpenType::kDownload));
   notifier().OnDownloadUpdated(nullptr, CreateCompletedDownloadItem(path));
@@ -427,7 +427,7 @@ TEST_F(FileTasksNotifierTest, Download_RemovableMedia) {
 TEST_F(FileTasksNotifierTest, Download_Incomplete) {
   EXPECT_CALL(observer(), OnFilesOpenedImpl(_, _)).Times(0);
   content::FakeDownloadItem download_item;
-  download_item.SetTargetFilePath(profile().GetPath().Append("file"));
+  download_item.SetTargetFilePath(my_files().Append("file"));
 
   for (auto state : {download::DownloadItem::DownloadState::IN_PROGRESS,
                      download::DownloadItem::DownloadState::CANCELLED,
