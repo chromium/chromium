@@ -1221,8 +1221,11 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas() {
 
 void CanvasResourceProvider::OnContextDestroyed() {
   if (canvas_image_provider_) {
-    DCHECK(skia_canvas_);
-    skia_canvas_->reset_image_provider();
+    if (!UseOopRasterization()) {
+      DCHECK(skia_canvas_);
+      skia_canvas_->reset_image_provider();
+    }
+
     canvas_image_provider_.reset();
   }
 }
