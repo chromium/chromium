@@ -600,7 +600,7 @@ try_.chromium_chromiumos_builder(
     branch_selector = branches.ALL_BRANCHES,
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
-    tryjob = try_.job(cancel_stale = False),
+    tryjob = try_.job(),
     use_clang_coverage = True,
 )
 
