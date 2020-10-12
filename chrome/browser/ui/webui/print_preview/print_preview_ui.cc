@@ -466,16 +466,10 @@ void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {
 content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIPrintHost);
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(source, "print_preview.js",
-                                     IDR_PRINT_PREVIEW_PRINT_PREVIEW_ROLLUP_JS,
-                                     IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
-#else
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize), "",
       IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
-#endif
   AddPrintPreviewStrings(source);
   SetupPrintPreviewPlugin(source);
   AddPrintPreviewFlags(source, profile);

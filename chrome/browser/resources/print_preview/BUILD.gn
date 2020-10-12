@@ -13,11 +13,14 @@ preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+
   optimize_webui("build") {
     host = "print"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "print_preview.rollup.js" ]
     js_module_in_files = [ "print_preview.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
       ":preprocess",
@@ -29,8 +32,15 @@ if (optimize_webui) {
       "pdf/pdf_scripting_api.js",
     ]
   }
-} else {
-  generate_grd("build_grd") {
+}
+
+generate_grd("build_grd") {
+  input_files = [ "print_preview.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
     deps = [
       ":preprocess",
       ":preprocess_generated",
@@ -39,9 +49,9 @@ if (optimize_webui) {
       "$target_gen_dir/$preprocess_manifest",
       "$target_gen_dir/$preprocess_gen_manifest",
     ]
-    grd_prefix = "print_preview"
-    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   }
+  grd_prefix = "print_preview"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
 preprocess_grit("preprocess") {
@@ -49,7 +59,6 @@ preprocess_grit("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "print_preview.html",
     "cloud_print_interface.js",
     "cloud_print_interface_impl.js",
     "dark_mode_behavior.js",
