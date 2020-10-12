@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/insecure_form_controller_client.h"
 
+#include "components/security_interstitials/content/insecure_form_tab_storage.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/i18n_util.h"
@@ -46,9 +47,12 @@ void InsecureFormControllerClient::GoBack() {
 }
 
 void InsecureFormControllerClient::Proceed() {
-  // TODO(crbug.com/1093955): The simple reload logic means the interstitial is
-  // bypassed with any reload (e.g. F5), ideally this shouldn't be the case.
-
+  // Set the is_proceeding flag on the tab storage so reload doesn't trigger
+  // another interstitial.
+  security_interstitials::InsecureFormTabStorage* tab_storage =
+      security_interstitials::InsecureFormTabStorage::GetOrCreate(
+          web_contents_);
+  tab_storage->SetIsProceeding(true);
   // We don't check for repost on the proceed reload since the interstitial
   // explains this will submit the form.
   web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
