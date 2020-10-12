@@ -6,7 +6,6 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"

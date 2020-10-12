@@ -5,7 +5,6 @@
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync_device_info/device_info_sync_client.h"

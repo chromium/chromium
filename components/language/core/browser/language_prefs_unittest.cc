@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"

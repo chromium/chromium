@@ -5,7 +5,6 @@
 #include "components/sync/driver/profile_sync_service.h"
 
 #include "base/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

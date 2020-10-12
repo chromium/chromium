@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/lookalikes/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

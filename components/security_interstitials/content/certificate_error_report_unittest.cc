@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
-#include "base/test/scoped_feature_list.h"
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 

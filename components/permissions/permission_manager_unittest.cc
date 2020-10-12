@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"

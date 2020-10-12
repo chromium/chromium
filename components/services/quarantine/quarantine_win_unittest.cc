@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/scoped_com_initializer.h"
