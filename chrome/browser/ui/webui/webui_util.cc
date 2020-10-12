@@ -32,8 +32,8 @@ void SetupPolymer3Defaults(content::WebUIDataSource* source) {
   source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
+  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 }
 
 }  // namespace

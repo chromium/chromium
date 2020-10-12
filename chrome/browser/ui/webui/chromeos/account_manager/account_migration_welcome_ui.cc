@@ -114,8 +114,9 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   html_source->AddResourcePath("googleg.svg",
                                IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG);
 #endif
-  html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
-  html_source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
+  html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  html_source->AddResourcePath("test_loader.html",
+                               IDR_WEBUI_HTML_TEST_LOADER_HTML);
   html_source->SetDefaultResource(IDR_ACCOUNT_MIGRATION_WELCOME_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MigrationMessageHandler>(

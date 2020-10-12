@@ -44,8 +44,9 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
   source->AddResourcePath("sync_confirmation.js", IDR_SYNC_CONFIRMATION_JS);
 
   if (is_sync_allowed) {
-    source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
-    source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
+    source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+    source->AddResourcePath("test_loader.html",
+                            IDR_WEBUI_HTML_TEST_LOADER_HTML);
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrc,
         "script-src chrome://resources chrome://test 'self';");

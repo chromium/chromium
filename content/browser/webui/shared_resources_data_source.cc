@@ -326,10 +326,10 @@ void SharedResourcesDataSource::StartDataRequest(
   DCHECK_NE(-1, idr) << " path: " << path;
   scoped_refptr<base::RefCountedMemory> bytes;
 
-  if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS) {
+  if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS) {
     std::string css = webui::GetWebUiCssTextDefaults();
     bytes = base::RefCountedString::TakeString(&css);
-  } else if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_MD) {
+  } else if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_MD_CSS) {
     std::string css = webui::GetWebUiCssTextDefaultsMd();
     bytes = base::RefCountedString::TakeString(&css);
   } else {

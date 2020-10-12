@@ -114,7 +114,7 @@ const struct Resource{
 } kResources[] = {
     {"animations.css", IDR_LOCAL_NTP_ANIMATIONS_CSS, "text/css"},
     {"animations.js", IDR_LOCAL_NTP_ANIMATIONS_JS, "application/javascript"},
-    {"assert.js", IDR_WEBUI_JS_ASSERT, "application/javascript"},
+    {"assert.js", IDR_WEBUI_JS_ASSERT_JS, "application/javascript"},
     {"local-ntp-common.css", IDR_LOCAL_NTP_COMMON_CSS, "text/css"},
     {"customize.css", IDR_LOCAL_NTP_CUSTOMIZE_CSS, "text/css"},
     {"customize.js", IDR_LOCAL_NTP_CUSTOMIZE_JS, "application/javascript"},
@@ -140,7 +140,7 @@ const struct Resource{
     // added complexity.
     {chrome::kChromeSearchLocalNtpBackgroundFilename, kLocalResource,
      "image/jpg"},
-    {omnibox::kGoogleGIconResourceName, IDR_WEBUI_IMAGES_200_LOGO_GOOGLE_G,
+    {omnibox::kGoogleGIconResourceName, IDR_WEBUI_IMAGES_200_LOGO_GOOGLE_G_PNG,
      "image/png"},
     {omnibox::kBookmarkIconResourceName, IDR_LOCAL_NTP_ICONS_BOOKMARK,
      "image/svg+xml"},
@@ -169,7 +169,7 @@ const struct Resource{
     {omnibox::kExtensionAppIconResourceName, IDR_LOCAL_NTP_ICONS_EXTENSION_APP,
      "image/svg+xml"},
     {omnibox::kPageIconResourceName, IDR_LOCAL_NTP_ICONS_PAGE, "image/svg+xml"},
-    {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH,
+    {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG,
      "image/svg+xml"},
     {omnibox::kTrendingUpIconResourceName, IDR_LOCAL_NTP_ICONS_TRENDING_UP,
      "image/svg+xml"},

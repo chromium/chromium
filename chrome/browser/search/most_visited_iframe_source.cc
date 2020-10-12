@@ -109,7 +109,7 @@ void MostVisitedIframeSource::StartDataRequest(
   } else if (path == kLocalNTPUtilsJSPath) {
     SendResource(IDR_LOCAL_NTP_UTILS_JS, std::move(callback));
   } else if (path == kAssertJsPath) {
-    SendResource(IDR_WEBUI_JS_ASSERT, std::move(callback));
+    SendResource(IDR_WEBUI_JS_ASSERT_JS, std::move(callback));
   } else {
     std::move(callback).Run(nullptr);
   }

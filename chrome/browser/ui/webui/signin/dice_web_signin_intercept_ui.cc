@@ -48,8 +48,8 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
   source->DisableTrustedTypesCSP();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
+  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

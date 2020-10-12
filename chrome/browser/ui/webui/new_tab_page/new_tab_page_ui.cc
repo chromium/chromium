@@ -210,7 +210,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   // Register images that are purposefully not inlined in the HTML and instead
   // are set in Javascript.
   static constexpr webui::ResourcePath kImages[] = {
-      {omnibox::kGoogleGIconResourceName, IDR_WEBUI_IMAGES_200_LOGO_GOOGLE_G},
+      {omnibox::kGoogleGIconResourceName,
+       IDR_WEBUI_IMAGES_200_LOGO_GOOGLE_G_PNG},
       {omnibox::kBookmarkIconResourceName, IDR_LOCAL_NTP_ICONS_BOOKMARK},
       {omnibox::kCalculatorIconResourceName, IDR_LOCAL_NTP_ICONS_CALCULATOR},
       {omnibox::kClockIconResourceName, IDR_LOCAL_NTP_ICONS_CLOCK},
@@ -226,7 +227,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {omnibox::kExtensionAppIconResourceName,
        IDR_LOCAL_NTP_ICONS_EXTENSION_APP},
       {omnibox::kPageIconResourceName, IDR_LOCAL_NTP_ICONS_PAGE},
-      {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH},
+      {omnibox::kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG},
       {omnibox::kTrendingUpIconResourceName, IDR_LOCAL_NTP_ICONS_TRENDING_UP}};
   webui::AddResourcePathsBulk(source, kImages);
 

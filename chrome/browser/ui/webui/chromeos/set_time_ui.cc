@@ -208,8 +208,8 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
   source->SetDefaultResource(IDR_SET_TIME_HTML);
 
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER);
+  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

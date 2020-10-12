@@ -57,7 +57,7 @@ void SharedResourcesDataSourceIOS::StartDataRequest(
   WebClient* web_client = GetWebClient();
 
   int idr = resource ? resource->value : -1;
-  if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS) {
+  if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS) {
     std::string css = webui::GetWebUiCssTextDefaults();
     bytes = base::RefCountedString::TakeString(&css);
   } else {

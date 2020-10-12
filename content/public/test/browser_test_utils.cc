@@ -1777,7 +1777,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents,
   // Inject WebUI test runner script first prior to other scripts required to
   // run the test as scripts may depend on it being declared.
   std::vector<int> ids;
-  ids.push_back(IDR_WEBUI_JS_WEBUI_RESOURCE_TEST);
+  ids.push_back(IDR_WEBUI_JS_WEBUI_RESOURCE_TEST_JS);
   ids.insert(ids.end(), js_resource_ids.begin(), js_resource_ids.end());
 
   std::string script;
