@@ -126,6 +126,10 @@ const base::Feature kClickToOpenPDFPlaceholder{
 const base::Feature kClientStorageAccessContextAuditing{
     "ClientStorageAccessContextAuditing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables recognizing user actions in web commerce.
+const base::Feature kCommerceHint{"CommerceHint",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kContentSettingsRedesign{"ContentSettingsRedesign",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 

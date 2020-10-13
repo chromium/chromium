@@ -50,6 +50,7 @@ class BookmarkCodec {
       const BookmarkNode* bookmark_bar_node,
       const BookmarkNode* other_folder_node,
       const BookmarkNode* mobile_folder_node,
+      const BookmarkNode* chrome_cart_node,
       const BookmarkNode::MetaInfoMap* model_meta_info_map,
       const std::string& sync_metadata_str);
 
@@ -62,6 +63,7 @@ class BookmarkCodec {
               BookmarkNode* bb_node,
               BookmarkNode* other_folder_node,
               BookmarkNode* mobile_folder_node,
+              BookmarkNode* chrome_cart_node,
               int64_t* max_node_id,
               std::string* sync_metadata_str);
 
@@ -93,6 +95,7 @@ class BookmarkCodec {
   static const char kRootFolderNameKey[];
   static const char kOtherBookmarkFolderNameKey[];
   static const char kMobileBookmarkFolderNameKey[];
+  static const char kChromeCartBookmarkFolderNameKey[];
   static const char kVersionKey[];
   static const char kChecksumKey[];
   static const char kIdKey[];
@@ -124,6 +127,7 @@ class BookmarkCodec {
   bool DecodeHelper(BookmarkNode* bb_node,
                     BookmarkNode* other_folder_node,
                     BookmarkNode* mobile_folder_node,
+                    BookmarkNode* chrome_cart_node,
                     const base::Value& value,
                     std::string* sync_metadata_str);
 
@@ -134,7 +138,8 @@ class BookmarkCodec {
   // Reassigns bookmark IDs for all nodes.
   void ReassignIDs(BookmarkNode* bb_node,
                    BookmarkNode* other_node,
-                   BookmarkNode* mobile_node);
+                   BookmarkNode* mobile_node,
+                   BookmarkNode* chrome_cart_node);
 
   // Helper to recursively reassign IDs.
   void ReassignIDsHelper(BookmarkNode* node);

@@ -42,6 +42,9 @@ void PrintTo(const BookmarkNode& node, std::ostream* os) {
     case BookmarkNode::MOBILE:
       *os << "MOBILE folder";
       break;
+    case BookmarkNode::CHROME_CART:
+      *os << "CHROME_CART folder";
+      break;
   }
 }
 

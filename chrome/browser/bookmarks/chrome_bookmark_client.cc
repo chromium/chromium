@@ -98,6 +98,7 @@ bool ChromeBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
       NOTREACHED();
       return false;
     case bookmarks::BookmarkNode::FOLDER:
+    case bookmarks::BookmarkNode::CHROME_CART:
       // Managed node.
       return false;
     case bookmarks::BookmarkNode::BOOKMARK_BAR:

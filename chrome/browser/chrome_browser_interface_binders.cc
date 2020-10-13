@@ -12,6 +12,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/complex_tasks/commerce_hint_service.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/engagement/site_engagement_details.mojom.h"
 #include "chrome/browser/language/translate_frame_binder.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
+#include "chrome/browser/ui/webui/chrome_cart/chrome_cart.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/interventions_internals/interventions_internals.mojom.h"
@@ -270,6 +272,22 @@ void BindImageAnnotator(
       ->BindImageAnnotator(std::move(receiver));
 }
 
+void BindCommerceHintObserver(
+    content::RenderFrameHost* const frame_host,
+    mojo::PendingReceiver<complex_tasks::mojom::CommerceHintObserver>
+        receiver) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+  if (!web_contents)
+    return;
+
+  complex_tasks::CommerceHintService::CreateForWebContents(web_contents);
+  complex_tasks::CommerceHintService* service =
+      complex_tasks::CommerceHintService::FromWebContents(web_contents);
+  if (!service)
+    return;
+  service->BindCommerceHintObserver(std::move(receiver));
+}
+
 void BindDistillabilityService(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<dom_distiller::mojom::DistillabilityService>
@@ -466,6 +484,9 @@ void PopulateChromeFrameBinders(
   map->Add<image_annotation::mojom::Annotator>(
       base::BindRepeating(&BindImageAnnotator));
 
+  map->Add<complex_tasks::mojom::CommerceHintObserver>(
+      base::BindRepeating(&BindCommerceHintObserver));
+
   map->Add<blink::mojom::AnchorElementMetricsHost>(
       base::BindRepeating(&NavigationPredictor::Create));
 
@@ -616,6 +637,9 @@ void PopulateChromeWebUIFrameBinders(
       ProfilePickerUI
 #endif  // !defined(OS_CHROMEOS)
       >(map);
+
+  RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::ChromeCartHandler,
+                                         NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<media_feeds::mojom::MediaFeedsStore,
                                          MediaFeedsUI>(map);

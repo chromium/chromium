@@ -59,6 +59,8 @@ static_library("renderer") {
     "chrome_render_frame_observer.h",
     "chrome_render_thread_observer.cc",
     "chrome_render_thread_observer.h",
+    "complex_tasks/commerce_hint_agent.cc",
+    "complex_tasks/commerce_hint_agent.h",
     "custom_menu_commands.h",
     "instant_restricted_id_cache.h",
     "lite_video/lite_video_hint_agent.cc",

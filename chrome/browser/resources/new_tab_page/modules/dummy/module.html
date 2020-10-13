@@ -1,23 +1,131 @@
 <style>
-  cr-grid {
-    --cr-grid-gap: 8px;
-  }
-
   .tile-item {
+    border: 2px solid var(--ntp-border-color);
+    border-radius: 8px;
     color: var(--cr-primary-text-color);
-    height: 120px;
-    width: 170px;
+    height: 146px;
+    margin: 16px 8px;
+    text-decoration: none;
+    width: 114px;
   }
 
-  img {
-    border-radius: 8px;
+  .tile-item-title {
+    align-items: center;
+    color: var(--ntp-theme-text-color);
+    display: flex;
+    font-size: 12px;
+    height: 40px;
+    width: 72px;
   }
+
+  .tile-item-title #merchant {
+    font-weight: 400;
+    max-width: 54px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: var(--ntp-theme-text-shadow);
+    white-space: nowrap;
+  }
+
+  .tile-item-title #itemCount {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .favicon-image {
+    border-radius: 2px;
+    float: left;
+    height: 24px;
+    margin: 8px 8px 8px 6px;
+    width: 24px;
+  }
+
+  .thumbnail-grid {
+    height: 108px;
+    width: 114px;
+  }
+
+  .cart-grid {
+    --cr-grid-gap: 0;
+  }
+
+  div.grid-thumbnail-img-container {
+    background-color: var(--ntp-border-color);
+    border-radius: 8px;
+    height: 48px;
+    margin: 3px 4px;
+    text-align: center;
+    width: 48px;
+  }
+
+  div.grid-thumbnail-img-container img {
+    height: auto;
+    max-height: 46px;
+    max-width: 46px;
+    width: auto;
+  }
+
+  div.grid-thumbnail-img-container div {
+    max-width: 48px;
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  div.single-thumbnail-img-container {
+    background-color: var(--ntp-border-color);
+    border-radius: 8px;
+    height: 102px;
+    margin: 0 8px 6px 6px;
+    text-align: center;
+    width: 102px;
+  }
+
+  div.single-thumbnail-img-container img {
+    height: auto;
+    max-height: 102px;
+    max-width: 102px;
+    width: auto;
+  }
+
 </style>
-<cr-grid id="tiles" columns="3">
+<cr-grid class="cart-grid" id="tiles" columns="4">
   <template id="tileList" is="dom-repeat" items="[[tiles]]">
-    <div class="tile-item" title="[[item.label]]">
-      <img is="ntp-img" auto-src="[[item.imageUrl]]"></img>
-      <span>[[item.value]]</span>
-    </div>
+    <a class="tile-item" title="[[item.merchant]]" href="[[item.cartUrl]]">
+      <img class="favicon-image" is="ntp-img"
+        auto-src="[[getFaviconUrl_(item.cartUrl)]]"></img>
+      <div class="tile-item-title">
+        <span id="merchant">[[item.merchant]]</span>
+        <template is="dom-if" if="[[item.imageUrls.length]]">
+          <span id="itemCount">&nbsp•&nbsp[[item.imageUrls.length]]</span>
+        </template>
+      </div>
+      <template is="dom-if" 
+        if="[[shouldShowThumbnailGrid_(item.imageUrls.length)]]">
+        <cr-grid class="thumbnail-grid" id="tiles" columns="2">
+          <template id="thumbnailGrid" is="dom-repeat"
+            items="[[getImagesToShow_(item.imageUrls)]]">
+            <div class="grid-thumbnail-img-container">
+              <img class="grid-thumbnail-img" is="ntp-img"
+                auto-src="[[item]]"></img>
+            </div>
+          </template>
+          <template is="dom-if"
+            if="[[shouldShowExtraItemCard_(item.imageUrls.length)]]">
+            <div class="grid-thumbnail-img-container">
+              <div>[[getTextForExtraItemCard_(item.imageUrls.length)]]</div>
+            </div>
+          </template>
+        </cr-grid>
+      </template>
+      <template is="dom-if"
+        if="[[!shouldShowThumbnailGrid_(item.imageUrls.length)]]">
+        <div class="single-thumbnail-img-container">
+          <img class="single-thumbnail-img" is="ntp-img" 
+            auto-src="[[getImagesToShow_(item.imageUrls)]]"></img>
+        </div>
+      </template>
+    </a>
   </template>
 </cr-grid>

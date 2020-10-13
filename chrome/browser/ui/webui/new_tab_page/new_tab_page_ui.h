@@ -9,6 +9,7 @@
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
+#include "chrome/browser/ui/webui/chrome_cart/chrome_cart.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,6 +25,7 @@ class WebUI;
 }  // namespace content
 
 class ChromeCustomizeThemesHandler;
+class ChromeCartHandler;
 class GURL;
 class InstantService;
 class KaleidoscopeDataProviderImpl;
@@ -70,6 +72,12 @@ class NewTabPageUI
       mojo::PendingReceiver<media::mojom::KaleidoscopeDataProvider>
           pending_receiver);
 
+  // Instantiates the implementor of the chrome_cart::mojom::ChromeCartHandler
+  // mojo interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<chrome_cart::mojom::ChromeCartHandler>
+          pending_receiver);
+
  private:
   // new_tab_page::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -104,6 +112,7 @@ class NewTabPageUI
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
   std::unique_ptr<PromoBrowserCommandHandler> promo_browser_command_handler_;
+  std::unique_ptr<ChromeCartHandler> chrome_cart_handler_;
   Profile* profile_;
   InstantService* instant_service_;
   content::WebContents* web_contents_;

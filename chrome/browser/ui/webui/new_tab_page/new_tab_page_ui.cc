@@ -18,6 +18,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/omnibox_mojo_utils.h"
+#include "chrome/browser/ui/webui/chrome_cart/chrome_cart_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
@@ -225,6 +226,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                           IDR_NEW_TAB_PAGE_OMNIBOX_MOJO_LITE_JS);
   source->AddResourcePath("promo_browser_command.mojom-lite.js",
                           IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_MOJO_LITE_JS);
+  source->AddResourcePath("chrome_cart.mojom-lite.js",
+                          IDR_NEW_TAB_PAGE_CHROME_CART_MOJO_LITE_JS);
 #if BUILDFLAG(OPTIMIZE_WEBUI)
   source->AddResourcePath("new_tab_page.js", IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_JS);
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
@@ -339,6 +342,13 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   kaleidoscope_data_provider_ = std::make_unique<KaleidoscopeDataProviderImpl>(
       std::move(pending_page_handler), profile_, nullptr);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<chrome_cart::mojom::ChromeCartHandler>
+        pending_page_handler) {
+  chrome_cart_handler_ = std::make_unique<ChromeCartHandler>(
+      std::move(pending_page_handler), profile_);
 }
 
 void NewTabPageUI::CreatePageHandler(

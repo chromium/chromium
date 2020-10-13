@@ -5618,10 +5618,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Dark purple
       </message>
       <message name="IDS_NTP_MODULES_DUMMY_NAME" translateable="false" desc="Name shown in the header of the dummy module.">
-        Dummy
+        Chrome Cart
       </message>
       <message name="IDS_NTP_MODULES_DUMMY_TITLE" translateable="false" desc="Title shown in the header of the dummy module.">
-        Super Duper Module
+        Your carts
       </message>
       <message name="IDS_NTP_MODULES_DUMMY2_NAME" translateable="false" desc="Name shown in the header of the dummy 2 module.">
         Dummy 2

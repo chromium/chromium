@@ -48,6 +48,7 @@
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/complex_tasks/commerce_hint_agent.h"
 #include "chrome/renderer/lite_video/lite_video_hint_agent.h"
 #include "chrome/renderer/lite_video/lite_video_util.h"
 #include "chrome/renderer/loadtimes_extension_bindings.h"
@@ -615,6 +616,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (translate::IsSubFrameTranslationEnabled()) {
     new translate::PerFrameTranslateAgent(
         render_frame, ISOLATED_WORLD_ID_TRANSLATE, associated_interfaces);
+  }
+  if (base::FeatureList::IsEnabled(features::kCommerceHint) &&
+      render_frame->IsMainFrame()) {
+    new complex_tasks::CommerceHintAgent(render_frame);
   }
 
 #if !defined(OS_ANDROID)

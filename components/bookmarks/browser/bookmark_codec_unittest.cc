@@ -178,10 +178,10 @@ class BookmarkCodecTest : public testing::Test {
               BookmarkModel* model,
               std::string* sync_metadata_str) {
     int64_t max_id;
-    bool result = codec->Decode(value, AsMutable(model->bookmark_bar_node()),
-                                AsMutable(model->other_node()),
-                                AsMutable(model->mobile_node()), &max_id,
-                                sync_metadata_str);
+    bool result = codec->Decode(
+        value, AsMutable(model->bookmark_bar_node()),
+        AsMutable(model->other_node()), AsMutable(model->mobile_node()),
+        AsMutable(model->chrome_cart_node()), &max_id, sync_metadata_str);
     model->set_next_node_id(max_id);
     AsMutable(model->root_node())->SetMetaInfoMap(codec->model_meta_info_map());
 

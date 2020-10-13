@@ -4796,6 +4796,9 @@ void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
   // a navigation concept. We pass ui::PAGE_TRANSITION_LINK as default one.
   WillSendRequestInternal(request, /*for_main_frame=*/false,
                           ui::PAGE_TRANSITION_LINK, for_redirect);
+  for (auto& observer : observers_) {
+    observer.WillSendRequest(request);
+  }
 }
 
 void RenderFrameImpl::WillSendRequestInternal(

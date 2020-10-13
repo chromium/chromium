@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module complex_tasks.mojom;
+
+struct Product {
+  string image_url;
+};
+
+// This service is implemented in the browser process and is used by the
+// renderer to notify the CommerceHint events.
+interface CommerceHintObserver {
+  OnAddToCart();
+  OnVisitCart();
+  OnCartProductUpdated(array<Product> products);
+  OnVisitCheckout();
+  OnPurchase();
+};

@@ -6,21 +6,21 @@
  * @fileoverview Registers all NTP modules given their respective descriptors.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
-import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
-import {kaleidoscopeDescriptor} from './kaleidoscope/module.js';
+import {ChromeCartProxy} from './dummy/chrome_cart_proxy.js';
+import {dummyDescriptor} from './dummy/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 
 /** @type {!Array<!ModuleDescriptor>} */
 const descriptors = [];
+loadModules();
 
-if (loadTimeData.getBoolean('kaleidoscopeModuleEnabled')) {
-  descriptors.push(kaleidoscopeDescriptor);
+async function loadModules() {
+  const shouldShowModule =
+      await ChromeCartProxy.getInstance().handler.shouldShowModule();
+  if (shouldShowModule.shouldShow) {
+    descriptors.push(dummyDescriptor);
+  }
+
+  ModuleRegistry.getInstance().registerModules(descriptors);
 }
-
-descriptors.push(dummyDescriptor);
-descriptors.push(dummyDescriptor2);
-
-ModuleRegistry.getInstance().registerModules(descriptors);

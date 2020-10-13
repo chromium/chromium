@@ -34,6 +34,10 @@ BookmarkLoadDetails::BookmarkLoadDetails(BookmarkClient* client)
       root_node_->Add(BookmarkPermanentNode::CreateMobileBookmarks(
           max_id_++,
           client->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::MOBILE))));
+  chrome_cart_node_ = static_cast<BookmarkPermanentNode*>(
+      root_node_->Add(BookmarkPermanentNode::CreateChromeCartBookmarks(
+          max_id_++,
+          client->IsPermanentNodeVisibleWhenEmpty(BookmarkNode::CHROME_CART))));
 }
 
 BookmarkLoadDetails::~BookmarkLoadDetails() = default;
