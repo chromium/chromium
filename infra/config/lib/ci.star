@@ -693,7 +693,7 @@ def fyi_builder(
         # TODO(crbug.com/1108016): Move this kwarg to ci.builder(), after
         # ResultSink and result_adapter is confirmed to work.
         experiments = {
-            "chromium.resultdb.result_sink": 0,
+            "chromium.resultdb.result_sink": 30,
         },
         **kwargs
     )
