@@ -6,10 +6,10 @@
 
 ## Resources
 
+* [Introduction](https://observablehq.com/@d3/learn-d3)
 * [API Reference](https://github.com/d3/d3/blob/master/API.md)
-* [Release Notes](https://github.com/d3/d3/releases)
-* [Gallery](https://github.com/d3/d3/wiki/Gallery)
-* [Examples](https://bl.ocks.org/mbostock)
+* [Releases](https://github.com/d3/d3/releases)
+* [Examples](https://observablehq.com/@d3/gallery)
 * [Wiki](https://github.com/d3/d3/wiki)
 
 ## Installing
