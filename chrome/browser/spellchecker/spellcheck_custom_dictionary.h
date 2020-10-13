@@ -57,6 +57,10 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
     // Removes |word| in this change.
     void RemoveWord(const std::string& word);
 
+    // Clear the whole dictionary before doing other operations. When saved,
+    // also deletes the backup file.
+    void Clear();
+
     // Prepares this change to be applied to |words| by removing duplicate and
     // invalid words from words to be added and removing missing words from
     // words to be removed. Returns a bitmap of |ChangeSanitationResult| values.
@@ -70,8 +74,13 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
       return to_remove_;
     }
 
+    // Returns true if the dictionary should be cleared first.
+    bool clear() const { return clear_; }
+
     // Returns true if there are no changes to be made. Otherwise returns false.
-    bool empty() const { return to_add_.empty() && to_remove_.empty(); }
+    bool empty() const {
+      return !clear_ && to_add_.empty() && to_remove_.empty();
+    }
 
    private:
     // The words to be added.
@@ -79,6 +88,9 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
     // The words to be removed.
     std::set<std::string> to_remove_;
+
+    // Whether to clear everything before adding words.
+    bool clear_ = false;
 
     DISALLOW_COPY_AND_ASSIGN(Change);
   };
@@ -130,6 +142,9 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
   // Returns true if the dictionary contains |word|. Otherwise returns false.
   bool HasWord(const std::string& word) const;
 
+  // Removes all words in the dictionary, and schedules a write to disk.
+  void Clear();
+
   // Adds |observer| to be notified of dictionary events and changes.
   void AddObserver(Observer* observer);
 
@@ -161,6 +176,9 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
  private:
   friend class DictionarySyncIntegrationTestHelper;
   friend class SpellcheckCustomDictionaryTest;
+
+  FRIEND_TEST_ALL_PREFIXES(ChromeBrowsingDataRemoverDelegateTest,
+                           WipeCustomDictionaryData);
 
   // Returns the list of words in the custom spellcheck dictionary at |path|.
   // Validates that the custom dictionary file does not have duplicates and

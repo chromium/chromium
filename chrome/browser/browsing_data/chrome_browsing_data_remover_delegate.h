@@ -77,6 +77,7 @@ class ChromeBrowsingDataRemoverDelegate
     DATA_TYPE_BOOKMARKS = DATA_TYPE_EMBEDDER_BEGIN << 10,
     DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN << 11,
     DATA_TYPE_ACCOUNT_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 12,
+    DATA_TYPE_LOCAL_CUSTOM_DICTIONARY = DATA_TYPE_EMBEDDER_BEGIN << 13,
 
     // Group datatypes.
 
@@ -122,7 +123,8 @@ class ChromeBrowsingDataRemoverDelegate
                      DATA_TYPE_HISTORY |           //
                      DATA_TYPE_PASSWORDS |         //
                      DATA_TYPE_CONTENT_SETTINGS |  //
-                     DATA_TYPE_BOOKMARKS,
+                     DATA_TYPE_BOOKMARKS |         //
+                     DATA_TYPE_LOCAL_CUSTOM_DICTIONARY,
 
     // Includes all available remove options. Meant to be used when the Profile
     // is scheduled to be deleted, and all possible data should be wiped from

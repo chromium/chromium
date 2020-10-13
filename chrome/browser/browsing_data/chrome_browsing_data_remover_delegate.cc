@@ -65,6 +65,8 @@
 #include "chrome/browser/previews/previews_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/spellchecker/spellcheck_factory.h"
+#include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -733,6 +735,17 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         // whole tree and check timestamps against delete_begin and delete_end.
         NOTIMPLEMENTED();
       }
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_LOCAL_CUSTOM_DICTIONARY
+  if (remove_mask & DATA_TYPE_LOCAL_CUSTOM_DICTIONARY) {
+    auto* spellcheck = SpellcheckServiceFactory::GetForContext(profile_);
+    if (spellcheck) {
+      auto* dict = spellcheck->GetCustomDictionary();
+      if (dict)
+        dict->Clear();
     }
   }
 

@@ -52,12 +52,17 @@
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
+#include "chrome/browser/spellchecker/spellcheck_factory.h"
+#include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1153,6 +1158,12 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     profile_builder.AddTestingFactory(
         FaviconServiceFactory::GetInstance(),
         FaviconServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        SpellcheckServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* profile) {
+          return std::unique_ptr<KeyedService>(
+              new SpellcheckService(static_cast<Profile*>(profile)));
+        }));
 
     profile_ = profile_builder.Build();
 
@@ -3196,6 +3207,39 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCrashData) {
   EXPECT_FALSE(base::PathExists(upload_log_path));
 }
 #endif
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCustomDictionaryData) {
+  base::FilePath dict_path =
+      GetProfile()->GetPath().Append(chrome::kCustomDictionaryFileName);
+  base::FilePath backup_path = dict_path.AddExtensionASCII("backup");
+
+  auto* spellcheck = SpellcheckServiceFactory::GetForContext(GetProfile());
+  ASSERT_NE(nullptr, spellcheck);
+  auto* dict = spellcheck->GetCustomDictionary();
+  ASSERT_NE(nullptr, dict);
+
+  auto change1 = std::make_unique<SpellcheckCustomDictionary::Change>();
+  change1->AddWord("wug");
+  dict->UpdateDictionaryFile(std::move(change1), dict_path);
+
+  auto change2 = std::make_unique<SpellcheckCustomDictionary::Change>();
+  change2->AddWord("spowing");
+  dict->UpdateDictionaryFile(std::move(change2), dict_path);
+
+  EXPECT_TRUE(base::PathExists(dict_path));
+  EXPECT_TRUE(base::PathExists(backup_path));
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_LOCAL_CUSTOM_DICTIONARY,
+      false);
+
+  std::string contents;
+  base::ReadFileToString(dict_path, &contents);
+  EXPECT_EQ(std::string::npos, contents.find("wug"));
+  EXPECT_EQ(std::string::npos, contents.find("spowing"));
+  EXPECT_FALSE(base::PathExists(backup_path));
+}
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        WipeNotificationPermissionPromptOutcomesData) {

@@ -161,7 +161,14 @@ void SaveDictionaryFileReliably(const base::FilePath& path,
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    base::CopyFile(path, path.AddExtension(BACKUP_EXTENSION));
+    base::FilePath backup_path = path.AddExtension(BACKUP_EXTENSION);
+    if (!custom_words.empty()) {
+      base::CopyFile(path, backup_path);
+    } else {
+      // The wordlist was just cleared, clean up the .backup file for privacy
+      // reasons.
+      base::DeleteFile(backup_path);
+    }
     base::ImportantFileWriter::WriteFileAtomically(path, content.str());
   }
 }
@@ -209,6 +216,10 @@ void SpellcheckCustomDictionary::Change::AddWords(
 
 void SpellcheckCustomDictionary::Change::RemoveWord(const std::string& word) {
   to_remove_.insert(word);
+}
+
+void SpellcheckCustomDictionary::Change::Clear() {
+  clear_ = true;
 }
 
 int SpellcheckCustomDictionary::Change::Sanitize(
@@ -263,6 +274,14 @@ bool SpellcheckCustomDictionary::RemoveWord(const std::string& word) {
 
 bool SpellcheckCustomDictionary::HasWord(const std::string& word) const {
   return base::Contains(words_, word);
+}
+
+void SpellcheckCustomDictionary::Clear() {
+  std::unique_ptr<Change> dictionary_change(new Change);
+  dictionary_change->Clear();
+  Apply(*dictionary_change);
+  Notify(*dictionary_change);
+  Save(std::move(dictionary_change));
 }
 
 void SpellcheckCustomDictionary::AddObserver(Observer* observer) {
@@ -424,6 +443,10 @@ void SpellcheckCustomDictionary::UpdateDictionaryFile(
 
   std::unique_ptr<LoadFileResult> result = LoadDictionaryFileReliably(path);
 
+  // Clear.
+  if (dictionary_change->clear())
+    result->words.clear();
+
   // Add words.
   result->words.insert(dictionary_change->to_add().begin(),
                        dictionary_change->to_add().end());
@@ -460,6 +483,8 @@ void SpellcheckCustomDictionary::OnLoaded(
 
 void SpellcheckCustomDictionary::Apply(const Change& dictionary_change) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (dictionary_change.clear())
+    words_.clear();
   if (!dictionary_change.to_add().empty()) {
     words_.insert(dictionary_change.to_add().begin(),
                   dictionary_change.to_add().end());
