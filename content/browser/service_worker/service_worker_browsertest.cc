@@ -348,8 +348,10 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    RunOnCoreThread(
-        base::BindOnce(&self::TearDownOnCoreThread, base::Unretained(this)));
+    base::RunLoop loop;
+    RunOnCoreThread(base::BindOnce(&self::TearDownOnCoreThread,
+                                   base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
     wrapper_ = nullptr;
   }
 
@@ -368,7 +370,16 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
   }
 
   virtual void SetUpOnCoreThread() {}
-  virtual void TearDownOnCoreThread() {}
+
+  virtual void TearDownOnCoreThread(base::OnceClosure callback) {
+    // Flush remote storage control so that all pending callbacks are executed.
+    wrapper()
+        ->context()
+        ->registry()
+        ->GetRemoteStorageControl()
+        .FlushForTesting();
+    std::move(callback).Run();
+  }
 
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
   ServiceWorkerContext* public_context() { return wrapper(); }
