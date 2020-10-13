@@ -61,15 +61,18 @@ SkColor TestAppListColorProvider::GetFolderBackgroundColor(
   return gfx::kGoogleGrey900;
 }
 
-SkColor TestAppListColorProvider::GetPageSwitcherButtonColor() const {
+SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
+    bool is_root_app_grid_page_switcher) const {
   return gfx::kGoogleGrey700;
 }
 
-SkColor TestAppListColorProvider::GetPageSwitcherInkDropBaseColor() const {
+SkColor TestAppListColorProvider::GetPageSwitcherInkDropBaseColor(
+    bool is_root_app_grid_page_switcher) const {
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
-SkColor TestAppListColorProvider::GetPageSwitcherInkDropHighlightColor() const {
+SkColor TestAppListColorProvider::GetPageSwitcherInkDropHighlightColor(
+    bool is_root_app_grid_page_switcher) const {
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 

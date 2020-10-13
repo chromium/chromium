@@ -102,14 +102,17 @@ class PageSwitcherButton : public views::Button {
     return std::make_unique<views::FloodFillInkDropRipple>(
         size(), GetLocalBounds().InsetsFrom(bounds),
         GetInkDropCenterBasedOnLastEvent(),
-        AppListColorProvider::Get()->GetPageSwitcherInkDropBaseColor(), 1.0f);
+        AppListColorProvider::Get()->GetPageSwitcherInkDropBaseColor(
+            is_root_app_grid_page_switcher_),
+        1.0f);
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override {
     auto highlight = std::make_unique<views::InkDropHighlight>(
         gfx::SizeF(size()),
-        AppListColorProvider::Get()->GetPageSwitcherInkDropHighlightColor());
+        AppListColorProvider::Get()->GetPageSwitcherInkDropHighlightColor(
+            is_root_app_grid_page_switcher_));
     highlight->set_visible_opacity(1.f);
     return highlight;
   }
@@ -131,7 +134,8 @@ class PageSwitcherButton : public views::Button {
   // Returns the information of how to paint selected/normal button.
   PaintButtonInfo BuildPaintButtonInfo() {
     PaintButtonInfo info;
-    info.color = AppListColorProvider::Get()->GetPageSwitcherButtonColor();
+    info.color = AppListColorProvider::Get()->GetPageSwitcherButtonColor(
+        is_root_app_grid_page_switcher_);
     if (selected_) {
       info.style = cc::PaintFlags::kFill_Style;
       info.radius = SkIntToScalar(kSelectedButtonRadius);
