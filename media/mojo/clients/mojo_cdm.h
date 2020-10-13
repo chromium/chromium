@@ -37,9 +37,9 @@ class MojoDecryptor;
 // A ContentDecryptionModule that proxies to a mojom::ContentDecryptionModule.
 // That mojom::ContentDecryptionModule proxies back to the MojoCdm via the
 // mojom::ContentDecryptionModuleClient interface.
-class MojoCdm : public ContentDecryptionModule,
-                public CdmContext,
-                public mojom::ContentDecryptionModuleClient {
+class MojoCdm final : public ContentDecryptionModule,
+                      public CdmContext,
+                      public mojom::ContentDecryptionModuleClient {
  public:
   using MessageType = CdmMessageType;
 

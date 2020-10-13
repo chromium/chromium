@@ -25,7 +25,7 @@ class MojoDecoderBufferWriter;
 // This class is single threaded. The |remote_decryptor| is connected before
 // being passed to MojoDecryptor, but it is bound to the thread MojoDecryptor
 // lives on the first time it is used in this class.
-class MojoDecryptor : public Decryptor {
+class MojoDecryptor final : public Decryptor {
  public:
   // |writer_capacity| can be used for testing. If 0, default writer capacity
   // will be used.

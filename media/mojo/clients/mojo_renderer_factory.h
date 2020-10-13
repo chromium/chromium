@@ -30,7 +30,7 @@ class MojoRenderer;
 // wrapper factories that use MRF, rather than creating derived MojoRenderer
 // types, or extending MRF. See DecryptingRendererFactory and
 // MediaPlayerRendererClientFactory for examples of small wrappers around MRF.
-class MojoRendererFactory : public RendererFactory {
+class MojoRendererFactory final : public RendererFactory {
  public:
   explicit MojoRendererFactory(
       media::mojom::InterfaceFactory* interface_factory);

@@ -14,7 +14,7 @@ namespace mojom {
 class InterfaceFactory;
 }
 
-class MojoCdmFactory : public CdmFactory {
+class MojoCdmFactory final : public CdmFactory {
  public:
   explicit MojoCdmFactory(media::mojom::InterfaceFactory* interface_factory);
   ~MojoCdmFactory() final;

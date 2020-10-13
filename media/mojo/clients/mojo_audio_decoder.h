@@ -25,7 +25,8 @@ namespace media {
 class MojoDecoderBufferWriter;
 
 // An AudioDecoder that proxies to a mojom::AudioDecoder.
-class MojoAudioDecoder : public AudioDecoder, public mojom::AudioDecoderClient {
+class MojoAudioDecoder final : public AudioDecoder,
+                               public mojom::AudioDecoderClient {
  public:
   MojoAudioDecoder(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::AudioDecoder> remote_decoder);

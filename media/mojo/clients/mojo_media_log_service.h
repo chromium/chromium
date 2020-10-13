@@ -14,7 +14,7 @@
 namespace media {
 
 // Implementation of a mojom::MediaLog service which wraps a media::MediaLog.
-class MojoMediaLogService : public mojom::MediaLog {
+class MojoMediaLogService final : public mojom::MediaLog {
  public:
   explicit MojoMediaLogService(media::MediaLog* media_log);
   ~MojoMediaLogService() final;

@@ -15,7 +15,7 @@ namespace mojom {
 class InterfaceFactory;
 }
 
-class MojoDecoderFactory : public DecoderFactory {
+class MojoDecoderFactory final : public DecoderFactory {
  public:
   explicit MojoDecoderFactory(
       media::mojom::InterfaceFactory* interface_factory);
