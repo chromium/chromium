@@ -7,7 +7,6 @@ interface OriginTrialsTest {
     [RuntimeEnabled=OriginTrialsSampleAPI] static readonly attribute boolean staticAttribute;
     [RuntimeEnabled=OriginTrialsSampleAPI] boolean normalMethod();
     [RuntimeEnabled=OriginTrialsSampleAPI] static boolean staticMethod();
-    [RuntimeEnabled=OriginTrialsSampleAPI] const unsigned short CONSTANT = 1;
 
     // This attribute uses native code to test whether the trial is enabled,
     // and throws an exception in JavaScript if it is not.
@@ -27,7 +26,6 @@ interface OriginTrialsTest {
     boolean unconditionalMethod();
     void unconditionalDictionaryMethod(OriginTrialsTestDictionary dict);
     static boolean staticUnconditionalMethod();
-    const unsigned short UNCONDITIONAL_CONSTANT = 99;
 
     // These are available whether or not the trial is enabled, but only in a
     // secure context.

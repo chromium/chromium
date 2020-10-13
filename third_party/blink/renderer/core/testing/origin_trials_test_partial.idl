@@ -6,7 +6,6 @@
     ImplementedAs=OriginTrialsTestPartial,
     RuntimeEnabled=OriginTrialsSampleAPI
 ] partial interface OriginTrialsTest {
-    const unsigned short CONSTANT_PARTIAL = 2;
     readonly attribute boolean normalAttributePartial;
     static readonly attribute boolean staticAttributePartial;
     boolean normalMethodPartial();

@@ -418,6 +418,8 @@ component("platform") {
     "bindings/exception_messages.h",
     "bindings/exception_state.cc",
     "bindings/exception_state.h",
+    "bindings/idl_member_installer.cc",
+    "bindings/idl_member_installer.h",
     "bindings/microtask.cc",
     "bindings/microtask.h",
     "bindings/name_client.h",

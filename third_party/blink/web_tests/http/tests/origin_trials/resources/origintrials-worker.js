@@ -37,11 +37,6 @@ expect_failure_worker = () => {
     assert_false('normalAttribute' in testObject);
     assert_equals(testObject.normalAttribute, undefined);
   }, 'Attribute should not exist in ' + worker_type + ' worker');
-  test(() => {
-    var testObject = self.internals.originTrialsTest();
-    assert_false('CONSTANT' in testObject);
-    assert_equals(testObject.CONSTANT, undefined);
-  }, 'Constant should not exist in ' + worker_type + ' worker');
   done();
 }
 
@@ -119,17 +114,6 @@ expect_success_worker = () => {
       assert_idl_attribute(testObject, 'normalAttribute');
       assert_true(testObject.normalAttribute, 'Attribute should return boolean value');
     }, 'Attribute should exist and return value in ' + worker_type + ' worker');
-  test(() => {
-      var testObject = self.internals.originTrialsTest();
-      assert_idl_attribute(testObject, 'CONSTANT');
-      assert_equals(testObject.CONSTANT, 1, 'Constant should return integer value');
-    }, 'Constant should exist and return value in ' + worker_type + ' worker');
-  test(() => {
-      var testObject = self.internals.originTrialsTest();
-      assert_idl_attribute(testObject, 'CONSTANT');
-      testObject.CONSTANT = 10;
-      assert_equals(testObject.CONSTANT, 1, 'Constant should not be modifiable');
-    }, 'Constant should exist and not be modifiable in ' + worker_type + ' worker');
   done();
 }
 

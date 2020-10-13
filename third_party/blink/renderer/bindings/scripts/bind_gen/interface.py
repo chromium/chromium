@@ -4266,18 +4266,16 @@ ${npo_prototype_template}->SetInternalFieldCount(
             code_node.register_code_symbol(symbol_node)
 
 
-def _make_property_entry_cached_accessor(property_):
-    value = property_.extended_attributes.value_of("CachedAccessor")
-    return "V8PrivateProperty::CachedAccessor::{}".format(value or "kNone")
-
-
-def _make_property_entry_check_cross_origin_access(property_,
-                                                   is_get=False,
-                                                   is_set=False):
+def _make_property_entry_cross_origin_check(property_,
+                                            is_get=False,
+                                            is_set=False):
     constants = {
-        True: "V8DOMConfiguration::kDoNotCheckAccess",
-        False: "V8DOMConfiguration::kCheckAccess",
+        False: "unsigned(IDLMemberInstaller::FlagCrossOriginCheck::kCheck)",
+        True:
+        "unsigned(IDLMemberInstaller::FlagCrossOriginCheck::kDoNotCheck)",
     }
+    if property_.is_static:
+        return constants[True]
     if "CrossOrigin" not in property_.extended_attributes:
         return constants[False]
     values = property_.extended_attributes.values_of("CrossOrigin")
@@ -4289,54 +4287,26 @@ def _make_property_entry_check_cross_origin_access(property_,
         return constants[True]
 
 
-def _make_property_entry_check_receiver(property_):
+def _make_property_entry_location(property_):
+    if hasattr(property_, "is_static") and property_.is_static:
+        return "unsigned(IDLMemberInstaller::FlagLocation::kInterface)"
+    if "Global" in property_.owner.extended_attributes:
+        return "unsigned(IDLMemberInstaller::FlagLocation::kInstance)"
+    if "LegacyUnforgeable" in property_.extended_attributes:
+        return "unsigned(IDLMemberInstaller::FlagLocation::kInstance)"
+    return "unsigned(IDLMemberInstaller::FlagLocation::kPrototype)"
+
+
+def _make_property_entry_receiver_check(property_):
     if ("LegacyLenientThis" in property_.extended_attributes
+            or property_.is_static
             or (isinstance(property_, web_idl.Attribute)
                 and property_.idl_type.unwrap().is_promise)
             or (isinstance(property_, web_idl.OverloadGroup)
                 and property_[0].return_type.unwrap().is_promise)):
-        return "V8DOMConfiguration::kDoNotCheckHolder"
+        return "unsigned(IDLMemberInstaller::FlagReceiverCheck::kDoNotCheck)"
     else:
-        return "V8DOMConfiguration::kCheckHolder"
-
-
-def _make_property_entry_constant_type_and_value_format(property_):
-    idl_type = property_.idl_type.unwrap()
-    if (idl_type.keyword_typename == "long long"
-            or idl_type.keyword_typename == "unsigned long long"):
-        assert False, "64-bit constants are not yet supported."
-    if idl_type.keyword_typename == "unsigned long":
-        return ("V8DOMConfiguration::kConstantTypeUnsignedLong",
-                "static_cast<int>({value})")
-    if idl_type.is_integer:
-        return ("V8DOMConfiguration::kConstantTypeLong",
-                "static_cast<int>({value})")
-    if idl_type.is_floating_point_numeric:
-        return ("V8DOMConfiguration::kConstantTypeDouble",
-                "static_cast<double>({value})")
-    assert False, "Unsupported type: {}".format(idl_type.syntactic_form)
-
-
-def _make_property_entry_has_side_effect(property_):
-    if property_.extended_attributes.value_of("Affects") == "Nothing":
-        return "V8DOMConfiguration::kHasNoSideEffect"
-    else:
-        return "V8DOMConfiguration::kHasSideEffect"
-
-
-def _make_property_entry_on_which_object(property_):
-    ON_INSTANCE = "V8DOMConfiguration::kOnInstance"
-    ON_PROTOTYPE = "V8DOMConfiguration::kOnPrototype"
-    ON_INTERFACE = "V8DOMConfiguration::kOnInterface"
-    if isinstance(property_, web_idl.Constant):
-        return ON_INTERFACE
-    if hasattr(property_, "is_static") and property_.is_static:
-        return ON_INTERFACE
-    if "Global" in property_.owner.extended_attributes:
-        return ON_INSTANCE
-    if "LegacyUnforgeable" in property_.extended_attributes:
-        return ON_INSTANCE
-    return ON_PROTOTYPE
+        return "unsigned(IDLMemberInstaller::FlagReceiverCheck::kCheck)"
 
 
 def _make_property_entry_v8_c_function(entry):
@@ -4344,6 +4314,11 @@ def _make_property_entry_v8_c_function(entry):
         return None
     return "v8::CFunction::Make({})".format(
         entry.no_alloc_direct_callback_name)
+
+
+def _make_property_entry_v8_cached_accessor(property_):
+    return "unsigned(V8PrivateProperty::CachedAccessor::{})".format(
+        property_.extended_attributes.value_of("CachedAccessor") or "kNone")
 
 
 def _make_property_entry_v8_property_attribute(property_):
@@ -4357,19 +4332,25 @@ def _make_property_entry_v8_property_attribute(property_):
     if not values:
         values.append("v8::None")
     if len(values) == 1:
-        return values[0]
+        return "unsigned({})".format(values[0])
     else:
-        return "static_cast<v8::PropertyAttribute>({})".format(
-            " | ".join(values))
+        return "unsigned({})".format(" | ".join(values))
+
+
+def _make_property_entry_v8_side_effect(property_):
+    if property_.extended_attributes.value_of("Affects") == "Nothing":
+        return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
+    else:
+        return "unsigned(v8::SideEffectType::kHasSideEffect)"
 
 
 def _make_property_entry_world(world):
     if world == CodeGenContext.MAIN_WORLD:
-        return "V8DOMConfiguration::kMainWorld"
+        return "unsigned(IDLMemberInstaller::FlagWorld::kMainWorld)"
     if world == CodeGenContext.NON_MAIN_WORLDS:
-        return "V8DOMConfiguration::kNonMainWorlds"
+        return "unsigned(IDLMemberInstaller::FlagWorld::kNonMainWorlds)"
     if world == CodeGenContext.ALL_WORLDS:
-        return "V8DOMConfiguration::kAllWorlds"
+        return "unsigned(IDLMemberInstaller::FlagWorld::kAllWorlds)"
     assert False
 
 
@@ -4387,42 +4368,41 @@ def _make_attribute_registration_table(table_name, attribute_entries):
                    "\"{property_name}\", "
                    "{attribute_get_callback}, "
                    "{attribute_set_callback}, "
-                   "static_cast<unsigned>({cached_accessor}), "
                    "{v8_property_attribute}, "
-                   "{on_which_object}, "
-                   "{check_receiver}, "
-                   "{check_cross_origin_get_access}, "
-                   "{check_cross_origin_set_access}, "
-                   "{has_side_effect}, "
-                   "{world}"
+                   "{location}, "
+                   "{world}, "
+                   "{receiver_check}, "
+                   "{cross_origin_check_for_get}, "
+                   "{cross_origin_check_for_set}, "
+                   "{v8_side_effect}, "
+                   "{v8_cached_accessor}"
                    "}},")
         text = _format(
             pattern,
             property_name=entry.property_.identifier,
             attribute_get_callback=entry.attr_get_callback_name,
             attribute_set_callback=(entry.attr_set_callback_name or "nullptr"),
-            cached_accessor=_make_property_entry_cached_accessor(
-                entry.property_),
             v8_property_attribute=_make_property_entry_v8_property_attribute(
                 entry.property_),
-            on_which_object=_make_property_entry_on_which_object(
+            location=_make_property_entry_location(entry.property_),
+            world=_make_property_entry_world(entry.world),
+            receiver_check=_make_property_entry_receiver_check(
                 entry.property_),
-            check_receiver=_make_property_entry_check_receiver(
+            cross_origin_check_for_get=(
+                _make_property_entry_cross_origin_check(entry.property_,
+                                                        is_get=True)),
+            cross_origin_check_for_set=(
+                _make_property_entry_cross_origin_check(entry.property_,
+                                                        is_set=True)),
+            v8_side_effect=_make_property_entry_v8_side_effect(
                 entry.property_),
-            check_cross_origin_get_access=(
-                _make_property_entry_check_cross_origin_access(entry.property_,
-                                                               is_get=True)),
-            check_cross_origin_set_access=(
-                _make_property_entry_check_cross_origin_access(entry.property_,
-                                                               is_set=True)),
-            has_side_effect=_make_property_entry_has_side_effect(
-                entry.property_),
-            world=_make_property_entry_world(entry.world))
+            v8_cached_accessor=_make_property_entry_v8_cached_accessor(
+                entry.property_))
         entry_nodes.append(T(text))
 
     return ListNode([
-        T("static constexpr const V8DOMConfiguration::AccessorConfiguration " +
-          table_name + "[] = {"),
+        T("static const IDLMemberInstaller::AttributeConfig " + table_name +
+          "[] = {"),
         ListNode(entry_nodes),
         T("};"),
     ])
@@ -4448,9 +4428,8 @@ def _make_constant_callback_registration_table(table_name, constant_entries):
         entry_nodes.append(T(text))
 
     return ListNode([
-        T("static constexpr const "
-          "V8DOMConfiguration::ConstantCallbackConfiguration " + table_name +
-          "[] = {"),
+        T("static const IDLMemberInstaller::ConstantCallbackConfig " +
+          table_name + "[] = {"),
         ListNode(entry_nodes),
         T("};"),
     ])
@@ -4469,23 +4448,15 @@ def _make_constant_value_registration_table(table_name, constant_entries):
     for entry in constant_entries:
         pattern = ("{{"
                    "\"{property_name}\", "
-                   "{constant_type}, "
                    "{constant_value}"
                    "}},")
-        constant_type, constant_value_fmt = (
-            _make_property_entry_constant_type_and_value_format(
-                entry.property_))
-        constant_value = _format(
-            constant_value_fmt, value=entry.const_constant_name)
-        text = _format(
-            pattern,
-            property_name=entry.property_.identifier,
-            constant_type=constant_type,
-            constant_value=constant_value)
+        text = _format(pattern,
+                       property_name=entry.property_.identifier,
+                       constant_value=entry.const_constant_name)
         entry_nodes.append(T(text))
 
     return ListNode([
-        T("static constexpr const V8DOMConfiguration::ConstantConfiguration " +
+        T("static const IDLMemberInstaller::ConstantValueConfig " +
           table_name + "[] = {"),
         ListNode(entry_nodes),
         T("};"),
@@ -4506,25 +4477,16 @@ def _make_exposed_construct_registration_table(table_name,
     for entry in exposed_construct_entries:
         pattern = ("{{"
                    "\"{property_name}\", "
-                   "{exposed_construct_callback}, "
-                   "nullptr, "
-                   "static_cast<v8::PropertyAttribute>(v8::DontEnum), "
-                   "V8DOMConfiguration::kOnInstance, "
-                   "V8DOMConfiguration::kDoNotCheckHolder, "
-                   "V8DOMConfiguration::kHasNoSideEffect, "
-                   "V8DOMConfiguration::kReplaceWithDataProperty, "
-                   "{world}"
+                   "{exposed_construct_callback}"
                    "}}, ")
-        text = _format(
-            pattern,
-            property_name=entry.property_.identifier,
-            exposed_construct_callback=entry.prop_callback_name,
-            world=_make_property_entry_world(entry.world))
+        text = _format(pattern,
+                       property_name=entry.property_.identifier,
+                       exposed_construct_callback=entry.prop_callback_name)
         entry_nodes.append(T(text))
 
     return ListNode([
-        T("static constexpr const V8DOMConfiguration::AttributeConfiguration "
-          + table_name + "[] = {"),
+        T("static const IDLMemberInstaller::ExposedConstructConfig " +
+          table_name + "[] = {"),
         ListNode(entry_nodes),
         T("};"),
     ])
@@ -4554,11 +4516,11 @@ def _make_operation_registration_table(table_name, operation_entries):
                    "{operation_callback}, "
                    "{function_length}, "
                    "{v8_property_attribute}, "
-                   "{on_which_object}, "
-                   "{check_receiver}, "
-                   "{check_cross_origin_access}, "
-                   "{has_side_effect}, "
-                   "{world}"
+                   "{location}, "
+                   "{world}, "
+                   "{receiver_check}, "
+                   "{cross_origin_check}, "
+                   "{v8_side_effect}"
                    "}}, ")
         if no_alloc_direct_call_enabled:
             pattern = "{{" + pattern + "{v8_c_function}}}, "
@@ -4569,24 +4531,23 @@ def _make_operation_registration_table(table_name, operation_entries):
             function_length=entry.op_func_length,
             v8_property_attribute=_make_property_entry_v8_property_attribute(
                 entry.property_),
-            on_which_object=_make_property_entry_on_which_object(
-                entry.property_),
-            check_receiver=_make_property_entry_check_receiver(
-                entry.property_),
-            check_cross_origin_access=(
-                _make_property_entry_check_cross_origin_access(
-                    entry.property_)),
-            has_side_effect=_make_property_entry_has_side_effect(
-                entry.property_),
+            location=_make_property_entry_location(entry.property_),
             world=_make_property_entry_world(entry.world),
+            receiver_check=_make_property_entry_receiver_check(
+                entry.property_),
+            cross_origin_check=_make_property_entry_cross_origin_check(
+                entry.property_),
+            v8_side_effect=_make_property_entry_v8_side_effect(
+                entry.property_),
             v8_c_function=_make_property_entry_v8_c_function(entry))
         entry_nodes.append(T(text))
 
     table_decl_before_name = (
-        "static constexpr const V8DOMConfiguration::MethodConfiguration")
+        "static const IDLMemberInstaller::OperationConfig")
     if no_alloc_direct_call_enabled:
-        table_decl_before_name = ("static const V8DOMConfiguration::"
-                                  "NoAllocDirectCallMethodConfiguration")
+        table_decl_before_name = (
+            "static const "
+            "IDLMemberInstaller::NoAllocDirectCallOperationConfig")
     return ListNode([
         T(table_decl_before_name + " " + table_name + "[] = {"),
         ListNode(entry_nodes),
@@ -5480,6 +5441,11 @@ def make_install_properties(cg_context, function_name, class_name,
             body.add_template_var(arg_name, arg_name)
     bind_installer_local_vars(body, cg_context)
 
+    body.extend([
+        TextNode("using bindings::IDLMemberInstaller;"),
+        EmptyNode(),
+    ])
+
     if (is_per_context_install
             and "Global" in cg_context.interface.extended_attributes):
         body.extend([
@@ -5531,32 +5497,34 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
                     ]))
         body.append(EmptyNode())
 
-    table_name = "kAttributeTable"
     if is_per_context_install:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallAccessors(${isolate}, ${world}, "
-            "${instance_object}, ${prototype_object}, ${interface_object}, "
-            "${signature}, kAttributeTable, base::size(kAttributeTable));")
+        pattern = ("{install_func}("
+                   "${isolate}, ${world}, "
+                   "v8::Local<v8::Object>(${instance_object}), "
+                   "v8::Local<v8::Object>(${prototype_object}), "
+                   "v8::Local<v8::Object>(${interface_object}), "
+                   "${signature}, {table_name});")
     else:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallAccessors(${isolate}, ${world}, "
-            "${instance_template}, ${prototype_template}, "
-            "${interface_template}, ${signature}, "
-            "kAttributeTable, base::size(kAttributeTable));")
+        pattern = ("{install_func}("
+                   "${isolate}, ${world}, "
+                   "v8::Local<v8::Template>(${instance_template}), "
+                   "v8::Local<v8::Template>(${prototype_template}), "
+                   "v8::Local<v8::Template>(${interface_template}), "
+                   "${signature}, {table_name});")
+
+    table_name = "kAttributeTable"
+    installer_call_text = _format(
+        pattern,
+        install_func="IDLMemberInstaller::InstallAttributes",
+        table_name=table_name)
     install_properties(table_name, attribute_entries,
                        _make_attribute_registration_table, installer_call_text)
 
     table_name = "kConstantCallbackTable"
-    if is_per_context_install:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallConstants(${isolate}, "
-            "${interface_object}, ${prototype_object}, "
-            "kConstantCallbackTable, base::size(kConstantCallbackTable));")
-    else:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallConstants(${isolate}, "
-            "${interface_template}, ${prototype_template}, "
-            "kConstantCallbackTable, base::size(kConstantCallbackTable));")
+    installer_call_text = _format(
+        pattern,
+        install_func="IDLMemberInstaller::InstallConstants",
+        table_name=table_name)
     constant_callback_entries = filter(lambda entry: entry.const_callback_name,
                                        constant_entries)
     install_properties(table_name, constant_callback_entries,
@@ -5564,16 +5532,10 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
                        installer_call_text)
 
     table_name = "kConstantValueTable"
-    if is_per_context_install:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallConstants(${isolate}, "
-            "${interface_object}, ${prototype_object}, "
-            "kConstantValueTable, base::size(kConstantValueTable));")
-    else:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallConstants(${isolate}, "
-            "${interface_template}, ${prototype_template}, "
-            "kConstantValueTable, base::size(kConstantValueTable));")
+    installer_call_text = _format(
+        pattern,
+        install_func="IDLMemberInstaller::InstallConstants",
+        table_name=table_name)
     constant_value_entries = filter(
         lambda entry: not entry.const_callback_name, constant_entries)
     install_properties(table_name, constant_value_entries,
@@ -5581,32 +5543,19 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
                        installer_call_text)
 
     table_name = "kExposedConstructTable"
-    if is_per_context_install:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallAttributes(${isolate}, ${world}, "
-            "${instance_object}, ${prototype_object}, "
-            "kExposedConstructTable, base::size(kExposedConstructTable));")
-    else:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallAttributes(${isolate}, ${world}, "
-            "${instance_template}, ${prototype_template}, "
-            "kExposedConstructTable, base::size(kExposedConstructTable));")
+    installer_call_text = _format(
+        pattern,
+        install_func="IDLMemberInstaller::InstallExposedConstructs",
+        table_name=table_name)
     install_properties(table_name, exposed_construct_entries,
                        _make_exposed_construct_registration_table,
                        installer_call_text)
 
     table_name = "kOperationTable"
-    if is_per_context_install:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallMethods(${isolate}, ${world}, "
-            "${instance_object}, ${prototype_object}, ${interface_object}, "
-            "${signature}, kOperationTable, base::size(kOperationTable));")
-    else:
-        installer_call_text = (
-            "V8DOMConfiguration::InstallMethods(${isolate}, ${world}, "
-            "${instance_template}, ${prototype_template}, "
-            "${interface_template}, ${signature}, "
-            "kOperationTable, base::size(kOperationTable));")
+    installer_call_text = _format(
+        pattern,
+        install_func="IDLMemberInstaller::InstallOperations",
+        table_name=table_name)
     entries = filter(lambda entry: not entry.no_alloc_direct_callback_name,
                      operation_entries)
     install_properties(table_name, entries, _make_operation_registration_table,
@@ -6956,6 +6905,7 @@ def generate_interface(interface_identifier):
         "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h",
         "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h",
         "third_party/blink/renderer/platform/bindings/exception_messages.h",
+        "third_party/blink/renderer/platform/bindings/idl_member_installer.h",
         "third_party/blink/renderer/platform/bindings/runtime_call_stats.h",
         "third_party/blink/renderer/platform/bindings/v8_binding.h",
     ])

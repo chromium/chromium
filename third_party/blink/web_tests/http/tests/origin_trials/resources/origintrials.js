@@ -83,19 +83,6 @@ expect_css_media = (feature_name) => {
   assert_true(media_list.mediaText.indexOf("not all") === -1);
 }
 
-// Verify that the given constant exists, and returns the expected value, and
-// is not modifiable.
-expect_constant = (constant_name, constant_value, get_value_func) => {
-  var testObject = internals.originTrialsTest();
-  var testInterface = testObject.constructor;
-  assert_own_property(testInterface, constant_name);
-  assert_equals(get_value_func(testInterface), constant_value,
-    'Constant should return expected value');
-  testInterface[constant_name] = constant_value + 1;
-  assert_equals(get_value_func(testInterface), constant_value,
-    'Constant should not be modifiable');
-}
-
 // Verify that given member does not exist, and does not provide a value
 // (i.e. is undefined).
 expect_member_fails = (member_name) => {
@@ -186,10 +173,6 @@ expect_failure = (skip_worker) => {
       expect_member_fails('normalAttribute');
     }, 'Attribute should not exist, with trial disabled');
 
-  test(() => {
-      expect_static_member_fails('CONSTANT');
-    }, 'Constant should not exist, with trial disabled');
-
   if (!skip_worker) {
     fetch_tests_from_worker(new Worker('resources/disabled-worker.js'));
   }
@@ -277,12 +260,6 @@ expect_success = () => {
           return testObject.normalAttribute;
         });
     }, 'Attribute should exist on object and return value');
-
-  test(() => {
-      expect_constant('CONSTANT', 1, (testObject) => {
-          return testObject.CONSTANT;
-        });
-    }, 'Constant should exist on interface and return value');
 
   fetch_tests_from_worker(new Worker('resources/enabled-worker.js'));
 };
@@ -383,12 +360,6 @@ expect_always_bindings = (insecure_context, opt_description_suffix) => {
           return testObject.staticUnconditionalMethod();
         });
     }, 'Static method should exist and return value, regardless of trial' + description_suffix);
-
-  test(() => {
-      expect_constant('UNCONDITIONAL_CONSTANT', 99, (testObject) => {
-          return testObject.UNCONDITIONAL_CONSTANT;
-        });
-    }, 'Constant should exist on interface and return value, regardless of trial' + description_suffix);
 
   test(() => {
       expect_dictionary_member('unconditionalBool');
@@ -539,12 +510,6 @@ expect_success_bindings = (insecure_context) => {
         });
     }, 'Static method should exist on partial interface and return value');
 
-  test(() => {
-      expect_constant('CONSTANT_PARTIAL', 2, (testObject) => {
-          return testObject.CONSTANT_PARTIAL;
-        });
-    }, 'Constant should exist on partial interface and return value');
-
   // Tests for combination of [RuntimeEnabled] and [SecureContext]
   test(() => {
       expect_member('secureAttribute', (testObject) => {
@@ -645,9 +610,6 @@ expect_failure_bindings_impl = (insecure_context, description_suffix) => {
   test(() => {
       expect_static_member_fails('staticMethodPartial');
     }, 'Static method should not exist on partial interface, with trial disabled');
-  test(() => {
-      expect_static_member_fails('CONSTANT_PARTIAL');
-    }, 'Constant should not exist on partial interface, with trial disabled');
 
   // Tests for combination of [RuntimeEnabled] and [SecureContext]
   test(() => {

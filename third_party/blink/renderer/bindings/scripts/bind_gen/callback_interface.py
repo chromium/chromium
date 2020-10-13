@@ -202,7 +202,8 @@ def generate_callback_interface(callback_interface_identifier):
     ])
     installer_function_defs.accumulate(
         CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
+            "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h",
+            "third_party/blink/renderer/platform/bindings/idl_member_installer.h",
         ]))
 
     # WrapperTypeInfo
