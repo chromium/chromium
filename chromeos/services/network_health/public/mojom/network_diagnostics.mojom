@@ -99,6 +99,17 @@ enum HttpFirewallProblem {
   kPotentialFirewall,
 };
 
+// Problems related to the HttpsFirewall routine.
+[Extensible]
+enum HttpsFirewallProblem {
+  // DNS resolution failure rate is high.
+  kHighDnsResolutionFailureRate,
+  // Firewall detected.
+  kFirewallDetected,
+  // A firewall may potentially exist.
+  kPotentialFirewall,
+};
+
 // Problems related to the HttpsLatency routine.
 [Extensible]
 enum HttpsLatencyProblem {
@@ -155,6 +166,10 @@ interface NetworkDiagnosticsRoutines {
   // Tests whether a firewall is blocking HTTP port 80.
   HttpFirewall() => (RoutineVerdict verdict,
       array<HttpFirewallProblem> problems);
+
+  // Tests whether a firewall is blocking HTTPS port 443.
+  HttpsFirewall() => (RoutineVerdict verdict,
+      array<HttpsFirewallProblem> problems);
 
   // Tests whether the HTTPS latency is within established tolerance levels for
   // the system.

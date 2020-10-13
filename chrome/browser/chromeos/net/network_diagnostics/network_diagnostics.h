@@ -31,6 +31,7 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void SignalStrength(SignalStrengthCallback callback) override;
   void GatewayCanBePinged(GatewayCanBePingedCallback callback) override;
   void HttpFirewall(HttpFirewallCallback callback) override;
+  void HttpsFirewall(HttpsFirewallCallback callback) override;
   void HasSecureWiFiConnection(
       HasSecureWiFiConnectionCallback callback) override;
   void DnsResolverPresent(DnsResolverPresentCallback callback) override;

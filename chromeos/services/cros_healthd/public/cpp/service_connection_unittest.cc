@@ -210,6 +210,10 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
               (NetworkDiagnosticsRoutines::HttpFirewallCallback),
               (override));
   MOCK_METHOD(void,
+              HttpsFirewall,
+              (NetworkDiagnosticsRoutines::HttpsFirewallCallback),
+              (override));
+  MOCK_METHOD(void,
               HttpsLatency,
               (NetworkDiagnosticsRoutines::HttpsLatencyCallback),
               (override));

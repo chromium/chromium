@@ -156,6 +156,8 @@ TlsProber::TlsProber(NetworkContextGetter network_context_getter,
   host_resolver_->Run(url);
 }
 
+TlsProber::TlsProber() = default;
+
 TlsProber::~TlsProber() = default;
 
 void TlsProber::OnHostResolutionComplete(

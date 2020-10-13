@@ -66,6 +66,10 @@ class TlsProber {
       const net::ResolveErrorInfo& resolve_error_info,
       const base::Optional<net::AddressList>& resolved_addresses);
 
+ protected:
+  // Test-only constructor.
+  TlsProber();
+
  private:
   // On success, upgrades a TCPConnectedSocket to a TLSClientSocket. On failure,
   // invokes the callback passed into the TlsProber instance with a failure

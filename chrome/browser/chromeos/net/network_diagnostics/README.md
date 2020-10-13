@@ -146,6 +146,15 @@ Problems:
 * `kFirewallDetected`: Firewall detected.
 * `kPotentialFirewall`: A firewall may potentially exist.
 
+#### HttpsFirewall
+
+Tests whether a firewall is blocking HTTPS port 443.
+
+Problems:
+* `kHighDnsResolutionFailureRate`: DNS resolution failure rate is high.
+* `kFirewallDetected`: Firewall detected.
+* `kPotentialFirewall`: A firewall may potentially exist.
+
 ### Google Services Routines
 
 Tests successful communication with various Google domains.
