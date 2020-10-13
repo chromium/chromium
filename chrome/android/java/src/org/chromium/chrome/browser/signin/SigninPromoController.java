@@ -76,8 +76,8 @@ public class SigninPromoController {
                 return getSigninPromoImpressionsCountBookmarks() < MAX_IMPRESSIONS_BOOKMARKS;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 int maxImpressions = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.SIGNIN_PROMO_MAX_IMPRESSIONS_ANDROID, "MaxImpressions",
-                        Integer.MAX_VALUE);
+                        ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
+                        "MaxSigninPromoImpressions", Integer.MAX_VALUE);
                 return SharedPreferencesManager.getInstance().readInt(
                                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP)
                         < maxImpressions;
