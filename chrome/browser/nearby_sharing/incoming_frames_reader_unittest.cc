@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
-#include "chrome/browser/nearby_sharing/mock_nearby_sharing_decoder.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,7 +78,7 @@ class IncomingFramesReaderTest : public testing::Test {
 
   FakeNearbyConnection& connection() { return mock_nearby_connection_; }
 
-  testing::StrictMock<MockNearbySharingDecoder>& decoder() {
+  testing::StrictMock<chromeos::nearby::MockNearbySharingDecoder>& decoder() {
     return mock_decoder_;
   }
 
@@ -89,7 +89,7 @@ class IncomingFramesReaderTest : public testing::Test {
   TestingProfile profile_;
   FakeNearbyConnection mock_nearby_connection_;
   testing::StrictMock<MockNearbyProcessManager> mock_process_manager_;
-  testing::StrictMock<MockNearbySharingDecoder> mock_decoder_;
+  testing::StrictMock<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
   IncomingFramesReader frames_reader_;
 };
 
@@ -116,7 +116,8 @@ TEST_F(IncomingFramesReaderTest, ReadAnyFrameSuccessful) {
               DecodeFrame(testing::Eq(introduction_frame), testing::_))
       .WillOnce(testing::Invoke(
           [&](const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+              chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                  callback) {
             sharing::mojom::V1FramePtr mojo_v1frame =
                 sharing::mojom::V1Frame::New();
             mojo_v1frame->set_introduction(
@@ -144,7 +145,8 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful) {
               DecodeFrame(testing::Eq(introduction_frame), testing::_))
       .WillOnce(testing::Invoke(
           [&](const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+              chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                  callback) {
             sharing::mojom::V1FramePtr mojo_v1frame =
                 sharing::mojom::V1Frame::New();
             mojo_v1frame->set_introduction(
@@ -177,7 +179,8 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
   EXPECT_CALL(decoder(), DecodeFrame(testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&](const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+              chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                  callback) {
             EXPECT_EQ(cancel_frame, data);
             sharing::mojom::V1FramePtr mojo_v1frame =
                 sharing::mojom::V1Frame::New();
@@ -189,7 +192,8 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
           }))
       .WillOnce(testing::Invoke(
           [&](const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+              chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                  callback) {
             EXPECT_EQ(introduction_frame, data);
             sharing::mojom::V1FramePtr mojo_v1frame =
                 sharing::mojom::V1Frame::New();
@@ -223,7 +227,8 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
   EXPECT_CALL(decoder(), DecodeFrame(testing::_, testing::_))
       .WillOnce(testing::Invoke(
           [&](const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+              chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                  callback) {
             EXPECT_EQ(cancel_frame, data);
             sharing::mojom::V1FramePtr mojo_v1frame =
                 sharing::mojom::V1Frame::New();
@@ -235,7 +240,8 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
           }))
       .WillOnce(testing::Invoke(
           [&](const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+              chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                  callback) {
             EXPECT_EQ(introduction_frame, data);
             sharing::mojom::V1FramePtr mojo_v1frame =
                 sharing::mojom::V1Frame::New();

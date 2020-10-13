@@ -37,7 +37,6 @@
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
-#include "chrome/browser/nearby_sharing/mock_nearby_sharing_decoder.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
@@ -51,6 +50,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -520,7 +520,8 @@ class NearbySharingServiceImplTest : public testing::Test {
         .WillOnce(testing::Invoke(
             [is_incoming](
                 const std::vector<uint8_t>& data,
-                MockNearbySharingDecoder::DecodeFrameCallback callback) {
+                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                    callback) {
               sharing::mojom::V1FramePtr mojo_v1frame =
                   sharing::mojom::V1Frame::New();
               mojo_v1frame->set_paired_key_encryption(
@@ -542,7 +543,8 @@ class NearbySharingServiceImplTest : public testing::Test {
                 DecodeFrame(testing::Eq(result_bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                MockNearbySharingDecoder::DecodeFrameCallback callback) {
+                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                    callback) {
               sharing::mojom::V1FramePtr mojo_v1frame =
                   sharing::mojom::V1Frame::New();
               mojo_v1frame->set_paired_key_result(
@@ -560,10 +562,10 @@ class NearbySharingServiceImplTest : public testing::Test {
                                  bool return_empty_advertisement) {
     EXPECT_CALL(mock_decoder_,
                 DecodeAdvertisement(testing::Eq(endpoint_info), testing::_))
-        .WillOnce(testing::Invoke(
-            [=](const std::vector<uint8_t>& data,
-                MockNearbySharingDecoder::DecodeAdvertisementCallback
-                    callback) {
+        .WillOnce(
+            testing::Invoke([=](const std::vector<uint8_t>& data,
+                                chromeos::nearby::MockNearbySharingDecoder::
+                                    DecodeAdvertisementCallback callback) {
               if (return_empty_advertisement) {
                 std::move(callback).Run(nullptr);
                 return;
@@ -584,7 +586,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                MockNearbySharingDecoder::DecodeFrameCallback callback) {
+                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                    callback) {
               std::move(callback).Run(return_empty_introduction_frame
                                           ? GetEmptyIntroductionFrame()
                                           : GetValidIntroductionFrame());
@@ -599,7 +602,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
         .WillOnce(testing::Invoke(
             [=](const std::vector<uint8_t>& data,
-                MockNearbySharingDecoder::DecodeFrameCallback callback) {
+                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                    callback) {
               std::move(callback).Run(GetConnectionResponseFrame(status));
             }));
     connection_.AppendReadableData(bytes);
@@ -886,7 +890,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
-  NiceMock<MockNearbySharingDecoder> mock_decoder_;
+  NiceMock<chromeos::nearby::MockNearbySharingDecoder> mock_decoder_;
   FakeNearbyConnection connection_;
 };
 
@@ -2121,7 +2125,8 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
       .WillOnce(testing::Invoke(
           [](const std::vector<uint8_t>& data,
-             MockNearbySharingDecoder::DecodeFrameCallback callback) {
+             chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                 callback) {
             std::vector<sharing::mojom::FileMetadataPtr> mojo_file_metadatas;
             mojo_file_metadatas.push_back(sharing::mojom::FileMetadata::New(
                 "name", sharing::mojom::FileMetadata::Type::kAudio,
@@ -2191,7 +2196,8 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
   EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
       .WillOnce(testing::Invoke(
           [](const std::vector<uint8_t>& data,
-             MockNearbySharingDecoder::DecodeFrameCallback callback) {
+             chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                 callback) {
             std::vector<sharing::mojom::FileMetadataPtr> mojo_file_metadatas;
             mojo_file_metadatas.push_back(sharing::mojom::FileMetadata::New(
                 "name_1", sharing::mojom::FileMetadata::Type::kAudio,

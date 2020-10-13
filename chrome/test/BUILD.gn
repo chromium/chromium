@@ -4841,12 +4841,8 @@ test("unit_tests") {
       "../browser/nearby_sharing/instantmessaging/receive_messages_express_unittest.cc",
       "../browser/nearby_sharing/instantmessaging/send_message_express_unittest.cc",
       "../browser/nearby_sharing/instantmessaging/stream_parser_unittest.cc",
-      "../browser/nearby_sharing/mock_nearby_connections.cc",
-      "../browser/nearby_sharing/mock_nearby_connections.h",
       "../browser/nearby_sharing/mock_nearby_process_manager.cc",
       "../browser/nearby_sharing/mock_nearby_process_manager.h",
-      "../browser/nearby_sharing/mock_nearby_sharing_decoder.cc",
-      "../browser/nearby_sharing/mock_nearby_sharing_decoder.h",
       "../browser/nearby_sharing/mock_nearby_sharing_service.cc",
       "../browser/nearby_sharing/mock_nearby_sharing_service.h",
       "../browser/nearby_sharing/nearby_confirmation_manager_unittest.cc",
@@ -4981,6 +4977,7 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/platform_v2:unit_tests",
       "//chromeos/assistant:buildflags",
       "//chromeos/services/machine_learning/public/cpp:test_support",
+      "//chromeos/services/nearby/public/cpp:test_support",
       "//components/arc:arc_test_support",
     ]
   }

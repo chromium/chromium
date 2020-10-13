@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_CONNECTIONS_H_
-#define CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_CONNECTIONS_H_
+#ifndef CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_
+#define CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_
 
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using NearbyConnectionsMojom =
@@ -24,12 +25,19 @@ using EndpointDiscoveryListener =
 using PayloadListener = location::nearby::connections::mojom::PayloadListener;
 using PayloadPtr = location::nearby::connections::mojom::PayloadPtr;
 
+namespace chromeos {
+namespace nearby {
+
 class MockNearbyConnections : public NearbyConnectionsMojom {
  public:
   MockNearbyConnections();
   MockNearbyConnections(const MockNearbyConnections&) = delete;
   MockNearbyConnections& operator=(const MockNearbyConnections&) = delete;
   ~MockNearbyConnections() override;
+
+  const mojo::SharedRemote<NearbyConnectionsMojom>& shared_remote() const {
+    return shared_remote_;
+  }
 
   MOCK_METHOD(void,
               StartAdvertising,
@@ -97,6 +105,13 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
                base::File output_file,
                RegisterPayloadFileCallback callback),
               (override));
+
+ private:
+  mojo::Receiver<NearbyConnectionsMojom> receiver_{this};
+  mojo::SharedRemote<NearbyConnectionsMojom> shared_remote_;
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_MOCK_NEARBY_CONNECTIONS_H_
+}  // namespace nearby
+}  // namespace chromeos
+
+#endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_

@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_nearby_connections.cc",
+    "mock_nearby_connections.h",
+    "mock_nearby_sharing_decoder.cc",
+    "mock_nearby_sharing_decoder.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/nearby/public/mojom",
+    "//mojo/public/cpp/bindings/",
+    "//testing/gmock",
+  ]
+}

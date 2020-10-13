@@ -16,13 +16,13 @@
 #include "base/test/bind_test_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/mock_nearby_connections.h"
-#include "chrome/browser/nearby_sharing/mock_nearby_sharing_decoder.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
@@ -57,8 +57,9 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
       CreateNearbyConnectionsCallback callback) override {
     dependencies_ = std::move(dependencies);
     mojo::PendingRemote<NearbyConnectionsMojom> remote;
-    mojo::MakeSelfOwnedReceiver(std::make_unique<MockNearbyConnections>(),
-                                remote.InitWithNewPipeAndPassReceiver());
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<chromeos::nearby::MockNearbyConnections>(),
+        remote.InitWithNewPipeAndPassReceiver());
     std::move(callback).Run(std::move(remote));
 
     run_loop_connections.Quit();
@@ -67,8 +68,9 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
   void CreateNearbySharingDecoder(
       CreateNearbySharingDecoderCallback callback) override {
     mojo::PendingRemote<NearbySharingDecoderMojom> remote;
-    mojo::MakeSelfOwnedReceiver(std::make_unique<MockNearbySharingDecoder>(),
-                                remote.InitWithNewPipeAndPassReceiver());
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<chromeos::nearby::MockNearbySharingDecoder>(),
+        remote.InitWithNewPipeAndPassReceiver());
     std::move(callback).Run(std::move(remote));
 
     run_loop_decoder.Quit();
