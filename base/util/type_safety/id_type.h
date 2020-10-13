@@ -47,13 +47,25 @@ namespace util {
 // - it restricts the set of available operations (i.e. no multiplication);
 // - it default-constructs to a null value and allows checking against the null
 //   value via is_null method.
-template <typename TypeMarker, typename WrappedType, WrappedType kInvalidValue>
+template <typename TypeMarker,
+          typename WrappedType,
+          WrappedType kInvalidValue,
+          WrappedType kFirstGeneratedId = kInvalidValue + 1>
 class IdType : public StrongAlias<TypeMarker, WrappedType> {
  public:
   static_assert(
       std::is_unsigned<WrappedType>::value || kInvalidValue <= 0,
       "If signed, the invalid value should be negative or equal to zero to "
       "avoid overflow issues.");
+
+  static_assert(kFirstGeneratedId != kInvalidValue,
+                "The first generated ID cannot be invalid.");
+
+  static_assert(std::is_unsigned<WrappedType>::value ||
+                    kFirstGeneratedId > kInvalidValue,
+                "If signed, the first generated ID must be greater than the "
+                "invalid value so that the monotonically increasing "
+                "GenerateNextId method will never return the invalid value.");
 
   using StrongAlias<TypeMarker, WrappedType>::StrongAlias;
 
@@ -71,7 +83,7 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
     Generator& operator=(const Generator&) = delete;
 
    private:
-    WrappedType next_id_ = kInvalidValue + 1;
+    WrappedType next_id_ = kFirstGeneratedId;
   };
 
   // Default-construct in the null state.

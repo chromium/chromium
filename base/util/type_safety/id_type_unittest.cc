@@ -52,6 +52,14 @@ TEST(IdType, GeneratorWithBigUnsignedInvalidValue) {
   }
 }
 
+TEST(IdType, GeneratorWithDifferentStartingValue) {
+  using TestId = IdType<class TestIdTag, int, -1, 1>;
+
+  TestId::Generator test_id_generator;
+  for (int i = 1; i < 10; i++)
+    EXPECT_EQ(test_id_generator.GenerateNextId(), TestId::FromUnsafeValue(i));
+}
+
 TEST(IdType, EnsureConstexpr) {
   using TestId = IdType32<class TestTag>;
 
