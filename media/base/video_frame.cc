@@ -1102,12 +1102,9 @@ bool VideoFrame::IsMappable() const {
 bool VideoFrame::HasTextures() const {
   // A SharedImage can be turned into a texture, and so it counts as a texture
   // in the context of this call.
-  if (mailbox_holders_[0].mailbox.IsSharedImage())
-    return true;
-
-  DCHECK(!wrapped_frame_ || !wrapped_frame_->HasTextures());
   return wrapped_frame_ ? wrapped_frame_->HasTextures()
-                        : !mailbox_holders_[0].mailbox.IsZero();
+                        : (mailbox_holders_[0].mailbox.IsSharedImage() ||
+                           !mailbox_holders_[0].mailbox.IsZero());
 }
 
 size_t VideoFrame::NumTextures() const {
