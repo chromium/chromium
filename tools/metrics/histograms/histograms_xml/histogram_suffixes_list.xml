@@ -14817,6 +14817,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Profile.State.Avatar"/>
   <affected-histogram name="Profile.State.LastUsed"/>
   <affected-histogram name="Profile.State.Name"/>
+  <affected-histogram name="Profile.State.SyncEnabled"/>
   <affected-histogram name="Profile.State.UnconsentedPrimaryAccountType"/>
 </histogram_suffixes>
 

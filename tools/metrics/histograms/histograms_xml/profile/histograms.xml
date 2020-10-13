@@ -427,6 +427,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Profile.State.SyncEnabled" enum="BooleanEnabled"
+    expires_after="2021-10-08">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    The sync status of the profile. Recorded on startup of Chrome and whenever
+    Chrome is used after at least 30 minutes of inactivity.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Profile.State.UnconsentedPrimaryAccountType"
     enum="ProfileUnconsentedPrimaryAccountType" expires_after="2021-03-11">
   <owner>jkrcal@chromium.org</owner>

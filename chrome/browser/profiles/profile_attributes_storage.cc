@@ -216,6 +216,10 @@ void RecordProfileState(ProfileAttributesEntry* entry,
   profile_metrics::LogProfileName(GetNameState(entry), suffix);
   profile_metrics::LogProfileAccountType(
       GetUnconsentedPrimaryAccountType(entry), suffix);
+  profile_metrics::LogProfileSyncEnabled(
+      entry->GetSigninState() ==
+          SigninState::kSignedInWithConsentedPrimaryAccount,
+      suffix);
   profile_metrics::LogProfileDaysSinceLastUse(
       (base::Time::Now() - entry->GetActiveTime()).InDays(), suffix);
 }

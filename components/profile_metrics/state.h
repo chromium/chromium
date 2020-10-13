@@ -103,6 +103,9 @@ void LogProfileName(NameState name_state, StateSuffix suffix);
 void LogProfileAccountType(UnconsentedPrimaryAccountType account_type,
                            StateSuffix suffix);
 
+// Records the state of profile's sync.
+void LogProfileSyncEnabled(bool sync_enabled, StateSuffix suffix);
+
 // Records the days since last use of a profile.
 void LogProfileDaysSinceLastUse(int days_since_last_use, StateSuffix suffix);
 
