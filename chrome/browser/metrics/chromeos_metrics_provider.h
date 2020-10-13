@@ -23,21 +23,12 @@ class CachedMetricsProfile;
 class ChromeUserMetricsExtension;
 }
 
+enum class EnrollmentStatus;
 class PrefRegistrySimple;
 
 // Performs ChromeOS specific metrics logging.
 class ChromeOSMetricsProvider : public metrics::MetricsProvider {
  public:
-  // Possible device enrollment status for a Chrome OS device.
-  // Used by UMA histogram, so entries shouldn't be reordered or removed.
-  enum EnrollmentStatus {
-    NON_MANAGED,
-    UNUSED,  // Formerly MANAGED_EDU, see crbug.com/462770.
-    MANAGED,
-    ERROR_GETTING_ENROLLMENT_STATUS,
-    ENROLLMENT_STATUS_MAX,
-  };
-
   explicit ChromeOSMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType service_type);
   ~ChromeOSMetricsProvider() override;

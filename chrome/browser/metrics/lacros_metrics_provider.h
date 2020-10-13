@@ -21,6 +21,8 @@ class LacrosMetricsProvider : public metrics::MetricsProvider {
   ~LacrosMetricsProvider() override;
 
   // metrics::MetricsProvider:
+  void ProvideStabilityMetrics(
+      metrics::SystemProfileProto* system_profile_proto) override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 };
