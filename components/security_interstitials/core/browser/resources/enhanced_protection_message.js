@@ -21,11 +21,21 @@ function setupEnhancedProtectionMessage() {
   }
 
   if ($('enhanced-protection-link')) {
-    $('enhanced-protection-link').addEventListener('click', function() {
-      sendCommand(
-          SecurityInterstitialCommandId.CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
-      return false;
-    });
+    if (mobileNav) {
+      // To make sure the touch area of the link is larger than the
+      // minimum touch area for accessibility, make the whole block tappable.
+      $('enhanced-protection-message').addEventListener('click', function() {
+        sendCommand(SecurityInterstitialCommandId
+                        .CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
+        return false;
+      });
+    } else {
+      $('enhanced-protection-link').addEventListener('click', function() {
+        sendCommand(SecurityInterstitialCommandId
+                        .CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
+        return false;
+      });
+    }
   }
   $('enhanced-protection-message').classList.remove('hidden');
 
