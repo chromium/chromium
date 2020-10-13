@@ -9,7 +9,7 @@ namespace variations {
 namespace internal {
 
 const base::Feature kRestrictGoogleWebVisibility{
-    "RestrictGoogleWebVisibility", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RestrictGoogleWebVisibility", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace internal
 }  // namespace variations

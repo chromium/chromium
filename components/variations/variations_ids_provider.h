@@ -144,7 +144,7 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
                            ForceDisableVariationIds_ValidCommandLine);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            ForceDisableVariationIds_Invalid);
-  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
                            OnFieldTrialGroupFinalized);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            GetGoogleAppVariationsString);

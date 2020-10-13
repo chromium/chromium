@@ -192,6 +192,7 @@ source_set("unit_tests") {
 
   deps = [
     ":variations",
+    ":variations_features",
     ":variations_mojom",
     "net",
     "proto",
