@@ -97,23 +97,6 @@ class InteractiveRenderWidget : public RenderWidget {
 
   IPC::TestSink* sink() { return &sink_; }
 
-  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
-      override {
-    std::unique_ptr<cc::FakeLayerTreeFrameSink> sink =
-        cc::FakeLayerTreeFrameSink::Create3d();
-    last_created_frame_sink_ = sink.get();
-    return sink;
-  }
-
-  // The returned pointer is valid after RequestNewLayerTreeFrameSink() occurs,
-  // until another call to RequestNewLayerTreeFrameSink() happens. It's okay to
-  // use this pointer on the main thread because this class causes the
-  // compositor to run in single thread mode by returning a null from
-  // GetCompositorImplThreadTaskRunner().
-  cc::FakeLayerTreeFrameSink* last_created_frame_sink() {
-    return last_created_frame_sink_;
-  }
-
  protected:
   bool Send(IPC::Message* msg) override {
     sink_.OnMessageReceived(*msg);
@@ -124,7 +107,6 @@ class InteractiveRenderWidget : public RenderWidget {
  private:
   IPC::TestSink sink_;
   static int next_routing_id_;
-  cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(InteractiveRenderWidget);
 };
@@ -189,16 +171,6 @@ class RenderWidgetUnittest : public testing::Test {
 
   InteractiveRenderWidget* widget() const { return widget_.get(); }
 
-  blink::WebFrameWidget* frame_widget() const { return web_frame_widget_; }
-
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
-  }
-
-  cc::FakeLayerTreeFrameSink* GetFrameSink() {
-    return widget_->last_created_frame_sink();
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   RenderProcess render_process_;
@@ -211,7 +183,6 @@ class RenderWidgetUnittest : public testing::Test {
   FakeCompositorDependencies compositor_deps_;
   std::unique_ptr<AgentSchedulingGroup> agent_scheduling_group_;
   std::unique_ptr<InteractiveRenderWidget> widget_;
-  base::HistogramTester histogram_tester_;
   const bool is_for_nested_main_frame_;
 };
 
@@ -256,116 +227,5 @@ TEST_F(RenderWidgetUnittest, ForceSendMetadataOnInput) {
   EXPECT_TRUE(layer_tree_host->TakeForceSendMetadataRequest());
 }
 #endif  // !defined(OS_ANDROID)
-
-class NotifySwapTimesRenderWidgetUnittest : public RenderWidgetUnittest {
- public:
-  void SetUp() override {
-    RenderWidgetUnittest::SetUp();
-
-    viz::ParentLocalSurfaceIdAllocator allocator;
-
-    // TODO(danakj): This usually happens through
-    // RenderWidget::UpdateVisualProperties() and we are cutting past that for
-    // some reason.
-    allocator.GenerateId();
-    widget()->layer_tree_host()->SetViewportRectAndScale(
-        gfx::Rect(200, 100), 1.f, allocator.GetCurrentLocalSurfaceId());
-
-    auto root_layer = cc::SolidColorLayer::Create();
-    root_layer->SetBounds(gfx::Size(200, 100));
-    root_layer->SetBackgroundColor(SK_ColorGREEN);
-    widget()->layer_tree_host()->SetRootLayer(root_layer);
-
-    auto color_layer = cc::SolidColorLayer::Create();
-    color_layer->SetBounds(gfx::Size(100, 100));
-    root_layer->AddChild(color_layer);
-    color_layer->SetBackgroundColor(SK_ColorRED);
-  }
-
-  // |swap_to_presentation| determines how long after swap should presentation
-  // happen. This can be negative, positive, or zero. If zero, an invalid (null)
-  // presentation time is used.
-  void CompositeAndWaitForPresentation(base::TimeDelta swap_to_presentation) {
-    base::RunLoop swap_run_loop;
-    base::RunLoop presentation_run_loop;
-
-    // Register callbacks for swap time and presentation time.
-    base::TimeTicks swap_time;
-    frame_widget()->NotifySwapAndPresentationTime(
-        base::BindOnce(
-            [](base::OnceClosure swap_quit_closure, base::TimeTicks* swap_time,
-               blink::WebSwapResult result, base::TimeTicks timestamp) {
-              DCHECK(!timestamp.is_null());
-              *swap_time = timestamp;
-              std::move(swap_quit_closure).Run();
-            },
-            swap_run_loop.QuitClosure(), &swap_time),
-        base::BindOnce(
-            [](base::OnceClosure presentation_quit_closure,
-               blink::WebSwapResult result, base::TimeTicks timestamp) {
-              DCHECK(!timestamp.is_null());
-              std::move(presentation_quit_closure).Run();
-            },
-            presentation_run_loop.QuitClosure()));
-
-    // Composite and wait for the swap to complete.
-    widget()->layer_tree_host()->Composite(base::TimeTicks::Now(),
-                                           /*raster=*/true);
-    swap_run_loop.Run();
-
-    // Present and wait for it to complete.
-    viz::FrameTimingDetails timing_details;
-    if (!swap_to_presentation.is_zero()) {
-      timing_details.presentation_feedback = gfx::PresentationFeedback(
-          /*presentation_time=*/swap_time + swap_to_presentation,
-          base::TimeDelta::FromMilliseconds(16), 0);
-    }
-    GetFrameSink()->NotifyDidPresentCompositorFrame(1, timing_details);
-    presentation_run_loop.Run();
-  }
-};
-
-TEST_F(NotifySwapTimesRenderWidgetUnittest, PresentationTimestampValid) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::TimeDelta::FromMilliseconds(2));
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::ElementsAre(base::Bucket(2, 1)));
-}
-
-TEST_F(NotifySwapTimesRenderWidgetUnittest, PresentationTimestampInvalid) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::TimeDelta());
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::IsEmpty());
-}
-
-TEST_F(NotifySwapTimesRenderWidgetUnittest,
-       PresentationTimestampEarlierThanSwaptime) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::TimeDelta::FromMilliseconds(-2));
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(false, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples(
-          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
-      testing::IsEmpty());
-}
 
 }  // namespace content

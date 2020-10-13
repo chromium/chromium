@@ -34,7 +34,8 @@ void SimCompositor::SetWebView(
   test_web_view_client_ = &view_client;
 }
 
-SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds) {
+SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
+                                              bool raster) {
   DCHECK(web_view_);
   DCHECK(!layer_tree_host()->defer_main_frame_update());
   // Verify that the need for a BeginMainFrame has been registered, and would
@@ -49,8 +50,7 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds) {
   SimCanvas::Commands commands;
   paint_commands_ = &commands;
 
-  layer_tree_host()->Composite(last_frame_time_,
-                               /*raster=*/false);
+  layer_tree_host()->Composite(last_frame_time_, raster);
 
   paint_commands_ = nullptr;
   return commands;

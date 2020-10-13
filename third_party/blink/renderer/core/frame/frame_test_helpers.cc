@@ -36,7 +36,6 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "build/build_config.h"
-#include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/test_ukm_recorder_factory.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -776,6 +775,11 @@ ScreenInfo TestWebWidgetClient::GetInitialScreenInfo() {
   return ScreenInfo();
 }
 
+cc::FakeLayerTreeFrameSink* TestWebWidgetClient::LastCreatedFrameSink() {
+  DCHECK(layer_tree_host_->IsSingleThreaded());
+  return last_created_frame_sink_;
+}
+
 mojo::PendingAssociatedRemote<mojom::blink::WidgetHost>
 TestWebWidgetClient::BindNewWidgetHost() {
   receiver_.reset();
@@ -792,7 +796,10 @@ viz::FrameSinkId TestWebWidgetClient::GetFrameSinkId() {
 
 std::unique_ptr<cc::LayerTreeFrameSink>
 TestWebWidgetClient::AllocateNewLayerTreeFrameSink() {
-  return cc::FakeLayerTreeFrameSink::Create3d();
+  std::unique_ptr<cc::FakeLayerTreeFrameSink> sink =
+      cc::FakeLayerTreeFrameSink::Create3d();
+  last_created_frame_sink_ = sink.get();
+  return sink;
 }
 
 void TestWebWidgetClient::WillQueueSyntheticEvent(

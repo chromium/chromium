@@ -149,6 +149,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void UpdateSurfaceAndCompositorRect(
       const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect);
+  void UpdateCompositorViewportRect(
+      const gfx::Rect& compositor_viewport_pixel_rect);
   void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);

@@ -38,6 +38,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -222,6 +223,12 @@ class TestWebWidgetClient : public WebWidgetClient,
     layer_tree_host_ = layer_tree_host;
   }
 
+  // The returned pointer is valid after AllocateNewLayerTreeFrameSink() occurs,
+  // until another call to AllocateNewLayerTreeFrameSink() happens. This
+  // pointer is valid to use from the main thread for tests that use a single
+  // threaded compositor, such as SimCompositor tests.
+  cc::FakeLayerTreeFrameSink* LastCreatedFrameSink();
+
   virtual ScreenInfo GetInitialScreenInfo();
 
   mojo::PendingAssociatedRemote<mojom::blink::WidgetHost> BindNewWidgetHost();
@@ -266,6 +273,7 @@ class TestWebWidgetClient : public WebWidgetClient,
   WebFrameWidget* frame_widget_ = nullptr;
   cc::LayerTreeHost* layer_tree_host_ = nullptr;
   cc::TestTaskGraphRunner test_task_graph_runner_;
+  cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
   blink::scheduler::WebFakeThreadScheduler fake_thread_scheduler_;
   Vector<std::unique_ptr<blink::WebCoalescedInputEvent>>
       injected_scroll_events_;

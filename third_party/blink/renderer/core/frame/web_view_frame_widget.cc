@@ -579,4 +579,9 @@ void WebViewFrameWidget::UpdateSurfaceAndCompositorRect(
                                                compositor_viewport_pixel_rect);
 }
 
+void WebViewFrameWidget::UpdateCompositorViewportRect(
+    const gfx::Rect& compositor_viewport_pixel_rect) {
+  widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
+}
+
 }  // namespace blink

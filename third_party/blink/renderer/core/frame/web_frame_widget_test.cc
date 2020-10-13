@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "cc/layers/solid_color_layer.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
@@ -376,6 +377,115 @@ TEST_F(WebViewFrameWidgetSimTest, SendElasticOverscrollForTouchscreen) {
       .Times(testing::AnyNumber());
 
   SendInputEvent(scroll, base::DoNothing());
+}
+
+class NotifySwapTimesWebFrameWidgetTest : public SimTest {
+ public:
+  void SetUp() override {
+    SimTest::SetUp();
+
+    WebView().StopDeferringMainFrameUpdate();
+    FrameWidgetBase()->UpdateCompositorViewportRect(gfx::Rect(200, 100));
+
+    auto root_layer = cc::SolidColorLayer::Create();
+    root_layer->SetBounds(gfx::Size(200, 100));
+    root_layer->SetBackgroundColor(SK_ColorGREEN);
+    FrameWidgetBase()->LayerTreeHost()->SetRootLayer(root_layer);
+
+    auto color_layer = cc::SolidColorLayer::Create();
+    color_layer->SetBounds(gfx::Size(100, 100));
+    root_layer->AddChild(color_layer);
+    color_layer->SetBackgroundColor(SK_ColorRED);
+  }
+
+  WebViewFrameWidget* FrameWidgetBase() {
+    return static_cast<WebViewFrameWidget*>(MainFrame().FrameWidget());
+  }
+
+  // |swap_to_presentation| determines how long after swap should presentation
+  // happen. This can be negative, positive, or zero. If zero, an invalid (null)
+  // presentation time is used.
+  void CompositeAndWaitForPresentation(base::TimeDelta swap_to_presentation) {
+    base::RunLoop swap_run_loop;
+    base::RunLoop presentation_run_loop;
+
+    // Register callbacks for swap time and presentation time.
+    base::TimeTicks swap_time;
+    MainFrame().FrameWidget()->NotifySwapAndPresentationTime(
+        base::BindOnce(
+            [](base::OnceClosure swap_quit_closure, base::TimeTicks* swap_time,
+               blink::WebSwapResult result, base::TimeTicks timestamp) {
+              DCHECK(!timestamp.is_null());
+              *swap_time = timestamp;
+              std::move(swap_quit_closure).Run();
+            },
+            swap_run_loop.QuitClosure(), &swap_time),
+        base::BindOnce(
+            [](base::OnceClosure presentation_quit_closure,
+               blink::WebSwapResult result, base::TimeTicks timestamp) {
+              DCHECK(!timestamp.is_null());
+              std::move(presentation_quit_closure).Run();
+            },
+            presentation_run_loop.QuitClosure()));
+
+    // Composite and wait for the swap to complete.
+    Compositor().BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);
+    swap_run_loop.Run();
+
+    // Present and wait for it to complete.
+    viz::FrameTimingDetails timing_details;
+    if (!swap_to_presentation.is_zero()) {
+      timing_details.presentation_feedback = gfx::PresentationFeedback(
+          /*presentation_time=*/swap_time + swap_to_presentation,
+          base::TimeDelta::FromMilliseconds(16), 0);
+    }
+    auto* last_frame_sink = WebWidgetClient().LastCreatedFrameSink();
+    last_frame_sink->NotifyDidPresentCompositorFrame(1, timing_details);
+    presentation_run_loop.Run();
+  }
+};
+
+TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampValid) {
+  base::HistogramTester histograms;
+
+  CompositeAndWaitForPresentation(base::TimeDelta::FromMilliseconds(2));
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
+              testing::ElementsAre(base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
+      testing::ElementsAre(base::Bucket(2, 1)));
+}
+
+TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampInvalid) {
+  base::HistogramTester histograms;
+
+  CompositeAndWaitForPresentation(base::TimeDelta());
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
+              testing::ElementsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
+      testing::IsEmpty());
+}
+
+TEST_F(NotifySwapTimesWebFrameWidgetTest,
+       PresentationTimestampEarlierThanSwaptime) {
+  base::HistogramTester histograms;
+
+  CompositeAndWaitForPresentation(base::TimeDelta::FromMilliseconds(-2));
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
+              testing::ElementsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
+      testing::IsEmpty());
 }
 
 }  // namespace blink
