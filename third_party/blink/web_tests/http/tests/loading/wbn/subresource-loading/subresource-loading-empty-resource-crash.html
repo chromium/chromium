@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <link
+    rel="webbundle"
+    href="../resources/wbn/empty-resource.wbn"
+    resources="http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js"
+  />
+  <script>
+    promise_test(async () => {
+      const response = await fetch(
+        "http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js"
+      );
+      assert_true(response.ok);
+    }, "Loading an empty resource in a bundle should not cause a crash");
+  </script>
+</body>

@@ -32,3 +32,10 @@ gen-bundle \
   -primaryURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-third-party-origin-trial/script.js \
   -dir wbn-subresource-third-party-origin-trial/ \
   -o wbn/wbn-subresource-third-party-origin-trial.wbn
+
+gen-bundle \
+  -version b1 \
+  -baseURL http://127.0.0.1:8000/loading/wbn/resources/wbn/ \
+  -primaryURL http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js \
+  -dir empty-resource/ \
+  -o wbn/empty-resource.wbn

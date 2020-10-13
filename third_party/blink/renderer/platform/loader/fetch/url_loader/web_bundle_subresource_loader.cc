@@ -106,7 +106,10 @@ class PipeDataSource : public mojo::DataPipeProducer::DataSource {
     }
     size_t offset = base::checked_cast<size_t>(uint64_offset);
     size_t len = std::min(data_.size() - offset, buffer.size());
-    memcpy(buffer.data(), &data_[offset], len);
+    if (len > 0) {
+      DCHECK_LT(offset, data_.size());
+      memcpy(buffer.data(), &data_[offset], len);
+    }
     result.bytes_read = len;
     return result;
   }
