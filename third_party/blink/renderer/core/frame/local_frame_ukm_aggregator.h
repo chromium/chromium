@@ -125,8 +125,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
     : public RefCounted<LocalFrameUkmAggregator> {
  public:
   // Changing these values requires changing the names of metrics specified
-  // below. For every metric name added here, add an entry in the
-  // metric_strings_ array below.
+  // below. For every metric name added here, add an entry in the array in
+  // metrics_data() below.
   enum MetricId {
     kCompositingAssignments,
     kCompositingCommit,
@@ -139,7 +139,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kLayout,
     kForcedStyleAndLayout,
     kHitTestDocumentUpdate,
-    kScrollingCoordinator,
     kHandleInputEvents,
     kAnimate,
     kUpdateLayers,
@@ -173,7 +172,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"Layout", true},
         {"ForcedStyleAndLayout", true},
         {"HitTestDocumentUpdate", true},
-        {"ScrollingCoordinator", true},
         {"HandleInputEvents", true},
         {"Animate", true},
         {"UpdateLayers", false},

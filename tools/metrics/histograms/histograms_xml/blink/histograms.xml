@@ -1316,7 +1316,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.MainFrame.ScrollingCoordinatorRatio"
-    units="%" expires_after="2020-11-08">
+    units="%" expires_after="M88">
+  <obsolete>
+    Merged into Blink.MainFrame.CompositingCommitRatio in
+    http://crrev.com/815947 in M88.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1638,7 +1642,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ScrollingCoordinator.UpdateTime" units="microseconds"
-    expires_after="2021-03-21">
+    expires_after="M88">
+  <obsolete>
+    Merged into Blink.CompositingCommit.UpdateTime in http://crrev.com/815947 in
+    M88.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->

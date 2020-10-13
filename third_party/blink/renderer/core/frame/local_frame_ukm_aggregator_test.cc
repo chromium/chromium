@@ -308,8 +308,6 @@ TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {
   EXPECT_EQ(metrics_data->compositing_assignments.InMillisecondsF(),
             millisecond_for_step);
   EXPECT_EQ(metrics_data->paint.InMillisecondsF(), millisecond_for_step);
-  EXPECT_EQ(metrics_data->scrolling_coordinator.InMillisecondsF(),
-            millisecond_for_step);
   EXPECT_EQ(metrics_data->composite_commit.InMillisecondsF(),
             millisecond_for_step);
   // Do not check the value in metrics_data.update_layers because it

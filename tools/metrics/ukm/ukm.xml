@@ -2027,6 +2027,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="ScrollingCoordinator">
+    <obsolete>
+      Merged into CompositingCommit in http://crrev.com/815947 in M88.
+    </obsolete>
     <summary>
       The time spent in ScrollingCoordinator, between navigation and First
       Contentful Paint, in microseconds.
@@ -2819,6 +2822,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="ScrollingCoordinator">
+    <obsolete>
+      Merged into CompositingCommit in http://crrev.com/815947 in M88.
+    </obsolete>
     <summary>
       The time taken for scrolling coordinator for the main frame in
       microseconds during the sampled frame.
@@ -2879,6 +2885,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="ScrollingCoordinatorPercentage">
+    <obsolete>
+      Merged into CompositingCommitPercentage in http://crrev.com/815947 in M88.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in scrolling coordinator. An
       int in the range [0,100].

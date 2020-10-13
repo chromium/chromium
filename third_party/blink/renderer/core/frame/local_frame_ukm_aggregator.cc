@@ -195,10 +195,6 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
   metrics_data->paint =
       main_frame_percentage_records_[static_cast<unsigned>(MetricId::kPaint)]
           .interval_duration;
-  metrics_data->scrolling_coordinator =
-      main_frame_percentage_records_[static_cast<unsigned>(
-                                         MetricId::kScrollingCoordinator)]
-          .interval_duration;
   metrics_data->composite_commit =
       main_frame_percentage_records_[static_cast<unsigned>(
                                          MetricId::kCompositingCommit)]
@@ -431,7 +427,6 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
       CASE_FOR_ID(Layout);
       CASE_FOR_ID(ForcedStyleAndLayout);
       CASE_FOR_ID(HitTestDocumentUpdate);
-      CASE_FOR_ID(ScrollingCoordinator);
       CASE_FOR_ID(HandleInputEvents);
       CASE_FOR_ID(Animate);
       CASE_FOR_ID(UpdateLayers);
@@ -477,7 +472,6 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
       CASE_FOR_ID(Layout, i);
       CASE_FOR_ID(ForcedStyleAndLayout, i);
       CASE_FOR_ID(HitTestDocumentUpdate, i);
-      CASE_FOR_ID(ScrollingCoordinator, i);
       CASE_FOR_ID(HandleInputEvents, i);
       CASE_FOR_ID(Animate, i);
       CASE_FOR_ID(UpdateLayers, i);

@@ -144,20 +144,19 @@ class CompositorFrameReportingControllerTest : public testing::Test {
 
   std::unique_ptr<BeginMainFrameMetrics> BuildBlinkBreakdown() {
     auto breakdown = std::make_unique<BeginMainFrameMetrics>();
-    breakdown->handle_input_events = base::TimeDelta::FromMicroseconds(11);
-    breakdown->animate = base::TimeDelta::FromMicroseconds(10);
-    breakdown->style_update = base::TimeDelta::FromMicroseconds(9);
-    breakdown->layout_update = base::TimeDelta::FromMicroseconds(8);
-    breakdown->compositing_inputs = base::TimeDelta::FromMicroseconds(7);
-    breakdown->prepaint = base::TimeDelta::FromMicroseconds(6);
-    breakdown->compositing_assignments = base::TimeDelta::FromMicroseconds(5);
-    breakdown->paint = base::TimeDelta::FromMicroseconds(4);
-    breakdown->scrolling_coordinator = base::TimeDelta::FromMicroseconds(3);
+    breakdown->handle_input_events = base::TimeDelta::FromMicroseconds(10);
+    breakdown->animate = base::TimeDelta::FromMicroseconds(9);
+    breakdown->style_update = base::TimeDelta::FromMicroseconds(8);
+    breakdown->layout_update = base::TimeDelta::FromMicroseconds(7);
+    breakdown->compositing_inputs = base::TimeDelta::FromMicroseconds(6);
+    breakdown->prepaint = base::TimeDelta::FromMicroseconds(5);
+    breakdown->compositing_assignments = base::TimeDelta::FromMicroseconds(4);
+    breakdown->paint = base::TimeDelta::FromMicroseconds(3);
     breakdown->composite_commit = base::TimeDelta::FromMicroseconds(2);
     breakdown->update_layers = base::TimeDelta::FromMicroseconds(1);
 
     // Advance now by the sum of the breakdowns.
-    AdvanceNowByMs(11 + 10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
+    AdvanceNowByMs(10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
 
     return breakdown;
   }
@@ -921,18 +920,15 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
       base::TimeDelta::FromMicroseconds(7).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.CompositingInputs",
-      base::TimeDelta::FromMicroseconds(5).InMilliseconds(), 1);
-  histogram_tester.ExpectUniqueSample(
-      "CompositorLatency.SendBeginMainFrameToCommit.Prepaint",
       base::TimeDelta::FromMicroseconds(6).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
-      "CompositorLatency.SendBeginMainFrameToCommit.CompositingAssignments",
+      "CompositorLatency.SendBeginMainFrameToCommit.Prepaint",
       base::TimeDelta::FromMicroseconds(5).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
-      "CompositorLatency.SendBeginMainFrameToCommit.Paint",
+      "CompositorLatency.SendBeginMainFrameToCommit.CompositingAssignments",
       base::TimeDelta::FromMicroseconds(4).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
-      "CompositorLatency.SendBeginMainFrameToCommit.ScrollingCoordinator",
+      "CompositorLatency.SendBeginMainFrameToCommit.Paint",
       base::TimeDelta::FromMicroseconds(3).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.CompositeCommit",
@@ -1153,9 +1149,6 @@ TEST_F(CompositorFrameReportingControllerTest,
        blink_breakdown_copy.compositing_assignments},
       {"EventLatency.TouchPressed.SendBeginMainFrameToCommit.Paint",
        blink_breakdown_copy.paint},
-      {"EventLatency.TouchPressed.SendBeginMainFrameToCommit."
-       "ScrollingCoordinator",
-       blink_breakdown_copy.scrolling_coordinator},
       {"EventLatency.TouchPressed.SendBeginMainFrameToCommit.CompositeCommit",
        blink_breakdown_copy.composite_commit},
       {"EventLatency.TouchPressed.SendBeginMainFrameToCommit.UpdateLayers",

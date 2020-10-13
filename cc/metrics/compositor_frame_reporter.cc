@@ -162,9 +162,6 @@ constexpr const char* GetStageName(int stage_type_index,
       return "SendBeginMainFrameToCommit.CompositingAssignments";
     case static_cast<int>(BlinkBreakdown::kPaint) + kBlinkBreakdownInitialIndex:
       return "SendBeginMainFrameToCommit.Paint";
-    case static_cast<int>(BlinkBreakdown::kScrollingCoordinator) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.ScrollingCoordinator";
     case static_cast<int>(BlinkBreakdown::kCompositeCommit) +
         kBlinkBreakdownInitialIndex:
       return "SendBeginMainFrameToCommit.CompositeCommit";
@@ -269,9 +266,9 @@ void ReportOffsetBetweenDeadlineAndPresentationTime(
       static_cast<size_t>(VizBreakdown::kSwapStartToBufferAvailable);          \
   bool has_ready_timings = !!viz_breakdown_list_[start_to_buffer_available];   \
   for (size_t i = 0; i < start_to_buffer_available; i++) {                     \
-    if (!viz_breakdown_list_[i])                                               \
+    if (!viz_breakdown_list_[i]) {                                             \
       break;                                                                   \
-                                                                               \
+    }                                                                          \
     if (i == static_cast<size_t>(VizBreakdown::kSwapStartToSwapEnd) &&         \
         has_ready_timings) {                                                   \
       size_t latch_to_swap_end =                                               \
@@ -999,9 +996,6 @@ void CompositorFrameReporter::PopulateBlinkBreakdownList() {
       blink_breakdown_.compositing_assignments;
   blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kPaint)] =
       blink_breakdown_.paint;
-  blink_breakdown_list_[static_cast<int>(
-      BlinkBreakdown::kScrollingCoordinator)] =
-      blink_breakdown_.scrolling_coordinator;
   blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kCompositeCommit)] =
       blink_breakdown_.composite_commit;
   blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kUpdateLayers)] =
