@@ -31,9 +31,9 @@ import sys
 # To build these packages, see comments in build/xcode_binaries.yaml
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
 MAC_BINARIES_TAG = {
-    # This contains binaries from Xcode 11.2.1, along with the 10.15 SDKs (aka
-    # 11B53).
-    'default': 'wXywrnOhzFxwLYlwO62UzRxVCjnu6DoSI2D2jrCd00gC',
+    # This contains binaries from Xcode 12.0.1, along with the 10.15 SDK (aka
+    # 12A7300).
+    'default': '89j_tSMJj0_9hMbceEg-P-VmiY_4CeYwsPE1e_zzRPcC',
     # This contains binaries from Xcode 12.2 beta 2, along with the
     # 11 SDK (aka 12B5025f).
     'xcode_12_beta': 'G4U9cOycs9JFzxLNSMaRuoS3NZwiB6RLwg0v4dh3Vw4C',
