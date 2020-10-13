@@ -188,8 +188,10 @@ IN_PROC_BROWSER_TEST_P(ForceEnabledOriginTrialsBrowserTest,
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("same-origin")));
   EXPECT_FALSE(HasTrialEnabled(GetFrameByName("cross-origin")));
 
-  if (disable_site_isolation_)
-    ASSERT_EQ(1, RenderProcessHost::GetCurrentRenderProcessCountForTesting());
+  // With site isolation, the cross-site iframe on |main_url_| will get its own
+  // process.  Otherwise, we'll only get one main frame process.
+  ASSERT_EQ(AreAllSitesIsolatedForTesting() ? 2 : 1,
+            RenderProcessHost::GetCurrentRenderProcessCountForTesting());
 
   // OT does not persist when we navigated away.
   NavigateViaRenderer(shell()->web_contents(),
