@@ -195,6 +195,9 @@ using base::UserMetricsAction;
 
 namespace {
 
+// The size of the tab strip view.
+const CGFloat kTabStripHeight = 39.0;
+
 const size_t kMaxURLDisplayChars = 32 * 1024;
 
 typedef NS_ENUM(NSInteger, ContextMenuHistogram) {
@@ -981,7 +984,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                 headerBehaviour:Hideable]];
     }
   } else {
-    if (self.tabStripView) {
+    if (self.tabStripView && !base::FeatureList::IsEnabled(kModernTabStrip)) {
       [results addObject:[HeaderDefinition definitionWithView:self.tabStripView
                                               headerBehaviour:Hideable]];
     }
@@ -1439,6 +1442,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self installFakeStatusBar];
   [self buildToolbarAndTabStrip];
   [self setUpViewLayout:YES];
+  [self addConstraintsToTabStrip];
   [self addConstraintsToToolbar];
 
   // If the tab model and browser state are valid, finish initialization.
@@ -1626,20 +1630,22 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self updateToolbar];
 
   // Update the tab strip visibility.
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    if (self.tabStripView) {
-      [self showTabStripView:self.tabStripView];
-      [self.tabStripView layoutSubviews];
+  if (self.tabStripView) {
+    [self showTabStripView:self.tabStripView];
+    [self.tabStripView layoutSubviews];
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      [self.tabStripCoordinator hideTabStrip:![self canShowTabStrip]];
+    } else {
       [self.legacyTabStripCoordinator hideTabStrip:![self canShowTabStrip]];
-      _fakeStatusBarView.hidden = ![self canShowTabStrip];
-      [self addConstraintsToPrimaryToolbar];
-      // If tabstrip is coming back due to a window resize or screen rotation,
-      // reset the full screen controller to adjust the tabstrip position.
-      if (ShouldShowCompactToolbar(previousTraitCollection) &&
-          !ShouldShowCompactToolbar(self)) {
-        [self updateForFullscreenProgress:self.fullscreenController
-                                              ->GetProgress()];
-      }
+    }
+    _fakeStatusBarView.hidden = ![self canShowTabStrip];
+    [self addConstraintsToPrimaryToolbar];
+    // If tabstrip is coming back due to a window resize or screen rotation,
+    // reset the full screen controller to adjust the tabstrip position.
+    if (ShouldShowCompactToolbar(previousTraitCollection) &&
+        !ShouldShowCompactToolbar(self)) {
+      [self
+          updateForFullscreenProgress:self.fullscreenController->GetProgress()];
     }
   }
 
@@ -1820,7 +1826,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-  if ([self canShowTabStrip] && !_isOffTheRecord) {
+  if ([self canShowTabStrip] && !_isOffTheRecord &&
+      !base::FeatureList::IsEnabled(kModernTabStrip)) {
     return self.tabStripView.frame.origin.y < kTabStripAppearanceOffset
                ? UIStatusBarStyleDefault
                : UIStatusBarStyleLightContent;
@@ -2035,6 +2042,22 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return secondaryToolbar.intrinsicContentSize.height + unsafeHeight;
 }
 
+- (void)addConstraintsToTabStrip {
+  if (!base::FeatureList::IsEnabled(kModernTabStrip))
+    return;
+
+  self.tabStripView.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor:self.tabStripView.topAnchor],
+    [self.view.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:self.tabStripView.leadingAnchor],
+    [self.view.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:self.tabStripView.trailingAnchor],
+    [self.tabStripView.heightAnchor constraintEqualToConstant:kTabStripHeight],
+  ]];
+}
+
 - (void)addConstraintsToPrimaryToolbar {
   NSLayoutYAxisAnchor* topAnchor;
   // On iPad, the toolbar is underneath the tab strip.
@@ -2234,6 +2257,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     UIView* primaryToolbarView =
         self.primaryToolbarCoordinator.viewController.view;
     if (IsIPadIdiom()) {
+      if (base::FeatureList::IsEnabled(kModernTabStrip) &&
+          self.tabStripCoordinator) {
+        [self addChildViewController:self.tabStripCoordinator.viewController];
+        self.tabStripView = self.tabStripCoordinator.view;
+        [self.view addSubview:self.tabStripView];
+      }
       [self.view insertSubview:primaryToolbarView
                   aboveSubview:self.tabStripView];
     } else {
@@ -2307,6 +2336,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     // Complete child UIViewController containment flow now that the views are
     // finished being added.
+    [self.tabStripCoordinator.viewController
+        didMoveToParentViewController:self];
     [self.primaryToolbarCoordinator.viewController
         didMoveToParentViewController:self];
     if (self.secondaryToolbarCoordinator) {

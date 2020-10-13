@@ -45,4 +45,14 @@
   _longPressDelegate = longPressDelegate;
 }
 
+- (UIView<TabStripContaining>*)view {
+  return static_cast<UIView<TabStripContaining>*>(self.viewController.view);
+}
+
+#pragma mark - Public
+
+- (void)hideTabStrip:(BOOL)hidden {
+  self.viewController.view.hidden = hidden;
+}
+
 @end

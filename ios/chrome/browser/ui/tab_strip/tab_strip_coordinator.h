@@ -9,6 +9,7 @@
 
 class Browser;
 @protocol PopupMenuLongPressDelegate;
+@protocol TabStripContaining;
 @class TabStripViewController;
 
 // Coordinator for the tab strip.
@@ -24,8 +25,14 @@ class Browser;
 // The TabStrip view controller owned by this coordinator.
 @property(nonatomic, strong) UIViewController* viewController;
 
+// The TabStrip view owned by the viewcontroller of this coordinator.
+@property(nonatomic, strong, readonly) UIView<TabStripContaining>* view;
+
 // Delegate for the long press gesture recognizer triggering popup menu.
 @property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
+
+// Hides or shows the tab strip.
+- (void)hideTabStrip:(BOOL)hidden;
 
 @end
 

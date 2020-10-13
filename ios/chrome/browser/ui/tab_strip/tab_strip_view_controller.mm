@@ -14,13 +14,15 @@
 
 - (instancetype)init {
   TabStripViewLayout* layout = [[TabStripViewLayout alloc] init];
-  self = [super initWithCollectionViewLayout:layout];
+  if (self = [super initWithCollectionViewLayout:layout]) {
+  }
   return self;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.collectionView.alwaysBounceHorizontal = YES;
 }
 
 @end
