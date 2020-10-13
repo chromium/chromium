@@ -573,8 +573,8 @@ TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
 TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
   InitializeBackend(true);
   backend_->StopSyncingForShutdown();
-  // Verify that call to DeactivateNonBlockingDataType doesn't assert.
-  backend_->DeactivateNonBlockingDataType(AUTOFILL);
+  // Verify that call to DeactivateDataType doesn't assert.
+  backend_->DeactivateDataType(AUTOFILL);
   backend_->Shutdown(STOP_SYNC);
   backend_.reset();
 }

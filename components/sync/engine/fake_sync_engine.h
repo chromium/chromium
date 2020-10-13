@@ -60,10 +60,9 @@ class FakeSyncEngine : public SyncEngine {
 
   void EnableEncryptEverything() override;
 
-  void ActivateNonBlockingDataType(
-      ModelType type,
-      std::unique_ptr<DataTypeActivationResponse>) override;
-  void DeactivateNonBlockingDataType(ModelType type) override;
+  void ActivateDataType(ModelType type,
+                        std::unique_ptr<DataTypeActivationResponse>) override;
+  void DeactivateDataType(ModelType type) override;
 
   void ActivateProxyDataType(ModelType type) override;
   void DeactivateProxyDataType(ModelType type) override;

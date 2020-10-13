@@ -227,18 +227,17 @@ void SyncEngineImpl::EnableEncryptEverything() {
       base::BindOnce(&SyncEngineBackend::DoEnableEncryptEverything, backend_));
 }
 
-void SyncEngineImpl::ActivateNonBlockingDataType(
+void SyncEngineImpl::ActivateDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
-  registrar_->RegisterNonBlockingType(type);
+  registrar_->RegisterDataType(type);
   if (activation_response->model_type_state.initial_sync_done())
-    registrar_->AddRestoredNonBlockingType(type);
-  model_type_connector_->ConnectNonBlockingType(type,
-                                                std::move(activation_response));
+    registrar_->AddRestoredDataType(type);
+  model_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 
-void SyncEngineImpl::DeactivateNonBlockingDataType(ModelType type) {
-  model_type_connector_->DisconnectNonBlockingType(type);
+void SyncEngineImpl::DeactivateDataType(ModelType type) {
+  model_type_connector_->DisconnectDataType(type);
 }
 
 void SyncEngineImpl::ActivateProxyDataType(ModelType type) {

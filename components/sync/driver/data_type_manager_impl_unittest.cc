@@ -77,13 +77,13 @@ class FakeModelTypeConfigurer : public ModelTypeConfigurer {
     last_params_ = std::move(params);
   }
 
-  void ActivateNonBlockingDataType(ModelType type,
-                                   std::unique_ptr<DataTypeActivationResponse>
-                                       activation_response) override {
+  void ActivateDataType(ModelType type,
+                        std::unique_ptr<DataTypeActivationResponse>
+                            activation_response) override {
     activated_types_.Put(type);
   }
 
-  void DeactivateNonBlockingDataType(ModelType type) override {
+  void DeactivateDataType(ModelType type) override {
     activated_types_.Remove(type);
   }
 

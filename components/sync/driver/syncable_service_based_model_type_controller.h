@@ -17,8 +17,9 @@ namespace syncer {
 
 class SyncableService;
 
-// Controller responsible for integrating SyncableService implementations within
-// a non-blocking datatype (USS), for datatypes living in the UI thread.
+// Controller responsible for integrating legacy data type implementations
+// (SyncableService) within the new sync architecture (USS), for types living on
+// the UI thread.
 class SyncableServiceBasedModelTypeController : public ModelTypeController {
  public:
   enum class DelegateMode { kFullSyncModeOnly, kTransportModeWithSingleModel };

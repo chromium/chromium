@@ -18,7 +18,7 @@ struct DataTypeActivationResponse;
 // syncing (receiving updates and committing local changes).
 // In addition it handles creating the connection between the ModelTypeWorker
 // (CommitQueue) on the sync side and the (Shared)ModelTypeProcessor on the
-// model type side for non-blocking types.
+// model type side.
 class ModelTypeConnector {
  public:
   ModelTypeConnector() = default;
@@ -28,7 +28,7 @@ class ModelTypeConnector {
   // thread. Note that in production |activation_response| actually
   // owns a processor proxy that forwards calls to the model thread and is safe
   // to call from the sync thread.
-  virtual void ConnectNonBlockingType(
+  virtual void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
@@ -37,7 +37,7 @@ class ModelTypeConnector {
   // This is the sync thread's chance to clear state associated with the type.
   // It also causes the syncer to stop requesting updates for this type, and to
   // abort any in-progress commit requests.
-  virtual void DisconnectNonBlockingType(ModelType type) = 0;
+  virtual void DisconnectDataType(ModelType type) = 0;
 
   // Marks a proxy type as connected.
   virtual void ConnectProxyType(ModelType type) = 0;

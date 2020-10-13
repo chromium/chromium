@@ -87,16 +87,16 @@ class TestModelTypeConfigurer : public ModelTypeConfigurer {
     NOTREACHED() << "Not implemented.";
   }
 
-  void ActivateNonBlockingDataType(ModelType type,
-                                   std::unique_ptr<DataTypeActivationResponse>
-                                       activation_response) override {
+  void ActivateDataType(ModelType type,
+                        std::unique_ptr<DataTypeActivationResponse>
+                            activation_response) override {
     DCHECK_EQ(kTestModelType, type);
     DCHECK(!processor_);
     processor_ = std::move(activation_response->type_processor);
     processor_->ConnectSync(nullptr);
   }
 
-  void DeactivateNonBlockingDataType(ModelType type) override {
+  void DeactivateDataType(ModelType type) override {
     DCHECK_EQ(kTestModelType, type);
     DCHECK(processor_);
     processor_->DisconnectSync();

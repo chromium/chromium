@@ -405,7 +405,7 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   // TODO(crbug.com/922900): this logic seems fragile, maybe initialization and
   // connecting of NIGORI needs refactoring.
   if (nigori_controller_ && sync_manager_) {
-    sync_manager_->GetModelTypeConnector()->DisconnectNonBlockingType(NIGORI);
+    sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(reason, base::DoNothing());
   }
   DoDestroySyncManager();
@@ -438,7 +438,7 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
     // for Nigori we need to do it here.
     // TODO(crbug.com/922900): try to find better way to implement this logic,
     // it's likely happen only due to BackendMigrator.
-    sync_manager_->GetModelTypeConnector()->DisconnectNonBlockingType(NIGORI);
+    sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(ShutdownReason::DISABLE_SYNC, base::DoNothing());
     LoadAndConnectNigoriController();
   }
@@ -576,9 +576,8 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
   configure_context.configuration_start_time = base::Time::Now();
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
-  // TODO(crbug.com/922900): Do we need to call RegisterNonBlockingType() for
-  // Nigori?
-  sync_manager_->GetModelTypeConnector()->ConnectNonBlockingType(
+  // TODO(crbug.com/922900): Do we need to call RegisterDataType() for Nigori?
+  sync_manager_->GetModelTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->ActivateManuallyForNigori());
 }
 

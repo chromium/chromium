@@ -74,10 +74,9 @@ class SyncEngineImpl : public SyncEngine,
   void StopSyncingForShutdown() override;
   void Shutdown(ShutdownReason reason) override;
   void ConfigureDataTypes(ConfigureParams params) override;
-  void ActivateNonBlockingDataType(
-      ModelType type,
-      std::unique_ptr<DataTypeActivationResponse>) override;
-  void DeactivateNonBlockingDataType(ModelType type) override;
+  void ActivateDataType(ModelType type,
+                        std::unique_ptr<DataTypeActivationResponse>) override;
+  void DeactivateDataType(ModelType type) override;
   void ActivateProxyDataType(ModelType type) override;
   void DeactivateProxyDataType(ModelType type) override;
   void EnableEncryptEverything() override;
@@ -176,7 +175,7 @@ class SyncEngineImpl : public SyncEngine,
   // sync loop.
   scoped_refptr<SyncEngineBackend> backend_;
 
-  // A handle referencing the main interface for non-blocking sync types. This
+  // A handle referencing the main interface for sync data types. This
   // object is owned because in production code it is a proxy object.
   std::unique_ptr<ModelTypeConnector> model_type_connector_;
 

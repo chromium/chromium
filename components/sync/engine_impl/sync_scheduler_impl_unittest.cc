@@ -139,14 +139,14 @@ class SyncSchedulerImplTest : public testing::Test {
     model_type_registry_ = std::make_unique<ModelTypeRegistry>(
         workers_, &mock_nudge_handler_, &cancelation_signal_,
         &encryption_handler_);
-    model_type_registry_->ConnectNonBlockingType(
+    model_type_registry_->ConnectDataType(
         HISTORY_DELETE_DIRECTIVES,
         MakeFakeActivationResponse(HISTORY_DELETE_DIRECTIVES));
-    model_type_registry_->ConnectNonBlockingType(
-        NIGORI, MakeFakeActivationResponse(NIGORI));
-    model_type_registry_->ConnectNonBlockingType(
-        THEMES, MakeFakeActivationResponse(THEMES));
-    model_type_registry_->ConnectNonBlockingType(
+    model_type_registry_->ConnectDataType(NIGORI,
+                                          MakeFakeActivationResponse(NIGORI));
+    model_type_registry_->ConnectDataType(THEMES,
+                                          MakeFakeActivationResponse(THEMES));
+    model_type_registry_->ConnectDataType(
         TYPED_URLS, MakeFakeActivationResponse(TYPED_URLS));
 
     context_ = std::make_unique<SyncCycleContext>(
@@ -161,7 +161,7 @@ class SyncSchedulerImplTest : public testing::Test {
   }
 
   void DisconnectDataType(ModelType type) {
-    model_type_registry_->DisconnectNonBlockingType(type);
+    model_type_registry_->DisconnectDataType(type);
   }
 
   void RebuildScheduler() {

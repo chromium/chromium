@@ -58,11 +58,11 @@ void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {}
 
 void FakeSyncEngine::EnableEncryptEverything() {}
 
-void FakeSyncEngine::ActivateNonBlockingDataType(
+void FakeSyncEngine::ActivateDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {}
 
-void FakeSyncEngine::DeactivateNonBlockingDataType(ModelType type) {}
+void FakeSyncEngine::DeactivateDataType(ModelType type) {}
 
 void FakeSyncEngine::ActivateProxyDataType(ModelType type) {}
 

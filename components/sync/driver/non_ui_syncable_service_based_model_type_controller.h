@@ -20,8 +20,9 @@ namespace syncer {
 
 class SyncableService;
 
-// Controller responsible for integrating SyncableService implementations within
-// a non-blocking datatype (USS), for datatypes living outside the UI thread.
+// Controller responsible for integrating legacy data type implementations
+// (SyncableService) within the new sync architecture (USS), for types living
+// outside the UI thread.
 // This requires interacting with the SyncableService in a model thread that is
 // not the UI thread, including the construction and destruction of objects
 // (most notably SyncableServiceBasedBridge) in the model thread as specified

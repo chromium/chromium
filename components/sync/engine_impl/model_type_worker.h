@@ -37,11 +37,11 @@ class ModelTypeProcessor;
 
 // A smart cache for sync types to communicate with the sync thread.
 //
-// When the non-blocking sync type wants to talk with the sync server, it will
+// When the sync data type wants to talk to the sync server, it will
 // send a message from its thread to this object on the sync thread. This
 // object ensures the appropriate sync server communication gets scheduled and
-// executed. The response, if any, will be returned to the non-blocking sync
-// type's thread eventually.
+// executed. The response, if any, will be returned to the data types's thread
+// eventually.
 //
 // This object also has a role to play in communications in the opposite
 // direction. Sometimes the sync thread will receive changes from the sync

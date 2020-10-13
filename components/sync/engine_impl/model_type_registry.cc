@@ -67,7 +67,7 @@ ModelTypeRegistry::ModelTypeRegistry(
 
 ModelTypeRegistry::~ModelTypeRegistry() = default;
 
-void ModelTypeRegistry::ConnectNonBlockingType(
+void ModelTypeRegistry::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
   DCHECK(!IsProxyType(type));
@@ -111,7 +111,7 @@ void ModelTypeRegistry::ConnectNonBlockingType(
       worker_ptr->AsWeakPtr(), base::SequencedTaskRunnerHandle::Get()));
 }
 
-void ModelTypeRegistry::DisconnectNonBlockingType(ModelType type) {
+void ModelTypeRegistry::DisconnectDataType(ModelType type) {
   DVLOG(1) << "Disabling an off-thread sync type: " << ModelTypeToString(type);
 
   DCHECK(!IsProxyType(type));
@@ -145,7 +145,7 @@ void ModelTypeRegistry::DisconnectProxyType(ModelType type) {
 }
 
 ModelTypeSet ModelTypeRegistry::GetEnabledTypes() const {
-  return Union(GetEnabledNonBlockingTypes(), enabled_proxy_types_);
+  return Union(GetEnabledDataTypes(), enabled_proxy_types_);
 }
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
@@ -263,12 +263,12 @@ DataTypeDebugInfoEmitter* ModelTypeRegistry::GetEmitter(ModelType type) {
   return raw_emitter;
 }
 
-ModelTypeSet ModelTypeRegistry::GetEnabledNonBlockingTypes() const {
-  ModelTypeSet enabled_non_blocking_types;
+ModelTypeSet ModelTypeRegistry::GetEnabledDataTypes() const {
+  ModelTypeSet enabled_types;
   for (const auto& worker : model_type_workers_) {
-    enabled_non_blocking_types.Put(worker->GetModelType());
+    enabled_types.Put(worker->GetModelType());
   }
-  return enabled_non_blocking_types;
+  return enabled_types;
 }
 
 }  // namespace syncer

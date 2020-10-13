@@ -218,14 +218,14 @@ class SyncerTest : public testing::Test,
 
   void EnableDatatype(ModelType model_type) {
     enabled_datatypes_.Put(model_type);
-    model_type_registry_->ConnectNonBlockingType(
+    model_type_registry_->ConnectDataType(
         model_type, MakeFakeActivationResponse(model_type));
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 
   void DisableDatatype(ModelType model_type) {
     enabled_datatypes_.Remove(model_type);
-    model_type_registry_->DisconnectNonBlockingType(model_type);
+    model_type_registry_->DisconnectDataType(model_type);
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 

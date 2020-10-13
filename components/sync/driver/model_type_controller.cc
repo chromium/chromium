@@ -131,8 +131,7 @@ ModelTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
       activation_response_->model_type_state.initial_sync_done();
   // Pass activation context to ModelTypeRegistry, where ModelTypeWorker gets
   // created and connected with the delegate (processor).
-  configurer->ActivateNonBlockingDataType(type(),
-                                          std::move(activation_response_));
+  configurer->ActivateDataType(type(), std::move(activation_response_));
 
   state_ = RUNNING;
   DVLOG(1) << "Sync running for " << ModelTypeToString(type());
@@ -144,7 +143,7 @@ void ModelTypeController::DeactivateDataType(ModelTypeConfigurer* configurer) {
   DCHECK(CalledOnValidThread());
   DCHECK(configurer);
   if (state_ == RUNNING) {
-    configurer->DeactivateNonBlockingDataType(type());
+    configurer->DeactivateDataType(type());
     state_ = MODEL_LOADED;
   }
 }

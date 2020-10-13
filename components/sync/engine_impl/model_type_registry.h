@@ -43,10 +43,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   ~ModelTypeRegistry() override;
 
   // Implementation of ModelTypeConnector.
-  void ConnectNonBlockingType(
+  void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
-  void DisconnectNonBlockingType(ModelType type) override;
+  void DisconnectDataType(ModelType type) override;
   void ConnectProxyType(ModelType type) override;
   void DisconnectProxyType(ModelType type) override;
 
@@ -96,7 +96,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // DebugInfoEmitters are never deleted. Returns an existing one if we have it.
   DataTypeDebugInfoEmitter* GetEmitter(ModelType type);
 
-  ModelTypeSet GetEnabledNonBlockingTypes() const;
+  ModelTypeSet GetEnabledDataTypes() const;
 
   // Enabled proxy types, which don't have a worker.
   ModelTypeSet enabled_proxy_types_;
@@ -108,8 +108,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
   UpdateHandlerMap update_handler_map_;
   CommitContributorMap commit_contributor_map_;
 
-  // Map of DebugInfoEmitters for directory types and Non-blocking types.
-  // Does not own its contents.
+  // Map of DebugInfoEmitters for sync data types. Does not own its contents.
   DataTypeDebugInfoEmitterMap data_type_debug_info_emitter_map_;
 
   // The known ModelSafeWorkers.

@@ -82,30 +82,29 @@ TEST_F(SyncBackendRegistrarTest, ConstructorEmpty) {
 }
 
 TEST_F(SyncBackendRegistrarTest, ConstructorNonEmpty) {
-  registrar()->RegisterNonBlockingType(BOOKMARKS);
+  registrar()->RegisterDataType(BOOKMARKS);
   registrar()->SetInitialTypes(ModelTypeSet(BOOKMARKS, NIGORI));
   EXPECT_TRUE(registrar()->IsNigoriEnabled());
   EXPECT_EQ(1u, GetWorkersSize());
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
-  // Bookmarks dropped because it is nonblocking.
+  // Bookmarks dropped because it is in ModelSafeGroup::GROUP_NON_BLOCKING.
   // Passwords dropped because of no password store.
   ExpectRoutingInfo({{NIGORI, GROUP_PASSIVE}});
 }
 
 TEST_F(SyncBackendRegistrarTest, ConstructorNonEmptyReversedInitialization) {
-  // The blocking types get to set initial types before NonBlocking types here.
   registrar()->SetInitialTypes(ModelTypeSet(BOOKMARKS, NIGORI));
-  registrar()->RegisterNonBlockingType(BOOKMARKS);
+  registrar()->RegisterDataType(BOOKMARKS);
   EXPECT_TRUE(registrar()->IsNigoriEnabled());
   EXPECT_EQ(1u, GetWorkersSize());
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
-  // Bookmarks dropped because it is nonblocking.
+  // Bookmarks dropped because it is in ModelSafeGroup::GROUP_NON_BLOCKING.
   // Passwords dropped because of no password store.
   ExpectRoutingInfo({{NIGORI, GROUP_PASSIVE}});
 }
 
 TEST_F(SyncBackendRegistrarTest, ConfigureDataTypes) {
-  registrar()->RegisterNonBlockingType(BOOKMARKS);
+  registrar()->RegisterDataType(BOOKMARKS);
   registrar()->SetInitialTypes(ModelTypeSet());
 
   // Add.
@@ -129,20 +128,20 @@ TEST_F(SyncBackendRegistrarTest, ConfigureDataTypes) {
   EXPECT_EQ(ModelTypeSet(), registrar()->GetLastConfiguredTypes());
 }
 
-// Tests that registration and configuration of non-blocking data types is
+// Tests that registration and configuration of sync data types is
 // handled correctly in SyncBackendRegistrar.
-TEST_F(SyncBackendRegistrarTest, ConfigureNonBlockingDataType) {
-  registrar()->RegisterNonBlockingType(AUTOFILL);
-  registrar()->RegisterNonBlockingType(BOOKMARKS);
+TEST_F(SyncBackendRegistrarTest, ConfigureDataType) {
+  registrar()->RegisterDataType(AUTOFILL);
+  registrar()->RegisterDataType(BOOKMARKS);
 
   ExpectRoutingInfo(ModelSafeRoutingInfo());
   // Simulate that initial sync was already done for AUTOFILL.
-  registrar()->AddRestoredNonBlockingType(AUTOFILL);
+  registrar()->AddRestoredDataType(AUTOFILL);
   // It should be added to routing info and set of configured types.
   EXPECT_EQ(ModelTypeSet(AUTOFILL), registrar()->GetLastConfiguredTypes());
   ExpectRoutingInfo({{AUTOFILL, GROUP_NON_BLOCKING}});
 
-  // Configure two non-blocking types. Initial sync wasn't done for BOOKMARKS so
+  // Configure two data types. Initial sync wasn't done for BOOKMARKS so
   // it should be included in types to be downloaded.
   ModelTypeSet types_to_add(AUTOFILL, BOOKMARKS);
   ModelTypeSet newly_added_types =

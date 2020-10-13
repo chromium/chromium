@@ -47,21 +47,20 @@ class SyncBackendRegistrar {
   //      SyncBackendRegistrar.
   ~SyncBackendRegistrar();
 
-  // Adds |type| to set of non-blocking types. These types are assigned to
+  // Adds |type| to the set of registered types. These types are assigned to
   // GROUP_NON_BLOCKING model safe group and will be treated differently in
-  // ModelTypeRegistry. Unlike the legacy Directory types, non-blocking types
-  // always stay assigned to GROUP_NON_BLOCKING group.
-  void RegisterNonBlockingType(ModelType type);
+  // ModelTypeRegistry.
+  void RegisterDataType(ModelType type);
 
   // Informs the SyncBackendRegistrar of the currently enabled set of types.
   // These types will be placed in the passive group.  This function should be
   // called exactly once during startup.
   void SetInitialTypes(ModelTypeSet initial_types);
 
-  // Informs SyncBackendRegistrar about non-blocking type loaded from local
-  // storage. Initial sync was already performed for this type, therefore its
-  // data shouldn't be downloaded as part of configuration.
-  void AddRestoredNonBlockingType(ModelType type);
+  // Informs SyncBackendRegistrar about a type loaded from local storage.
+  // Initial sync was already performed for this type, therefore its data
+  // shouldn't be downloaded as part of configuration.
+  void AddRestoredDataType(ModelType type);
 
   // Returns whether or not we are currently syncing encryption keys.
   // Must be called on the UI thread.
@@ -97,8 +96,7 @@ class SyncBackendRegistrar {
   bool IsCurrentThreadSafeForModel(ModelType model_type) const;
 
   // Returns model safe group that should be assigned to type when it is first
-  // configured (before activation). Returns GROUP_PASSIVE for directory types
-  // and GROUP_NON_BLOCKING for non-blocking types.
+  // configured (before activation).
   ModelSafeGroup GetInitialGroupForType(ModelType type) const;
 
   // Name used for debugging.
@@ -120,8 +118,8 @@ class SyncBackendRegistrar {
   // call to ConfigureDataTypes as well as SetInitialTypes.
   ModelTypeSet last_configured_types_;
 
-  // Set of types with non-blocking implementation.
-  ModelTypeSet non_blocking_types_;
+  // Set of registered types.
+  ModelTypeSet registered_types_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncBackendRegistrar);
 };

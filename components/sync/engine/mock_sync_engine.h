@@ -26,9 +26,9 @@ class MockSyncEngine : public SyncEngine {
 
   // ModelTypeConfigurer:
   MOCK_METHOD1(ConfigureDataTypes, void(ConfigureParams));
-  MOCK_METHOD2(ActivateNonBlockingDataType,
+  MOCK_METHOD2(ActivateDataType,
                void(ModelType, std::unique_ptr<DataTypeActivationResponse>));
-  MOCK_METHOD1(DeactivateNonBlockingDataType, void(ModelType));
+  MOCK_METHOD1(DeactivateDataType, void(ModelType));
   MOCK_METHOD1(ActivateProxyDataType, void(ModelType));
   MOCK_METHOD1(DeactivateProxyDataType, void(ModelType));
 

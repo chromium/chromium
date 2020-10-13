@@ -20,19 +20,20 @@ SyncBackendRegistrar::SyncBackendRegistrar(
   MaybeAddWorker(worker_factory, GROUP_PASSIVE);
 }
 
-void SyncBackendRegistrar::RegisterNonBlockingType(ModelType type) {
+void SyncBackendRegistrar::RegisterDataType(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock lock(lock_);
-  // There may have been a previously successful sync of a type when passive,
-  // which is now NonBlocking. We're not sure what order these two sets of types
-  // are being registered in, so guard against SetInitialTypes(...) having been
-  // already called by undoing everything to these types.
+  // There may have been a previously successful sync of a type which used to
+  // be in GROUP_PASSIVE, but is now in GROUP_NON_BLOCKING. We're not sure what
+  // order these two sets of types are being registered in, so guard against
+  // SetInitialTypes(...) having been already called by undoing everything to
+  // these types.
   if (routing_info_.find(type) != routing_info_.end() &&
       routing_info_[type] != GROUP_NON_BLOCKING) {
     routing_info_.erase(type);
     last_configured_types_.Remove(type);
   }
-  non_blocking_types_.Put(type);
+  registered_types_.Put(type);
 }
 
 void SyncBackendRegistrar::SetInitialTypes(ModelTypeSet initial_types) {
@@ -46,22 +47,23 @@ void SyncBackendRegistrar::SetInitialTypes(ModelTypeSet initial_types) {
   // This will ensure that our calculations in ConfigureDataTypes() will always
   // return correct results.
   for (ModelType type : initial_types) {
-    // If this type is also registered as NonBlocking, assume that it shouldn't
-    // be registered as passive. The NonBlocking path will eventually take care
-    // of adding to routing_info_ later on.
-    if (!non_blocking_types_.Has(type)) {
+    // If this type is also registered as GROUP_NON_BLOCKING, assume that it
+    // shouldn't be registered as GROUP_PASSIVE. The GROUP_NON_BLOCKING path
+    // will eventually take care of adding to routing_info_ later on.
+    if (!registered_types_.Has(type)) {
       routing_info_[type] = GROUP_PASSIVE;
     }
   }
 
-  // Although this can re-set NonBlocking types, this should be idempotent.
+  // Although this can re-set types in GROUP_NON_BLOCKING, this should be
+  // idempotent.
   last_configured_types_ = GetRoutingInfoTypes(routing_info_);
 }
 
-void SyncBackendRegistrar::AddRestoredNonBlockingType(ModelType type) {
+void SyncBackendRegistrar::AddRestoredDataType(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock lock(lock_);
-  DCHECK(non_blocking_types_.Has(type)) << syncer::ModelTypeToString(type);
+  DCHECK(registered_types_.Has(type)) << syncer::ModelTypeToString(type);
   DCHECK(routing_info_.find(type) == routing_info_.end() ||
          routing_info_[type] == GROUP_NON_BLOCKING)
       << syncer::ModelTypeToString(type);
@@ -162,7 +164,7 @@ void SyncBackendRegistrar::MaybeAddWorker(ModelSafeWorkerFactory worker_factory,
 
 ModelSafeGroup SyncBackendRegistrar::GetInitialGroupForType(
     ModelType type) const {
-  return non_blocking_types_.Has(type) ? GROUP_NON_BLOCKING : GROUP_PASSIVE;
+  return registered_types_.Has(type) ? GROUP_NON_BLOCKING : GROUP_PASSIVE;
 }
 
 }  // namespace syncer

@@ -71,20 +71,19 @@ class ModelTypeRegistryTest : public ::testing::Test {
   MockNudgeHandler mock_nudge_handler_;
 };
 
-TEST_F(ModelTypeRegistryTest, NonBlockingTypes) {
+TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
   EXPECT_TRUE(registry()->GetEnabledTypes().Empty());
 
-  registry()->ConnectNonBlockingType(
-      THEMES,
-      MakeDataTypeActivationResponse(MakeInitialModelTypeState(THEMES)));
+  registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
+                                          MakeInitialModelTypeState(THEMES)));
   EXPECT_EQ(ModelTypeSet(THEMES), registry()->GetEnabledTypes());
 
-  registry()->ConnectNonBlockingType(
+  registry()->ConnectDataType(
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
   EXPECT_EQ(ModelTypeSet(THEMES, SESSIONS), registry()->GetEnabledTypes());
 
-  registry()->DisconnectNonBlockingType(THEMES);
+  registry()->DisconnectDataType(THEMES);
   EXPECT_EQ(ModelTypeSet(SESSIONS), registry()->GetEnabledTypes());
 
   // Allow ModelTypeRegistry destruction to delete the
@@ -96,11 +95,11 @@ TEST_F(ModelTypeRegistryTest, GetInitialSyncEndedTypes) {
   // Themes has finished initial sync.
   sync_pb::ModelTypeState model_type_state = MakeInitialModelTypeState(THEMES);
   model_type_state.set_initial_sync_done(true);
-  registry()->ConnectNonBlockingType(
-      THEMES, MakeDataTypeActivationResponse(model_type_state));
+  registry()->ConnectDataType(THEMES,
+                              MakeDataTypeActivationResponse(model_type_state));
 
   // SESSIONS has NOT finished initial sync.
-  registry()->ConnectNonBlockingType(
+  registry()->ConnectDataType(
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
 

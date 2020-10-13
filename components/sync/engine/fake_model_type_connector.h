@@ -17,10 +17,10 @@ class FakeModelTypeConnector : public ModelTypeConnector {
   FakeModelTypeConnector();
   ~FakeModelTypeConnector() override;
 
-  void ConnectNonBlockingType(
+  void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
-  void DisconnectNonBlockingType(ModelType type) override;
+  void DisconnectDataType(ModelType type) override;
   void ConnectProxyType(ModelType type) override;
   void DisconnectProxyType(ModelType type) override;
 };

@@ -19,19 +19,19 @@ ModelTypeConnectorProxy::ModelTypeConnectorProxy(
 
 ModelTypeConnectorProxy::~ModelTypeConnectorProxy() {}
 
-void ModelTypeConnectorProxy::ConnectNonBlockingType(
+void ModelTypeConnectorProxy::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ModelTypeConnector::ConnectNonBlockingType,
-                                model_type_connector_, type,
-                                std::move(activation_response)));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&ModelTypeConnector::ConnectDataType,
+                                        model_type_connector_, type,
+                                        std::move(activation_response)));
 }
 
-void ModelTypeConnectorProxy::DisconnectNonBlockingType(ModelType type) {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ModelTypeConnector::DisconnectNonBlockingType,
-                                model_type_connector_, type));
+void ModelTypeConnectorProxy::DisconnectDataType(ModelType type) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&ModelTypeConnector::DisconnectDataType,
+                                        model_type_connector_, type));
 }
 
 void ModelTypeConnectorProxy::ConnectProxyType(ModelType type) {
