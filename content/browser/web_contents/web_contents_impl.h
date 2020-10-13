@@ -1037,7 +1037,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool SetDeviceEmulationSize(const gfx::Size& new_size);
   void ClearDeviceEmulationSize();
 
-  AudioStreamMonitor* audio_stream_monitor() { return &audio_stream_monitor_; }
+  AudioStreamMonitor* audio_stream_monitor() {
+    return &audio_stream_monitor_;
+  }
 
   ForwardingAudioStreamFactory* GetAudioStreamFactory();
 
@@ -1058,9 +1060,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Called by MediaWebContentsObserver when a buffer underflow occurs. See the
   // WebContentsObserver function stubs for more details.
   void MediaBufferUnderflow(const MediaPlayerId& id);
-
-  // Called by MediaWebContentsObserver when player seek event occurs.
-  void MediaPlayerSeek(const MediaPlayerId& id);
 
   int GetCurrentlyPlayingVideoCount() override;
   base::Optional<gfx::Size> GetFullscreenVideoSize() override;

@@ -275,29 +275,4 @@ void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
             render_frame_host->GetLastCommittedURL(), true);
 }
 
-void LiteVideoObserver::MediaPlayerSeek(const content::MediaPlayerId& id) {
-  content::RenderFrameHost* render_frame_host = id.render_frame_host;
-
-  if (!render_frame_host || !render_frame_host->GetProcess())
-    return;
-
-  // Only consider a seek event related to LiteVideos if they were allowed on
-  // current navigation.
-  if (!nav_metrics_ ||
-      nav_metrics_->decision() != lite_video::LiteVideoDecision::kAllowed) {
-    return;
-  }
-
-  mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
-      loading_hints_agent;
-
-  if (!render_frame_host->GetRemoteAssociatedInterfaces())
-    return;
-
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &loading_hints_agent);
-
-  loading_hints_agent->StopThrottlingMediaRequests();
-}
-
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LiteVideoObserver)
