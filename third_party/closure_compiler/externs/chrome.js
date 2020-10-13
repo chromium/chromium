@@ -486,6 +486,10 @@ Tab.prototype.mutedInfo;
 Tab.prototype.url;
 
 
+/** @type {string|undefined} */
+Tab.prototype.pendingUrl;
+
+
 // TODO: Make this field optional once dependent projects have been updated.
 /** @type {string} */
 Tab.prototype.title;
