@@ -13,13 +13,13 @@ namespace syncer {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 enum StopSource {
-  PROFILE_DESTRUCTION,   // The user destroyed the profile.
-  SIGN_OUT,              // The user signed out of Chrome.
-  BIRTHDAY_ERROR,        // A dashboard stop-and-clear on the server.
-  CHROME_SYNC_SETTINGS,  // The on/off switch in settings for mobile Chrome.
-  ANDROID_CHROME_SYNC,   // Android's sync setting for Chrome.
-  ANDROID_MASTER_SYNC,   // Android's master sync setting.
-  STOP_SOURCE_LIMIT,
+  // Deprecated: PROFILE_DESTRUCTION = 0,
+  SIGN_OUT = 1,              // The user signed out of Chrome.
+  BIRTHDAY_ERROR = 2,        // A dashboard stop-and-clear on the server.
+  CHROME_SYNC_SETTINGS = 3,  // The on/off switch in settings for mobile Chrome.
+  ANDROID_CHROME_SYNC = 4,   // Android's sync setting for Chrome.
+  ANDROID_MASTER_SYNC = 5,   // Android's master sync setting.
+  STOP_SOURCE_LIMIT = 6,
 };
 
 }  // namespace syncer
