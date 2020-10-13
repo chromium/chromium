@@ -36,6 +36,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -170,7 +171,10 @@ const std::array<const char*, 2>& GetBackupPhotoUrls() {
 
 class AmbientURLLoaderImpl : public AmbientURLLoader {
  public:
-  AmbientURLLoaderImpl() = default;
+  AmbientURLLoaderImpl()
+      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
   ~AmbientURLLoaderImpl() override = default;
 
   // AmbientURLLoader:
@@ -195,24 +199,21 @@ class AmbientURLLoaderImpl : public AmbientURLLoader {
     auto simple_loader = CreateSimpleURLLoader(url);
     auto loader_factory = AmbientClient::Get()->GetURLLoaderFactory();
     auto* loader_ptr = simple_loader.get();
+
+    // Create a temporary file path as target for download to guard against race
+    // conditions in reading.
+    base::FilePath temp_path = file_path.DirName().Append(
+        base::UnguessableToken::Create().ToString() + kPhotoFileExt);
+
     // Download to temp file first to guarantee entire image is written without
     // errors before attempting to read it.
-
-    // Create a temp file.
-    base::FilePath temp_file;
-    if (!base::CreateTemporaryFileInDir(file_path.DirName(), &temp_file)) {
-      LOG(ERROR) << "Cannot create a temporary file";
-      std::move(callback).Run(base::FilePath());
-      return;
-    }
-
     loader_ptr->DownloadToFile(
         loader_factory.get(),
         base::BindOnce(&AmbientURLLoaderImpl::OnUrlDownloadedToFile,
                        weak_factory_.GetWeakPtr(), std::move(callback),
                        std::move(simple_loader), std::move(loader_factory),
                        file_path),
-        temp_file);
+        temp_path);
   }
 
  private:
@@ -254,15 +255,37 @@ class AmbientURLLoaderImpl : public AmbientURLLoader {
       LOG(ERROR) << "Downloading to file failed with error code: "
                  << GetResponseCode(simple_loader.get())
                  << " with network error" << simple_loader->NetError();
+
+      if (!temp_path.empty()) {
+        // Clean up temporary file.
+        task_runner_->PostTask(FROM_HERE, base::BindOnce(
+                                              [](const base::FilePath& path) {
+                                                base::DeleteFile(path);
+                                              },
+                                              temp_path));
+      }
       std::move(callback).Run(base::FilePath());
       return;
     }
-    if (!base::ReplaceFile(temp_path, desired_path, /*error=*/nullptr)) {
-      LOG(ERROR) << "Unable to move downloaded file to ambient directory";
-      std::move(callback).Run(base::FilePath());
-      return;
-    }
-    std::move(callback).Run(std::move(desired_path));
+
+    // Swap the temporary file to the desired path, and then run the callback.
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::FilePath& to_path, const base::FilePath& from_path) {
+              if (!base::ReplaceFile(from_path, to_path,
+                                     /*error=*/nullptr)) {
+                LOG(ERROR)
+                    << "Unable to move downloaded file to ambient directory";
+                // Clean up the files.
+                base::DeleteFile(from_path);
+                base::DeleteFile(to_path);
+                return base::FilePath();
+              }
+              return to_path;
+            },
+            desired_path, temp_path),
+        std::move(callback));
   }
 
   int GetResponseCode(network::SimpleURLLoader* simple_loader) {
@@ -274,6 +297,7 @@ class AmbientURLLoaderImpl : public AmbientURLLoader {
     }
   }
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AmbientURLLoaderImpl> weak_factory_{this};
 };
 
