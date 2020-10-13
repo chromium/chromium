@@ -179,9 +179,6 @@
     "includes": [1780],
     "structures": [1800],
   },
-  "chrome/browser/resources/settings/settings_resources_vulcanized.grd": {
-    "includes": [1820],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/settings_resources.grd": {
     "META": {"sizes": {"includes": [500],}},
     "includes": [1830],

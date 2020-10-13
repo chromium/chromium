@@ -18,7 +18,9 @@ preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
-  optimize_webui("build_polymer3") {
+  build_manifest = "build_manifest.json"
+
+  optimize_webui("build") {
     host = "settings"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_module_in_files = [
@@ -30,6 +32,7 @@ if (optimize_webui) {
       "lazy_load.rollup.js",
       "shared.rollup.js",
     ]
+    out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
       ":preprocess",
@@ -42,8 +45,32 @@ if (optimize_webui) {
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
     ]
   }
-} else {
-  generate_grd("build_grd") {
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "settings"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "images/cookies_banner_dark.svg",
+    "images/cookies_banner.svg",
+    "images/password_check_neutral_dark.svg",
+    "images/password_check_neutral.svg",
+    "images/password_check_positive_dark.svg",
+    "images/password_check_positive.svg",
+    "images/permissions_banner_dark.svg",
+    "images/permissions_banner.svg",
+    "images/safe_browsing_banner_dark.svg",
+    "images/safe_browsing_banner.svg",
+    "images/sync_banner_dark.svg",
+    "images/sync_banner.svg",
+    "settings.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
     deps = [
       ":preprocess",
       ":preprocess_generated",
@@ -52,8 +79,6 @@ if (optimize_webui) {
       "$target_gen_dir/$preprocess_manifest",
       "$target_gen_dir/$preprocess_gen_manifest",
     ]
-    grd_prefix = "settings"
-    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   }
 }
 
@@ -99,22 +124,6 @@ preprocess_grit("preprocess") {
     "site_settings/site_settings_behavior.js",
     "site_settings/site_settings_prefs_browser_proxy.js",
     "site_settings/website_usage_browser_proxy.js",
-
-    # TODO(dpapad): Pass these directly to the generate_grd() target above, once
-    # support for that is added, as part of crbug.com/1132403.
-    "images/cookies_banner.svg",
-    "images/cookies_banner_dark.svg",
-    "images/password_check_neutral.svg",
-    "images/password_check_neutral_dark.svg",
-    "images/password_check_positive.svg",
-    "images/password_check_positive_dark.svg",
-    "images/permissions_banner.svg",
-    "images/permissions_banner_dark.svg",
-    "images/safe_browsing_banner.svg",
-    "images/safe_browsing_banner_dark.svg",
-    "images/sync_banner.svg",
-    "images/sync_banner_dark.svg",
-    "settings_v3.html",
   ]
 
   if (is_chromeos) {

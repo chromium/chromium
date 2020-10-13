@@ -329,47 +329,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   // Add the metrics handler to write uma stats.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(html_source, "settings.js",
-                                     IDR_SETTINGS_SETTINGS_ROLLUP_JS,
-                                     IDR_SETTINGS_SETTINGS_V3_HTML);
-  html_source->AddResourcePath("shared.rollup.js",
-                               IDR_SETTINGS_SHARED_ROLLUP_JS);
-  html_source->AddResourcePath("lazy_load.js",
-                               IDR_SETTINGS_LAZY_LOAD_ROLLUP_JS);
-
-  // Register SVG images that are purposefully not inlined in the HTML bundle
-  // above.
-  static constexpr webui::ResourcePath kSvgResources[] = {
-      {"images/cookies_banner.svg", IDR_SETTINGS_IMAGES_COOKIES_BANNER_SVG},
-      {"images/cookies_banner_dark.svg",
-       IDR_SETTINGS_IMAGES_COOKIES_BANNER_DARK_SVG},
-      {"images/permissions_banner.svg",
-       IDR_SETTINGS_IMAGES_PERMISSIONS_BANNER_SVG},
-      {"images/permissions_banner_dark.svg",
-       IDR_SETTINGS_IMAGES_PERMISSIONS_BANNER_DARK_SVG},
-      {"images/safe_browsing_banner.svg",
-       IDR_SETTINGS_IMAGES_SAFE_BROWSING_BANNER_SVG},
-      {"images/safe_browsing_banner_dark.svg",
-       IDR_SETTINGS_IMAGES_SAFE_BROWSING_BANNER_DARK_SVG},
-      {"images/sync_banner.svg", IDR_SETTINGS_IMAGES_SYNC_BANNER_SVG},
-      {"images/sync_banner_dark.svg", IDR_SETTINGS_IMAGES_SYNC_BANNER_DARK_SVG},
-      {"images/password_check_neutral.svg",
-       IDR_SETTINGS_IMAGES_PASSWORD_CHECK_NEUTRAL_SVG},
-      {"images/password_check_neutral_dark.svg",
-       IDR_SETTINGS_IMAGES_PASSWORD_CHECK_NEUTRAL_DARK_SVG},
-      {"images/password_check_positive.svg",
-       IDR_SETTINGS_IMAGES_PASSWORD_CHECK_POSITIVE_SVG},
-      {"images/password_check_positive_dark.svg",
-       IDR_SETTINGS_IMAGES_PASSWORD_CHECK_POSITIVE_DARK_SVG},
-  };
-  webui::AddResourcePathsBulk(html_source, kSvgResources);
-
-#else
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
-      "", IDR_SETTINGS_SETTINGS_V3_HTML);
-#endif
+      "", IDR_SETTINGS_SETTINGS_HTML);
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
 
