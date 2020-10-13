@@ -1094,7 +1094,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2021-02-07">
+    enum="PowerMLSmartDimModelResult" expires_after="2021-04-11">
   <owner>jiameng@chromium.org</owner>
   <summary>
     This is the status code returned by the model when calculating a user

@@ -70,7 +70,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped" enum="UkmDataDroppedReason"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -104,7 +104,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Entries.SerializedCount2" units="entries"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>Number of serialized UKM entries when storing a UKM log.</summary>
@@ -134,7 +134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2021-02-07">
+<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -207,7 +207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Sources.Dropped" enum="UkmDataDroppedReason"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Sources.KeptSourcesCount" units="sources"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Sources.UnsentSourcesCount" units="sources"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -264,7 +264,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.UnsentLogs.NumDropped" units="units"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
