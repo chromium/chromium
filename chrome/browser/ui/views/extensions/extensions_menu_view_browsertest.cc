@@ -37,6 +37,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -88,7 +89,7 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
       // Trigger uninstall dialog.
       views::NamedWidgetShownWaiter waiter(
           views::test::AnyWidgetTestPasskey{},
-          "ExtensionUninstallDialogDelegateView");
+          views::BubbleDialogModelHost::kViewClassName);
       extensions::ExtensionContextMenuModel menu_model(
           extensions()[0].get(), browser(),
           extensions::ExtensionContextMenuModel::PINNED, nullptr,

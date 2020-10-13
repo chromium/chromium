@@ -134,11 +134,19 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   SetButtons(button_mask);
 
   SetTitle(model_->title(GetPassKey()));
+
   if (model_->override_show_close_button(GetPassKey())) {
     SetShowCloseButton(*model_->override_show_close_button(GetPassKey()));
   } else {
     SetShowCloseButton(!IsModalDialog());
   }
+
+  if (!model_->icon(GetPassKey()).IsEmpty()) {
+    // TODO(pbos): Consider adding ImageModel support to SetIcon().
+    SetIcon(model_->icon(GetPassKey()).GetImage().AsImageSkia());
+    SetShowIcon(true);
+  }
+
   if (model_->is_alert_dialog(GetPassKey()))
     SetAccessibleRole(ax::mojom::Role::kAlertDialog);
 
@@ -290,8 +298,20 @@ void BubbleDialogModelHost::AddInitialFields() {
     first_row = false;
   }
 
-  set_margins(LayoutProvider::Get()->GetDialogInsetsForContentType(
-      first_field_content_type, last_field_content_type));
+  gfx::Insets margins = LayoutProvider::Get()->GetDialogInsetsForContentType(
+      first_field_content_type, last_field_content_type);
+  if (!model_->icon(GetPassKey()).IsEmpty()) {
+    // If we have a window icon, inset margins additionally to align with
+    // title label.
+    // TODO(pbos): Reconsider this. Aligning with title gives a massive gap on
+    // the left side of the dialog. This style is from
+    // ExtensionUninstallDialogView as part of refactoring it to use
+    // DialogModel.
+    margins.set_left(
+        margins.left() + model_->icon(GetPassKey()).Size().width() +
+        LayoutProvider::Get()->GetInsetsMetric(INSETS_DIALOG_TITLE).left());
+  }
+  set_margins(margins);
 }
 
 void BubbleDialogModelHost::OnWindowClosing() {
@@ -479,8 +499,7 @@ std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
   }
 
   auto text_label = std::make_unique<Label>(
-      l10n_util::GetStringUTF16(dialog_label.message_id(GetPassKey())),
-      style::CONTEXT_DIALOG_BODY_TEXT,
+      dialog_label.GetString(GetPassKey()), style::CONTEXT_DIALOG_BODY_TEXT,
       dialog_label.is_secondary(GetPassKey()) ? style::STYLE_SECONDARY
                                               : style::STYLE_PRIMARY);
   text_label->SetMultiLine(true);

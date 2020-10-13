@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ui/base/models/dialog_model_field.h"
+
 #include "base/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace ui {
@@ -18,9 +20,23 @@ DialogModelLabel::Link::Link(int message_id, base::RepeatingClosure closure)
 DialogModelLabel::Link::Link(const Link&) = default;
 DialogModelLabel::Link::~Link() = default;
 
-DialogModelLabel::DialogModelLabel(int message_id) : message_id_(message_id) {}
+DialogModelLabel::DialogModelLabel(int message_id)
+    : message_id_(message_id),
+      string_(l10n_util::GetStringUTF16(message_id_)) {}
 DialogModelLabel::DialogModelLabel(int message_id, std::vector<Link> links)
-    : message_id_(message_id), links_(std::move(links)) {}
+    : message_id_(message_id), links_(std::move(links)) {
+  // Note that this constructor does not set |string_| which is invalid for
+  // labels with links.
+}
+
+DialogModelLabel::DialogModelLabel(base::string16 fixed_string)
+    : message_id_(-1), string_(std::move(fixed_string)) {}
+
+const base::string16& DialogModelLabel::GetString(
+    util::PassKey<DialogModelHost>) const {
+  DCHECK(links_.empty());
+  return string_;
+}
 
 DialogModelLabel::DialogModelLabel(const DialogModelLabel&) = default;
 

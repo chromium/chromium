@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   };
 
   explicit DialogModelLabel(int message_id);
+  explicit DialogModelLabel(base::string16 fixed_string);
   DialogModelLabel(const DialogModelLabel&);
   DialogModelLabel& operator=(const DialogModelLabel&) = delete;
   ~DialogModelLabel();
@@ -54,8 +55,19 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   static DialogModelLabel CreateWithLinks(int message_id,
                                           std::vector<Link> links);
 
+  // Gets the string. Not for use with links, in which case the caller must use
+  // links() and message_id() to construct the final label. This is required to
+  // style the final label appropriately and support link callbacks. The caller
+  // is responsible for checking links().empty() before calling this.
+  const base::string16& GetString(util::PassKey<DialogModelHost>) const;
+
   DialogModelLabel& set_is_secondary() {
     is_secondary_ = true;
+    return *this;
+  }
+
+  DialogModelLabel& set_allow_character_break() {
+    allow_character_break_ = true;
     return *this;
   }
 
@@ -66,13 +78,18 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
   bool is_secondary(util::PassKey<DialogModelHost>) const {
     return is_secondary_;
   }
+  bool allow_character_break(util::PassKey<DialogModelHost>) const {
+    return allow_character_break_;
+  }
 
  private:
   explicit DialogModelLabel(int message_id, std::vector<Link> links);
 
   const int message_id_;
+  const base::string16 string_;
   const std::vector<Link> links_;
   bool is_secondary_ = false;
+  bool allow_character_break_ = false;
 };
 
 // These "field" classes represent entries in a DialogModel. They are owned

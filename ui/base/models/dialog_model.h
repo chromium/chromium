@@ -14,6 +14,7 @@
 #include "base/util/type_safety/pass_key.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ui {
@@ -123,6 +124,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     Builder& SetTitle(base::string16 title) {
       model_->title_ = std::move(title);
+      return *this;
+    }
+
+    Builder& SetIcon(ImageModel icon) {
+      model_->icon_ = std::move(icon);
       return *this;
     }
 
@@ -281,6 +287,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return title_;
   }
 
+  const ImageModel& icon(util::PassKey<DialogModelHost>) const { return icon_; }
+
   base::Optional<int> initially_focused_field(
       util::PassKey<DialogModelHost>) const {
     return initially_focused_field_;
@@ -327,8 +335,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   base::Optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;
   base::string16 title_;
+  ImageModel icon_;
 
-  static constexpr int kExtraButtonId = DIALOG_BUTTON_LAST + 1;
   std::vector<std::unique_ptr<DialogModelField>> fields_;
   base::Optional<int> initially_focused_field_;
   bool is_alert_dialog_ = false;
