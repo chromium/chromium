@@ -6,6 +6,7 @@ package org.chromium.weblayer.shell;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Trace;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.weblayer.Browser;
+import org.chromium.weblayer.Navigation;
+import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
@@ -36,6 +39,12 @@ import java.util.List;
  */
 public class TelemetryActivity extends FragmentActivity {
     private static final String KEY_MAIN_VIEW_ID = "mainViewId";
+
+    // The trace tag names are the same as WebView's telemetry activity so the perf metric logic can
+    // be shared between them.
+    private static final String START_UP_TRACE_TAG = "WebViewStartupInterval";
+    private static final String LOAD_URL_TRACE_TAG = "WebViewBlankUrlLoadInterval";
+    private static final String DUMMY_TRACE_TAG = "WebViewDummyInterval";
 
     private Profile mProfile;
     private Fragment mFragment;
@@ -77,6 +86,14 @@ public class TelemetryActivity extends FragmentActivity {
         mTopContentsContainer.addView(
                 mUrlView, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0));
 
+        Trace.beginSection(START_UP_TRACE_TAG);
+
+        // TODO(aluo): Use async tracing to avoid having to do this
+        // dummyTraceTag is needed here to prevent code in Android intended to
+        // end activityStart from ending loadUrlTraceTag prematurely,
+        // see crbug/919221
+        Trace.beginSection(DUMMY_TRACE_TAG);
+
         // If activity is re-created during process restart, FragmentManager attaches
         // BrowserFragment immediately, resulting in synchronous init. By the time this line
         // executes, the synchronous init has already happened, so WebLayer#createAsync will
@@ -102,6 +119,11 @@ public class TelemetryActivity extends FragmentActivity {
     }
 
     private void onWebLayerReady(WebLayer webLayer) {
+        // Ends START_UP_TRACE_TAG
+        Trace.endSection();
+        // Ends activityStart
+        Trace.endSection();
+
         if (mBrowser != null || isFinishing() || isDestroyed()) return;
 
         webLayer.setRemoteDebuggingEnabled(true);
@@ -113,6 +135,14 @@ public class TelemetryActivity extends FragmentActivity {
         mBrowser.setTopView(mTopContentsContainer);
         setTab(mBrowser.getActiveTab());
 
+        Trace.beginSection(LOAD_URL_TRACE_TAG);
+        mTab.getNavigationController().registerNavigationCallback(new NavigationCallback() {
+            @Override
+            public void onNavigationCompleted(Navigation navigation) {
+                // Ends LOAD_URL_TRACE_TAG
+                Trace.endSection();
+            }
+        });
         if (getIntent() != null) {
             mTab.getNavigationController().navigate(Uri.parse(getIntent().getDataString()));
         }

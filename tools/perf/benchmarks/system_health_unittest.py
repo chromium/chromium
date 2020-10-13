@@ -28,12 +28,17 @@ class TestSystemHealthBenchmarks(unittest.TestCase):
 
   def testNamePrefix(self):
     for b in _GetAllSystemHealthBenchmarks():
+      # TODO(crbug.com/1137468): Right now this has the UNSCHEDULED_ prefix.
+      if b is system_health_benchmark.WebLayerStartupSystemHealthBenchmark:
+        continue
       self.assertTrue(
           b.Name().startswith('system_health.'),
           '%r must have name starting with "system_health." prefix' % b)
 
   def testSystemHealthStorySetIsUsed(self):
     for b in _GetAllSystemHealthBenchmarks():
+      if b is system_health_benchmark.WebLayerStartupSystemHealthBenchmark:
+        continue
       if b is system_health_benchmark.WebviewStartupSystemHealthBenchmark:
         continue
       self.assertIsInstance(
