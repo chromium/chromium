@@ -50,6 +50,15 @@ class AmbientModeHandlerTest : public testing::Test {
     image_downloader_ = std::make_unique<ash::TestImageDownloader>();
   }
 
+  content::TestWebUI* web_ui() { return web_ui_.get(); }
+
+  void SetTopicSource(ash::AmbientModeTopicSource topic_source) {
+    if (!handler_->settings_)
+      handler_->settings_ = ash::AmbientSettings();
+
+    handler_->settings_->topic_source = topic_source;
+  }
+
   void RequestSettings() {
     base::ListValue args;
     handler_->HandleRequestSettings(&args);
@@ -66,15 +75,21 @@ class AmbientModeHandlerTest : public testing::Test {
   }
 
   void UpdateSettings() {
-    handler_->settings_ = ash::AmbientSettings();
+    if (!handler_->settings_)
+      handler_->settings_ = ash::AmbientSettings();
+
     handler_->UpdateSettings();
+  }
+
+  bool HasPendingFetchRequestAtHandler() const {
+    return handler_->has_pending_fetch_request_;
   }
 
   bool IsUpdateSettingsPendingAtHandler() const {
     return handler_->is_updating_backend_;
   }
 
-  bool HasPendingUpdatesForTesting() const {
+  bool HasPendingUpdatesAtHandler() const {
     return handler_->has_pending_updates_for_backend_;
   }
 
@@ -108,7 +123,8 @@ class AmbientModeHandlerTest : public testing::Test {
 
   std::string BoolToString(bool x) { return x ? "true" : "false"; }
 
-  void VerifySettingsSent() {
+  void VerifySettingsSent(ash::AmbientModeTopicSource topic_source,
+                          const std::string& temperature_unit) {
     EXPECT_EQ(2U, web_ui_->call_data().size());
 
     // The call is structured such that the function name is the "web callback"
@@ -120,20 +136,17 @@ class AmbientModeHandlerTest : public testing::Test {
     EXPECT_EQ(kWebCallbackFunctionName, topic_source_call_data.function_name());
     EXPECT_EQ("topic-source-changed",
               topic_source_call_data.arg1()->GetString());
-    // In FakeAmbientBackendControllerImpl, the |topic_source| is
-    // kGooglePhotos.
     const base::DictionaryValue* dictionary = nullptr;
     topic_source_call_data.arg2()->GetAsDictionary(&dictionary);
     const base::Value* topic_source_value = dictionary->FindKey("topicSource");
-    EXPECT_EQ(0, topic_source_value->GetInt());
+    EXPECT_EQ(static_cast<int>(topic_source), topic_source_value->GetInt());
 
     // Temperature Unit
     EXPECT_EQ(kWebCallbackFunctionName,
               temperature_unit_call_data.function_name());
     EXPECT_EQ("temperature-unit-changed",
               temperature_unit_call_data.arg1()->GetString());
-    // In FakeAmbientBackendControllerImpl, the |temperature_unit| is kCelsius.
-    EXPECT_EQ("celsius", temperature_unit_call_data.arg2()->GetString());
+    EXPECT_EQ(temperature_unit, temperature_unit_call_data.arg2()->GetString());
   }
 
   void VerifyAlbumsSent(ash::AmbientModeTopicSource topic_source) {
@@ -205,7 +218,10 @@ class AmbientModeHandlerTest : public testing::Test {
 TEST_F(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
   RequestSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
-  VerifySettingsSent();
+
+  // In FakeAmbientBackendControllerImpl, the |topic_source| is kGooglePhotos,
+  // the |temperature_unit| is kCelsius.
+  VerifySettingsSent(ash::AmbientModeTopicSource::kGooglePhotos, "celsius");
 }
 
 TEST_F(AmbientModeHandlerTest, TestSendAlbumsForGooglePhotos) {
@@ -302,72 +318,72 @@ TEST_F(AmbientModeHandlerTest, TestUpdateSettings) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/true);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
 TEST_F(AmbientModeHandlerTest, TestUpdateSettingsTwice) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_TRUE(HasPendingUpdatesForTesting());
+  EXPECT_TRUE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/true);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_TRUE(HasPendingUpdatesForTesting());
+  EXPECT_TRUE(HasPendingUpdatesAtHandler());
 
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
 TEST_F(AmbientModeHandlerTest, TestUpdateSettingsFailedWillRetry) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
 TEST_F(AmbientModeHandlerTest, TestUpdateSettingsSecondRetryWillBackoff) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   base::TimeDelta delay1 = GetUpdateSettingsDelay();
   FastForwardBy(delay1 * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   base::TimeDelta delay2 = GetUpdateSettingsDelay();
   EXPECT_GT(delay2, delay1);
@@ -375,7 +391,7 @@ TEST_F(AmbientModeHandlerTest, TestUpdateSettingsSecondRetryWillBackoff) {
   FastForwardBy(delay2 * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 }
 
 TEST_F(AmbientModeHandlerTest,
@@ -383,51 +399,305 @@ TEST_F(AmbientModeHandlerTest,
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   // 1st retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   // 2nd retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   // 3rd retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
 
   // Will not retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
-  EXPECT_FALSE(HasPendingUpdatesForTesting());
+  EXPECT_FALSE(HasPendingUpdatesAtHandler());
+}
+
+TEST_F(AmbientModeHandlerTest, TestNoFetchRequestWhenUpdatingSettings) {
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+  UpdateSettings();
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  RequestSettings();
+  EXPECT_TRUE(HasPendingFetchRequestAtHandler());
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(AmbientModeHandlerTest, TestSendSettingsWhenUpdatedSettings) {
+  // Simulate initial page request.
+  RequestSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+  SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+  UpdateSettings();
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  RequestSettings();
+  EXPECT_TRUE(HasPendingFetchRequestAtHandler());
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  web_ui()->ClearTrackedCalls();
+  ReplyUpdateSettings(/*success=*/true);
+
+  // In FakeAmbientBackendControllerImpl, the |topic_source| is kGooglePhotos,
+  // the |temperature_unit| is kCelsius.
+  VerifySettingsSent(ash::AmbientModeTopicSource::kArtGallery, "celsius");
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+}
+
+TEST_F(AmbientModeHandlerTest,
+       TestSendAlbumsOfGooglePhotosWhenUpdatedSettings) {
+  // Simulate initial page request.
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kGooglePhotos;
+  RequestAlbums(topic_source);
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  web_ui()->ClearTrackedCalls();
+
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+  UpdateSettings();
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  RequestAlbums(topic_source);
+  EXPECT_TRUE(HasPendingFetchRequestAtHandler());
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  ReplyUpdateSettings(/*success=*/true);
+  VerifyAlbumsSent(topic_source);
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+}
+
+TEST_F(AmbientModeHandlerTest, TestSendAlbumsOfArtGalleryWhenUpdatedSettings) {
+  // Simulate initial page request.
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kGooglePhotos;
+  RequestAlbums(topic_source);
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  web_ui()->ClearTrackedCalls();
+
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+  UpdateSettings();
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  RequestAlbums(topic_source);
+  EXPECT_TRUE(HasPendingFetchRequestAtHandler());
+  EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+
+  ReplyUpdateSettings(/*success=*/true);
+  VerifyAlbumsSent(topic_source);
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+}
+
+TEST_F(AmbientModeHandlerTest, TestNotUpdateUIWhenFetechedSettings) {
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+  RequestSettings();
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+}
+
+TEST_F(AmbientModeHandlerTest, TestNotSendSettingsWhenFetechedSettings) {
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+  RequestSettings();
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+}
+
+TEST_F(AmbientModeHandlerTest, TestNotSendAlbumsWhenFetechedSettings) {
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kGooglePhotos;
+  RequestAlbums(topic_source);
+  EXPECT_TRUE(IsFetchSettingsPendingAtBackend());
+  EXPECT_FALSE(HasPendingFetchRequestAtHandler());
+
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+}
+
+TEST_F(AmbientModeHandlerTest, TestSendSettingsWhenUpdateSettingsFailed) {
+  // Simulate initial page request.
+  RequestSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+  UpdateSettings();
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 1st retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 2nd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  web_ui()->ClearTrackedCalls();
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+
+  // 3rd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  // In FakeAmbientBackendControllerImpl, the |topic_source| is kGooglePhotos,
+  // the |temperature_unit| is kCelsius.
+  VerifySettingsSent(ash::AmbientModeTopicSource::kGooglePhotos, "celsius");
+}
+
+TEST_F(AmbientModeHandlerTest,
+       TestSendAlbumsOfGooglePhotosWhenUpdateSettingsFailed) {
+  // Simulate initial page request.
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kGooglePhotos;
+  SetTopicSource(topic_source);
+  RequestAlbums(topic_source);
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  UpdateSettings();
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 1st retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 2nd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  web_ui()->ClearTrackedCalls();
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+
+  // 3rd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  VerifyAlbumsSent(topic_source);
+}
+
+TEST_F(AmbientModeHandlerTest,
+       TestSendAlbumsOfArtGalleryWhenUpdateSettingsFailed) {
+  // Simulate initial page request.
+  ash::AmbientModeTopicSource topic_source =
+      ash::AmbientModeTopicSource::kArtGallery;
+  SetTopicSource(topic_source);
+  RequestAlbums(topic_source);
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  UpdateSettings();
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 1st retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 2nd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  web_ui()->ClearTrackedCalls();
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+
+  // 3rd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  VerifyAlbumsSent(topic_source);
+}
+
+// Test that there are two updates, the first update succeeded and the second
+// update failed. When the second update failed, it will update UI to restore
+// the latest successfully updated settings.
+TEST_F(AmbientModeHandlerTest, TestSendSettingsWithCachedSettings) {
+  ash::AmbientModeTopicSource topic_source_google_photos =
+      ash::AmbientModeTopicSource::kGooglePhotos;
+  ash::AmbientModeTopicSource topic_source_art_gallery =
+      ash::AmbientModeTopicSource::kArtGallery;
+
+  // Simulate initial page request.
+  RequestSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  // The first update.
+  SetTopicSource(topic_source_art_gallery);
+  UpdateSettings();
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+
+  // There is the second change and pending update before retry.
+  SetTopicSource(topic_source_google_photos);
+  UpdateSettings();
+  EXPECT_TRUE(HasPendingUpdatesAtHandler());
+
+  // First update returns true and will start the second update.
+  ReplyUpdateSettings(/*success=*/true);
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 1st retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  // 2nd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+
+  web_ui()->ClearTrackedCalls();
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+
+  // 3rd retry.
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  VerifySettingsSent(topic_source_art_gallery, "celsius");
 }
 
 }  // namespace settings

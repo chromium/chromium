@@ -79,7 +79,15 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   void UpdateSettings();
 
   // Called when the settings is updated.
+  // |success| is true when update successfully.
   void OnUpdateSettings(bool success);
+
+  // Return true if a new update needed.
+  // |success| is true when update successfully.
+  bool MaybeScheduleNewUpdateSettings(bool success);
+
+  // |success| is true when update successfully.
+  void UpdateUIWithCachedSettings(bool success);
 
   // Will be called from ambientMode/photos subpage and ambientMode subpage.
   // |topic_source| is used to request the albums in that source and identify
@@ -113,12 +121,29 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
 
   ash::ArtSetting* FindArtAlbumById(const std::string& album_id);
 
+  // Local settings which may contain changes from WebUI but have not sent to
+  // server.
   base::Optional<ash::AmbientSettings> settings_;
+
+  // The cached settings from the server. Should be the same as the server side.
+  // This value will be updated when RequestSettingsAndAlbums() and
+  // UpdateSettings() return successfully.
+  // If UpdateSettings() fails, will restore to this value.
+  base::Optional<ash::AmbientSettings> cached_settings_;
+
+  // A temporary settings sent to the server in UpdateSettings().
+  base::Optional<ash::AmbientSettings> settings_sent_for_update_;
 
   ash::PersonalAlbums personal_albums_;
 
   // Backoff retries for RequestSettingsAndAlbums().
   net::BackoffEntry fetch_settings_retry_backoff_;
+
+  // Whether to update UI when UpdateSettings() returns successfully.
+  bool has_pending_fetch_request_ = false;
+
+  // The topic source in the latest RequestSettingsAndAlbums().
+  base::Optional<ash::AmbientModeTopicSource> last_fetch_request_topic_source_;
 
   // Whether the Settings updating is ongoing.
   bool is_updating_backend_ = false;
