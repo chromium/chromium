@@ -359,8 +359,9 @@ FilterAndBatchCredentialDescriptors(
   DCHECK_EQ(device.supported_protocol(), ProtocolVersion::kCtap2);
   DCHECK(device.device_info().has_value());
 
-  if (device.DeviceTransport() ==
-      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy) {
+  const auto transport = device.DeviceTransport();
+  if (transport == FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy ||
+      transport == FidoTransportProtocol::kAndroidAccessory) {
     // caBLE devices might not support silent probing, so just put everything
     // into one batch that can will be sent in a non-probing request.
     return {in};
