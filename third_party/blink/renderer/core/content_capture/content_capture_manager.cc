@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/renderer/core/content_capture/sent_nodes.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
@@ -29,8 +28,7 @@ void ContentCaptureManager::UserActivation::Trace(Visitor* visitor) const {
 ContentCaptureManager::ContentCaptureManager(LocalFrame& local_frame_root)
     : local_frame_root_(&local_frame_root) {
   DCHECK(local_frame_root.IsLocalRoot());
-  sent_nodes_ = MakeGarbageCollected<SentNodes>();
-  task_session_ = MakeGarbageCollected<TaskSession>(*sent_nodes_);
+  task_session_ = MakeGarbageCollected<TaskSession>();
 }
 
 ContentCaptureManager::~ContentCaptureManager() = default;
@@ -114,7 +112,6 @@ void ContentCaptureManager::Trace(Visitor* visitor) const {
   visitor->Trace(content_capture_idle_task_);
   visitor->Trace(local_frame_root_);
   visitor->Trace(task_session_);
-  visitor->Trace(sent_nodes_);
   visitor->Trace(latest_user_activation_);
 }
 

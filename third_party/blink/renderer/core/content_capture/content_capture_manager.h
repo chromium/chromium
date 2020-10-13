@@ -16,7 +16,6 @@ namespace blink {
 
 class LocalFrame;
 class Node;
-class SentNodes;
 
 // This class is used to create the NodeHolder, and start the ContentCaptureTask
 // when necessary. The ContentCaptureManager is owned by main frame.
@@ -82,9 +81,6 @@ class CORE_EXPORT ContentCaptureManager
   bool first_node_holder_created_ = false;
 
   Member<TaskSession> task_session_;
-
-  // A set of weak reference of the node that has been sent.
-  Member<SentNodes> sent_nodes_;
 
   // The latest user activation in any frame of the |local_frame_root_|.
   Member<UserActivation> latest_user_activation_;
