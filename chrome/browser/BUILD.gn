@@ -2115,6 +2115,7 @@ static_library("browser") {
     "//components/services/heap_profiling",
     "//components/services/language_detection/public/cpp",
     "//components/services/language_detection/public/mojom",
+    "//components/services/paint_preview_compositor/public/mojom:mojom",
     "//components/services/patch/content",
     "//components/services/quarantine",
     "//components/services/quarantine/public/mojom",

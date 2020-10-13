@@ -14,14 +14,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/renderer_uptime_tracker.h"
+#include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using GlobalMemoryDump = memory_instrumentation::GlobalMemoryDump;
 using GlobalMemoryDumpPtr = memory_instrumentation::mojom::GlobalMemoryDumpPtr;
+using HistogramProcessType = memory_instrumentation::HistogramProcessType;
 using ProcessMemoryDumpPtr =
     memory_instrumentation::mojom::ProcessMemoryDumpPtr;
 using OSMemDumpPtr = memory_instrumentation::mojom::OSMemDumpPtr;
@@ -473,45 +476,87 @@ MetricMap GetExpectedAudioServiceMetrics() {
   });
 }
 
+void PopulatePaintPreviewCompositorMetrics(GlobalMemoryDumpPtr& global_dump,
+                                           MetricMap& metrics_mb) {
+  auto process_memory_dump =
+      memory_instrumentation::mojom::ProcessMemoryDump::New();
+  process_memory_dump->service_name =
+      paint_preview::mojom::PaintPreviewCompositorCollection::Name_;
+  ProcessMemoryDumpPtr pmd(std::move(process_memory_dump));
+  pmd->process_type = ProcessType::UTILITY;
+  OSMemDumpPtr os_dump =
+      GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
+                       metrics_mb["PrivateMemoryFootprint"] * 1024,
+                       metrics_mb["SharedMemoryFootprint"] * 1024
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+                       // accessing PrivateSwapFootprint on other OSes will
+                       // modify metrics_mb to create the value, which leads to
+                       // expectation failures.
+                       ,
+                       metrics_mb["PrivateSwapFootprint"] * 1024
+#endif
+      );
+  pmd->os_dump = std::move(os_dump);
+  global_dump->process_dumps.push_back(std::move(pmd));
+}
+
+MetricMap GetExpectedPaintPreviewCompositorMetrics() {
+  return MetricMap({
+    {"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
+#if !defined(OS_MAC)
+        {"Resident", 10},
+#endif
+        {"PrivateMemoryFootprint", 30}, {"SharedMemoryFootprint", 35},
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+        {"PrivateSwapFootprint", 50},
+#endif
+  });
+}
+
 void PopulateMetrics(GlobalMemoryDumpPtr& global_dump,
-                     ProcessType ptype,
+                     HistogramProcessType ptype,
                      MetricMap& metrics_mb) {
   switch (ptype) {
-    case ProcessType::BROWSER:
-      PopulateBrowserMetrics(global_dump, metrics_mb);
-      return;
-    case ProcessType::RENDERER:
-      PopulateRendererMetrics(global_dump, metrics_mb, 101);
-      return;
-    case ProcessType::GPU:
-      PopulateGpuMetrics(global_dump, metrics_mb);
-      return;
-    case ProcessType::UTILITY:
+    case HistogramProcessType::kAudioService:
       PopulateAudioServiceMetrics(global_dump, metrics_mb);
       return;
-    case ProcessType::PLUGIN:
-    case ProcessType::OTHER:
-    case ProcessType::ARC:
+    case HistogramProcessType::kBrowser:
+      PopulateBrowserMetrics(global_dump, metrics_mb);
+      return;
+    case HistogramProcessType::kGpu:
+      PopulateGpuMetrics(global_dump, metrics_mb);
+      return;
+    case HistogramProcessType::kPaintPreviewCompositor:
+      PopulatePaintPreviewCompositorMetrics(global_dump, metrics_mb);
+      return;
+    case HistogramProcessType::kRenderer:
+      PopulateRendererMetrics(global_dump, metrics_mb, 101);
+      return;
+    case HistogramProcessType::kExtension:
+    case HistogramProcessType::kNetworkService:
+    case HistogramProcessType::kUtility:
       break;
   }
 
   // We shouldn't reach here.
-  FAIL() << "Unknown process type case " << ptype << ".";
+  CHECK(false);
 }
 
-MetricMap GetExpectedProcessMetrics(ProcessType ptype) {
+MetricMap GetExpectedProcessMetrics(HistogramProcessType ptype) {
   switch (ptype) {
-    case ProcessType::BROWSER:
-      return GetExpectedBrowserMetrics();
-    case ProcessType::RENDERER:
-      return GetExpectedRendererMetrics();
-    case ProcessType::GPU:
-      return GetExpectedGpuMetrics();
-    case ProcessType::UTILITY:
+    case HistogramProcessType::kAudioService:
       return GetExpectedAudioServiceMetrics();
-    case ProcessType::PLUGIN:
-    case ProcessType::OTHER:
-    case ProcessType::ARC:
+    case HistogramProcessType::kBrowser:
+      return GetExpectedBrowserMetrics();
+    case HistogramProcessType::kGpu:
+      return GetExpectedGpuMetrics();
+    case HistogramProcessType::kPaintPreviewCompositor:
+      return GetExpectedPaintPreviewCompositorMetrics();
+    case HistogramProcessType::kRenderer:
+      return GetExpectedRendererMetrics();
+    case HistogramProcessType::kExtension:
+    case HistogramProcessType::kNetworkService:
+    case HistogramProcessType::kUtility:
       break;
   }
 
@@ -585,7 +630,7 @@ ProcessInfoVector GetProcessInfo(ukm::TestUkmRecorder& ukm_recorder) {
 }  // namespace
 
 class ProcessMemoryMetricsEmitterTest
-    : public testing::TestWithParam<ProcessType> {
+    : public testing::TestWithParam<HistogramProcessType> {
  public:
   ProcessMemoryMetricsEmitterTest() {}
   ~ProcessMemoryMetricsEmitterTest() override {}
@@ -640,12 +685,14 @@ TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {
   CheckMemoryUkmEntryMetrics(expected_entries);
 }
 
-INSTANTIATE_TEST_SUITE_P(SinglePtype,
-                         ProcessMemoryMetricsEmitterTest,
-                         testing::Values(ProcessType::BROWSER,
-                                         ProcessType::RENDERER,
-                                         ProcessType::GPU,
-                                         ProcessType::UTILITY));
+INSTANTIATE_TEST_SUITE_P(
+    SinglePtype,
+    ProcessMemoryMetricsEmitterTest,
+    testing::Values(HistogramProcessType::kBrowser,
+                    HistogramProcessType::kRenderer,
+                    HistogramProcessType::kGpu,
+                    HistogramProcessType::kPaintPreviewCompositor,
+                    HistogramProcessType::kAudioService));
 
 TEST_F(ProcessMemoryMetricsEmitterTest, CollectsExtensionProcessUKMs) {
   MetricMap expected_metrics = GetExpectedRendererMetrics();
@@ -668,10 +715,17 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsExtensionProcessUKMs) {
 }
 
 TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsSingleDump) {
-  std::vector<ProcessType> entries_ptypes = {
-      ProcessType::BROWSER,  ProcessType::RENDERER, ProcessType::GPU,
-      ProcessType::UTILITY,  ProcessType::UTILITY,  ProcessType::GPU,
-      ProcessType::RENDERER, ProcessType::BROWSER,
+  std::vector<HistogramProcessType> entries_ptypes = {
+      HistogramProcessType::kBrowser,
+      HistogramProcessType::kRenderer,
+      HistogramProcessType::kGpu,
+      HistogramProcessType::kAudioService,
+      HistogramProcessType::kPaintPreviewCompositor,
+      HistogramProcessType::kPaintPreviewCompositor,
+      HistogramProcessType::kAudioService,
+      HistogramProcessType::kGpu,
+      HistogramProcessType::kRenderer,
+      HistogramProcessType::kBrowser,
   };
 
   GlobalMemoryDumpPtr global_dump(
@@ -693,11 +747,15 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsSingleDump) {
 }
 
 TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsManyDumps) {
-  std::vector<std::vector<ProcessType>> entries_ptypes = {
-      {ProcessType::BROWSER, ProcessType::RENDERER, ProcessType::GPU,
-       ProcessType::UTILITY},
-      {ProcessType::UTILITY, ProcessType::GPU, ProcessType::RENDERER,
-       ProcessType::BROWSER},
+  std::vector<std::vector<HistogramProcessType>> entries_ptypes = {
+      {HistogramProcessType::kBrowser, HistogramProcessType::kRenderer,
+       HistogramProcessType::kGpu,
+       HistogramProcessType::kPaintPreviewCompositor,
+       HistogramProcessType::kAudioService},
+      {HistogramProcessType::kBrowser, HistogramProcessType::kRenderer,
+       HistogramProcessType::kGpu,
+       HistogramProcessType::kPaintPreviewCompositor,
+       HistogramProcessType::kAudioService},
   };
 
   std::vector<MetricMap> entries_metrics;

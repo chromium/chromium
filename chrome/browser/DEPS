@@ -252,6 +252,7 @@ include_rules = [
   "+components/services/heap_profiling",
   "+components/services/language_detection/public/cpp",
   "+components/services/language_detection/public/mojom",
+  "+components/services/paint_preview_compositor/public/mojom",
   "+components/services/patch/content",
   "+components/services/patch/public",
   "+components/services/print_compositor/public",

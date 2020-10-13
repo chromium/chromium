@@ -27,6 +27,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "content/public/browser/audio_service_info.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -620,7 +621,8 @@ void EmitGpuMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
   builder.Record(ukm_recorder);
 }
 
-void EmitUtilityMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
+void EmitUtilityMemoryMetrics(HistogramProcessType ptype,
+                              const GlobalMemoryDump::ProcessDump& pmd,
                               ukm::SourceId ukm_source_id,
                               ukm::UkmRecorder* ukm_recorder,
                               const base::Optional<base::TimeDelta>& uptime,
@@ -628,38 +630,7 @@ void EmitUtilityMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
   Memory_Experimental builder(ukm_source_id);
   builder.SetProcessType(static_cast<int64_t>(
       memory_instrumentation::mojom::ProcessType::UTILITY));
-  EmitProcessUmaAndUkm(pmd, HistogramProcessType::kUtility, uptime, record_uma,
-                       &builder);
-
-  builder.Record(ukm_recorder);
-}
-
-void EmitAudioServiceMemoryMetrics(
-    const GlobalMemoryDump::ProcessDump& pmd,
-    ukm::SourceId ukm_source_id,
-    ukm::UkmRecorder* ukm_recorder,
-    const base::Optional<base::TimeDelta>& uptime,
-    bool record_uma) {
-  Memory_Experimental builder(ukm_source_id);
-  builder.SetProcessType(static_cast<int64_t>(
-      memory_instrumentation::mojom::ProcessType::UTILITY));
-  EmitProcessUmaAndUkm(pmd, HistogramProcessType::kAudioService, uptime,
-                       record_uma, &builder);
-
-  builder.Record(ukm_recorder);
-}
-
-void EmitNetworkServiceMemoryMetrics(
-    const GlobalMemoryDump::ProcessDump& pmd,
-    ukm::SourceId ukm_source_id,
-    ukm::UkmRecorder* ukm_recorder,
-    const base::Optional<base::TimeDelta>& uptime,
-    bool record_uma) {
-  Memory_Experimental builder(ukm_source_id);
-  builder.SetProcessType(static_cast<int64_t>(
-      memory_instrumentation::mojom::ProcessType::UTILITY));
-  EmitProcessUmaAndUkm(pmd, HistogramProcessType::kNetworkService, uptime,
-                       record_uma, &builder);
+  EmitProcessUmaAndUkm(pmd, ptype, uptime, record_uma, &builder);
 
   builder.Record(ukm_recorder);
 }
@@ -890,20 +861,22 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         break;
       }
       case memory_instrumentation::mojom::ProcessType::UTILITY: {
+        HistogramProcessType ptype;
         if (pmd.pid() == content::GetProcessIdForAudioService()) {
-          EmitAudioServiceMemoryMetrics(
-              pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
-              GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
+          ptype = HistogramProcessType::kAudioService;
         } else if (pmd.service_name() ==
                    network::mojom::NetworkService::Name_) {
-          EmitNetworkServiceMemoryMetrics(
-              pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
-              GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
+          ptype = HistogramProcessType::kNetworkService;
+        } else if (pmd.service_name() ==
+                   paint_preview::mojom::PaintPreviewCompositorCollection::
+                       Name_) {
+          ptype = HistogramProcessType::kPaintPreviewCompositor;
         } else {
-          EmitUtilityMemoryMetrics(
-              pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
-              GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
+          ptype = HistogramProcessType::kUtility;
         }
+        EmitUtilityMemoryMetrics(
+            ptype, pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
+            GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
         break;
       }
       case memory_instrumentation::mojom::ProcessType::PLUGIN:
