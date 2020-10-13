@@ -45,12 +45,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     auto right_scroll =
         std::make_unique<views::ImageButton>(base::BindRepeating(
             &TabStripRegionView::ScrollRight, base::Unretained(this)));
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_MenuIconColor);
-    views::SetImageFromVectorIconWithColor(left_scroll.get(), kBrowserToolsIcon,
-                                           icon_color);
-    views::SetImageFromVectorIconWithColor(right_scroll.get(),
-                                           kBrowserToolsIcon, icon_color);
     left_scroll_ = AddChildView(std::move(left_scroll));
     right_scroll_ = AddChildView(std::move(right_scroll));
   } else {
@@ -131,6 +125,16 @@ bool TabStripRegionView::IsPositionInWindowCaption(const gfx::Point& point) {
 void TabStripRegionView::FrameColorsChanged() {
   if (tab_search_button_)
     tab_search_button_->FrameColorsChanged();
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    const SkColor background_color = tab_strip_->GetTabBackgroundColor(
+        TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
+    SkColor foreground_color = tab_strip_->GetTabForegroundColor(
+        TabActive::kInactive, background_color);
+    views::SetImageFromVectorIconWithColor(
+        left_scroll_, kScrollingTabstripLeftIcon, foreground_color);
+    views::SetImageFromVectorIconWithColor(
+        right_scroll_, kScrollingTabstripRightIcon, foreground_color);
+  }
   tab_strip_->FrameColorsChanged();
   SchedulePaint();
 }
