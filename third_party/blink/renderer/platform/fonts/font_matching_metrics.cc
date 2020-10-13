@@ -244,7 +244,7 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
           {&font_lookups_by_unique_or_family_name_,
            IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName},
           {&font_lookups_by_unique_name_only_,
-           IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName},
+           IdentifiableSurface::Type::kLocalFontLookupByUniqueNameOnly},
           {&font_lookups_by_fallback_character_,
            IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter},
           {&font_lookups_as_last_resort_,
