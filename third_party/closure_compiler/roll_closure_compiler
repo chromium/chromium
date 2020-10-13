@@ -8,7 +8,7 @@
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly TEMP_DIR=$(mktemp -d)
-readonly EXTERNS_DIR_URL="https://raw.githubusercontent.com/google/closure-compiler/master/contrib/externs"
+readonly EXTERNS_NPM_DIR="node_modules/google-closure-compiler/contrib/externs"
 readonly EXTERNS_DIR="${SCRIPT_DIR}/externs"
 readonly README="${SCRIPT_DIR}/README.chromium"
 
@@ -29,20 +29,21 @@ old_mocha_sha1=$(get_sha1 "${EXTERNS_DIR}/mocha-2.5.js")
 
 cd "${TEMP_DIR}"
 
-echo "Downloading Closure Compiler latest..."
-wget https://dl.google.com/closure-compiler/compiler-latest.zip
-unzip compiler-latest.zip
+# Check if NPM is installed.
+command -v npm >/dev/null 2>&1 || {
+  echo >&2 "NPM is required to run this script. Aborting.";
+  exit 1;
+}
 
-jar_file=$(basename $(find . -name '*.jar'))
-new_version=$(basename $(echo ${jar_file} | cut -f3 -d-) .jar)
+echo "Downloading Closure Compiler latest..."
+npm install --prefix . --no-bin-links --only=prod google-closure-compiler
+
+json_file=node_modules/google-closure-compiler-java/package.json
+new_version=$(cat $json_file | grep version | cut -f2 -d ":" | tr -d '" ')
 new_date="$(date --utc '+%Y/%m/%d %H:%M')"
 
+jar_file=node_modules/google-closure-compiler-java/compiler.jar
 cp "${jar_file}" "${SCRIPT_DIR}/compiler/compiler.jar"
-
-wget ${EXTERNS_DIR_URL}/chrome.js
-wget ${EXTERNS_DIR_URL}/chrome_extensions.js
-wget ${EXTERNS_DIR_URL}/polymer-1.0.js
-wget ${EXTERNS_DIR_URL}/mocha-2.5.js
 
 readonly WARNING="$(cat <<EOT
 //    SSSSSSSSSSSSSSS TTTTTTTTTTTTTTTTTTTTTTT     OOOOOOOOO     PPPPPPPPPPPPPPPPP
@@ -64,10 +65,10 @@ readonly WARNING="$(cat <<EOT
 EOT
 )"
 
-(echo "${WARNING}" && cat chrome.js) > "${EXTERNS_DIR}/chrome.js"
-(echo "${WARNING}" && cat chrome_extensions.js) > "${EXTERNS_DIR}/chrome_extensions.js"
-(echo "${WARNING}" && cat polymer-1.0.js) > "${EXTERNS_DIR}/polymer-1.0.js"
-(echo "${WARNING}" && cat mocha-2.5.js) > "${EXTERNS_DIR}/mocha-2.5.js"
+(echo "${WARNING}" && cat ${EXTERNS_NPM_DIR}/chrome.js) > "${EXTERNS_DIR}/chrome.js"
+(echo "${WARNING}" && cat ${EXTERNS_NPM_DIR}/chrome_extensions.js) > "${EXTERNS_DIR}/chrome_extensions.js"
+(echo "${WARNING}" && cat ${EXTERNS_NPM_DIR}/polymer-1.0.js) > "${EXTERNS_DIR}/polymer-1.0.js"
+(echo "${WARNING}" && cat ${EXTERNS_NPM_DIR}/mocha-2.5.js) > "${EXTERNS_DIR}/mocha-2.5.js"
 
 # Apply local Chromium patch.
 cd "${SCRIPT_DIR}"
