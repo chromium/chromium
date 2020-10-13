@@ -62,8 +62,8 @@ constexpr net::BackoffEntry::Policy kFetchTopicRetryBackoffPolicy = {
 };
 
 constexpr net::BackoffEntry::Policy kResumeFetchImageBackoffPolicy = {
-    0,              // Number of initial errors to ignore.
-    500,            // Initial delay in ms.
+    kMaxConsecutiveReadPhotoFailures,  // Number of initial errors to ignore.
+    500,                               // Initial delay in ms.
     2.0,            // Factor by which the waiting time will be multiplied.
     0.2,            // Fuzzing percentage.
     8 * 60 * 1000,  // Maximum delay in ms.
@@ -538,7 +538,12 @@ void AmbientPhotoController::TryReadPhotoRawData() {
   if (retries_to_read_from_cache_ == 0) {
     if (backup_retries_to_read_from_cache_ == 0) {
       LOG(WARNING) << "Failed to read from cache";
-      if (topic_index_ == ambient_backend_model_.topics().size()) {
+      ambient_backend_model_.AddImageFailure();
+      // Do not refresh image if image loading has failed repeatedly, or there
+      // are no more topics to retry.
+      if (ambient_backend_model_.ImageLoadingFailed() ||
+          topic_index_ == ambient_backend_model_.topics().size()) {
+        LOG(WARNING) << "Not attempting image refresh";
         image_refresh_started_ = false;
         return;
       }

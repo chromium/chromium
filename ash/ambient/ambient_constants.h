@@ -45,6 +45,10 @@ constexpr int kMaxImageSizeInBytes = 5 * 1024 * 1024;
 
 constexpr int kMaxReservedAvailableDiskSpaceByte = 200 * 1024 * 1024;
 
+// The maximum number of consecutive failures in downloading or reading an image
+// from disk.
+constexpr int kMaxConsecutiveReadPhotoFailures = 3;
+
 constexpr char kPhotoFileExt[] = ".img";
 constexpr char kPhotoDetailsFileExt[] = ".txt";
 

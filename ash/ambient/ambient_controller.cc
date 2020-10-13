@@ -297,6 +297,10 @@ void AmbientController::OnLockStateChanged(bool locked) {
     return;
   }
 
+  // Reset image failures to allow retrying ambient mode after lock state
+  // changes.
+  GetAmbientBackendModel()->ResetImageFailures();
+
   // We have 3 options to manage the token for lock screen. Here use option 1.
   // 1. Request only one time after entering lock screen. We will use it once
   //    to request all the image links and no more requests.
@@ -374,6 +378,11 @@ void AmbientController::ScreenBrightnessChanged(
   if (!is_screen_off_)
     return;
   is_screen_off_ = false;
+
+  // Reset image failures to allow retrying ambient mode because screen has
+  // turned back on.
+  GetAmbientBackendModel()->ResetImageFailures();
+
   // If screen is back on, turn on ambient mode for lock screen.
   if (LockScreen::HasInstance())
     ShowHiddenUi();
@@ -393,6 +402,17 @@ void AmbientController::ScreenIdleStateChanged(
 
   if (!idle_state.dimmed())
     return;
+
+  // Do not show the UI if lockscreen is active. The inactivity monitor should
+  // have activated ambient mode.
+  if (LockScreen::HasInstance())
+    return;
+
+  // Do not show UI if loading images was unsuccessful.
+  if (GetAmbientBackendModel()->ImageLoadingFailed()) {
+    VLOG(1) << "Skipping ambient mode activation due to prior failure";
+    return;
+  }
 
   ShowUi();
 }
@@ -535,6 +555,11 @@ AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
 
 void AmbientController::OnImagesReady() {
   CreateAndShowWidget();
+}
+
+void AmbientController::OnImagesFailed() {
+  LOG(ERROR) << "Ambient mode failed to start";
+  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
 }
 
 std::unique_ptr<AmbientContainerView> AmbientController::CreateContainerView() {

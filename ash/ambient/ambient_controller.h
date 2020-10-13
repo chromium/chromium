@@ -127,6 +127,7 @@ class ASH_EXPORT AmbientController
 
   // AmbientBackendModelObserver overrides:
   void OnImagesReady() override;
+  void OnImagesFailed() override;
 
   // Initializes the |container_view_|. Called in |CreateWidget()| to create the
   // contents view.
