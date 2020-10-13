@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_
 
+#include <map>
+#include <memory>
+#include <string>
+
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
@@ -15,6 +19,11 @@ class MediaDialogViewObserver;
 class MediaNotificationContainerImplView;
 class MediaNotificationListView;
 class MediaNotificationService;
+class Profile;
+
+namespace views {
+class ToggleButton;
+}
 
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
@@ -22,7 +31,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
                         public MediaNotificationContainerObserver {
  public:
   static views::Widget* ShowDialog(views::View* anchor_view,
-                                   MediaNotificationService* service);
+                                   MediaNotificationService* service,
+                                   Profile* profile);
   static void HideDialog();
   static bool IsShowing();
 
@@ -61,9 +71,12 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   const MediaNotificationListView* GetListViewForTesting() const;
 
+  views::Button* GetLiveCaptionButtonForTesting();
+
  private:
   explicit MediaDialogView(views::View* anchor_view,
-                           MediaNotificationService* service);
+                           MediaNotificationService* service,
+                           Profile* profile);
   ~MediaDialogView() override;
 
   static MediaDialogView* instance_;
@@ -75,7 +88,15 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void Init() override;
   void WindowClosing() override;
 
+  // views::Button::PressedCallback
+  void ToggleLiveCaption(const ui::Event& event);
+
+  void UpdateBubbleSize();
+  bool IsLiveCaptionEnabled();
+
   MediaNotificationService* const service_;
+
+  Profile* const profile_;
 
   MediaNotificationListView* const active_sessions_view_;
 
@@ -84,6 +105,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   // A map of all containers we're currently observing.
   std::map<const std::string, MediaNotificationContainerImplView*>
       observed_containers_;
+
+  views::View* live_caption_container_ = nullptr;
+
+  views::ToggleButton* live_caption_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MediaDialogView);
 };

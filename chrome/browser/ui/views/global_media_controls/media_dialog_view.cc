@@ -4,21 +4,46 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/sync_preferences/pref_service_syncable.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
 using media_session::mojom::MediaSessionAction;
+
+namespace {
+
+static constexpr int kLiveCaptionBetweenChildSpacing = 4;
+static constexpr int kLiveCaptionHorizontalMarginDip = 10;
+static constexpr int kLiveCaptionImageWidthDip = 20;
+static constexpr int kLiveCaptionVerticalMarginDip = 16;
+
+}  // namespace
 
 // static
 MediaDialogView* MediaDialogView::instance_ = nullptr;
@@ -28,10 +53,11 @@ bool MediaDialogView::has_been_opened_ = false;
 
 // static
 views::Widget* MediaDialogView::ShowDialog(views::View* anchor_view,
-                                           MediaNotificationService* service) {
+                                           MediaNotificationService* service,
+                                           Profile* profile) {
   DCHECK(!instance_);
   DCHECK(service);
-  instance_ = new MediaDialogView(anchor_view, service);
+  instance_ = new MediaDialogView(anchor_view, service, profile);
 
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(instance_);
@@ -72,7 +98,7 @@ MediaNotificationContainerImpl* MediaDialogView::ShowMediaSession(
   observed_containers_[id] = container_ptr;
 
   active_sessions_view_->ShowNotification(id, std::move(container));
-  SizeToContents();
+  UpdateBubbleSize();
 
   for (auto& observer : observers_)
     observer.OnMediaSessionShown();
@@ -86,7 +112,7 @@ void MediaDialogView::HideMediaSession(const std::string& id) {
   if (active_sessions_view_->empty())
     HideDialog();
   else
-    SizeToContents();
+    UpdateBubbleSize();
 
   for (auto& observer : observers_)
     observer.OnMediaSessionHidden();
@@ -113,6 +139,8 @@ void MediaDialogView::AddedToWidget() {
 
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+  if (IsLiveCaptionEnabled())
+    layer()->SetFillsBoundsOpaquely(false);
 
   service_->SetDialogDelegate(this);
 }
@@ -128,8 +156,18 @@ gfx::Size MediaDialogView::CalculatePreferredSize() const {
   return gfx::Size(width, 1);
 }
 
-void MediaDialogView::OnContainerSizeChanged() {
+void MediaDialogView::UpdateBubbleSize() {
   SizeToContents();
+  if (!IsLiveCaptionEnabled())
+    return;
+
+  const int width = GetPreferredSize().width();
+  const int height = live_caption_container_->GetPreferredSize().height();
+  live_caption_container_->SetPreferredSize(gfx::Size(width, height));
+}
+
+void MediaDialogView::OnContainerSizeChanged() {
+  UpdateBubbleSize();
 }
 
 void MediaDialogView::OnContainerMetadataChanged() {
@@ -168,10 +206,16 @@ const MediaNotificationListView* MediaDialogView::GetListViewForTesting()
   return active_sessions_view_;
 }
 
+views::Button* MediaDialogView::GetLiveCaptionButtonForTesting() {
+  return live_caption_button_;
+}
+
 MediaDialogView::MediaDialogView(views::View* anchor_view,
-                                 MediaNotificationService* service)
+                                 MediaNotificationService* service,
+                                 Profile* profile)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       service_(service),
+      profile_(profile),
       active_sessions_view_(
           AddChildView(std::make_unique<MediaNotificationListView>())) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -186,8 +230,49 @@ MediaDialogView::~MediaDialogView() {
 void MediaDialogView::Init() {
   // Remove margins.
   set_margins(gfx::Insets());
+  if (!IsLiveCaptionEnabled()) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    return;
+  }
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+                       views::BoxLayout::Orientation::kVertical))
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  views::View* live_caption_container = new views::View();
+  auto* live_caption_container_layout =
+      live_caption_container->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal,
+              gfx::Insets(kLiveCaptionHorizontalMarginDip,
+                          kLiveCaptionVerticalMarginDip),
+              kLiveCaptionBetweenChildSpacing));
+
+  views::ImageView* live_caption_image = new views::ImageView();
+  live_caption_image->SetImage(
+      gfx::CreateVectorIcon(kLiveCaptionIcon, kLiveCaptionImageWidthDip,
+                            SkColor(gfx::kGoogleGrey700)));
+  views::Label* live_caption_title = new views::Label(
+      l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
+  live_caption_title->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  views::ToggleButton* live_caption_button =
+      new views::ToggleButton(base::BindRepeating(
+          &MediaDialogView::ToggleLiveCaption, base::Unretained(this)));
+  live_caption_button->SetIsOn(
+      profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  live_caption_button->SetAccessibleName(live_caption_title->GetText());
+  live_caption_button->SetThumbOnColor(SkColor(gfx::kGoogleBlue600));
+  live_caption_button->SetTrackOnColor(SkColorSetA(gfx::kGoogleBlue600, 128));
+  live_caption_button->SetThumbOffColor(SK_ColorWHITE);
+  live_caption_button->SetTrackOffColor(SkColor(gfx::kGoogleGrey400));
+
+  live_caption_container->AddChildView(std::move(live_caption_image));
+  live_caption_container_layout->SetFlexForView(
+      live_caption_container->AddChildView(std::move(live_caption_title)), 1);
+  live_caption_button_ =
+      live_caption_container->AddChildView(std::move(live_caption_button));
+  live_caption_container_ = AddChildView(std::move(live_caption_container));
 }
 
 void MediaDialogView::WindowClosing() {
@@ -195,4 +280,14 @@ void MediaDialogView::WindowClosing() {
     instance_ = nullptr;
     service_->SetDialogDelegate(nullptr);
   }
+}
+
+void MediaDialogView::ToggleLiveCaption(const ui::Event& event) {
+  bool enabled = !profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled);
+  profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
+  live_caption_button_->SetIsOn(enabled);
+}
+
+bool MediaDialogView::IsLiveCaptionEnabled() {
+  return base::FeatureList::IsEnabled(media::kLiveCaption);
 }

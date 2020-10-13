@@ -115,7 +115,7 @@ void MediaToolbarButtonView::ButtonPressed() {
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
   } else {
-    MediaDialogView::ShowDialog(this, service_);
+    MediaDialogView::ShowDialog(this, service_, browser_->profile());
 
     feature_promo_controller_->CloseBubble(
         feature_engagement::kIPHLiveCaptionFeature);

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -307,7 +308,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast}, {});
+        {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
+         media::kLiveCaption},
+        {});
 
     presentation_manager_ =
         std::make_unique<TestWebContentsPresentationManager>();
@@ -462,6 +465,14 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(MediaDialogView::IsShowing());
     ClickButton(GetButtonForAction(MediaSessionAction::kExitPictureInPicture));
+  }
+
+  void ClickEnableLiveCaptionOnDialog() {
+    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(MediaDialogView::IsShowing());
+    auto* live_caption_button = MediaDialogView::GetDialogViewForTesting()
+                                    ->GetLiveCaptionButtonForTesting();
+    ClickButton(live_caption_button);
   }
 
   void ClickNotificationByTitle(const base::string16& title) {
@@ -840,4 +851,38 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsDialogVisible());
 
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaption) {
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  WaitForVisibleToolbarIcon();
+  ClickToolbarIcon();
+  WaitForDialogOpened();
+  EXPECT_TRUE(IsDialogVisible());
+
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+
+  // Close dialog and enable live caption preference. Reopen dialog.
+  ClickToolbarIcon();
+  EXPECT_FALSE(IsDialogVisible());
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
+                                               true);
+  ClickToolbarIcon();
+  WaitForDialogOpened();
+  EXPECT_TRUE(IsDialogVisible());
+
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_FALSE(
+      browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 }
