@@ -33,7 +33,6 @@ PROXIED_IFACE(PPB_FILECHOOSER_TRUSTED_INTERFACE_0_6,
               PPB_FileChooserTrusted_0_6)
 PROXIED_IFACE(PPB_FILEREFPRIVATE_INTERFACE_0_1,
               PPB_FileRefPrivate_0_1)
-PROXIED_IFACE(PPB_FLASHFULLSCREEN_INTERFACE_1_0, PPB_FlashFullscreen_1_0)
 #endif  // !defined(OS_NACL)
 
 #include "ppapi/thunk/interfaces_postamble.h"

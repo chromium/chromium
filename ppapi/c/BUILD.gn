@@ -120,7 +120,6 @@ source_set("c") {
     "private/ppb_file_ref_private.h",
     "private/ppb_find_private.h",
     "private/ppb_flash_font_file.h",
-    "private/ppb_flash_fullscreen.h",
     "private/ppb_host_resolver_private.h",
     "private/ppb_instance_private.h",
     "private/ppb_isolated_file_system_private.h",

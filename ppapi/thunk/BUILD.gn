@@ -148,7 +148,6 @@ source_set("thunk") {
       "ppb_buffer_thunk.cc",
       "ppb_char_set_thunk.cc",
       "ppb_flash_font_file_thunk.cc",
-      "ppb_flash_fullscreen_thunk.cc",
       "ppb_gles_chromium_texture_mapping_thunk.cc",
       "ppb_pdf_thunk.cc",
       "ppb_url_util_thunk.cc",

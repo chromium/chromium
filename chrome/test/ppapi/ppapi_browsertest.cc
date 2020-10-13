@@ -2142,20 +2142,6 @@ TEST_PPAPI_NACL(MAYBE_MessageHandler)
 TEST_PPAPI_NACL(MessageLoop_Basics)
 TEST_PPAPI_NACL(MessageLoop_Post)
 
-// Mac/Aura reach NOTIMPLEMENTED/time out.
-// mac: http://crbug.com/96767
-// aura: http://crbug.com/104384
-// cros: http://crbug.com/396502
-// windows: http://crbug.com/899893
-// linux: http://crbug.com/899893
-#if defined(OS_MAC) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_LINUX)
-#define MAYBE_FlashFullscreen DISABLED_FlashFullscreen
-#else
-#define MAYBE_FlashFullscreen FlashFullscreen
-#endif
-TEST_PPAPI_OUT_OF_PROCESS(MAYBE_FlashFullscreen)
-
 TEST_PPAPI_OUT_OF_PROCESS(PDF)
 
 #if BUILDFLAG(ENABLE_NACL)

@@ -3067,8 +3067,6 @@ static void Pnacl_M15_PPB_FileRefPrivate_GetAbsolutePath(struct PP_Var* _struct_
 
 /* Not generating wrapper methods for PPB_Flash_FontFile_0_2 */
 
-/* Not generating wrapper methods for PPB_FlashFullscreen_1_0 */
-
 /* Begin wrapper methods for PPB_HostResolver_Private_0_1 */
 
 static PP_Resource Pnacl_M19_PPB_HostResolver_Private_Create(PP_Instance instance) {
@@ -4604,8 +4602,6 @@ static const struct PPB_FileRefPrivate_0_1 Pnacl_Wrappers_PPB_FileRefPrivate_0_1
 /* Not generating wrapper interface for PPB_Flash_FontFile_0_1 */
 
 /* Not generating wrapper interface for PPB_Flash_FontFile_0_2 */
-
-/* Not generating wrapper interface for PPB_FlashFullscreen_1_0 */
 
 static const struct PPB_HostResolver_Private_0_1 Pnacl_Wrappers_PPB_HostResolver_Private_0_1 = {
     .Create = (PP_Resource (*)(PP_Instance instance))&Pnacl_M19_PPB_HostResolver_Private_Create,
