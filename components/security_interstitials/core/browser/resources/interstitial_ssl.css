@@ -35,7 +35,3 @@
 .ssl-enhanced-protection-message .icon {
   background-image: url(images/light_bulb_grey.svg);
 }
-
-.ssl-enhanced-protection-message a:link {
-  color: blue;
-}
