@@ -799,8 +799,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/homepage/settings/HomepageMetricsEnums.java",
   "java/src/org/chromium/chrome/browser/homepage/settings/HomepageSettings.java",
   "java/src/org/chromium/chrome/browser/homepage/settings/RadioButtonGroupHomepagePreference.java",
-  "java/src/org/chromium/chrome/browser/identity/UniqueIdentificationGenerator.java",
-  "java/src/org/chromium/chrome/browser/identity/UniqueIdentificationGeneratorFactory.java",
   "java/src/org/chromium/chrome/browser/identity_disc/IdentityDiscController.java",
   "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationManager.java",
   "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationPresenceController.java",
