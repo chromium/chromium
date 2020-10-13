@@ -58,6 +58,9 @@
       name: "advance-override"
     },
     {
+      name: "advance-proportional-override"
+    },
+    {
       name: "line-gap-override",
     },
     {

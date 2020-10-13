@@ -123,7 +123,9 @@ float ShapeResultSpacing<TextContainerType>::NextExpansion() {
 template <typename TextContainerType>
 float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
     unsigned index,
+    float original_advance,
     float advance_override,
+    float advance_proportional_override,
     float& offset) {
   DCHECK(has_spacing_);
   UChar32 character = text_[index];
@@ -137,9 +139,12 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
 
   float spacing = 0;
 
-  bool has_letter_spacing = letter_spacing_ || advance_override;
-  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character))
-    spacing += letter_spacing_ + advance_override;
+  bool has_letter_spacing = letter_spacing_ || advance_override ||
+                            (advance_proportional_override != 1.0);
+  if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character)) {
+    spacing += original_advance * (advance_proportional_override - 1.0) +
+               letter_spacing_ + advance_override;
+  }
 
   if (treat_as_space && (index || character == kNoBreakSpaceCharacter))
     spacing += word_spacing_;

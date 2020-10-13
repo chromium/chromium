@@ -5146,6 +5146,12 @@
       runtime_flag: "CSSFontFaceAdvanceOverride",
     },
     {
+      name: "advance-proportional-override",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSFontFaceAdvanceProportionalOverride",
+    },
+    {
       name: "line-gap-override",
       is_descriptor: true,
       is_property: false,

@@ -183,6 +183,9 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
     advance_override_ =
         *metrics_override.advance_override * platform_data_.size();
   }
+
+  advance_proportional_override_ =
+      metrics_override.advance_proportional_override;
 }
 
 void SimpleFontData::PlatformGlyphInit() {

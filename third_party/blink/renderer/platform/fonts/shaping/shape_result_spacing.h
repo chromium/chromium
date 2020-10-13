@@ -62,7 +62,11 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // The |index| is for the |TextContainerType| given in the constructor.
   // For justification, this function must be called incrementally since it
   // keeps states and counts consumed justification opportunities.
-  float ComputeSpacing(unsigned index, float advance_override, float& offset);
+  float ComputeSpacing(unsigned index,
+                       float original_advance,
+                       float advance_override,
+                       float advance_proportional_override,
+                       float& offset);
 
  private:
   bool IsAfterExpansion() const { return is_after_expansion_; }

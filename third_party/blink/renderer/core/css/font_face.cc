@@ -209,6 +209,8 @@ FontFace* FontFace::Create(Document* document,
                                       AtRuleDescriptorID::LineGapOverride) &&
       font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::AdvanceOverride) &&
+      font_face->SetPropertyFromStyle(
+          properties, AtRuleDescriptorID::AdvanceProportionalOverride) &&
       font_face->GetFontSelectionCapabilities().IsValid() &&
       !font_face->family().IsEmpty()) {
     font_face->InitCSSFontFace(document->GetExecutionContext(), *src);
@@ -422,6 +424,9 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
       break;
     case AtRuleDescriptorID::AdvanceOverride:
       advance_override_ = value;
+      break;
+    case AtRuleDescriptorID::AdvanceProportionalOverride:
+      advance_proportional_override_ = ConvertFontMetricOverrideValue(value);
       break;
     default:
       NOTREACHED();
@@ -868,6 +873,7 @@ void FontFace::Trace(Visitor* visitor) const {
   visitor->Trace(descent_override_);
   visitor->Trace(line_gap_override_);
   visitor->Trace(advance_override_);
+  visitor->Trace(advance_proportional_override_);
   visitor->Trace(error_);
   visitor->Trace(loaded_property_);
   visitor->Trace(css_font_face_);
@@ -912,6 +918,11 @@ FontMetricsOverride FontFace::GetFontMetricsOverride() const {
   if (advance_override_) {
     result.advance_override =
         To<CSSPrimitiveValue>(*advance_override_).GetFloatValue();
+  }
+  if (advance_proportional_override_) {
+    result.advance_proportional_override =
+        To<CSSPrimitiveValue>(*advance_proportional_override_).GetFloatValue() /
+        100;
   }
   return result;
 }
