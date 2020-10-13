@@ -5753,14 +5753,10 @@ static_library("browser") {
 
   if (enable_plugins) {
     sources += [
-      "browsing_data/browsing_data_flash_lso_helper.cc",
-      "browsing_data/browsing_data_flash_lso_helper.h",
       "metrics/plugin_metrics_provider.cc",
       "metrics/plugin_metrics_provider.h",
       "pepper_broker_infobar_delegate.cc",
       "pepper_broker_infobar_delegate.h",
-      "pepper_flash_settings_manager.cc",
-      "pepper_flash_settings_manager.h",
       "plugins/chrome_content_browser_client_plugins_part.cc",
       "plugins/chrome_content_browser_client_plugins_part.h",
       "plugins/chrome_plugin_service_filter.cc",
@@ -5775,8 +5771,6 @@ static_library("browser") {
       "plugins/flash_temporary_permission_tracker_factory.h",
       "plugins/hung_plugin_infobar_delegate.cc",
       "plugins/hung_plugin_infobar_delegate.h",
-      "plugins/plugin_data_remover_helper.cc",
-      "plugins/plugin_data_remover_helper.h",
       "plugins/plugin_finder.cc",
       "plugins/plugin_finder.h",
       "plugins/plugin_info_host_impl.cc",
@@ -6418,8 +6412,6 @@ static_library("test_support") {
     "autofill/mock_autofill_popup_controller.h",
     "autofill/mock_manual_filling_controller.cc",
     "autofill/mock_manual_filling_controller.h",
-    "browsing_data/mock_browsing_data_flash_lso_helper.cc",
-    "browsing_data/mock_browsing_data_flash_lso_helper.h",
     "browsing_data/mock_browsing_data_media_license_helper.cc",
     "browsing_data/mock_browsing_data_media_license_helper.h",
     "browsing_data/mock_browsing_data_quota_helper.cc",

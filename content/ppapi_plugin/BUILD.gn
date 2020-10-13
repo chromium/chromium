@@ -27,8 +27,6 @@ source_set("ppapi_plugin_sources") {
   ]
 
   sources = [
-    "broker_process_dispatcher.cc",
-    "broker_process_dispatcher.h",
     "plugin_process_dispatcher.cc",
     "plugin_process_dispatcher.h",
     "ppapi_blink_platform_impl.cc",

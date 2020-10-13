@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -184,8 +183,7 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
         new browsing_data::ServiceWorkerHelper(
             storage_partition->GetServiceWorkerContext()),
         new browsing_data::CacheStorageHelper(
-            storage_partition->GetCacheStorageContext()),
-        BrowsingDataFlashLSOHelper::Create(profile_));
+            storage_partition->GetCacheStorageContext()));
   }
   site_data_size_collector_->Fetch(
       base::BindOnce(&BrowsingDataSizeCalculator::OnGetBrowsingDataSize,

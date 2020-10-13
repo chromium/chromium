@@ -19,7 +19,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -105,43 +104,6 @@ const struct PatternContentTypeTestCase {
     {{"http://127.0.0.1", "location"}, {true, ""}},  // Localhost is secure.
     {{"http://[::1]", "location"}, {true, ""}}};
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Waits until a change is observed in content settings.
-class FlashContentSettingsChangeWaiter : public content_settings::Observer {
- public:
-  explicit FlashContentSettingsChangeWaiter(Profile* profile)
-      : profile_(profile) {
-    HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
-  }
-  FlashContentSettingsChangeWaiter(const FlashContentSettingsChangeWaiter&) =
-      delete;
-  FlashContentSettingsChangeWaiter& operator=(
-      const FlashContentSettingsChangeWaiter&) = delete;
-  ~FlashContentSettingsChangeWaiter() override {
-    HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
-        this);
-  }
-
-  // content_settings::Observer:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const std::string& resource_identifier) override {
-    if (content_type == ContentSettingsType::PLUGINS)
-      Proceed();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  void Proceed() { run_loop_.Quit(); }
-
-  Profile* profile_;
-  base::RunLoop run_loop_;
-};
-#endif
-
 std::string GenerateFakeAppId(const GURL& url) {
   return web_app::GenerateAppIdFromURL(url);
 }
@@ -191,9 +153,7 @@ class SiteSettingsHandlerTest : public testing::Test {
       : kNotifications(site_settings::ContentSettingsTypeToGroupName(
             ContentSettingsType::NOTIFICATIONS)),
         kCookies(site_settings::ContentSettingsTypeToGroupName(
-            ContentSettingsType::COOKIES)),
-        kFlash(site_settings::ContentSettingsTypeToGroupName(
-            ContentSettingsType::PLUGINS)) {
+            ContentSettingsType::COOKIES)) {
 #if defined(OS_CHROMEOS)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<chromeos::MockUserManager>());
@@ -472,7 +432,6 @@ class SiteSettingsHandlerTest : public testing::Test {
         /*service_worker_helper=*/nullptr,
         /*data_shared_worker_helper=*/nullptr,
         /*cache_storage_helper=*/nullptr,
-        /*flash_lso_helper=*/nullptr,
         /*media_license_helper=*/nullptr);
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
@@ -516,7 +475,6 @@ class SiteSettingsHandlerTest : public testing::Test {
   // Content setting group name for the relevant ContentSettingsType.
   const std::string kNotifications;
   const std::string kCookies;
-  const std::string kFlash;
 
   const ContentSettingsType kPermissionNotifications =
       ContentSettingsType::NOTIFICATIONS;
@@ -571,7 +529,6 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   get_all_sites_args.AppendString(kCallbackId);
   base::Value category_list(base::Value::Type::LIST);
   category_list.Append(kNotifications);
-  category_list.Append(kFlash);
   get_all_sites_args.Append(std::move(category_list));
 
   // Test all sites is empty when there are no preferences.
@@ -596,7 +553,8 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   map->SetContentSettingDefaultScope(url1, url1,
                                      ContentSettingsType::NOTIFICATIONS,
                                      std::string(), CONTENT_SETTING_BLOCK);
-  map->SetContentSettingDefaultScope(url2, url2, ContentSettingsType::PLUGINS,
+  map->SetContentSettingDefaultScope(url2, url2,
+                                     ContentSettingsType::NOTIFICATIONS,
                                      std::string(), CONTENT_SETTING_ALLOW);
   handler()->HandleGetAllSites(&get_all_sites_args);
 
@@ -624,7 +582,8 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
 
   // Add an additional exception belonging to a different eTLD+1.
   const GURL url3("https://example2.net");
-  map->SetContentSettingDefaultScope(url3, url3, ContentSettingsType::PLUGINS,
+  map->SetContentSettingDefaultScope(url3, url3,
+                                     ContentSettingsType::NOTIFICATIONS,
                                      std::string(), CONTENT_SETTING_BLOCK);
   handler()->HandleGetAllSites(&get_all_sites_args);
 
@@ -774,7 +733,6 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   get_recent_permissions_args.AppendString(kCallbackId);
   base::Value category_list(base::Value::Type::LIST);
   category_list.Append(kNotifications);
-  category_list.Append(kFlash);
   get_recent_permissions_args.Append(std::move(category_list));
   get_recent_permissions_args.Append(3);
 
@@ -839,26 +797,21 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     ASSERT_TRUE(data.arg2()->GetBool());
 
     base::Value::ConstListView recent_permissions = data.arg3()->GetList();
-    EXPECT_EQ(3UL, recent_permissions.size());
+    EXPECT_EQ(2UL, recent_permissions.size());
     EXPECT_EQ(url1.spec(),
-              recent_permissions[2].FindKey("origin")->GetString());
-    EXPECT_EQ(url2.spec(),
               recent_permissions[1].FindKey("origin")->GetString());
     EXPECT_EQ(url1.spec(),
               recent_permissions[0].FindKey("origin")->GetString());
 
     EXPECT_TRUE(recent_permissions[0].FindKey("incognito")->GetBool());
     EXPECT_FALSE(recent_permissions[1].FindKey("incognito")->GetBool());
-    EXPECT_FALSE(recent_permissions[2].FindKey("incognito")->GetBool());
 
     base::Value::ConstListView incognito_url1_permissions =
         recent_permissions[0].FindKey("recentPermissions")->GetList();
     base::Value::ConstListView url1_permissions =
-        recent_permissions[2].FindKey("recentPermissions")->GetList();
-    base::Value::ConstListView url2_permissions =
         recent_permissions[1].FindKey("recentPermissions")->GetList();
 
-    EXPECT_EQ(2UL, incognito_url1_permissions.size());
+    EXPECT_EQ(1UL, incognito_url1_permissions.size());
 
     EXPECT_EQ(kNotifications,
               incognito_url1_permissions[0].FindKey("type")->GetString());
@@ -867,20 +820,9 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     EXPECT_EQ(kEmbargo,
               incognito_url1_permissions[0].FindKey("source")->GetString());
 
-    EXPECT_EQ(kFlash,
-              incognito_url1_permissions[1].FindKey("type")->GetString());
-    EXPECT_EQ(kAllowed,
-              incognito_url1_permissions[1].FindKey("setting")->GetString());
-    EXPECT_EQ(kPreference,
-              incognito_url1_permissions[1].FindKey("source")->GetString());
-
     EXPECT_EQ(kNotifications, url1_permissions[0].FindKey("type")->GetString());
     EXPECT_EQ(kBlocked, url1_permissions[0].FindKey("setting")->GetString());
     EXPECT_EQ(kEmbargo, url1_permissions[0].FindKey("source")->GetString());
-
-    EXPECT_EQ(kFlash, url2_permissions[0].FindKey("type")->GetString());
-    EXPECT_EQ(kAllowed, url2_permissions[0].FindKey("setting")->GetString());
-    EXPECT_EQ(kPreference, url2_permissions[0].FindKey("source")->GetString());
   }
 }
 
@@ -1389,55 +1331,6 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
                  CONTENT_SETTING_ASK,
                  site_settings::SiteSettingSource::kDefault, 4U);
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(SiteSettingsHandlerTest, ChangingFlashSettingForSiteIsRemembered) {
-  ChromePluginServiceFilter::GetInstance()->RegisterProfile(profile());
-  FlashContentSettingsChangeWaiter waiter(profile());
-
-  const std::string origin_with_port("https://www.example.com:443");
-  // The display name won't show the port if it's default for that scheme.
-  const std::string origin("https://www.example.com");
-  base::ListValue get_args;
-  get_args.AppendString(kCallbackId);
-  get_args.AppendString(origin_with_port);
-  const GURL url(origin_with_port);
-
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  // Make sure the site being tested doesn't already have this marker set.
-  EXPECT_EQ(nullptr,
-            map->GetWebsiteSetting(url, url, ContentSettingsType::PLUGINS_DATA,
-                                   std::string(), nullptr));
-
-  // Change the Flash setting.
-  base::ListValue set_args;
-  set_args.AppendString(origin_with_port);
-  {
-    auto category_list = std::make_unique<base::ListValue>();
-    category_list->AppendString(kFlash);
-    set_args.Append(std::move(category_list));
-  }
-  set_args.AppendString(
-      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
-  handler()->HandleSetOriginPermissions(&set_args);
-  EXPECT_EQ(1U, web_ui()->call_data().size());
-  waiter.Wait();
-
-  // Check that this site has now been marked for displaying Flash always, then
-  // clear it and check this works.
-  EXPECT_NE(nullptr,
-            map->GetWebsiteSetting(url, url, ContentSettingsType::PLUGINS_DATA,
-                                   std::string(), nullptr));
-  base::ListValue clear_args;
-  clear_args.AppendString(origin_with_port);
-  handler()->HandleSetOriginPermissions(&set_args);
-  handler()->HandleClearFlashPref(&clear_args);
-  EXPECT_EQ(nullptr,
-            map->GetWebsiteSetting(url, url, ContentSettingsType::PLUGINS_DATA,
-                                   std::string(), nullptr));
-}
-#endif
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetForInvalidURLs) {
   const std::string origin("arbitrary string");

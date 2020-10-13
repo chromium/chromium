@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
@@ -32,7 +31,6 @@ class SiteDataSizeCollector {
       std::list<browsing_data::FileSystemHelper::FileSystemInfo>;
   using ServiceWorkerUsageInfoList = std::list<content::StorageUsageInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
-  using FlashLSODomainList = std::vector<std::string>;
 
   SiteDataSizeCollector(
       const base::FilePath& default_storage_partition_path,
@@ -43,8 +41,7 @@ class SiteDataSizeCollector {
       browsing_data::IndexedDBHelper* indexed_db_helper,
       browsing_data::FileSystemHelper* file_system_helper,
       browsing_data::ServiceWorkerHelper* service_worker_helper,
-      browsing_data::CacheStorageHelper* cache_storage_helper,
-      BrowsingDataFlashLSOHelper* flash_lso_helper);
+      browsing_data::CacheStorageHelper* cache_storage_helper);
   virtual ~SiteDataSizeCollector();
 
   using FetchCallback = base::OnceCallback<void(int64_t)>;
@@ -68,7 +65,6 @@ class SiteDataSizeCollector {
       const ServiceWorkerUsageInfoList& service_worker_info_list);
   void OnCacheStorageModelInfoLoaded(
       const CacheStorageUsageInfoList& cache_storage_info_list);
-  void OnFlashLSOInfoLoaded(const FlashLSODomainList& domains);
 
   // Callback for when the size is fetched from each storage backend.
   void OnStorageSizeFetched(int64_t size);
@@ -86,7 +82,6 @@ class SiteDataSizeCollector {
   scoped_refptr<browsing_data::FileSystemHelper> file_system_helper_;
   scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper_;
   scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper_;
-  scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper_;
 
   // Callback called when sizes of all site data are fetched and accumulated.
   FetchCallback fetch_callback_;

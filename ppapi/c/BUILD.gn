@@ -134,7 +134,6 @@ source_set("c") {
     "private/ppb_uma_private.h",
     "private/ppb_x509_certificate_private.h",
     "private/ppp_find_private.h",
-    "private/ppp_flash_browser_operations.h",
     "private/ppp_instance_private.h",
     "private/ppp_pdf.h",
     "private/ppp_pexe_stream_handler.h",

@@ -80,9 +80,6 @@ int GetCategoryLabelID(CookieTreeNode::DetailedInfo::NodeType node_type) {
       {CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE,
        IDS_SETTINGS_COOKIES_CACHE_STORAGE},
 
-      {CookieTreeNode::DetailedInfo::TYPE_FLASH_LSO,
-       IDS_SETTINGS_COOKIES_FLASH_LSO},
-
       {CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSES,
        IDS_SETTINGS_COOKIES_MEDIA_LICENSE},
       {CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE,

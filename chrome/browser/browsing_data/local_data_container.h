@@ -26,7 +26,6 @@
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
 
-class BrowsingDataFlashLSOHelper;
 class CookiesTreeModel;
 class LocalDataContainer;
 
@@ -60,7 +59,6 @@ class LocalDataContainer {
       std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>;
   using CacheStorageUsageInfoList = std::list<content::StorageUsageInfo>;
   using AppCacheInfoList = std::list<content::StorageUsageInfo>;
-  using FlashLSODomainList = std::vector<std::string>;
   using MediaLicenseInfoList =
       std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>;
 
@@ -76,7 +74,6 @@ class LocalDataContainer {
       scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
       scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
       scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
-      scoped_refptr<BrowsingDataFlashLSOHelper> flash_data_helper,
       scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper);
   virtual ~LocalDataContainer();
 
@@ -98,7 +95,6 @@ class LocalDataContainer {
   friend class CookieTreeServiceWorkerNode;
   friend class CookieTreeSharedWorkerNode;
   friend class CookieTreeCacheStorageNode;
-  friend class CookieTreeFlashLSONode;
 
   // Callback methods to be invoked when fetching the data is complete.
   void OnAppCacheModelInfoLoaded(const AppCacheInfoList& appcache_info_list);
@@ -118,7 +114,6 @@ class LocalDataContainer {
   void OnSharedWorkerInfoLoaded(const SharedWorkerInfoList& shared_worker_info);
   void OnCacheStorageModelInfoLoaded(
       const CacheStorageUsageInfoList& cache_storage_info);
-  void OnFlashLSOInfoLoaded(const FlashLSODomainList& domains);
   void OnMediaLicenseInfoLoaded(const MediaLicenseInfoList& media_license_info);
 
   // Pointers to the helper objects, needed to retreive all the types of locally
@@ -134,7 +129,6 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper_;
   scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper_;
   scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper_;
-  scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper_;
   scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper_;
 
   // Storage for all the data that was retrieved through the helper objects.
@@ -150,7 +144,6 @@ class LocalDataContainer {
   ServiceWorkerUsageInfoList service_worker_info_list_;
   SharedWorkerInfoList shared_worker_info_list_;
   CacheStorageUsageInfoList cache_storage_info_list_;
-  FlashLSODomainList flash_lso_domain_list_;
   MediaLicenseInfoList media_license_info_list_;
 
   // A delegate, which must outlive this object. The update callbacks use the

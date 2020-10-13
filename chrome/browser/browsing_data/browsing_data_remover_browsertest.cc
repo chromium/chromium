@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
@@ -560,7 +559,6 @@ class BrowsingDataRemoverBrowserTest : public InProcessBrowserTest {
         new browsing_data::SharedWorkerHelper(storage_partition,
                                               profile->GetResourceContext()),
         new browsing_data::CacheStorageHelper(cache_storage_context),
-        BrowsingDataFlashLSOHelper::Create(profile),
         BrowsingDataMediaLicenseHelper::Create(file_system_context));
     base::RunLoop run_loop;
     CookiesTreeObserver observer(run_loop.QuitClosure());

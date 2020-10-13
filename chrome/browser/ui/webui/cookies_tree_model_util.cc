@@ -255,12 +255,6 @@ bool CookiesTreeModelUtil::GetCookieTreeNodeDictionary(
                           usage_info.last_modified)));
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_FLASH_LSO: {
-      dict->SetString(kKeyType, "flash_lso");
-
-      dict->SetString(kKeyDomain, node.GetDetailedInfo().flash_lso_domain);
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE: {
       dict->SetString(kKeyType, "media_license");
 

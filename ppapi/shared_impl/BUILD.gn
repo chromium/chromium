@@ -87,7 +87,6 @@ component("shared_impl") {
     "ppb_var_shared.h",
     "ppb_view_shared.cc",
     "ppb_view_shared.h",
-    "ppp_flash_browser_operations_shared.h",
     "ppp_instance_combined.cc",
     "ppp_instance_combined.h",
     "proxy_lock.cc",
