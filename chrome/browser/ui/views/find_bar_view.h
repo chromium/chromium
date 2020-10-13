@@ -43,7 +43,6 @@ class Textfield;
 ////////////////////////////////////////////////////////////////////////////////
 class FindBarView : public views::View,
                     public DropdownBarHostDelegate,
-                    public views::ButtonListener,
                     public views::TextfieldController {
  public:
   METADATA_HEADER(FindBarView);
@@ -81,9 +80,6 @@ class FindBarView : public views::View,
   // DropdownBarHostDelegate:
   void FocusAndSelectAll() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
@@ -93,6 +89,12 @@ class FindBarView : public views::View,
  private:
   // Starts finding |search_text|.  If the text is empty, stops finding.
   void Find(const base::string16& search_text);
+
+  // Find the next/previous occurrence of search text when clicking the
+  // next/previous button.
+  void FindNext(bool reverse = false);
+  // End the current find session and close the find bubble.
+  void EndFindSession();
 
   // Updates the appearance for the match count label.
   void UpdateMatchCountAppearance(bool no_match);

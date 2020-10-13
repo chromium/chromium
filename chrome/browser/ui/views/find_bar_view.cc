@@ -127,50 +127,67 @@ END_METADATA
 // FindBarView, public:
 
 FindBarView::FindBarView(FindBarHost* host) {
-  auto find_text = std::make_unique<views::Textfield>();
-  find_text->SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD);
-  find_text->SetDefaultWidthInChars(30);
-  find_text->SetMinimumWidthInChars(1);
+  auto find_text =
+      views::Builder<views::Textfield>()
+          .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND))
+          .SetBorder(views::NullBorder())
+          .SetDefaultWidthInChars(30)
+          .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
+          .SetMinimumWidthInChars(1)
+          .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
+          .Build();
+
+  // TODO(kerenzhu): set_controller() should be supported in Builder<TextField>.
   find_text->set_controller(this);
-  find_text->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND));
-  find_text->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
+
   find_text_ = AddChildView(std::move(find_text));
 
   SetHost(host);
 
-  auto match_count_text = std::make_unique<FindBarMatchCountLabel>();
-  match_count_text->SetCanProcessEventsWithinSubtree(false);
+  auto match_count_text = views::Builder<FindBarMatchCountLabel>()
+                              .SetCanProcessEventsWithinSubtree(false)
+                              .Build();
   match_count_text_ = AddChildView(std::move(match_count_text));
 
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetCanProcessEventsWithinSubtree(false);
+  auto separator = views::Builder<views::Separator>()
+                       .SetCanProcessEventsWithinSubtree(false)
+                       .Build();
   separator_ = AddChildView(std::move(separator));
 
-  auto find_previous_button = std::make_unique<views::ImageButton>(this);
-  SetCommonButtonAttributes(find_previous_button.get());
-  find_previous_button->SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON);
-  find_previous_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP));
-  find_previous_button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS));
+  auto find_previous_button =
+      views::Builder<views::ImageButton>()
+          .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
+          .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
+          .Build();
+  find_previous_button->set_callback(base::BindRepeating(
+      &FindBarView::FindNext, base::Unretained(this), true));
   find_previous_button_ = AddChildView(std::move(find_previous_button));
+  SetCommonButtonAttributes(find_previous_button_);
 
-  auto find_next_button = std::make_unique<views::ImageButton>(this);
-  SetCommonButtonAttributes(find_next_button.get());
-  find_next_button->SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON);
-  find_next_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP));
-  find_next_button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT));
+  auto find_next_button =
+      views::Builder<views::ImageButton>()
+          .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
+          .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
+          .Build();
+  find_next_button->set_callback(base::BindRepeating(
+      &FindBarView::FindNext, base::Unretained(this), false));
   find_next_button_ = AddChildView(std::move(find_next_button));
+  SetCommonButtonAttributes(find_next_button_);
 
-  auto close_button = std::make_unique<views::ImageButton>(this);
-  SetCommonButtonAttributes(close_button.get());
-  close_button->SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON);
-  close_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP));
-  close_button->SetAnimationDuration(base::TimeDelta());
+  auto close_button = views::Builder<views::ImageButton>()
+                          .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
+                          .SetTooltipText(l10n_util::GetStringUTF16(
+                              IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
+                          .SetAnimationDuration(base::TimeDelta())
+                          .Build();
+  close_button->set_callback(base::BindRepeating(&FindBarView::EndFindSession,
+                                                 base::Unretained(this)));
   close_button_ = AddChildView(std::move(close_button));
+  SetCommonButtonAttributes(close_button_);
 
   EnableCanvasFlippingForRTLUI(true);
 
@@ -213,8 +230,6 @@ FindBarView::FindBarView(FindBarHost* host) {
   match_count_text_->SetProperty(
       views::kMarginsKey,
       gfx::Insets(toast_label_vertical_margin + horizontal_margin));
-
-  find_text_->SetBorder(views::NullBorder());
 
   auto* manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -344,40 +359,6 @@ void FindBarView::FocusAndSelectAll() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FindBarView, views::ButtonListener implementation:
-
-void FindBarView::ButtonPressed(
-    views::Button* sender, const ui::Event& event) {
-  if (!find_bar_host_)
-    return;
-
-  switch (sender->GetID()) {
-    case VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON:
-    case VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON:
-      if (!find_text_->GetText().empty()) {
-        find_in_page::FindTabHelper* find_tab_helper =
-            find_in_page::FindTabHelper::FromWebContents(
-                find_bar_host_->GetFindBarController()->web_contents());
-        find_tab_helper->StartFinding(
-            find_text_->GetText(),
-            sender->GetID() ==
-                VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON, /* forward_direction */
-            false /* case_sensitive */,
-            true /* find_match */);
-      }
-      break;
-    case VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON:
-      find_bar_host_->GetFindBarController()->EndFindSession(
-          find_in_page::SelectionAction::kKeep,
-          find_in_page::ResultAction::kKeep);
-      break;
-    default:
-      NOTREACHED() << "Unknown button";
-      break;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // FindBarView, views::TextfieldController implementation:
 
 bool FindBarView::HandleKeyEvent(views::Textfield* sender,
@@ -462,6 +443,27 @@ void FindBarView::Find(const base::string16& search_text) {
         web_contents->GetBrowserContext());
     find_bar_state->SetLastSearchText(base::string16());
   }
+}
+
+void FindBarView::FindNext(bool reverse) {
+  if (!find_bar_host_)
+    return;
+  if (!find_text_->GetText().empty()) {
+    find_in_page::FindTabHelper* find_tab_helper =
+        find_in_page::FindTabHelper::FromWebContents(
+            find_bar_host_->GetFindBarController()->web_contents());
+    find_tab_helper->StartFinding(find_text_->GetText(),
+                                  !reverse, /* forward_direction */
+                                  false,    /* case_sensitive */
+                                  true /* find_match */);
+  }
+}
+
+void FindBarView::EndFindSession() {
+  if (!find_bar_host_)
+    return;
+  find_bar_host_->GetFindBarController()->EndFindSession(
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 }
 
 void FindBarView::UpdateMatchCountAppearance(bool no_match) {

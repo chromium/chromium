@@ -381,6 +381,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, InkDropHostView)
+VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
 VIEW_BUILDER_PROPERTY(base::TimeDelta, AnimationDuration)
 VIEW_BUILDER_PROPERTY(bool, AnimateOnStateChange)
 VIEW_BUILDER_PROPERTY(bool, HasInkDropActionOnClick)
