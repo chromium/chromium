@@ -225,6 +225,7 @@ android_resources("chrome_app_java_resources") {
     "//components/policy:app_restrictions_resources",
     "//components/strings:components_locale_settings_grd",
     "//components/strings:components_strings_grd",
+    "//components/subresource_filter/android:java_resources",
     "//components/translate/content/android:java_resources",
     "//content/public/android:content_java_resources",
     "//third_party/android_data_chart:android_data_chart_java_resources",

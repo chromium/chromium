@@ -14,11 +14,11 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.R;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
+import org.chromium.components.subresource_filter.R;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
 

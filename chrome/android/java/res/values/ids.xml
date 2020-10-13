@@ -23,9 +23,6 @@
     <item type="id" name="share_tab_group" />
     <item type="id" name="edit_group_name" />
 
-    <!-- InfoBar constants -->
-    <item type="id" name="subresource_filter_infobar_toggle" />
-
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
 

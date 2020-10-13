@@ -39,6 +39,12 @@ android_resources("weblayer_resources") {
     "//components/infobars/android:java_resources",
     "//components/page_info/android:java_resources",
     "//components/permissions/android:java_resources",
+
+    # TODO(crbug.com/1137713): Determine why the creation of
+    # //components/subresource_filter Java resources caused //weblayer's BundlePackageTest
+    # to fail without this dep even in advance of //weblayer depending on the code that uses these
+    # resources.
+    "//components/subresource_filter/android:java_resources",
     "//components/translate/content/android:java_resources",
     "//third_party/android_deps:material_design_java",
     "//weblayer:components_java_strings",
