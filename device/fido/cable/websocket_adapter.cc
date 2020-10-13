@@ -120,7 +120,8 @@ void WebSocketAdapter::OnDataFrame(bool finish,
 
   const size_t old_size = pending_message_.size();
   const size_t new_size = old_size + data_len;
-  if (type != network::mojom::WebSocketMessageType::BINARY ||
+  if ((type != network::mojom::WebSocketMessageType::BINARY &&
+       type != network::mojom::WebSocketMessageType::CONTINUATION) ||
       data_len > std::numeric_limits<uint32_t>::max() || new_size < old_size ||
       new_size > kMaxIncomingMessageSize) {
     FIDO_LOG(ERROR) << "invalid WebSocket frame (type: "
