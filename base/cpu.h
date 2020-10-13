@@ -98,11 +98,11 @@ class BASE_EXPORT CPU final {
     CPU::CoreType core_type;      // type of the cores in this cluster.
     uint32_t cluster_core_index;  // index of the first core in the cluster.
     uint64_t core_frequency_khz;
-    TimeDelta cumulative_cpu_time;
+    TimeDelta cumulative_time;
   };
   using TimeInState = std::vector<TimeInStateEntry>;
 
-  // Emits the device's cumulative CPU usage split by CPU cluster frequency
+  // For each CPU core, emits the cumulative time spent in different frequency
   // states into the output parameter (replacing its current contents). One
   // entry in the output parameter is added for each cluster core index
   // + frequency state combination with a non-zero CPU time value. Returns false
@@ -113,6 +113,17 @@ class BASE_EXPORT CPU final {
   // NOTE: Currently only supported on Linux/Android, and only on kernels with
   // cpufreq-stats driver.
   static bool GetTimeInState(TimeInState&);
+
+  // For each CPU core, emits the total cumulative wall time spent in any idle
+  // state into the output parameter (replacing its current contents). Returns
+  // false on failure. We return the usage via an output parameter to allow
+  // reuse of TimeInState's std::vector by the caller, e.g. to avoid allocations
+  // between repeated calls to this method.
+  //
+  // NOTE: Currently only supported on Linux/Android, and only on kernels with
+  // cpuidle driver.
+  using CoreIdleTimes = std::vector<TimeDelta>;
+  static bool GetCumulativeCoreIdleTimes(CoreIdleTimes&);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
         // defined(OS_AIX)
 
