@@ -43,11 +43,11 @@ declare_args() {
 
   # If true, the new implementation (experimental) of Blink-V8 bindings
   # (of IDL callback function) is used.
-  use_blink_v8_binding_new_idl_callback_function = false
+  use_blink_v8_binding_new_idl_callback_function = true
 
   # If true, the new implementation (experimental) of Blink-V8 bindings
   # (of IDL callback interface) is used.
-  use_blink_v8_binding_new_idl_callback_interface = false
+  use_blink_v8_binding_new_idl_callback_interface = true
 
   # If true, the new implementation (experimental) of Blink-V8 bindings
   # (of IDL dictionary) is used.
