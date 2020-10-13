@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -39,16 +38,6 @@ struct BLINK_COMMON_EXPORT
 
   static bool FromMojom(blink::mojom::ViewportStyle input,
                         blink::web_pref::ViewportStyle* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::AutoplayPolicy, blink::web_pref::AutoplayPolicy> {
-  static blink::mojom::AutoplayPolicy ToMojom(
-      blink::web_pref::AutoplayPolicy policy);
-
-  static bool FromMojom(blink::mojom::AutoplayPolicy input,
-                        blink::web_pref::AutoplayPolicy* out);
 };
 
 template <>
@@ -728,7 +717,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.do_not_update_selection_on_mutating_selection_range;
   }
 
-  static blink::web_pref::AutoplayPolicy autoplay_policy(
+  static blink::mojom::AutoplayPolicy autoplay_policy(
       const blink::web_pref::WebPreferences& r) {
     return r.autoplay_policy;
   }

@@ -351,7 +351,6 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
@@ -3449,18 +3448,18 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     // If autoplay is allowed by policy then force the no user gesture required
     // autoplay policy.
     web_prefs->autoplay_policy =
-        blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
+        blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   } else if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
              web_prefs->autoplay_policy ==
-                 blink::web_pref::AutoplayPolicy::
+                 blink::mojom::AutoplayPolicy::
                      kDocumentUserActivationRequired) {
     // If the autoplay disable settings feature is enabled and the autoplay
     // policy is set to using the unified policy then set the default autoplay
     // policy based on user preference.
     web_prefs->autoplay_policy =
         UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
-            ? blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired
-            : blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
+            ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
+            : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
 
   auto* native_theme = GetWebTheme();

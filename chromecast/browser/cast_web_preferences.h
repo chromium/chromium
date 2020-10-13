@@ -7,7 +7,7 @@
 
 #include <base/optional.h>
 #include <base/supports_user_data.h>
-#include <third_party/blink/public/common/web_preferences/web_preferences.h>
+#include <third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h>
 
 namespace chromecast {
 
@@ -18,7 +18,7 @@ class CastWebPreferences : public base::SupportsUserData::Data {
   struct Preferences {
     Preferences();
 
-    base::Optional<blink::web_pref::AutoplayPolicy> autoplay_policy;
+    base::Optional<blink::mojom::AutoplayPolicy> autoplay_policy;
     base::Optional<bool> hide_scrollbars;
     base::Optional<bool> javascript_enabled;
   };

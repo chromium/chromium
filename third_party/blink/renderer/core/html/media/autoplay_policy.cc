@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -395,11 +396,12 @@ void AutoplayPolicy::Trace(Visitor* visitor) const {
   visitor->Trace(autoplay_uma_helper_);
 }
 
-STATIC_ASSERT_ENUM(web_pref::AutoplayPolicy::kNoUserGestureRequired,
+STATIC_ASSERT_ENUM(mojom::blink::AutoplayPolicy::kNoUserGestureRequired,
                    AutoplayPolicy::Type::kNoUserGestureRequired);
-STATIC_ASSERT_ENUM(web_pref::AutoplayPolicy::kUserGestureRequired,
+STATIC_ASSERT_ENUM(mojom::blink::AutoplayPolicy::kUserGestureRequired,
                    AutoplayPolicy::Type::kUserGestureRequired);
-STATIC_ASSERT_ENUM(web_pref::AutoplayPolicy::kDocumentUserActivationRequired,
-                   AutoplayPolicy::Type::kDocumentUserActivationRequired);
+STATIC_ASSERT_ENUM(
+    mojom::blink::AutoplayPolicy::kDocumentUserActivationRequired,
+    AutoplayPolicy::Type::kDocumentUserActivationRequired);
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -71,7 +72,7 @@ class VideoAutoFullscreen : public testing::Test,
     frame_host_.Init(
         web_frame_client_.GetRemoteNavigationAssociatedInterfaces());
     GetWebView()->GetSettings()->SetAutoplayPolicy(
-        web_pref::AutoplayPolicy::kUserGestureRequired);
+        mojom::AutoplayPolicy::kUserGestureRequired);
 
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");

@@ -26,7 +26,7 @@
 #include "fuchsia/engine/switches.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
 namespace {
 
@@ -119,7 +119,7 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
   // Allow media to autoplay.
   // TODO(crbug.com/1067101): Provide a FIDL API to configure AutoplayPolicy.
   web_prefs->autoplay_policy =
-      blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
+      blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
 }
 
 void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(

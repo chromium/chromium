@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/common/pref_names.h"
@@ -95,11 +96,11 @@ class MediaEngagementScoreDetailsProviderImpl
     switch (web_ui_->GetWebContents()
                 ->GetOrCreateWebPreferences()
                 .autoplay_policy) {
-      case blink::web_pref::AutoplayPolicy::kNoUserGestureRequired:
+      case blink::mojom::AutoplayPolicy::kNoUserGestureRequired:
         return "no-user-gesture-required";
-      case blink::web_pref::AutoplayPolicy::kUserGestureRequired:
+      case blink::mojom::AutoplayPolicy::kUserGestureRequired:
         return "user-gesture-required";
-      case blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired:
+      case blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired:
         return "document-user-activation-required";
     }
   }

@@ -23,7 +23,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 
 namespace chromecast {
 
@@ -197,8 +196,8 @@ void WebviewController::HandleSetAutoMediaPlaybackPolicy(
 
   cast_prefs->preferences()->autoplay_policy =
       request.require_user_gesture()
-          ? blink::web_pref::AutoplayPolicy::kUserGestureRequired
-          : blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
+          ? blink::mojom::AutoplayPolicy::kUserGestureRequired
+          : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   UpdateWebkitPreferences(contents, cast_prefs);
 }
 

@@ -52,7 +52,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   bool ShrinksViewportContentToFit() const override;
   bool ViewportEnabled() const override;
   void SetAccelerated2dCanvasMSAASampleCount(int) override;
-  void SetAutoplayPolicy(web_pref::AutoplayPolicy) override;
+  void SetAutoplayPolicy(mojom::blink::AutoplayPolicy) override;
   void SetPreferCompositingToLCDTextEnabled(bool) override;
   void SetAccessibilityPasswordValuesEnabled(bool) override;
   void SetAllowFileAccessFromFileURLs(bool) override;

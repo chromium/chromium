@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/web_preferences/autoplay_policy.h"
 #include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
@@ -286,7 +285,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool do_not_update_selection_on_mutating_selection_range;
 
   // Defines the current autoplay policy.
-  AutoplayPolicy autoplay_policy;
+  blink::mojom::AutoplayPolicy autoplay_policy =
+      blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
 
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme

@@ -112,41 +112,6 @@ bool EnumTraits<blink::mojom::ViewportStyle, blink::web_pref::ViewportStyle>::
 }
 
 // static
-blink::mojom::AutoplayPolicy
-EnumTraits<blink::mojom::AutoplayPolicy, blink::web_pref::AutoplayPolicy>::
-    ToMojom(blink::web_pref::AutoplayPolicy style) {
-  switch (style) {
-    case blink::web_pref::AutoplayPolicy::kNoUserGestureRequired:
-      return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-    case blink::web_pref::AutoplayPolicy::kUserGestureRequired:
-      return blink::mojom::AutoplayPolicy::kUserGestureRequired;
-    case blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired:
-      return blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
-  }
-  NOTREACHED();
-  return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-}
-
-// static
-bool EnumTraits<blink::mojom::AutoplayPolicy, blink::web_pref::AutoplayPolicy>::
-    FromMojom(blink::mojom::AutoplayPolicy input,
-              blink::web_pref::AutoplayPolicy* out) {
-  switch (input) {
-    case blink::mojom::AutoplayPolicy::kNoUserGestureRequired:
-      *out = blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
-      return true;
-    case blink::mojom::AutoplayPolicy::kUserGestureRequired:
-      *out = blink::web_pref::AutoplayPolicy::kUserGestureRequired;
-      return true;
-    case blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired:
-      *out = blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 blink::mojom::EffectiveConnectionType EnumTraits<
     blink::mojom::EffectiveConnectionType,
     net::EffectiveConnectionType>::ToMojom(net::EffectiveConnectionType type) {
@@ -234,7 +199,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadPrimaryHoverType(&out->primary_hover_type) ||
       !data.ReadViewportStyle(&out->viewport_style) ||
       !data.ReadAnimationPolicy(&out->animation_policy) ||
-      !data.ReadAutoplayPolicy(&out->autoplay_policy) ||
       !data.ReadLowPriorityIframesThreshold(
           &out->low_priority_iframes_threshold) ||
       !data.ReadNetworkQualityEstimatorWebHoldback(
@@ -398,6 +362,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->media_controls_enabled = data.media_controls_enabled();
   out->do_not_update_selection_on_mutating_selection_range =
       data.do_not_update_selection_on_mutating_selection_range();
+  out->autoplay_policy = data.autoplay_policy();
   out->preferred_color_scheme = data.preferred_color_scheme();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();
   out->translate_service_available = data.translate_service_available();
