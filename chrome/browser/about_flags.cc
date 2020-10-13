@@ -2406,6 +2406,25 @@ const FeatureEntry::FeatureVariation kMetricsSettingsAndroidVariations[] = {
 };
 #endif  // defined(OS_ANDROID)
 
+#if !defined(OS_ANDROID)
+// SCT Auditing feature variations.
+const FeatureEntry::FeatureParam kSCTAuditingSamplingRateNone[] = {
+    {"sampling_rate", "0.0"}};
+const FeatureEntry::FeatureParam kSCTAuditingSamplingRateAlternativeOne[] = {
+    {"sampling_rate", "0.0001"}};
+const FeatureEntry::FeatureParam kSCTAuditingSamplingRateAlternativeTwo[] = {
+    {"sampling_rate", "0.001"}};
+
+const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
+    {"Sampling rate 0%", kSCTAuditingSamplingRateNone,
+     base::size(kSCTAuditingSamplingRateNone), nullptr},
+    {"Sampling rate 0.01%", kSCTAuditingSamplingRateAlternativeOne,
+     base::size(kSCTAuditingSamplingRateAlternativeOne), nullptr},
+    {"Sampling rate 0.1%", kSCTAuditingSamplingRateAlternativeTwo,
+     base::size(kSCTAuditingSamplingRateAlternativeTwo), nullptr},
+};
+#endif  // !defined(OS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6666,8 +6685,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"desktop-in-product-help-snooze",
      flag_descriptions::kDesktopInProductHelpSnoozeName,
      flag_descriptions::kDesktopInProductHelpSnoozeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(feature_engagement::kIPHDesktopSnoozeFeature)}
+     FEATURE_VALUE_TYPE(feature_engagement::kIPHDesktopSnoozeFeature)},
 #endif  // defined(TOOLKIT_VIEWS)
+
+#if !defined(OS_ANDROID)
+    {"sct-auditing", flag_descriptions::kSCTAuditingName,
+     flag_descriptions::kSCTAuditingDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSCTAuditing,
+                                    kSCTAuditingVariations,
+                                    "SCTAuditingVariations")},
+#endif  // !defined(OS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

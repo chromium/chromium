@@ -41660,6 +41660,7 @@ from previous Chrome versions.
   <int value="-1457775295" label="PasswordSearchMobile:disabled"/>
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
   <int value="-1456627355" label="EnableEmojiContextMenu:disabled"/>
+  <int value="-1456538122" label="SCTAuditing:enabled"/>
   <int value="-1456004000" label="VrShell:disabled"/>
   <int value="-1455852875" label="WebAuthentication:disabled"/>
   <int value="-1455559065"
@@ -43635,6 +43636,7 @@ from previous Chrome versions.
   <int value="557915559" label="CCTModuleCustomRequestHeader:enabled"/>
   <int value="558873715" label="SiteDetails:disabled"/>
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
+  <int value="561374433" label="SCTAuditing:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>

@@ -3414,6 +3414,11 @@ const char kPasswordsWeaknessCheckName[] = "Passwords weakness check";
 const char kPasswordsWeaknessCheckDescription[] =
     "Enables checking passwords for weakness in Password Check";
 
+const char kSCTAuditingName[] = "SCT auditing";
+const char kSCTAuditingDescription[] =
+    "Enables SCT auditing for users who have opted in to Safe Browsing "
+    "Extended Reporting.";
+
 const char kTabFreezeName[] = "Tab Freeze";
 const char kTabFreezeDescription[] =
     "Enables freezing eligible tabs when they have been backgrounded for 5 "

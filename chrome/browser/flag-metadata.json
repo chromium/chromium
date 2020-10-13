@@ -4122,6 +4122,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "sct-auditing",
+    "owners": [ "cthomp", "estark", "jdeblasio" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "send-uma-cellular",
     "owners": [ "thegreenfrog", "bling-flags" ],
     "expiry_milestone": 80
