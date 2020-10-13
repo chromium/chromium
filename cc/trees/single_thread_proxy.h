@@ -68,7 +68,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
     // need to record UKM in that case.
   }
   void SetUkmSmoothnessDestination(
-      UkmSmoothnessDataShared* ukm_smoothness_data) override {}
+      base::WritableSharedMemoryMapping ukm_smoothness_data) override {}
   void ClearHistory() override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;

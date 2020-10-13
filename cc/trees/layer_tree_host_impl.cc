@@ -60,6 +60,7 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
+#include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
@@ -498,6 +499,7 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   // Clear the UKM Manager so that we do not try to report when the
   // UKM System has shut down.
   compositor_frame_reporting_controller_->SetUkmManager(nullptr);
+  compositor_frame_reporting_controller_ = nullptr;
 }
 
 ThreadedInputHandler& LayerTreeHostImpl::GetInputHandler() {
@@ -4794,8 +4796,10 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
 }
 
 void LayerTreeHostImpl::SetUkmSmoothnessDestination(
-    UkmSmoothnessDataShared* ukm_smoothness_data) {
-  dropped_frame_counter_.SetUkmSmoothnessDestination(ukm_smoothness_data);
+    base::WritableSharedMemoryMapping ukm_smoothness_data) {
+  ukm_smoothness_mapping_ = std::move(ukm_smoothness_data);
+  dropped_frame_counter_.SetUkmSmoothnessDestination(
+      ukm_smoothness_mapping_.GetMemoryAs<UkmSmoothnessDataShared>());
 }
 
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {

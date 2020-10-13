@@ -959,8 +959,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // sticking around and potentially being reused.
   std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
 
-  base::MappedReadOnlyRegion ukm_smoothness_mapping_;
-
   // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
   // objects.
   base::WeakPtrFactory<LayerTreeHost> defer_main_frame_update_weak_ptr_factory_{

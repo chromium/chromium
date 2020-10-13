@@ -1864,12 +1864,12 @@ void LayerTreeHost::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
 base::ReadOnlySharedMemoryRegion
 LayerTreeHost::CreateSharedMemoryForSmoothnessUkm() {
   const auto size = sizeof(UkmSmoothnessDataShared);
-  ukm_smoothness_mapping_ = base::ReadOnlySharedMemoryRegion::Create(size);
-  if (!ukm_smoothness_mapping_.IsValid())
+  auto ukm_smoothness_mapping = base::ReadOnlySharedMemoryRegion::Create(size);
+  if (!ukm_smoothness_mapping.IsValid())
     return {};
   proxy_->SetUkmSmoothnessDestination(
-      ukm_smoothness_mapping_.mapping.GetMemoryAs<UkmSmoothnessDataShared>());
-  return std::move(ukm_smoothness_mapping_.region);
+      std::move(ukm_smoothness_mapping.mapping));
+  return std::move(ukm_smoothness_mapping.region);
 }
 
 void LayerTreeHost::SetRenderFrameObserver(

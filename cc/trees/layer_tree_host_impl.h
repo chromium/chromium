@@ -775,7 +775,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetActiveURL(const GURL& url, ukm::SourceId source_id);
 
   void SetUkmSmoothnessDestination(
-      UkmSmoothnessDataShared* ukm_smoothness_data);
+      base::WritableSharedMemoryMapping ukm_smoothness_data);
 
   CompositorFrameReportingController* compositor_frame_reporting_controller()
       const {
@@ -1175,6 +1175,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // True if we are measuring smoothness in TotalFrameCounter and
   // DroppedFrameCounter. Currently true when first contentful paint is done.
   bool is_measuring_smoothness_ = false;
+
+  base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

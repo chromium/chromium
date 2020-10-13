@@ -777,9 +777,9 @@ void ProxyImpl::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
 }
 
 void ProxyImpl::SetUkmSmoothnessDestination(
-    UkmSmoothnessDataShared* ukm_smoothness_data) {
+    base::WritableSharedMemoryMapping ukm_smoothness_data) {
   DCHECK(IsImplThread());
-  host_impl_->SetUkmSmoothnessDestination(ukm_smoothness_data);
+  host_impl_->SetUkmSmoothnessDestination(std::move(ukm_smoothness_data));
 }
 
 void ProxyImpl::ClearHistory() {

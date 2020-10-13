@@ -101,7 +101,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void RequestBeginMainFrameNotExpected(bool new_state) override;
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override;
   void SetUkmSmoothnessDestination(
-      UkmSmoothnessDataShared* ukm_smoothness_data) override;
+      base::WritableSharedMemoryMapping ukm_smoothness_data) override;
   void ClearHistory() override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;

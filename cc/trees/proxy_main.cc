@@ -692,12 +692,12 @@ void ProxyMain::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
 }
 
 void ProxyMain::SetUkmSmoothnessDestination(
-    UkmSmoothnessDataShared* ukm_smoothness_data) {
+    base::WritableSharedMemoryMapping ukm_smoothness_data) {
   DCHECK(IsMainThread());
   ImplThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProxyImpl::SetUkmSmoothnessDestination,
-                     base::Unretained(proxy_impl_.get()), ukm_smoothness_data));
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetUkmSmoothnessDestination,
+                                base::Unretained(proxy_impl_.get()),
+                                std::move(ukm_smoothness_data)));
 }
 
 void ProxyMain::ClearHistory() {
