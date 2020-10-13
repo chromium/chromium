@@ -25,6 +25,7 @@ class ShellContentClient : public ContentClient {
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
   blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
+  void AddAdditionalSchemes(Schemes* schemes) override;
 
  private:
   ShellOriginTrialPolicy origin_trial_policy_;

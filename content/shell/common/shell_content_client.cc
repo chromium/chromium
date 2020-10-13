@@ -67,4 +67,10 @@ blink::OriginTrialPolicy* ShellContentClient::GetOriginTrialPolicy() {
   return &origin_trial_policy_;
 }
 
+void ShellContentClient::AddAdditionalSchemes(Schemes* schemes) {
+#if defined(OS_ANDROID)
+  schemes->local_schemes.push_back(url::kContentScheme);
+#endif
+}
+
 }  // namespace content
