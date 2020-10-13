@@ -1541,10 +1541,15 @@
     "label": "//sql:sql_unittests",
     "type": "console_test_launcher",
   },
+  "standalone_angle_end2end_tests": {
+    "label": "//third_party/angle/src/tests:standalone_angle_end2end_tests",
+    "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+    "type": "script",
+  },
   "standalone_angle_unittests": {
     "label": "//third_party/angle/src/tests:standalone_angle_unittests",
-    "type": "script",
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
+    "type": "script",
   },
   "storage_unittests": {
     "label": "//storage:storage_unittests",

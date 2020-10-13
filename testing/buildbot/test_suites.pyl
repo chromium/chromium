@@ -1951,25 +1951,29 @@
     },
 
     'gpu_angle_end2end_gtests': {
-      'angle_end2end_tests': {
+      'standalone_angle_end2end_tests': {
         'android_args': [
-          '--shard-timeout=180'
+          '--shard-timeout=180',
+          '-v',
         ],
-        'desktop_args': [
-          '--use-gpu-in-tests',
-        ],
-        'args': [
-          # ANGLE test retries deliberately disabled to prevent flakiness.
-          # http://crbug.com/669196
-          '--test-launcher-retry-limit=0',
-          '--test-launcher-batch-limit=256',
-          '--gtest_filter=-*Vulkan_SwiftShader*',
-        ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
-        'swarming': {
+        'android_swarming': {
           'shards': 4,
         },
+        'args': [
+          'standalone_angle_end2end_tests',
+          '--gtest_filter=-*Vulkan_SwiftShader*',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        # Linux has issues with creating too many windows at once.
+        'linux_args': [
+          '--max-processes=4',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'use_isolated_scripts_api': True,
       },
     },
 
@@ -4097,15 +4101,16 @@
           '--test-launcher-retry-limit=0',
         ],
       },
-      'angle_end2end_tests': {
+      'standalone_angle_end2end_tests': {
         'args': [
+          'standalone_angle_end2end_tests',
+          '--bot-mode',
           '--gtest_filter=*Vulkan_SwiftShader*',
-          '--test-launcher-batch-limit=512',
-          '--test-launcher-retry-limit=0',
         ],
-        'swarming': {
-          'shards': 2,
-        },
+        'linux_args': [
+          '--xvfb',
+        ],
+        'use_isolated_scripts_api': True,
       },
     },
 

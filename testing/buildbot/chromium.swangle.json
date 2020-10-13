@@ -274,14 +274,15 @@
       },
       {
         "args": [
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
           "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -295,11 +296,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -506,14 +507,15 @@
       },
       {
         "args": [
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
           "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -527,11 +529,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -738,14 +740,15 @@
       },
       {
         "args": [
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
           "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -759,11 +762,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -970,14 +973,15 @@
       },
       {
         "args": [
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
           "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -991,11 +995,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -1202,14 +1206,15 @@
       },
       {
         "args": [
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
           "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1223,11 +1228,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -1434,14 +1439,15 @@
       },
       {
         "args": [
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
           "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1455,11 +1461,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -1795,13 +1801,13 @@
       },
       {
         "args": [
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1815,11 +1821,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -2019,13 +2025,13 @@
       },
       {
         "args": [
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2039,11 +2045,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -2243,13 +2249,13 @@
       },
       {
         "args": [
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2263,11 +2269,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -2467,13 +2473,13 @@
       },
       {
         "args": [
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2487,11 +2493,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -2691,13 +2697,13 @@
       },
       {
         "args": [
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2711,11 +2717,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   },
@@ -2915,13 +2921,13 @@
       },
       {
         "args": [
-          "--gtest_filter=*Vulkan_SwiftShader*",
-          "--test-launcher-batch-limit=512",
-          "--test-launcher-retry-limit=0"
+          "standalone_angle_end2end_tests",
+          "--bot-mode",
+          "--gtest_filter=*Vulkan_SwiftShader*"
         ],
         "merge": {
           "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2935,11 +2941,11 @@
           ],
           "hard_timeout": 900,
           "io_timeout": 900,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_end2end_tests/"
+        "test": "standalone_angle_end2end_tests",
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
+        "use_isolated_scripts_api": true
       }
     ]
   }
