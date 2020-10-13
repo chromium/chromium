@@ -408,12 +408,16 @@ IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, CountryCodes) {
   TapOnGetStartedAndWaitForScreenExit();
   WaitForBackendRequest();
   EXPECT_EQ(GetRequestedCountryCode(), param.country_code);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.MarketingOptInScreen.Event." + std::string(param.country_code),
+  const auto event =
       (param.is_default_opt_in)
           ? MarketingOptInScreen::Event::kUserOptedInWhenDefaultIsOptIn
-          : MarketingOptInScreen::Event::kUserOptedInWhenDefaultIsOptOut,
-      1);
+          : MarketingOptInScreen::Event::kUserOptedInWhenDefaultIsOptOut;
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.MarketingOptInScreen.Event." + std::string(param.country_code),
+      event, 1);
+  // Expect a generic event in addition to the country specific one.
+  histogram_tester_.ExpectUniqueSample("OOBE.MarketingOptInScreen.Event", event,
+                                       1);
 
   // Expect successful geolocation resolve.
   ExpectGeolocationMetric(true, std::string(param.country_code).size());
