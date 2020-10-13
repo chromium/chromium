@@ -311,6 +311,8 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
   if (policy_invalidator_)
     policy_invalidator_->Shutdown();
+  if (commands_invalidator_)
+    commands_invalidator_->Shutdown();
 }
 
 MachineLevelUserCloudPolicyManager*
@@ -393,7 +395,6 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
             ->core(),
         base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
     commands_invalidator_->Initialize(invalidation_service_.get());
-    commands_invalidator_->Start();
   }
 }
 
