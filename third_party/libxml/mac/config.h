@@ -1,6 +1,9 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* A form that will not confuse apibuild.py */
+#define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
+
 /* Type cast for the gethostbyname() argument */
 #define GETHOSTBYNAME_ARG_CAST /**/
 
@@ -9,6 +12,9 @@
 
 /* Define to 1 if you have the <arpa/nameser.h> header file. */
 #define HAVE_ARPA_NAMESER_H 1
+
+/* Define if __attribute__((destructor)) is accepted */
+#define HAVE_ATTRIBUTE_DESTRUCTOR 1
 
 /* Whether struct sockaddr::__ss_family exists */
 /* #undef HAVE_BROKEN_SS_FAMILY */
@@ -240,19 +246,19 @@
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME ""
+#define PACKAGE_NAME "libxml2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING ""
+#define PACKAGE_STRING "libxml2 2.9.10"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME ""
+#define PACKAGE_TARNAME "libxml2"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION ""
+#define PACKAGE_VERSION "2.9.10"
 
 /* Type cast for the send() function 2nd arg */
 #define SEND_ARG2_CAST /**/

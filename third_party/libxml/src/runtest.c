@@ -105,6 +105,7 @@ struct testDesc {
 };
 
 static int update_results = 0;
+static char* temp_directory = NULL;
 static int checkTestFile(const char *filename);
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -1699,7 +1700,7 @@ saxParseTest(const char *filename, const char *result,
     char *temp;
 
     nb_tests++;
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "out of memory\n");
         fatalError();
@@ -1818,7 +1819,7 @@ oldParseTest(const char *filename, const char *result,
 #endif
     if (doc == NULL)
         return(1);
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "out of memory\n");
         fatalError();
@@ -2030,7 +2031,7 @@ noentParseTest(const char *filename, const char *result,
     doc = xmlReadFile(filename, NULL, options);
     if (doc == NULL)
         return(1);
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -2107,15 +2108,15 @@ errParseTest(const char *filename, const char *result, const char *err,
 	    xmlDocDumpMemory(doc, (xmlChar **) &base, &size);
 	}
 	res = compareFileMem(result, base, size);
-	if (res != 0) {
-	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
-	    return(-1);
-	}
     }
     if (doc != NULL) {
 	if (base != NULL)
 	    xmlFree((char *)base);
 	xmlFreeDoc(doc);
+    }
+    if (res != 0) {
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
+        return(-1);
     }
     if (err != NULL) {
 	res = compareFileMem(err, testErrors, testErrorsSize);
@@ -2177,7 +2178,7 @@ streamProcessTest(const char *filename, const char *result, const char *err,
 
     nb_tests++;
     if (result != NULL) {
-	temp = resultFilename(filename, "", ".res");
+	temp = resultFilename(filename, temp_directory, ".res");
 	if (temp == NULL) {
 	    fprintf(stderr, "Out of memory\n");
 	    fatalError();
@@ -2406,7 +2407,7 @@ xpathCommonTest(const char *filename, const char *result,
     int len, ret = 0;
     char *temp;
 
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -2605,7 +2606,7 @@ xmlidDocTest(const char *filename,
 	return(-1);
     }
 
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -2703,7 +2704,7 @@ uriCommonTest(const char *filename,
     char str[1024];
     int res = 0, i, ret;
 
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -3007,7 +3008,7 @@ schemasOneTest(const char *sch,
 	return(-1);
     }
 
-    temp = resultFilename(result, "", ".res");
+    temp = resultFilename(result, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -3178,7 +3179,7 @@ rngOneTest(const char *sch,
 	return(-1);
     }
 
-    temp = resultFilename(result, "", ".res");
+    temp = resultFilename(result, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -3528,7 +3529,7 @@ patternTest(const char *filename,
         fprintf(stderr, "Failed to open %s\n", filename);
 	return(-1);
     }
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -4565,6 +4566,8 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 	    update_results = 1;
         else if (!strcmp(argv[a], "-quiet"))
 	    tests_quiet = 1;
+        else if (!strcmp(argv[a], "--out"))
+	    temp_directory = argv[++a];
 	else {
 	    for (i = 0; testDescriptions[i].func != NULL; i++) {
 	        if (strstr(testDescriptions[i].desc, argv[a])) {

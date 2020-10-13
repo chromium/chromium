@@ -1334,8 +1334,12 @@ xmlBufGetInputBase(xmlBufPtr buf, xmlParserInputPtr input) {
 int
 xmlBufSetInputBaseCur(xmlBufPtr buf, xmlParserInputPtr input,
                       size_t base, size_t cur) {
-    if ((input == NULL) || (buf == NULL) || (buf->error))
+    if (input == NULL)
         return(-1);
+    if ((buf == NULL) || (buf->error)) {
+        input->base = input->cur = input->end = BAD_CAST "";
+        return(-1);
+    }
     CHECK_COMPAT(buf)
     input->base = &buf->content[base];
     input->cur = input->base + cur;

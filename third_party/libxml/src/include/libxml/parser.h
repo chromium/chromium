@@ -231,7 +231,7 @@ struct _xmlParserCtxt {
     int                nameMax;       /* Max depth of the parsing stack */
     const xmlChar *   *nameTab;       /* array of nodes */
 
-    long               nbChars;       /* number of xmlChar processed */
+    long               nbChars;       /* unused */
     long            checkIndex;       /* used by progressive parsing lookup */
     int             keepBlanks;       /* ugly but ... */
     int             disableSAX;       /* SAX callbacks are disabled */
