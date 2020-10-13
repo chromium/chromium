@@ -14,7 +14,7 @@ RepeatedTreeChangeHandlerTest = class extends ChromeVoxNextE2ETest {};
 TEST_F(
     'RepeatedTreeChangeHandlerTest', 'RepeatedTreeChangeHandledOnce',
     function() {
-      this.runWithLoadedTree('', (root) => {
+      this.runWithLoadedDesktop(() => {
         this.handlerCallCount = 0;
         const handler = () => this.handlerCallCount++;
 
@@ -34,7 +34,7 @@ TEST_F(
     });
 
 TEST_F('RepeatedTreeChangeHandlerTest', 'Predicate', function() {
-  this.runWithLoadedTree('', (root) => {
+  this.runWithLoadedDesktop(() => {
     this.handlerCallCount = 0;
     const handler = () => this.handlerCallCount++;
 

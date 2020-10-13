@@ -9,11 +9,11 @@ SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {};
 
 TEST_F('SwitchAccessGroupNodeTest', 'NodesRemoved', function() {
   const website = `<button></button>`;
-  this.runWithLoadedTree(website, (desktop) => {
-    const button = desktop.find({role: chrome.automation.RoleType.BUTTON});
+  this.runWithLoadedTree(website, (rootNode) => {
+    const button = rootNode.find({role: chrome.automation.RoleType.BUTTON});
     assertNotEquals(undefined, button);
 
-    const root = new BasicRootNode(desktop);
+    const root = new BasicRootNode(rootNode);
     assertEquals(0, root.children_.length);
 
     // Add a group child which has two buttons (same underlying automation

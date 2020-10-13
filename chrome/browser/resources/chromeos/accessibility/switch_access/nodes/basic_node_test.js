@@ -15,8 +15,8 @@ TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
                      </div>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (desktop) => {
-    const slider = desktop.find({role: chrome.automation.RoleType.SLIDER});
+  this.runWithLoadedTree(website, (root) => {
+    const slider = root.find({role: chrome.automation.RoleType.SLIDER});
     const inner = slider.parent;
     assertNotEquals(undefined, inner, 'Could not find inner group');
     const outer = inner.parent;
@@ -42,7 +42,7 @@ TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
 });
 
 TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop((desktop) => {
     const desktopNode = DesktopNode.build(desktop);
 
     let childGroup = desktopNode.firstChild;
@@ -115,9 +115,9 @@ TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
   const website = `<input type="text">
                    <button></button>
                    <input type="range" min=1 max=5 value=3>`;
-  this.runWithLoadedTree(website, (desktop) => {
+  this.runWithLoadedTree(website, (root) => {
     const textField = BasicNode.create(
-        desktop.find({role: chrome.automation.RoleType.TEXT_FIELD}),
+        root.find({role: chrome.automation.RoleType.TEXT_FIELD}),
         new SARootNode());
 
     assertEquals(
@@ -134,8 +134,7 @@ TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
         'Text field has action SELECT');
 
     const button = BasicNode.create(
-        desktop.find({role: chrome.automation.RoleType.BUTTON}),
-        new SARootNode());
+        root.find({role: chrome.automation.RoleType.BUTTON}), new SARootNode());
 
     assertEquals(
         chrome.automation.RoleType.BUTTON, button.role,
@@ -151,8 +150,7 @@ TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
         'Button has action DICTATION');
 
     const slider = BasicNode.create(
-        desktop.find({role: chrome.automation.RoleType.SLIDER}),
-        new SARootNode());
+        root.find({role: chrome.automation.RoleType.SLIDER}), new SARootNode());
 
     assertEquals(
         chrome.automation.RoleType.SLIDER, slider.role,

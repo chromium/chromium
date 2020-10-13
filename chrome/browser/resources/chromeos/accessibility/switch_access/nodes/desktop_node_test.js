@@ -8,7 +8,7 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 SwitchAccessDesktopNodeTest = class extends SwitchAccessE2ETest {};
 
 TEST_F('SwitchAccessDesktopNodeTest', 'Build', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop((desktop) => {
     const desktopNode = DesktopNode.build(desktop);
 
     const children = desktopNode.children;

@@ -45,7 +45,7 @@ function runTextNavigationTest(testHelper, textParams) {
   const website = generateWebsiteWithTextArea(
       textId, textContent, initialTextIndex, textCols, textWrap);
 
-  testHelper.runWithLoadedTree(website, function(desktop) {
+  testHelper.runWithLoadedTree(website, function(root) {
     const inputNode = this.findNodeById(textId);
     assertNotEquals(inputNode, null);
 
@@ -104,7 +104,7 @@ function runTextSelectionTest(testHelper, textParams) {
     navigationTargetIndex = targetTextStartIndex;
   }
 
-  testHelper.runWithLoadedTree(website, function(desktop) {
+  testHelper.runWithLoadedTree(website, function(root) {
     const inputNode = this.findNodeById(textId);
     assertNotEquals(inputNode, null);
     checkNodeIsFocused(inputNode);
@@ -314,7 +314,7 @@ TEST_F(
       const website =
           generateWebsiteWithTextArea('test', 'test123', 3, 20, 'hard');
 
-      this.runWithLoadedTree(website, function(desktop) {
+      this.runWithLoadedTree(website, function(root) {
         const inputNode = this.findNodeById('test');
         assertNotEquals(inputNode, null);
         checkNodeIsFocused(inputNode);
@@ -335,7 +335,7 @@ TEST_F(
       const website =
           generateWebsiteWithTextArea('test', 'test 123', 6, 20, 'hard');
 
-      this.runWithLoadedTree(website, function(desktop) {
+      this.runWithLoadedTree(website, function(root) {
         const inputNode = this.findNodeById('test');
         assertNotEquals(inputNode, null);
         checkNodeIsFocused(inputNode);

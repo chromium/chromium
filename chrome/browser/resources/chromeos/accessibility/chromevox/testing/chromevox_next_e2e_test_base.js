@@ -89,10 +89,6 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
 
   /** @override */
   runWithLoadedTree(doc, callback, opt_params = {}) {
-    if (opt_params.returnPage === undefined) {
-      opt_params.returnPage = true;
-    }
-
     callback = this.newCallback(callback);
     const wrappedCallback = (node) => {
       CommandHandler.onCommand('nextObject');

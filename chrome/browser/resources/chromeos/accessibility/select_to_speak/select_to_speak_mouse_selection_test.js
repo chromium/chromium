@@ -48,7 +48,7 @@ TEST_F('SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked', function() {
   this.runWithLoadedTree(
       'data:text/html;charset=utf-8,' +
           '<p>This is some text</p>',
-      function(desktop) {
+      function(root) {
         assertFalse(this.mockTts.currentlySpeaking());
         assertEquals(this.mockTts.pendingUtterances().length, 0);
         this.mockTts.setOnSpeechCallbacks(
@@ -59,7 +59,7 @@ TEST_F('SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked', function() {
               this.assertEqualsCollapseWhitespace(
                   this.mockTts.pendingUtterances()[0], 'This is some text');
             })]);
-        const textNode = this.findTextNode(desktop, 'This is some text');
+        const textNode = this.findTextNode(root, 'This is some text');
         const event = {
           screenX: textNode.location.left + 1,
           screenY: textNode.location.top + 1
@@ -74,7 +74,7 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p><p>This is some more text</p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 0);
             this.mockTts.setOnSpeechCallbacks([
@@ -89,13 +89,12 @@ TEST_F(
                     utterance, 'This is some more text');
               })
             ]);
-            const firstNode = this.findTextNode(desktop, 'This is some text');
+            const firstNode = this.findTextNode(root, 'This is some text');
             const downEvent = {
               screenX: firstNode.location.left + 1,
               screenY: firstNode.location.top + 1
             };
-            const lastNode =
-                this.findTextNode(desktop, 'This is some more text');
+            const lastNode = this.findTextNode(root, 'This is some more text');
             const upEvent = {
               screenX: lastNode.location.left + lastNode.location.width,
               screenY: lastNode.location.top + lastNode.location.height
@@ -111,7 +110,7 @@ TEST_F(
           'data:text/html;charset=utf-8,' +
               '<p style="width:200px">This is some text in a paragraph that wraps. ' +
               '<i>Italic text</i></p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 0);
             this.mockTts.setOnSpeechCallbacks(
@@ -124,12 +123,12 @@ TEST_F(
                           'Italic text');
                 })]);
             const firstNode = this.findTextNode(
-                desktop, 'This is some text in a paragraph that wraps. ');
+                root, 'This is some text in a paragraph that wraps. ');
             const downEvent = {
               screenX: firstNode.location.left + 1,
               screenY: firstNode.location.top + 1
             };
-            const lastNode = this.findTextNode(desktop, 'Italic text');
+            const lastNode = this.findTextNode(root, 'Italic text');
             const upEvent = {
               screenX: lastNode.location.left + lastNode.location.width,
               screenY: lastNode.location.top + lastNode.location.height
@@ -144,7 +143,7 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             this.mockTts.setOnSpeechCallbacks(
                 [this.newCallback(function(utterance) {
@@ -155,13 +154,14 @@ TEST_F(
                       this.mockTts.pendingUtterances()[0], 'This is some text');
                 })]);
 
-            const textNode = this.findTextNode(desktop, 'This is some text');
+            const textNode = this.findTextNode(root, 'This is some text');
             const event = {
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
             };
             // A state change request should shift us into 'selecting' state
             // from 'inactive'.
+            const desktop = root.parent.root;
             this.tapTrayButton(desktop, () => {
               selectToSpeak.fireMockMouseDownEvent(event);
               selectToSpeak.fireMockMouseUpEvent(event);
@@ -175,14 +175,15 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p>',
-          function(desktop) {
-            const textNode = this.findTextNode(desktop, 'This is some text');
+          function(root) {
+            const textNode = this.findTextNode(root, 'This is some text');
             const event = {
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
             };
             // A state change request should shift us into 'selecting' state
             // from 'inactive'.
+            const desktop = root.parent.root;
             this.tapTrayButton(desktop, () => {
               selectToSpeak.fireMockMouseDownEvent(event);
               assertEquals(SelectToSpeakState.SELECTING, selectToSpeak.state_);
@@ -200,7 +201,7 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 0);
             this.mockTts.setOnSpeechCallbacks(
@@ -212,6 +213,7 @@ TEST_F(
                       this.mockTts.pendingUtterances()[0], 'This is some text');
 
                   // Cancel speech and make sure state resets to INACTIVE.
+                  const desktop = root.parent.root;
                   this.tapTrayButton(desktop, () => {
                     assertFalse(this.mockTts.currentlySpeaking());
                     assertEquals(this.mockTts.pendingUtterances().length, 0);
@@ -219,7 +221,7 @@ TEST_F(
                         SelectToSpeakState.INACTIVE, selectToSpeak.state_);
                   });
                 })]);
-            const textNode = this.findTextNode(desktop, 'This is some text');
+            const textNode = this.findTextNode(root, 'This is some text');
             const event = {
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
@@ -237,7 +239,7 @@ TEST_F(
       // stylus may act as a laser pointer unless it taps on the stylus options
       // button, which always opens on a tap regardless of the stylus behavior
       // selected.
-      chrome.automation.getDesktop(this.newCallback((desktop) => {
+      this.runWithLoadedDesktop((desktop) => {
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
           const button = desktop.find({
@@ -266,5 +268,5 @@ TEST_F(
           selectToSpeak.fireMockMouseDownEvent(event);
           selectToSpeak.fireMockMouseUpEvent(event);
         });
-      }));
+      });
     });

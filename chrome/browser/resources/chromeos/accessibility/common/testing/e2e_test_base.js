@@ -84,21 +84,32 @@ E2ETestBase = class extends testing.Test {
   }
 
   /**
+   * Gets the desktop from the automation API and runs |callback|.
+   * Arranges to call |testDone()| after |callback| returns.
+   * NOTE: Callbacks created inside |opt_callback| must be wrapped with
+   * |this.newCallback| if passed to asynchronous calls.  Otherwise, the test
+   * will be finished prematurely.
+   * @param {function(chrome.automation.AutomationNode)} callback
+   *     Called with the desktop node once it's retrieved.
+   */
+  runWithLoadedDesktop(callback) {
+    chrome.automation.getDesktop(this.newCallback(callback));
+  }
+
+  /**
    * Gets the desktop from the automation API and Launches a new tab with
    * the given document, and runs |callback| when a load complete fires.
    * Arranges to call |testDone()| after |callback| returns.
-   * NOTE: Callbacks created inside |opt_callback| must be wrapped with
+   * NOTE: Callbacks created inside |callback| must be wrapped with
    * |this.newCallback| if passed to asynchronous calls.  Otherwise, the test
    * will be finished prematurely.
    * @param {string|function(): string} doc An HTML snippet, optionally wrapped
    *     inside of a function.
    * @param {function(chrome.automation.AutomationNode)} callback
-   *     Called once the document is ready.
-   * @param {{url: (string=), returnPage: (boolean=)}}
+   *     Called with the root web area node once the document is ready.
+   * @param {{url: (string=), returnDesktop: (boolean=)}}
    *     opt_params
    *           url Optional url to wait for. Defaults to undefined.
-   *           returnPage True if the node for the root web area should be
-   *               returned; otherwise the desktop will be returned.
    */
   runWithLoadedTree(doc, callback, opt_params = {}) {
     callback = this.newCallback(callback);
@@ -111,9 +122,10 @@ E2ETestBase = class extends testing.Test {
 
         desktop.removeEventListener('focus', listener, true);
         desktop.removeEventListener('loadComplete', listener, true);
-        callback && callback(opt_params.returnPage ? event.target : desktop);
+        callback && callback(event.target);
         callback = null;
       };
+
       this.desktop_ = desktop;
       desktop.addEventListener('focus', listener, true);
       desktop.addEventListener('loadComplete', listener, true);

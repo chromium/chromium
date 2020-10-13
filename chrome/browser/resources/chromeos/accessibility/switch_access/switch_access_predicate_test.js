@@ -128,7 +128,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsInteresting', function() {
     assertFalse(
         SwitchAccessPredicate.isInteresting(t.leaf7, null, cache),
         'Leaf7 should not be interesting');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessPredicateTest', 'IsGroup', function() {
@@ -178,7 +178,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsGroup', function() {
     assertFalse(
         SwitchAccessPredicate.isGroup(t.leaf7, null, cache),
         'Leaf7 should not be a group');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessPredicateTest', 'IsInterestingSubtree', function() {
@@ -225,7 +225,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsInterestingSubtree', function() {
     assertFalse(
         SwitchAccessPredicate.isInterestingSubtree(t.leaf7, cache),
         'Leaf7 should not be an interesting subtree');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessPredicateTest', 'IsActionable', function() {
@@ -238,7 +238,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsActionable', function() {
        <input type="range" aria-label="slider" value=5 min=0 max=10>
        <div id="clickable" role="listitem" onclick="2+2"></div>
        <div aria-label="div1"><p>p1</p></div>`;
-  this.runWithLoadedTree(treeString, (desktop) => {
+  this.runWithLoadedTree(treeString, (loadedPage) => {
     const cache = new SACache();
 
     const offscreenButton = this.findNodeByNameAndRole('offscreen', 'button');
@@ -251,13 +251,9 @@ TEST_F('SwitchAccessPredicateTest', 'IsActionable', function() {
         SwitchAccessPredicate.isActionable(disabledButton, cache),
         'Disabled objects should not be actionable');
 
-    const rwas =
-        desktop.findAll({role: chrome.automation.RoleType.ROOT_WEB_AREA});
-    for (const node of rwas) {
-      assertFalse(
-          SwitchAccessPredicate.isActionable(node, cache),
-          'Root web area should not be directly actionable');
-    }
+    assertFalse(
+        SwitchAccessPredicate.isActionable(loadedPage, cache),
+        'Root web area should not be directly actionable');
 
     const link1 = this.findNodeByNameAndRole('link1', 'link');
     assertTrue(
@@ -318,7 +314,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsActionableFocusableElements', function() 
          <p>p2</p>
          <p>p3</p>
        </div>`;
-  this.runWithLoadedTree(treeString, (desktop) => {
+  this.runWithLoadedTree(treeString, (loadedPage) => {
     const cache = new SACache();
 
     const noChildren = this.findNodeById('noChildren');
@@ -372,7 +368,7 @@ TEST_F('SwitchAccessPredicateTest', 'LeafPredicate', function() {
     assertTrue(leaf(t.leaf1), 'Leaf1 should be a leaf for lower1 tree');
     assertTrue(leaf(t.leaf2), 'Leaf2 should be a leaf for lower1 tree');
     assertTrue(leaf(t.leaf3), 'Leaf3 should be a leaf for lower1 tree');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessPredicateTest', 'RootPredicate', function() {
@@ -399,7 +395,7 @@ TEST_F('SwitchAccessPredicateTest', 'RootPredicate', function() {
     assertFalse(root(t.leaf1), 'Leaf1 should not be a root of the lower1 tree');
     assertFalse(root(t.leaf2), 'Leaf2 should not be a root of the lower1 tree');
     assertFalse(root(t.leaf3), 'Leaf3 should not be a root of the lower1 tree');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessPredicateTest', 'VisitPredicate', function() {
@@ -432,7 +428,7 @@ TEST_F('SwitchAccessPredicateTest', 'VisitPredicate', function() {
     assertFalse(visit(t.lower3), 'Lower3 should not be visited in lower1 tree');
     assertFalse(visit(t.leaf6), 'Leaf6 should not be visited in lower1 tree');
     assertFalse(visit(t.leaf7), 'Leaf7 should not be visited in lower1 tree');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessPredicateTest', 'Cache', function() {
@@ -476,5 +472,5 @@ TEST_F('SwitchAccessPredicateTest', 'Cache', function() {
     assertEquals(
         locationAccessCount, 1,
         'Cache should have been used, avoiding second location access');
-  }, {returnPage: true});
+  });
 });

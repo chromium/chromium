@@ -47,7 +47,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
 };
 
 TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabled', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedTree('', () => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
         'Auto scan manager is running prematurely');
@@ -76,7 +76,7 @@ TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabled', function() {
 });
 
 TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabledMultiple', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
         'Auto scan manager is running prematurely');
@@ -94,7 +94,7 @@ TEST_F('SwitchAccessAutoScanManagerTest', 'SetEnabledMultiple', function() {
 });
 
 TEST_F('SwitchAccessAutoScanManagerTest', 'EnableAndDisable', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
         'Auto scan manager is running prematurely');
@@ -116,7 +116,7 @@ TEST_F('SwitchAccessAutoScanManagerTest', 'EnableAndDisable', function() {
 
 TEST_F(
     'SwitchAccessAutoScanManagerTest', 'RestartIfRunningMultiple', function() {
-      this.runWithLoadedTree('', (desktop) => {
+      this.runWithLoadedDesktop(() => {
         assertFalse(
             AutoScanManager.instance.isRunning_(),
             'Auto scan manager is running prematurely');
@@ -140,7 +140,7 @@ TEST_F(
 
 TEST_F(
     'SwitchAccessAutoScanManagerTest', 'RestartIfRunningWhenOff', function() {
-      this.runWithLoadedTree('', (desktop) => {
+      this.runWithLoadedDesktop(() => {
         assertFalse(
             AutoScanManager.instance.isRunning_(),
             'Auto scan manager is running at start.');
@@ -152,7 +152,7 @@ TEST_F(
     });
 
 TEST_F('SwitchAccessAutoScanManagerTest', 'SetPrimaryScanTime', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
         'Auto scan manager is running prematurely');

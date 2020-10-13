@@ -62,9 +62,8 @@ AutoclickE2ETest = class extends E2ETestBase {
 
 TEST_F('AutoclickE2ETest', 'HighlightsRootWebAreaIfNotScrollable', function() {
   this.runWithLoadedTree(
-      'data:text/html;charset=utf-8,<p>Cats rock!</p>',
-      async function(desktop) {
-        const node = desktop.find(
+      'data:text/html;charset=utf-8,<p>Cats rock!</p>', async function(root) {
+        const node = root.find(
             {role: RoleType.STATIC_TEXT, attributes: {name: 'Cats rock!'}});
         await new Promise(resolve => {
           this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(
@@ -86,8 +85,8 @@ TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', function() {
           '<div style="width:100px;height:100px;overflow:scroll">' +
           '<div style="margin:50px">cats rock! this text wraps and overflows!' +
           '</div></div>',
-      async function(desktop) {
-        const node = desktop.find({
+      async function(root) {
+        const node = root.find({
           role: RoleType.STATIC_TEXT,
           attributes: {name: 'cats rock! this text wraps and overflows!'}
         });
@@ -110,8 +109,7 @@ TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', function() {
 
 TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', function() {
   this.runWithLoadedTree(
-      'data:text/html;charset=utf-8,<p>Cats rock!</p>',
-      async function(desktop) {
+      'data:text/html;charset=utf-8,<p>Cats rock!</p>', async function(root) {
         // Turn on screen magnifier so that when we turn off autoclick, the
         // extension doesn't get unloaded and crash the test.
         await new Promise(resolve => {
@@ -126,7 +124,7 @@ TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', function() {
         await new Promise(resolve => {
           chrome.accessibilityFeatures.autoclick.set({value: true}, resolve);
         });
-        const node = desktop.find(
+        const node = root.find(
             {role: RoleType.STATIC_TEXT, attributes: {name: 'Cats rock!'}});
         await new Promise(resolve => {
           this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(

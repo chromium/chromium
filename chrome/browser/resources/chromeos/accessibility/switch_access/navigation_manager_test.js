@@ -42,7 +42,8 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveTo', function() {
                      </div>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (desktop) => {
+  this.runWithLoadedTree(website, (root) => {
+    const desktop = root.parent.root;
     const textFields =
         desktop.findAll({role: chrome.automation.RoleType.TEXT_FIELD});
     assertEquals(2, textFields.length, 'Should be exactly 2 text fields.');
@@ -105,7 +106,8 @@ TEST_F('SwitchAccessNavigationManagerTest', 'JumpTo', function() {
                      <button></button>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (desktop) => {
+  this.runWithLoadedTree(website, (root) => {
+    const desktop = root.parent.root;
     const textInput =
         desktop.findAll({role: chrome.automation.RoleType.TEXT_FIELD})[1];
     assertNotNullNorUndefined(textInput, 'Text field is undefined');
@@ -163,7 +165,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'SelectButton', function() {
         }));
 
     NavigationManager.instance.node_.performAction('select');
-  }, {returnPage: true});
+  });
 });
 
 TEST_F('SwitchAccessNavigationManagerTest', 'EnterGroup', function() {
@@ -172,7 +174,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'EnterGroup', function() {
                      <button></button>
                    </div>
                    <input type="range">`;
-  this.runWithLoadedTree(website, (desktop) => {
+  this.runWithLoadedTree(website, (root) => {
     const targetGroup = this.findNodeById('group');
     this.navigator.moveTo_(targetGroup);
 
@@ -202,7 +204,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveForward', function() {
                      <button id="button2"></button>
                      <button id="button3"></button>
                    </div>`;
-  this.runWithLoadedTree(website, (desktop) => {
+  this.runWithLoadedTree(website, (root) => {
     this.navigator.moveTo_(this.findNodeById('button1'));
     const button1 = this.navigator.node_;
     assertFalse(
@@ -257,7 +259,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
                      <button id="button2"></button>
                      <button id="button3"></button>
                    </div>`;
-  this.runWithLoadedTree(website, (desktop) => {
+  this.runWithLoadedTree(website, (root) => {
     this.navigator.moveTo_(this.findNodeById('button1'));
     const button1 = this.navigator.node_;
     assertFalse(
@@ -310,7 +312,7 @@ TEST_F(
       const website = `<div>
                      <button id="button1"></button>
                    </div>`;
-      this.runWithLoadedTree(website, (desktop) => {
+      this.runWithLoadedTree(website, (root) => {
         this.navigator.moveTo_(this.findNodeById('button1'));
         const button1 = this.navigator.node_;
         assertFalse(

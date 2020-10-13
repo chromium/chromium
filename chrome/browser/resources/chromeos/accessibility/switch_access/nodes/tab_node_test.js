@@ -8,7 +8,7 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 SwitchAccessTabNodeTest = class extends SwitchAccessE2ETest {};
 
 TEST_F('SwitchAccessTabNodeTest', 'FindCloseButton', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop((desktop) => {
     const tab = desktop.find({role: chrome.automation.RoleType.TAB});
 
     // To find the close button, Switch Access relies on it being the only
@@ -24,7 +24,7 @@ TEST_F('SwitchAccessTabNodeTest', 'FindCloseButton', function() {
 });
 
 TEST_F('SwitchAccessTabNodeTest', 'Construction', function() {
-  this.runWithLoadedTree('', (desktop) => {
+  this.runWithLoadedDesktop((desktop) => {
     NavigationManager.instance.moveTo_(
         desktop.find({role: chrome.automation.RoleType.TAB}));
 

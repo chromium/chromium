@@ -47,11 +47,11 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
    *     extra whitespace, after this selection is triggered.
    */
   testSimpleTextAtKeystroke(text, anchorOffset, focusOffset, expected) {
-    this.testReadTextAtKeystroke('<p>' + text + '</p>', function(desktop) {
+    this.testReadTextAtKeystroke('<p>' + text + '</p>', function(root) {
       // Set the document selection. This will fire the changed event
       // above, allowing us to do the keystroke and test that speech
       // occurred properly.
-      const textNode = this.findTextNode(desktop, 'This is some text');
+      const textNode = this.findTextNode(root, 'This is some text');
       chrome.automation.setDocumentSelection({
         anchorObject: textNode,
         anchorOffset,
@@ -78,21 +78,20 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
    */
   testReadTextAtKeystroke(contents, setFocusCallback, expected) {
     setFocusCallback = this.newCallback(setFocusCallback);
-    this.runWithLoadedTree(
-        contents, function(desktop) {
-          // Add an event listener that will start the user interaction
-          // of the test once the selection is completed.
-          desktop.addEventListener(
-              'documentSelectionChanged', this.newCallback(function(event) {
-                this.triggerReadSelectedText();
-                assertTrue(this.mockTts.currentlySpeaking());
-                assertEquals(this.mockTts.pendingUtterances().length, 1);
-                this.assertEqualsCollapseWhitespace(
-                    this.mockTts.pendingUtterances()[0], expected);
-              }),
-              false);
-          setFocusCallback(desktop);
-        });
+    this.runWithLoadedTree(contents, function(root) {
+      // Add an event listener that will start the user interaction
+      // of the test once the selection is completed.
+      root.addEventListener(
+          'documentSelectionChanged', this.newCallback(function(event) {
+            this.triggerReadSelectedText();
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], expected);
+          }),
+          false);
+      setFocusCallback(root);
+    });
   }
 
   generateHtmlWithSelection(selectionCode, bodyHtml) {
@@ -138,9 +137,9 @@ TEST_F(
     function() {
       this.testReadTextAtKeystroke(
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>',
-          function(desktop) {
-            const firstNode = this.findTextNode(desktop, 'This is some ');
-            const lastNode = this.findTextNode(desktop, ' text');
+          function(root) {
+            const firstNode = this.findTextNode(root, 'This is some ');
+            const lastNode = this.findTextNode(root, ' text');
             chrome.automation.setDocumentSelection({
               anchorObject: firstNode,
               anchorOffset: 0,
@@ -156,10 +155,10 @@ TEST_F(
     'SpeaksAcrossNodesSelectedBackwardsAtKeystroke', function() {
       this.testReadTextAtKeystroke(
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>',
-          function(desktop) {
+          function(root) {
             // Set the document selection backwards in page order.
-            const lastNode = this.findTextNode(desktop, 'This is some ');
-            const firstNode = this.findTextNode(desktop, ' text');
+            const lastNode = this.findTextNode(root, 'This is some ');
+            const firstNode = this.findTextNode(root, ' text');
             chrome.automation.setDocumentSelection({
               anchorObject: firstNode,
               anchorOffset: 5,
@@ -176,9 +175,9 @@ TEST_F(
       // If you load this html and double-click on "Selected text", this is the
       // document selection that occurs -- into the second <br/> element.
 
-      let setFocusCallback = function(desktop) {
-        const firstNode = this.findTextNode(desktop, 'Selected text');
-        const lastNode = desktop.findAll({role: 'lineBreak'})[1];
+      let setFocusCallback = function(root) {
+        const firstNode = this.findTextNode(root, 'Selected text');
+        const lastNode = root.findAll({role: 'lineBreak'})[1];
         chrome.automation.setDocumentSelection({
           anchorObject: firstNode,
           anchorOffset: 0,
@@ -188,10 +187,10 @@ TEST_F(
       };
       setFocusCallback = this.newCallback(setFocusCallback);
       this.runWithLoadedTree(
-          '<br/><p>Selected text</p><br/>', function(desktop) {
+          '<br/><p>Selected text</p><br/>', function(root) {
             // Add an event listener that will start the user interaction
             // of the test once the selection is completed.
-            desktop.addEventListener(
+            root.addEventListener(
                 'documentSelectionChanged', this.newCallback(function(event) {
                   this.triggerReadSelectedText();
                   assertTrue(this.mockTts.currentlySpeaking());
@@ -203,7 +202,7 @@ TEST_F(
                   }
                 }),
                 false);
-            setFocusCallback(desktop);
+            setFocusCallback(root);
           });
     });
 
@@ -212,10 +211,10 @@ TEST_F(
     function() {
       this.testReadTextAtKeystroke(
           '<div id="empty"></div><div><p>This is some <b>bold</b> text</p></div>',
-          function(desktop) {
+          function(root) {
             const firstNode =
-                this.findTextNode(desktop, 'This is some ').root.children[0];
-            const lastNode = this.findTextNode(desktop, ' text');
+                this.findTextNode(root, 'This is some ').root.children[0];
+            const lastNode = this.findTextNode(root, ' text');
             chrome.automation.setDocumentSelection({
               anchorObject: firstNode,
               anchorOffset: 0,
@@ -231,10 +230,10 @@ TEST_F(
     function() {
       this.testReadTextAtKeystroke(
           '<div><p>This is some <span style="user-select:none">unselectable</span> text</p></div>',
-          function(desktop) {
+          function(root) {
             const firstNode =
-                this.findTextNode(desktop, 'This is some ').root.children[0];
-            const lastNode = this.findTextNode(desktop, ' text');
+                this.findTextNode(root, 'This is some ').root.children[0];
+            const lastNode = this.findTextNode(root, ' text');
             chrome.automation.setDocumentSelection({
               anchorObject: firstNode,
               anchorOffset: 0,
@@ -249,8 +248,8 @@ TEST_F(
     'SelectToSpeakKeystrokeSelectionTest',
     'HandlesSingleImageCorrectlyWithAutomation', function() {
       this.testReadTextAtKeystroke(
-          '<img src="pipe.jpg" alt="one"/>', function(desktop) {
-            const container = desktop.findAll({role: 'genericContainer'})[0];
+          '<img src="pipe.jpg" alt="one"/>', function(root) {
+            const container = root.findAll({role: 'genericContainer'})[0];
             chrome.automation.setDocumentSelection({
               anchorObject: container,
               anchorOffset: 0,
@@ -266,8 +265,8 @@ TEST_F(
       this.testReadTextAtKeystroke(
           '<img src="pipe.jpg" alt="one"/>' +
               '<img src="pipe.jpg" alt="two"/><img src="pipe.jpg" alt="three"/>',
-          function(desktop) {
-            const container = desktop.findAll({role: 'genericContainer'})[0];
+          function(root) {
+            const container = root.findAll({role: 'genericContainer'})[0];
             chrome.automation.setDocumentSelection({
               anchorObject: container,
               anchorOffset: 1,
