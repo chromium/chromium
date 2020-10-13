@@ -17,11 +17,31 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace base {
 
 namespace {
+
+constexpr char kMetricPrefixJob[] = "Job.";
+constexpr char kMetricWorkThroughput[] = "work_throughput";
+constexpr char kStoryNoOpNaive[] = "noop_naive";
+constexpr char kStoryBusyWaitNaive[] = "busy_wait_naive";
+constexpr char kStoryNoOpDynamic[] = "noop_dynamic";
+constexpr char kStoryNoOpDynamicDisrupted[] = "noop_dynamic_disrupted";
+constexpr char kStoryBusyWaitDynamic[] = "busy_wait_dynamic";
+constexpr char kStoryBusyWaitDynamicDisrupted[] = "busy_wait_dynamic_disrupted";
+constexpr char kStoryNoOpLoopAround[] = "noop_loop_around";
+constexpr char kStoryNoOpLoopAroundDisrupted[] = "noop_loop_around_disrupted";
+constexpr char kStoryBusyWaitLoopAround[] = "busy_wait_loop_around";
+constexpr char kStoryBusyWaitLoopAroundDisrupted[] =
+    "busy_wait_loop_around_disrupted";
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixJob, story_name);
+  reporter.RegisterImportantMetric(kMetricWorkThroughput, "tasks/ms");
+  return reporter;
+}
 
 // A thread-safe data structure that generates heuristic starting points in a
 // range to process items in parallel.
@@ -152,7 +172,7 @@ class JobPerfTest : public testing::Test {
   // Process |num_work_items| items with |process_item| in parallel. Work is
   // assigned by having each worker sequentially traversing all items and
   // acquiring unvisited ones.
-  void RunJobWithNaiveAssignment(const std::string& trace,
+  void RunJobWithNaiveAssignment(const std::string& story_name,
                                  size_t num_work_items,
                                  RepeatingCallback<void(size_t)> process_item) {
     WorkList work_list(num_work_items, std::move(process_item));
@@ -185,17 +205,17 @@ class JobPerfTest : public testing::Test {
     handle.Join();
     const TimeDelta job_duration = TimeTicks::Now() - job_run_start;
     EXPECT_EQ(0U, work_list.NumIncompleteWorkItems(0));
-    perf_test::PrintResult(
-        "Work throughput", "", trace,
-        size_t(num_work_items / job_duration.InMilliseconds()), "tasks/ms",
-        true);
+
+    auto reporter = SetUpReporter(story_name);
+    reporter.AddResult(kMetricWorkThroughput,
+                       size_t(num_work_items / job_duration.InMilliseconds()));
   }
 
   // Process |num_work_items| items with |process_item| in parallel. Work is
   // assigned dynamically having each new worker given a different point far
   // from other workers until all work is done. This is achieved by recursively
   // splitting each range that was previously given in half.
-  void RunJobWithDynamicAssignment(const std::string& trace,
+  void RunJobWithDynamicAssignment(const std::string& story_name,
                                    size_t num_work_items,
                                    RepeatingCallback<void(size_t)> process_item,
                                    bool disruptive_post_tasks = false) {
@@ -244,17 +264,17 @@ class JobPerfTest : public testing::Test {
     handle.Join();
     const TimeDelta job_duration = TimeTicks::Now() - job_run_start;
     EXPECT_EQ(0U, work_list.NumIncompleteWorkItems(0));
-    perf_test::PrintResult(
-        "Work throughput", "", trace,
-        size_t(num_work_items / job_duration.InMilliseconds()), "tasks/ms",
-        true);
+
+    auto reporter = SetUpReporter(story_name);
+    reporter.AddResult(kMetricWorkThroughput,
+                       size_t(num_work_items / job_duration.InMilliseconds()));
   }
 
   // Process |num_work_items| items with |process_item| in parallel. Work is
   // assigned having each new worker given a different starting point far from
   // other workers and loop over all work items from there. This is achieved by
   // recursively splitting each range that was previously given in half.
-  void RunJobWithLoopAround(const std::string& trace,
+  void RunJobWithLoopAround(const std::string& story_name,
                             size_t num_work_items,
                             RepeatingCallback<void(size_t)> process_item,
                             bool disruptive_post_tasks = false) {
@@ -306,10 +326,10 @@ class JobPerfTest : public testing::Test {
     handle.Join();
     const TimeDelta job_duration = TimeTicks::Now() - job_run_start;
     EXPECT_EQ(0U, work_list.NumIncompleteWorkItems(0));
-    perf_test::PrintResult(
-        "Work throughput", "", trace,
-        size_t(num_work_items / job_duration.InMilliseconds()), "tasks/ms",
-        true);
+
+    auto reporter = SetUpReporter(story_name);
+    reporter.AddResult(kMetricWorkThroughput,
+                       size_t(num_work_items / job_duration.InMilliseconds()));
   }
 
  private:
@@ -332,56 +352,57 @@ class JobPerfTest : public testing::Test {
 // - Busy wait + disrupted
 
 TEST_F(JobPerfTest, NoOpWorkNaiveAssignment) {
-  RunJobWithNaiveAssignment("No-Op naive", 10000000, DoNothing());
+  RunJobWithNaiveAssignment(kStoryNoOpNaive, 10000000, DoNothing());
 }
 
 TEST_F(JobPerfTest, BusyWaitNaiveAssignment) {
   RepeatingCallback<void(size_t)> callback =
       BusyWaitCallback(TimeDelta::FromMicroseconds(5));
-  RunJobWithNaiveAssignment("BusyWait naive", 500000, std::move(callback));
+  RunJobWithNaiveAssignment(kStoryBusyWaitNaive, 500000, std::move(callback));
 }
 
 TEST_F(JobPerfTest, NoOpWorkDynamicAssignment) {
-  RunJobWithDynamicAssignment("No-Op dynamic", 10000000, DoNothing());
+  RunJobWithDynamicAssignment(kStoryNoOpDynamic, 10000000, DoNothing());
 }
 
 TEST_F(JobPerfTest, NoOpDisruptedWorkDynamicAssignment) {
-  RunJobWithDynamicAssignment("No-Op dynamic disrupted", 10000000, DoNothing(),
+  RunJobWithDynamicAssignment(kStoryNoOpDynamicDisrupted, 10000000, DoNothing(),
                               true);
 }
 
 TEST_F(JobPerfTest, BusyWaitWorkDynamicAssignment) {
   RepeatingCallback<void(size_t)> callback =
       BusyWaitCallback(TimeDelta::FromMicroseconds(5));
-  RunJobWithDynamicAssignment("BusyWait dynamic", 500000, std::move(callback));
+  RunJobWithDynamicAssignment(kStoryBusyWaitDynamic, 500000,
+                              std::move(callback));
 }
 
 TEST_F(JobPerfTest, BusyWaitDisruptedWorkDynamicAssignment) {
   RepeatingCallback<void(size_t)> callback =
       BusyWaitCallback(TimeDelta::FromMicroseconds(5));
-  RunJobWithDynamicAssignment("BusyWait dynamic disrupted", 500000,
+  RunJobWithDynamicAssignment(kStoryBusyWaitDynamicDisrupted, 500000,
                               std::move(callback), true);
 }
 
 TEST_F(JobPerfTest, NoOpWorkLoopAround) {
-  RunJobWithLoopAround("No-Op loop around", 10000000, DoNothing());
+  RunJobWithLoopAround(kStoryNoOpLoopAround, 10000000, DoNothing());
 }
 
 TEST_F(JobPerfTest, NoOpDisruptedWorkLoopAround) {
-  RunJobWithLoopAround("No-Op loop around disrupted", 10000000, DoNothing(),
+  RunJobWithLoopAround(kStoryNoOpLoopAroundDisrupted, 10000000, DoNothing(),
                        true);
 }
 
 TEST_F(JobPerfTest, BusyWaitWorkLoopAround) {
   RepeatingCallback<void(size_t)> callback =
       BusyWaitCallback(TimeDelta::FromMicroseconds(5));
-  RunJobWithLoopAround("BusyWait loop around", 500000, std::move(callback));
+  RunJobWithLoopAround(kStoryBusyWaitLoopAround, 500000, std::move(callback));
 }
 
 TEST_F(JobPerfTest, BusyWaitDisruptedWorkLoopAround) {
   RepeatingCallback<void(size_t)> callback =
       BusyWaitCallback(TimeDelta::FromMicroseconds(5));
-  RunJobWithLoopAround("BusyWait loop around disrupted", 500000,
+  RunJobWithLoopAround(kStoryBusyWaitLoopAroundDisrupted, 500000,
                        std::move(callback), true);
 }
 
