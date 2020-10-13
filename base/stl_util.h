@@ -322,6 +322,23 @@ struct identity {
   using is_transparent = void;
 };
 
+// Simplified C++14 implementation of  C++20's std::to_address.
+// Note: This does not consider specializations of pointer_traits<>::to_address,
+// since that member function may only be present in C++20 and later.
+//
+// Reference: https://wg21.link/pointer.conversion#lib:to_address
+template <typename T>
+constexpr T* to_address(T* p) noexcept {
+  static_assert(!std::is_function<T>::value,
+                "Error: T must not be a function type.");
+  return p;
+}
+
+template <typename Ptr>
+constexpr auto to_address(const Ptr& p) noexcept {
+  return to_address(p.operator->());
+}
+
 // Returns a const reference to the underlying container of a container adapter.
 // Works for std::priority_queue, std::queue, and std::stack.
 template <class A>

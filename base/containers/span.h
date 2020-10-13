@@ -16,6 +16,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
+#include "base/containers/contiguous_iterator.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/template_util.h"
@@ -71,6 +72,15 @@ using IsNotCArray = negation<std::is_array<std::remove_reference_t<T>>>;
 
 template <typename From, typename To>
 using IsLegalDataConversion = std::is_convertible<From (*)[], To (*)[]>;
+
+template <typename Iter, typename T>
+using IteratorHasConvertibleReferenceType =
+    IsLegalDataConversion<std::remove_reference_t<iter_reference_t<Iter>>, T>;
+
+template <typename Iter, typename T>
+using EnableIfCompatibleContiguousIterator = std::enable_if_t<
+    conjunction<IsContiguousIterator<Iter>,
+                IteratorHasConvertibleReferenceType<Iter, T>>::value>;
 
 template <typename Container, typename T>
 using ContainerHasConvertibleData = IsLegalDataConversion<
@@ -250,14 +260,19 @@ class span : public internal::ExtentStorage<Extent> {
     static_assert(Extent == dynamic_extent || Extent == 0, "Invalid Extent");
   }
 
-  constexpr span(T* data, size_t size) noexcept
-      : ExtentStorage(size), data_(data) {
-    CHECK(Extent == dynamic_extent || Extent == size);
+  template <typename It,
+            typename = internal::EnableIfCompatibleContiguousIterator<It, T>>
+  constexpr span(It first, size_t count) noexcept
+      : ExtentStorage(count), data_(base::to_address(first)) {
+    CHECK(Extent == dynamic_extent || Extent == count);
   }
 
-  // Artificially templatized to break ambiguity for span(ptr, 0).
-  template <typename = void>
-  constexpr span(T* begin, T* end) noexcept : span(begin, end - begin) {
+  template <
+      typename It,
+      typename End,
+      typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
+      typename = std::enable_if_t<!std::is_convertible<End, size_t>::value>>
+  constexpr span(It begin, End end) noexcept : span(begin, end - begin) {
     // Note: CHECK_LE is not constexpr, hence regular CHECK must be used.
     CHECK(begin <= end);
   }
@@ -442,14 +457,10 @@ as_writable_bytes(span<T, X> s) noexcept {
 }
 
 // Type-deducing helpers for constructing a span.
-template <int&... ExplicitArgumentBarrier, typename T>
-constexpr span<T> make_span(T* data, size_t size) noexcept {
-  return {data, size};
-}
-
-template <int&... ExplicitArgumentBarrier, typename T>
-constexpr span<T> make_span(T* begin, T* end) noexcept {
-  return {begin, end};
+template <int&... ExplicitArgumentBarrier, typename It, typename EndOrSize>
+constexpr auto make_span(It it, EndOrSize end_or_size) noexcept {
+  using T = std::remove_reference_t<iter_reference_t<It>>;
+  return span<T>(it, end_or_size);
 }
 
 // make_span utility function that deduces both the span's value_type and extent
@@ -472,6 +483,15 @@ constexpr auto make_span(Container&& container) noexcept {
 // Note: This will CHECK that N indeed matches size(container).
 //
 // Usage: auto static_span = base::make_span<N>(...);
+template <size_t N,
+          int&... ExplicitArgumentBarrier,
+          typename It,
+          typename EndOrSize>
+constexpr auto make_span(It it, EndOrSize end_or_size) noexcept {
+  using T = std::remove_reference_t<iter_reference_t<It>>;
+  return span<T, N>(it, end_or_size);
+}
+
 template <size_t N, int&... ExplicitArgumentBarrier, typename Container>
 constexpr auto make_span(Container&& container) noexcept {
   using T =

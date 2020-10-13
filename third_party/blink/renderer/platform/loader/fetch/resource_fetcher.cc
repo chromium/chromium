@@ -672,7 +672,8 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   if (resource->EncodedSize() > 0) {
     resource_load_observer_->DidReceiveData(
         request.InspectorId(),
-        base::span<const char>(nullptr, resource->EncodedSize()));
+        base::make_span(static_cast<const char*>(nullptr),
+                        resource->EncodedSize()));
   }
 
   resource_load_observer_->DidFinishLoading(

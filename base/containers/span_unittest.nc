@@ -102,6 +102,22 @@ void WontCompile() {
   span<int, 3> span = v;
 }
 
+#elif defined(NCTEST_STD_SET_ITER_SIZE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
+
+// A std::set() should not satisfy the requirements for conversion to a span.
+void WontCompile() {
+  std::set<int> set;
+  span<int> span(set.begin(), 0);
+}
+
+#elif defined(NCTEST_STD_SET_ITER_ITER_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
+
+// A std::set() should not satisfy the requirements for conversion to a span.
+void WontCompile() {
+  std::set<int> set;
+  span<int> span(set.begin(), set.end());
+}
+
 #elif defined(NCTEST_STD_SET_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
 
 // A std::set() should not satisfy the requirements for conversion to a span.
@@ -188,6 +204,13 @@ void WontCompile() {
   span<uint8_t> bytes = as_writable_bytes(make_span(v));
 }
 
+#elif defined(NCTEST_MAKE_SPAN_FROM_SET_ITER_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<T>'"]
+// A std::set() should not satisfy the requirements for conversion to a span.
+void WontCompile() {
+  std::set<int> set;
+  auto span = make_span(set.begin(), set.end());
+}
+
 #elif defined(NCTEST_MAKE_SPAN_FROM_SET_CONVERSION_DISALLOWED)  // [r"fatal error: no matching function for call to 'data'"]
 
 // A std::set() should not satisfy the requirements for conversion to a span.
@@ -201,6 +224,28 @@ void WontCompile() {
 int WontCompile() {
   const std::vector<int> v;
   span<int> s = make_span(v);
+}
+
+#elif defined(NCTEST_STATIC_MAKE_SPAN_FROM_ITER_AND_SIZE_CHECKS)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]
+
+// The static make_span<N>(begin, size) should CHECK whether N matches size.
+// This should result in compilation failures when evaluated at compile
+// time.
+int WontCompile() {
+  constexpr StringPiece str = "Foo";
+  // Intentional extent mismatch causing CHECK failure.
+  constexpr auto made_span = make_span<2>(str.begin(), 3);
+}
+
+#elif defined(NCTEST_STATIC_MAKE_SPAN_FROM_ITERS_CHECKS_SIZE)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]
+
+// The static make_span<N>(begin, end) should CHECK whether N matches end -
+// begin. This should result in compilation failures when evaluated at compile
+// time.
+int WontCompile() {
+  constexpr StringPiece str = "Foo";
+  // Intentional extent mismatch causing CHECK failure.
+  constexpr auto made_span = make_span<2>(str.begin(), str.end());
 }
 
 #elif defined(NCTEST_STATIC_MAKE_SPAN_CHECKS_SIZE)  // [r"constexpr variable 'made_span' must be initialized by a constant expression"]

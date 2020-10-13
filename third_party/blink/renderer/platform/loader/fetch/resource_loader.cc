@@ -1378,9 +1378,9 @@ void ResourceLoader::OnProgress(uint64_t delta) {
     return;
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->DidReceiveData(
-        resource_->InspectorId(),
-        base::span<const char>(nullptr, static_cast<size_t>(delta)));
+    observer->DidReceiveData(resource_->InspectorId(),
+                             base::make_span(static_cast<const char*>(nullptr),
+                                             static_cast<size_t>(delta)));
   }
   resource_->DidDownloadData(delta);
 }

@@ -54,7 +54,8 @@ TEST(SpanTest, DefaultConstructor) {
 }
 
 TEST(SpanTest, ConstructFromDataAndSize) {
-  constexpr span<int> empty_span(nullptr, 0);
+  constexpr int* kNull = nullptr;
+  constexpr span<int> empty_span(kNull, 0);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
@@ -75,21 +76,45 @@ TEST(SpanTest, ConstructFromDataAndSize) {
     EXPECT_EQ(vector[i], static_span[i]);
 }
 
-TEST(SpanTest, ConstructFromPointerPair) {
-  constexpr span<int> empty_span(nullptr, nullptr);
+TEST(SpanTest, ConstructFromIterAndSize) {
+  constexpr int* kNull = nullptr;
+  constexpr span<int> empty_span(kNull, 0);
   EXPECT_TRUE(empty_span.empty());
   EXPECT_EQ(nullptr, empty_span.data());
 
   std::vector<int> vector = {1, 1, 2, 3, 5, 8};
 
-  span<int> dynamic_span(vector.data(), vector.data() + vector.size() / 2);
+  span<int> dynamic_span(vector.begin(), vector.size());
+  EXPECT_EQ(vector.data(), dynamic_span.data());
+  EXPECT_EQ(vector.size(), dynamic_span.size());
+
+  for (size_t i = 0; i < dynamic_span.size(); ++i)
+    EXPECT_EQ(vector[i], dynamic_span[i]);
+
+  span<int, 6> static_span(vector.begin(), vector.size());
+  EXPECT_EQ(vector.data(), static_span.data());
+  EXPECT_EQ(vector.size(), static_span.size());
+
+  for (size_t i = 0; i < static_span.size(); ++i)
+    EXPECT_EQ(vector[i], static_span[i]);
+}
+
+TEST(SpanTest, ConstructFromIterPair) {
+  constexpr int* kNull = nullptr;
+  constexpr span<int> empty_span(kNull, kNull);
+  EXPECT_TRUE(empty_span.empty());
+  EXPECT_EQ(nullptr, empty_span.data());
+
+  std::vector<int> vector = {1, 1, 2, 3, 5, 8};
+
+  span<int> dynamic_span(vector.begin(), vector.begin() + vector.size() / 2);
   EXPECT_EQ(vector.data(), dynamic_span.data());
   EXPECT_EQ(vector.size() / 2, dynamic_span.size());
 
   for (size_t i = 0; i < dynamic_span.size(); ++i)
     EXPECT_EQ(vector[i], dynamic_span[i]);
 
-  span<int, 3> static_span(vector.data(), vector.data() + vector.size() / 2);
+  span<int, 3> static_span(vector.begin(), vector.begin() + vector.size() / 2);
   EXPECT_EQ(vector.data(), static_span.data());
   EXPECT_EQ(vector.size() / 2, static_span.size());
 
