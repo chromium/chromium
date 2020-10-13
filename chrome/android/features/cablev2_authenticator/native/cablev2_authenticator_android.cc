@@ -77,6 +77,10 @@ NewState() {
 base::span<const uint8_t> JavaByteArrayToSpan(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& data) {
+  if (data.is_null()) {
+    return base::span<const uint8_t>();
+  }
+
   const size_t data_len = env->GetArrayLength(data);
   const jbyte* data_bytes = env->GetByteArrayElements(data, /*iscopy=*/nullptr);
   return base::as_bytes(base::make_span(data_bytes, data_len));
