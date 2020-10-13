@@ -607,8 +607,18 @@ bool AVIFImageDecoder::MaybeCreateDemuxer() {
     return false;
   }
 
-  avifROData raw_data = {image_data_->bytes(), image_data_->size()};
-  auto ret = avifDecoderParse(decoder_.get(), &raw_data);
+  // Chrome doesn't use XMP and Exif metadata. Ignoring XMP and Exif will ensure
+  // avifDecoderParse() isn't waiting for some tiny Exif payload hiding at the
+  // end of a file.
+  decoder_->ignoreXMP = AVIF_TRUE;
+  decoder_->ignoreExif = AVIF_TRUE;
+  auto ret = avifDecoderSetIOMemory(decoder_.get(), image_data_->bytes(),
+                                    image_data_->size());
+  if (ret != AVIF_RESULT_OK) {
+    DVLOG(1) << "avifDecoderSetIOMemory failed: " << avifResultToString(ret);
+    return false;
+  }
+  ret = avifDecoderParse(decoder_.get());
   if (ret != AVIF_RESULT_OK) {
     DVLOG(1) << "avifDecoderParse failed: " << avifResultToString(ret);
     return false;
