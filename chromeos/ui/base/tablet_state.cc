@@ -26,9 +26,24 @@ TabletState::~TabletState() {
   g_instance = nullptr;
 }
 
+void TabletState::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabletState::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool TabletState::InTabletMode() const {
   return state_ == TabletState::kInTabletMode ||
          state_ == TabletState::kEnteringTabletMode;
+}
+
+void TabletState::SetState(State state) {
+  state_ = state;
+
+  for (auto& observer : observers_)
+    observer.OnTabletStateChanged(state_);
 }
 
 }  // namespace chromeos
