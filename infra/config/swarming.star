@@ -61,6 +61,12 @@ swarming.pool_realm(
     projects = [details.project for details in ACTIVE_MILESTONES.values()],
 )
 
+swarming.task_triggerers(
+    builder_realm = "ci",
+    pool_realm = "pools/ci",
+    users = ["chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"],
+)
+
 # Realm with bots that run try builds.
 #
 # The tasks here are also triggered via Buildbucket. See comment above.
