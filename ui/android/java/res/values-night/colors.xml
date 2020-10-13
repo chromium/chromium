@@ -75,4 +75,5 @@
     <color name="omnibox_bg_color">@color/omnibox_bg_color_dark</color>
     <color name="image_loading_color">@color/image_loading_color_light</color>
     <color name="promo_illustration_bg_color">@color/promo_illustration_bg_color_dark</color>
+    <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_light</color>
 </resources>

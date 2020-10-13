@@ -11,10 +11,12 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -53,6 +55,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
     private RadioButtonWithDescription mNoProtection;
     private @SafeBrowsingState int mSafeBrowsingState;
     private boolean mIsEnhancedProtectionEnabled;
+    private @SettingsAccessPoint int mAccessPoint;
     private OnSafeBrowsingModeDetailsRequested mSafeBrowsingModeDetailsRequestedListener;
     private ManagedPreferenceDelegate mManagedPrefDelegate;
 
@@ -65,11 +68,13 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
      * Set Safe Browsing state and Enhanced Protection state. Called before onBindViewHolder.
      * @param safeBrowsingState The current Safe Browsing state.
      * @param isEnhancedProtectionEnabled Whether to show the Enhanced Protection button.
+     * @param accessPoint Where this preference was triggered to be created.
      */
-    public void init(
-            @SafeBrowsingState int safeBrowsingState, boolean isEnhancedProtectionEnabled) {
+    public void init(@SafeBrowsingState int safeBrowsingState, boolean isEnhancedProtectionEnabled,
+            @SettingsAccessPoint int accessPoint) {
         mSafeBrowsingState = safeBrowsingState;
         mIsEnhancedProtectionEnabled = isEnhancedProtectionEnabled;
+        mAccessPoint = accessPoint;
         assert ((mSafeBrowsingState != SafeBrowsingState.ENHANCED_PROTECTION)
                 || mIsEnhancedProtectionEnabled)
             : "Safe Browsing state shouldn't be enhanced protection when the flag is disabled.";
@@ -95,6 +100,10 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         if (mIsEnhancedProtectionEnabled) {
             mEnhancedProtection = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
                     R.id.enhanced_protection);
+            if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
+                mEnhancedProtection.setBackgroundColor(ContextCompat.getColor(
+                        getContext(), R.color.preference_highlighted_bg_color));
+            }
             mEnhancedProtection.setVisibility(View.VISIBLE);
             mEnhancedProtection.setAuxButtonClickedListener(this);
         }
