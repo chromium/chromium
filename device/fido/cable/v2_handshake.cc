@@ -93,7 +93,7 @@ namespace tunnelserver {
 std::string DecodeDomain(uint32_t domain) {
   static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
 
-  std::string ret;
+  std::string ret = "cable.";
   ret.push_back(kBase32Chars[(domain >> 17) & 0x1f]);
   ret.push_back(kBase32Chars[(domain >> 12) & 0x1f]);
   ret.push_back(kBase32Chars[(domain >> 7) & 0x1f]);

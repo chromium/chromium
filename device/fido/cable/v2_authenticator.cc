@@ -72,7 +72,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // communication. This specifies a Google service and the short domain need is
 // necessary to fit within a BLE advert.
 constexpr uint32_t kTunnelServer = device::cablev2::tunnelserver::EncodeDomain(
-    "xyi3",
+    "ua5v",
     device::cablev2::tunnelserver::TLD::COM);
 
 struct MakeCredRequest {

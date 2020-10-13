@@ -22,7 +22,7 @@ TEST(CableV2Encoding, TunnelServerURLs) {
       tunnelserver::EncodeDomain("abcd", tunnelserver::TLD::NET);
   uint8_t tunnel_id[16] = {0};
   const GURL url = tunnelserver::GetNewTunnelURL(encoded, tunnel_id);
-  EXPECT_TRUE(url.spec().find("//abcd.net/") != std::string::npos) << url;
+  EXPECT_TRUE(url.spec().find("//cable.abcd.net/") != std::string::npos) << url;
 }
 
 TEST(CableV2Encoding, EIDToFromComponents) {
