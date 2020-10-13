@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
-#include "content/public/browser/xr_runtime_manager.h"
 
 #include <string>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/gpu_utils.h"
+#include "content/public/browser/xr_runtime_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
@@ -196,12 +196,6 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
   auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
   if (openxr)
     return openxr;
-#endif
-
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-  auto* oculus = GetRuntime(device::mojom::XRDeviceId::OCULUS_DEVICE_ID);
-  if (oculus)
-    return oculus;
 #endif
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)

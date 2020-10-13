@@ -41,7 +41,6 @@ gclient_gn_args = [
   'checkout_google_benchmark',
   'checkout_ios_webkit',
   'checkout_nacl',
-  'checkout_oculus_sdk',
   'checkout_openxr',
   'cros_boards',
   'cros_boards_with_qemu_images',
@@ -114,9 +113,6 @@ vars = {
 
   # Fetch clang-tidy into the same bin/ directory as our clang binary.
   'checkout_clang_tidy': False,
-
-  # By default do not check out the Oculus SDK. Only available for Googlers.
-  'checkout_oculus_sdk' : 'checkout_src_internal and checkout_win',
 
   # By default checkout the OpenXR loader library only on Windows. The OpenXR
   # backend for VR in Chromium is currently only supported for Windows, but
@@ -4830,20 +4826,6 @@ hooks = [
     'condition': 'checkout_android',
     'action': [ 'python',
                 'src/third_party/arcore-android-sdk/test-apks/update.py',
-    ],
-  },
-  # Download Oculus SDK if appropriate.
-  {
-    'name': 'libovr',
-    'pattern': '.',
-    'condition': 'checkout_oculus_sdk',
-    'action': ['python',
-               'src/third_party/depot_tools/download_from_google_storage.py',
-               '--bucket', 'chrome-oculus-sdk',
-               '--recursive',
-               '--num_threads=10',
-               '--directory',
-               'src/third_party/libovr/src',
     ],
   },
   # Download common ink resources for chromeos.

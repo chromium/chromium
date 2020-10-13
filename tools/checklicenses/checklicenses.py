@@ -428,11 +428,6 @@ PATH_SPECIFIC_WHITELISTED_LICENSES = {
         'UNKNOWN',
     ],
 
-    # The following files have a special license.
-    'third_party/libovr/src': [
-        'UNKNOWN',
-    ],
-
     # The following files lack license headers, but are trivial.
     'third_party/libusb/src/libusb/os/poll_posix.h': [
         'UNKNOWN',

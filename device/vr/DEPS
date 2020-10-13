@@ -7,7 +7,6 @@ include_rules = [
   "+services/device/public",
   "+services/metrics/public/cpp/ukm_builders.h",
   "+third_party/gvr-android-sdk/src",
-  "+third_party/libovr/src",
   "+third_party/skia/include/core/SkColor.h",
   "+ui/display",
   "+ui/gfx",

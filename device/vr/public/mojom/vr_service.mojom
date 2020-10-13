@@ -30,7 +30,7 @@ enum XRDeviceId {
   ORIENTATION_DEVICE_ID = 2,
   GVR_DEVICE_ID = 3,
   // OPENVR_DEVICE_ID = 4,
-  [EnableIf=enable_oculus_vr] OCULUS_DEVICE_ID = 5,
+  // OCULUS_DEVICE_ID = 5,
   [EnableIf=enable_windows_mr] WINDOWS_MIXED_REALITY_ID = 6,
   ARCORE_DEVICE_ID = 7,
   [EnableIf=enable_openxr] OPENXR_DEVICE_ID = 8,

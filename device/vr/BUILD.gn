@@ -125,7 +125,7 @@ if (enable_vr) {
       configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
     }
 
-    if (enable_oculus_vr || enable_windows_mr || enable_openxr) {
+    if (enable_windows_mr || enable_openxr) {
       sources += [
         "test/test_hook.h",
         "windows/compositor_base.cc",
@@ -133,7 +133,7 @@ if (enable_vr) {
       ]
     }
 
-    if (is_win && (enable_oculus_vr || enable_windows_mr || enable_openxr)) {
+    if (is_win && (enable_windows_mr || enable_openxr)) {
       libs = [
         "d3d11.lib",
         "DXGI.lib",
@@ -215,21 +215,6 @@ if (enable_vr) {
         "windows_mixed_reality/wrappers/test/mock_wmr_rendering.h",
         "windows_mixed_reality/wrappers/test/mock_wmr_timestamp.cc",
         "windows_mixed_reality/wrappers/test/mock_wmr_timestamp.h",
-      ]
-    }
-
-    if (enable_oculus_vr) {
-      deps += [ "//third_party/libovr" ]
-
-      sources += [
-        "oculus/oculus_device.cc",
-        "oculus/oculus_device.h",
-        "oculus/oculus_gamepad_helper.cc",
-        "oculus/oculus_gamepad_helper.h",
-        "oculus/oculus_render_loop.cc",
-        "oculus/oculus_render_loop.h",
-        "oculus/oculus_type_converters.cc",
-        "oculus/oculus_type_converters.h",
       ]
     }
 
