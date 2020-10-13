@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -40,7 +41,23 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     TranslateManager::SetIgnoreMissingKeyForTesting(true);
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        switches::kTranslateScriptURL,
+        embedded_test_server()->GetURL("/mock_translate_script.js").spec());
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -69,8 +86,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   EXPECT_FALSE(TranslateBubbleView::GetCurrentBubble());
 
   // Show a French page and wait until the bubble is shown.
-  GURL french_url = ui_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
   NavigateAndWaitForLanguageDetection(french_url, "fr");
   EXPECT_TRUE(TranslateBubbleView::GetCurrentBubble());
 
@@ -86,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   EXPECT_FALSE(TranslateBubbleView::GetCurrentBubble());
 
   // Show a French page and wait until the bubble is shown.
-  GURL french_url = ui_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
   NavigateAndWaitForLanguageDetection(french_url, "fr");
   EXPECT_TRUE(TranslateBubbleView::GetCurrentBubble());
 
@@ -108,8 +123,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
 
   // Open another tab to load a French page on background.
   int french_index = active_index + 1;
-  GURL french_url = ui_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
   chrome::AddTabAt(browser(), french_url, french_index, false);
   EXPECT_EQ(active_index, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -136,8 +150,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
-  GURL french_url = ui_test_utils::GetTestUrl(
-      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
   NavigateAndWaitForLanguageDetection(french_url, "fr");
 
   // TODO(crbug.com/1082217): This should produce one event instead of two.

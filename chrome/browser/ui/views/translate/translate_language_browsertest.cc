@@ -40,14 +40,10 @@ namespace translate {
 
 namespace {
 
-const base::FilePath::CharType kEnglishTestPath[] =
-    FILE_PATH_LITERAL("english_page.html");
-const base::FilePath::CharType kItalianTestPath[] =
-    FILE_PATH_LITERAL("italian_page.html");
-const base::FilePath::CharType kFrenchTestPath[] =
-    FILE_PATH_LITERAL("french_page.html");
-const base::FilePath::CharType kGermanTestPath[] =
-    FILE_PATH_LITERAL("german_page.html");
+const char kEnglishTestPath[] = "/english_page.html";
+const char kItalianTestPath[] = "/italian_page.html";
+const char kFrenchTestPath[] = "/french_page.html";
+const char kGermanTestPath[] = "/german_page.html";
 
 static const char kTestValidScript[] =
     "var google = {};"
@@ -115,7 +111,7 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
     browser_ = incognito ? CreateIncognitoBrowser() : browser();
   }
 
-  void NavigateToUrl(const base::FilePath::StringPieceType path) {
+  void NavigateToUrl(const char* path) {
     // Close previous Translate bubble, if it exists. This is intended to
     // prevent a race condition in which the previous page's call to
     // TranslateBubbleView::WindowClosing doesn't occur until after the new page
@@ -124,13 +120,11 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
     // TODO(789593): investigate a more robust fix.
     TranslateBubbleView::CloseCurrentBubble();
 
-    const GURL url =
-        ui_test_utils::GetTestUrl(base::FilePath(), base::FilePath(path));
-    ui_test_utils::NavigateToURL(browser_, url);
+    ui_test_utils::NavigateToURL(browser_,
+                                 GURL(embedded_test_server()->GetURL(path)));
   }
 
-  void CheckForTranslateUI(const base::FilePath::StringPieceType path,
-                           const bool expect_translate) {
+  void CheckForTranslateUI(const char* path, const bool expect_translate) {
     ASSERT_TRUE(browser_);
 
     auto waiter = CreateTranslateWaiter(
