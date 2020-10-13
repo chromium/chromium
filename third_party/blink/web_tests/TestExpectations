@@ -5879,6 +5879,13 @@ crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/106759 http/tests/devtools/command-line-api-inspect.js [ Pass Failure ]
 crbug.com/106759 http/tests/devtools/sources/debugger-console/debugger-command-line-api.js [ Pass Failure ]
 
+# Temporarily disabled to land DevTools change
+crbug.com/1136848 http/tests/devtools/sources/formatter-css.js [ Pass Failure ]
+crbug.com/1136848 http/tests/devtools/sources/formatter-js.js [ Pass Failure ]
+crbug.com/1136848 http/tests/devtools/sources/inline-styles-scripts-locations.js [ Pass Failure ]
+crbug.com/1136848 http/tests/devtools/sources/debugger-ui/script-formatter-breakpoints-2.js [ Pass Failure ]
+crbug.com/1136848 http/tests/devtools/sources/debugger-ui/script-formatter-breakpoints-3.js [ Pass Failure ]
+
 crbug.com/989665 [ Mac ] external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
 crbug.com/989665 [ Linux ] virtual/omt-worker-fetch/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
 crbug.com/989665 [ Win ] virtual/omt-worker-fetch/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Pass Timeout ]
