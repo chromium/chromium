@@ -5935,6 +5935,8 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ProactivelySwapBrowsingInstancesCrossSiteReuseProcessTest,
     NavigationToSiteThatRequiresDedicatedProcess) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -5971,6 +5973,8 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ProactivelySwapBrowsingInstancesCrossSiteReuseProcessTest,
     NavigationFromSiteThatRequiresDedicatedProcess) {
+  if (AreAllSitesIsolatedForTesting())
+    return;
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
