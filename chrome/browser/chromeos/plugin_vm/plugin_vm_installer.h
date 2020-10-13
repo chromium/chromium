@@ -125,13 +125,12 @@ class PluginVmInstaller : public KeyedService,
   void OnDlcDownloadCompleted(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
-  // Called by PluginVmImageDownloadClient, are not supposed to be used by other
-  // classes.
+  // Used by PluginVmImageDownloadClient and PluginVmDriveImageDownloadService,
+  // other classes should not call into here.
   void OnDownloadStarted();
   void OnDownloadProgressUpdated(uint64_t bytes_downloaded,
                                  int64_t content_length);
   void OnDownloadCompleted(const download::CompletionInfo& info);
-  void OnDownloadCancelled();
   void OnDownloadFailed(FailureReason reason);
 
   // ConciergeClient::DiskImageObserver:
@@ -155,7 +154,7 @@ class PluginVmInstaller : public KeyedService,
   void SetDriveDownloadServiceForTesting(
       std::unique_ptr<PluginVmDriveImageDownloadService>
           drive_download_service);
-  std::string GetCurrentDownloadGuidForTesting();
+  std::string GetCurrentDownloadGuid();
 
  private:
   void CheckLicense();

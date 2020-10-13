@@ -28,11 +28,12 @@ class PluginVmImageDownloadClient : public download::Client {
   ~PluginVmImageDownloadClient() override;
 
  private:
-  std::set<std::string> old_downloads_;
   Profile* profile_ = nullptr;
   int64_t content_length_ = -1;
 
   PluginVmInstaller* GetInstaller();
+  // Returns false for cancelled downloads.
+  bool IsCurrentDownload(const std::string& guid);
 
   // download::Client implementation.
   void OnServiceInitialized(

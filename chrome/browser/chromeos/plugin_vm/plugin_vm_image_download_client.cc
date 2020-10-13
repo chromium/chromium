@@ -25,33 +25,32 @@ PluginVmInstaller* PluginVmImageDownloadClient::GetInstaller() {
   return PluginVmInstallerFactory::GetForProfile(profile_);
 }
 
-// TODO(okalitova): Remove logs.
+bool PluginVmImageDownloadClient::IsCurrentDownload(const std::string& guid) {
+  return guid == GetInstaller()->GetCurrentDownloadGuid();
+}
 
 void PluginVmImageDownloadClient::OnServiceInitialized(
     bool state_lost,
     const std::vector<download::DownloadMetaData>& downloads) {
-  VLOG(1) << __func__ << " called";
-  // TODO(okalitova): Manage downloads after sleep and log out.
+  // TODO(timloh): It appears that only completed downloads (aka previous
+  // successful installations) surface here, so this logic might not be needed.
   for (const auto& download : downloads) {
     VLOG(1) << "Download tracked by DownloadService: " << download.guid;
-    old_downloads_.insert(download.guid);
     DownloadServiceFactory::GetForKey(profile_->GetProfileKey())
         ->CancelDownload(download.guid);
   }
 }
 
 void PluginVmImageDownloadClient::OnServiceUnavailable() {
-  VLOG(1) << __func__ << " called";
 }
 
 void PluginVmImageDownloadClient::OnDownloadStarted(
     const std::string& guid,
     const std::vector<GURL>& url_chain,
     const scoped_refptr<const net::HttpResponseHeaders>& headers) {
-  VLOG(1) << __func__ << " called";
   // We do not want downloads that are tracked by download service from its
   // initialization to proceed.
-  if (old_downloads_.find(guid) != old_downloads_.end()) {
+  if (!IsCurrentDownload(guid)) {
     DownloadServiceFactory::GetForKey(profile_->GetProfileKey())
         ->CancelDownload(guid);
     return;
@@ -64,8 +63,7 @@ void PluginVmImageDownloadClient::OnDownloadStarted(
 void PluginVmImageDownloadClient::OnDownloadUpdated(const std::string& guid,
                                                     uint64_t bytes_uploaded,
                                                     uint64_t bytes_downloaded) {
-  DCHECK(old_downloads_.find(guid) == old_downloads_.end());
-  VLOG(1) << __func__ << " called";
+  DCHECK(IsCurrentDownload(guid));
   VLOG(1) << bytes_downloaded << " bytes downloaded";
   GetInstaller()->OnDownloadProgressUpdated(bytes_downloaded, content_length_);
 }
@@ -74,7 +72,6 @@ void PluginVmImageDownloadClient::OnDownloadFailed(
     const std::string& guid,
     const download::CompletionInfo& completion_info,
     download::Client::FailureReason clientReason) {
-  VLOG(1) << __func__ << " called";
   auto failureReason =
       PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_UNKNOWN;
   switch (clientReason) {
@@ -100,22 +97,16 @@ void PluginVmImageDownloadClient::OnDownloadFailed(
       break;
   }
 
-  // We do not want to notify PluginVmInstaller about the status of downloads
-  // that are tracked by download service from its initialization.
-  if (old_downloads_.find(guid) != old_downloads_.end())
+  if (!IsCurrentDownload(guid))
     return;
 
-  if (clientReason == download::Client::FailureReason::CANCELLED)
-    GetInstaller()->OnDownloadCancelled();
-  else
-    GetInstaller()->OnDownloadFailed(failureReason);
+  GetInstaller()->OnDownloadFailed(failureReason);
 }
 
 void PluginVmImageDownloadClient::OnDownloadSucceeded(
     const std::string& guid,
     const download::CompletionInfo& completion_info) {
-  DCHECK(old_downloads_.find(guid) == old_downloads_.end());
-  VLOG(1) << __func__ << " called";
+  DCHECK(IsCurrentDownload(guid));
   VLOG(1) << "Downloaded file is in " << completion_info.path.value();
   GetInstaller()->OnDownloadCompleted(completion_info);
 }
@@ -123,15 +114,12 @@ void PluginVmImageDownloadClient::OnDownloadSucceeded(
 bool PluginVmImageDownloadClient::CanServiceRemoveDownloadedFile(
     const std::string& guid,
     bool force_delete) {
-  VLOG(1) << __func__ << " called";
   return true;
 }
 
 void PluginVmImageDownloadClient::GetUploadData(
     const std::string& guid,
     download::GetUploadDataCallback callback) {
-  DCHECK(old_downloads_.find(guid) == old_downloads_.end());
-  VLOG(1) << __func__ << " called";
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), nullptr));
 }

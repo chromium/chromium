@@ -471,7 +471,7 @@ TEST_F(PluginVmInstallerDownloadServiceTest, DownloadPluginVmImageParamsTest) {
 
   StartAndRunUntil(InstallingState::kDownloadingImage);
 
-  std::string guid = installer_->GetCurrentDownloadGuidForTesting();
+  std::string guid = installer_->GetCurrentDownloadGuid();
   base::Optional<download::DownloadParams> params =
       download_service_->GetDownload(guid);
   ASSERT_TRUE(params.has_value());
@@ -536,7 +536,7 @@ TEST_F(PluginVmInstallerDownloadServiceTest,
   EXPECT_CALL(*observer_, OnError(FailureReason::DOWNLOAD_FAILED_ABORTED));
 
   StartAndRunUntil(InstallingState::kDownloadingImage);
-  std::string guid = installer_->GetCurrentDownloadGuidForTesting();
+  std::string guid = installer_->GetCurrentDownloadGuid();
   download_service_->SetFailedDownload(guid, false);
   task_environment_.RunUntilIdle();
   VerifyExpectations();
@@ -563,8 +563,6 @@ TEST_F(PluginVmInstallerDownloadServiceTest, CancelledDownloadTest) {
   StartAndRunUntil(InstallingState::kDownloadingImage);
   installer_->Cancel();
   task_environment_.RunUntilIdle();
-  // Finishing image processing as it should really happen.
-  installer_->OnDownloadCancelled();
 
   histogram_tester_->ExpectTotalCount(kPluginVmImageDownloadedSizeHistogram, 0);
   histogram_tester_->ExpectTotalCount(kFailureReasonHistogram, 0);

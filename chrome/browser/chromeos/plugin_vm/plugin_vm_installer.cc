@@ -327,11 +327,11 @@ void PluginVmInstaller::CancelDownload() {
   if (using_drive_download_service_) {
     DCHECK(drive_download_service_);
     drive_download_service_->CancelDownload();
-    CancelFinished();
   } else {
-    // OnDownloadCancelled() is called after the download is cancelled.
     download_service_->CancelDownload(current_download_guid_);
+    current_download_guid_.clear();
   }
+  CancelFinished();
 }
 
 void PluginVmInstaller::OnDlcDownloadProgressUpdated(double progress) {
@@ -418,20 +418,6 @@ void PluginVmInstaller::OnDownloadCompleted(
 
   RecordPluginVmImageDownloadedSizeHistogram(info.bytes_downloaded);
   StartImport();
-}
-
-void PluginVmInstaller::OnDownloadCancelled() {
-  DCHECK_EQ(state_, State::kCancelling);
-  DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
-
-  RemoveTemporaryImageIfExists();
-  current_download_guid_.clear();
-  if (using_drive_download_service_) {
-    drive_download_service_->ResetState();
-    using_drive_download_service_ = false;
-  }
-
-  CancelFinished();
 }
 
 void PluginVmInstaller::OnDownloadFailed(FailureReason reason) {
@@ -774,7 +760,7 @@ void PluginVmInstaller::SetDownloadedImageForTesting(
   downloaded_image_for_testing_ = downloaded_image;
 }
 
-std::string PluginVmInstaller::GetCurrentDownloadGuidForTesting() {
+std::string PluginVmInstaller::GetCurrentDownloadGuid() {
   return current_download_guid_;
 }
 
