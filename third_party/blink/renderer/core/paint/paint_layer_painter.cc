@@ -374,8 +374,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   // is not scrolled and should be above scrolled content.
   bool should_paint_self_outline =
       is_self_painting_layer && !is_painting_overlay_overflow_controls &&
-      (is_painting_composited_decoration ||
-       (!is_painting_overflow_contents && !is_painting_mask)) &&
+      is_painting_composited_decoration &&
       paint_layer_.GetLayoutObject().StyleRef().HasOutline();
 
   PhysicalOffset subpixel_accumulation =
