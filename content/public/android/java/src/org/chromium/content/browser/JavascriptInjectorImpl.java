@@ -96,7 +96,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
         assert mUseMojo != null;
         if (mUseMojo) {
-            mInjector.addInterface(object, name);
+            mInjector.addInterface(object, name, requiredAnnotation);
         } else if (mNativePtr != 0) {
             mInjectedObjects.put(name, new Pair<Object, Class>(object, requiredAnnotation));
             JavascriptInjectorImplJni.get().addInterface(

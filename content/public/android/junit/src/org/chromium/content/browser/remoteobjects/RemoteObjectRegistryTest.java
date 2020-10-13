@@ -38,7 +38,7 @@ public final class RemoteObjectRegistryTest {
         Set<RemoteObjectRegistry> retainingSet = new HashSet<>();
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
-        int id = registry.getObjectId(o);
+        int id = registry.getObjectId(o, null);
         Assert.assertSame(o, registry.getObjectById(id));
     }
 
@@ -48,8 +48,8 @@ public final class RemoteObjectRegistryTest {
         Set<RemoteObjectRegistry> retainingSet = new HashSet<>();
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
-        int id = registry.getObjectId(o);
-        Assert.assertEquals(id, registry.getObjectId(o));
+        int id = registry.getObjectId(o, null);
+        Assert.assertEquals(id, registry.getObjectId(o, null));
     }
 
     @Test
@@ -58,9 +58,9 @@ public final class RemoteObjectRegistryTest {
         Set<RemoteObjectRegistry> retainingSet = new HashSet<>();
         RemoteObjectRegistry registry = new RemoteObjectRegistry(retainingSet);
         Object o = new Object();
-        int id = registry.getObjectId(o);
+        int id = registry.getObjectId(o, null);
         registry.unrefObjectById(id);
-        int id2 = registry.getObjectId(o);
+        int id2 = registry.getObjectId(o, null);
         Assert.assertSame(o, registry.getObjectById(id2));
     }
 

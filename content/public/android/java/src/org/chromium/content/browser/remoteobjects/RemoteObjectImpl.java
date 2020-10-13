@@ -54,7 +54,7 @@ class RemoteObjectImpl implements RemoteObject {
      * These identifiers must not collide.
      */
     interface ObjectIdAllocator {
-        int getObjectId(Object object);
+        int getObjectId(Object object, Class<? extends Annotation> safeAnnotationClass);
         Object getObjectById(int id);
     }
 
@@ -78,6 +78,13 @@ class RemoteObjectImpl implements RemoteObject {
      * references which form an uncollectable cycle.
      */
     private final WeakReference<Object> mTarget;
+
+    /**
+     * Annotation required on all exposed methods.
+     * If null, no annotation is required.
+     * In practice, this is usually {@link android.webkit.JavascriptInterface}.
+     */
+    private final Class<? extends Annotation> mSafeAnnotationClass;
 
     /**
      * Allocates IDs for other Java objects.
@@ -105,6 +112,7 @@ class RemoteObjectImpl implements RemoteObject {
     public RemoteObjectImpl(Object target, Class<? extends Annotation> safeAnnotationClass,
             Auditor auditor, ObjectIdAllocator objectIdAllocator, boolean allowInspection) {
         mTarget = new WeakReference<>(target);
+        mSafeAnnotationClass = safeAnnotationClass;
         mAuditor = auditor;
         mObjectIdAllocator = new WeakReference<>(objectIdAllocator);
         mAllowInspection = allowInspection;
@@ -202,8 +210,8 @@ class RemoteObjectImpl implements RemoteObject {
             return;
         }
 
-        RemoteInvocationResult mojoResult =
-                convertResult(result, method.getReturnType(), objectIdAllocator);
+        RemoteInvocationResult mojoResult = convertResult(
+                result, method.getReturnType(), objectIdAllocator, mSafeAnnotationClass);
         callback.call(mojoResult);
     }
 
@@ -383,8 +391,8 @@ class RemoteObjectImpl implements RemoteObject {
         }
     }
 
-    private static RemoteInvocationResult convertResult(
-            Object result, Class<?> returnType, ObjectIdAllocator objectIdAllocator) {
+    private static RemoteInvocationResult convertResult(Object result, Class<?> returnType,
+            ObjectIdAllocator objectIdAllocator, Class<? extends Annotation> safeAnnotationClass) {
         // Methods returning arrays should not be called (for legacy reasons).
         assert !returnType.isArray();
 
@@ -413,7 +421,7 @@ class RemoteObjectImpl implements RemoteObject {
         } else if (result == null) {
             resultValue.setSingletonValue(SingletonJavaScriptValue.NULL);
         } else {
-            int objectId = objectIdAllocator.getObjectId(result);
+            int objectId = objectIdAllocator.getObjectId(result, safeAnnotationClass);
             resultValue.setObjectId(objectId);
         }
         RemoteInvocationResult mojoResult = new RemoteInvocationResult();

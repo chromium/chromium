@@ -777,7 +777,7 @@ public final class RemoteObjectImplTest {
             }
         };
 
-        when(mIdAllocator.getObjectId(foo)).thenReturn(42);
+        when(mIdAllocator.getObjectId(foo, TestJavascriptInterface.class)).thenReturn(42);
 
         RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
         RemoteObject.InvokeMethodResponse response = mock(RemoteObject.InvokeMethodResponse.class);

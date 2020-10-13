@@ -806,7 +806,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testAllowOnlyAnnotatedMethods(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -839,7 +839,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testAnnotationRequirementRetainsPropertyAcrossObjects(boolean useMojo)
             throws Throwable {
         class Test {
@@ -891,7 +891,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testAnnotationDoesNotGetInherited(boolean useMojo) throws Throwable {
         class Base {
             @JavascriptInterface
@@ -922,7 +922,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testCustomAnnotationRestriction(boolean useMojo) throws Throwable {
         class Test {
             @TestAnnotation
