@@ -23,6 +23,7 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -40,8 +41,11 @@ class GetElementStatusActionTest : public testing::Test {
         .WillByDefault(Return(&user_data_));
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kValue));
+    test_util::MockFindAnyElement(mock_action_delegate_);
+    ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus(), kValue));
+
+    proto_.set_value_source(GetElementStatusProto::VALUE);
   }
 
  protected:
@@ -178,6 +182,13 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveFullMatch) {
       ->mutable_match_expectation()
       ->set_full_match(true);
   proto_.set_mismatch_should_fail(true);
+
+  auto expected_element =
+      test_util::MockFindElement(mock_action_delegate_, selector);
+  EXPECT_CALL(mock_action_delegate_,
+              GetStringAttribute(ElementsAre("value"),
+                                 EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus(), kValue));
 
   EXPECT_CALL(
       callback_,
@@ -336,13 +347,137 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForFullMatchWithoutSpaces) {
   Run();
 }
 
-TEST_F(GetElementStatusActionTest, EmptyTextForEmptyFieldIsSuccess) {
-  ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
+TEST_F(GetElementStatusActionTest, EmptyTextForEmptyValueIsSuccess) {
+  ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
+      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), ""));
 
   Selector selector({"#element"});
   *proto_.mutable_element() = selector.proto;
   proto_.mutable_expected_value_match()->mutable_text_match()->set_value("");
+  proto_.set_mismatch_should_fail(true);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, false),
+                    Property(&GetElementStatusProto::Result::match_success,
+                             true)))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, InnerTextLookupSuccess) {
+  Selector selector({"#element"});
+  *proto_.mutable_element() = selector.proto;
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_value(
+      kValue);
+  proto_.set_value_source(GetElementStatusProto::INNER_TEXT);
+  proto_.set_mismatch_should_fail(true);
+
+  auto expected_element =
+      test_util::MockFindElement(mock_action_delegate_, selector);
+  EXPECT_CALL(mock_action_delegate_,
+              GetStringAttribute(ElementsAre("innerText"),
+                                 EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus(), kValue));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
+                    Property(&GetElementStatusProto::Result::match_success,
+                             true)))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, MatchingValueWithRegexpCaseSensitive) {
+  Selector selector({"#element"});
+  *proto_.mutable_element() = selector.proto;
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("Valu.");
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->mutable_match_options()
+      ->set_case_sensitive(true);
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_ends_with(true);
+  proto_.set_mismatch_should_fail(true);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
+                    Property(&GetElementStatusProto::Result::match_success,
+                             true)))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, MatchingValueWithRegexpCaseInsensitive) {
+  Selector selector({"#element"});
+  *proto_.mutable_element() = selector.proto;
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("vAlU.");
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->mutable_match_options()
+      ->set_case_sensitive(false);
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_ends_with(true);
+  proto_.set_mismatch_should_fail(true);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
+                    Property(&GetElementStatusProto::Result::match_success,
+                             true)))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, ActionFailsForRegexMismatchIfRequired) {
+  Selector selector({"#element"});
+  *proto_.mutable_element() = selector.proto;
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("none");
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_match_expectation()
+      ->set_full_match(true);
+  proto_.set_mismatch_should_fail(true);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ELEMENT_MISMATCH),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
+                    Property(&GetElementStatusProto::Result::match_success,
+                             false)))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, EmptyRegexpForEmptyValueIsSuccess) {
+  ON_CALL(mock_action_delegate_, GetStringAttribute(_, _, _))
+      .WillByDefault(RunOnceCallback<2>(OkClientStatus(), ""));
+
+  Selector selector({"#element"});
+  *proto_.mutable_element() = selector.proto;
+  proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("^$");
   proto_.set_mismatch_should_fail(true);
 
   EXPECT_CALL(

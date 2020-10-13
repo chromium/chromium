@@ -28,11 +28,8 @@ class GetElementStatusAction : public Action {
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   void OnWaitForElement(const ClientStatus& element_status);
-  void CheckValue();
-  void OnGetContentForTextMatch(
-      const GetElementStatusProto::TextMatch& expected_match,
-      const ClientStatus& status,
-      const std::string& text);
+  void OnGetStringAttribute(const ClientStatus& status,
+                            const std::string& text);
 
   void EndAction(const ClientStatus& status);
 

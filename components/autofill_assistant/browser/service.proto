@@ -2366,9 +2366,8 @@ message PopupMessageProto {
 message GetElementStatusProto {
   optional SelectorProto element = 1;
 
-  // Compare the element's |value| attribute against this expected match.
   optional ValueMatch expected_value_match = 2;
-  // TODO(b/169924567): Add expected_inner_text_match
+  optional ValueSource value_source = 4;
 
   // If set and a mismatch happens, the action will report an failure status
   // with |ELEMENT_MISMATCH|. If this flag is set to false, the action will not
@@ -2384,6 +2383,14 @@ message GetElementStatusProto {
 
     // For logging and debugging.
     repeated ComparisonReport reports = 3;
+  }
+
+  enum ValueSource {
+    NOT_SET = 0;
+    // Compare the element's |value| attribute against this expected match.
+    VALUE = 1;
+    // Compare the element's |innerText| attribute against this expected match.
+    INNER_TEXT = 2;
   }
 
   message MatchOptions {
@@ -2409,20 +2416,18 @@ message GetElementStatusProto {
       // A value from an Autofill source. Note that this must be proceeded by a
       // |CollectUserDataAction|.
       AutofillValue autofill_value = 2;
+      // A regular expression.
+      string re2 = 4;
     }
 
     // Optional. The expectations to declare this as a matching success. If
-    // left empty, the action will always be treated as successful. This field
-    // is not necessary if the expected value is empty.
+    // left empty, the action will always be treated as successful.
     optional MatchExpectation match_expectation = 3;
   }
 
   message ValueMatch {
     optional TextMatch text_match = 1;
-    // TODO(b/169924567): Add text_filter
   }
-
-  // TODO(b/169924567): Add InnerTextMatch
 
   message ComparisonReport {
     optional MatchOptions match_options = 1;
@@ -2431,5 +2436,7 @@ message GetElementStatusProto {
     optional bool contains = 3;
     optional bool starts_with = 4;
     optional bool ends_with = 5;
+
+    optional bool empty = 6;
   }
 }
