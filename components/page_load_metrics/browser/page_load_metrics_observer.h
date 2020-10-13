@@ -94,15 +94,16 @@ struct UserInitiatedInfo {
 // Information about how the page rendered during the browsing session.
 // Derived from the FrameRenderDataUpdate that is sent via UpdateTiming IPC.
 struct PageRenderData {
-  PageRenderData()
-      : layout_shift_score(0), layout_shift_score_before_input_or_scroll(0) {}
+  PageRenderData() = default;
 
   // How much visible elements on the page shifted (bit.ly/lsm-explainer).
-  float layout_shift_score;
+  float layout_shift_score = 0;
 
   // How much visible elements on the page shifted (bit.ly/lsm-explainer),
-  // before user input or document scroll.
-  float layout_shift_score_before_input_or_scroll;
+  // before user input or document scroll. This field's meaning is context-
+  // dependent (see comments on page_render_data_ and main_frame_render_data_
+  // in PageLoadMetricsUpdateDispatcher).
+  float layout_shift_score_before_input_or_scroll = 0;
 
   // How many LayoutBlock instances were created.
   uint64_t all_layout_block_count = 0;

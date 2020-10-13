@@ -837,6 +837,11 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
       .SetLayoutInstability_CumulativeShiftScore(
           page_load_metrics::LayoutShiftUkmValue(
               GetDelegate().GetPageRenderData().layout_shift_score))
+      .SetLayoutInstability_CumulativeShiftScore_BeforeInputOrScroll(
+          page_load_metrics::LayoutShiftUkmValue(
+              GetDelegate()
+                  .GetPageRenderData()
+                  .layout_shift_score_before_input_or_scroll))
       .SetLayoutInstability_CumulativeShiftScore_MainFrame(
           page_load_metrics::LayoutShiftUkmValue(
               GetDelegate().GetMainFrameRenderData().layout_shift_score))

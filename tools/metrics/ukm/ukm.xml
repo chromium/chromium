@@ -8977,6 +8977,15 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="LayoutInstability.CumulativeShiftScore.BeforeInputOrScroll">
+    <summary>
+      Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
+      occurred on the page (including all subframes) during the session, before
+      any user input or scroll (in any frame). This metric's integral value is
+      100x the fractional cumulative layout shift score described in the
+      explainer.
+    </summary>
+  </metric>
   <metric name="LayoutInstability.CumulativeShiftScore.MainFrame">
     <summary>
       Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
@@ -8990,8 +8999,8 @@ be describing additional metrics about the same event.
     <summary>
       Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
       occurred in the main frame during the session, before any user input or
-      document scroll. This metric's integral value is 100x the fractional
-      cumulative layout shift score described in the explainer.
+      scroll. This metric's integral value is 100x the fractional cumulative
+      layout shift score described in the explainer.
     </summary>
   </metric>
   <metric name="LayoutStability.JankScore">

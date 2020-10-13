@@ -340,10 +340,14 @@ class PageLoadTimingMerger {
                          navigation_start_offset,
                          new_paint_timing.first_contentful_paint);
     if (is_main_frame) {
-      // FMP and FCP++ are only tracked in the main frame.
+      // FMP is only tracked in the main frame.
       target_paint_timing->first_meaningful_paint =
           new_paint_timing.first_meaningful_paint;
 
+      // LCP and the first input/scroll timestamp are not merged by us; instead,
+      // PLMUD passes the per-frame data to its client (PageLoadTracker) via
+      // OnTimingChanged and OnSubFrameTimingChanged, and merged results are
+      // calculated and held by the LargestContentfulPaintHandler.
       target_paint_timing->largest_contentful_paint =
           new_paint_timing.largest_contentful_paint->Clone();
       target_paint_timing->experimental_largest_contentful_paint =
@@ -480,6 +484,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
   // Report new deferral info.
   client_->OnNewDeferredResourceCounts(*new_deferred_resource_data);
 
+  UpdateHasSeenInputOrScroll(*new_timing);
+
   bool is_main_frame = IsMainFrame(render_frame_host);
   if (is_main_frame) {
     UpdateMainFrameMetadata(render_frame_host, std::move(new_metadata));
@@ -497,6 +503,20 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
   }
 
   client_->UpdateFeaturesUsage(render_frame_host, *new_features);
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateHasSeenInputOrScroll(
+    const mojom::PageLoadTiming& new_timing) {
+  const mojom::PaintTiming* paint_timing = new_timing.paint_timing.get();
+  if (!paint_timing)
+    return;
+
+  // NOTE: we cannot use the first input/scroll in current_merged_page_timing_,
+  // because PageLoadTimingMerger ignores this field.  We could reach into the
+  // LargestContentfulPaintHandler, but it is simpler to just watch the
+  // per-frame timing updates and remember a boolean.
+  if (paint_timing->first_input_or_scroll_notified_timestamp.has_value())
+    has_seen_input_or_scroll_ = true;
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
@@ -707,6 +727,15 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
     const mojom::FrameRenderDataUpdate& render_data) {
   page_render_data_.layout_shift_score += render_data.layout_shift_delta;
 
+  // Stop accumulating page-wide layout_shift_score_before_input_or_scroll after
+  // input or scroll in any frame. Note that we can't unconditionally accumulate
+  // layout_shift_delta_before_input_or_scroll, because that field only reflects
+  // input/scroll in the same frame as the shift.
+  if (!has_seen_input_or_scroll_) {
+    page_render_data_.layout_shift_score_before_input_or_scroll +=
+        render_data.layout_shift_delta_before_input_or_scroll;
+  }
+
   page_render_data_.all_layout_block_count +=
       render_data.all_layout_block_count_delta;
   page_render_data_.ng_layout_block_count +=
@@ -720,6 +749,10 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameRenderData(
     const mojom::FrameRenderDataUpdate& render_data) {
   main_frame_render_data_.layout_shift_score += render_data.layout_shift_delta;
+
+  // Track main frame cumulative score up to the first input or scroll in the
+  // main frame. For this we do not care about inputs sent to subframes, so we
+  // should not check has_seen_input_or_scroll_ (but see crbug.com/1136207).
   main_frame_render_data_.layout_shift_score_before_input_or_scroll +=
       render_data.layout_shift_delta_before_input_or_scroll;
 

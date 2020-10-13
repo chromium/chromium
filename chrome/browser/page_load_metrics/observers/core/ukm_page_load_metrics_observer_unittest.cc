@@ -1860,3 +1860,95 @@ TEST_F(UkmPageLoadMetricsObserverTest, NavigationTiming) {
     }
   }
 }
+
+class CLSUkmPageLoadMetricsObserverTest
+    : public UkmPageLoadMetricsObserverTest {
+ protected:
+  void RunBeforeInputOrScrollCase(bool input_in_subframe);
+  void SimulateShiftDelta(float delta, content::RenderFrameHost* frame);
+  RenderFrameHost* NavigateSubframe();
+  void VerifyUKMBuckets(int total, int before_input_or_scroll);
+  void InitPageLoadTimingWithInputOrScroll(
+      page_load_metrics::mojom::PageLoadTiming& timing,
+      base::TimeDelta timestamp);
+};
+
+void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
+    float delta,
+    content::RenderFrameHost* frame) {
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(delta, delta, 0,
+                                                              0, 0, 0);
+  tester()->SimulateRenderDataUpdate(render_data, frame);
+}
+
+RenderFrameHost* CLSUkmPageLoadMetricsObserverTest::NavigateSubframe() {
+  return NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL(kSubframeTestUrl),
+      RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          ->AppendChild("subframe"));
+}
+
+void CLSUkmPageLoadMetricsObserverTest::VerifyUKMBuckets(
+    int total,
+    int before_input_or_scroll) {
+  const char* total_name =
+      PageLoad::kLayoutInstability_CumulativeShiftScoreName;
+  const char* before_input_or_scroll_name =
+      PageLoad::kLayoutInstability_CumulativeShiftScore_BeforeInputOrScrollName;
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+
+    ukm_recorder.ExpectEntryMetric(ukm_entry, total_name, total);
+    ukm_recorder.ExpectEntryMetric(ukm_entry, before_input_or_scroll_name,
+                                   before_input_or_scroll);
+  }
+}
+
+void CLSUkmPageLoadMetricsObserverTest::InitPageLoadTimingWithInputOrScroll(
+    page_load_metrics::mojom::PageLoadTiming& timing,
+    base::TimeDelta timestamp) {
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  PopulateRequiredTimingFields(&timing);
+  timing.paint_timing->first_input_or_scroll_notified_timestamp = timestamp;
+}
+
+void CLSUkmPageLoadMetricsObserverTest::RunBeforeInputOrScrollCase(
+    bool input_in_subframe) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* subframe = NavigateSubframe();
+
+  SimulateShiftDelta(1.0, main_frame);
+  SimulateShiftDelta(1.5, subframe);
+
+  // Simulate input.
+  page_load_metrics::mojom::PageLoadTiming timing;
+  InitPageLoadTimingWithInputOrScroll(timing, base::TimeDelta::FromSeconds(1));
+  tester()->SimulateTimingUpdate(timing,
+                                 input_in_subframe ? subframe : main_frame);
+
+  SimulateShiftDelta(1.2, main_frame);
+  SimulateShiftDelta(0.8, subframe);
+
+  DeleteContents();
+
+  // Total CLS: 1.0 + 1.5 + 1.2 + 0.8 = 4.5 (bucket 450).
+  // Before input: 1.0 + 1.5 = 2.5 (bucket 250).
+  VerifyUKMBuckets(450, 250);
+}
+
+TEST_F(CLSUkmPageLoadMetricsObserverTest, BeforeInputOrScroll_Main) {
+  RunBeforeInputOrScrollCase(false);
+}
+
+TEST_F(CLSUkmPageLoadMetricsObserverTest, BeforeInputOrScroll_Sub) {
+  RunBeforeInputOrScrollCase(true);
+}
