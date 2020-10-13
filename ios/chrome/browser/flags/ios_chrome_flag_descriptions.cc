@@ -115,12 +115,6 @@ const char kAutofillUseRendererIDsDescription[] =
     "When enabled, Autofill logic uses unique numeric renderer IDs instead "
     "of string form and field identifiers in form filling logic.";
 
-const char kBlockPopupInfobarMessagesUIName[] =
-    "Block Popup Infobars Messages UI";
-const char kBlockPopupInfobarMessagesUIDescription[] =
-    "When enabled Block Popup Infobars use the new Messages UI. "
-    "IOSInfobarUIReboot needs to be enabled as well for this to work.";
-
 extern const char kLogBreadcrumbsName[] = "Log Breadcrumb Events";
 extern const char kLogBreadcrumbsDescription[] =
     "When enabled, breadcrumb events will be logged.";
@@ -143,15 +137,6 @@ const char kCollectionsCardPresentationStyleName[] =
 const char kCollectionsCardPresentationStyleDescription[] =
     "When enabled collections are presented using the new iOS13 card "
     "style.";
-
-const char kConfirmInfobarMessagesUIName[] = "Confirm Infobars Messages UI";
-const char kConfirmInfobarMessagesUIDescription[] =
-    "When enabled Confirm Infobars use the new Messages UI.";
-
-const char kCrashRestoreInfobarMessagesUIName[] =
-    "Crash Restore Infobars Messages UI";
-const char kCrashRestoreInfobarMessagesUIDescription[] =
-    "When enabled Crash Restore Infobars use the new Messages UI.";
 
 const char kCreditCardScannerName[] = "Enable the 'Use Camera' button";
 const char kCreditCardScannerDescription[] =
@@ -202,10 +187,6 @@ const char kDiscoverFeedInNtpName[] = "Enable new content Suggestion Feed";
 const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
-
-const char kDownloadInfobarMessagesUIName[] = "Download Infobars Messages UI";
-const char kDownloadInfobarMessagesUIDescription[] =
-    "When enabled Downloads use the new Messages UI.";
 
 const char kDragAndDropName[] = "Drag and Drop";
 const char kDragAndDropDescription[] = "Enable support for drag and drop.";

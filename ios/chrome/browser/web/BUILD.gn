@@ -253,7 +253,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:feature_flags",

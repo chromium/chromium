@@ -730,15 +730,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:self.dispatcher];
     self.toolbarInterface = _toolbarCoordinatorAdaptor;
 
-    // TODO(crbug.com/1024288): Remove these lines along the legacy code
-    // removal.
-    if (!IsDownloadInfobarMessagesUIEnabled()) {
-      _downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
-          initWithBaseViewController:_browserContainerViewController
-                             browser:browser];
-      _downloadManagerCoordinator.presenter =
-          [[VerticalAnimationContainer alloc] init];
-    }
+    _downloadManagerCoordinator = [[DownloadManagerCoordinator alloc]
+        initWithBaseViewController:_browserContainerViewController
+                           browser:browser];
+    _downloadManagerCoordinator.presenter =
+        [[VerticalAnimationContainer alloc] init];
 
     _webStateDelegate.reset(new web::WebStateDelegateBridge(self));
     _inNewTabAnimation = NO;
@@ -2171,14 +2167,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   [self.sideSwipeController addHorizontalGesturesToView:self.view];
 
-  // TODO(crbug.com/1024288): Remove these lines along the legacy code removal.
-  if (!IsDownloadInfobarMessagesUIEnabled()) {
     // DownloadManagerCoordinator is already created.
     DCHECK(_downloadManagerCoordinator);
     _downloadManagerCoordinator.bottomMarginHeightAnchor =
         [NamedGuide guideWithName:kSecondaryToolbarGuide view:self.contentArea]
             .heightAnchor;
-  }
 
   self.bubblePresenter =
       [[BubblePresenter alloc] initWithBrowserState:self.browserState
@@ -2667,13 +2660,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   OfflinePageTabHelper::CreateForWebState(
       webState, ReadingListModelFactory::GetForBrowserState(self.browserState));
 
-  // TODO(crbug.com/1024288): Remove these lines along the legacy code removal.
-  if (!IsDownloadInfobarMessagesUIEnabled()) {
     // DownloadManagerTabHelper cannot function without delegate.
     DCHECK(_downloadManagerCoordinator);
     DownloadManagerTabHelper::CreateForWebState(webState,
                                                 _downloadManagerCoordinator);
-  }
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
 

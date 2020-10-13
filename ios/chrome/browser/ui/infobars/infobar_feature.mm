@@ -18,27 +18,6 @@ const base::Feature kInfobarOverlayUI{"InfobarOverlayUI",
 // Feature enabled by default since it will always be checked along
 // kIOSInfobarUIReboot, effectively working as a kill switch. Meaning that if
 // kIOSInfobarUIReboot is not enabled this feature won't work.
-const base::Feature kConfirmInfobarMessagesUI{"ConfirmInfobarMessagesUI",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Feature enabled by default since it will always be checked along
-// kIOSInfobarUIReboot, effectively working as a kill switch. Meaning that if
-// kIOSInfobarUIReboot is not enabled this feature won't work.
-const base::Feature kCrashRestoreInfobarMessagesUI{
-    "CrashRestoreInfobarMessagesUI", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Feature enabled by default since it will always be checked along
-// kIOSInfobarUIReboot, effectively working as a kill switch. Meaning that if
-// kIOSInfobarUIReboot is not enabled this feature won't work.
-const base::Feature kBlockPopupInfobarMessagesUI{
-    "BlockPopupInfobarMessagesUI", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kDownloadInfobarMessagesUI{
-    "DownloadInfobarMessagesUI", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature enabled by default since it will always be checked along
-// kIOSInfobarUIReboot, effectively working as a kill switch. Meaning that if
-// kIOSInfobarUIReboot is not enabled this feature won't work.
 const base::Feature kSaveCardInfobarMessagesUI{
     "SaveCardInfobarMessagesUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -58,26 +37,6 @@ bool IsInfobarUIRebootEnabled() {
 bool IsInfobarOverlayUIEnabled() {
   return IsInfobarUIRebootEnabled() &&
          base::FeatureList::IsEnabled(kInfobarOverlayUI);
-}
-
-bool IsConfirmInfobarMessagesUIEnabled() {
-  return base::FeatureList::IsEnabled(kConfirmInfobarMessagesUI) &&
-         IsInfobarUIRebootEnabled();
-}
-
-bool IsCrashRestoreInfobarMessagesUIEnabled() {
-  return base::FeatureList::IsEnabled(kCrashRestoreInfobarMessagesUI) &&
-         IsInfobarUIRebootEnabled();
-}
-
-bool IsBlockPopupInfobarMessagesUIEnabled() {
-  return base::FeatureList::IsEnabled(kBlockPopupInfobarMessagesUI) &&
-         IsInfobarUIRebootEnabled();
-}
-
-bool IsDownloadInfobarMessagesUIEnabled() {
-  return base::FeatureList::IsEnabled(kDownloadInfobarMessagesUI) &&
-         IsInfobarUIRebootEnabled();
 }
 
 bool IsSaveCardInfobarMessagesUIEnabled() {

@@ -13,32 +13,6 @@
 // directly.
 extern const base::Feature kInfobarOverlayUI;
 
-// Feature to choose whether Confirm Infobars use the new Messages UI or the
-// legacy one. Also, in order for it to work kIOSInfobarUIReboot needs to be
-// enabled.
-// Use IsConfirmInfobarMessagesUIEnabled() instead of this constant directly.
-extern const base::Feature kConfirmInfobarMessagesUI;
-
-// Feature to choose whether Confirm Infobars use the new Messages UI or the
-// legacy one. Also, in order for it to work kIOSInfobarUIReboot needs to be
-// enabled.
-// Use IsCrashRestoreInfobarMessagesUIEnabled() instead of this constant
-// directly.
-extern const base::Feature kCrashRestoreInfobarMessagesUI;
-
-// Feature to choose whether Block Popup Infobars use the new Messages UI or the
-// legacy one. Also, in order for it to work kIOSInfobarUIReboot needs to be
-// enabled.
-// Use IsBlockPopupInfobarMessagesUIEnabled() instead of this constant
-// directly.
-extern const base::Feature kBlockPopupInfobarMessagesUI;
-
-// Feature to choose whether Downloads uses the new Messages UI or the
-// legacy one. Also, in order for it to work kIOSInfobarUIReboot needs to be
-// enabled.
-// Use IsDownloadInfobarMessagesUIEnabled() instead of this constant directly.
-extern const base::Feature kDownloadInfobarMessagesUI;
-
 // Feature to choose whether Save Card Infobar uses the new Messages UI or the
 // legacy one. Also, in order for it to work kIOSInfobarUIReboot needs to be
 // enabled.
@@ -62,18 +36,6 @@ bool IsInfobarUIRebootEnabled();
 
 // Whether the Messages Infobar UI is presented using OverlayPresenter.
 bool IsInfobarOverlayUIEnabled();
-
-// Whether the Confirm Infobar Messages UI is enabled.
-bool IsConfirmInfobarMessagesUIEnabled();
-
-// Whether the Crash Restore Infobar Messages UI is enabled.
-bool IsCrashRestoreInfobarMessagesUIEnabled();
-
-// Whether the Block Popup Infobar Messages UI is enabled.
-bool IsBlockPopupInfobarMessagesUIEnabled();
-
-// Whether the Download Infobar Messages UI is enabled.
-bool IsDownloadInfobarMessagesUIEnabled();
 
 // Whether the SaveCard Infobar Messages UI is enabled.
 bool IsSaveCardInfobarMessagesUIEnabled();

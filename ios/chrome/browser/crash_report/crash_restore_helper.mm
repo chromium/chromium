@@ -21,7 +21,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/breakpad_helper.h"
-#include "ios/chrome/browser/infobars/confirm_infobar_controller.h"
 #include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -34,7 +33,6 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
@@ -170,14 +168,8 @@ bool SessionCrashedInfoBarDelegate::Create(
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
       new SessionCrashedInfoBarDelegate(crash_restore_helper));
 
-  std::unique_ptr<infobars::InfoBar> infobar;
-  if (IsCrashRestoreInfobarMessagesUIEnabled()) {
-    infobar = ::CreateHighPriorityConfirmInfoBar(std::move(delegate));
-  } else {
-    ConfirmInfoBarController* controller = [[ConfirmInfoBarController alloc]
-        initWithInfoBarDelegate:delegate.get()];
-    infobar = std::make_unique<InfoBarIOS>(controller, std::move(delegate));
-  }
+  std::unique_ptr<infobars::InfoBar> infobar =
+      ::CreateHighPriorityConfirmInfoBar(std::move(delegate));
   return !!infobar_manager->AddInfoBar(std::move(infobar));
 }
 

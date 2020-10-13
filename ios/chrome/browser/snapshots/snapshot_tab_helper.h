@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -23,8 +22,7 @@ class WebState;
 }
 
 // SnapshotTabHelper allows capturing and retrival for web page snapshots.
-class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
-                          public web::WebStateObserver,
+class SnapshotTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<SnapshotTabHelper> {
  public:
   ~SnapshotTabHelper() override;
@@ -92,24 +90,12 @@ class SnapshotTabHelper : public infobars::InfoBarManager::Observer,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // infobars::InfoBarManager::Observer implementation.
-  void OnInfoBarAdded(infobars::InfoBar* infobar) override;
-  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
-                         infobars::InfoBar* new_infobar) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
-
   web::WebState* web_state_ = nullptr;
   NSString* tab_id_ = nil;
   SnapshotGenerator* snapshot_generator_ = nil;
-  infobars::InfoBarManager* infobar_manager_ = nullptr;
 
   // Manages this object as an observer of |web_state_|.
   ScopedObserver<web::WebState, web::WebStateObserver> web_state_observer_;
-
-  // Manages this object as an observer of infobars.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
 
   bool ignore_next_load_ = false;
 

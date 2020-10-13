@@ -8,12 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -117,19 +113,12 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state, NSString* tab_id)
     : web_state_(web_state),
       tab_id_([tab_id copy]),
       web_state_observer_(this),
-      infobar_observer_(this),
       weak_ptr_factory_(this) {
   DCHECK(web_state_);
   DCHECK(tab_id_.length > 0);
   snapshot_generator_ = [[SnapshotGenerator alloc] initWithWebState:web_state_
                                                               tabID:tab_id_];
   web_state_observer_.Add(web_state_);
-
-  // Supports missing InfoBarManager to make testing easier.
-  infobar_manager_ = InfoBarManagerImpl::FromWebState(web_state_);
-  if (infobar_manager_) {
-    infobar_observer_.Add(infobar_manager_);
-  }
 }
 
 void SnapshotTabHelper::PageLoaded(
@@ -188,51 +177,6 @@ void SnapshotTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_observer_.Remove(web_state);
   web_state_ = nullptr;
   tab_id_ = nil;
-}
-
-void SnapshotTabHelper::OnInfoBarAdded(infobars::InfoBar* infobar) {
-  // TODO(crbug.com/961343): Remove snapshotting for infobars when
-  // MessagesUI is permanent for all infobars.
-  if (!IsConfirmInfobarMessagesUIEnabled()) {
-    UpdateSnapshotWithCallback(nil);
-  }
-}
-
-void SnapshotTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
-                                         bool animate) {
-  // TODO(crbug.com/961343): Remove snapshotting for infobars when
-  // MessagesUI is permanent for all infobars.
-  if (!IsConfirmInfobarMessagesUIEnabled()) {
-    UpdateSnapshotWithCallback(nil);
-  }
-}
-
-void SnapshotTabHelper::OnInfoBarReplaced(infobars::InfoBar* old_infobar,
-                                          infobars::InfoBar* new_infobar) {
-  // TODO(crbug.com/961343): Remove snapshotting for infobars when
-  // MessagesUI is permanent for all infobars.
-  // TODO(crbug.com/1018285): Rapid blocking of javascript popups can cause a
-  // crash as simultaneous snapshots are triggered. Do not take snapshots when
-  // consecutive infobars are popup blocking infobars.
-  infobars::InfoBarDelegate::InfoBarIdentifier
-      popup_blocked_infobar_identifier =
-          infobars::InfoBarDelegate::POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
-  bool consecutive_popup_blocked_infobars =
-      old_infobar->delegate()->GetIdentifier() ==
-          popup_blocked_infobar_identifier &&
-      new_infobar->delegate()->GetIdentifier() ==
-          popup_blocked_infobar_identifier;
-  if (!consecutive_popup_blocked_infobars &&
-      !IsConfirmInfobarMessagesUIEnabled()) {
-    UpdateSnapshotWithCallback(nil);
-  }
-}
-
-void SnapshotTabHelper::OnManagerShuttingDown(
-    infobars::InfoBarManager* manager) {
-  DCHECK_EQ(infobar_manager_, manager);
-  infobar_observer_.Remove(manager);
-  infobar_manager_ = nullptr;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SnapshotTabHelper)

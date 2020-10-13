@@ -89,11 +89,6 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAutofillUseRendererIDsName[];
 extern const char kAutofillUseRendererIDsDescription[];
 
-// Title and description for the flag that enables Messages UI on
-// Block Popup Infobars.
-extern const char kBlockPopupInfobarMessagesUIName[];
-extern const char kBlockPopupInfobarMessagesUIDescription[];
-
 // Title and description for the flag that controls whether event breadcrumbs
 // are captured.
 extern const char kLogBreadcrumbsName[];
@@ -113,16 +108,6 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 // presented using the new iOS13 Card style or the custom legacy one.
 extern const char kCollectionsCardPresentationStyleName[];
 extern const char kCollectionsCardPresentationStyleDescription[];
-
-// Title and description for the flag that enables Messages UI on
-// ConfirmInfobars.
-extern const char kConfirmInfobarMessagesUIName[];
-extern const char kConfirmInfobarMessagesUIDescription[];
-
-// Title and description for the flag that enables Messages UI on
-// Crash Restore Infobars.
-extern const char kCrashRestoreInfobarMessagesUIName[];
-extern const char kCrashRestoreInfobarMessagesUIDescription[];
 
 // Title and description for the flag to scan a new credit card using the
 // camera.
@@ -169,10 +154,6 @@ extern const char kDisableProgressBarAnimationDescription[];
 // Discover feed in the Bling NTP.
 extern const char kDiscoverFeedInNtpName[];
 extern const char kDiscoverFeedInNtpDescription[];
-
-// Title and description for the flag to enable the Messages UI for downloads.
-extern const char kDownloadInfobarMessagesUIName[];
-extern const char kDownloadInfobarMessagesUIDescription[];
 
 // Title and description for the flag to enable drag and drop.
 extern const char kDragAndDropName[];
