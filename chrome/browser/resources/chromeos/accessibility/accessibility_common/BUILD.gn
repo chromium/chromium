@@ -60,6 +60,7 @@ js2gtest("accessibility_common_extjs_tests") {
   sources = [
     "accessibility_common_test.js",
     "autoclick/autoclick_test.js",
+    "magnifier/magnifier_test.js",
   ]
   gen_include_files = [
     "../common/rect_util.js",
@@ -88,6 +89,7 @@ js_library("accessibility_common") {
   deps = [
     ":autoclick",
     ":magnifier",
+    "../common:event_handler",
     "../common:instance_checker",
   ]
   externs_list = [
