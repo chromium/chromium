@@ -600,6 +600,7 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   header_row_ = new NotificationHeaderView(this);
   header_row_->SetPreferredSize(header_row_->GetPreferredSize() -
                                 gfx::Size(GetInsets().width(), 0));
+  header_row_->SetID(kHeaderRow);
   control_buttons_view_ = header_row_->AddChildView(
       std::make_unique<NotificationControlButtonsView>(this));
   AddChildView(header_row_);

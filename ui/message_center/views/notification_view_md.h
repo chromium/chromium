@@ -168,6 +168,13 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
       public NotificationInputDelegate,
       public views::ButtonListener {
  public:
+  // This defines an enumeration of IDs that can uniquely identify a view within
+  // the scope of NotificationViewMD.
+  enum ViewId {
+    // We start from 1 because 0 is the default view ID.
+    kHeaderRow = 1,
+  };
+
   explicit NotificationViewMD(const Notification& notification);
   ~NotificationViewMD() override;
 

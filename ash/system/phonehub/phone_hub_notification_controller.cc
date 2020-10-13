@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -19,14 +20,35 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/views/message_view_factory.h"
+#include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view_md.h"
 
 namespace ash {
 
 namespace {
 const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
+const char kNotificationCustomViewType[] = "phonehub";
 const int kReplyButtonIndex = 0;
 const int kCancelButtonIndex = 1;
+
+std::unique_ptr<message_center::MessageView> CreateCustomNotificationView(
+    const message_center::Notification& notification) {
+  DCHECK_EQ(kNotificationCustomViewType, notification.custom_view_type());
+
+  std::unique_ptr<message_center::NotificationViewMD> notification_view =
+      std::make_unique<message_center::NotificationViewMD>(notification);
+  message_center::NotificationHeaderView* header_row =
+      static_cast<message_center::NotificationHeaderView*>(
+          notification_view->GetViewByID(
+              message_center::NotificationViewMD::kHeaderRow));
+  header_row->SetSummaryText(l10n_util::GetStringUTF16(
+      IDS_ASH_PHONE_HUB_NOTIFICATION_FROM_PHONE_TITLE));
+
+  return notification_view;
+}
+
 }  // namespace
 
 // Delegate for the displayed ChromeOS notification.
@@ -101,7 +123,11 @@ class PhoneHubNotificationController::NotificationDelegate
   base::WeakPtrFactory<NotificationDelegate> weak_ptr_factory_{this};
 };
 
-PhoneHubNotificationController::PhoneHubNotificationController() = default;
+PhoneHubNotificationController::PhoneHubNotificationController() {
+  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
+      kNotificationCustomViewType,
+      base::BindRepeating(&CreateCustomNotificationView));
+}
 
 PhoneHubNotificationController::~PhoneHubNotificationController() {
   if (manager_)
@@ -178,6 +204,7 @@ void PhoneHubNotificationController::CreateOrUpdateNotification(
   NotificationDelegate* delegate = notification_map_[phone_hub_id].get();
 
   auto cros_notification = CreateNotification(notification, cros_id, delegate);
+  cros_notification->set_custom_view_type(kNotificationCustomViewType);
 
   auto* message_center = message_center::MessageCenter::Get();
   if (notification_already_exists)
@@ -194,7 +221,7 @@ PhoneHubNotificationController::CreateNotification(
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId);
 
-  auto notification_type = message_center::NOTIFICATION_TYPE_SIMPLE;
+  auto notification_type = message_center::NOTIFICATION_TYPE_CUSTOM;
 
   base::string16 title = notification->title().value_or(base::string16());
   base::string16 message =
@@ -208,10 +235,8 @@ PhoneHubNotificationController::CreateNotification(
   optional_fields.timestamp = notification->timestamp();
 
   auto shared_image = notification->shared_image();
-  if (shared_image.has_value()) {
+  if (shared_image.has_value())
     optional_fields.image = shared_image.value();
-    notification_type = message_center::NOTIFICATION_TYPE_IMAGE;
-  }
 
   const gfx::Image& icon = notification->contact_image().value_or(gfx::Image());
 
