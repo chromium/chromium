@@ -39,13 +39,17 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
      */
     private final WeakReference<RemoteObjectRegistry> mRegistry;
 
-    private final boolean mAllowInspection;
+    private boolean mAllowInspection;
 
     RemoteObjectHostImpl(RemoteObjectImpl.Auditor auditor, RemoteObjectRegistry registry,
             boolean allowInspection) {
         mAuditor = auditor;
         mRegistry = new WeakReference<>(registry);
         mAllowInspection = allowInspection;
+    }
+
+    public void setAllowInspection(boolean allow) {
+        mAllowInspection = allow;
     }
 
     @Override

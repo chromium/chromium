@@ -31,11 +31,13 @@ public final class RemoteObjectInjector extends WebContentsObserver {
      */
     private static class RemoteObjectGatewayHelper {
         public RemoteObjectGateway.Proxy gateway;
+        public RemoteObjectHostImpl host;
         public RemoteObjectRegistry registry;
 
-        public RemoteObjectGatewayHelper(
-                RemoteObjectGateway.Proxy newGateway, RemoteObjectRegistry newRegistry) {
+        public RemoteObjectGatewayHelper(RemoteObjectGateway.Proxy newGateway,
+                RemoteObjectHostImpl newHost, RemoteObjectRegistry newRegistry) {
             gateway = newGateway;
+            host = newHost;
             registry = newRegistry;
         }
     }
@@ -104,7 +106,14 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     }
 
     public void setAllowInspection(boolean allow) {
+        WebContents webContents = mWebContents.get();
+        if (webContents == null) return;
+
         mAllowInspection = allow;
+
+        // TODO(crbug.com/1105935): the objects host needs to update the allow status from all
+        // frames, not just the main one.
+        setAllowInspectionForFrame(webContents.getMainFrame());
     }
 
     private void addInterfaceForFrame(RenderFrameHost frameHost, String name, Object object,
@@ -120,6 +129,13 @@ public final class RemoteObjectInjector extends WebContentsObserver {
 
         helper.gateway.removeNamedObject(name);
         helper.registry.unrefObjectByObject(object);
+    }
+
+    private void setAllowInspectionForFrame(RenderFrameHost frameHost) {
+        RemoteObjectGatewayHelper helper = mRemoteObjectGatewayHelpers.get(frameHost);
+        if (helper == null) return;
+
+        helper.host.setAllowInspection(mAllowInspection);
     }
 
     private RemoteObjectGatewayHelper getRemoteObjectGatewayHelperForFrame(
@@ -140,7 +156,7 @@ public final class RemoteObjectInjector extends WebContentsObserver {
                     RemoteObjectGateway.MANAGER.getInterfaceRequest(CoreImpl.getInstance());
             factory.createRemoteObjectGateway(host, result.second);
             mRemoteObjectGatewayHelpers.put(
-                    frameHost, new RemoteObjectGatewayHelper(result.first, registry));
+                    frameHost, new RemoteObjectGatewayHelper(result.first, host, registry));
         }
 
         return mRemoteObjectGatewayHelpers.get(frameHost);
