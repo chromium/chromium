@@ -203,9 +203,18 @@ class MockEntry {
     Promise.resolve()
         .then(() => {
           delete this.filesystem.entries[this.fullPath];
-          return this.clone(
-              joinPath(parent.fullPath, opt_newName || this.name),
-              parent.filesystem);
+          const newPath = joinPath(parent.fullPath, opt_newName || this.name);
+          const newFs = parent.filesystem;
+          // For directories, also move all descendant entries.
+          if (this.isDirectory) {
+            for (const e of Object.values(this.filesystem.entries)) {
+              if (e.fullPath.startsWith(this.fullPath)) {
+                delete this.filesystem.entries[e.fullPath];
+                e.clone(e.fullPath.replace(this.fullPath, newPath), newFs);
+              }
+            }
+          }
+          return this.clone(newPath, newFs);
         })
         .then(opt_successCallback);
   }
@@ -251,7 +260,7 @@ class MockEntry {
   removeRecursively(onSuccess, onError) {
     this.removed_ = true;
     Promise.resolve().then(() => {
-      for (let path in this.filesystem.entries) {
+      for (const path in this.filesystem.entries) {
         if (path.startsWith(this.fullPath)) {
           delete this.filesystem.entries[path];
         }
@@ -317,6 +326,16 @@ class MockFileEntry extends MockEntry {
     onSuccess(new File([this.content], this.toURL()));
   }
 
+  /**
+   * Returns a FileWriter.
+   *
+   * @param {function(!FileWriter)} successCallback
+   * @param {function(!FileError)=} opt_errorCallback
+   */
+  createWriter(successCallback, opt_errorCallback) {
+    successCallback(new MockFileWriter(this));
+  }
+
   /** @override */
   clone(path, opt_filesystem) {
     return MockFileEntry.create(
@@ -338,6 +357,30 @@ class MockFileEntry extends MockEntry {
   asFileEntry() {
     const instance = /** @type {!Object} */ (this);
     return /** @type {!FileEntry} */ (instance);
+  }
+}
+
+/**
+ * Mock class for FileWriter.
+ * @extends {FileWriter}
+ */
+class MockFileWriter {
+  /**
+   * @param {!MockFileEntry} entry
+   */
+  constructor(entry) {
+    this.entry_ = entry;
+    this.onwriteend = (e) => {};
+  }
+
+  /**
+   * @param {!Blob} data
+   */
+  write(data) {
+    this.entry_.content = data;
+    this.onwriteend(new ProgressEvent(
+        'writeend',
+        {lengthComputable: true, loaded: data.size, total: data.size}));
   }
 }
 
@@ -390,44 +433,24 @@ class MockDirectoryEntry extends MockEntry {
   /**
    * Returns a file under the directory.
    *
+   * @param {!Function} expectedClass class expected for entry. Either
+   *     MockFileEntry or MockDirectoryEntry.
    * @param {string} path Path.
    * @param {!FileSystemFlags=} option Options
-   * @param {function(!FileEntry)=} onSuccess Success callback.
+   * @param {function(!Entry)=} onSuccess Success callback.
    * @param {function(!FileError)=} onError Failure callback;
+   * @private
    */
-  getFile(path, option, onSuccess, onError) {
+  getEntry_(expectedClass, path, option, onSuccess, onError) {
     // As onSuccess and onError are optional, if they are not supplied we
     // default them to be no-ops to save on checking their validity later.
     onSuccess = onSuccess || (entry => {});  // no-op
     onError = onError || (error => {});      // no-op
-    const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
-    if (!this.filesystem.entries[fullPath]) {
-      onError(/** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
-    } else if (!(this.filesystem.entries[fullPath] instanceof MockFileEntry)) {
-      onError(
-          /** @type {!FileError} */ ({name: util.FileError.TYPE_MISMATCH_ERR}));
-    } else {
-      onSuccess(this.filesystem.entries[fullPath]);
-    }
-  }
-
-  /**
-   * Returns a directory under the directory.
-   *
-   * @param {string} path Path.
-   * @param {!FileSystemFlags=} option Options
-   * @param {function(!DirectoryEntry)=} onSuccess Success callback.
-   * @param {function(!FileError)=} onError Failure callback;
-   */
-  getDirectory(path, option, onSuccess, onError) {
-    // As onSuccess and onError are optional, if they are not supplied we
-    // default them to be no-ops to save on checking their validity later.
-    onSuccess = onSuccess || (entry => {});  // no-op
-    onError = onError || (error => {});      // no-op
+    option = option || {};
     const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
     const result = this.filesystem.entries[fullPath];
     if (result) {
-      if (!(result instanceof MockDirectoryEntry)) {
+      if (!(result instanceof expectedClass)) {
         onError(
             /** @type {!FileError} */ (
                 {name: util.FileError.TYPE_MISMATCH_ERR}));
@@ -442,11 +465,38 @@ class MockDirectoryEntry extends MockEntry {
         onError(
             /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
       } else {
-        const newEntry = MockDirectoryEntry.create(this.filesystem, fullPath);
-        this.filesystem.entries[fullPath] = newEntry;
+        const newEntry = expectedClass.create(this.filesystem, fullPath);
         onSuccess(newEntry);
       }
     }
+  }
+
+  /**
+   * Returns a file under the directory.
+   *
+   * @param {string} path Path.
+   * @param {!FileSystemFlags=} option Options
+   * @param {function(!FileEntry)=} onSuccess Success callback.
+   * @param {function(!FileError)=} onError Failure callback;
+   */
+  getFile(path, option, onSuccess, onError) {
+    return this.getEntry_(
+        MockFileEntry, path, option,
+        /** @type {function(!Entry)|undefined} */ (onSuccess), onError);
+  }
+
+  /**
+   * Returns a directory under the directory.
+   *
+   * @param {string} path Path.
+   * @param {!FileSystemFlags=} option Options
+   * @param {function(!DirectoryEntry)=} onSuccess Success callback.
+   * @param {function(!FileError)=} onError Failure callback;
+   */
+  getDirectory(path, option, onSuccess, onError) {
+    return this.getEntry_(
+        MockDirectoryEntry, path, option,
+        /** @type {function(!Entry)|undefined} */ (onSuccess), onError);
   }
 
   /**

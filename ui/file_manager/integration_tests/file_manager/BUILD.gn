@@ -46,6 +46,7 @@ js_type_check("closure_compile") {
     ":tasks",
     ":toolbar",
     ":transfer",
+    ":trash",
     ":traverse",
     ":zip_files",
   ]
@@ -251,6 +252,11 @@ js_library("toolbar") {
 }
 
 js_library("transfer") {
+  testonly = true
+  deps = []
+}
+
+js_library("trash") {
   testonly = true
   deps = []
 }

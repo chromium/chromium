@@ -53,6 +53,7 @@
       "file_manager/tasks.js",
       "file_manager/toolbar.js",
       "file_manager/transfer.js",
+      "file_manager/trash.js",
       "file_manager/traverse.js",
       "file_manager/zip_files.js"
     ]

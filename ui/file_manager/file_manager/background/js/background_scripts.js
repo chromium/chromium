@@ -27,4 +27,5 @@
 // <include src="mount_metrics.js">
 // <include src="progress_center.js">
 // <include src="test_util.js">
+// <include src="trash.js">
 // <include src="background.js">

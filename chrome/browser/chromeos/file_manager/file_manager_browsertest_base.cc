@@ -716,6 +716,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(offline)
   PRINT_IF_NOT_DEFAULT(smbfs)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
+  PRINT_IF_NOT_DEFAULT(trash)
   PRINT_IF_NOT_DEFAULT(zip)
   PRINT_IF_NOT_DEFAULT(zip_no_nacl)
   PRINT_IF_NOT_DEFAULT(single_partition_format)
@@ -1647,6 +1648,10 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.single_partition_format) {
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
+  }
+
+  if (options.trash) {
+    enabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
   if (command_line->HasSwitch("devtools-code-coverage")) {

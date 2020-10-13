@@ -122,7 +122,7 @@ class BlockableFakeStartCopy {
     this.startCopyId_++;
 
     callback(this.startCopyId_);
-    var listener = mockChrome.fileManagerPrivate.onCopyProgress.listener_;
+    const listener = mockChrome.fileManagerPrivate.onCopyProgress.listener_;
     listener(this.startCopyId_, makeStatus('begin_copy_entry'));
     listener(this.startCopyId_, makeStatus('progress'));
 
@@ -257,6 +257,7 @@ function waitForEvents(fileOperationManager) {
  */
 let volumeManager;
 
+// eslint-disable-next-line no-var
 var volumeManagerFactory = volumeManagerFactory || {};
 
 /**
@@ -278,6 +279,15 @@ let fileOperationManager;
  * Initializes the test environment.
  */
 function setUp() {
+  // Mock LoadTimeData strings.
+  window.loadTimeData = {
+    data: {},
+    getBoolean: function(key) {
+      return window.loadTimeData.data[key];
+    },
+    getString: id => id,
+  };
+
   // Install mock chrome APIs.
   installMockChrome(mockChrome);
 }
