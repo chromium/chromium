@@ -396,8 +396,8 @@ void ArCoreGl::GetFrameData(
   base::TimeDelta frame_timestamp = arcore_->GetFrameTimestamp();
   if (!last_arcore_frame_timestamp_.is_zero()) {
     base::TimeDelta delta = frame_timestamp - last_arcore_frame_timestamp_;
-    TRACE_COUNTER1("xr", "ARCore camera frame interval (ms)",
-                   delta.InMilliseconds());
+    TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                   "ARCore camera frame interval (ms)", delta.InMilliseconds());
   }
   last_arcore_frame_timestamp_ = frame_timestamp;
 
@@ -560,6 +560,8 @@ base::TimeDelta ArCoreGl::WaitTimeForArCoreUpdate() {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta wait =
       next_update - now - kScheduleFrametimeMarginForUpdate * frametime;
+  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                 "GetFrameData update wait (ms)", wait.InMilliseconds());
   return wait;
 }
 
@@ -582,12 +584,24 @@ base::TimeDelta ArCoreGl::WaitTimeForRenderCompletion() {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta render_wait = expected_render_complete - now - render_margin;
 
+  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                 "GetFrameData render wait (ms)", render_wait.InMilliseconds());
   // Once the next frame starts animating, we won't be able to finish processing
   // it until the current frame finishes rendering. If rendering is slower than
   // the animating (JS processing) time, increase the delay to compensate.
   if (avg_animate < avg_render) {
     render_wait += avg_render - avg_animate;
   }
+  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                 "GetFrameData adjusted render wait (ms)",
+                 render_wait.InMilliseconds());
+  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                 "Avg animating time (ms)", avg_animate.InMilliseconds());
+  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                 "Avg processing time (ms)",
+                 average_process_time_.GetAverage().InMilliseconds());
+  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
+                 "Avg rendering time (ms)", avg_render.InMilliseconds());
   return render_wait;
 }
 
