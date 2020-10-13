@@ -346,7 +346,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libavif
   # and whatever else without interference from each other.
-  'libavif_revision': '0265cd7a10d1425cf42908458a0807e919195914',
+  'libavif_revision': 'e67f9369d50e00c59b504abf52655b3c0f304430',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling nearby
   # and whatever else without interference from each other.
@@ -4916,7 +4916,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_chromeos or checkout_simplechrome',
     'action': [ 'vpython',
-		'src/tools/download_optimization_profile.py',
+  'src/tools/download_optimization_profile.py',
                 '--newest_state=src/chromeos/profiles/atom.afdo.newest.txt',
                 '--local_state=src/chromeos/profiles/atom.afdo.local.txt',
                 '--output_name=src/chromeos/profiles/atom.afdo.prof',
