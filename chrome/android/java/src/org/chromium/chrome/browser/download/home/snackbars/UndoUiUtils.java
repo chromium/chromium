@@ -30,4 +30,15 @@ final class UndoUiUtils {
                 ? context.getString(R.string.delete_message)
                 : context.getString(R.string.undo_bar_multiple_downloads_delete_message);
     }
+
+    /** @return A {@link String} representing the text to announce when an undo occurs. */
+    public static String getAccessibilityActionAnnouncementTextFor(Collection<OfflineItem> items) {
+        String title = getTitleFor(items);
+        Context context = ContextUtils.getApplicationContext();
+        return items.size() == 1
+                ? context.getString(R.string.undo_bar_delete_restore_accessibility_message, title)
+                : context.getString(
+                        R.string.undo_bar_multiple_downloads_delete_restore_accessibility_message,
+                        title);
+    }
 }

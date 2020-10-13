@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
@@ -208,6 +209,15 @@ public class SnackbarView {
         mMessageView.announceForAccessibility(mMessageView.getContentDescription() + ". "
                 + mActionButtonView.getContentDescription() + ". "
                 + mContainerView.getResources().getString(R.string.bottom_bar_screen_position));
+    }
+
+    /**
+     * Sends an accessibility event to mContainerView announcing that an action was taken based on
+     * the action button being pressed.  May do nothing if no announcement was specified.
+     */
+    public void announceActionForAccessibility() {
+        if (TextUtils.isEmpty(mSnackbar.getActionAccessibilityAnnouncement())) return;
+        mContainerView.announceForAccessibility(mSnackbar.getActionAccessibilityAnnouncement());
     }
 
     /**

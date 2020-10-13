@@ -179,6 +179,7 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
      */
     @Override
     public void onClick(View v) {
+        mView.announceActionForAccessibility();
         mSnackbars.removeCurrentDueToAction();
         updateView();
     }

@@ -95,6 +95,7 @@ public class Snackbar {
     private String mTemplateText;
     private String mActionText;
     private Object mActionData;
+    private String mAccessibilityActionAnnouncement;
     private int mBackgroundColor;
     private int mTextApperanceResId;
     private boolean mSingleLine = true;
@@ -159,6 +160,16 @@ public class Snackbar {
     public Snackbar setAction(String actionText, Object actionData) {
         mActionText = actionText;
         mActionData = actionData;
+        return this;
+    }
+
+    /**
+     * Sets the text to accessibility announce when the action button is pressed.
+     * @param accessibilityActionAnnouncement An optional string to be announced when the action
+     *        button is pressed.
+     */
+    public Snackbar setActionAccessibilityAnnouncement(String accessibilityActionAnnouncement) {
+        mAccessibilityActionAnnouncement = accessibilityActionAnnouncement;
         return this;
     }
 
@@ -239,6 +250,10 @@ public class Snackbar {
 
     Object getActionData() {
         return mActionData;
+    }
+
+    String getActionAccessibilityAnnouncement() {
+        return mAccessibilityActionAnnouncement;
     }
 
     boolean getSingleLine() {

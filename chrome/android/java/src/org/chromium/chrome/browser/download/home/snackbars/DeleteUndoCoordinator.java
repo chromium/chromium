@@ -46,6 +46,8 @@ public class DeleteUndoCoordinator {
                 Snackbar.TYPE_ACTION, Snackbar.UMA_DOWNLOAD_DELETE_UNDO);
         snackbar.setAction(ContextUtils.getApplicationContext().getString(R.string.undo), callback);
         snackbar.setTemplateText(UndoUiUtils.getTemplateTextFor(itemsSelected));
+        snackbar.setActionAccessibilityAnnouncement(
+                UndoUiUtils.getAccessibilityActionAnnouncementTextFor(itemsSelected));
         mView.showSnackbar(snackbar);
     }
 
