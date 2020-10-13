@@ -7,7 +7,7 @@
 
 #include "net/base/net_export.h"
 
-NET_EXPORT_PRIVATE extern bool spdy_hpack_use_indexed_name;
+NET_EXPORT_PRIVATE extern bool http2_use_fast_huffman_encoder;
 
 inline bool GetSpdyReloadableFlagImpl(bool flag) {
   return flag;

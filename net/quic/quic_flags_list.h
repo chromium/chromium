@@ -228,7 +228,7 @@ QUIC_FLAG(bool,
 QUIC_FLAG(bool, FLAGS_quic_enable_http3_grease_randomness, true)
 
 // If true, disable QUIC version h3-27.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_draft_27, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_draft_27, true)
 
 // If true, server push will be allowed in QUIC versions using HTTP/3.
 QUIC_FLAG(bool, FLAGS_quic_enable_http3_server_push, false)
@@ -282,12 +282,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_disable_server_blackhole_detection,
           false)
 
-// When true, QUIC+TLS versions will send the key_update_not_yet_supported
-// transport parameter.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_send_key_update_not_yet_supported,
-          true)
-
 // If true, QUIC will default enable MTU discovery, with a target of 1450 bytes.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_enable_mtu_discovery_at_server,
@@ -338,7 +332,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_copy_bbr_cwnd_to_bbr2, true)
 // GOAWAY frame.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_fix_http3_goaway_stream_id,
-          false)
+          true)
 
 // If true, close connection if writer is still blocked when OnCanWrite is
 // called.
@@ -387,7 +381,7 @@ QUIC_FLAG(
 // If true, abort async QPACK header decompression in QuicSpdyStream::OnClose().
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_abort_qpack_on_stream_close,
-          false)
+          true)
 
 // If true, do not arm PTO for application data until handshake confirmed.
 QUIC_FLAG(bool,
@@ -413,7 +407,7 @@ QUIC_FLAG(bool,
 QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_bbr2_use_post_inflight_to_detect_queuing,
-    false)
+    true)
 
 // If true, QUIC BBRv2 will use 15% inflight_hi headroom, which is the default
 // for TCP.
@@ -436,7 +430,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_default_to_2_rttvar, true)
 // sent.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_deallocate_message_right_after_sent,
-          false)
+          true)
 
 // If true, drop initial keys at the end of writing and unify the fixes for
 // missing initial keys.
@@ -468,3 +462,15 @@ QUIC_FLAG(bool,
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_let_connection_handle_pings,
           true)
+
+// If true, BBRv2 will 1) change the default STARTUP and DRAIN cwnd gain to 2.0,
+// and 2) change the meaning of connection option BBQ2 to use 2.885 for STARTUP
+// and DRAIN cwnd gain.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_bbr2_flip_bbq2, true)
+
+// If true, use http2::HuffmanEncodeFast() instead of HuffmanEncode() and
+// eliminate one string copy for QPACK encoding used in IETF QUIC.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_fast_huffman_encoder, false)
+
+// When true, QUIC+TLS versions will support key updates.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_key_update_supported, false)

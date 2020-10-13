@@ -164,6 +164,19 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "OnStreamsBlockedFrame: " << frame;
     return true;
   }
+  void OnKeyUpdate() override { *output_ << "OnKeyUpdate\n"; }
+  void OnDecryptedFirstPacketInKeyPhase() override {
+    *output_ << "OnDecryptedFirstPacketInKeyPhase\n";
+  }
+  std::unique_ptr<QuicDecrypter> AdvanceKeysAndCreateCurrentOneRttDecrypter()
+      override {
+    *output_ << "AdvanceKeysAndCreateCurrentOneRttDecrypter\n";
+    return nullptr;
+  }
+  std::unique_ptr<QuicEncrypter> CreateCurrentOneRttEncrypter() override {
+    *output_ << "CreateCurrentOneRttEncrypter\n";
+    return nullptr;
+  }
   bool OnWindowUpdateFrame(const QuicWindowUpdateFrame& frame) override {
     *output_ << "OnWindowUpdateFrame: " << frame;
     return true;

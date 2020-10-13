@@ -4,8 +4,10 @@
 
 #include "net/spdy/platform/impl/spdy_flags_impl.h"
 
-// If true, use indexed name if possible when sending
-// Literal Header Field without Indexing instruction.
-bool spdy_hpack_use_indexed_name = true;
+// If true, use http2::HuffmanSize() instead of
+// spdy::HpackHuffmanTable::EncodedSize() and http2::HuffmanEncodeFast()
+// instead of spdy::HpackHuffmanTable::EncodeString() for HPACK encoding used
+// in HTTP/2 and Google QUIC (not IETF QUIC).
+bool http2_use_fast_huffman_encoder = true;
 
 namespace spdy {}  // namespace spdy
