@@ -48,12 +48,12 @@ def GetAllImages(boot_image_names):
   return images_to_download
 
 
-def DownloadSdkBootImages(bucket, sdk_hash, boot_image_names, image_output_dir):
+def DownloadSdkBootImages(bucket, sdk_hash, boot_image_names, image_root_dir):
   images_to_download = GetAllImages(boot_image_names)
   for image_to_download in images_to_download:
     device_type = image_to_download[0]
     arch = image_to_download[1]
-    image_output_dir = os.path.join(image_output_dir, arch, device_type)
+    image_output_dir = os.path.join(image_root_dir, arch, device_type)
     if os.path.exists(image_output_dir):
       continue
 
