@@ -248,11 +248,11 @@ class WeakPtr : public internal::WeakPtrBase {
   }
 
   T& operator*() const {
-    DCHECK(get() != nullptr);
+    CHECK(ref_.IsValid());
     return *get();
   }
   T* operator->() const {
-    DCHECK(get() != nullptr);
+    CHECK(ref_.IsValid());
     return get();
   }
 
