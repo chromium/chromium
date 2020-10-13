@@ -250,4 +250,44 @@ TEST_F(AXTreeConverterTest, ConvertToFuchsiaNodeId) {
   EXPECT_EQ(10u, ConvertToFuchsiaNodeId(10, 0));
 }
 
+TEST_F(AXTreeConverterTest, ConvertRoles) {
+  ui::AXNodeData node;
+  node.id = 0;
+  node.role = ax::mojom::Role::kButton;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::BUTTON,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kCheckBox;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::CHECK_BOX,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kHeader;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::HEADER,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kImage;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::IMAGE,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kLink;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::LINK,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kRadioButton;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::RADIO_BUTTON,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kSlider;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::SLIDER,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kTextField;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::TEXT_FIELD,
+            AXNodeDataToSemanticNode(node).role());
+
+  node.role = ax::mojom::Role::kStaticText;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::STATIC_TEXT,
+            AXNodeDataToSemanticNode(node).role());
+}
+
 }  // namespace

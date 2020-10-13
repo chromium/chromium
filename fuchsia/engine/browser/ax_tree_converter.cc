@@ -29,21 +29,6 @@ constexpr uint32_t kFuchsiaRootNodeId = 0;
 // so as to not conflict with other values used by Chromium.
 constexpr uint32_t kZeroIdRemappedForFuchsia = 1u + INT32_MAX;
 
-fuchsia::accessibility::semantics::Role ConvertRole(ax::mojom::Role role) {
-  if (role == ax::mojom::Role::kButton)
-    return fuchsia::accessibility::semantics::Role::BUTTON;
-  if (role == ax::mojom::Role::kHeader)
-    return fuchsia::accessibility::semantics::Role::HEADER;
-  if (role == ax::mojom::Role::kImage)
-    return fuchsia::accessibility::semantics::Role::IMAGE;
-  if (role == ax::mojom::Role::kSlider)
-    return fuchsia::accessibility::semantics::Role::SLIDER;
-  if (role == ax::mojom::Role::kTextField)
-    return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
-
-  return fuchsia::accessibility::semantics::Role::UNKNOWN;
-}
-
 fuchsia::accessibility::semantics::Attributes ConvertAttributes(
     const ui::AXNodeData& node) {
   fuchsia::accessibility::semantics::Attributes attributes;
@@ -77,6 +62,35 @@ fuchsia::accessibility::semantics::Attributes ConvertAttributes(
   }
 
   return attributes;
+}
+
+// Converts an ax::mojom::Role to a fuchsia::accessibility::semantics::Role.
+fuchsia::accessibility::semantics::Role AxRoleToFuchsiaSemanticRole(
+    ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kButton:
+      return fuchsia::accessibility::semantics::Role::BUTTON;
+    case ax::mojom::Role::kCheckBox:
+      return fuchsia::accessibility::semantics::Role::CHECK_BOX;
+    case ax::mojom::Role::kHeader:
+      return fuchsia::accessibility::semantics::Role::HEADER;
+    case ax::mojom::Role::kImage:
+      return fuchsia::accessibility::semantics::Role::IMAGE;
+    case ax::mojom::Role::kLink:
+      return fuchsia::accessibility::semantics::Role::LINK;
+    case ax::mojom::Role::kRadioButton:
+      return fuchsia::accessibility::semantics::Role::RADIO_BUTTON;
+    case ax::mojom::Role::kSlider:
+      return fuchsia::accessibility::semantics::Role::SLIDER;
+    case ax::mojom::Role::kTextField:
+      return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
+    case ax::mojom::Role::kStaticText:
+      return fuchsia::accessibility::semantics::Role::STATIC_TEXT;
+    default:
+      return fuchsia::accessibility::semantics::Role::UNKNOWN;
+  }
+
+  return fuchsia::accessibility::semantics::Role::UNKNOWN;
 }
 
 // This function handles conversions for all data that is part of a Semantic
@@ -196,7 +210,7 @@ fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
     const ui::AXNodeData& node) {
   fuchsia::accessibility::semantics::Node fuchsia_node;
   fuchsia_node.set_node_id(base::checked_cast<uint32_t>(node.id));
-  fuchsia_node.set_role(ConvertRole(node.role));
+  fuchsia_node.set_role(AxRoleToFuchsiaSemanticRole(node.role));
   fuchsia_node.set_states(ConvertStates(node));
   fuchsia_node.set_attributes(ConvertAttributes(node));
   fuchsia_node.set_actions(ConvertActions(node));
