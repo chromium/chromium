@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine_impl/model_type_worker.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 

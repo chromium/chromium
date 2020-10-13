@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace syncer {
 

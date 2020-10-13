@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_COMMIT_QUEUE_H_
 #define COMPONENTS_SYNC_ENGINE_COMMIT_QUEUE_H_
 
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace syncer {
 

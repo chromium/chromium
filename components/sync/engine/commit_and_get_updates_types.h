@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_NON_BLOCKING_SYNC_COMMON_H_
-#define COMPONENTS_SYNC_ENGINE_NON_BLOCKING_SYNC_COMMON_H_
+#ifndef COMPONENTS_SYNC_ENGINE_COMMIT_AND_GET_UPDATES_TYPES_H_
+#define COMPONENTS_SYNC_ENGINE_COMMIT_AND_GET_UPDATES_TYPES_H_
 
 #include <stdint.h>
 
@@ -114,4 +114,4 @@ size_t EstimateMemoryUsage(const UpdateResponseData& value);
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_NON_BLOCKING_SYNC_COMMON_H_
+#endif  // COMPONENTS_SYNC_ENGINE_COMMIT_AND_GET_UPDATES_TYPES_H_

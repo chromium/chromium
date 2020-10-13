@@ -19,7 +19,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"

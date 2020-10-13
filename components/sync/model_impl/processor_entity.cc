@@ -15,7 +15,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
 namespace syncer {

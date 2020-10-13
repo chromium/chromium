@@ -18,9 +18,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 

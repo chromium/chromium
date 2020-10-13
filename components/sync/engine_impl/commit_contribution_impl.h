@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/protocol/sync.pb.h"

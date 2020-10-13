@@ -30,6 +30,8 @@ group("test_support") {
 # etc, but currently they all depend on each other.
 static_library("rest_of_sync") {
   sources = [
+    "engine/commit_and_get_updates_types.cc",
+    "engine/commit_and_get_updates_types.h",
     "engine/commit_queue.h",
     "engine/configure_reason.h",
     "engine/cycle/commit_counters.cc",
@@ -66,8 +68,6 @@ static_library("rest_of_sync") {
     "engine/net/http_bridge.h",
     "engine/net/http_post_provider_factory.h",
     "engine/net/http_post_provider_interface.h",
-    "engine/non_blocking_sync_common.cc",
-    "engine/non_blocking_sync_common.h",
     "engine/passive_model_worker.cc",
     "engine/passive_model_worker.h",
     "engine/polling_constants.cc",

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace bookmarks {
 class BookmarkModel;
