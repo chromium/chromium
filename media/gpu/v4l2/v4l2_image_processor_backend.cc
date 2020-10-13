@@ -664,13 +664,15 @@ void V4L2ImageProcessorBackend::Reset() {
 
 bool V4L2ImageProcessorBackend::ApplyCrop(const gfx::Rect& visible_rect,
                                           enum v4l2_buf_type type) {
-  struct v4l2_rect rect {};
+  struct v4l2_rect rect;
+  memset(&rect, 0, sizeof(rect));
   rect.left = visible_rect.x();
   rect.top = visible_rect.y();
   rect.width = visible_rect.width();
   rect.height = visible_rect.height();
 
-  struct v4l2_selection selection_arg {};
+  struct v4l2_selection selection_arg;
+  memset(&selection_arg, 0, sizeof(selection_arg));
   // Multiplanar buffer types are messed up in S_SELECTION API, so all drivers
   // don't necessarily work with MPLANE types. This issue is resolved with
   // kernel 4.13. As we use kernel < 4.13 today, we use single planar buffer
@@ -686,7 +688,8 @@ bool V4L2ImageProcessorBackend::ApplyCrop(const gfx::Rect& visible_rect,
     rect = selection_arg.r;
   } else {
     DVLOGF(2) << "Fallback to VIDIOC_S/G_CROP";
-    struct v4l2_crop crop {};
+    struct v4l2_crop crop;
+    memset(&crop, 0, sizeof(crop));
     crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     crop.c = rect;
     if (device_->Ioctl(VIDIOC_S_CROP, &crop) != 0) {
@@ -711,7 +714,8 @@ bool V4L2ImageProcessorBackend::ReconfigureV4L2Format(
     const gfx::Size& size,
     const gfx::Rect& visible_rect,
     enum v4l2_buf_type type) {
-  v4l2_format format{};
+  struct v4l2_format format;
+  memset(&format, 0, sizeof(format));
   format.type = type;
   if (device_->Ioctl(VIDIOC_G_FMT, &format) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_G_FMT";
