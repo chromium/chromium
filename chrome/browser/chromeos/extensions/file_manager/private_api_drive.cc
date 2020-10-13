@@ -274,14 +274,13 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
       CompleteGetEntryProperties(base::File::FILE_ERROR_NOT_FOUND);
       return;
     }
-    root->GetMetadata(
-        path,
-        base::BindOnce(
-            &SingleEntryPropertiesGetterForDocumentsProvider::OnGetMetadata,
-            weak_ptr_factory_.GetWeakPtr()));
+    root->GetExtraFileMetadata(
+        path, base::BindOnce(&SingleEntryPropertiesGetterForDocumentsProvider::
+                                 OnGetExtraFileMetadata,
+                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnGetMetadata(
+  void OnGetExtraFileMetadata(
       base::File::Error error,
       const arc::ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);

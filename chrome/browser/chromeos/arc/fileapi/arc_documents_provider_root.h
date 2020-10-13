@@ -65,7 +65,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   using WatcherStatusCallback = storage::WatcherManager::StatusCallback;
   using ResolveToContentUrlCallback =
       base::OnceCallback<void(const GURL& content_url)>;
-  using GetMetadataCallback =
+  using GetExtraMetadataCallback =
       base::OnceCallback<void(base::File::Error error,
                               const ExtraFileMetadata& metadata)>;
 
@@ -188,7 +188,8 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // Get extra metadata of the file at |path|.
   // The metadata is about capatility of write operations.
   // See ExtraFileMetadata for the supported capabilities.
-  void GetMetadata(const base::FilePath& path, GetMetadataCallback callback);
+  void GetExtraFileMetadata(const base::FilePath& path,
+                            GetExtraMetadataCallback callback);
 
   // Instructs to make directory caches expire "soon" after callbacks are
   // called, that is, when the message loop gets idle.
@@ -214,14 +215,13 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   using ReadDirectoryInternalCallback =
       base::OnceCallback<void(base::File::Error error,
                               const NameToDocumentMap& mapping)>;
+  using GetDocumentCallback =
+      base::OnceCallback<void(base::File::Error error,
+                              const mojom::DocumentPtr& document)>;
 
-  void GetFileInfoWithParentDocumentId(GetFileInfoCallback callback,
-                                       const base::FilePath& basename,
-                                       const std::string& parent_document_id);
-  void GetFileInfoWithNameToDocumentMap(GetFileInfoCallback callback,
-                                        const base::FilePath& basename,
-                                        base::File::Error error,
-                                        const NameToDocumentMap& mapping);
+  void GetFileInfoFromDocument(GetFileInfoCallback callback,
+                               base::File::Error error,
+                               const mojom::DocumentPtr& document);
 
   void ReadDirectoryWithDocumentId(ReadDirectoryCallback callback,
                                    const std::string& document_id);
@@ -315,11 +315,20 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   void ResolveToContentUrlWithDocumentId(ResolveToContentUrlCallback callback,
                                          const std::string& document_id);
 
-  void GetMetadataWithDocumentId(GetMetadataCallback callback,
-                                 const std::string& document_id);
-  void OnMetadataGotten(GetMetadataCallback callback,
-                        mojom::DocumentPtr document);
+  void GetExtraMetadataFromDocument(GetExtraMetadataCallback callback,
+                                    base::File::Error error,
+                                    const mojom::DocumentPtr& document);
 
+  // Queries for a single document at the given |path|, using a directory cache,
+  // if present.
+  void GetDocument(const base::FilePath& path, GetDocumentCallback callback);
+  void GetDocumentWithParentDocumentId(GetDocumentCallback callback,
+                                       const base::FilePath& basename,
+                                       const std::string& parent_document_id);
+  void GetDocumentWithNameToDocumentMap(GetDocumentCallback callback,
+                                        const base::FilePath& basename,
+                                        base::File::Error error,
+                                        const NameToDocumentMap& mapping);
   // Resolves |path| to a document ID. Failures are indicated by an empty
   // document ID.
   void ResolveToDocumentId(const base::FilePath& path,

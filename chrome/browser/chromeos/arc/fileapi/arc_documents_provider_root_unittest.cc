@@ -1326,7 +1326,7 @@ TEST_F(ArcDocumentsProviderRootTest, ResolveToContentUrlDups) {
 
 TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonDeletable) {
   base::RunLoop run_loop;
-  root_->GetMetadata(
+  root_->GetExtraFileMetadata(
       base::FilePath(FILE_PATH_LITERAL("dir/no-delete.jpg")),
       base::BindOnce(
           [](base::RunLoop* run_loop, base::File::Error error,
@@ -1343,7 +1343,7 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonDeletable) {
 
 TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonRenamable) {
   base::RunLoop run_loop;
-  root_->GetMetadata(
+  root_->GetExtraFileMetadata(
       base::FilePath(FILE_PATH_LITERAL("dir/no-rename.jpg")),
       base::BindOnce(
           [](base::RunLoop* run_loop, base::File::Error error,
@@ -1360,7 +1360,7 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonRenamable) {
 
 TEST_F(ArcDocumentsProviderRootTest, GetMetadataReadOnlyDirectory) {
   base::RunLoop run_loop;
-  root_->GetMetadata(
+  root_->GetExtraFileMetadata(
       base::FilePath(FILE_PATH_LITERAL("ro-dir")),
       base::BindOnce(
           [](base::RunLoop* run_loop, base::File::Error error,
@@ -1377,7 +1377,7 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataReadOnlyDirectory) {
 
 TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonExist) {
   base::RunLoop run_loop;
-  root_->GetMetadata(
+  root_->GetExtraFileMetadata(
       base::FilePath(FILE_PATH_LITERAL("dir/no-exist-file")),
       base::BindOnce(
           [](base::RunLoop* run_loop, base::File::Error error,

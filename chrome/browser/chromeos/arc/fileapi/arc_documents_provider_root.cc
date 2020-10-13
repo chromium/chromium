@@ -117,16 +117,9 @@ void ArcDocumentsProviderRoot::GetFileInfo(const base::FilePath& path,
     return;
   }
 
-  base::FilePath basename = path.BaseName();
-  base::FilePath parent = path.DirName();
-  if (parent.value() == base::FilePath::kCurrentDirectory)
-    parent = base::FilePath();
-
-  ResolveToDocumentId(
-      parent,
-      base::BindOnce(&ArcDocumentsProviderRoot::GetFileInfoWithParentDocumentId,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     basename));
+  GetDocument(path, base::BindOnce(
+                        &ArcDocumentsProviderRoot::GetFileInfoFromDocument,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcDocumentsProviderRoot::ReadDirectory(const base::FilePath& path,
@@ -269,8 +262,9 @@ void ArcDocumentsProviderRoot::ResolveToContentUrl(
                 weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ArcDocumentsProviderRoot::GetMetadata(const base::FilePath& path,
-                                           GetMetadataCallback callback) {
+void ArcDocumentsProviderRoot::GetExtraFileMetadata(
+    const base::FilePath& path,
+    GetExtraMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (path.IsAbsolute()) {
@@ -283,10 +277,10 @@ void ArcDocumentsProviderRoot::GetMetadata(const base::FilePath& path,
     std::move(callback).Run(base::File::FILE_OK, {});
     return;
   }
-  ResolveToDocumentId(
-      path,
-      base::BindOnce(&ArcDocumentsProviderRoot::GetMetadataWithDocumentId,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  GetDocument(path, base::BindOnce(
+                        &ArcDocumentsProviderRoot::GetExtraMetadataFromDocument,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcDocumentsProviderRoot::SetDirectoryCacheExpireSoonForTesting() {
@@ -301,43 +295,15 @@ void ArcDocumentsProviderRoot::OnWatchersCleared() {
     entry.second = kInvalidWatcherData;
 }
 
-void ArcDocumentsProviderRoot::GetFileInfoWithParentDocumentId(
+void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
     GetFileInfoCallback callback,
-    const base::FilePath& basename,
-    const std::string& parent_document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (parent_document_id.empty()) {
-    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
-                            base::File::Info());
-    return;
-  }
-  ReadDirectoryInternal(
-      parent_document_id, false /* force_refresh */,
-      base::BindOnce(
-          &ArcDocumentsProviderRoot::GetFileInfoWithNameToDocumentMap,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), basename));
-}
-
-void ArcDocumentsProviderRoot::GetFileInfoWithNameToDocumentMap(
-    GetFileInfoCallback callback,
-    const base::FilePath& basename,
     base::File::Error error,
-    const NameToDocumentMap& mapping) {
+    const mojom::DocumentPtr& document) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (error != base::File::FILE_OK) {
-    std::move(callback).Run(error, base::File::Info());
+  if (document.is_null()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
     return;
   }
-
-  auto iter = mapping.find(basename.value());
-  if (iter == mapping.end()) {
-    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
-                            base::File::Info());
-    return;
-  }
-
-  const auto& document = iter->second;
 
   base::File::Info info;
   info.size = document->size;
@@ -748,22 +714,10 @@ void ArcDocumentsProviderRoot::ResolveToContentUrlWithDocumentId(
   std::move(callback).Run(BuildDocumentUrl(authority_, document_id));
 }
 
-void ArcDocumentsProviderRoot::GetMetadataWithDocumentId(
-    GetMetadataCallback callback,
-    const std::string& document_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (document_id.empty()) {
-    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
-    return;
-  }
-  runner_->GetDocument(
-      authority_, document_id,
-      base::BindOnce(&ArcDocumentsProviderRoot::OnMetadataGotten,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ArcDocumentsProviderRoot::OnMetadataGotten(GetMetadataCallback callback,
-                                                mojom::DocumentPtr document) {
+void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
+    GetExtraMetadataCallback callback,
+    base::File::Error error,
+    const mojom::DocumentPtr& document) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (document.is_null()) {
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
@@ -774,6 +728,61 @@ void ArcDocumentsProviderRoot::OnMetadataGotten(GetMetadataCallback callback,
   metadata.supports_rename = document->supports_rename;
   metadata.dir_supports_create = document->dir_supports_create;
   std::move(callback).Run(base::File::FILE_OK, metadata);
+}
+
+void ArcDocumentsProviderRoot::GetDocument(const base::FilePath& path,
+                                           GetDocumentCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::FilePath basename = path.BaseName();
+  base::FilePath parent = path.DirName();
+  if (parent.value() == base::FilePath::kCurrentDirectory)
+    parent = base::FilePath();
+
+  ResolveToDocumentId(
+      parent,
+      base::BindOnce(&ArcDocumentsProviderRoot::GetDocumentWithParentDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     basename));
+}
+
+void ArcDocumentsProviderRoot::GetDocumentWithParentDocumentId(
+    GetDocumentCallback callback,
+    const base::FilePath& basename,
+    const std::string& parent_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (parent_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
+                            mojom::DocumentPtr());
+    return;
+  }
+  ReadDirectoryInternal(
+      parent_document_id, false /* force_refresh */,
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::GetDocumentWithNameToDocumentMap,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), basename));
+}
+
+void ArcDocumentsProviderRoot::GetDocumentWithNameToDocumentMap(
+    GetDocumentCallback callback,
+    const base::FilePath& basename,
+    base::File::Error error,
+    const NameToDocumentMap& mapping) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (error != base::File::FILE_OK) {
+    std::move(callback).Run(error, mojom::DocumentPtr());
+    return;
+  }
+
+  auto iter = mapping.find(basename.value());
+  if (iter == mapping.end()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
+                            mojom::DocumentPtr());
+    return;
+  }
+
+  std::move(callback).Run(base::File::FILE_OK, iter->second);
 }
 
 void ArcDocumentsProviderRoot::ResolveToDocumentId(
