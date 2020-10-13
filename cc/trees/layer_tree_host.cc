@@ -1865,7 +1865,8 @@ base::ReadOnlySharedMemoryRegion
 LayerTreeHost::CreateSharedMemoryForSmoothnessUkm() {
   const auto size = sizeof(UkmSmoothnessDataShared);
   ukm_smoothness_mapping_ = base::ReadOnlySharedMemoryRegion::Create(size);
-  DCHECK(ukm_smoothness_mapping_.IsValid());
+  if (!ukm_smoothness_mapping_.IsValid())
+    return {};
   proxy_->SetUkmSmoothnessDestination(
       ukm_smoothness_mapping_.mapping.GetMemoryAs<UkmSmoothnessDataShared>());
   return std::move(ukm_smoothness_mapping_.region);

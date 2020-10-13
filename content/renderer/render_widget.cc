@@ -739,8 +739,10 @@ void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {
   DCHECK(for_frame());
   RenderFrameImpl* render_frame =
       RenderFrameImpl::FromWebFrame(GetFrameWidget()->LocalRoot());
-  render_frame->SetUpSharedMemoryForSmoothness(
-      layer_tree_host_->CreateSharedMemoryForSmoothnessUkm());
+  auto shmem = layer_tree_host_->CreateSharedMemoryForSmoothnessUkm();
+  if (shmem.IsValid()) {
+    render_frame->SetUpSharedMemoryForSmoothness(std::move(shmem));
+  }
 }
 
 blink::WebInputMethodController* RenderWidget::GetInputMethodController()
