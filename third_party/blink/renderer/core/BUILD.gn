@@ -1634,6 +1634,14 @@ proto_library("css_proto") {
   sources = [ "css/parser/css.proto" ]
 }
 
+fuzzer_test("blink_html_tokenizer_fuzzer") {
+  sources = [ "html/parser/html_tokenizer_fuzzer.cc" ]
+  deps = [
+    ":core",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+  ]
+}
+
 # Fuzzers for blink::FeaturePolicy.
 fuzzer_test("feature_policy_fuzzer") {
   sources = [ "feature_policy/feature_policy_fuzzer.cc" ]

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("parser") {
@@ -87,12 +86,4 @@ blink_core_sources("parser") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-}
-
-fuzzer_test("blink_html_tokenizer_fuzzer") {
-  sources = [ "html_tokenizer_fuzzer.cc" ]
-  deps = [
-    "../../:core",
-    "../../../platform:blink_fuzzer_test_support",
-  ]
 }
