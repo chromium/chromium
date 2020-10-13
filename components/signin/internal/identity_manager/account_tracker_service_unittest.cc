@@ -107,11 +107,10 @@ std::string AccountKeyToPictureURL(AccountKey account_key) {
       account_key.value);
 }
 
-std::string AccountKeyToPictureURLWithSize(AccountKey account_key) {
+GURL AccountKeyToPictureURLWithSize(AccountKey account_key) {
   return signin::GetAvatarImageURLWithOptions(
-             GURL(AccountKeyToPictureURL(account_key)),
-             signin::kAccountInfoImageSize, true /* no_silhouette */)
-      .spec();
+      GURL(AccountKeyToPictureURL(account_key)), signin::kAccountInfoImageSize,
+      true /* no_silhouette */);
 }
 
 class TrackingEvent {
@@ -315,7 +314,8 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
  protected:
-  void ReturnFetchResults(net::HttpStatusCode response_code,
+  void ReturnFetchResults(const GURL& url,
+                          net::HttpStatusCode response_code,
                           const std::string& response_string);
 
   base::test::TaskEnvironment task_environment_;
@@ -371,9 +371,9 @@ class AccountTrackerServiceTest : public testing::Test {
 };
 
 void AccountTrackerServiceTest::ReturnFetchResults(
+    const GURL& url,
     net::HttpStatusCode response_code,
     const std::string& response_string) {
-  GURL url = GaiaUrls::GetInstance()->oauth_user_info_url();
   EXPECT_TRUE(GetTestURLLoaderFactory()->IsPending(url.spec()));
 
   // It's possible for multiple requests to be pending. Respond to all of them.
@@ -388,35 +388,35 @@ void AccountTrackerServiceTest::ReturnFetchResults(
 void AccountTrackerServiceTest::ReturnAccountInfoFetchSuccess(
     AccountKey account_key) {
   IssueAccessToken(account_key);
-  ReturnFetchResults(net::HTTP_OK, GenerateValidTokenInfoResponse(account_key));
+  ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
+                     net::HTTP_OK, GenerateValidTokenInfoResponse(account_key));
 }
 
 void AccountTrackerServiceTest::ReturnAccountInfoFetchSuccessIncomplete(
     AccountKey account_key) {
   IssueAccessToken(account_key);
-  ReturnFetchResults(net::HTTP_OK,
+  ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
+                     net::HTTP_OK,
                      GenerateIncompleteTokenInfoResponse(account_key));
 }
 
 void AccountTrackerServiceTest::ReturnAccountInfoFetchFailure(
     AccountKey account_key) {
   IssueAccessToken(account_key);
-  ReturnFetchResults(net::HTTP_BAD_REQUEST, std::string());
+  ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
+                     net::HTTP_BAD_REQUEST, std::string());
 }
 
 void AccountTrackerServiceTest::ReturnAccountImageFetchSuccess(
     AccountKey account_key) {
-  GetTestURLLoaderFactory()->AddResponse(
-      AccountKeyToPictureURLWithSize(account_key), "image data");
-  task_environment_.RunUntilIdle();
+  ReturnFetchResults(AccountKeyToPictureURLWithSize(account_key), net::HTTP_OK,
+                     "image data");
 }
 
 void AccountTrackerServiceTest::ReturnAccountImageFetchFailure(
     AccountKey account_key) {
-  GetTestURLLoaderFactory()->AddResponse(
-      AccountKeyToPictureURLWithSize(account_key), std::string(),
-      net::HTTP_BAD_REQUEST);
-  task_environment_.RunUntilIdle();
+  ReturnFetchResults(AccountKeyToPictureURLWithSize(account_key),
+                     net::HTTP_BAD_REQUEST, "image data");
 }
 
 TEST_F(AccountTrackerServiceTest, Basic) {}
@@ -561,6 +561,44 @@ TEST_F(AccountTrackerServiceTest, TwoTokenAvailable_OneUserInfo) {
                     AccountKeyToGaiaId(kAccountKeyAlpha),
                     AccountKeyToEmail(kAccountKeyAlpha)),
   }));
+}
+
+// Regression test for http://crbug.com/1135958
+TEST_F(AccountTrackerServiceTest,
+       AccountSeeded_TokenAvailable_UserInfoSuccess) {
+  // Setup: Seed the account before simulating that the refresh token is
+  // available.
+  account_tracker()->SeedAccountInfo(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                     AccountKeyToEmail(kAccountKeyAlpha));
+
+  // Account fetcher service should fetch user info for accounts that were
+  // seeded.
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
+}
+
+// Regression test for http://crbug.com/1135958
+TEST_F(AccountTrackerServiceTest, RefreshAccount_FetchImageSuccess) {
+  CoreAccountId account_id = AccountKeyToAccountId(kAccountKeyAlpha);
+
+  // Setup: User info fetched successfully, but missing the account image.
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ReturnAccountImageFetchFailure(kAccountKeyAlpha);
+  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsValid());
+  ASSERT_TRUE(
+      account_tracker()->GetAccountInfo(account_id).account_image.IsEmpty());
+
+  // Account fetcher should fetch the account image even when user info if
+  // the account image was not fetched before.
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountImageFetchSuccess(kAccountKeyAlpha);
+  AccountInfo account_info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_FALSE(account_info.account_image.IsEmpty());
+  EXPECT_EQ(account_info.last_downloaded_image_url_with_size,
+            AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
 }
 
 TEST_F(AccountTrackerServiceTest, GetAccounts) {
@@ -1139,7 +1177,8 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
   account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        false);
 #endif
-  ReturnFetchResults(net::HTTP_OK,
+  ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
+                     net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1167,7 +1206,8 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevokedWithUpdate) {
   account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        true);
 #endif
-  ReturnFetchResults(net::HTTP_OK,
+  ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
+                     net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1253,7 +1293,8 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
   EXPECT_TRUE(info.is_child_account);
-  ReturnFetchResults(net::HTTP_OK,
+  ReturnFetchResults(GaiaUrls::GetInstance()->oauth_user_info_url(),
+                     net::HTTP_OK,
                      GenerateValidTokenInfoResponse(kAccountKeyChild));
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
