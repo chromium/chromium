@@ -52,7 +52,6 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
     NOT_DESTROYED();
     return local_transform_;
   }
-  bool IsUseElement() const;
 
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;

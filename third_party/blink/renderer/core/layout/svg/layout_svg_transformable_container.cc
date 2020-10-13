@@ -80,28 +80,16 @@ void LayoutSVGTransformableContainer::SetNeedsTransformUpdate() {
   needs_transform_update_ = true;
 }
 
-bool LayoutSVGTransformableContainer::IsUseElement() const {
-  NOT_DESTROYED();
-  const SVGElement& element = *GetElement();
-  if (IsA<SVGUseElement>(element))
-    return true;
-  // Nested <use> are replaced by <g> during shadow tree expansion.
-  if (IsA<SVGGElement>(element) && To<SVGGElement>(element).InUseShadowTree())
-    return IsA<SVGUseElement>(element.CorrespondingElement());
-  return false;
-}
-
 SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
     bool bounds_changed) {
   NOT_DESTROYED();
   SVGElement* element = GetElement();
   DCHECK(element);
 
-  // If we're either the LayoutObject for a <use> element, or for any <g>
-  // element inside the shadow tree, that was created during the use/symbol/svg
-  // expansion in SVGUseElement. These containers need to respect the
-  // translations induced by their corresponding use elements x/y attributes.
-  if (IsUseElement()) {
+  // If we're the LayoutObject for a <use> element, this container needs to
+  // respect the translations induced by their corresponding use elements x/y
+  // attributes.
+  if (IsA<SVGUseElement>(element)) {
     const ComputedStyle& style = StyleRef();
     const SVGComputedStyle& svg_style = style.SvgStyle();
     SVGLengthContext length_context(element);
