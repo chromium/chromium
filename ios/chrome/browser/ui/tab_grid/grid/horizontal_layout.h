@@ -11,4 +11,9 @@
 @interface HorizontalLayout : FlowLayout
 @end
 
+// A specialization of HorizontalLayout that shows the UI in its "reordering"
+// state, with the moving cell enlarged and the non-moving cells transparent.
+@interface HorizontalReorderingLayout : HorizontalLayout
+@end
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_HORIZONTAL_LAYOUT_H_

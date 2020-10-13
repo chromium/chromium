@@ -81,6 +81,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong) HorizontalLayout* horizontalLayout;
 // The layout used while the grid is being reordered.
 @property(nonatomic, strong) UICollectionViewLayout* reorderingLayout;
+// The layout used while the thumb strip is being reordered.
+@property(nonatomic, strong) UICollectionViewLayout* horizontalReorderingLayout;
 // YES if, when reordering is enabled, the order of the cells has changed.
 @property(nonatomic, assign) BOOL hasChangedOrder;
 #if defined(__IPHONE_13_4)
@@ -150,6 +152,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     collectionView.dragInteractionEnabled = YES;
   } else {
     self.reorderingLayout = [[GridReorderingLayout alloc] init];
+    if (IsThumbStripEnabled()) {
+      self.horizontalReorderingLayout =
+          [[HorizontalReorderingLayout alloc] init];
+    }
     self.itemReorderRecognizer = [[UILongPressGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(handleItemReorderingWithGesture:)];
@@ -858,8 +864,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         self.itemReorderTouchPoint =
             CGPointMake(location.x - cellCenter.x, location.y - cellCenter.y);
         // Switch to the reordering layout.
-        [self.collectionView setCollectionViewLayout:self.reorderingLayout
-                                            animated:YES];
+        if (IsThumbStripEnabled() &&
+            self.defaultLayout == self.horizontalLayout) {
+          [self.collectionView
+              setCollectionViewLayout:self.horizontalReorderingLayout
+                             animated:YES];
+        } else {
+          [self.collectionView setCollectionViewLayout:self.reorderingLayout
+                                              animated:YES];
+        }
         // Immediately update the position of the moving item; otherwise, the
         // collection view may relayout its subviews and briefly show the moving
         // item at position (0,0).

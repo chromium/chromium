@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_layout.h"
 
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/reordering_layout_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -75,38 +76,23 @@
 // default layout attributes.
 - (NSArray<__kindof UICollectionViewLayoutAttributes*>*)
     layoutAttributesForElementsInRect:(CGRect)rect {
-  NSArray* baseAttributes = [super layoutAttributesForElementsInRect:rect];
-  NSMutableArray<__kindof UICollectionViewLayoutAttributes*>* attributes =
-      [NSMutableArray array];
-  for (UICollectionViewLayoutAttributes* attribute in baseAttributes) {
-    UICollectionViewLayoutAttributes* newAttribute = [attribute copy];
-    newAttribute.alpha = kReorderingInactiveCellOpacity;
-    [attributes addObject:newAttribute];
-  }
-  return [attributes copy];
+  return CopyAttributesArrayAndSetInactiveOpacity(
+      [super layoutAttributesForElementsInRect:rect]);
 }
 
 - (UICollectionViewLayoutAttributes*)layoutAttributesForItemAtIndexPath:
     (NSIndexPath*)indexPath {
-  UICollectionViewLayoutAttributes* attributes =
-      [[super layoutAttributesForItemAtIndexPath:indexPath] copy];
-  attributes.alpha = kReorderingInactiveCellOpacity;
-  return attributes;
+  return CopyAttributesAndSetInactiveOpacity(
+      [super layoutAttributesForItemAtIndexPath:indexPath]);
 }
 
 - (UICollectionViewLayoutAttributes*)
     layoutAttributesForInteractivelyMovingItemAtIndexPath:
         (NSIndexPath*)indexPath
                                        withTargetPosition:(CGPoint)position {
-  UICollectionViewLayoutAttributes* attributes = [[super
+  return CopyAttributesAndSetActiveProperties([super
       layoutAttributesForInteractivelyMovingItemAtIndexPath:indexPath
-                                         withTargetPosition:position] copy];
-  // The moving item has regular opacity, but is scaled.
-  attributes.alpha = 1.0;
-  attributes.transform =
-      CGAffineTransformScale(attributes.transform, kReorderingActiveCellScale,
-                             kReorderingActiveCellScale);
-  return attributes;
+                                         withTargetPosition:position]);
 }
 
 @end
