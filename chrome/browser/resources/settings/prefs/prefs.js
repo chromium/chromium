@@ -213,7 +213,9 @@ Polymer({
     // settingsPrivate.setPref and potentially trigger an IPC loop.)
     if (!deepEqual(prefStoreValue, prefObj.value)) {
       // <if expr="chromeos">
-      this.fire('user-action-setting-change');
+      this.fire(
+          'user-action-setting-change',
+          {prefKey: key, prefValue: prefObj.value});
       // </if>
 
       this.settingsApi_.setPref(

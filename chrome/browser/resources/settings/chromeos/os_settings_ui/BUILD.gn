@@ -13,6 +13,7 @@ js_library("os_settings_ui") {
     "..:metrics_recorder",
     "..:os_page_visibility",
     "..:os_route",
+    "..:pref_to_setting_metric_converter",
     "../..:global_scroll_target_behavior",
     "../..:router",
     "../../prefs",

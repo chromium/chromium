@@ -125,9 +125,16 @@ cr.define('settings', function() {
      */
     activeRoute_: null,
 
+    /**
+     * Converts prefs to settings metrics to help record pref changes.
+     * @private {PrefToSettingMetricConverter}
+     */
+    prefToSettingMetricConverter_: null,
+
     /** @override */
     created() {
       settings.Router.getInstance().initializeRouteFromUrl();
+      this.prefToSettingMetricConverter_ = new PrefToSettingMetricConverter();
     },
 
     /**
@@ -350,10 +357,26 @@ cr.define('settings', function() {
     },
 
     /**
+     * @param {!CustomEvent<!{prefKey: string, prefValue: *}>} e
      * @private
      */
-    onSettingChange_() {
-      settings.recordSettingChange();
+    onSettingChange_(e) {
+      const {prefKey, prefValue} = e.detail;
+      const settingMetric =
+          this.prefToSettingMetricConverter_.convertPrefToSettingMetric(
+              prefKey, prefValue);
+
+      // New metrics for this setting pref have not yet been implemented.
+      if (!settingMetric) {
+        settings.recordSettingChange();
+        return;
+      }
+
+      const setting = /** @type {!chromeos.settings.mojom.Setting} */ (
+          settingMetric.setting);
+      const value = /** @type {!chromeos.settings.mojom.SettingChangeValue} */ (
+          settingMetric.value);
+      settings.recordSettingChange(setting, value);
     },
 
     /**

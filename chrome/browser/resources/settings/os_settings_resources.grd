@@ -985,6 +985,12 @@
       <structure name="IDR_OS_SETTINGS_OS_PAGE_VISIBILITY_JS"
                  file="chromeos/os_page_visibility.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_PREF_TO_SETTING_METRIC_CONVERTER_HTML"
+                 file="chromeos/pref_to_setting_metric_converter.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_PREF_TO_SETTING_METRIC_CONVERTER_JS"
+                 file="chromeos/pref_to_setting_metric_converter.js"
+                 compress="false" type="chrome_html" />
       <!-- TODO(jamescook): Remove after sync settings is forked. -->
       <structure name="IDR_OS_SETTINGS_PERSONALIZATION_OPTIONS_HTML"
                  file="privacy_page/personalization_options.html"
