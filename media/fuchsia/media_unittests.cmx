@@ -3,11 +3,11 @@
     "fuchsia.test": {
       "injected-services": {
         "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cmx",
-        "fuchsia.media.Audio": "fuchsia-pkg://fuchsia.com/audio#meta/audio.cmx",
         "fuchsia.mediacodec.CodecFactory": "fuchsia-pkg://fuchsia.com/codec_factory#meta/codec_factory.cmx"
       },
       "system-services": [
         "fuchsia.sysmem.Allocator",
+        "fuchsia.media.Audio",
         "fuchsia.media.AudioCore"
       ]
     }
