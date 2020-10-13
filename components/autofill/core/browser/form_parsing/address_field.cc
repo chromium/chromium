@@ -122,6 +122,7 @@ std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
       address_field->address2_ || address_field->address3_ ||
       address_field->street_address_ || address_field->city_ ||
       address_field->state_ || address_field->zip_ || address_field->zip4_ ||
+      address_field->street_name_ || address_field->house_number_ ||
       address_field->country_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
