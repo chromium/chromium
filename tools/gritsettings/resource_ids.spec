@@ -106,12 +106,9 @@
     "includes": [1220],
     "structures": [1240],
   },
-  "chrome/browser/resources/bookmarks/bookmarks_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bookmarks/bookmarks_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
     "includes": [1260],
-    "structures": [1280],
-  },
-  "chrome/browser/resources/bookmarks/bookmarks_resources_vulcanized.grd": {
-    "includes": [1300],
   },
   "chrome/browser/resources/chromeos/cellular_setup/cellular_setup_resources.grd": {
     "structures": [1360],

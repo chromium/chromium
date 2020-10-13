@@ -35,11 +35,6 @@
 
 namespace {
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/bookmarks/";
-#endif
-
 void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id) {
@@ -51,16 +46,9 @@ void AddLocalizedString(content::WebUIDataSource* source,
 content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIBookmarksHost);
-
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(source, "bookmarks.js",
-                                     IDR_BOOKMARKS_BOOKMARKS_ROLLUP_JS,
-                                     IDR_BOOKMARKS_BOOKMARKS_HTML);
-#else
   webui::SetupWebUIDataSource(
-      source, base::make_span(kBookmarksResources, kBookmarksResourcesSize),
-      kGeneratedPath, IDR_BOOKMARKS_BOOKMARKS_HTML);
-#endif
+      source, base::make_span(kBookmarksResources, kBookmarksResourcesSize), "",
+      IDR_BOOKMARKS_BOOKMARKS_HTML);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in bookmarks/command_manager.js
