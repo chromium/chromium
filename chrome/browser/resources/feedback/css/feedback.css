@@ -97,6 +97,11 @@ body {
   margin-inline-end: 9px;
 }
 
+.content .description-empty-notification {
+  color: rgb(204, 0, 0);
+  font-weight: bold;
+}
+
 .content .checkbox-field-container {
   -webkit-align-items: center;
   display: -webkit-flex;

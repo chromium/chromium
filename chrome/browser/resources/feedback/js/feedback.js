@@ -189,9 +189,18 @@ function checkForBluetoothKeywords(inputEvent) {
  */
 function sendReport() {
   if ($('description-text').value.length == 0) {
+    // Don't need to re-hide this or reset the aria label in the non-empty case
+    // because the report will always be sent if we get past this if statement.
+    $('description-empty-error').hidden = false;
+
+    // Return focus to the textarea but first change its aria-labelledby so that
+    // the screen reader reads the error first when describing it.
     const description = $('description-text');
-    description.placeholder = loadTimeData.getString('noDescription');
+    description.setAttribute('aria-labelledby', 'description-empty-error');
     description.focus();
+
+    // We added a line of text, so make sure the app window is big enough.
+    resizeAppWindow();
     return false;
   }
 
