@@ -81,10 +81,10 @@ public class TutorialListCoordinatorTest {
     @SmallTest
     public void testShowList() {
         Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
-        onView(withText(tutorial.displayTitle)).check(matches(isDisplayed()));
+        onView(withText(tutorial.title)).check(matches(isDisplayed()));
         onView(withText(VideoTutorialUtils.getVideoLengthString(tutorial.videoLength)))
                 .check(matches(isDisplayed()));
-        onView(withText(tutorial.displayTitle)).perform(ViewActions.click());
+        onView(withText(tutorial.title)).perform(ViewActions.click());
         Mockito.verify(mClickCallback).onResult(tutorial);
     }
 }

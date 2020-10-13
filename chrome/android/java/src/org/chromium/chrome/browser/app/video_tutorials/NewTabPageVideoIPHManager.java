@@ -60,10 +60,8 @@ public class NewTabPageVideoIPHManager {
 
         mContext = viewStub.getContext();
         mTracker = TrackerFactory.getTrackerForProfile(profile);
-        Callback<Tutorial> clickListener = this::onClickIPH;
-        Callback<Tutorial> dismissListener = this::onDismissIPH;
         mVideoIPHCoordinator = createVideoIPHCoordinator(
-                viewStub, createImageFetcher(profile), clickListener, dismissListener);
+                viewStub, createImageFetcher(profile), this::onClickIPH, this::onDismissIPH);
         mVideoTutorialService = VideoTutorialServiceFactory.getForProfile(profile);
         mVideoTutorialService.getTutorials(this::onFetchTutorials);
     }

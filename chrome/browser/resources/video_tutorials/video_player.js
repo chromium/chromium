@@ -15,7 +15,7 @@ function onDocumentLoaded() {
 
 function onVideoEnded() {
   // Resize the poster.
-  video.style.classList.add('video-ended');
+  video.classList.add('video-ended');
   video.controls = false;
 }
 

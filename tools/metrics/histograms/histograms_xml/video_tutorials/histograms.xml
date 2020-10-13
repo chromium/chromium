@@ -22,9 +22,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="VideoTutorialFeatureTopic">
+  <variant name="ChromeIntro"/>
   <variant name="Download"/>
   <variant name="Search"/>
+  <variant name="Summary"/>
   <variant name="Unknown"/>
+  <variant name="VoiceSearch"/>
 </variants>
 
 <histogram name="VideoTutorials.Player.LoadTimeLatency" units="ms"

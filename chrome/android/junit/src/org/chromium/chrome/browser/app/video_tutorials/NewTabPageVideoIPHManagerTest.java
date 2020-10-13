@@ -30,8 +30,11 @@ import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinator;
+import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialIPHUtils;
 import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.HashMap;
@@ -116,15 +119,17 @@ public class NewTabPageVideoIPHManagerTest {
     @Test
     public void testShowFirstEnabledIPH() {
         // We have already watched the first tutorial, the second one should show up as IPH card.
+        Tutorial testTutorial = mTestVideoTutorialService.getTestTutorials().get(1);
         Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString())).thenReturn(false, true);
         mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
-        Mockito.verify(mVideoIPHCoordinator)
-                .showVideoIPH(mTestVideoTutorialService.getTestTutorials().get(1));
+        Mockito.verify(mVideoIPHCoordinator).showVideoIPH(testTutorial);
 
-        // Click on the IPH. video player should be launched.
-        mIPHClickListener.onResult(mTestVideoTutorialService.getTestTutorials().get(1));
+        // Click on the IPH. The video player should be launched.
+        mIPHClickListener.onResult(testTutorial);
         assertThat(mVideoIPHManager.videoPlayerLaunched, equalTo(true));
         assertThat(mVideoIPHManager.videoListLaunched, equalTo(false));
+        Mockito.verify(mTracker, Mockito.times(1))
+                .notifyEvent(VideoTutorialIPHUtils.getClickEvent(testTutorial.featureType));
     }
 
     @Test
@@ -142,5 +147,64 @@ public class NewTabPageVideoIPHManagerTest {
         mIPHClickListener.onResult(tutorialArgument.getValue());
         assertThat(mVideoIPHManager.videoPlayerLaunched, equalTo(false));
         assertThat(mVideoIPHManager.videoListLaunched, equalTo(true));
+    }
+
+    @Test
+    public void testDismissIPH() {
+        // Show a tutorial IPH.
+        Tutorial testTutorial = mTestVideoTutorialService.getTestTutorials().get(0);
+        Mockito.when(mTracker.shouldTriggerHelpUI(Mockito.anyString())).thenReturn(true);
+        mVideoIPHManager = new TestNewTabPageVideoIPHManager(mViewStub, mProfile);
+        Mockito.verify(mVideoIPHCoordinator).showVideoIPH(testTutorial);
+
+        // Dismiss the IPH. The tracker should record this event.
+        mIPHDismissListener.onResult(testTutorial);
+        Mockito.verify(mTracker, Mockito.times(1))
+                .notifyEvent(VideoTutorialIPHUtils.getDismissEvent(testTutorial.featureType));
+        assertThat(mVideoIPHManager.videoPlayerLaunched, equalTo(false));
+        assertThat(mVideoIPHManager.videoListLaunched, equalTo(false));
+    }
+
+    @Test
+    public void testClickEventForFeatureTypes() {
+        assertThat(VideoTutorialIPHUtils.getClickEvent(FeatureType.SUMMARY),
+                equalTo(EventConstants.VIDEO_TUTORIAL_CLICKED_SUMMARY));
+        assertThat(VideoTutorialIPHUtils.getClickEvent(FeatureType.CHROME_INTRO),
+                equalTo(EventConstants.VIDEO_TUTORIAL_CLICKED_CHROME_INTRO));
+        assertThat(VideoTutorialIPHUtils.getClickEvent(FeatureType.DOWNLOAD),
+                equalTo(EventConstants.VIDEO_TUTORIAL_CLICKED_DOWNLOAD));
+        assertThat(VideoTutorialIPHUtils.getClickEvent(FeatureType.SEARCH),
+                equalTo(EventConstants.VIDEO_TUTORIAL_CLICKED_SEARCH));
+        assertThat(VideoTutorialIPHUtils.getClickEvent(FeatureType.VOICE_SEARCH),
+                equalTo(EventConstants.VIDEO_TUTORIAL_CLICKED_VOICE_SEARCH));
+    }
+
+    @Test
+    public void testDismissEventForFeatureTypes() {
+        assertThat(VideoTutorialIPHUtils.getDismissEvent(FeatureType.SUMMARY),
+                equalTo(EventConstants.VIDEO_TUTORIAL_DISMISSED_SUMMARY));
+        assertThat(VideoTutorialIPHUtils.getDismissEvent(FeatureType.CHROME_INTRO),
+                equalTo(EventConstants.VIDEO_TUTORIAL_DISMISSED_CHROME_INTRO));
+        assertThat(VideoTutorialIPHUtils.getDismissEvent(FeatureType.DOWNLOAD),
+                equalTo(EventConstants.VIDEO_TUTORIAL_DISMISSED_DOWNLOAD));
+        assertThat(VideoTutorialIPHUtils.getDismissEvent(FeatureType.SEARCH),
+                equalTo(EventConstants.VIDEO_TUTORIAL_DISMISSED_SEARCH));
+        assertThat(VideoTutorialIPHUtils.getDismissEvent(FeatureType.VOICE_SEARCH),
+                equalTo(EventConstants.VIDEO_TUTORIAL_DISMISSED_VOICE_SEARCH));
+    }
+
+    @Test
+    public void testNTPFeatureNameForFeatureTypes() {
+        assertThat(VideoTutorialIPHUtils.getFeatureNameForNTP(FeatureType.SUMMARY),
+                equalTo(FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE));
+        assertThat(VideoTutorialIPHUtils.getFeatureNameForNTP(FeatureType.CHROME_INTRO),
+                equalTo(FeatureConstants.VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE));
+        assertThat(VideoTutorialIPHUtils.getFeatureNameForNTP(FeatureType.DOWNLOAD),
+                equalTo(FeatureConstants.VIDEO_TUTORIAL_NTP_DOWNLOAD_FEATURE));
+        assertThat(VideoTutorialIPHUtils.getFeatureNameForNTP(FeatureType.SEARCH),
+                equalTo(FeatureConstants.VIDEO_TUTORIAL_NTP_SEARCH_FEATURE));
+        assertThat(VideoTutorialIPHUtils.getFeatureNameForNTP(FeatureType.VOICE_SEARCH),
+                equalTo(FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE));
+        assertThat(VideoTutorialIPHUtils.getFeatureNameForNTP(FeatureType.INVALID), equalTo(null));
     }
 }

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
@@ -50,7 +51,8 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
                 this, videoTutorialService, this::createWebContents, this::tryNow, this::finish);
         setContentView(mCoordinator.getView());
 
-        int featureType = IntentUtils.safeGetIntExtra(getIntent(), EXTRA_VIDEO_TUTORIAL, 0);
+        int featureType =
+                IntentUtils.safeGetIntExtra(getIntent(), EXTRA_VIDEO_TUTORIAL, FeatureType.INVALID);
         videoTutorialService.getTutorial(featureType, mCoordinator::playVideoTutorial);
     }
 

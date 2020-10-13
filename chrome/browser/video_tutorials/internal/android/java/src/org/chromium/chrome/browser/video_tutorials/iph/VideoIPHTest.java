@@ -78,9 +78,9 @@ public class VideoIPHTest {
     public void testShowIPH() {
         final Tutorial tutorial = createDummyTutorial();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.showVideoIPH(tutorial); });
-        onView(withText(tutorial.displayTitle)).check(matches(isDisplayed()));
+        onView(withText(tutorial.title)).check(matches(isDisplayed()));
         onView(withText("5:35")).check(matches(isDisplayed()));
-        onView(withText(tutorial.displayTitle)).perform(ViewActions.click());
+        onView(withText(tutorial.title)).perform(ViewActions.click());
         Mockito.verify(mOnClickListener).onResult(Mockito.any());
         onView(withId(R.id.close_button)).perform(ViewActions.click());
         Mockito.verify(mOnDismissListener).onResult(Mockito.any());

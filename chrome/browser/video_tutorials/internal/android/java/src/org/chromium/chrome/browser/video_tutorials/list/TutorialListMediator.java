@@ -57,7 +57,7 @@ public class TutorialListMediator {
     private PropertyModel buildModelFromTutorial(Tutorial tutorial) {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(TutorialCardProperties.ALL_KEYS)
-                        .with(TutorialCardProperties.TITLE, tutorial.displayTitle)
+                        .with(TutorialCardProperties.TITLE, tutorial.title)
                         .with(TutorialCardProperties.VIDEO_LENGTH,
                                 VideoTutorialUtils.getVideoLengthString(tutorial.videoLength))
                         .with(TutorialCardProperties.CLICK_CALLBACK,

@@ -50,7 +50,7 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
     @Override
     public void showVideoIPH(Tutorial tutorial) {
         mModel.set(VideoIPHProperties.VISIBILITY, true);
-        mModel.set(VideoIPHProperties.DISPLAY_TITLE, tutorial.displayTitle);
+        mModel.set(VideoIPHProperties.DISPLAY_TITLE, tutorial.title);
         mModel.set(VideoIPHProperties.VIDEO_LENGTH,
                 VideoTutorialUtils.getVideoLengthString(tutorial.videoLength));
         mModel.set(VideoIPHProperties.CLICK_LISTENER, () -> mOnClickListener.onResult(tutorial));

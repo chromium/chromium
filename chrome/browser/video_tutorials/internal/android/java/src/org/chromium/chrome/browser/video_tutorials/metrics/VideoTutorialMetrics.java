@@ -65,10 +65,16 @@ public class VideoTutorialMetrics {
 
     private static String histogramSuffixFromFeatureType(@FeatureType int feature) {
         switch (feature) {
+            case FeatureType.CHROME_INTRO:
+                return "ChromeIntro";
             case FeatureType.DOWNLOAD:
                 return "Download";
             case FeatureType.SEARCH:
                 return "Search";
+            case FeatureType.VOICE_SEARCH:
+                return "VoiceSearch";
+            case FeatureType.SUMMARY:
+                return "Summary";
             default:
                 return "Unknown";
         }
