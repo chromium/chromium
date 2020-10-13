@@ -209,7 +209,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void AddChild(const NGPhysicalContainerFragment&,
                 const LogicalOffset&,
                 const LayoutInline* inline_container = nullptr,
-                const NGMarginStrut* margin_strut = nullptr);
+                const NGMarginStrut* margin_strut = nullptr,
+                bool is_self_collapsing = false);
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.

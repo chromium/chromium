@@ -199,7 +199,8 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
-  AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut);
+  AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut,
+           child_layout_result.IsSelfCollapsing());
   if (fragment.IsBox())
     PropagateBreak(child_layout_result);
 }
@@ -207,7 +208,8 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
 void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
                                     const LogicalOffset& child_offset,
                                     const LayoutInline* inline_container,
-                                    const NGMarginStrut* margin_strut) {
+                                    const NGMarginStrut* margin_strut,
+                                    bool is_self_collapsing) {
   LogicalOffset adjusted_offset = child_offset;
 
   if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox) {
@@ -254,7 +256,13 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
       if (margin_strut) {
         NGMarginStrut end_margin_strut = *margin_strut;
         end_margin_strut.Append(margins.block_end, /* is_quirky */ false);
-        margins.block_end = end_margin_strut.Sum();
+
+        // Self-collapsing blocks are special, their end margin-strut is part
+        // of their inflow position. To correctly determine the "end" margin,
+        // we need to the "final" margin-strut from their end margin-strut.
+        margins.block_end = is_self_collapsing
+                                ? end_margin_strut.Sum() - margin_strut->Sum()
+                                : end_margin_strut.Sum();
       }
 
       NGFragment fragment(GetWritingDirection(), child);
