@@ -1554,16 +1554,17 @@ const FeatureEntry::FeatureParam
     kPromoBrowserCommandOpenSafetyCheckCommandParam[] = {
         {features::kPromoBrowserCommandIdParam, "1"}};
 const FeatureEntry::FeatureParam
-    kPromoBrowserCommandOpenSafeBrowsingSettingsCommandParam[] = {
-        {features::kPromoBrowserCommandIdParam, "2"}};
+    kPromoBrowserCommandOpenSafeBrowsingSettingsEnhancedProtectionCommandParam
+        [] = {{features::kPromoBrowserCommandIdParam, "2"}};
 const FeatureEntry::FeatureVariation kPromoBrowserCommandsVariations[] = {
     {"- Unknown Command", kPromoBrowserCommandUnknownCommandParam,
      base::size(kPromoBrowserCommandUnknownCommandParam), nullptr},
     {"- Open Safety Check", kPromoBrowserCommandOpenSafetyCheckCommandParam,
      base::size(kPromoBrowserCommandOpenSafetyCheckCommandParam), nullptr},
-    {"- Open Safe Browsing Settings",
-     kPromoBrowserCommandOpenSafeBrowsingSettingsCommandParam,
-     base::size(kPromoBrowserCommandOpenSafeBrowsingSettingsCommandParam),
+    {"- Open Safe Browsing Enhanced Protection Settings",
+     kPromoBrowserCommandOpenSafeBrowsingSettingsEnhancedProtectionCommandParam,
+     base::size(
+         kPromoBrowserCommandOpenSafeBrowsingSettingsEnhancedProtectionCommandParam),
      nullptr}};
 #if !defined(OS_ANDROID)
 const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {

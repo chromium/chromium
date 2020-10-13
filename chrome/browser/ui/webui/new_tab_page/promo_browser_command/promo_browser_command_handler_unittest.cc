@@ -193,16 +193,19 @@ TEST_F(PromoBrowserCommandHandlerTest, OpenSafetyCheckCommand) {
   EXPECT_TRUE(ExecuteCommand(Command::kOpenSafetyCheck, std::move(info)));
 }
 
-TEST_F(PromoBrowserCommandHandlerTest, OpenSafeBrowsingCommand) {
-  // The OpenSafeBRowsing command opens a new settings window with the Safe
-  // Browsing settings, and the correct disposition.
+TEST_F(PromoBrowserCommandHandlerTest,
+       OpenSafeBrowsingEnhancedProtectionCommand) {
+  // The kOpenSafeBrowsingEnhancedProtectionSettings command opens a new
+  // settings window with the Safe Browsing settings with the Enhanced
+  // Protection section expanded, and the correct disposition.
   ClickInfoPtr info = ClickInfo::New();
   info->middle_button = true;
   info->meta_key = true;
   EXPECT_CALL(
       *command_handler_,
-      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafeBrowsingSubPage)),
+      NavigateToURL(GURL(chrome::GetSettingsUrl(
+                        chrome::kSafeBrowsingEnhancedProtectionSubPage)),
                     DispositionFromClick(*info)));
-  EXPECT_TRUE(
-      ExecuteCommand(Command::kOpenSafeBrowsingSettings, std::move(info)));
+  EXPECT_TRUE(ExecuteCommand(
+      Command::kOpenSafeBrowsingEnhancedProtectionSettings, std::move(info)));
 }

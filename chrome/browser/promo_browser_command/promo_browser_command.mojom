@@ -16,7 +16,7 @@ module promo_browser_command.mojom;
 enum Command {
   kUnknownCommand = 0,
   kOpenSafetyCheck = 1,
-  kOpenSafeBrowsingSettings = 2,
+  kOpenSafeBrowsingEnhancedProtectionSettings = 2,
 };
 
 // Click information needed to determine user's desired window disposition using
