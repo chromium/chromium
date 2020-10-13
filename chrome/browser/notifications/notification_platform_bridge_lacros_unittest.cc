@@ -7,8 +7,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
-#include "chromeos/crosapi/cpp/bitmap.h"
-#include "chromeos/crosapi/cpp/bitmap_util.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -178,17 +176,6 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   EXPECT_EQ(crosapi::mojom::FullscreenVisibility::kOverUser,
             last_notification->fullscreen_visibility);
 
-  // TODO(https://crbug.com/1123969): Don't test the deprecated field after
-  // ash M87 beta.
-  ASSERT_TRUE(last_notification->deprecated_badge.has_value());
-  EXPECT_TRUE(AreBitmapsEqual(
-      badge.AsBitmap(),
-      crosapi::SkBitmapFromBitmap(*last_notification->deprecated_badge)));
-  ASSERT_TRUE(last_notification->deprecated_icon.has_value());
-  EXPECT_TRUE(AreBitmapsEqual(
-      icon.AsBitmap(),
-      crosapi::SkBitmapFromBitmap(*last_notification->deprecated_icon)));
-
   ASSERT_FALSE(last_notification->badge.isNull());
   EXPECT_TRUE(last_notification->badge.HasRepresentation(1.0f));
   EXPECT_TRUE(last_notification->badge.HasRepresentation(2.0f));
@@ -223,12 +210,6 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   crosapi::mojom::Notification* last_notification =
       test_message_center_.last_notification_.get();
   ASSERT_TRUE(last_notification);
-  // TODO(https://crbug.com/1123969): Don't test the deprecated field after
-  // ash M87 beta.
-  ASSERT_TRUE(last_notification->deprecated_image.has_value());
-  EXPECT_TRUE(AreBitmapsEqual(
-      image.AsBitmap(),
-      crosapi::SkBitmapFromBitmap(*last_notification->deprecated_image)));
   ASSERT_FALSE(last_notification->image.isNull());
   EXPECT_TRUE(AreImagesEqual(image, gfx::Image(last_notification->image)));
 }
