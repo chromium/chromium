@@ -217,11 +217,15 @@ void MediaClientImpl::HandleMediaSeekForward() {
 
 void MediaClientImpl::RequestCaptureState() {
   base::flat_map<AccountId, MediaCaptureState> capture_states;
-  for (user_manager::User* user :
-       user_manager::UserManager::Get()->GetLRULoggedInUsers()) {
+  auto* manager = user_manager::UserManager::Get();
+  for (user_manager::User* user : manager->GetLRULoggedInUsers()) {
     capture_states[user->GetAccountId()] = GetMediaCaptureStateOfAllWebContents(
         chromeos::ProfileHelper::Get()->GetProfileByUser(user));
   }
+
+  const user_manager::User* primary_user = manager->GetPrimaryUser();
+  if (primary_user)
+    capture_states[primary_user->GetAccountId()] |= vm_media_capture_state_;
 
   media_controller_->NotifyCaptureState(std::move(capture_states));
 }
@@ -254,12 +258,12 @@ void MediaClientImpl::OnBrowserSetLastActive(Browser* browser) {
 void MediaClientImpl::OnVmCameraMicActiveChanged(
     chromeos::VmCameraMicManager* manager) {
   using DeviceType = chromeos::VmCameraMicManager::DeviceType;
-  MediaCaptureState state = MediaCaptureState::kNone;
+  vm_media_capture_state_ = MediaCaptureState::kNone;
   if (manager->GetDeviceActive(DeviceType::kCamera))
-    state |= MediaCaptureState::kVideo;
+    vm_media_capture_state_ |= MediaCaptureState::kVideo;
   if (manager->GetDeviceActive(DeviceType::kMic))
-    state |= MediaCaptureState::kAudio;
-  media_controller_->NotifyVmCaptureState(state);
+    vm_media_capture_state_ |= MediaCaptureState::kAudio;
+  media_controller_->NotifyVmCaptureState(vm_media_capture_state_);
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(
