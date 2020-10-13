@@ -3,5 +3,3 @@ file://printing/OWNERS
 
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
-
-# COMPONENT: Services>CloudPrint
