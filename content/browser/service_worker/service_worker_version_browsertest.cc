@@ -631,10 +631,11 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
       base::OnceClosure done,
       base::Optional<blink::ServiceWorkerStatusCode>* out_result,
       int request_id,
-      blink::mojom::ServiceWorkerEventStatus status) {
-    version_->FinishRequest(
-        request_id,
-        status == blink::mojom::ServiceWorkerEventStatus::COMPLETED);
+      blink::mojom::ServiceWorkerEventStatus status,
+      uint32_t fetch_count) {
+    version_->FinishRequestWithFetchCount(
+        request_id, status == blink::mojom::ServiceWorkerEventStatus::COMPLETED,
+        fetch_count);
 
     *out_result = mojo::ConvertTo<blink::ServiceWorkerStatusCode>(status);
     if (!done.is_null())

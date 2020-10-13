@@ -202,12 +202,14 @@ class ServiceWorkerMetrics {
 
   static void RecordActivateEventStatus(blink::ServiceWorkerStatusCode status,
                                         bool is_shutdown);
-  static void RecordInstallEventStatus(blink::ServiceWorkerStatusCode status);
+  static void RecordInstallEventStatus(blink::ServiceWorkerStatusCode status,
+                                       uint32_t fetch_count);
 
   // Records the amount of time spent handling an event.
   static void RecordEventDuration(EventType event,
                                   base::TimeDelta time,
-                                  bool was_handled);
+                                  bool was_handled,
+                                  uint32_t fetch_count);
 
   // Records the result of dispatching a fetch event to a service worker.
   static void RecordFetchEventStatus(bool is_main_resource,

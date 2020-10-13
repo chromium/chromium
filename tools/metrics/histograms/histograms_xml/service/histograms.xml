@@ -385,22 +385,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.InstallEvent.Time" units="ms"
-    expires_after="2021-02-01">
+<histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="ms"
+    expires_after="2021-10-01">
+  <owner>wanderview@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The number of network fetches performed by the install event handler.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.InstallEvent.{type}.Status"
+    enum="ServiceWorkerStatusCode" expires_after="2021-04-06">
+  <owner>falken@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The result of dispatching the install event to the worker. This histogram
+    includes data for ${type}.
+  </summary>
+  <token key="type">
+    <variant name="All" summary="all install events"/>
+    <variant name="WithFetch"
+        summary="install events that made network fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ServiceWorker.InstallEvent.{type}.Time" units="ms"
+    expires_after="2021-04-06">
   <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken between dispatching an InstallEvent to a Service Worker and
     receiving a message that it finished handling the event. Includes the time
-    for the waitUntil() promise to settle.
+    for the waitUntil() promise to settle. This histogram includes data for
+    ${type}.
   </summary>
-</histogram>
-
-<histogram name="ServiceWorker.InstallEventStatus"
-    enum="ServiceWorkerStatusCode" expires_after="2021-02-16">
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>The result of dispatching the install event to the worker.</summary>
+  <token key="type">
+    <variant name="All" summary="all install events"/>
+    <variant name="WithFetch"
+        summary="install events that made network fetches"/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.InternalsPageAccessed"

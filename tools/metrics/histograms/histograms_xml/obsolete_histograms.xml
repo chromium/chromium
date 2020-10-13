@@ -72897,6 +72897,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.InstallEvent.Status"
+    enum="ServiceWorkerStatusCode" expires_after="2021-02-16">
+  <obsolete>
+    Removed 10/2020. Replaced with ServiceWorker.InstallEvent.All.Status.
+  </obsolete>
+  <owner>falken@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>The result of dispatching the install event to the worker.</summary>
+</histogram>
+
+<histogram name="ServiceWorker.InstallEvent.Time" units="ms"
+    expires_after="2021-02-01">
+  <obsolete>
+    Removed 10/2020. Replaced with ServiceWorker.InstallEvent.All.Time.
+  </obsolete>
+  <owner>shimazu@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The time taken between dispatching an InstallEvent to a Service Worker and
+    receiving a message that it finished handling the event. Includes the time
+    for the waitUntil() promise to settle.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.InstallEventExecutionTime" units="ms"
     expires_after="2015-05-28">
   <obsolete>

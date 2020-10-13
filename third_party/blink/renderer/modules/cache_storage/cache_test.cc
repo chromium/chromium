@@ -56,7 +56,7 @@ class ScopedFetcherForTests final
     : public GarbageCollected<ScopedFetcherForTests>,
       public GlobalFetch::ScopedFetcher {
  public:
-  ScopedFetcherForTests() : fetch_count_(0), expected_url_(nullptr) {}
+  ScopedFetcherForTests() = default;
 
   ScriptPromise Fetch(ScriptState* script_state,
                       const RequestInfo& request_info,
@@ -91,7 +91,7 @@ class ScopedFetcherForTests final
   }
   void SetResponse(Response* response) { response_ = response; }
 
-  int FetchCount() const { return fetch_count_; }
+  uint32_t FetchCount() const override { return fetch_count_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(response_);
@@ -99,8 +99,8 @@ class ScopedFetcherForTests final
   }
 
  private:
-  int fetch_count_;
-  const String* expected_url_;
+  uint32_t fetch_count_ = 0;
+  const String* expected_url_ = nullptr;
   Member<Response> response_;
 };
 
@@ -778,7 +778,7 @@ TEST_F(CacheStorageTest, Add) {
       GetScriptState(), RequestToRequestInfo(request), exception_state);
 
   EXPECT_EQ(kNotImplementedString, GetRejectString(add_result));
-  EXPECT_EQ(1, fetcher->FetchCount());
+  EXPECT_EQ(1u, fetcher->FetchCount());
   EXPECT_EQ("dispatchBatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
 }
