@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "components/autofill_assistant/browser/public/runtime_observer.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/browser/per_frame_content_translate_driver.h"
@@ -43,7 +44,8 @@ class ChromeTranslateClient
     : public translate::TranslateClient,
       public translate::ContentTranslateDriver::Observer,
       public content::WebContentsObserver,
-      public content::WebContentsUserData<ChromeTranslateClient> {
+      public content::WebContentsUserData<ChromeTranslateClient>,
+      public autofill_assistant::RuntimeObserver {
  public:
   ~ChromeTranslateClient() override;
 
@@ -104,10 +106,14 @@ class ChromeTranslateClient
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
   void ShowReportLanguageDetectionErrorUI(const GURL& report_url) override;
+  bool IsAutofillAssistantRunning() const override;
 
   // ContentTranslateDriver::Observer implementation.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
+
+  // autofill_assistant::RuntimeObserver implementation.
+  void OnStateChanged(autofill_assistant::UIState state) override;
 
  private:
   explicit ChromeTranslateClient(content::WebContents* web_contents);

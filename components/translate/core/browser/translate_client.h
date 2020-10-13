@@ -74,6 +74,10 @@ class TranslateClient {
   // a language detection error, to the user to allow them to report language
   // detection errors as desired.
   virtual void ShowReportLanguageDetectionErrorUI(const GURL& report_url) = 0;
+
+  // Returns if AutofillAssistant is running. Translation should be disabled
+  // while AutofillAssistant is running.
+  virtual bool IsAutofillAssistantRunning() const = 0;
 };
 
 }  // namespace translate

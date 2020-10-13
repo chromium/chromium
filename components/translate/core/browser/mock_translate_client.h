@@ -56,6 +56,7 @@ class MockTranslateClient : public TranslateClient {
                     bool));
   MOCK_METHOD1(IsTranslatableURL, bool(const GURL&));
   MOCK_METHOD1(ShowReportLanguageDetectionErrorUI, void(const GURL&));
+  MOCK_CONST_METHOD0(IsAutofillAssistantRunning, bool());
 
  private:
   TranslateDriver* driver_;

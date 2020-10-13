@@ -64,6 +64,7 @@ class TranslateClientImpl
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
   void ShowReportLanguageDetectionErrorUI(const GURL& report_url) override;
+  bool IsAutofillAssistantRunning() const override;
 
   // ContentTranslateDriver::Observer implementation.
   void OnLanguageDetermined(

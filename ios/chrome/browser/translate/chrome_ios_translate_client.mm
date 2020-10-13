@@ -173,6 +173,10 @@ bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
   return TranslateServiceIOS::IsTranslatableURL(url);
 }
 
+bool ChromeIOSTranslateClient::IsAutofillAssistantRunning() const {
+  return false;
+}
+
 void ChromeIOSTranslateClient::ShowReportLanguageDetectionErrorUI(
     const GURL& report_url) {
   NOTREACHED();

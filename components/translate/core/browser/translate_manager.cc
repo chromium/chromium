@@ -177,6 +177,12 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
                             target_lang);
 }
 
+void TranslateManager::InitiateTranslation() {
+  if (!page_language_code_.empty()) {
+    InitiateTranslation(page_language_code_);
+  }
+}
+
 // static
 std::string TranslateManager::GetManualTargetLanguage(
     const std::string& source_code,
@@ -733,6 +739,15 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_NO_NETWORK);
+  }
+
+  // Skip translation if autofill assistant is running.
+  if (translate_client_->IsAutofillAssistantRunning()) {
+    page_language_code_ = page_language_code;
+    decision->PreventAllTriggering();
+    decision->initiation_statuses.push_back(
+        TranslateBrowserMetrics::
+            INITIATION_STATUS_DISABLED_BY_AUTOFILL_ASSISTANT);
   }
 
   if (!ignore_missing_key_for_testing_ &&

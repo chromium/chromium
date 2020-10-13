@@ -131,6 +131,10 @@ bool WebViewTranslateClient::IsTranslatableURL(const GURL& url) {
   return !url.is_empty() && !url.SchemeIs(url::kFtpScheme);
 }
 
+bool WebViewTranslateClient::IsAutofillAssistantRunning() const {
+  return false;
+}
+
 void WebViewTranslateClient::ShowReportLanguageDetectionErrorUI(
     const GURL& report_url) {
   NOTREACHED();
