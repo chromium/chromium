@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/api/echo_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,15 +36,6 @@
 #include "extensions/common/extension.h"
 
 namespace echo_api = extensions::api::echo_private;
-
-namespace {
-
-// URL of "More info" link shown in echo dialog in GetUserConsent function.
-const char kMoreInfoLink[] =
-    "chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html?"
-    "answer=2677280";
-
-}  // namespace
 
 namespace chromeos {
 
@@ -213,7 +205,7 @@ void EchoPrivateGetUserConsentFunction::OnCancel() {
 
 void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
   ChromeExtensionFunctionDetails details(this);
-  NavigateParams params(details.GetProfile(), GURL(kMoreInfoLink),
+  NavigateParams params(details.GetProfile(), GURL(chrome::kEchoLearnMoreURL),
                         ui::PAGE_TRANSITION_LINK);
   // Open the link in a new window. The echo dialog is modal, so the current
   // window is useless until the dialog is closed.

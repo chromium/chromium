@@ -346,6 +346,9 @@ const char kCupsPrintPPDLearnMoreURL[] =
 const char kEasyUnlockLearnMoreUrl[] =
     "https://support.google.com/chromebook/?p=smart_lock";
 
+const char kEchoLearnMoreURL[] =
+    "chrome://help-app/help/sub/3399709/id/2703646";
+
 const char kArcTermsPathFormat[] = "arc_tos/%s/terms.html";
 
 const char kArcPrivacyPolicyPathFormat[] = "arc_tos/%s/privacy_policy.pdf";

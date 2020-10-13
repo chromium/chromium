@@ -304,6 +304,9 @@ extern const char kCupsPrintPPDLearnMoreURL[];
 // The URL for the "Learn more" link the the Easy Unlock settings.
 extern const char kEasyUnlockLearnMoreUrl[];
 
+// The URL for the help center article about redeeming Chromebook offers.
+extern const char kEchoLearnMoreURL[];
+
 // The URL for EOL notification
 extern const char kEolNotificationURL[];
 
