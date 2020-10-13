@@ -8816,7 +8816,6 @@ interface VirtualKeyboard : EventTarget
     setter overlaysContent
 interface VirtualKeyboardGeometryChangeEvent : Event
     attribute @@toStringTag
-    getter boundingRect
     method constructor
 interface VisibilityStateEntry : PerformanceEntry
     attribute @@toStringTag

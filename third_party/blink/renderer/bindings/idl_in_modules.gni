@@ -661,7 +661,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/virtualkeyboard/navigator_virtual_keyboard.idl",
           "//third_party/blink/renderer/modules/virtualkeyboard/virtual_keyboard.idl",
           "//third_party/blink/renderer/modules/virtualkeyboard/virtual_keyboard_geometry_change_event.idl",
-          "//third_party/blink/renderer/modules/virtualkeyboard/virtual_keyboard_geometry_change_event_init.idl",
           "//third_party/blink/renderer/modules/wake_lock/navigator_wake_lock.idl",
           "//third_party/blink/renderer/modules/wake_lock/wake_lock.idl",
           "//third_party/blink/renderer/modules/wake_lock/wake_lock_sentinel.idl",

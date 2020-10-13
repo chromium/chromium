@@ -7,7 +7,4 @@ modules_idl_files = [
   "virtual_keyboard_geometry_change_event.idl",
 ]
 
-modules_dictionary_idl_files =
-    [ "virtual_keyboard_geometry_change_event_init.idl" ]
-
 modules_dependency_idl_files = [ "navigator_virtual_keyboard.idl" ]

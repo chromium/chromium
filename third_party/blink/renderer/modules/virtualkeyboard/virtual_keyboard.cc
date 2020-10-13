@@ -85,7 +85,7 @@ void VirtualKeyboard::VirtualKeyboardOverlayChanged(
         StyleEnvironmentVariables::FormatPx(keyboard_rect.height()));
   }
   DispatchEvent(*(MakeGarbageCollected<VirtualKeyboardGeometryChangeEvent>(
-      event_type_names::kGeometrychange, bounding_rect_)));
+      event_type_names::kGeometrychange)));
 }
 
 void VirtualKeyboard::show() {
