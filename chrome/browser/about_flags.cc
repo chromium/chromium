@@ -3494,6 +3494,18 @@ const FeatureEntry kFeatureEntries[] = {
     {"report-feed-user-actions", flag_descriptions::kReportFeedUserActionsName,
      flag_descriptions::kReportFeedUserActionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kReportFeedUserActions)},
+    {"interest-feed-v1-clicks-and-views-cond-upload",
+     flag_descriptions::InterestFeedV1ClickAndViewActionsConditionalUploadName,
+     flag_descriptions::
+         InterestFeedV1ClickAndViewActionsConditionalUploadDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kInterestFeedV1ClicksAndViewsConditionalUpload)},
+    {"interest-feed-v2-clicks-and-views-cond-upload",
+     flag_descriptions::InterestFeedV2ClickAndViewActionsConditionalUploadName,
+     flag_descriptions::
+         InterestFeedV2ClickAndViewActionsConditionalUploadDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kInterestFeedV2ClicksAndViewsConditionalUpload)},
     {"offlining-recent-pages", flag_descriptions::kOffliningRecentPagesName,
      flag_descriptions::kOffliningRecentPagesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(offline_pages::kOffliningRecentPagesFeature)},

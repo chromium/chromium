@@ -1637,6 +1637,14 @@ extern const char kInterestFeedContentSuggestionsDescription[];
 extern const char kInterestFeedV2Name[];
 extern const char kInterestFeedV2Description[];
 
+extern const char InterestFeedV1ClickAndViewActionsConditionalUploadName[];
+extern const char
+    InterestFeedV1ClickAndViewActionsConditionalUploadDescription[];
+
+extern const char InterestFeedV2ClickAndViewActionsConditionalUploadName[];
+extern const char
+    InterestFeedV2ClickAndViewActionsConditionalUploadDescription[];
+
 extern const char kMessagesForAndroidInfrastructureName[];
 extern const char kMessagesForAndroidInfrastructureDescription[];
 
