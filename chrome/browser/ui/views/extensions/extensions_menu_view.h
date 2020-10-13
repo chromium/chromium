@@ -103,6 +103,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // the view directly is more friendly to unit test setups.
   static base::AutoReset<bool> AllowInstancesForTesting();
 
+ private:
   // A "section" within the menu, based on the extension's current access to
   // the page.
   struct Section {
