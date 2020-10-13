@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/session_manager/core/session_manager_observer.h"
 
 class PrefService;
 
@@ -27,8 +26,7 @@ class ArcDataSnapshotdBridge;
 
 // This class manages ARC data/ directory snapshots and controls the lifetime of
 // the arc-data-snapshotd daemon.
-class ArcDataSnapshotdManager final
-    : public session_manager::SessionManagerObserver {
+class ArcDataSnapshotdManager final {
  public:
   // State of the flow.
   enum class State {
@@ -111,7 +109,7 @@ class ArcDataSnapshotdManager final
     static std::unique_ptr<Snapshot> CreateForTesting(
         PrefService* local_state,
         bool blocked_ui_mode,
-        bool started,
+        const std::string& started_date,
         std::unique_ptr<SnapshotInfo> last,
         std::unique_ptr<SnapshotInfo> previous);
 
@@ -123,22 +121,14 @@ class ArcDataSnapshotdManager final
     // if |last| is true or previous otherwise.
     void ClearSnapshot(bool last);
 
-    // Moves last snapshot to previous and updates a |start_date| to the current
-    // date.
-    void StartNewSnapshot();
-
-    void set_blocked_ui_mode(bool blocked_ui_mode) {
-      blocked_ui_mode_ = blocked_ui_mode;
-    }
     bool is_blocked_ui_mode() const { return blocked_ui_mode_; }
-    bool started() const { return started_; }
     SnapshotInfo* last() { return last_.get(); }
     SnapshotInfo* previous() { return previous_.get(); }
 
    private:
     Snapshot(PrefService* local_state,
              bool blocked_ui_mode,
-             bool started,
+             const std::string& started_date,
              std::unique_ptr<SnapshotInfo> last,
              std::unique_ptr<SnapshotInfo> previous);
 
@@ -148,41 +138,25 @@ class ArcDataSnapshotdManager final
     // Values should be kept in sync with values stored in arc.snapshot
     // preference.
     bool blocked_ui_mode_ = false;
-    bool started_;
+    std::string started_date_;
     std::unique_ptr<SnapshotInfo> last_;
     std::unique_ptr<SnapshotInfo> previous_;
   };
 
-  ArcDataSnapshotdManager(PrefService* local_state,
-                          base::OnceClosure attempt_user_exit_callback);
+  explicit ArcDataSnapshotdManager(PrefService* local_state);
   ArcDataSnapshotdManager(const ArcDataSnapshotdManager&) = delete;
   ArcDataSnapshotdManager& operator=(const ArcDataSnapshotdManager&) = delete;
-  ~ArcDataSnapshotdManager() override;
-
-  static ArcDataSnapshotdManager* Get();
+  ~ArcDataSnapshotdManager();
 
   // Starts arc-data-snapshotd.
   void EnsureDaemonStarted(base::OnceClosure callback);
   // Stops arc-data-snapshotd.
   void EnsureDaemonStopped(base::OnceClosure callback);
 
-  // Returns true if autologin to public account should be performed.
-  bool IsAutoLoginConfigured();
-  // Returns true if autologin is allowed to be performed and manager is not
-  // waiting for the response from arc-data-snapshotd daemon.
-  bool IsAutoLoginAllowed();
-
-  // session_manager::SessionManagerObserver:
-  void OnSessionStateChanged() override;
-
   // Get |bridge_| for testing.
   ArcDataSnapshotdBridge* bridge() { return bridge_.get(); }
 
   State state() const { return state_; }
-
-  void set_reset_autologin_callback(base::OnceClosure callback) {
-    reset_autologin_callback_ = std::move(callback);
-  }
 
   static void set_snapshot_enabled_for_testing(bool enabled) {
     is_snapshot_enabled_for_testing_ = enabled;
@@ -190,7 +164,6 @@ class ArcDataSnapshotdManager final
   static bool is_snapshot_enabled_for_testing() {
     return is_snapshot_enabled_for_testing_;
   }
-  void set_state_for_testing(State state) { state_ = state; }
 
  private:
   // Attempts to arc-data-snapshotd daemon regardless of state of the class.
@@ -227,11 +200,6 @@ class ArcDataSnapshotdManager final
   Snapshot snapshot_;
 
   std::unique_ptr<ArcDataSnapshotdBridge> bridge_;
-
-  base::OnceClosure attempt_user_exit_callback_;
-
-  // Callback to reset an autologin timer once userless MGS is ready to start.
-  base::OnceClosure reset_autologin_callback_;
 
   // Used for cancelling previously posted tasks to daemon.
   base::WeakPtrFactory<ArcDataSnapshotdManager> daemon_weak_ptr_factory_{this};

@@ -11,15 +11,12 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace arc {
@@ -37,7 +34,7 @@ constexpr char kUpdated[] = "updated";
 constexpr char kPrevious[] = "previous";
 constexpr char kLast[] = "last";
 constexpr char kBlockedUiReboot[] = "blocked_ui_reboot";
-constexpr char kStarted[] = "started";
+constexpr char kStartedDate[] = "started_date";
 
 bool IsSnapshotEnabled() {
   // TODO(pbond): implement policy processing.
@@ -61,9 +58,6 @@ void EnableHeadlessMode() {
 }  // namespace
 
 bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
-
-// This class is owned by ChromeBrowserMainPartsChromeos.
-static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
                                                     bool last)
@@ -159,11 +153,11 @@ std::unique_ptr<ArcDataSnapshotdManager::Snapshot>
 ArcDataSnapshotdManager::Snapshot::CreateForTesting(
     PrefService* local_state,
     bool blocked_ui_mode,
-    bool started,
+    const std::string& started_date,
     std::unique_ptr<SnapshotInfo> last,
     std::unique_ptr<SnapshotInfo> previous) {
   return base::WrapUnique(new ArcDataSnapshotdManager::Snapshot(
-      local_state, blocked_ui_mode, started, std::move(last),
+      local_state, blocked_ui_mode, started_date, std::move(last),
       std::move(previous)));
 }
 
@@ -188,9 +182,9 @@ void ArcDataSnapshotdManager::Snapshot::Parse() {
       blocked_ui_mode_ = found.value();
   }
   {
-    auto found = dict->FindBoolPath(kStarted);
-    if (found.has_value())
-      started_ = found.value();
+    auto* found = dict->FindStringPath(kStartedDate);
+    if (found)
+      started_date_ = *found;
   }
 }
 
@@ -201,7 +195,7 @@ void ArcDataSnapshotdManager::Snapshot::Sync() {
   if (last_)
     last_->Sync(&dict);
   dict.SetBoolKey(kBlockedUiReboot, blocked_ui_mode_);
-  dict.SetBoolKey(kStarted, started_);
+  dict.SetStringKey(kStartedDate, started_date_);
   local_state_->Set(arc::prefs::kArcSnapshotInfo, std::move(dict));
 }
 
@@ -211,42 +205,23 @@ void ArcDataSnapshotdManager::Snapshot::ClearSnapshot(bool last) {
   Sync();
 }
 
-void ArcDataSnapshotdManager::Snapshot::StartNewSnapshot() {
-  previous_ = std::move(last_);
-  last_ = nullptr;
-
-  started_ = true;
-  Sync();
-}
-
 ArcDataSnapshotdManager::Snapshot::Snapshot(
     PrefService* local_state,
     bool blocked_ui_mode,
-    bool started,
+    const std::string& started_date,
     std::unique_ptr<SnapshotInfo> last,
     std::unique_ptr<SnapshotInfo> previous)
     : local_state_(local_state),
       blocked_ui_mode_(blocked_ui_mode),
-      started_(started),
+      started_date_(started_date),
       last_(std::move(last)),
       previous_(std::move(previous)) {
   DCHECK(local_state_);
 }
 
-// static
-ArcDataSnapshotdManager* ArcDataSnapshotdManager::Get() {
-  return g_arc_data_snapshotd_manager;
-}
-
-ArcDataSnapshotdManager::ArcDataSnapshotdManager(
-    PrefService* local_state,
-    base::OnceClosure attempt_user_exit_callback)
-    : snapshot_{local_state},
-      attempt_user_exit_callback_(std::move(attempt_user_exit_callback)) {
-  DCHECK(!g_arc_data_snapshotd_manager);
+ArcDataSnapshotdManager::ArcDataSnapshotdManager(PrefService* local_state)
+    : snapshot_{local_state} {
   DCHECK(local_state);
-  g_arc_data_snapshotd_manager = this;
-
   snapshot_.Parse();
 
   if (IsRestoredSession()) {
@@ -262,11 +237,6 @@ ArcDataSnapshotdManager::ArcDataSnapshotdManager(
 }
 
 ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
-  DCHECK(g_arc_data_snapshotd_manager);
-  g_arc_data_snapshotd_manager = nullptr;
-
-  session_manager::SessionManager::Get()->RemoveObserver(this);
-
   snapshot_.Sync();
   EnsureDaemonStopped(base::DoNothing());
 }
@@ -289,37 +259,6 @@ void ArcDataSnapshotdManager::EnsureDaemonStopped(base::OnceClosure callback) {
     return;
   }
   StopDaemon(std::move(callback));
-}
-
-bool ArcDataSnapshotdManager::IsAutoLoginConfigured() {
-  switch (state_) {
-    case ArcDataSnapshotdManager::State::kBlockedUi:
-    case ArcDataSnapshotdManager::State::kMgsToLaunch:
-    case ArcDataSnapshotdManager::State::kMgsLaunched:
-      return true;
-    case ArcDataSnapshotdManager::State::kNone:
-    case ArcDataSnapshotdManager::State::kRestored:
-      return false;
-  }
-}
-
-bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
-  switch (state_) {
-    case ArcDataSnapshotdManager::State::kBlockedUi:
-      return false;
-    case ArcDataSnapshotdManager::State::kNone:
-    case ArcDataSnapshotdManager::State::kRestored:
-    case ArcDataSnapshotdManager::State::kMgsLaunched:
-    case ArcDataSnapshotdManager::State::kMgsToLaunch:
-      return true;
-  }
-}
-
-void ArcDataSnapshotdManager::OnSessionStateChanged() {
-  if (state_ != State::kMgsToLaunch)
-    return;
-  if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount())
-    state_ = State::kMgsLaunched;
 }
 
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {
@@ -392,22 +331,10 @@ void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
 
 void ArcDataSnapshotdManager::OnKeyPairGenerated(bool success) {
   if (success) {
-    VLOG(1) << "Managed Guest Session is ready to be started with blocked UI.";
     state_ = State::kMgsToLaunch;
-    session_manager::SessionManager::Get()->AddObserver(this);
-    // Move last to previous snapshot:
-    snapshot_.StartNewSnapshot();
-
-    if (!reset_autologin_callback_.is_null())
-      std::move(reset_autologin_callback_).Run();
   } else {
+    // TODO(pbond): restart browser to normal.
     LOG(ERROR) << "Key pair generation failed. Abort snapshot creation.";
-
-    snapshot_.set_blocked_ui_mode(false);
-    snapshot_.Sync();
-
-    DCHECK(!attempt_user_exit_callback_.is_null());
-    EnsureDaemonStopped(std::move(attempt_user_exit_callback_));
   }
 }
 
