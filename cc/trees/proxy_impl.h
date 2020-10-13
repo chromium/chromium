@@ -65,7 +65,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                  bool hold_commit_for_activation);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
-      UkmSmoothnessDataShared* ukm_smoothness_data);
+      base::WritableSharedMemoryMapping ukm_smoothness_data);
   void ClearHistory();
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
