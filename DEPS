@@ -4916,7 +4916,7 @@ hooks = [
     'pattern': '.',
     'condition': 'checkout_chromeos or checkout_simplechrome',
     'action': [ 'vpython',
-  'src/tools/download_optimization_profile.py',
+                'src/tools/download_optimization_profile.py',
                 '--newest_state=src/chromeos/profiles/atom.afdo.newest.txt',
                 '--local_state=src/chromeos/profiles/atom.afdo.local.txt',
                 '--output_name=src/chromeos/profiles/atom.afdo.prof',
