@@ -20,10 +20,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
-class FrameCaptionButtonContainerView;
-}
-
 namespace gfx {
 class ImageSkia;
 }
@@ -38,6 +34,7 @@ class NonClientFrameView;
 namespace ash {
 
 class DefaultFrameHeader;
+class FrameCaptionButtonContainerView;
 enum class FrameBackButtonState;
 
 // View which paints the frame header (title, caption buttons...). It slides off
@@ -101,7 +98,7 @@ class ASH_EXPORT HeaderView : public views::View,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  chromeos::FrameCaptionButtonContainerView* caption_button_container() {
+  FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
 
@@ -154,8 +151,7 @@ class ASH_EXPORT HeaderView : public views::View,
   HeaderContentView* header_content_view_ = nullptr;
 
   // View which contains the window caption buttons.
-  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
-      nullptr;
+  FrameCaptionButtonContainerView* caption_button_container_ = nullptr;
 
   // The fraction of the header's height which is visible while in fullscreen.
   // This value is meaningless when not in fullscreen.

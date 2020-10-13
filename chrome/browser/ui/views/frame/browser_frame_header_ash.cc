@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/frame/browser_frame_header_ash.h"
 
 #include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/frame_utils.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -112,7 +112,7 @@ BrowserFrameHeaderAsh::BrowserFrameHeaderAsh(
     views::Widget* target_widget,
     views::View* view,
     AppearanceProvider* appearance_provider,
-    chromeos::FrameCaptionButtonContainerView* caption_button_container)
+    ash::FrameCaptionButtonContainerView* caption_button_container)
     : FrameHeader(target_widget, view) {
   DCHECK(appearance_provider);
   DCHECK(caption_button_container);

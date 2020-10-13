@@ -32,10 +32,6 @@ class RootWindow;
 class Window;
 }  // namespace aura
 
-namespace chromeos {
-class SnapController;
-}  // namespace chromeos
-
 namespace dbus {
 class Bus;
 }
@@ -179,6 +175,7 @@ struct ShellInitParams;
 class ShellObserver;
 class ShutdownControllerImpl;
 class SmsObserver;
+class SnapController;
 class StickyKeysController;
 class SystemGestureEventFilter;
 class SystemModalContainerEventFilter;
@@ -832,7 +829,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<DockedMagnifierControllerImpl> docked_magnifier_controller_;
 
-  std::unique_ptr<chromeos::SnapController> snap_controller_;
+  std::unique_ptr<SnapController> snap_controller_;
 
   // |native_cursor_manager_| is owned by |cursor_manager_|, but we keep a
   // pointer to vend to test code.

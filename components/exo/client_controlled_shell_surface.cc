@@ -11,6 +11,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/rounded_corner_decorator.h"
@@ -38,7 +39,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -214,7 +214,7 @@ bool IsPinned(const ash::WindowState* window_state) {
   return window_state->IsPinned() || window_state->IsTrustedPinned();
 }
 
-class CaptionButtonModel : public chromeos::CaptionButtonModel {
+class CaptionButtonModel : public ash::CaptionButtonModel {
  public:
   CaptionButtonModel(uint32_t visible_button_mask, uint32_t enabled_button_mask)
       : visible_button_mask_(visible_button_mask),

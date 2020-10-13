@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "ash/public/cpp/caption_buttons/snap_controller.h"
 
 #include "base/check_op.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -29,4 +29,4 @@ SnapController::SnapController() {
   g_instance = this;
 }
 
-}  // namespace chromeos
+}  // namespace ash

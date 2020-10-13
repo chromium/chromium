@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_CAPTION_BUTTONS_CAPTION_BUTTON_MODEL_H_
-#define CHROMEOS_UI_FRAME_CAPTION_BUTTONS_CAPTION_BUTTON_MODEL_H_
+#ifndef ASH_PUBLIC_CPP_CAPTION_BUTTONS_CAPTION_BUTTON_MODEL_H_
+#define ASH_PUBLIC_CPP_CAPTION_BUTTONS_CAPTION_BUTTON_MODEL_H_
 
 #include "ui/views/window/caption_button_types.h"
 
-namespace chromeos {
+namespace ash {
 
 // CaptionButtonModel describes the state of caption buttons
 // for each CaptionButtonIcon types.
@@ -26,6 +26,6 @@ class CaptionButtonModel {
   virtual bool InZoomMode() const = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_UI_FRAME_CAPTION_BUTTONS_CAPTION_BUTTON_MODEL_H_
+#endif  // ASH_PUBLIC_CPP_CAPTION_BUTTONS_CAPTION_BUTTON_MODEL_H_

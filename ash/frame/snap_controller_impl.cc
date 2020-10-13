@@ -21,8 +21,8 @@ bool SnapControllerImpl::CanSnap(aura::Window* window) {
 }
 
 void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
-                                         chromeos::SnapDirection snap) {
-  if (snap == chromeos::SnapDirection::kNone) {
+                                         SnapDirection snap) {
+  if (snap == SnapDirection::kNone) {
     phantom_window_controller_.reset();
     return;
   }
@@ -33,23 +33,21 @@ void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
         std::make_unique<PhantomWindowController>(window);
   }
   gfx::Rect phantom_bounds_in_screen =
-      (snap == chromeos::SnapDirection::kLeft)
+      (snap == SnapDirection::kLeft)
           ? GetDefaultLeftSnappedWindowBoundsInParent(window)
           : GetDefaultRightSnappedWindowBoundsInParent(window);
   ::wm::ConvertRectToScreen(window->parent(), &phantom_bounds_in_screen);
   phantom_window_controller_->Show(phantom_bounds_in_screen);
 }
 
-void SnapControllerImpl::CommitSnap(aura::Window* window,
-                                    chromeos::SnapDirection snap) {
+void SnapControllerImpl::CommitSnap(aura::Window* window, SnapDirection snap) {
   phantom_window_controller_.reset();
-  if (snap == chromeos::SnapDirection::kNone)
+  if (snap == SnapDirection::kNone)
     return;
 
   WindowState* window_state = WindowState::Get(window);
-  const WMEvent snap_event(snap == chromeos::SnapDirection::kLeft
-                               ? WM_EVENT_SNAP_LEFT
-                               : WM_EVENT_SNAP_RIGHT);
+  const WMEvent snap_event(snap == SnapDirection::kLeft ? WM_EVENT_SNAP_LEFT
+                                                        : WM_EVENT_SNAP_RIGHT);
   window_state->OnWMEvent(&snap_event);
 }
 

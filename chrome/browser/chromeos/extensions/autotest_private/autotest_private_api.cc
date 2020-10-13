@@ -3638,7 +3638,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
       auto* frame_header = ash::FrameHeader::Get(widget);
       window_info.caption_height = frame_header->GetHeaderHeight();
 
-      const chromeos::CaptionButtonModel* button_model =
+      const ash::CaptionButtonModel* button_model =
           frame_header->GetCaptionButtonModel();
       int caption_button_enabled_status = 0;
       int caption_button_visible_status = 0;

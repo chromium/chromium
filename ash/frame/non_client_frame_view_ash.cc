@@ -10,6 +10,7 @@
 
 #include "ash/frame/header_view.h"
 #include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/frame_utils.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
@@ -23,7 +24,6 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -257,7 +257,7 @@ void NonClientFrameViewAsh::SetFrameColors(SkColor active_frame_color,
 }
 
 void NonClientFrameViewAsh::SetCaptionButtonModel(
-    std::unique_ptr<chromeos::CaptionButtonModel> model) {
+    std::unique_ptr<CaptionButtonModel> model) {
   header_view_->caption_button_container()->SetModel(std::move(model));
   header_view_->UpdateCaptionButtons();
 }
@@ -406,7 +406,7 @@ bool NonClientFrameViewAsh::DoesIntersectRect(const views::View* target,
   return false;
 }
 
-chromeos::FrameCaptionButtonContainerView*
+FrameCaptionButtonContainerView*
 NonClientFrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
   return header_view_->caption_button_container();
 }
