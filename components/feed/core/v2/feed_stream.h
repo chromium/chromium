@@ -269,6 +269,9 @@ class FeedStream : public FeedStreamApi,
   }
   void SetIdleCallbackForTesting(base::RepeatingClosure idle_callback);
 
+  bool CanUploadActions() const;
+  void SetLastStreamLoadHadNoticeCard(bool value);
+
  private:
   class OfflineSuggestionsProvider;
 
@@ -299,6 +302,15 @@ class FeedStream : public FeedStreamApi,
   void ClearAll();
 
   bool IsFeedEnabledByEnterprisePolicy();
+
+  bool HasReachedConditionsToUploadActionsWithNoticeCard();
+  void DeclareHasReachedConditionsToUploadActionsWithNoticeCard();
+
+  void UpdateShownSlicesUploadCondition(int index);
+
+  bool CanLogViews() const;
+
+  void UpdateCanUploadActionsWithNoticeCard();
 
   // Unowned.
 
@@ -335,6 +347,9 @@ class FeedStream : public FeedStreamApi,
   Metadata metadata_;
   int unload_on_detach_sequence_number_ = 0;
   bool is_activity_logging_enabled_ = false;
+  // Whether the feed stream can upload actions with the notice card in the
+  // feed.
+  bool can_upload_actions_with_notice_card_ = false;
 
   // To allow tests to wait on task queue idle.
   base::RepeatingClosure idle_callback_;

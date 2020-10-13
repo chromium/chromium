@@ -55,7 +55,8 @@ enum class UploadActionsStatus {
   kUpdatedConsistencyToken = 4,
   kFinishedWithoutUpdatingConsistencyToken = 5,
   kAbortUploadForSignedOutUser = 6,
-  kMaxValue = kAbortUploadForSignedOutUser,
+  kAbortUploadBecauseDisabled = 7,
+  kMaxValue = kAbortUploadBecauseDisabled,
 };
 
 // Keep this in sync with FeedUploadActionsBatchStatus in enums.xml.

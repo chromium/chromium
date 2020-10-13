@@ -29816,6 +29816,7 @@ Called by update_feature_policy_enum.py.-->
              without receiving a new consistency token"/>
   <int value="6"
       label="Upload attempt was aborted because the account is now signed-out"/>
+  <int value="7" label="Could not upload because does not meet conditions"/>
 </enum>
 
 <enum name="FeedUserActionType">

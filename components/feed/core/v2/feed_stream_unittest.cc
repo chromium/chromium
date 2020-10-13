@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -45,6 +46,7 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/page_criteria.h"
@@ -130,6 +132,12 @@ std::string SerializedOfflineBadgeContent() {
   testbadge.set_available_offline(true);
   testbadge.SerializeToString(&badge_serialized);
   return badge_serialized;
+}
+
+feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id) {
+  feedwire::ThereAndBackAgainData msg;
+  *msg.mutable_action_payload() = MakeFeedAction(id).action_payload();
+  return msg;
 }
 
 // This is EXPECT_EQ, but also dumps the string values for ease of reading.
@@ -545,6 +553,8 @@ class TestOfflinePageModel : public offline_pages::StubOfflinePageModel {
 class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
  public:
   void SetUp() override {
+    SetupFeatures();
+
     // Reset to default config, since tests can change it.
     SetFeedConfigForTesting(Config());
 
@@ -561,6 +571,11 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
 
     CHECK_EQ(kTestTimeEpoch, task_environment_.GetMockClock()->Now());
     CreateStream();
+  }
+
+  virtual void SetupFeatures() {
+    scoped_feature_list_.InitAndDisableFeature(
+        feed::kInterestFeedV2ClicksAndViewsConditionalUpload);
   }
 
   void TearDown() override {
@@ -674,6 +689,14 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;
   bool is_signed_in_ = true;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class FeedStreamConditionalActionsUploadTest : public FeedStreamTest {
+  void SetupFeatures() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        feed::kInterestFeedV2ClicksAndViewsConditionalUpload);
+  }
 };
 
 TEST_F(FeedStreamTest, IsArticlesListVisibleByDefault) {
@@ -1571,6 +1594,191 @@ TEST_F(FeedStreamTest, ProcessViewActionResultsInDelayedUpload) {
   EXPECT_EQ(1, network_.action_request_call_count);
 }
 
+TEST_F(FeedStreamTest, ActionsUploadWithoutConditionsWhenFeatureDisabled) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  stream_->ProcessViewAction(
+      feedwire::FeedAction::default_instance().SerializeAsString());
+  WaitForIdleTaskQueue();
+  stream_->ProcessThereAndBackAgain(
+      MakeThereAndBackAgainData(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+
+  // Verify the actions were uploaded.
+  ASSERT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(2, network_.action_request_sent->feed_actions_size());
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest,
+       NoActionsUploadUntilReachedConditions) {
+  // Tests the flow where we:
+  //   (1) Perform a ThereAndBackAgain action and a View action while upload
+  //   isn't enabled => (2) Attempt an upload while the upload conditions aren't
+  //   reached => (3) Reach upload conditions => (4) Perform another View action
+  //   that should be dropped => (5) Simulate the backgrounding of the app to
+  //   enable actions upload => (6) Trigger an upload which will upload the
+  //   stored ThereAndBackAgain action.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Process the view action and the ThereAndBackAgain action while the upload
+  // conditions aren't reached.
+  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+  // Verify that the view action was dropped.
+  ASSERT_EQ(0ul, ReadStoredActions(stream_->GetStore()).size());
+
+  stream_->ProcessThereAndBackAgain(
+      MakeThereAndBackAgainData(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+  // Verify that the ThereAndBackAgain action is in the action store.
+  ASSERT_EQ(1ul, ReadStoredActions(stream_->GetStore()).size());
+
+  // Attempt an upload.
+  stream_->OnEnterBackground();
+  WaitForIdleTaskQueue();
+  // Verify that no upload is done because the conditions aren't reached.
+  EXPECT_EQ(0, network_.action_request_call_count);
+
+  // Reach conditions.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  // Verify that the view action is still dropped because we haven't
+  // transitioned out of the current surface.
+  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1ul, ReadStoredActions(stream_->GetStore()).size());
+
+  // Enable the upload bit and trigger the upload of actions.
+  stream_->OnEnterBackground();
+  WaitForIdleTaskQueue();
+
+  // Verify that the ThereAndBackAgain action was uploaded but not the view
+  // action.
+  ASSERT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Perform a ThereAndBackAgain action.
+  stream_->ProcessThereAndBackAgain(
+      MakeThereAndBackAgainData(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+
+  // Reach conditions.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  // Attach a new surface to update the bit to enable uploads.
+  TestSurface surface2(stream_.get());
+
+  // Trigger an upload through load more to isolate the effect of the on-attach
+  // event on enabling uploads.
+  response_translator_.InjectResponse(MakeTypicalNextPageState());
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  // Verify that the ThereAndBackAgain action was uploaded.
+  ASSERT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Perform a ThereAndBackAgain action.
+  stream_->ProcessThereAndBackAgain(
+      MakeThereAndBackAgainData(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+
+  // Reach conditions.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  stream_->OnEnterBackground();
+  WaitForIdleTaskQueue();
+
+  // Verify that the ThereAndBackAgain action was uploaded.
+  ASSERT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest,
+       AllowActionsUploadWhenNoticeCardNotPresentRegardlessOfConditions) {
+  auto model_state = MakeTypicalInitialModelState();
+  model_state->stream_data.set_privacy_notice_fulfilled(false);
+  response_translator_.InjectResponse(std::move(model_state));
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Process the view action and the ThereAndBackAgain action while the upload
+  // conditions aren't reached.
+  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+  stream_->ProcessThereAndBackAgain(
+      MakeThereAndBackAgainData(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+
+  // Trigger an upload through a query.
+  stream_->OnEnterBackground();
+  WaitForIdleTaskQueue();
+
+  // Verify the ThereAndBackAgain action and the view action were uploaded.
+  ASSERT_EQ(1, network_.action_request_call_count);
+  EXPECT_EQ(2, network_.action_request_sent->feed_actions_size());
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest,
+       ReupdateUploadEnableBitsOnSignIn) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Reach conditions.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  // Assert that uploads are not yet enabled.
+  ASSERT_FALSE(stream_->CanUploadActions());
+
+  // Update the upload enable bits which will enable upload because the related
+  // pref is true.
+  stream_->OnSignedIn();
+
+  EXPECT_TRUE(stream_->CanUploadActions());
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest,
+       ResetTheUploadEnableBitsOnSignOut) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Reach conditions.
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  // Update the upload enable bits which will enable upload.
+  stream_->OnSignedOut();
+
+  ASSERT_TRUE(stream_->CanUploadActions());
+}
+
 TEST_F(FeedStreamTest, LoadStreamFromNetworkUploadsActions) {
   stream_->UploadAction(MakeFeedAction(99ul), false, base::DoNothing());
   WaitForIdleTaskQueue();
@@ -1659,6 +1867,37 @@ TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
       }
     }
   }
+}
+
+TEST_F(FeedStreamConditionalActionsUploadTest,
+       LoadMoreDoesntUpdateNoticeCardPref) {
+  // The initial stream load has the notice card.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Inject a response for the LoadMore fetch that doesn't have the notice card.
+  // It shouldn't overwrite the notice card pref.
+  response_translator_.InjectResponse(MakeTypicalNextPageState(
+      /* first_cluster_id= */ 0,
+      /* last_added_time= */ kTestTimeEpoch,
+      /* signed_in= */ true,
+      /* logging_enabled= */ true,
+      /* privacy_notice_fulfilled= */ false));
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  // Process a view action that should be dropped because the upload of actions
+  // is still disabled because there is still a notice card.
+  stream_->ProcessViewAction(MakeFeedAction(42ul).SerializeAsString());
+  WaitForIdleTaskQueue();
+
+  // Trigger an upload.
+  stream_->OnEnterBackground();
+  WaitForIdleTaskQueue();
+
+  // Verify that there were no uploads.
+  EXPECT_EQ(0, network_.action_request_call_count);
 }
 
 TEST_F(FeedStreamTest, BackgroundingAppUploadsActions) {

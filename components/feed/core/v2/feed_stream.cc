@@ -36,6 +36,7 @@
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
@@ -174,6 +175,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
   task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(this));
+
+  UpdateCanUploadActionsWithNoticeCard();
 }
 
 void FeedStream::InitializeScheduling() {
@@ -220,6 +223,7 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
 }
 
 void FeedStream::OnEnterBackground() {
+  UpdateCanUploadActionsWithNoticeCard();
   metrics_reporter_->OnEnterBackground();
   if (GetFeedConfig().upload_actions_on_enter_background) {
     task_queue_.AddTask(std::make_unique<UploadActionsTask>(
@@ -229,7 +233,7 @@ void FeedStream::OnEnterBackground() {
 }
 
 bool FeedStream::IsActivityLoggingEnabled() const {
-  return is_activity_logging_enabled_;
+  return is_activity_logging_enabled_ && CanUploadActions();
 }
 
 void FeedStream::UpdateIsActivityLoggingEnabled() {
@@ -243,11 +247,13 @@ void FeedStream::AttachSurface(SurfaceInterface* surface) {
   surface_updater_->SurfaceAdded(surface);
   // Cancel any scheduled model unload task.
   ++unload_on_detach_sequence_number_;
+  UpdateCanUploadActionsWithNoticeCard();
 }
 
 void FeedStream::DetachSurface(SurfaceInterface* surface) {
   metrics_reporter_->SurfaceClosed(surface->GetSurfaceId());
   surface_updater_->SurfaceRemoved(surface);
+  UpdateCanUploadActionsWithNoticeCard();
   ScheduleModelUnloadIfNoSurfacesAttached();
 }
 
@@ -388,6 +394,10 @@ void FeedStream::ProcessThereAndBackAgain(base::StringPiece data) {
 }
 
 void FeedStream::ProcessViewAction(base::StringPiece data) {
+  if (!CanLogViews()) {
+    return;
+  }
+
   feedwire::FeedAction msg;
   msg.ParseFromArray(data.data(), data.size());
   UploadAction(std::move(msg), /*upload_now=*/false,
@@ -578,6 +588,8 @@ void FeedStream::OnSignedIn() {
   // buffered events.
   is_activity_logging_enabled_ = false;
 
+  UpdateCanUploadActionsWithNoticeCard();
+
   ClearAll();
 }
 
@@ -586,6 +598,8 @@ void FeedStream::OnSignedOut() {
   // send logs with the wrong user info attached, but may cause us to lose
   // buffered events.
   is_activity_logging_enabled_ = false;
+
+  UpdateCanUploadActionsWithNoticeCard();
 
   ClearAll();
 }
@@ -699,8 +713,53 @@ void FeedStream::ReportOpenInNewIncognitoTabAction() {
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,
                                    const std::string& slice_id) {
   int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
-  if (index >= 0)
+  if (index >= 0) {
+    UpdateShownSlicesUploadCondition(index);
     metrics_reporter_->ContentSliceViewed(surface_id, index);
+  }
+}
+bool FeedStream::CanUploadActions() const {
+  return can_upload_actions_with_notice_card_ ||
+         !prefs::GetLastFetchHadNoticeCard(*profile_prefs_);
+}
+void FeedStream::SetLastStreamLoadHadNoticeCard(bool value) {
+  prefs::SetLastFetchHadNoticeCard(*profile_prefs_, value);
+}
+bool FeedStream::HasReachedConditionsToUploadActionsWithNoticeCard() {
+  if (base::FeatureList::IsEnabled(
+          feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
+    return prefs::GetHasReachedClickAndViewActionsUploadConditions(
+        *profile_prefs_);
+  }
+  // Consider the conditions as already reached to enable uploads when the
+  // feature is disabled. This will also have the effect of not updating the
+  // related pref.
+  return true;
+}
+void FeedStream::DeclareHasReachedConditionsToUploadActionsWithNoticeCard() {
+  if (base::FeatureList::IsEnabled(
+          feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
+    prefs::SetHasReachedClickAndViewActionsUploadConditions(*profile_prefs_,
+                                                            true);
+  }
+}
+void FeedStream::UpdateShownSlicesUploadCondition(int viewed_slice_index) {
+  constexpr int kShownSlicesThreshold = 2;
+
+  // Don't take shown slices into consideration when the upload conditions has
+  // already been reached.
+  if (HasReachedConditionsToUploadActionsWithNoticeCard())
+    return;
+
+  if (viewed_slice_index + 1 >= kShownSlicesThreshold)
+    DeclareHasReachedConditionsToUploadActionsWithNoticeCard();
+}
+bool FeedStream::CanLogViews() const {
+  return CanUploadActions();
+}
+void FeedStream::UpdateCanUploadActionsWithNoticeCard() {
+  can_upload_actions_with_notice_card_ =
+      HasReachedConditionsToUploadActionsWithNoticeCard();
 }
 void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
   metrics_reporter_->FeedViewed(surface_id);
