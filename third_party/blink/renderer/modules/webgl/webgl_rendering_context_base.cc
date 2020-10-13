@@ -3336,13 +3336,12 @@ void WebGLRenderingContextBase::RecordIdentifiableGLParameterDigest(
     IdentifiableToken value) {
   if (!ShouldMeasureGLParam(pname))
     return;
-  if (const auto& ukm_params = GetUkmParameters()) {
-    blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
-        .Set(blink::IdentifiableSurface::FromTypeAndToken(
-                 blink::IdentifiableSurface::Type::kWebGLParameter, pname),
-             value)
-        .Record(ukm_params->ukm_recorder);
-  }
+  const auto ukm_params = GetUkmParameters();
+  blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
+      .Set(blink::IdentifiableSurface::FromTypeAndToken(
+               blink::IdentifiableSurface::Type::kWebGLParameter, pname),
+           value)
+      .Record(ukm_params.ukm_recorder);
 }
 
 void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
@@ -3353,22 +3352,21 @@ void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
           blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat))
     return;
 
-  if (const auto& ukm_params = GetUkmParameters()) {
-    IdentifiableTokenBuilder builder;
-    auto surface_token =
-        builder.AddValue(shader_type).AddValue(precision_type).GetToken();
-    auto sample_token = builder.AddValue(format->rangeMin())
-                            .AddValue(format->rangeMax())
-                            .AddValue(format->precision())
-                            .GetToken();
+  const auto& ukm_params = GetUkmParameters();
+  IdentifiableTokenBuilder builder;
+  auto surface_token =
+      builder.AddValue(shader_type).AddValue(precision_type).GetToken();
+  auto sample_token = builder.AddValue(format->rangeMin())
+                          .AddValue(format->rangeMax())
+                          .AddValue(format->precision())
+                          .GetToken();
 
-    blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
-        .Set(blink::IdentifiableSurface::FromTypeAndToken(
-                 blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat,
-                 surface_token),
-             sample_token)
-        .Record(ukm_params->ukm_recorder);
-  }
+  blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
+      .Set(blink::IdentifiableSurface::FromTypeAndToken(
+               blink::IdentifiableSurface::Type::kWebGLShaderPrecisionFormat,
+               surface_token),
+           sample_token)
+      .Record(ukm_params.ukm_recorder);
 }
 
 ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
@@ -4661,14 +4659,13 @@ void WebGLRenderingContextBase::readPixels(
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels) {
   if (IdentifiabilityStudySettings::Get()->IsActive()) {
-    if (const auto& ukm_params = GetUkmParameters()) {
-      blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
-          .Set(blink::IdentifiableSurface::FromTypeAndToken(
-                   blink::IdentifiableSurface::Type::kCanvasReadback,
-                   GetContextType()),
-               0)
-          .Record(ukm_params->ukm_recorder);
-    }
+    const auto& ukm_params = GetUkmParameters();
+    blink::IdentifiabilityMetricBuilder(ukm_params.source_id)
+        .Set(blink::IdentifiableSurface::FromTypeAndToken(
+                 blink::IdentifiableSurface::Type::kCanvasReadback,
+                 GetContextType()),
+             0)
+        .Record(ukm_params.ukm_recorder);
   }
   ReadPixelsHelper(x, y, width, height, format, type, pixels.View(), 0);
 }

@@ -120,8 +120,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
       PageVisibilityObserver(document.GetPage()),
       CanvasRenderingContextHost(
           CanvasRenderingContextHost::HostType::kCanvasHost,
-          base::make_optional<UkmParameters>(
-              {document.UkmRecorder(), document.UkmSourceID()})),
+          {document.UkmRecorder(), document.UkmSourceID()}),
       size_(kDefaultCanvasWidth, kDefaultCanvasHeight),
       context_creation_was_blocked_(false),
       ignore_reset_(false),
@@ -315,6 +314,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     const CanvasContextCreationAttributesCore& attributes) {
   auto* old_contents_cc_layer = ContentsCcLayer();
   auto* result = GetCanvasRenderingContextInternal(type, attributes);
+
   if (ContentsCcLayer() != old_contents_cc_layer)
     OnContentsCcLayerChanged();
   return result;
@@ -1070,8 +1070,8 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
         image_bitmap, options,
         CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback, start_time,
         GetExecutionContext(),
-        base::make_optional<UkmParameters>(
-            {GetDocument().UkmRecorder(), GetDocument().UkmSourceID()}));
+        UkmParameters{GetDocument().UkmRecorder(),
+                      GetDocument().UkmSourceID()});
   }
 
   // TODO(crbug.com/973801): Report real digest for toBlob().

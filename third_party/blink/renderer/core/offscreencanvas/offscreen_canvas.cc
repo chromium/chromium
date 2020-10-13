@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
@@ -45,7 +48,7 @@ namespace blink {
 OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, const IntSize& size)
     : CanvasRenderingContextHost(
           CanvasRenderingContextHost::HostType::kOffscreenCanvasHost,
-          base::make_optional<UkmParameters>()),
+          {context->UkmRecorder(), context->UkmSourceID()}),
       execution_context_(context),
       size_(size) {
   // Other code in Blink watches for destruction of the context; be
@@ -211,7 +214,24 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
                                       "ImageBitmap construction failed");
   }
 
+  RecordIdentifiabilityMetric(
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kCanvasReadback,
+          context_ ? context_->GetContextType()
+                   : CanvasRenderingContext::kContextTypeUnknown),
+      0);
+
   return image;
+}
+
+void OffscreenCanvas::RecordIdentifiabilityMetric(
+    const blink::IdentifiableSurface& surface,
+    const IdentifiableToken& token) const {
+  if (!IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+    return;
+  blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
+      .Set(surface, token)
+      .Record(GetExecutionContext()->UkmRecorder());
 }
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(

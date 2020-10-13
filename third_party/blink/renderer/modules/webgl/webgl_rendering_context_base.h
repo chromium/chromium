@@ -140,7 +140,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     return static_cast<HTMLCanvasElement*>(Host());
   }
 
-  const base::Optional<UkmParameters>& GetUkmParameters() const {
+  const UkmParameters GetUkmParameters() const {
     return Host()->GetUkmParameters();
   }
 

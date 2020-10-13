@@ -150,7 +150,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     ToBlobFunctionType function_type,
     base::TimeTicks start_time,
     ExecutionContext* context,
-    base::Optional<UkmParameters> ukm_params,
+    UkmParameters ukm_params,
     ScriptPromiseResolver* resolver)
     : CanvasAsyncBlobCreator(image,
                              options,
@@ -168,7 +168,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     V8BlobCallback* callback,
     base::TimeTicks start_time,
     ExecutionContext* context,
-    base::Optional<UkmParameters> ukm_params,
+    UkmParameters ukm_params,
     ScriptPromiseResolver* resolver)
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
@@ -486,7 +486,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
 }
 
 void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
-  if (!ukm_params_.has_value() || !IsUserInIdentifiabilityStudy())
+  if (!IsUserInIdentifiabilityStudy())
     return;
   // Creating this ImageDataBuffer has some overhead, namely getting the SkImage
   // and computing the pixmap.
@@ -512,7 +512,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
                                              data_buffer->ComputeByteSize())))
                     .Record(ukm_params.ukm_recorder);
               },
-              image_, ukm_params_.value()));
+              image_, ukm_params_));
 }
 
 void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
