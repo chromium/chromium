@@ -390,12 +390,26 @@ void SurfaceAggregator::HandleSurfaceQuad(
     bool* damage_rect_in_quad_space_valid,
     const RoundedCornerInfo& rounded_corner_info) {
   SurfaceId primary_surface_id = surface_quad->surface_range.end();
+  Surface* latest_surface =
+      manager_->GetLatestInFlightSurface(surface_quad->surface_range);
+
+  // If a new surface is going to be emitted, add the surface_quad rect to
+  // |surface_damage_rect_list_| for overlays. The whole quad is considered
+  // damaged.
+  if (needs_surface_damage_rect_list_ &&
+      (!latest_surface || !latest_surface->HasActiveFrame() ||
+       (latest_surface->surface_id() != primary_surface_id))) {
+    gfx::Transform transform(
+        target_transform,
+        surface_quad->shared_quad_state->quad_to_target_transform);
+    transform.ConcatTransform(dest_pass->transform_to_root_target);
+    AddSurfaceDamageToDamageList(surface_quad->rect, target_transform,
+                                 clip_rect);
+  }
 
   // If there's no fallback surface ID available, then simply emit a
   // SolidColorDrawQuad with the provided default background color. This
   // can happen after a Viz process crash.
-  Surface* latest_surface =
-      manager_->GetLatestInFlightSurface(surface_quad->surface_range);
   if (!latest_surface || !latest_surface->HasActiveFrame()) {
     EmitDefaultBackgroundColorQuad(surface_quad, target_transform, clip_rect,
                                    dest_pass, rounded_corner_info);
@@ -419,16 +433,6 @@ void SurfaceAggregator::HandleSurfaceQuad(
                                target_transform, clip_rect,
                                fallback_frame.metadata.root_background_color,
                                dest_pass, rounded_corner_info);
-  }
-
-  if (needs_surface_damage_rect_list_ &&
-      latest_surface->surface_id() != primary_surface_id) {
-    gfx::Transform transform(
-        target_transform,
-        surface_quad->shared_quad_state->quad_to_target_transform);
-    transform.ConcatTransform(dest_pass->transform_to_root_target);
-    AddSurfaceDamageToDamageList(surface_quad->rect, target_transform,
-                                 clip_rect);
   }
 
   EmitSurfaceContent(latest_surface, parent_device_scale_factor, surface_quad,
@@ -719,14 +723,6 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
       dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   solid_color_quad->SetNew(shared_quad_state, surface_quad->rect,
                            surface_quad->visible_rect, background_color, false);
-
-  if (needs_surface_damage_rect_list_) {
-    gfx::Transform transform(
-        target_transform,
-        surface_quad->shared_quad_state->quad_to_target_transform);
-    transform.ConcatTransform(dest_pass->transform_to_root_target);
-    AddSurfaceDamageToDamageList(surface_quad->rect, transform, clip_rect);
-  }
 }
 
 void SurfaceAggregator::EmitGutterQuadsIfNecessary(
