@@ -454,13 +454,10 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
     UmaHistogramSparse("Histogram.TooManyBuckets.1000",
                        static_cast<Sample>(HashMetricName(name)));
 
-    // TODO(bcwhite): Clean these up as bugs get fixed. Also look at injecting
-    // whitelist (using hashes) from a higher layer rather than hardcoding
-    // them here.
+    // TODO(bcwhite): Look at injecting allowlist (using hashes) from a higher
+    // layer rather than hardcoding them here.
     // Blink.UseCounter legitimately has more than 1000 entries in its enum.
-    // Arc.OOMKills: https://crbug.com/916757
-    if (!StartsWith(name, "Blink.UseCounter") &&
-        !StartsWith(name, "Arc.OOMKills.")) {
+    if (!StartsWith(name, "Blink.UseCounter")) {
       DVLOG(1) << "Histogram: " << name
                << " has bad bucket_count: " << *bucket_count << " (limit "
                << kBucketCount_MAX << ")";
