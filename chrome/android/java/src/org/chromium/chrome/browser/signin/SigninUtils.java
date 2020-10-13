@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -96,8 +97,16 @@ public class SigninUtils {
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
             return;
         }
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) {
+            // The bottomSheetController can be null when google.com is just opened inside a
+            // bottom sheet for example. In this case, it's better to disable the account picker
+            // bottom sheet.
+            return;
+        }
 
+        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
         // To close the current regular tab after the user clicks on "Continue" in the incognito
         // interstitial.
         TabModel regularTabModel = activity.getTabModelSelector().getModel(/*incognito=*/false);
@@ -109,7 +118,7 @@ public class SigninUtils {
                         HelpAndFeedback.getInstance());
 
         AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
-                windowAndroid.getContext().get(), BottomSheetControllerProvider.from(windowAndroid),
+                windowAndroid.getContext().get(), bottomSheetController,
                 new AccountPickerDelegate(windowAndroid, activity.getActivityTab(),
                         new WebSigninBridge.Factory(), continueUrl),
                 incognitoInterstitialDelegate);
