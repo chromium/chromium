@@ -29,9 +29,27 @@
 }
 
 .ssl-enhanced-protection-message {
-  border: 1px solid #696969;
+  background-color: rgb(248, 249, 250); /* google-gray-50 */
+  border: 1px solid rgb(218, 220, 224); /* google-gray-300 */
+}
+
+@media (prefers-color-scheme: dark) {
+  .ssl-enhanced-protection-message {
+    background-color: rgb(32, 33, 36); /* google-gray-900 */
+    border: 1px solid rgb(95, 99, 104); /* google-gray-700 */
+  }
 }
 
 .ssl-enhanced-protection-message .icon {
   background-image: url(images/light_bulb_grey.svg);
+}
+
+.ssl-enhanced-protection-message a:link {
+  color: rgb(26, 115, 232); /* google-blue-600 */
+}
+
+@media (prefers-color-scheme: dark) {
+  .ssl-enhanced-protection-message a:link {
+    color: rgb(138, 180, 248); /* google-blue-300 */
+  }
 }
