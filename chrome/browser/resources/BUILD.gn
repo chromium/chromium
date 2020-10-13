@@ -548,21 +548,19 @@ if (enable_extensions) {
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
     ]
 
     defines = chrome_grit_defines
-    if (optimize_webui) {
-      source = "extensions/extensions_resources_vulcanized.grd"
-      deps = [ "//chrome/browser/resources/extensions:build" ]
-    } else {
-      # These arguments are needed since the grd is generated at build time.
-      enable_input_discovery_for_gn_analyze = false
-      defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                   rebase_path(root_gen_dir, root_build_dir) ]
-      extensions_gen_dir = "$root_gen_dir/chrome/browser/resources/extensions"
-      source = "$extensions_gen_dir/extensions_resources.grd"
-      deps = [ "//chrome/browser/resources/extensions:build_grd" ]
-    }
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    extensions_gen_dir = "$root_gen_dir/chrome/browser/resources/extensions"
+    source = "$extensions_gen_dir/extensions_resources.grd"
+    deps = [ "//chrome/browser/resources/extensions:build_grd" ]
 
     outputs = [
       "grit/extensions_resources.h",

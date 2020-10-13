@@ -134,9 +134,6 @@
     "includes": [1480],
     "structures": [1500],
   },
-  "chrome/browser/resources/extensions/extensions_resources_vulcanized.grd": {
-    "includes": [1520],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/extensions_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1540],

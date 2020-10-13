@@ -14,11 +14,14 @@ preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+
   optimize_webui("build") {
     host = "extensions"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "extensions.rollup.js" ]
     js_module_in_files = [ "extensions.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
       ":preprocess",
@@ -27,8 +30,22 @@ if (optimize_webui) {
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }
-} else {
-  generate_grd("build_grd") {
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "extensions"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "checkup_image_dark.svg",
+    "checkup_image.svg",
+    "extensions.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
     deps = [
       ":preprocess",
       ":preprocess_generated",
@@ -37,8 +54,6 @@ if (optimize_webui) {
       "$target_gen_dir/$preprocess_manifest",
       "$target_gen_dir/$preprocess_gen_manifest",
     ]
-    grd_prefix = "extensions"
-    out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   }
 }
 
@@ -55,12 +70,6 @@ preprocess_grit("preprocess") {
     "navigation_helper.js",
     "service.js",
     "shortcut_util.js",
-
-    # TODO(dpapad): Pass these directly to the generate_grd() target above, once
-    # support for that is added, as part of crbug.com/1132403.
-    "extensions.html",
-    "checkup_image_dark.svg",
-    "checkup_image.svg",
   ]
 
   if (is_chromeos) {
