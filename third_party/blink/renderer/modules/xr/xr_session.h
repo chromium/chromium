@@ -49,6 +49,7 @@ class XRLightProbe;
 class XRReferenceSpace;
 class XRRenderState;
 class XRRenderStateInit;
+class XRSessionViewportScaler;
 class XRSpace;
 class XRSystem;
 class XRTransientInputHitTestOptionsInit;
@@ -565,6 +566,8 @@ class XRSession final
 
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
+
+  std::unique_ptr<XRSessionViewportScaler> viewport_scaler_;
 
   // Indicates that this is a sensorless session which should only support the
   // identity reference space.
