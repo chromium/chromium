@@ -155,7 +155,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
           auto* provider = web_app::WebAppProvider::Get(profile());
           DCHECK(provider);
           provider->registry_controller().SetExperimentalTabbedWindowMode(
-              app_id(), true);
+              app_id(), true, /*is_user_action=*/true);
           return;
         }
 
@@ -323,9 +323,9 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
         auto* provider = web_app::WebAppProvider::Get(profile());
         DCHECK(provider);
         provider->registry_controller().SetExperimentalTabbedWindowMode(
-            app_id(), false);
+            app_id(), false, /*is_user_action=*/true);
         provider->registry_controller().SetAppUserDisplayMode(
-            app_id(), user_display_mode);
+            app_id(), user_display_mode, /*is_user_action=*/true);
       }
       return;
     }

@@ -281,7 +281,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 
   WebAppProvider::Get(GetProfile(1))
       ->registry_controller()
-      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser);
+      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
+                             /*is_user_action=*/false);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
   // the initial apps.
@@ -375,7 +376,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
   WebAppProvider::Get(GetProfile(0))
       ->registry_controller()
-      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser);
+      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
+                             /*is_user_action=*/false);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
   // the initial apps.

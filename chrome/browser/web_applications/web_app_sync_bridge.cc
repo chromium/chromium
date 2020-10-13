@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
 #include "base/optional.h"
 #include "base/util/type_safety/pass_key.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -178,7 +179,22 @@ void WebAppSyncBridge::Init(base::OnceClosure callback) {
 }
 
 void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
-                                             DisplayMode user_display_mode) {
+                                             DisplayMode user_display_mode,
+                                             bool is_user_action) {
+  if (is_user_action) {
+    switch (user_display_mode) {
+      case DisplayMode::kStandalone:
+        base::RecordAction(
+            base::UserMetricsAction("WebApp.SetWindowMode.Window"));
+        break;
+      case DisplayMode::kBrowser:
+        base::RecordAction(base::UserMetricsAction("WebApp.SetWindowMode.Tab"));
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   ScopedRegistryUpdate update(this);
   WebApp* web_app = update->UpdateApp(app_id);
   if (web_app)

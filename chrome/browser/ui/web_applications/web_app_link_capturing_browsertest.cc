@@ -41,8 +41,8 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     web_app_info->start_url = start_url_;
     web_app_info->open_as_window = true;
     app_id_ = web_app::InstallWebApp(profile(), std::move(web_app_info));
-    provider().registry_controller().SetExperimentalTabbedWindowMode(app_id_,
-                                                                     true);
+    provider().registry_controller().SetExperimentalTabbedWindowMode(
+        app_id_, true, /*is_user_action=*/false);
   }
 
   WebAppProviderBase& provider() {

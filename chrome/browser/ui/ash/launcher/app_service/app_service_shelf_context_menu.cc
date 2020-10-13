@@ -163,7 +163,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
         auto* provider = web_app::WebAppProvider::Get(controller()->profile());
         DCHECK(provider);
         provider->registry_controller().SetExperimentalTabbedWindowMode(
-            item().id.app_id, true);
+            item().id.app_id, true, /*is_user_action=*/true);
       }
       return;
     case ash::LAUNCH_TYPE_PINNED_TAB:
@@ -434,9 +434,9 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
         auto* provider = web_app::WebAppProvider::Get(controller()->profile());
         DCHECK(provider);
         provider->registry_controller().SetExperimentalTabbedWindowMode(
-            item().id.app_id, false);
+            item().id.app_id, false, /*is_user_action=*/true);
         provider->registry_controller().SetAppUserDisplayMode(
-            item().id.app_id, user_display_mode);
+            item().id.app_id, user_display_mode, /*is_user_action=*/true);
       }
       return;
     }

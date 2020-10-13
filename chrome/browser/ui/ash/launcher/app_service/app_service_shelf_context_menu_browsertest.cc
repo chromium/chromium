@@ -8,6 +8,8 @@
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,27 +26,12 @@
 using web_app::ProviderType;
 
 class AppServiceShelfContextMenuWebAppBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<ProviderType> {
+    : public InProcessBrowserTest {
  public:
-  AppServiceShelfContextMenuWebAppBrowserTest() = default;
-  ~AppServiceShelfContextMenuWebAppBrowserTest() override = default;
-
-  void SetUp() override {
-    if (GetParam() == ProviderType::kWebApps) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kDesktopPWAsTabStrip,
-           features::kDesktopPWAsWithoutExtensions},
-          {});
-    } else {
-      DCHECK_EQ(GetParam(), ProviderType::kBookmarkApps);
-      scoped_feature_list_.InitWithFeatures(
-          {features::kDesktopPWAsTabStrip},
-          {features::kDesktopPWAsWithoutExtensions});
-    }
-
-    InProcessBrowserTest::SetUp();
+  AppServiceShelfContextMenuWebAppBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kDesktopPWAsTabStrip);
   }
+  ~AppServiceShelfContextMenuWebAppBrowserTest() override = default;
 
   struct MenuSection {
     std::unique_ptr<ui::SimpleMenuModel> menu_model;
@@ -84,9 +71,10 @@ class AppServiceShelfContextMenuWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
                        WindowCommandCheckedForMinimalUi) {
   Profile* profile = browser()->profile();
+  base::UserActionTester user_action_tester;
 
   auto web_application_info = std::make_unique<WebApplicationInfo>();
   web_application_info->start_url = GURL("https://example.org");
@@ -98,18 +86,23 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->FlushMojoCallsForTesting();
 
-  // Open in window should be checked after activating it.
+  // Activate open in window menu item.
   base::Optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
+            1);
+
+  // Open in window should be checked after activating it.
   EXPECT_TRUE(
       menu_section->sub_model->IsItemCheckedAt(menu_section->command_index));
 }
 
-IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
                        SetOpenInTabbedWindow) {
   Profile* profile = browser()->profile();
+  base::UserActionTester user_action_tester;
 
   auto web_application_info = std::make_unique<WebApplicationInfo>();
   web_application_info->start_url = GURL("https://example.org");
@@ -126,14 +119,33 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
       app_id, ash::LAUNCH_TYPE_TABBED_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
+            1);
 
   // App window should have tab strip.
   Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
   EXPECT_TRUE(app_browser->app_controller()->has_tab_strip());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppServiceShelfContextMenuWebAppBrowserTest,
-                         ::testing::Values(ProviderType::kBookmarkApps,
-                                           ProviderType::kWebApps),
-                         web_app::ProviderTypeParamToString);
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
+                       SetOpenInBrowserTab) {
+  Profile* profile = browser()->profile();
+  base::UserActionTester user_action_tester;
+
+  auto web_application_info = std::make_unique<WebApplicationInfo>();
+  web_application_info->start_url = GURL("https://example.org");
+  web_app::AppId app_id =
+      web_app::InstallWebApp(profile, std::move(web_application_info));
+
+  // Wait for app service to see the newly installed app.
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->FlushMojoCallsForTesting();
+
+  // Set app to open in browser tab.
+  base::Optional<MenuSection> menu_section =
+      GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_TYPE_REGULAR_TAB);
+  ASSERT_TRUE(menu_section);
+  menu_section->sub_model->ActivatedAt(menu_section->command_index);
+
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tab"), 1);
+}

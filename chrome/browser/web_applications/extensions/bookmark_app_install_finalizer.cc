@@ -286,7 +286,8 @@ void BookmarkAppInstallFinalizer::OnExtensionInstalled(
 
   if (!is_legacy_finalizer()) {
     registry_controller().SetExperimentalTabbedWindowMode(
-        extension->id(), enable_experimental_tabbed_window);
+        extension->id(), enable_experimental_tabbed_window,
+        /*is_user_action=*/false);
     registrar().NotifyWebAppInstalled(extension->id());
   }
 

@@ -43,7 +43,8 @@ const Extension* BookmarkAppRegistryController::GetExtension(
 
 void BookmarkAppRegistryController::SetAppUserDisplayMode(
     const web_app::AppId& app_id,
-    DisplayMode display_mode) {
+    DisplayMode display_mode,
+    bool is_user_action) {
   const Extension* extension = GetExtension(app_id);
   if (!extension)
     return;

@@ -827,7 +827,7 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
     }
 
     web_app_provider_->registry_controller().SetAppUserDisplayMode(
-        app_id, display_mode);
+        app_id, display_mode, /*is_user_action=*/true);
     return;
   }
 

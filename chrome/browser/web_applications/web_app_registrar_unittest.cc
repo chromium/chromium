@@ -386,7 +386,8 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
     web_app_ptr->SetUserDisplayMode(DisplayMode::kBrowser);
     EXPECT_EQ(DisplayMode::kBrowser, registrar().GetAppUserDisplayMode(app_id));
 
-    sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone);
+    sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
+                                        /*is_user_action=*/false);
     EXPECT_EQ(DisplayMode::kStandalone, web_app_ptr->user_display_mode());
     EXPECT_EQ(DisplayMode::kMinimalUi, web_app_ptr->display_mode());
 
