@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/input/synthetic_pointer_action.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -301,9 +302,10 @@ class MockSyntheticPointerMouseActionTarget
               SyntheticPointerActionParams::PointerActionType::PRESS ||
           param.pointer_action_type() ==
               SyntheticPointerActionParams::PointerActionType::RELEASE) {
-        if (click_count_ != 1) {
-          return testing::AssertionFailure() << "Pointer click count was "
-                                             << click_count_ << ", expected 1.";
+        if (click_count_ < 1) {
+          return testing::AssertionFailure()
+                 << "Pointer click count was " << click_count_ << ", expected "
+                 << "greater or equal to 1.";
         }
       }
 
@@ -390,7 +392,7 @@ class SyntheticPointerActionTest : public testing::Test {
  protected:
   template <typename MockGestureTarget>
   void CreateSyntheticPointerActionTarget() {
-    target_.reset(new MockGestureTarget());
+    target_ = std::make_unique<MockGestureTarget>();
     synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
         target_->GetDefaultSyntheticGestureSourceType());
   }
@@ -468,7 +470,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchAction) {
   param_list4.push_back(param1);
   param_list4.push_back(param2);
   params_.PushPointerActionParamsList(param_list4);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -539,7 +541,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionsMultiPressRelease) {
     // Send a touch release for the second finger and not move the first finger.
     params_.PushPointerActionParamsList(param_list3);
   }
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -607,7 +609,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionCancel) {
   param_list3.push_back(param1);
   param_list3.push_back(param2);
   params_.PushPointerActionParamsList(param_list3);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -646,7 +648,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
   param.set_pointer_id(0);
   param.set_position(gfx::PointF(54, 89));
   params_.PushPointerActionParams(param);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(0, num_success_);
@@ -656,7 +658,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_ = SyntheticPointerActionListParams();
   params_.PushPointerActionParams(param);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(0, num_success_);
@@ -668,7 +670,7 @@ TEST_F(SyntheticPointerActionTest, PointerTouchActionTypeInvalid) {
   params_ = SyntheticPointerActionListParams();
   params_.PushPointerActionParams(param);
   params_.PushPointerActionParams(param);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerTouchActionTarget* pointer_touch_target =
@@ -710,7 +712,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseAction) {
   SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param4);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -781,7 +783,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionMultiPress) {
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   param6.set_button(SyntheticPointerActionParams::Button::LEFT);
   params_.PushPointerActionParams(param6);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -851,7 +853,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithKey) {
   param3.set_button(SyntheticPointerActionParams::Button::LEFT);
   param3.set_key_modifiers(6);
   params_.PushPointerActionParams(param3);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -904,7 +906,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionWithTime) {
   param3.set_key_modifiers(6);
   param3.set_timestamp(timestamp + base::TimeDelta::FromSeconds(3));
   params_.PushPointerActionParams(param3);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -936,7 +938,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseRelease) {
   SyntheticPointerActionParams param = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params_.PushPointerActionParams(param);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(1, num_success_);
@@ -955,7 +957,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionTypeInvalid) {
 
   // Cannot send a mouse down again without releasing the mouse button.
   params_.PushPointerActionParams(param);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
@@ -996,7 +998,7 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
   SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType::LEAVE);
   params_.PushPointerActionParams(param4);
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   MockSyntheticPointerPenActionTarget* pointer_pen_target =
@@ -1034,11 +1036,302 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
 
 TEST_F(SyntheticPointerActionTest, EmptyParams) {
   CreateSyntheticPointerActionTarget<MockSyntheticPointerPenActionTarget>();
-  pointer_action_.reset(new SyntheticPointerAction(params_));
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(1, num_success_);
   EXPECT_EQ(0, num_failure_);
+}
+
+TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
+  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+
+  // Send a mouse move.
+  SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::MOVE);
+  param1.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param1);
+
+  // Send a mouse down.
+  SyntheticPointerActionParams param2 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param2.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param2);
+
+  // Send a mouse up.
+  SyntheticPointerActionParams param3 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param3);
+
+  // Send a second mouse down.
+  SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param4.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param4);
+
+  // Send a second mouse up.
+  SyntheticPointerActionParams param5 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param5);
+
+  // Send a third mouse down.
+  SyntheticPointerActionParams param6 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param6.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param6);
+
+  // Send a third mouse up.
+  SyntheticPointerActionParams param7 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param7);
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+
+  // Send a fourth mouse down.
+  SyntheticPointerActionParams param8 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param8.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param8);
+
+  // Send a fourth mouse up.
+  SyntheticPointerActionParams param9 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param9);
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+
+  ForwardSyntheticPointerAction();
+  MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
+      static_cast<MockSyntheticPointerMouseActionTarget*>(target_.get());
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  std::vector<SyntheticPointerActionParams::Button> buttons;
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param1, 0, buttons));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(2, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param2, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(3, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param3, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+  buttons.pop_back();
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(4, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param4, 2, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(5, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param5, 2, buttons, SyntheticPointerActionParams::Button::LEFT));
+  buttons.pop_back();
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(6, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param6, 3, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(7, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param7, 3, buttons, SyntheticPointerActionParams::Button::LEFT));
+  buttons.pop_back();
+
+  int click_count = 4;
+#if !defined(OS_MAC) && !defined(OS_WIN)
+  click_count = 1;
+#endif
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(8, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param8, click_count, buttons,
+      SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(9, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param9, click_count, buttons,
+      SyntheticPointerActionParams::Button::LEFT));
+}
+
+TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountOnOtherButton) {
+  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+
+  // Send a mouse move.
+  SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::MOVE);
+  param1.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param1);
+
+  // Send a mouse down.
+  SyntheticPointerActionParams param2 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param2.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param2);
+
+  // Send a mouse up.
+  SyntheticPointerActionParams param3 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param3);
+
+  // Send a second mouse down with another button.
+  SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param4.set_position(gfx::PointF(189, 62));
+  param4.set_button(SyntheticPointerActionParams::Button::MIDDLE);
+  params_.PushPointerActionParams(param4);
+
+  // Send a second mouse up.
+  SyntheticPointerActionParams param5 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  param5.set_button(SyntheticPointerActionParams::Button::MIDDLE);
+  params_.PushPointerActionParams(param5);
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+
+  ForwardSyntheticPointerAction();
+  MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
+      static_cast<MockSyntheticPointerMouseActionTarget*>(target_.get());
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  std::vector<SyntheticPointerActionParams::Button> buttons;
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param1, 0, buttons));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(2, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param2, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(3, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param3, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+  buttons.pop_back();
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(4, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::MIDDLE);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param4, 1, buttons, SyntheticPointerActionParams::Button::MIDDLE));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(5, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param5, 1, buttons, SyntheticPointerActionParams::Button::MIDDLE));
+}
+
+TEST_F(SyntheticPointerActionTest, PointerMouseActionResetCountAfterMove) {
+  CreateSyntheticPointerActionTarget<MockSyntheticPointerMouseActionTarget>();
+
+  // Send a mouse move.
+  SyntheticPointerActionParams param1 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::MOVE);
+  param1.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param1);
+
+  // Send a mouse down.
+  SyntheticPointerActionParams param2 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param2.set_position(gfx::PointF(189, 62));
+  params_.PushPointerActionParams(param2);
+
+  // Send a mouse up.
+  SyntheticPointerActionParams param3 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param3);
+
+  // Send a second mouse down close to the last one.
+  SyntheticPointerActionParams param4 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param4.set_position(gfx::PointF(190, 60));
+  params_.PushPointerActionParams(param4);
+
+  // Send a second mouse up.
+  SyntheticPointerActionParams param5 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param5);
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+
+  // Send a third mouse down far enough from the last one.
+  SyntheticPointerActionParams param6 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::PRESS);
+  param6.set_position(gfx::PointF(290, 60));
+  params_.PushPointerActionParams(param6);
+
+  // Send a third mouse up.
+  SyntheticPointerActionParams param7 = SyntheticPointerActionParams(
+      SyntheticPointerActionParams::PointerActionType::RELEASE);
+  params_.PushPointerActionParams(param7);
+  pointer_action_ = std::make_unique<SyntheticPointerAction>(params_);
+
+  ForwardSyntheticPointerAction();
+  MockSyntheticPointerMouseActionTarget* pointer_mouse_target =
+      static_cast<MockSyntheticPointerMouseActionTarget*>(target_.get());
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  std::vector<SyntheticPointerActionParams::Button> buttons;
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param1, 0, buttons));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(2, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param2, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(3, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param3, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+  buttons.pop_back();
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(4, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param4, 2, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(5, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param5, 2, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(6, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param6, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
+
+  ForwardSyntheticPointerAction();
+  EXPECT_EQ(7, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(pointer_mouse_target->SyntheticMouseActionDispatchedCorrectly(
+      param7, 1, buttons, SyntheticPointerActionParams::Button::LEFT));
 }
 
 }  // namespace

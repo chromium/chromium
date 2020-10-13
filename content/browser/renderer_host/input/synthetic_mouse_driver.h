@@ -57,7 +57,10 @@ class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
   unsigned last_modifiers_ = 0;
 
  private:
-  bool IsRepeatedClickEvent(const base::TimeTicks& timestamp, float x, float y);
+  int ComputeClickCount(const base::TimeTicks& timestamp,
+                        blink::WebMouseEvent::Button pressed_button,
+                        float x,
+                        float y);
   int click_count_ = 0;
   base::TimeTicks last_mouse_click_time_ = base::TimeTicks::Now();
   float last_x_ = 0;
