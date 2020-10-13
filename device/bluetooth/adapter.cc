@@ -89,6 +89,7 @@ void Adapter::AddObserver(mojo::PendingRemote<mojom::AdapterObserver> observer,
 
 void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
                                     const std::vector<uint8_t>& service_data,
+                                    bool use_scan_response,
                                     RegisterAdvertisementCallback callback) {
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
@@ -98,10 +99,38 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
   uuid_list->push_back(service_uuid.value());
   advertisement_data->set_service_uuids(std::move(uuid_list));
 
-  auto service_data_map =
-      std::make_unique<device::BluetoothAdvertisement::ServiceData>();
-  service_data_map->emplace(service_uuid.value(), service_data);
-  advertisement_data->set_service_data(std::move(service_data_map));
+  if (!use_scan_response) {
+    auto service_data_map =
+        std::make_unique<device::BluetoothAdvertisement::ServiceData>();
+    service_data_map->emplace(service_uuid.value(), service_data);
+    advertisement_data->set_service_data(std::move(service_data_map));
+  } else {
+    // Require the service uuid to be in 128-bit format.
+    DCHECK_EQ(service_uuid.format(),
+              device::BluetoothUUID::Format::kFormat128Bit);
+    auto scan_response_data_map =
+        std::make_unique<device::BluetoothAdvertisement::ScanResponseData>();
+    // Start with the original scan response data.
+    std::vector<uint8_t> scan_response_data(service_data.begin(),
+                                            service_data.end());
+    // Now insert in front of the service data the identifying 2-bytes of the
+    // service id assuming this is a valid 16-bit uuid. For example, the uuid:
+    // 0000fef3-0000-1000-8000-00805f9b34fb can be uniquely defined by two bytes
+    // ****fef3-****-****-****-************ the rest is the same for all 16-bit
+    // uuids as defined by the Bluetooth spec. We insert them in little endian
+    // ordering 0xf3 first, then 0xfe in for this example.
+    auto service_id_bytes = service_uuid.GetBytes();
+    // Take bytes 2 and 3.
+    auto id_bytes = base::make_span(service_id_bytes).subspan(2, 2);
+    // Add them in reverse order (little endian).
+    scan_response_data.insert(scan_response_data.begin(), id_bytes.rbegin(),
+                              id_bytes.rend());
+    // The platform API only supports AD Type 0x16 "Service Data" which assumes
+    // as 16-bit service id.
+    scan_response_data_map->emplace(0x16, scan_response_data);
+    advertisement_data->set_scan_response_data(
+        std::move(scan_response_data_map));
+  }
 
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   adapter_->RegisterAdvertisement(

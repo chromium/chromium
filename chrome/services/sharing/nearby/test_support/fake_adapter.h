@@ -29,6 +29,7 @@ class FakeAdapter : public mojom::Adapter {
                    AddObserverCallback callback) override;
   void RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
                              const std::vector<uint8_t>& service_data,
+                             bool use_scan_response,
                              RegisterAdvertisementCallback callback) override;
   void SetDiscoverable(bool discoverable,
                        SetDiscoverableCallback callback) override;

@@ -147,6 +147,16 @@ interface Adapter {
   // Requests the adapter to broadcast a BLE advertisement on |service_id| with
   // the associated packet |service_data|. Returns null if advertisement is not
   // registered successfully.
+  //
+  // When |use_scan_response| is true, the |service_data| is added to the scan
+  // response instead of the initial advertisement. A few assumptions are made:
+  //
+  // 1) The |service_id| provided is a valid 16-bit UUID in 128-bit format.
+  //    The identifying 16-bits will be extracted for the short service id used
+  //    in the scan response.
+  // 2) The Ad Type is assumed to be 0x16 as that is all that is supported by
+  //    the Platform right now.
+  //
   // Important notes:
   // * This method registers a "non-connectable" advertisement. Any future
   //   effort to allow this API to support "connectable" advertisements would
@@ -157,8 +167,8 @@ interface Adapter {
   //   as Chrome OS does. Non-Chrome OS clients of this API are responsible for
   //   understanding their host OS's and/or hardware's limitations.
   [Sync]
-  RegisterAdvertisement(UUID service_id, array<uint8> service_data) =>
-      (pending_remote<Advertisement>? advertisement);
+  RegisterAdvertisement(UUID service_id, array<uint8> service_data,
+      bool use_scan_response) => (pending_remote<Advertisement>? advertisement);
 
   // Requests the local device to make itself discoverable to nearby remote
   // devices.

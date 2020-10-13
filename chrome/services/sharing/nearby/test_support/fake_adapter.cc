@@ -106,6 +106,7 @@ void FakeAdapter::AddObserver(
 void FakeAdapter::RegisterAdvertisement(
     const device::BluetoothUUID& service_uuid,
     const std::vector<uint8_t>& service_data,
+    bool use_scan_response,
     RegisterAdvertisementCallback callback) {
   if (!should_advertisement_registration_succeed_) {
     std::move(callback).Run(mojo::NullRemote());

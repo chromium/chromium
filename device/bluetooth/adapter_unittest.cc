@@ -21,7 +21,7 @@ using testing::Return;
 
 namespace {
 
-const char kServiceId[] = "00000000-0000-0000-0000-000000000001";
+const char kServiceId[] = "0000abcd-0000-0000-0000-000000000001";
 const char kDeviceServiceDataStr[] = "ServiceData";
 
 std::vector<uint8_t> GetByteVector(const std::string& str) {
@@ -36,9 +36,7 @@ class MockBluetoothAdapterWithAdvertisements
       device::BluetoothAdapter::CreateAdvertisementCallback callback,
       device::BluetoothAdapter::AdvertisementErrorCallback error_callback)
       override {
-    last_register_advertisement_args_ =
-        std::make_pair(*advertisement_data->service_uuids(),
-                       *advertisement_data->service_data());
+    last_advertisement_data_ = std::move(advertisement_data);
 
     if (should_advertisement_registration_succeed_) {
       std::move(callback).Run(
@@ -51,9 +49,8 @@ class MockBluetoothAdapterWithAdvertisements
   }
 
   bool should_advertisement_registration_succeed_ = true;
-  base::Optional<std::pair<device::BluetoothAdvertisement::UUIDList,
-                           device::BluetoothAdvertisement::ServiceData>>
-      last_register_advertisement_args_;
+  std::unique_ptr<device::BluetoothAdvertisement::Data>
+      last_advertisement_data_;
 
  protected:
   ~MockBluetoothAdapterWithAdvertisements() override = default;
@@ -80,7 +77,7 @@ class AdapterTest : public testing::Test {
   }
 
  protected:
-  void VerifyRegisterAdvertisement(bool should_succeed) {
+  void RegisterAdvertisement(bool should_succeed, bool use_scan_data) {
     mock_bluetooth_adapter_->should_advertisement_registration_succeed_ =
         should_succeed;
 
@@ -90,21 +87,46 @@ class AdapterTest : public testing::Test {
     base::RunLoop run_loop;
     adapter_->RegisterAdvertisement(
         device::BluetoothUUID(kServiceId), service_data,
+        /*use_scan_data=*/use_scan_data,
         base::BindLambdaForTesting([&](mojo::PendingRemote<mojom::Advertisement>
                                            pending_advertisement) {
           EXPECT_EQ(should_succeed, pending_advertisement.is_valid());
           run_loop.Quit();
         }));
     run_loop.Run();
+  }
 
-    auto& uuid_list =
-        mock_bluetooth_adapter_->last_register_advertisement_args_->first;
-    EXPECT_EQ(1u, uuid_list.size());
-    EXPECT_EQ(kServiceId, uuid_list[0]);
-    EXPECT_EQ(
-        service_data,
-        mock_bluetooth_adapter_->last_register_advertisement_args_->second.at(
-            kServiceId));
+  void VerifyAdvertisement() {
+    auto service_data = GetByteVector(kDeviceServiceDataStr);
+    auto uuid_list =
+        mock_bluetooth_adapter_->last_advertisement_data_->service_uuids();
+    EXPECT_EQ(1u, uuid_list->size());
+    EXPECT_EQ(kServiceId, (*uuid_list)[0]);
+    auto last_service_data =
+        mock_bluetooth_adapter_->last_advertisement_data_->service_data();
+    EXPECT_EQ(service_data, last_service_data->at(kServiceId));
+    EXPECT_FALSE(mock_bluetooth_adapter_->last_advertisement_data_
+                     ->scan_response_data());
+  }
+
+  void VerifyAdvertisementWithScanData() {
+    auto service_data = GetByteVector(kDeviceServiceDataStr);
+    auto uuid_list =
+        mock_bluetooth_adapter_->last_advertisement_data_->service_uuids();
+    EXPECT_EQ(1u, uuid_list->size());
+    EXPECT_EQ(kServiceId, (*uuid_list)[0]);
+    EXPECT_FALSE(
+        mock_bluetooth_adapter_->last_advertisement_data_->service_data());
+    auto last_scan_response_data =
+        mock_bluetooth_adapter_->last_advertisement_data_->scan_response_data();
+    ASSERT_TRUE(base::Contains(*last_scan_response_data, 0x16));
+    const auto& raw_data = (*last_scan_response_data)[0x16];
+    // First two bytes should be the identifying bits of the kServiceId UUID.
+    // They should be in litten endian order (reversed).
+    EXPECT_EQ(0xCD, raw_data[0]);
+    EXPECT_EQ(0xAB, raw_data[1]);
+    EXPECT_EQ(service_data,
+              std::vector<uint8_t>(raw_data.begin() + 2, raw_data.end()));
   }
 
   scoped_refptr<NiceMock<MockBluetoothAdapterWithAdvertisements>>
@@ -116,11 +138,18 @@ class AdapterTest : public testing::Test {
 };
 
 TEST_F(AdapterTest, TestRegisterAdvertisement_Success) {
-  VerifyRegisterAdvertisement(/*should_succeed=*/true);
+  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/false);
+  VerifyAdvertisement();
 }
 
 TEST_F(AdapterTest, TestRegisterAdvertisement_Error) {
-  VerifyRegisterAdvertisement(/*should_succeed=*/false);
+  RegisterAdvertisement(/*should_succeed=*/false, /*use_scan_data=*/false);
+  VerifyAdvertisement();
+}
+
+TEST_F(AdapterTest, TestRegisterAdvertisement_ScanResponseData) {
+  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/true);
+  VerifyAdvertisementWithScanData();
 }
 
 }  // namespace bluetooth

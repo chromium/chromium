@@ -40,7 +40,7 @@ bool BleMedium::StartAdvertising(
       service_uuid,
       std::vector<uint8_t>(advertisement.data(),
                            advertisement.data() + advertisement.size()),
-      &pending_advertisement);
+      /*use_scan_data=*/true, &pending_advertisement);
 
   if (!success || !pending_advertisement.is_valid())
     return false;
