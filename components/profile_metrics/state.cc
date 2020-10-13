@@ -24,8 +24,21 @@ std::string GetStateSuffix(StateSuffix suffix) {
       return "_LatentMultiProfileOthers";
     case StateSuffix::kSingleProfile:
       return "_SingleProfile";
+    case StateSuffix::kUponDeletion:
+      return "_UponDeletion";
   }
 }
+
+// Context for profile deletion.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DeleteProfileContext {
+  kWithoutBrowserLastProfile = 0,
+  kWithoutBrowserAdditionalProfile = 1,
+  kWithBrowserLastProfile = 2,
+  kWithBrowserAdditionalProfile = 3,
+  kMaxValue = kWithBrowserAdditionalProfile
+};
 
 }  // namespace
 
@@ -54,6 +67,24 @@ void LogProfileSyncEnabled(bool sync_enabled, StateSuffix suffix) {
 void LogProfileDaysSinceLastUse(int days_since_last_use, StateSuffix suffix) {
   base::UmaHistogramCounts1000(
       "Profile.State.LastUsed" + GetStateSuffix(suffix), days_since_last_use);
+}
+
+void LogProfileDeletionContext(bool is_last_profile, bool no_browser_windows) {
+  DeleteProfileContext context;
+  if (no_browser_windows) {
+    if (is_last_profile) {
+      context = DeleteProfileContext::kWithoutBrowserLastProfile;
+    } else {
+      context = DeleteProfileContext::kWithoutBrowserAdditionalProfile;
+    }
+  } else {
+    if (is_last_profile) {
+      context = DeleteProfileContext::kWithBrowserLastProfile;
+    } else {
+      context = DeleteProfileContext::kWithBrowserAdditionalProfile;
+    }
+  }
+  base::UmaHistogramEnumeration("Profile.DeleteProfileContext", context);
 }
 
 void LogProfileAllAccountsNames(AllAccountsNames names) {

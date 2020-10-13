@@ -148,7 +148,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     This histogram tracks which UI screen was used to initiate and confirm the
     deletion of a profile. This does not track when the profile is actually
-    deleted, which is an asynchronous process that happens later.
+    deleted, which is an asynchronous process that happens later. Not all
+    buckets in the histogram correspond to profile deletion so the sum is not
+    the count of deleted profiles.
+  </summary>
+</histogram>
+
+<histogram name="Profile.DeleteProfileContext" enum="ProfileDeleteContext"
+    expires_after="2021-10-08">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    This histogram tracks the context of profile deletion whenever a profile is
+    scheduled for deletion (from user action in the UI). Only recorded if the
+    profile has a valid entry in ProfileAttributesStorage.
   </summary>
 </histogram>
 

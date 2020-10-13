@@ -851,7 +851,14 @@ void ProfileManager::MaybeScheduleProfileForDeletion(
     ProfileMetrics::ProfileDelete deletion_source) {
   if (!ScheduleProfileDirectoryForDeletion(profile_dir))
     return;
+
+  ProfileAttributesStorage& storage = GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry;
+  if (storage.GetProfileAttributesWithPath(profile_dir, &entry)) {
+    storage.RecordDeletedProfileState(entry);
+  }
   ProfileMetrics::LogProfileDeleteUser(deletion_source);
+
   ScheduleProfileForDeletion(profile_dir, std::move(callback));
 }
 
