@@ -7,14 +7,25 @@
 // require: list_selection_controller.js
 // require: list_item.js
 
+// clang-format off
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from '../../cr.m.js';
+// #import {ArrayDataModel} from './array_data_model.m.js';
+// #import {ListSelectionModel} from './list_selection_model.m.js';
+// #import {ListSelectionController} from './list_selection_controller.m.js';
+// #import {ListItem} from './list_item.m.js';
+// clang-format on
+
 /**
  * @fileoverview This implements a list control.
  */
 
 cr.define('cr.ui', function() {
-  /** @const */ const ListSelectionModel = cr.ui.ListSelectionModel;
-  /** @const */ const ListSelectionController = cr.ui.ListSelectionController;
-  /** @const */ const ArrayDataModel = cr.ui.ArrayDataModel;
+  /* #ignore */ /** @const */ const ListSelectionModel =
+      /* #ignore */ cr.ui.ListSelectionModel;
+  /* #ignore */ /** @const */ const ListSelectionController =
+      /* #ignore */ cr.ui.ListSelectionController;
+  /* #ignore */ /** @const */ const ArrayDataModel = cr.ui.ArrayDataModel;
 
   /**
    *  @typedef {{
@@ -26,7 +37,7 @@ cr.define('cr.ui', function() {
    *    width: number
    *  }}
    */
-  let Size;
+  /* #export */ let Size;
 
   /**
    * Whether a mouse event is inside the element viewport. This will return
@@ -55,7 +66,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLUListElement}
    */
-  const List = cr.ui.define('list');
+  /* #export */ const List = cr.ui.define('list');
 
   List.prototype = {
     __proto__: HTMLUListElement.prototype,
@@ -1364,15 +1375,23 @@ cr.define('cr.ui', function() {
     },
   };
 
-  cr.defineProperty(List, 'disabled', cr.PropertyKind.BOOL_ATTR);
+  /** @type {boolean} */
+  List.prototype.disabled;
+  Object.defineProperty(
+      List.prototype, 'disabled',
+      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the list or one of its descendents has focus. This is necessary
    * because list items can contain controls that can be focused, and for some
    * purposes (e.g., styling), the list can still be conceptually focused at
    * that point even though it doesn't actually have the page focus.
+   * @type {boolean}
    */
-  cr.defineProperty(List, 'hasElementFocus', cr.PropertyKind.BOOL_ATTR);
+  List.prototype.hasElementFocus;
+  Object.defineProperty(
+      List.prototype, 'hasElementFocus',
+      cr.getPropertyDescriptor('hasElementFocus', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Mousedown event handler.
@@ -1453,6 +1472,7 @@ cr.define('cr.ui', function() {
     return false;
   }
 
+  // #cr_define_end
   return {
     List: List,
     Size: Size,

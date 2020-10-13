@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('cr.ui', function() {
+// clang-format off
+// #import {PropertyKind, getPropertyDescriptor} from '../../cr.m.js';
+// #import {define as crUiDefine} from '../ui.m.js';
+// clang-format on
 
+cr.define('cr.ui', function() {
   /**
    * Creates a new list item element.
    * @constructor
    * @extends {HTMLLIElement}
    */
-  const ListItem = cr.ui.define('li');
+  /* #export */ const ListItem = cr.ui.define('li');
 
   /**
    * The next id suffix to use when giving each item an unique id.
@@ -57,23 +61,34 @@ cr.define('cr.ui', function() {
   /**
    * Whether the item is selected. Setting this does not update the underlying
    * selection model. This is only used for display purpose.
+   * @type {boolean}
    */
-  cr.defineProperty(
-      ListItem, 'selected', cr.PropertyKind.BOOL_ATTR, function() {
-        this.selectionChanged();
-      });
+  ListItem.prototype.selected;
+  Object.defineProperty(
+      ListItem.prototype, 'selected',
+      cr.getPropertyDescriptor(
+          'selected', cr.PropertyKind.BOOL_ATTR, function() {
+            this.selectionChanged();
+          }));
 
   /**
    * Whether the item is the lead in a selection. Setting this does not update
    * the underlying selection model. This is only used for display purpose.
+   * @type {boolean}
    */
-  cr.defineProperty(ListItem, 'lead', cr.PropertyKind.BOOL_ATTR);
+  ListItem.prototype.lead;
+  Object.defineProperty(
+      ListItem.prototype, 'lead',
+      cr.getPropertyDescriptor('lead', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * This item's index in the containing list.
    * type {number}
    */
-  cr.defineProperty(ListItem, 'listIndex');
+  ListItem.prototype.listIndex;
+  Object.defineProperty(
+      ListItem.prototype, 'listIndex', cr.getPropertyDescriptor('listIndex'));
 
+  // #cr_define_end
   return {ListItem: ListItem};
 });

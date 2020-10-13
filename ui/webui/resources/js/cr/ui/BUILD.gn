@@ -257,6 +257,8 @@ js_modulizer("modulize") {
     "focus_row_behavior.js",
     "focus_without_ink.js",
     "keyboard_shortcut_list.js",
+    "list.js",
+    "list_item.js",
     "list_selection_controller.js",
     "list_selection_model.js",
     "list_single_selection_model.js",
@@ -264,8 +266,11 @@ js_modulizer("modulize") {
     "splitter.js",
     "store.js",
     "store_client.js",
+    "tree.js",
   ]
   namespace_rewrites = [
+    "cr.getPropertyDescriptor|getPropertyDescriptor",
+    "cr.PropertyKind|PropertyKind",
     "cr.dispatchPropertyChange|dispatchPropertyChange",
     "cr.EventTarget|EventTarget",
     "cr.ui.dialogs.BaseDialog|BaseDialog",
@@ -280,8 +285,15 @@ js_modulizer("modulize") {
     "cr.ui.DragWrapperDelegate|DragWrapperDelegate",
     "cr.ui.FocusRowDelegate|FocusRowDelegate",
     "cr.ui.FocusRow|FocusRow",
+    "cr.ui.limitInputWidth|limitInputWidth",
+    "cr.ui.List|List",
+    "cr.ui.Size|Size",
+    "cr.ui.ListItem|ListItem",
     "cr.ui.ListSelectionModel|ListSelectionModel",
+    "cr.ui.ListSelectionController|ListSelectionController",
     "cr.ui.StoreObserver|StoreObserver",
+    "cr.ui.Tree|Tree",
+    "cr.ui.TreeItem|TreeItem",
     "cr.ui.VirtualFocusRow|VirtualFocusRow",
   ]
 }
@@ -298,6 +310,8 @@ js_type_check("ui_resources_modules") {
     ":focus_row_behavior.m",
     ":focus_without_ink.m",
     ":keyboard_shortcut_list.m",
+    ":list.m",
+    ":list_item.m",
     ":list_selection_controller.m",
     ":list_selection_model.m",
     ":list_single_selection_model.m",
@@ -305,6 +319,7 @@ js_type_check("ui_resources_modules") {
     ":splitter.m",
     ":store.m",
     ":store_client.m",
+    ":tree.m",
   ]
 }
 
@@ -383,6 +398,25 @@ js_library("keyboard_shortcut_list.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("list.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/list.m.js" ]
+  deps = [
+    ":array_data_model.m",
+    ":list_item.m",
+    ":list_selection_controller.m",
+    ":list_selection_model.m",
+    "../:ui.m",
+    "../..:cr.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("list_item.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/list_item.m.js" ]
+  deps = [ "../..:cr.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("list_selection_controller.m") {
   sources = [
     "$root_gen_dir/ui/webui/resources/js/cr/ui/list_selection_controller.m.js",
@@ -438,5 +472,15 @@ js_library("store_client.m") {
     "../..:assert.m",
   ]
   sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/store_client.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("tree.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/tree.m.js" ]
+  deps = [
+    "../:ui.m",
+    "../..:assert.m",
+    "../..:cr.m",
+  ]
   extra_deps = [ ":modulize" ]
 }

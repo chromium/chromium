@@ -223,6 +223,25 @@ var cr = cr || function(global) {
   }
 
   /**
+   * Returns a getter and setter to be used as property descriptor in
+   * Object.defineProperty(). When the setter changes the value a property
+   * change event with the type {@code name + 'Change'} is fired.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   */
+  function getPropertyDescriptor(name, opt_kind, opt_setHook) {
+    const kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
+
+    const desc = {
+      get: getGetter(name, kind),
+      set: getSetter(name, kind, opt_setHook),
+    };
+    return desc;
+  }
+
+  /**
    * Counter for use with createUid
    */
   let uidCounter = 1;
@@ -415,6 +434,7 @@ var cr = cr || function(global) {
     addSingletonGetter: addSingletonGetter,
     define: define,
     defineProperty: defineProperty,
+    getPropertyDescriptor: getPropertyDescriptor,
     dispatchPropertyChange: dispatchPropertyChange,
     dispatchSimpleEvent: dispatchSimpleEvent,
     PropertyKind: PropertyKind,
