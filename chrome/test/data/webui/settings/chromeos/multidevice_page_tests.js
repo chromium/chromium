@@ -181,6 +181,38 @@ suite('Multidevice', function() {
         'Setup multidevice button should be focused for settingId=200.');
   });
 
+  test('Open notification access setup dialog route param', async () => {
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MULTIDEVICE_FEATURES,
+        new URLSearchParams('showNotificationAccessSetupDialog=true'));
+
+    PolymerTest.clearBody();
+    browserProxy = new multidevice.TestMultideviceBrowserProxy();
+    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+
+    multidevicePage = document.createElement('settings-multidevice-page');
+    assertTrue(!!multidevicePage);
+
+    document.body.appendChild(multidevicePage);
+    await browserProxy.whenCalled('getPageContentData');
+
+    Polymer.dom.flush();
+    assertTrue(!!multidevicePage.$$(
+        'settings-multidevice-notification-access-setup-dialog'));
+
+    // Close the dialog.
+    multidevicePage.showNotificationAccessSetupDialog_ = false;
+    Polymer.dom.flush();
+
+    // A change in pageContentData will not cause the notification access
+    // setup dialog to reappaear
+    setPageContentData({});
+    Polymer.dom.flush();
+
+    assertFalse(!!multidevicePage.$$(
+        'settings-multidevice-notification-access-setup-dialog'));
+  });
+
   test('headings render based on mode and host', function() {
     for (const mode of ALL_MODES) {
       setHostData(mode);

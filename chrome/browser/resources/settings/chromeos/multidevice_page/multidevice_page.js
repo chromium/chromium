@@ -114,7 +114,7 @@ Polymer({
         this.onPageContentDataChanged_.bind(this));
 
     this.browserProxy_.getPageContentData().then(
-        this.onPageContentDataChanged_.bind(this));
+        this.onInitialPageContentDataFetched_.bind(this));
   },
 
   /**
@@ -430,6 +430,25 @@ Polymer({
       Polymer.RenderStatus.beforeNextRender(this, () => {
         settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
       });
+    }
+  },
+
+  /**
+   * @param {!settings.MultiDevicePageContentData} newData
+   * @private
+   */
+  onInitialPageContentDataFetched_(newData) {
+    this.onPageContentDataChanged_(newData);
+
+    if (this.pageContentData.isNotificationAccessGranted) {
+      return;
+    }
+
+    // Show the notification access dialog if the url contains the correct
+    // param.
+    const urlParams = settings.Router.getInstance().getQueryParameters();
+    if (urlParams.get('showNotificationAccessSetupDialog') !== null) {
+      this.showNotificationAccessSetupDialog_ = true;
     }
   },
 

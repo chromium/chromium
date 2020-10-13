@@ -40,11 +40,11 @@ constexpr gfx::Insets kButtonContainerBorderInsets = {10, 0, 5, 5};
 constexpr int kDismissButtonTag = 1;
 constexpr int kSetUpButtonTag = 2;
 
-// URL of the multidevice settings page.
-// TODO(crbug.com/1126208): update to the direct link to the Phone Hub
-// notification set up dialog.
+// URL of the multidevice settings page with the URL parameter that will
+// start up the opt-in-flow.
 constexpr char kMultideviceSettingsUrl[] =
-    "chrome://os-settings/multidevice/features";
+    "chrome://os-settings/multidevice/"
+    "features?showNotificationAccessSetupDialog";
 
 }  // namespace
 
