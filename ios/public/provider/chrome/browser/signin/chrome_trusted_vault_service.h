@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/observer_list.h"
 #include "components/sync/driver/trusted_vault_client.h"
 
@@ -31,8 +30,6 @@ class ChromeTrustedVaultService {
       delete;
 
   using Observer = syncer::TrustedVaultClient::Observer;
-  using CallbackList = base::CallbackList<void()>;
-  using Subscription = CallbackList::Subscription;
 
   // Adds/removes observers.
   void AddObserver(Observer* observer);
@@ -56,9 +53,6 @@ class ChromeTrustedVaultService {
   // synchronously.
   virtual void CancelReauthentication(BOOL animated,
                                       void (^callback)(void)) = 0;
-  // TODO(crbug.com/1100278): Delete this deprecated function.
-  virtual std::unique_ptr<Subscription> AddKeysChangedObserver(
-      const base::RepeatingClosure& cb);
 
  protected:
   // Functions to notify observers.
@@ -67,9 +61,6 @@ class ChromeTrustedVaultService {
 
  private:
   base::ObserverList<Observer> observer_list_;
-  // TODO(crbug.com/1100278): Delete this field onceAddKeysChangedObserver() is
-  // cleaned up.
-  std::unique_ptr<Subscription> deprecated_keys_changed_subscription_;
 };
 
 }  // namespace ios
