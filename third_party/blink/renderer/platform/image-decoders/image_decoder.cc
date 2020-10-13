@@ -160,7 +160,6 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     const ColorBehavior& color_behavior,
-    const OverrideAllowDecodeToYuv allow_decode_to_yuv,
     const SkISize& desired_size,
     AnimationOption animation_option) {
   auto type = SniffMimeTypeInternal(data);
@@ -169,7 +168,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
 
   return CreateByMimeType(type, std::move(data), data_complete, alpha_option,
                           high_bit_depth_decoding_option, color_behavior,
-                          allow_decode_to_yuv, desired_size, animation_option);
+                          desired_size, animation_option);
 }
 
 std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
@@ -179,7 +178,6 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     const ColorBehavior& color_behavior,
-    const OverrideAllowDecodeToYuv allow_decode_to_yuv,
     const SkISize& desired_size,
     AnimationOption animation_option) {
   const size_t max_decoded_bytes =
@@ -190,8 +188,8 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
   std::unique_ptr<ImageDecoder> decoder;
   if (mime_type == "image/jpeg" || mime_type == "image/pjpeg" ||
       mime_type == "image/jpg") {
-    decoder = std::make_unique<JPEGImageDecoder>(
-        alpha_option, color_behavior, max_decoded_bytes, allow_decode_to_yuv);
+    decoder = std::make_unique<JPEGImageDecoder>(alpha_option, color_behavior,
+                                                 max_decoded_bytes);
   } else if (mime_type == "image/png" || mime_type == "image/x-png" ||
              mime_type == "image/apng") {
     decoder = std::make_unique<PNGImageDecoder>(

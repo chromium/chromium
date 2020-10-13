@@ -599,14 +599,12 @@ class JPEGImageReader final {
     return true;
   }
 
-  // Decode the JPEG data. If |only_size| is specified, then only the size
-  // information will be decoded.
-  bool Decode(bool only_size) {
+  // Decode the JPEG data.
+  bool Decode(JPEGImageDecoder::DecodingMode decoding_mode) {
     // We need to do the setjmp here. Otherwise bad things will happen
     if (setjmp(err_.setjmp_buffer))
       return decoder_->SetFailed();
 
-    J_COLOR_SPACE override_color_space = JCS_UNKNOWN;
     switch (state_) {
       case JPEG_HEADER: {
         // Read file parameters with jpeg_read_header().
@@ -615,9 +613,6 @@ class JPEGImageReader final {
 
         switch (info_.jpeg_color_space) {
           case JCS_YCbCr:
-            if (decoder_->CanDecodeToYUV() &&
-                YuvSubsampling(info_) == cc::YUVSubsampling::k420)
-              override_color_space = JCS_YCbCr;
             FALLTHROUGH;  // libjpeg can convert YCbCr image pixels to RGB.
           case JCS_GRAYSCALE:
             FALLTHROUGH;  // libjpeg can convert GRAYSCALE image pixels to RGB.
@@ -678,13 +673,6 @@ class JPEGImageReader final {
         }
 
         info_.scale_num = max_numerator;
-        // Scaling caused by running low on memory isn't supported by YUV
-        // decoding since YUV decoding is performed on full sized images. At
-        // this point, buffers and various image info structs have already been
-        // set up for the scaled size after reading the image header using this
-        // decoder, so using the full size is no longer possible.
-        if (info_.scale_num != info_.scale_denom)
-          override_color_space = JCS_UNKNOWN;
         jpeg_calc_output_dimensions(&info_);
         decoder_->SetDecodedSize(info_.output_width, info_.output_height);
 
@@ -726,16 +714,6 @@ class JPEGImageReader final {
             }
             free(profile_buf);
           }
-          if (Decoder()->ColorTransform()) {
-            override_color_space = JCS_UNKNOWN;
-          }
-        }
-        if (override_color_space == JCS_YCbCr) {
-          info_.out_color_space = JCS_YCbCr;
-          info_.raw_data_out = TRUE;
-          uv_size_ = ComputeYUVSize(
-              &info_,
-              1);  // U size and V size have to be the same if we got here
         }
 
         // Don't allocate a giant and superfluous memory buffer when the
@@ -746,7 +724,7 @@ class JPEGImageReader final {
           err_.num_corrupt_warnings = 0;
         }
 
-        if (only_size) {
+        if (decoding_mode == JPEGImageDecoder::DecodingMode::kDecodeHeader) {
           // This exits the function while there is still potentially
           // data in the buffer. Before this function is called again,
           // the SharedBuffer may be collapsed (by a call to
@@ -763,8 +741,15 @@ class JPEGImageReader final {
       }
       FALLTHROUGH;
       case JPEG_START_DECOMPRESS:
-        if (info_.out_color_space == JCS_YCbCr)
+        if (decoding_mode == JPEGImageDecoder::DecodingMode::kDecodeToYuv) {
+          DCHECK(decoder_->CanDecodeToYUV());
           DCHECK(decoder_->HasImagePlanes());
+          info_.out_color_space = JCS_YCbCr;
+          info_.raw_data_out = TRUE;
+          uv_size_ = ComputeYUVSize(&info_, 1);
+          // U size and V size have to be the same if we got here
+          DCHECK_EQ(uv_size_, ComputeYUVSize(&info_, 2));
+        }
 
         // Set parameters for decompression.
         // FIXME -- Should reset dct_method and dither mode for final pass
@@ -990,19 +975,14 @@ void term_source(j_decompress_ptr jd) {
       ->Complete();
 }
 
-JPEGImageDecoder::JPEGImageDecoder(
-    AlphaOption alpha_option,
-    const ColorBehavior& color_behavior,
-    size_t max_decoded_bytes,
-    const OverrideAllowDecodeToYuv allow_decode_to_yuv,
-    size_t offset)
-    : ImageDecoder(
-          alpha_option,
-          ImageDecoder::kDefaultBitDepth,
-          color_behavior,
-          max_decoded_bytes,
-          allow_decode_to_yuv == OverrideAllowDecodeToYuv::kDefault &&
-              RuntimeEnabledFeatures::DecodeJpeg420ImagesToYUVEnabled()),
+JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
+                                   const ColorBehavior& color_behavior,
+                                   size_t max_decoded_bytes,
+                                   size_t offset)
+    : ImageDecoder(alpha_option,
+                   ImageDecoder::kDefaultBitDepth,
+                   color_behavior,
+                   max_decoded_bytes),
       offset_(offset) {}
 
 JPEGImageDecoder::~JPEGImageDecoder() = default;
@@ -1021,17 +1001,22 @@ bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {
 void JPEGImageDecoder::OnSetData(SegmentReader* data) {
   if (reader_)
     reader_->SetData(data);
-  // TODO(crbug.com/943519): Incremental YUV decoding is not currently
-  // supported.
-  if (IsAllDataReceived()) {
-    // TODO(crbug.com/919627): Right now |allow_decode_to_yuv_| is false by
-    // default and is set by the blink feature DecodeJpeg420ImagesToYUV.
-    //
-    // Calling IsSizeAvailable() ensures the reader is created and the output
-    // color space is set.
-    allow_decode_to_yuv_ &=
-        IsSizeAvailable() && reader_->Info()->out_color_space == JCS_YCbCr;
-  }
+
+  allow_decode_to_yuv_ =
+      // Incremental YUV decoding is not currently supported (crbug.com/943519).
+      IsAllDataReceived() &&
+      // TODO(sashamcintosh): Cleanup. Finch experiment is enabled by default.
+      RuntimeEnabledFeatures::DecodeJpeg420ImagesToYUVEnabled() &&
+      // Ensures that the reader is created, the scale numbers are known,
+      // the color profile is known, and the subsampling is known.
+      IsSizeAvailable() &&
+      // YUV decoding to a smaller size is not supported.
+      reader_->Info()->scale_num == reader_->Info()->scale_denom &&
+      // TODO(crbug.com/911246): Support color space transformations on planar
+      // data.
+      !ColorTransform() &&
+      // TODO(crbug.com/919627): Support 4:4:4 and 4:2:2 sub samplings.
+      GetYUVSubsampling() == cc::YUVSubsampling::k420;
 }
 
 void JPEGImageDecoder::SetDecodedSize(unsigned width, unsigned height) {
@@ -1049,7 +1034,7 @@ IntSize JPEGImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(reader_);
   const jpeg_decompress_struct* info = reader_->Info();
 
-  DCHECK_EQ(info->out_color_space, JCS_YCbCr);
+  DCHECK_EQ(info->jpeg_color_space, JCS_YCbCr);
   return ComputeYUVSize(info, static_cast<int>(index));
 }
 
@@ -1057,7 +1042,7 @@ size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   DCHECK(reader_);
   const jpeg_decompress_struct* info = reader_->Info();
 
-  DCHECK_EQ(info->out_color_space, JCS_YCbCr);
+  DCHECK_EQ(info->jpeg_color_space, JCS_YCbCr);
   return ComputeYUVWidthBytes(info, static_cast<int>(index));
 }
 
@@ -1090,7 +1075,7 @@ void JPEGImageDecoder::DecodeToYUV() {
   {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "Decode Image",
                  "imageType", "JPEG");
-    Decode(false);
+    Decode(DecodingMode::kDecodeToYuv);
   }
 }
 
@@ -1344,14 +1329,17 @@ void JPEGImageDecoder::Complete() {
   frame_buffer_cache_[0].SetStatus(ImageFrame::kFrameComplete);
 }
 
-inline bool IsComplete(const JPEGImageDecoder* decoder, bool only_size) {
-  if (decoder->HasImagePlanes() && !only_size)
+inline bool IsComplete(const JPEGImageDecoder* decoder,
+                       JPEGImageDecoder::DecodingMode decoding_mode) {
+  if (decoding_mode == JPEGImageDecoder::DecodingMode::kDecodeToYuv) {
+    DCHECK(decoder->HasImagePlanes());
     return true;
+  }
 
   return decoder->FrameIsDecodedAtIndex(0);
 }
 
-void JPEGImageDecoder::Decode(bool only_size) {
+void JPEGImageDecoder::Decode(DecodingMode decoding_mode) {
   if (Failed())
     return;
 
@@ -1362,11 +1350,11 @@ void JPEGImageDecoder::Decode(bool only_size) {
 
   // If we couldn't decode the image but have received all the data, decoding
   // has failed.
-  if (!reader_->Decode(only_size) && IsAllDataReceived())
+  if (!reader_->Decode(decoding_mode) && IsAllDataReceived())
     SetFailed();
 
   // If decoding is done or failed, we don't need the JPEGImageReader anymore.
-  if (IsComplete(this, only_size) || Failed())
+  if (IsComplete(this, decoding_mode) || Failed())
     reader_.reset();
 }
 

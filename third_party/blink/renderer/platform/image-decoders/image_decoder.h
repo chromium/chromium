@@ -148,13 +148,6 @@ class PLATFORM_EXPORT ImageDecoder {
     kMaxValue = kWebPAnimationFormat,
   };
 
-  // Enforces YUV decoding to be disallowed in the image decoder. The default
-  // value defers the YUV decoding decision to the decoder.
-  enum class OverrideAllowDecodeToYuv {
-    kDefault,
-    kDeny,
-  };
-
   // For images which contain both animations and still images, indicates which
   // is preferred. When unspecified the decoder will use hints from the data
   // stream to make a decision.
@@ -183,8 +176,6 @@ class PLATFORM_EXPORT ImageDecoder {
       AlphaOption,
       HighBitDepthDecodingOption,
       const ColorBehavior&,
-      const OverrideAllowDecodeToYuv allow_decode_to_yuv =
-          OverrideAllowDecodeToYuv::kDefault,
       const SkISize& desired_size = SkISize::MakeEmpty(),
       AnimationOption animation_option = AnimationOption::kUnspecified);
   static std::unique_ptr<ImageDecoder> Create(
@@ -193,14 +184,11 @@ class PLATFORM_EXPORT ImageDecoder {
       AlphaOption alpha_option,
       HighBitDepthDecodingOption high_bit_depth_decoding_option,
       const ColorBehavior& color_behavior,
-      const OverrideAllowDecodeToYuv allow_decode_to_yuv =
-          OverrideAllowDecodeToYuv::kDefault,
       const SkISize& desired_size = SkISize::MakeEmpty(),
       AnimationOption animation_option = AnimationOption::kUnspecified) {
     return Create(SegmentReader::CreateFromSharedBuffer(std::move(data)),
                   data_complete, alpha_option, high_bit_depth_decoding_option,
-                  color_behavior, allow_decode_to_yuv, desired_size,
-                  animation_option);
+                  color_behavior, desired_size, animation_option);
   }
 
   // Similar to above, but does not allow mime sniffing. Creates explicitly
@@ -212,8 +200,6 @@ class PLATFORM_EXPORT ImageDecoder {
       AlphaOption alpha_option,
       HighBitDepthDecodingOption high_bit_depth_decoding_option,
       const ColorBehavior& color_behavior,
-      const OverrideAllowDecodeToYuv allow_decode_to_yuv =
-          OverrideAllowDecodeToYuv::kDefault,
       const SkISize& desired_size = SkISize::MakeEmpty(),
       AnimationOption animation_option = AnimationOption::kUnspecified);
 
@@ -442,13 +428,12 @@ class PLATFORM_EXPORT ImageDecoder {
   ImageDecoder(AlphaOption alpha_option,
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
                const ColorBehavior& color_behavior,
-               size_t max_decoded_bytes,
-               const bool allow_decode_to_yuv = false)
+               size_t max_decoded_bytes)
       : premultiply_alpha_(alpha_option == kAlphaPremultiplied),
         high_bit_depth_decoding_option_(high_bit_depth_decoding_option),
         color_behavior_(color_behavior),
         max_decoded_bytes_(max_decoded_bytes),
-        allow_decode_to_yuv_(allow_decode_to_yuv),
+        allow_decode_to_yuv_(false),
         purge_aggressively_(false) {}
 
   // Calculates the most recent frame whose image data may be needed in

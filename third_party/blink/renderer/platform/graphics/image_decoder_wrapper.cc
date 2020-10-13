@@ -292,7 +292,6 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
   // The newly created decoder just grabbed the data.  No need to reset it.
   return ImageDecoder::Create(data_, all_data_received_, alpha_option_,
                               decoding_option_, decoder_color_behavior_,
-                              ImageDecoder::OverrideAllowDecodeToYuv::kDeny,
                               scaled_size_);
 }
 

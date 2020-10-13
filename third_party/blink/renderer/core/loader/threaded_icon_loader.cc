@@ -104,8 +104,7 @@ void ThreadedIconLoader::DecodeAndResizeImageOnBackgroundThread(
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       std::move(data), /* data_complete= */ true,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::TransformToSRGB(),
-      ImageDecoder::OverrideAllowDecodeToYuv::kDeny);
+      ColorBehavior::TransformToSRGB());
 
   if (!decoder) {
     notify_complete(-1.0);

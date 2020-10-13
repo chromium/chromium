@@ -529,8 +529,7 @@ bool BMPImageReader::DecodeAlternateFormat() {
     if (info_header_.compression == JPEG) {
       alternate_decoder_ = std::make_unique<JPEGImageDecoder>(
           parent_->GetAlphaOption(), parent_->GetColorBehavior(),
-          parent_->GetMaxDecodedBytes(),
-          ImageDecoder::OverrideAllowDecodeToYuv::kDefault, img_data_offset_);
+          parent_->GetMaxDecodedBytes(), img_data_offset_);
     } else {
       alternate_decoder_ = std::make_unique<PNGImageDecoder>(
           parent_->GetAlphaOption(), ImageDecoder::kDefaultBitDepth,

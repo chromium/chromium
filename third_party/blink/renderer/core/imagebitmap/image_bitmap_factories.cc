@@ -307,7 +307,7 @@ void DecodeImageOnDecoderThread(
       SegmentReader::CreateFromSkData(
           SkData::MakeWithoutCopy(contents.Data(), contents.DataLength())),
       data_complete, alpha_option, ImageDecoder::kDefaultBitDepth,
-      color_behavior, ImageDecoder::OverrideAllowDecodeToYuv::kDeny);
+      color_behavior);
   sk_sp<SkImage> frame;
   ImageOrientationEnum orientation = kDefaultImageOrientation;
   if (decoder) {
