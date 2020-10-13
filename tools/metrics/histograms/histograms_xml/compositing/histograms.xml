@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.GL.DrawFrameUs"
-    units="microseconds" expires_after="2021-02-07">
+    units="microseconds" expires_after="2021-04-11">
   <owner>weiliangc@chromium.org</owner>
   <summary>
     Time spent drawing of composited layers by GLRenderer, in microseconds. This
@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.ExtraDamage" units="%"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -153,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.PartialSwap.FrameBufferDamage"
-    units="%" expires_after="2021-02-07">
+    units="%" expires_after="2021-04-11">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>

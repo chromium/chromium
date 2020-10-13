@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
@@ -326,7 +326,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.OpenTime" units="ms"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>cmumford@chromium.org</owner>
   <summary>
     The time that it takes to open IndexedDB's LevelDB backing store.
@@ -828,7 +828,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.WebSocket.SendType" enum="WebSocketSendType"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>yhirano@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>

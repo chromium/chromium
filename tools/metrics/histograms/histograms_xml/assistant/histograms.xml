@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.BetterOnboarding.Shown"
-    enum="AssistantBetterOnboardingMode" expires_after="2021-02-07">
+    enum="AssistantBetterOnboardingMode" expires_after="2021-04-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -41,7 +41,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -72,7 +72,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -147,7 +147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>The Assistant query response type.</summary>

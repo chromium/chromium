@@ -750,7 +750,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IOSurface.CreateTime" units="ms"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>ccameron@chromium.org</owner>
   <summary>
     The time that it took for a call to IOSurfaceCreate to complete.

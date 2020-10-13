@@ -774,7 +774,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanEnabled"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

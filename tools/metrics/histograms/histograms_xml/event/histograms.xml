@@ -76,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.BrowserVerifiedUserActivation" enum="BooleanSuccess"
-    expires_after="2020-12-31">
+    expires_after="2021-04-11">
   <owner>liviutinta@chromium.org</owner>
   <owner>mustaq@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -444,7 +444,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2020-12-01">
+    units="microseconds" expires_after="2021-04-11">
   <owner>nzolghadr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1256,7 +1256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.TimeToHandled2"
-    units="microseconds" expires_after="2021-02-07">
+    units="microseconds" expires_after="2021-04-11">
   <owner>tdresser@chromium.org</owner>
   <summary>
     Time between initial creation of a touch event and the generated

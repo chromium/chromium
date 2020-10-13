@@ -193,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2021-02-07">
+    units="dBFS (negated)" expires_after="2021-04-11">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal in the output of

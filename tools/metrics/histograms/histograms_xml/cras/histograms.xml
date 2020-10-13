@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cras.HfpBatteryIndicatorSupported"
-    enum="CrasHfpBatteryIndicator" expires_after="2021-02-07">
+    enum="CrasHfpBatteryIndicator" expires_after="2021-04-11">
   <owner>enshuo@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

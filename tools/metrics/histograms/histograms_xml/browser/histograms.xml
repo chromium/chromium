@@ -378,7 +378,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
-    units="microseconds" expires_after="2021-02-07">
+    units="microseconds" expires_after="2021-04-11">
   <owner>sadrul@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -533,7 +533,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.FramePrioritiesSeen"
-    enum="FramePrioritiesSeen" expires_after="2021-02-07">
+    enum="FramePrioritiesSeen" expires_after="2021-04-11">
   <owner>ericrobinson@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

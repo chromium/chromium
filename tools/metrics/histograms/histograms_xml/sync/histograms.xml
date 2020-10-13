@@ -513,7 +513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeEntityChange3"
-    enum="SyncEntityChange" expires_after="2021-02-07">
+    enum="SyncEntityChange" expires_after="2021-04-11">
   <owner>jkrcal@chromium.org</owner>
   <summary>
     Recorded once for every sync entity change (whenever it is commited to the
@@ -797,7 +797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.Startup.DeferredInitTrigger"
-    enum="SyncDeferredInitTrigger" expires_after="2021-01-31">
+    enum="SyncDeferredInitTrigger" expires_after="2021-04-11">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>The type of event that triggered sync initialization.</summary>
@@ -813,7 +813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.Startup.TypeTriggeringInit" enum="SyncModelTypes"
-    expires_after="2021-01-31">
+    expires_after="2021-04-11">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>Data type that first requests sync initialization.</summary>

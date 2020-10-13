@@ -254,7 +254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.StepCompletionTimeByExitReason" units="ms"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
@@ -273,7 +273,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2021-02-07">
+    enum="BooleanChecked" expires_after="2021-04-11">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -364,7 +364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.A11yUserActions"
-    enum="WelcomeScreenA11yUserAction" expires_after="2021-01-31">
+    enum="WelcomeScreenA11yUserAction" expires_after="2021-04-11">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

@@ -57,7 +57,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerAction"
-    enum="ArcIntentHandlerAction" expires_after="2021-02-07">
+    enum="ArcIntentHandlerAction" expires_after="2021-04-11">
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -401,7 +401,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MemoryPressureLevel" enum="MemoryPressureLevel"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>xdai@chromium.org</owner>
   <summary>
     The memory pressure level in Chrome OS, which is recorded periodically (once
@@ -492,7 +492,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Provider" enum="ChromeOSSamlProvider"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>mslus@chromium.org</owner>
   <owner>mohammedabdon@chromium.org</owner>
   <summary>Records SAML provider when SAML login flow is used.</summary>
@@ -903,7 +903,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SystemTray.FeaturePodCountOnOpen" units="count"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>tengs@chromium.org</owner>
   <owner>amehfooz@chromium.org</owner>
   <summary>
@@ -1034,7 +1034,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.USB.DeviceAttached"
-    enum="ChromeOSUsbEventTiming" expires_after="2021-02-07">
+    enum="ChromeOSUsbEventTiming" expires_after="2021-04-11">
   <owner>allenwebb@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>

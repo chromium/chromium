@@ -293,7 +293,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.RegistrationRequest.NetErrorCode" enum="NetErrorCodes"
-    expires_after="2021-02-07">
+    expires_after="2021-04-11">
   <owner>peter@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>

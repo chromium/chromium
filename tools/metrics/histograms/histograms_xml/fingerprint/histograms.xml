@@ -43,7 +43,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AttemptsCountBeforeSuccess" units="count"
-    expires_after="2021-01-03">
+    expires_after="2021-04-11">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -72,7 +72,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Capture" units="ms"
-    expires_after="2021-01-03">
+    expires_after="2021-04-11">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -83,7 +83,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Matcher" units="ms"
-    expires_after="2021-01-03">
+    expires_after="2021-04-11">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
