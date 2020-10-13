@@ -201,7 +201,7 @@ constexpr bool all_of(InputIterator first,
                       Pred pred,
                       Proj proj = {}) {
   for (; first != last; ++first) {
-    if (!invoke(pred, invoke(proj, *first)))
+    if (!base::invoke(pred, base::invoke(proj, *first)))
       return false;
   }
 
@@ -247,7 +247,7 @@ constexpr bool any_of(InputIterator first,
                       Pred pred,
                       Proj proj = {}) {
   for (; first != last; ++first) {
-    if (invoke(pred, invoke(proj, *first)))
+    if (base::invoke(pred, base::invoke(proj, *first)))
       return true;
   }
 
@@ -293,7 +293,7 @@ constexpr bool none_of(InputIterator first,
                        Pred pred,
                        Proj proj = {}) {
   for (; first != last; ++first) {
-    if (invoke(pred, invoke(proj, *first)))
+    if (base::invoke(pred, base::invoke(proj, *first)))
       return false;
   }
 
@@ -344,7 +344,7 @@ constexpr auto for_each(InputIterator first,
                         Fun f,
                         Proj proj = {}) {
   for (; first != last; ++first)
-    invoke(f, invoke(proj, *first));
+    base::invoke(f, base::invoke(proj, *first));
   return for_each_result<InputIterator, Fun>{first, std::move(f)};
 }
 
@@ -389,7 +389,7 @@ template <typename InputIterator,
           typename = internal::iterator_category_t<InputIterator>>
 constexpr auto for_each_n(InputIterator first, Size n, Fun f, Proj proj = {}) {
   while (n > 0) {
-    invoke(f, invoke(proj, *first));
+    base::invoke(f, base::invoke(proj, *first));
     ++first;
     --n;
   }
@@ -420,7 +420,7 @@ constexpr auto find(InputIterator first,
   // Note: In order to be able to apply `proj` to each element in [first, last)
   // we are dispatching to std::find_if instead of std::find.
   return std::find_if(first, last, [&proj, &value](auto&& lhs) {
-    return invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
+    return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
   });
 }
 
@@ -742,7 +742,7 @@ constexpr auto count(InputIterator first,
   // Note: In order to be able to apply `proj` to each element in [first, last)
   // we are dispatching to std::count_if instead of std::count.
   return std::count_if(first, last, [&proj, &value](auto&& lhs) {
-    return invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
+    return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
   });
 }
 
@@ -1523,7 +1523,8 @@ constexpr auto transform(InputIterator first1,
                          UnaryOperation op,
                          Proj proj = {}) {
   return std::transform(first1, last1, result, [&op, &proj](auto&& arg) {
-    return invoke(op, invoke(proj, std::forward<decltype(arg)>(arg)));
+    return base::invoke(op,
+                        base::invoke(proj, std::forward<decltype(arg)>(arg)));
   });
 }
 
@@ -1603,13 +1604,13 @@ constexpr auto transform(ForwardIterator1 first1,
   // `last1` to ensure to not read past `last2`.
   last1 = std::next(first1, std::min(std::distance(first1, last1),
                                      std::distance(first2, last2)));
-  return std::transform(first1, last1, first2, result,
-                        [&binary_op, &proj1, &proj2](auto&& lhs, auto&& rhs) {
-                          return invoke(
-                              binary_op,
-                              invoke(proj1, std::forward<decltype(lhs)>(lhs)),
-                              invoke(proj2, std::forward<decltype(rhs)>(rhs)));
-                        });
+  return std::transform(
+      first1, last1, first2, result,
+      [&binary_op, &proj1, &proj2](auto&& lhs, auto&& rhs) {
+        return base::invoke(
+            binary_op, base::invoke(proj1, std::forward<decltype(lhs)>(lhs)),
+            base::invoke(proj2, std::forward<decltype(rhs)>(rhs)));
+      });
 }
 
 // Let:
@@ -1685,7 +1686,8 @@ constexpr auto replace(ForwardIterator first,
   std::replace_if(
       first, last,
       [&proj, &old_value](auto&& lhs) {
-        return invoke(proj, std::forward<decltype(lhs)>(lhs)) == old_value;
+        return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) ==
+               old_value;
       },
       new_value);
   return last;
@@ -1805,7 +1807,8 @@ constexpr auto replace_copy(InputIterator first,
   std::replace_copy_if(
       first, last, result,
       [&proj, &old_value](auto&& lhs) {
-        return invoke(proj, std::forward<decltype(lhs)>(lhs)) == old_value;
+        return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) ==
+               old_value;
       },
       new_value);
   return last;
@@ -2065,7 +2068,7 @@ constexpr auto remove(ForwardIterator first,
   // Note: In order to be able to apply `proj` to each element in [first, last)
   // we are dispatching to std::remove_if instead of std::remove.
   return std::remove_if(first, last, [&proj, &value](auto&& lhs) {
-    return invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
+    return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
   });
 }
 
@@ -2172,7 +2175,7 @@ constexpr auto remove_copy(InputIterator first,
   // Note: In order to be able to apply `proj` to each element in [first, last)
   // we are dispatching to std::remove_copy_if instead of std::remove_copy.
   return std::remove_copy_if(first, last, result, [&proj, &value](auto&& lhs) {
-    return invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
+    return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
   });
 }
 
@@ -3219,7 +3222,8 @@ constexpr auto binary_search(ForwardIterator first,
                              Comp comp = {},
                              Proj proj = {}) {
   first = ranges::lower_bound(first, last, value, comp, proj);
-  return first != last && !invoke(comp, value, invoke(proj, *first));
+  return first != last &&
+         !base::invoke(comp, value, base::invoke(proj, *first));
 }
 
 // Preconditions: The elements `e` of `range` are partitioned with
@@ -4447,7 +4451,8 @@ constexpr auto is_heap_until(Range&& range, Comp comp = {}, Proj proj = {}) {
 // Reference: https://wg21.link/alg.min.max#:~:text=ranges::min
 template <typename T, typename Comp = ranges::less, typename Proj = identity>
 constexpr const T& min(const T& a, const T& b, Comp comp = {}, Proj proj = {}) {
-  return invoke(comp, invoke(proj, b), invoke(proj, a)) ? b : a;
+  return base::invoke(comp, base::invoke(proj, b), base::invoke(proj, a)) ? b
+                                                                          : a;
 }
 
 // Preconditions: `!empty(ilist)`.
@@ -4496,7 +4501,8 @@ constexpr auto min(Range&& range, Comp comp = {}, Proj proj = {}) {
 // Reference: https://wg21.link/alg.min.max#:~:text=ranges::max
 template <typename T, typename Comp = ranges::less, typename Proj = identity>
 constexpr const T& max(const T& a, const T& b, Comp comp = {}, Proj proj = {}) {
-  return invoke(comp, invoke(proj, a), invoke(proj, b)) ? b : a;
+  return base::invoke(comp, base::invoke(proj, a), base::invoke(proj, b)) ? b
+                                                                          : a;
 }
 
 // Preconditions: `!empty(ilist)`.
@@ -4747,11 +4753,11 @@ constexpr const T& clamp(const T& v,
                          const T& hi,
                          Comp comp = {},
                          Proj proj = {}) {
-  auto&& projected_v = invoke(proj, v);
-  if (invoke(comp, projected_v, invoke(proj, lo)))
+  auto&& projected_v = base::invoke(proj, v);
+  if (base::invoke(comp, projected_v, base::invoke(proj, lo)))
     return lo;
 
-  return invoke(comp, invoke(proj, hi), projected_v) ? hi : v;
+  return base::invoke(comp, base::invoke(proj, hi), projected_v) ? hi : v;
 }
 
 // [alg.lex.comparison] Lexicographical comparison
@@ -4795,11 +4801,11 @@ constexpr bool lexicographical_compare(ForwardIterator1 first1,
                                        Proj1 proj1 = {},
                                        Proj2 proj2 = {}) {
   for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
-    auto&& projected_first1 = invoke(proj1, *first1);
-    auto&& projected_first2 = invoke(proj2, *first2);
-    if (invoke(comp, projected_first1, projected_first2))
+    auto&& projected_first1 = base::invoke(proj1, *first1);
+    auto&& projected_first2 = base::invoke(proj2, *first2);
+    if (base::invoke(comp, projected_first1, projected_first2))
       return true;
-    if (invoke(comp, projected_first2, projected_first1))
+    if (base::invoke(comp, projected_first2, projected_first1))
       return false;
   }
 
