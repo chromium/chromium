@@ -65,6 +65,18 @@
           localized-string="[[eolMessageWithMonthAndYear]]">
       </settings-localized-link>
     </div>
+    <template is="dom-if" if="[[isHostnameSettingEnabled_]]">
+      <div class="settings-box two-line">
+        <div class="start">
+          <div role="heading">$i18n{aboutDeviceName}</div>
+          <div aria-hidden="true" class="secondary">
+            ChromeOS-102938
+          </div>
+        </div>
+        <cr-icon-button class="icon-edit">
+        </cr-icon-button>
+      </div>
+    </template>
     <div id="buildDetailsLinkContainer" class="settings-box">
       <div class="start" id="aboutBuildDetailsTitle">
         $i18n{aboutBuildDetailsTitle}

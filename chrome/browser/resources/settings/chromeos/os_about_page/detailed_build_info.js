@@ -48,6 +48,15 @@ Polymer({
         chromeos.settings.mojom.Setting.kCopyDetailedBuildInfo,
       ]),
     },
+
+    /** @private */
+    isHostnameSettingEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isHostnameSettingEnabled');
+      },
+      readOnly: true,
+    },
   },
 
   /** @override */

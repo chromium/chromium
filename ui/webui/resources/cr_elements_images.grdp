@@ -25,6 +25,8 @@
            file="images/icon_clear.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_ICON_DELETE_GRAY_SVG"
            file="images/icon_delete_gray.svg" type="BINDATA" />
+  <include name="IDR_WEBUI_IMAGES_ICON_EDIT_SVG"
+           file="images/icon_edit.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_ICON_EXPAND_LESS_SVG"
            file="images/icon_expand_less.svg" type="BINDATA" />
   <include name="IDR_WEBUI_IMAGES_ICON_EXPAND_MORE_SVG"
