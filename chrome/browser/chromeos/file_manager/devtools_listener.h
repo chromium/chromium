@@ -82,7 +82,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
 
   base::OnceClosure value_closure_;
   std::unique_ptr<base::DictionaryValue> value_;
-  int value_id_;
+  int value_id_ = 0;
 
   const std::string uuid_;
   bool navigated_ = false;
