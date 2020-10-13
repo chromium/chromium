@@ -47,7 +47,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "url/origin.h"
 
 using base::test::RunOnceCallback;
@@ -608,16 +607,17 @@ TEST_F(DownloadManagerTest, StartDownload) {
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetNextId_(_))
       .WillOnce(RunOnceCallback<0>(local_id));
 
-  // TODO(https://crbug.com/1109690): figure out what to do for Ozone/Linux.
-  // Probably, this can be removed.
-  bool should_call_get_save_dir = true;
-#if defined(USE_X11)
-  should_call_get_save_dir = features::IsUsingOzonePlatform();
+  // TODO(thomasanderson,crbug.com/784010): Remove this when all Linux
+  // distros with versions of GTK lower than 3.14.7 are no longer
+  // supported.  This should happen when support for Ubuntu Trusty and
+  // Debian Jessie are removed.
+#if defined(OS_LINUX)
+  // Doing nothing will set the default download directory to null.
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _)).Times(0);
+#else
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _));
 #endif
-  if (should_call_get_save_dir) {
-    // Doing nothing will set the default download directory to null.
-    EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _));
-  }
+
   EXPECT_CALL(GetMockDownloadManagerDelegate(),
               ApplicationClientIdForFileScanning())
       .WillRepeatedly(Return("client-id"));
@@ -650,16 +650,17 @@ TEST_F(DownloadManagerTest, StartDownloadWithoutHistoryDB) {
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetNextId_(_))
       .WillOnce(RunOnceCallback<0>(download::DownloadItem::kInvalidId));
 
-  // TODO(https://crbug.com/1109690): figure out what to do for Ozone/Linux.
-  // Probably, this can be removed.
-  bool should_call_get_save_dir = true;
-#if defined(USE_X11)
-  should_call_get_save_dir = features::IsUsingOzonePlatform();
+  // TODO(thomasanderson,crbug.com/784010): Remove this when all Linux
+  // distros with versions of GTK lower than 3.14.7 are no longer
+  // supported.  This should happen when support for Ubuntu Trusty and
+  // Debian Jessie are removed.
+#if defined(OS_LINUX)
+  // Doing nothing will set the default download directory to null.
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _)).Times(0);
+#else
+  EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _));
 #endif
-  if (should_call_get_save_dir) {
-    // Doing nothing will set the default download directory to null.
-    EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _));
-  }
+
   EXPECT_CALL(GetMockDownloadManagerDelegate(),
               ApplicationClientIdForFileScanning())
       .WillRepeatedly(Return("client-id"));
