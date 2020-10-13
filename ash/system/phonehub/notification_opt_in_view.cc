@@ -9,6 +9,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
@@ -111,17 +112,21 @@ void NotificationOptInView::InitLayout() {
   button_container->SetBorder(
       views::CreateEmptyBorder(kButtonContainerBorderInsets));
   dismiss_button_ =
-      button_container->AddChildView(std::make_unique<views::LabelButton>(
-          this, l10n_util::GetStringUTF16(
-                    IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON)));
+      button_container->AddChildView(std::make_unique<InterstitialViewButton>(
+          this,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON),
+          /*paint_background=*/false));
   dismiss_button_->set_tag(kDismissButtonTag);
   dismiss_button_->SetEnabledTextColors(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
   set_up_button_ =
-      button_container->AddChildView(std::make_unique<RoundedLabelButton>(
-          this, l10n_util::GetStringUTF16(
-                    IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON)));
+      button_container->AddChildView(std::make_unique<InterstitialViewButton>(
+          this,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
+          /*paint_background=*/true));
   set_up_button_->set_tag(kSetUpButtonTag);
 }
 

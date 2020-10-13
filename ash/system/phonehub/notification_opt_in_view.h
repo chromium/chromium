@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_NOTIFICATION_OPT_IN_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -13,7 +14,6 @@
 
 namespace views {
 class Label;
-class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -43,8 +43,8 @@ class ASH_EXPORT NotificationOptInView : public views::View,
 
   // Main components of this view. Owned by view hierarchy.
   views::Label* text_label_ = nullptr;
-  RoundedLabelButton* set_up_button_ = nullptr;
-  views::LabelButton* dismiss_button_ = nullptr;
+  InterstitialViewButton* set_up_button_ = nullptr;
+  InterstitialViewButton* dismiss_button_ = nullptr;
 
   TrayBubbleView* bubble_view_ = nullptr;
 };
