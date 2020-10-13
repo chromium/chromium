@@ -16,7 +16,7 @@
 // present. Those that are will be converted. The Fuchsia SemanticsManager
 // accepts partial updates, so |node| does not require all fields to be set.
 WEB_ENGINE_EXPORT fuchsia::accessibility::semantics::Node
-AXNodeDataToSemanticNode(const ui::AXNodeData& node);
+AXNodeDataToSemanticNode(const ui::AXNodeData& node, int32_t ax_root_id);
 
 // Converts Fuchsia action of type |fuchsia_action| to an ax::mojom::Action of
 // type |mojom_action|. Function will return true if |fuchsia_action| is

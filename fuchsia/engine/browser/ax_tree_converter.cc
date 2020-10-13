@@ -175,11 +175,12 @@ std::vector<fuchsia::accessibility::semantics::Action> ConvertActions(
   return fuchsia_actions;
 }
 
-std::vector<uint32_t> ConvertChildIds(std::vector<int32_t> ids) {
+std::vector<uint32_t> ConvertChildIds(std::vector<int32_t> ids,
+                                      int32_t ax_root_id) {
   std::vector<uint32_t> child_ids;
   child_ids.reserve(ids.size());
   for (auto i : ids) {
-    child_ids.push_back(base::checked_cast<uint32_t>(i));
+    child_ids.push_back(ConvertToFuchsiaNodeId(i, ax_root_id));
   }
   return child_ids;
 }
@@ -207,14 +208,15 @@ fuchsia::ui::gfx::mat4 ConvertTransform(gfx::Transform* transform) {
 }  // namespace
 
 fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
-    const ui::AXNodeData& node) {
+    const ui::AXNodeData& node,
+    int32_t ax_root_id) {
   fuchsia::accessibility::semantics::Node fuchsia_node;
-  fuchsia_node.set_node_id(base::checked_cast<uint32_t>(node.id));
+  fuchsia_node.set_node_id(ConvertToFuchsiaNodeId(node.id, ax_root_id));
   fuchsia_node.set_role(AxRoleToFuchsiaSemanticRole(node.role));
   fuchsia_node.set_states(ConvertStates(node));
   fuchsia_node.set_attributes(ConvertAttributes(node));
   fuchsia_node.set_actions(ConvertActions(node));
-  fuchsia_node.set_child_ids(ConvertChildIds(node.child_ids));
+  fuchsia_node.set_child_ids(ConvertChildIds(node.child_ids, ax_root_id));
   fuchsia_node.set_location(ConvertBoundingBox(node.relative_bounds.bounds));
   if (node.relative_bounds.transform) {
     fuchsia_node.set_transform(

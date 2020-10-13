@@ -220,9 +220,8 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
   // deleted are already gone, which means that all updates collected here in
   // |to_update_| are going to be executed after |to_delete_|.
   for (const ui::AXTreeObserver::Change& change : changes) {
-    ui::AXNodeData ax_data = change.node->data();
-    ax_data.id = ConvertToFuchsiaNodeId(change.node->id(), root_id_);
-    to_update_.push_back(AXNodeDataToSemanticNode(ax_data));
+    to_update_.push_back(
+        AXNodeDataToSemanticNode(change.node->data(), root_id_));
   }
   // TODO(https://crbug.com/1134737): Separate updates of atomic updates and
   // don't allow all of them to be in the same commit.
