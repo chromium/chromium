@@ -31,7 +31,7 @@ class MEDIA_GPU_EXPORT Fourcc {
  public:
   enum Value : uint32_t {
     // RGB formats.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-rgb.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-rgb.html
     // Maps to PIXEL_FORMAT_ARGB, V4L2_PIX_FMT_ABGR32, VA_FOURCC_BGRA.
     // 32bpp BGRA (byte-order), 1 plane.
     AR24 = ComposeFourcc('A', 'R', '2', '4'),
@@ -56,7 +56,7 @@ class MEDIA_GPU_EXPORT Fourcc {
     RGB4 = ComposeFourcc('R', 'G', 'B', '4'),
 
     // YUV420 single-planar formats.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-yuv420.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv420.html
     // Maps to PIXEL_FORMAT_I420, V4L2_PIX_FMT_YUV420, VA_FOURCC_I420.
     // 12bpp YUV planar 1x1 Y, 2x2 UV samples.
     YU12 = ComposeFourcc('Y', 'U', '1', '2'),
@@ -65,20 +65,20 @@ class MEDIA_GPU_EXPORT Fourcc {
     YV12 = ComposeFourcc('Y', 'V', '1', '2'),
 
     // YUV420 multi-planar format.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-yuv420m.htm
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv420m.html
     // Maps to PIXEL_FORMAT_I420, V4L2_PIX_FMT_YUV420M.
     YM12 = ComposeFourcc('Y', 'M', '1', '2'),
     // Maps to PIXEL_FORMAT_YV12, V4L2_PIX_FMT_YVU420M.
     YM21 = ComposeFourcc('Y', 'M', '2', '1'),
 
     // YUYV format.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-yuyv.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuyv.html
     // Maps to PIXEL_FORMAT_YUY2, V4L2_PIX_FMT_YUYV, VA_FOURCC_YUY2.
     // 16bpp YUV planar (YUV 4:2:2), YUYV (byte-order), 1 plane.
     YUYV = ComposeFourcc('Y', 'U', 'Y', 'V'),
 
     // NV12 single-planar format.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-nv12.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-nv12.html
     // Maps to PIXEL_FORMAT_NV12, V4L2_PIX_FMT_NV12, VA_FOURCC_NV12.
     // 12bpp with Y plane followed by a 2x2 interleaved UV plane.
     NV12 = ComposeFourcc('N', 'V', '1', '2'),
@@ -87,20 +87,20 @@ class MEDIA_GPU_EXPORT Fourcc {
     NV21 = ComposeFourcc('N', 'V', '2', '1'),
 
     // NV12 multi-planar format.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-nv12m.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-nv12m.html
     // Maps to PIXEL_FORMAT_NV12, V4L2_PIX_FMT_NV12M,
     NM12 = ComposeFourcc('N', 'M', '1', '2'),
     // Maps to PIXEL_FORMAT_NV21, V4L2_PIX_FMT_NV21M.
     NM21 = ComposeFourcc('N', 'M', '2', '1'),
 
     // YUV422 multi-planar format.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-yuv422m.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv422m.html
     // Maps to PIXEL_FORMAT_I422, V4L2_PIX_FMT_YUV422M
     // 16bpp YUV planar 1x1 Y, 2x1 UV samples.
     YM16 = ComposeFourcc('Y', 'M', '1', '6'),
 
     // V4L2 proprietary format.
-    // https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/pixfmt-reserved.html
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-reserved.html
     // Maps to V4L2_PIX_FMT_MT21C.
     // It is used for MT8173 hardware video decoder output and should be
     // converted by MT8173 image processor for compositor to render.
