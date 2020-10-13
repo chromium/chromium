@@ -1,0 +1,19 @@
+{
+  "name": "MV3: Strict isolated world CSP.",
+  "manifest_version": 3,
+  "version": "1.0",
+  "content_scripts": [
+    {
+      "matches": ["*://eval.com/*"],
+      "js": ["eval.js"]
+    },
+    {
+      "matches": ["*://js-url.com/*"],
+      "js": ["javascript_url.js"]
+    },
+    {
+      "matches": ["*://remote-script.com/*"],
+      "js": ["remote_script.js"]
+    }
+  ]
+}
