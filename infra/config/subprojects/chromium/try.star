@@ -1198,20 +1198,9 @@ try_.chromium_mac_builder(
 try_.chromium_mac_builder(
     name = "mac_upload_clang",
     builderless = False,
-    caches = [
-        swarming.cache(
-            name = "xcode_mac_9a235",
-            path = "xcode_mac_9a235.app",
-        ),
-    ],
     executable = "recipe:chromium_upload_clang",
     execution_timeout = 6 * time.hour,
     goma_backend = None,  # Does not use Goma.
-    properties = {
-        "$depot_tools/osx_sdk": {
-            "sdk_version": "9a235",
-        },
-    },
 )
 
 try_.chromium_mac_ios_builder(
