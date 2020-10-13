@@ -1228,7 +1228,6 @@ crbug.com/6606 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-ele
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/embellished-operator-002.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
-crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/scripts/cramped-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-001.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/spaces/space-like-002.html [ Failure ]

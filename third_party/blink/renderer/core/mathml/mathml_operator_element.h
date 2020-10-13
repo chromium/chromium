@@ -44,6 +44,8 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   double DefaultLeadingSpace();
   double DefaultTrailingSpace();
 
+  void CheckFormAfterSiblingChange();
+
  private:
   base::Optional<OperatorContent> operator_content_;
   // Operator properties calculated from dictionary and attributes.

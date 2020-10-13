@@ -254,6 +254,13 @@ bool MathMLOperatorElement::HasBooleanProperty(OperatorPropertyFlag flag) {
   return properties_.flags & flag;
 }
 
+void MathMLOperatorElement::CheckFormAfterSiblingChange() {
+  if (properties_.dictionary_category !=
+          MathMLOperatorDictionaryCategory::kUndefined &&
+      !FastHasAttribute(mathml_names::kFormAttr))
+    SetOperatorFormDirty();
+}
+
 void MathMLOperatorElement::SetOperatorFormDirty() {
   properties_.dictionary_category =
       MathMLOperatorDictionaryCategory::kUndefined;
