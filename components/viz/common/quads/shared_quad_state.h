@@ -34,7 +34,7 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   ~SharedQuadState();
 
   void SetAll(const gfx::Transform& quad_to_target_transform,
-              const gfx::Rect& layer_rect,
+              const gfx::Rect& quad_layer_rect,
               const gfx::Rect& visible_layer_rect,
               const gfx::RRectF& rounded_corner_bounds,
               const gfx::Rect& clip_rect,
