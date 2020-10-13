@@ -41,6 +41,7 @@
 #include "components/sync/model_impl/proxy_model_type_controller_delegate.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/proxy_tabs_data_type_controller.h"
 #include "components/sync_sessions/session_model_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -102,6 +103,14 @@ AutofillWalletOfferDelegateFromDataService(
   return autofill::AutofillWalletOfferSyncBridge::FromWebDataService(service)
       ->change_processor()
       ->GetControllerDelegate();
+}
+
+// Helper function that deals will null (e.g. tests, iOS webview).
+base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
+    sync_preferences::PrefServiceSyncable* prefs_service,
+    syncer::ModelType type) {
+  return prefs_service ? prefs_service->GetSyncableService(type)->AsWeakPtr()
+                       : nullptr;
 }
 
 }  // namespace
@@ -254,9 +263,10 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
     // Delete directive sync is enabled by default.
     if (!disabled_types.Has(syncer::HISTORY_DELETE_DIRECTIVES)) {
       controllers.push_back(
-          std::make_unique<HistoryDeleteDirectivesModelTypeController>(
+          std::make_unique<history::HistoryDeleteDirectivesModelTypeController>(
               dump_stack, sync_service,
-              sync_client_->GetModelTypeStoreService(), sync_client_));
+              sync_client_->GetModelTypeStoreService(),
+              sync_client_->GetHistoryService()));
     }
 
     // Session sync is enabled by default.  This is disabled if history is
@@ -301,7 +311,8 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
         std::make_unique<SyncableServiceBasedModelTypeController>(
             syncer::PREFERENCES,
             sync_client_->GetModelTypeStoreService()->GetStoreFactory(),
-            sync_client_->GetSyncableServiceForType(syncer::PREFERENCES),
+            SyncableServiceForPrefs(sync_client_->GetPrefServiceSyncable(),
+                                    syncer::PREFERENCES),
             dump_stack));
   }
 
@@ -310,8 +321,8 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
         std::make_unique<SyncableServiceBasedModelTypeController>(
             syncer::PRIORITY_PREFERENCES,
             sync_client_->GetModelTypeStoreService()->GetStoreFactory(),
-            sync_client_->GetSyncableServiceForType(
-                syncer::PRIORITY_PREFERENCES),
+            SyncableServiceForPrefs(sync_client_->GetPrefServiceSyncable(),
+                                    syncer::PRIORITY_PREFERENCES),
             dump_stack));
   }
 

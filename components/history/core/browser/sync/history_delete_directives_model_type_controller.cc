@@ -7,24 +7,36 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "components/sync/driver/sync_client.h"
+#include "base/memory/weak_ptr.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/model_type_store_service.h"
 
-namespace browser_sync {
+namespace history {
+
+namespace {
+
+base::WeakPtr<syncer::SyncableService> GetSyncableServiceFromHistoryService(
+    HistoryService* history_service) {
+  if (history_service) {
+    return history_service->GetDeleteDirectivesSyncableService();
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 HistoryDeleteDirectivesModelTypeController::
     HistoryDeleteDirectivesModelTypeController(
         const base::RepeatingClosure& dump_stack,
         syncer::SyncService* sync_service,
         syncer::ModelTypeStoreService* model_type_store_service,
-        syncer::SyncClient* sync_client)
+        HistoryService* history_service)
     : SyncableServiceBasedModelTypeController(
           syncer::HISTORY_DELETE_DIRECTIVES,
           model_type_store_service->GetStoreFactory(),
-          sync_client->GetSyncableServiceForType(
-              syncer::HISTORY_DELETE_DIRECTIVES),
+          GetSyncableServiceFromHistoryService(history_service),
           dump_stack),
       sync_service_(sync_service) {}
 
@@ -68,4 +80,4 @@ void HistoryDeleteDirectivesModelTypeController::OnStateChanged(
   sync_service_->DataTypePreconditionChanged(type());
 }
 
-}  // namespace browser_sync
+}  // namespace history

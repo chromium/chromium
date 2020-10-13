@@ -12,11 +12,12 @@
 
 namespace syncer {
 class ModelTypeStoreService;
-class SyncClient;
 class SyncService;
 }  // namespace syncer
 
-namespace browser_sync {
+namespace history {
+
+class HistoryService;
 
 // A controller for delete directives, which cannot sync when full encryption
 // is enabled.
@@ -24,13 +25,13 @@ class HistoryDeleteDirectivesModelTypeController
     : public syncer::SyncableServiceBasedModelTypeController,
       public syncer::SyncServiceObserver {
  public:
-  // |sync_service| and |sync_client| must not be null and must outlive this
+  // |sync_service| and |history_service| must not be null and must outlive this
   // object.
   HistoryDeleteDirectivesModelTypeController(
       const base::RepeatingClosure& dump_stack,
       syncer::SyncService* sync_service,
       syncer::ModelTypeStoreService* model_type_store_service,
-      syncer::SyncClient* sync_client);
+      HistoryService* history_service);
   ~HistoryDeleteDirectivesModelTypeController() override;
 
   // DataTypeController overrides.
@@ -49,6 +50,6 @@ class HistoryDeleteDirectivesModelTypeController
   DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectivesModelTypeController);
 };
 
-}  // namespace browser_sync
+}  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_DELETE_DIRECTIVES_MODEL_TYPE_CONTROLLER_H_

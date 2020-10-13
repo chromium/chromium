@@ -82,8 +82,6 @@ class PrefServiceSyncable : public PrefService {
   void AddObserver(PrefServiceSyncableObserver* observer);
   void RemoveObserver(PrefServiceSyncableObserver* observer);
 
-  // TODO(zea): Have PrefServiceSyncable implement
-  // syncer::SyncableService directly.
   syncer::SyncableService* GetSyncableService(const syncer::ModelType& type);
 
   // Do not call this after having derived an incognito or per tab pref service.

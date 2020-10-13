@@ -35,7 +35,6 @@
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/passive_model_worker.h"
-#include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -162,6 +161,12 @@ history::HistoryService* IOSChromeSyncClient::GetHistoryService() {
       browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
+sync_preferences::PrefServiceSyncable*
+IOSChromeSyncClient::GetPrefServiceSyncable() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return browser_state_->GetSyncablePrefs();
+}
+
 sync_sessions::SessionSyncService*
 IOSChromeSyncClient::GetSessionSyncService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -208,30 +213,6 @@ syncer::TrustedVaultClient* IOSChromeSyncClient::GetTrustedVaultClient() {
 scoped_refptr<syncer::ExtensionsActivity>
 IOSChromeSyncClient::GetExtensionsActivity() {
   return nullptr;
-}
-
-base::WeakPtr<syncer::SyncableService>
-IOSChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
-  switch (type) {
-    case syncer::PREFERENCES:
-      return browser_state_->GetSyncablePrefs()
-          ->GetSyncableService(syncer::PREFERENCES)
-          ->AsWeakPtr();
-    case syncer::PRIORITY_PREFERENCES:
-      return browser_state_->GetSyncablePrefs()
-          ->GetSyncableService(syncer::PRIORITY_PREFERENCES)
-          ->AsWeakPtr();
-    case syncer::HISTORY_DELETE_DIRECTIVES: {
-      history::HistoryService* history =
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
-      return history ? history->GetDeleteDirectivesSyncableService()
-                     : base::WeakPtr<syncer::SyncableService>();
-    }
-    default:
-      NOTREACHED();
-      return base::WeakPtr<syncer::SyncableService>();
-  }
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

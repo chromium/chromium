@@ -147,6 +147,11 @@ history::HistoryService* WebViewSyncClient::GetHistoryService() {
   return nullptr;
 }
 
+sync_preferences::PrefServiceSyncable*
+WebViewSyncClient::GetPrefServiceSyncable() {
+  return nullptr;
+}
+
 sync_sessions::SessionSyncService* WebViewSyncClient::GetSessionSyncService() {
   return nullptr;
 }
@@ -187,12 +192,6 @@ syncer::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
 scoped_refptr<syncer::ExtensionsActivity>
 WebViewSyncClient::GetExtensionsActivity() {
   return nullptr;
-}
-
-base::WeakPtr<syncer::SyncableService>
-WebViewSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
-  NOTREACHED();
-  return base::WeakPtr<syncer::SyncableService>();
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

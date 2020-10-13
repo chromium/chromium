@@ -29,8 +29,6 @@ class SyncClientMock : public SyncClient {
                syncer::SyncInvalidationsService*());
   MOCK_METHOD0(GetTrustedVaultClient, TrustedVaultClient*());
   MOCK_METHOD0(GetExtensionsActivity, scoped_refptr<ExtensionsActivity>());
-  MOCK_METHOD1(GetSyncableServiceForType,
-               base::WeakPtr<SyncableService>(ModelType type));
   MOCK_METHOD1(CreateModelWorkerForGroup,
                scoped_refptr<ModelSafeWorker>(ModelSafeGroup group));
   MOCK_METHOD0(GetSyncApiComponentFactory, SyncApiComponentFactory*());

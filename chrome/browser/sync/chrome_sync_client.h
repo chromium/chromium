@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
@@ -19,16 +20,17 @@ class Profile;
 
 namespace autofill {
 class AutofillWebDataService;
-}
+}  // namespace autofill
 
 namespace password_manager {
 class PasswordStore;
-}
+}  // namespace password_manager
 
 namespace syncer {
 class ModelTypeController;
 class SyncService;
-}
+class SyncableService;
+}  // namespace syncer
 
 namespace browser_sync {
 
@@ -51,6 +53,7 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
+  sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   base::Closure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
@@ -59,8 +62,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::ModelType type) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
   scoped_refptr<syncer::ModelSafeWorker> CreateModelWorkerForGroup(
@@ -69,6 +70,10 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
 
  private:
+  // Convenience function used during controller creation.
+  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
+      syncer::ModelType type);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates the ModelTypeController for syncer::APPS.
   std::unique_ptr<syncer::ModelTypeController> CreateAppsModelTypeController(

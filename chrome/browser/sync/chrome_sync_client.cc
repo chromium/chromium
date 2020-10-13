@@ -65,6 +65,7 @@
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -308,6 +309,11 @@ send_tab_to_self::SendTabToSelfSyncService*
 ChromeSyncClient::GetSendTabToSelfSyncService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return SendTabToSelfSyncServiceFactory::GetForProfile(profile_);
+}
+
+sync_preferences::PrefServiceSyncable*
+ChromeSyncClient::GetPrefServiceSyncable() {
+  return PrefServiceSyncableFromProfile(profile_);
 }
 
 sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
@@ -568,14 +574,6 @@ ChromeSyncClient::GetExtensionsActivity() {
 base::WeakPtr<syncer::SyncableService>
 ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
   switch (type) {
-    case syncer::PREFERENCES:
-      return PrefServiceSyncableFromProfile(profile_)
-          ->GetSyncableService(syncer::PREFERENCES)
-          ->AsWeakPtr();
-    case syncer::PRIORITY_PREFERENCES:
-      return PrefServiceSyncableFromProfile(profile_)
-          ->GetSyncableService(syncer::PRIORITY_PREFERENCES)
-          ->AsWeakPtr();
     case syncer::SEARCH_ENGINES:
       return GetWeakPtrOrNull(
           TemplateURLServiceFactory::GetForProfile(profile_));
@@ -594,10 +592,6 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
       return ThemeServiceFactory::GetForProfile(profile_)->
           GetThemeSyncableService()->AsWeakPtr();
 #endif  // !defined(OS_ANDROID)
-    case syncer::HISTORY_DELETE_DIRECTIVES: {
-      history::HistoryService* history = GetHistoryService();
-      return history ? history->GetDeleteDirectivesSyncableService() : nullptr;
-    }
 #if BUILDFLAG(ENABLE_SPELLCHECK)
     case syncer::DICTIONARY: {
       SpellcheckService* spellcheck_service =
