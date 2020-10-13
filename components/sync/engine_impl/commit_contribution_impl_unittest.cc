@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine_impl/non_blocking_type_commit_contribution.h"
+#include "components/sync/engine_impl/commit_contribution_impl.h"
 
 #include <memory>
 #include <string>
@@ -48,7 +48,7 @@ EntitySpecifics GenerateBookmarkSpecifics(const std::string& url,
   return specifics;
 }
 
-TEST(NonBlockingTypeCommitContributionTest, PopulateCommitProtoDefault) {
+TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time =
       base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
@@ -74,8 +74,8 @@ TEST(NonBlockingTypeCommitContributionTest, PopulateCommitProtoDefault) {
   request_data.entity = std::move(data);
 
   SyncEntity entity;
-  NonBlockingTypeCommitContribution::PopulateCommitProto(PREFERENCES,
-                                                         request_data, &entity);
+  CommitContributionImpl::PopulateCommitProto(PREFERENCES, request_data,
+                                              &entity);
 
   // Exhaustively verify the populated SyncEntity.
   EXPECT_TRUE(entity.id_string().empty());
@@ -92,7 +92,7 @@ TEST(NonBlockingTypeCommitContributionTest, PopulateCommitProtoDefault) {
   EXPECT_EQ(0, entity.position_in_parent());
 }
 
-TEST(NonBlockingTypeCommitContributionTest, PopulateCommitProtoBookmark) {
+TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time =
       base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
@@ -123,8 +123,7 @@ TEST(NonBlockingTypeCommitContributionTest, PopulateCommitProtoBookmark) {
   request_data.entity = std::move(data);
 
   SyncEntity entity;
-  NonBlockingTypeCommitContribution::PopulateCommitProto(BOOKMARKS,
-                                                         request_data, &entity);
+  CommitContributionImpl::PopulateCommitProto(BOOKMARKS, request_data, &entity);
 
   // Exhaustively verify the populated SyncEntity.
   EXPECT_FALSE(entity.id_string().empty());
@@ -144,7 +143,7 @@ TEST(NonBlockingTypeCommitContributionTest, PopulateCommitProtoBookmark) {
 
 // Verifies how PASSWORDS protos are committed on the wire, making sure the data
 // is properly encrypted except for password metadata.
-TEST(NonBlockingTypeCommitContributionTest,
+TEST(CommitContributionImplTest,
      PopulateCommitProtoPasswordWithoutCustomPassphrase) {
   const std::string kMetadataUrl = "http://foo.com";
   const std::string kSignonRealm = "signon_realm";
@@ -173,7 +172,7 @@ TEST(NonBlockingTypeCommitContributionTest,
 
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
-  NonBlockingTypeCommitContribution contribution(
+  CommitContributionImpl contribution(
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       /*on_commit_response_callback=*/base::NullCallback(),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
@@ -210,7 +209,7 @@ TEST(NonBlockingTypeCommitContributionTest,
 
 // Same as above but uses CUSTOM_PASSPHRASE. In this case, field
 // |unencrypted_metadata| should be cleared.
-TEST(NonBlockingTypeCommitContributionTest,
+TEST(CommitContributionImplTest,
      PopulateCommitProtoPasswordWithCustomPassphrase) {
   const std::string kMetadataUrl = "http://foo.com";
   const std::string kSignonRealm = "signon_realm";
@@ -239,7 +238,7 @@ TEST(NonBlockingTypeCommitContributionTest,
 
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
-  NonBlockingTypeCommitContribution contribution(
+  CommitContributionImpl contribution(
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       /*on_commit_response_callback=*/base::NullCallback(),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
@@ -269,8 +268,7 @@ TEST(NonBlockingTypeCommitContributionTest,
   EXPECT_EQ(0, entity.position_in_parent());
 }
 
-TEST(NonBlockingTypeCommitContributionTest,
-     ShouldPropagateFailedItemsOnCommitResponse) {
+TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   auto data = std::make_unique<syncer::EntityData>();
   data->client_tag_hash = ClientTagHash::FromHashed("hash");
   auto request_data = std::make_unique<CommitRequestData>();
@@ -295,7 +293,7 @@ TEST(NonBlockingTypeCommitContributionTest,
       },
       &actual_error_response_list);
 
-  NonBlockingTypeCommitContribution contribution(
+  CommitContributionImpl contribution(
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       std::move(on_commit_response_callback),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
@@ -333,14 +331,14 @@ TEST(NonBlockingTypeCommitContributionTest,
       failed_item.datatype_specific_error.sharing_message_error().error_code());
 }
 
-TEST(NonBlockingTypeCommitContributionTest, ShouldPropagateFullCommitFailure) {
+TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   DataTypeDebugInfoEmitter debug_info_emitter(BOOKMARKS);
 
   base::MockOnceCallback<void(SyncCommitError commit_error)>
       on_commit_failure_callback;
   EXPECT_CALL(on_commit_failure_callback, Run(SyncCommitError::kNetworkError));
 
-  NonBlockingTypeCommitContribution contribution(
+  CommitContributionImpl contribution(
       BOOKMARKS, sync_pb::DataTypeContext(), CommitRequestDataList(),
       /*on_commit_response_callback=*/base::NullCallback(),
       on_commit_failure_callback.Get(), /*cryptographer=*/nullptr,

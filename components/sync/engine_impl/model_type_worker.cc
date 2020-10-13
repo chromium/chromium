@@ -29,7 +29,7 @@
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine_impl/bookmark_update_preprocessing.h"
 #include "components/sync/engine_impl/commit_contribution.h"
-#include "components/sync/engine_impl/non_blocking_type_commit_contribution.h"
+#include "components/sync/engine_impl/commit_contribution_impl.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
 namespace syncer {
@@ -424,7 +424,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   }
 
   DCHECK(response.size() <= max_entries);
-  return std::make_unique<NonBlockingTypeCommitContribution>(
+  return std::make_unique<CommitContributionImpl>(
       GetModelType(), model_type_state_.type_context(), std::move(response),
       base::BindOnce(&ModelTypeWorker::OnCommitResponse,
                      weak_ptr_factory_.GetWeakPtr()),

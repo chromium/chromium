@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_IMPL_NON_BLOCKING_TYPE_COMMIT_CONTRIBUTION_H_
-#define COMPONENTS_SYNC_ENGINE_IMPL_NON_BLOCKING_TYPE_COMMIT_CONTRIBUTION_H_
+#ifndef COMPONENTS_SYNC_ENGINE_IMPL_COMMIT_CONTRIBUTION_IMPL_H_
+#define COMPONENTS_SYNC_ENGINE_IMPL_COMMIT_CONTRIBUTION_IMPL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -22,17 +22,17 @@ namespace syncer {
 class Cryptographer;
 class ModelTypeWorker;
 
-// A non-blocking sync type's contribution to an outgoing commit message.
+// A sync type's contribution to an outgoing commit message.
 //
 // Helps build a commit message and process its response.  It collaborates
 // closely with the ModelTypeWorker.
-class NonBlockingTypeCommitContribution : public CommitContribution {
+class CommitContributionImpl : public CommitContribution {
  public:
   // Note: only one of |on_commit_response_callback| and
   // |on_full_commit_failure_callback| will be called.
   // TODO(rushans): there is still possible rare case when both of these
   // callbacks are never called, i.e. if get updates from the server fails.
-  NonBlockingTypeCommitContribution(
+  CommitContributionImpl(
       ModelType type,
       const sync_pb::DataTypeContext& context,
       CommitRequestDataList commit_requests,
@@ -44,7 +44,7 @@ class NonBlockingTypeCommitContribution : public CommitContribution {
       PassphraseType passphrase_type,
       DataTypeDebugInfoEmitter* debug_info_emitter,
       bool only_commit_specifics);
-  ~NonBlockingTypeCommitContribution() override;
+  ~CommitContributionImpl() override;
 
   // Implementation of CommitContribution
   void AddToCommitMessage(sync_pb::ClientToServerMessage* msg) override;
@@ -104,9 +104,9 @@ class NonBlockingTypeCommitContribution : public CommitContribution {
   // commit only types to save bandwidth.
   bool only_commit_specifics_;
 
-  DISALLOW_COPY_AND_ASSIGN(NonBlockingTypeCommitContribution);
+  DISALLOW_COPY_AND_ASSIGN(CommitContributionImpl);
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_IMPL_NON_BLOCKING_TYPE_COMMIT_CONTRIBUTION_H_
+#endif  // COMPONENTS_SYNC_ENGINE_IMPL_COMMIT_CONTRIBUTION_IMPL_H_

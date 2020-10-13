@@ -55,7 +55,7 @@ base::HistogramBase* GetModelTypeEntityChangeHistogram(ModelType type) {
 }  // namespace
 
 DataTypeDebugInfoEmitter::DataTypeDebugInfoEmitter(ModelType type)
-    : type_(type), histogram_(GetModelTypeEntityChangeHistogram(type)) {
+    : histogram_(GetModelTypeEntityChangeHistogram(type)) {
   DCHECK(histogram_);
 }
 

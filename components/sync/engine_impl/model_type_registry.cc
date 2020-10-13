@@ -15,7 +15,7 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine_impl/cycle/non_blocking_type_debug_info_emitter.h"
+#include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/engine_impl/model_type_worker.h"
 #include "components/sync/nigori/cryptographer.h"
 #include "components/sync/nigori/keystore_keys_handler.h"
@@ -85,7 +85,7 @@ void ModelTypeRegistry::ConnectNonBlockingType(
 
   DataTypeDebugInfoEmitter* emitter = GetEmitter(type);
   if (emitter == nullptr) {
-    auto new_emitter = std::make_unique<NonBlockingTypeDebugInfoEmitter>(type);
+    auto new_emitter = std::make_unique<DataTypeDebugInfoEmitter>(type);
     emitter = new_emitter.get();
     data_type_debug_info_emitter_map_.insert(
         std::make_pair(type, std::move(new_emitter)));

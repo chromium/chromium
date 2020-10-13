@@ -20,7 +20,6 @@ namespace syncer {
 
 // Supports various kinds of debugging requests for a certain directory type.
 //
-// TODO(crbug.com/1102849): Merge with NonBlockingDataTypeDebugInfoEmitter.
 // TODO(crbug.com/1102849): Rename Emit*() methods to mention UMA, and update
 // the documentation to not mention any observers.
 // The Emit*() functions send updates to registered TypeDebugInfoObservers.
@@ -54,9 +53,6 @@ class DataTypeDebugInfoEmitter {
 
   // Triggers an update counters update to registered observers.
   void EmitUpdateCountersUpdate();
-
- protected:
-  const ModelType type_;
 
  private:
   // The actual up-to-date counters.

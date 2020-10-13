@@ -19,7 +19,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine_impl/commit_contribution.h"
-#include "components/sync/engine_impl/cycle/non_blocking_type_debug_info_emitter.h"
+#include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/engine_impl/cycle/status_controller.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori.h"
@@ -150,8 +150,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
         mock_type_processor_(nullptr),
         mock_server_(std::make_unique<SingleTypeMockServer>(model_type)),
         is_processor_disconnected_(false),
-        emitter_(
-            std::make_unique<NonBlockingTypeDebugInfoEmitter>(model_type)) {}
+        emitter_(std::make_unique<DataTypeDebugInfoEmitter>(model_type)) {}
 
   ~ModelTypeWorkerTest() override {}
 
@@ -187,7 +186,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   void InitializeCommitOnly() {
     mock_server_ = std::make_unique<SingleTypeMockServer>(USER_EVENTS);
-    emitter_ = std::make_unique<NonBlockingTypeDebugInfoEmitter>(USER_EVENTS);
+    emitter_ = std::make_unique<DataTypeDebugInfoEmitter>(USER_EVENTS);
 
     // Don't set progress marker, commit only types don't use them.
     ModelTypeState initial_state;
@@ -470,7 +469,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   MockModelTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
   SingleTypeMockServer* server() { return mock_server_.get(); }
-  NonBlockingTypeDebugInfoEmitter* emitter() { return emitter_.get(); }
+  DataTypeDebugInfoEmitter* emitter() { return emitter_.get(); }
   MockNudgeHandler* nudge_handler() { return &mock_nudge_handler_; }
   StatusController* status_controller() { return &status_controller_; }
 
@@ -508,7 +507,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   bool is_processor_disconnected_;
 
-  std::unique_ptr<NonBlockingTypeDebugInfoEmitter> emitter_;
+  std::unique_ptr<DataTypeDebugInfoEmitter> emitter_;
 
   StatusController status_controller_;
 };

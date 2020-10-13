@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine_impl/non_blocking_type_commit_contribution.h"
+#include "components/sync/engine_impl/commit_contribution_impl.h"
 
 #include <algorithm>
 #include <utility>
@@ -17,7 +17,7 @@
 
 namespace syncer {
 
-NonBlockingTypeCommitContribution::NonBlockingTypeCommitContribution(
+CommitContributionImpl::CommitContributionImpl(
     ModelType type,
     const sync_pb::DataTypeContext& context,
     CommitRequestDataList commit_requests,
@@ -41,11 +41,11 @@ NonBlockingTypeCommitContribution::NonBlockingTypeCommitContribution(
       debug_info_emitter_(debug_info_emitter),
       only_commit_specifics_(only_commit_specifics) {}
 
-NonBlockingTypeCommitContribution::~NonBlockingTypeCommitContribution() {
+CommitContributionImpl::~CommitContributionImpl() {
   DCHECK(cleaned_up_);
 }
 
-void NonBlockingTypeCommitContribution::AddToCommitMessage(
+void CommitContributionImpl::AddToCommitMessage(
     sync_pb::ClientToServerMessage* msg) {
   sync_pb::CommitMessage* commit_message = msg->mutable_commit();
   entries_start_index_ = commit_message->entries_size();
@@ -86,7 +86,7 @@ void NonBlockingTypeCommitContribution::AddToCommitMessage(
     commit_message->add_client_contexts()->CopyFrom(context_);
 }
 
-SyncerError NonBlockingTypeCommitContribution::ProcessCommitResponse(
+SyncerError CommitContributionImpl::ProcessCommitResponse(
     const sync_pb::ClientToServerResponse& response,
     StatusController* status) {
   const sync_pb::CommitResponse& commit_response = response.commit();
@@ -188,24 +188,24 @@ SyncerError NonBlockingTypeCommitContribution::ProcessCommitResponse(
   }
 }
 
-void NonBlockingTypeCommitContribution::ProcessCommitFailure(
+void CommitContributionImpl::ProcessCommitFailure(
     SyncCommitError commit_error) {
   std::move(on_full_commit_failure_callback_).Run(commit_error);
   on_commit_response_callback_.Reset();
 }
 
-void NonBlockingTypeCommitContribution::CleanUp() {
+void CommitContributionImpl::CleanUp() {
   cleaned_up_ = true;
 
   debug_info_emitter_->EmitCommitCountersUpdate();
 }
 
-size_t NonBlockingTypeCommitContribution::GetNumEntries() const {
+size_t CommitContributionImpl::GetNumEntries() const {
   return commit_requests_.size();
 }
 
 // static
-void NonBlockingTypeCommitContribution::PopulateCommitProto(
+void CommitContributionImpl::PopulateCommitProto(
     ModelType type,
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
@@ -246,7 +246,7 @@ void NonBlockingTypeCommitContribution::PopulateCommitProto(
   }
 }
 
-void NonBlockingTypeCommitContribution::AdjustCommitProto(
+void CommitContributionImpl::AdjustCommitProto(
     sync_pb::SyncEntity* commit_proto) {
   if (commit_proto->version() == kUncommittedVersion) {
     commit_proto->set_version(0);
