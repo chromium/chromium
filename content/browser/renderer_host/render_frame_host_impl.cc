@@ -1876,9 +1876,19 @@ void RenderFrameHostImpl::AccessibilityViewSetFocus() {
   if (IsInactiveAndDisallowReactivation())
     return;
 
-  RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
-  if (view)
-    view->Focus();
+  // Ensure focus is transferred to the guest web contents that this
+  // RenderFrameHostImpl is a part of. This is similar to what happens for
+  // pointer input, and ensures the focus state in both browser and renderer
+  // processes matches expectations in order for focus actions to take their
+  // intended effect.
+  RenderWidgetHostImpl* host = GetRenderWidgetHost();
+  host->delegate()->FocusOwningWebContents(host);
+
+  if (!AccessibilityViewHasFocus()) {
+    RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
+    if (view)
+      view->Focus();
+  }
 }
 
 gfx::Rect RenderFrameHostImpl::AccessibilityGetViewBounds() {

@@ -730,8 +730,7 @@ void BrowserAccessibilityManager::SetFocus(const BrowserAccessibility& node) {
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
   action_data.target_node_id = node.GetId();
-  if (!delegate_->AccessibilityViewHasFocus())
-    delegate_->AccessibilityViewSetFocus();
+  delegate_->AccessibilityViewSetFocus();
   delegate_->AccessibilityPerformAction(action_data);
 }
 

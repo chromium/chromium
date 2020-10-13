@@ -105,6 +105,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/display/display_switches.h"
@@ -3735,6 +3736,41 @@ IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusAccessibility) {
   // "Guest button".
   ui::AXNodeData node_data =
       content::GetFocusedAccessibilityNodeInfo(web_contents);
+  EXPECT_EQ("Guest button",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewAccessibilityTest, FocusActionAccessibility) {
+  LoadAppWithGuest("web_view/focus_accessibility");
+  content::WebContents* web_contents = GetFirstAppWindowWebContents();
+  content::EnableAccessibilityForWebContents(web_contents);
+  content::WebContents* guest_web_contents = GetGuestWebContents();
+  content::EnableAccessibilityForWebContents(guest_web_contents);
+
+  // Wait for focus to land on the "root web area" role, representing
+  // focus on the main document itself.
+  while (content::GetFocusedAccessibilityNodeInfo(web_contents).role !=
+         ax::mojom::Role::kRootWebArea) {
+    content::WaitForAccessibilityFocusChange();
+  }
+
+  // Find the button in the guest web contents and perform a focus action.
+  content::FindAccessibilityNodeCriteria find_criteria;
+  find_criteria.role = ax::mojom::Role::kButton;
+  ui::AXPlatformNodeDelegate* button =
+      content::FindAccessibilityNode(guest_web_contents, find_criteria);
+  ASSERT_TRUE(button);
+
+  ui::AXActionData data;
+  data.action = ax::mojom::Action::kFocus;
+  button->AccessibilityPerformAction(data);
+
+  content::WaitForAccessibilityFocusChange();
+
+  // Verify that accessibility focus moved to the correct node.
+  ui::AXNodeData node_data =
+      content::GetFocusedAccessibilityNodeInfo(web_contents);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kButton);
   EXPECT_EQ("Guest button",
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
