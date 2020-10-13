@@ -161,6 +161,7 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   void DidBeginMainFrame() override;
   void FocusChanged(bool enable) override;
   gfx::Rect ViewportVisibleRect() override;
+  void DidCompletePageScaleAnimation() override;
 
   // blink::mojom::FrameWidget
   void EnableDeviceEmulation(const DeviceEmulationParams& parameters) override;

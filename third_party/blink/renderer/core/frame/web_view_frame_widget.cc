@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
@@ -436,6 +437,13 @@ bool WebViewFrameWidget::UpdateScreenRects(
 void WebViewFrameWidget::RunPaintBenchmark(int repeat_count,
                                            cc::PaintBenchmarkResult& result) {
   web_view_->RunPaintBenchmark(repeat_count, result);
+}
+
+void WebViewFrameWidget::DidCompletePageScaleAnimation() {
+  if (auto* focused_frame = View()->FocusedFrame()) {
+    if (focused_frame->AutofillClient())
+      focused_frame->AutofillClient()->DidCompleteFocusChangeInFrame();
+  }
 }
 
 const ScreenInfo& WebViewFrameWidget::GetOriginalScreenInfo() {

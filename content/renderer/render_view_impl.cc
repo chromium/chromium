@@ -487,40 +487,12 @@ bool RenderViewImpl::SupportsMultipleWindowsForWidget() {
   return webview_->GetWebPreferences().supports_multiple_windows;
 }
 
-bool RenderViewImpl::ShouldAckSyntheticInputImmediately() {
-  // TODO(bokan): The RequestPresentation API appears not to function in VR. As
-  // a short term workaround for https://crbug.com/940063, ACK input
-  // immediately rather than using RequestPresentation.
-  if (webview_->GetWebPreferences().immersive_mode_enabled)
-    return true;
-  return false;
-}
-
-bool RenderViewImpl::AutoResizeMode() {
-  return GetWebView()->AutoResizeMode();
-}
-
 void RenderViewImpl::DidCommitCompositorFrameForWidget() {
   for (auto& observer : observers_)
     observer.DidCommitCompositorFrame();
 
   if (GetWebView())
     GetWebView()->UpdatePreferredSize();
-}
-
-void RenderViewImpl::DidCompletePageScaleAnimationForWidget() {
-  if (auto* focused_frame = GetWebView()->FocusedFrame()) {
-    if (focused_frame->AutofillClient())
-      focused_frame->AutofillClient()->DidCompleteFocusChangeInFrame();
-  }
-}
-
-void RenderViewImpl::ResizeWebWidgetForWidget(
-    const gfx::Size& widget_size,
-    const gfx::Size& visible_viewport_size,
-    cc::BrowserControlsParams browser_controls_params) {
-  GetWebView()->ResizeWithBrowserControls(widget_size, visible_viewport_size,
-                                          browser_controls_params);
 }
 
 // IPC message handlers -----------------------------------------

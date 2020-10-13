@@ -1196,6 +1196,10 @@ gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
   return compositor_visible_rect_;
 }
 
+void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
+  // Page scale animations only happen on the main frame.
+}
+
 void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
     const VisualProperties& visual_properties) {
   SetWindowSegments(visual_properties.root_widget_window_segments);

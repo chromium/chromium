@@ -705,10 +705,6 @@ WebFrameWidgetBase::AllocateNewLayerTreeFrameSink() {
   return Client()->AllocateNewLayerTreeFrameSink();
 }
 
-void WebFrameWidgetBase::DidCompletePageScaleAnimation() {
-  Client()->DidCompletePageScaleAnimation();
-}
-
 void WebFrameWidgetBase::DidBeginMainFrame() {
   Client()->DidBeginMainFrame();
 }

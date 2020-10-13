@@ -333,7 +333,6 @@ class CORE_EXPORT WebFrameWidgetBase
   void DidCommitAndDrawCompositorFrame() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;
-  void DidCompletePageScaleAnimation() override;
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;

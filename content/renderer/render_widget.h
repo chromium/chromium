@@ -218,7 +218,6 @@ class CONTENT_EXPORT RenderWidget
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
-  void DidCompletePageScaleAnimation() override;
   bool WillHandleMouseEvent(const blink::WebMouseEvent& event) override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPepper() override;

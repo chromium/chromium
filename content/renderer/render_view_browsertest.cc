@@ -566,7 +566,8 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     visual_properties.new_size = gfx::Size(100, 100);
     visual_properties.compositor_viewport_pixel_rect = gfx::Rect(200, 200);
     visual_properties.visible_viewport_size = visual_properties.new_size;
-    visual_properties.auto_resize_enabled = view()->AutoResizeMode();
+    visual_properties.auto_resize_enabled =
+        view()->GetWebView()->AutoResizeMode();
     visual_properties.min_size_for_auto_resize = min_size_for_autoresize_;
     visual_properties.max_size_for_auto_resize = max_size_for_autoresize_;
     visual_properties.local_surface_id =

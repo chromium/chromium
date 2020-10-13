@@ -136,6 +136,7 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
                          const gfx::Rect& window_screen_rect) override;
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
+  void DidCompletePageScaleAnimation() override;
 
   void SetScreenMetricsEmulationParameters(
       bool enabled,

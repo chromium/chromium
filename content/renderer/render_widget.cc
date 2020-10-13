@@ -381,11 +381,6 @@ void RenderWidget::DidCommitCompositorFrame(base::TimeTicks commit_start_time) {
     delegate()->DidCommitCompositorFrameForWidget();
 }
 
-void RenderWidget::DidCompletePageScaleAnimation() {
-  if (delegate())
-    delegate()->DidCompletePageScaleAnimationForWidget();
-}
-
 void RenderWidget::ScheduleAnimation() {
   // This call is not needed in single thread mode for tests without a
   // scheduler, but they override this method in order to schedule a synchronous

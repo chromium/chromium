@@ -327,14 +327,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   void SetActiveForWidget(bool active) override;
   bool SupportsMultipleWindowsForWidget() override;
-  bool ShouldAckSyntheticInputImmediately() override;
-  bool AutoResizeMode() override;
   void DidCommitCompositorFrameForWidget() override;
-  void DidCompletePageScaleAnimationForWidget() override;
-  void ResizeWebWidgetForWidget(
-      const gfx::Size& widget_size,
-      const gfx::Size& visible_viewport_size,
-      cc::BrowserControlsParams browser_controls_params) override;
 
   // Old WebLocalFrameClient implementations
   // ----------------------------------------
