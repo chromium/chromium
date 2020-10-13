@@ -208,6 +208,13 @@ const base::Feature kClobberTriggersContextualWebZeroSuggest{
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, enables local zero-prefix suggestions for signed in users.
+// Local zero-prefix suggestions are enabled for signed in users by default. We
+// will be experimenting with DISABLING this behavior.
+const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers{
+    "OmniboxLocalZeroSuggestForAuthenticatedUsers",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, ranks the local zero-prefix suggestions based on frecency
 // (combined frequency and recency).
 const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking{

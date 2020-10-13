@@ -59,6 +59,7 @@ extern const base::Feature kBubbleUrlSuggestions;
 // On-Focus Suggestions a.k.a. ZeroSuggest.
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
+extern const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers;
 extern const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
 extern const base::Feature kOnFocusSuggestions;

@@ -261,15 +261,72 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
       "Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime", 0);
 }
 
-// Tests that suggestions are returned only user is not in an off-the-record
-// context, regardless of the user's authentication state.
+// Tests that suggestions are returned only if user is not in an off-the-record
+// context.
 TEST_F(LocalHistoryZeroSuggestProviderTest, Incognito) {
   LoadURLs({
       {default_search_provider(), "hello world", "&foo=bar", 1},
   });
 
-  EXPECT_CALL(*client_.get(), IsAuthenticated()).Times(0);
   EXPECT_CALL(*client_.get(), IsOffTheRecord())
+      .Times(2)
+      .WillOnce(testing::Return(true))
+      .WillOnce(testing::Return(false));
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({});
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({{"hello world", 500}});
+}
+
+// Tests that suggestions are returned regardless of the authentication state
+// when omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers is enabled.
+#if defined(OS_IOS)
+// Tests that enable additional features fail on iOS.
+#define MAYBE_ZeroSuggestForAuthenticatedUsers_Enabled \
+  DISABLED_ZeroSuggestForAuthenticatedUsers_Enabled
+#else
+#define MAYBE_ZeroSuggestForAuthenticatedUsers_Enabled \
+  ZeroSuggestForAuthenticatedUsers_Enabled
+#endif
+TEST_F(LocalHistoryZeroSuggestProviderTest,
+       MAYBE_ZeroSuggestForAuthenticatedUsers_Enabled) {
+  LoadURLs({
+      {default_search_provider(), "hello world", "&foo=bar", 1},
+  });
+
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitAndEnableFeature(
+      omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers);
+
+  EXPECT_CALL(*client_.get(), IsAuthenticated()).Times(0);
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({{"hello world", 500}});
+}
+
+// Tests that suggestions are returned for signed-out users only when
+// when omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers is disabled.
+#if defined(OS_IOS)
+// Tests that enable additional features fail on iOS.
+#define MAYBE_ZeroSuggestForAuthenticatedUsers_Disabled \
+  DISABLED_ZeroSuggestForAuthenticatedUsers_Disabled
+#else
+#define MAYBE_ZeroSuggestForAuthenticatedUsers_Disabled \
+  ZeroSuggestForAuthenticatedUsers_Disabled
+#endif
+TEST_F(LocalHistoryZeroSuggestProviderTest,
+       MAYBE_ZeroSuggestForAuthenticatedUsers_Disabled) {
+  LoadURLs({
+      {default_search_provider(), "hello world", "&foo=bar", 1},
+  });
+
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitAndDisableFeature(
+      omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers);
+
+  EXPECT_CALL(*client_.get(), IsAuthenticated())
       .Times(2)
       .WillOnce(testing::Return(true))
       .WillOnce(testing::Return(false));

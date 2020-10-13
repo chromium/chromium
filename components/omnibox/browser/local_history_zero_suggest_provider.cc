@@ -114,6 +114,12 @@ void LocalHistoryZeroSuggestProvider::Start(const AutocompleteInput& input,
   done_ = true;
   matches_.clear();
 
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers) &&
+      client_->IsAuthenticated()) {
+    return;
+  }
+
   // Allow local history query suggestions only when the user is not in an
   // off-the-record context.
   if (client_->IsOffTheRecord())
