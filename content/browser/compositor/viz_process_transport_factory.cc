@@ -55,11 +55,11 @@ static const char* kBrowser = "Browser";
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    bool support_locking,
-    bool support_gles2_interface,
-    bool support_raster_interface,
-    bool support_grcontext,
-    bool support_oop_rasterization,
+    bool supports_locking,
+    bool supports_gles2_interface,
+    bool supports_raster_interface,
+    bool supports_grcontext,
+    bool supports_oop_rasterization,
     viz::command_buffer_metrics::ContextType type) {
   constexpr bool kAutomaticFlushes = false;
 
@@ -72,9 +72,9 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.buffer_preserved = false;
-  attributes.enable_gles2_interface = support_gles2_interface;
-  attributes.enable_raster_interface = support_raster_interface;
-  attributes.enable_oop_rasterization = support_oop_rasterization;
+  attributes.enable_gles2_interface = supports_gles2_interface;
+  attributes.enable_raster_interface = supports_raster_interface;
+  attributes.enable_oop_rasterization = supports_oop_rasterization;
 
   gpu::SharedMemoryLimits memory_limits =
       gpu::SharedMemoryLimits::ForDisplayCompositor();
@@ -83,7 +83,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       std::move(gpu_channel_host), gpu_memory_buffer_manager,
       kGpuStreamIdDefault, kGpuStreamPriorityUI, gpu::kNullSurfaceHandle,
-      std::move(url), kAutomaticFlushes, support_locking, support_grcontext,
+      std::move(url), kAutomaticFlushes, supports_locking, supports_grcontext,
       memory_limits, attributes, type);
 }
 
