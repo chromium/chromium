@@ -495,6 +495,54 @@ text text text text text text text text text and last text",
                             "First%20paragraph,last%20text");
 }
 
+// It should be more than 300 characters selected from the same node so that
+// ranges are used.
+TEST_F(TextFragmentSelectorGeneratorTest,
+       RangeSelector_SameNode_MultipleSelections) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text text text text text text text
+    text text text text text text text text text text text text text
+    text text text text text text text text text text text text text
+    text text text text text text text text text text text text text
+    text text text text text text text text text text and last text</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 325);
+  ASSERT_EQ(
+      "First paragraph text text text text text text text \
+text text text text text text text text text text text text text \
+text text text text text text text text text text text text text \
+text text text text text text text text text text text text text \
+text text text text text text text text text text and last text",
+      PlainText(EphemeralRange(selected_start, selected_end)));
+  ASSERT_EQ(309u,
+            PlainText(EphemeralRange(selected_start, selected_end)).length());
+
+  GenerateAndVerifySelector(selected_start, selected_end,
+                            "First%20paragraph,last%20text");
+
+  const auto& second_selected_start = Position(first_paragraph, 6);
+  const auto& second_selected_end = Position(first_paragraph, 325);
+  ASSERT_EQ(
+      "paragraph text text text text text text text \
+text text text text text text text text text text text text text \
+text text text text text text text text text text text text text \
+text text text text text text text text text text text text text \
+text text text text text text text text text text and last text",
+      PlainText(EphemeralRange(second_selected_start, second_selected_end)));
+  ASSERT_EQ(303u, PlainText(EphemeralRange(second_selected_start,
+                                           second_selected_end))
+                      .length());
+
+  GenerateAndVerifySelector(second_selected_start, second_selected_end,
+                            "paragraph%20text%20text,and%20last%20text");
+}
+
 // When using all the selected text for the range is not enough for unique
 // match, context should be added.
 TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
