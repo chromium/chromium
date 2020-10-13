@@ -9,6 +9,7 @@
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/frame_utils.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
@@ -94,7 +95,7 @@ BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
 }
 
 BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
-  chromeos::TabletState::Get()->RemoveObserver(this);
+  ash::TabletMode::Get()->RemoveObserver(this);
 
   ImmersiveModeController* immersive_controller =
       browser_view()->immersive_mode_controller();
@@ -133,7 +134,7 @@ void BrowserNonClientFrameViewAsh::Init() {
   if (browser->profile()->IsOffTheRecord())
     window->SetProperty(ash::kBlockedForAssistantSnapshotKey, true);
 
-  chromeos::TabletState::Get()->AddObserver(this);
+  ash::TabletMode::Get()->AddObserver(this);
 
   if (frame()->ShouldDrawFrameHeader())
     frame_header_ = CreateFrameHeader();
@@ -414,19 +415,12 @@ gfx::ImageSkia BrowserNonClientFrameViewAsh::GetFrameHeaderOverlayImage(
                                      : BrowserFrameActiveState::kInactive);
 }
 
-void BrowserNonClientFrameViewAsh::OnTabletStateChanged(
-    chromeos::TabletState::State state) {
-  switch (state) {
-    case chromeos::TabletState::State::kInTabletMode:
-      OnTabletModeToggled(true);
-      return;
-    case chromeos::TabletState::State::kInClamshellMode:
-      OnTabletModeToggled(false);
-      return;
-    case chromeos::TabletState::State::kEnteringTabletMode:
-    case chromeos::TabletState::State::kExitingTabletMode:
-      break;
-  }
+void BrowserNonClientFrameViewAsh::OnTabletModeStarted() {
+  OnTabletModeToggled(true);
+}
+
+void BrowserNonClientFrameViewAsh::OnTabletModeEnded() {
+  OnTabletModeToggled(false);
 }
 
 void BrowserNonClientFrameViewAsh::OnTabletModeToggled(bool enabled) {
@@ -565,7 +559,7 @@ bool BrowserNonClientFrameViewAsh::ShouldShowCaptionButtons() const {
 bool BrowserNonClientFrameViewAsh::ShouldShowCaptionButtonsWhenNotInOverview()
     const {
   return UsePackagedAppHeaderStyle(browser_view()->browser()) ||
-         !chromeos::TabletState::Get()->InTabletMode();
+         !ash::TabletMode::Get()->InTabletMode();
 }
 
 int BrowserNonClientFrameViewAsh::GetToolbarLeftInset() const {
