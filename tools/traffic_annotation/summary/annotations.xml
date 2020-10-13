@@ -151,7 +151,7 @@ Refer to README.md for content description and update process.
  <item id="history_ui_favicon_request_handler_get_favicon" added_in_milestone="77" hash_code="17562717" type="0" content_hash_code="64054629" os_list="linux,windows" file_path="components/favicon/core/history_ui_favicon_request_handler_impl.cc"/>
  <item id="http_server_error_response" added_in_milestone="66" hash_code="32197336" type="0" content_hash_code="61082230" os_list="linux,windows" file_path="net/server/http_server.cc"/>
  <item id="https_server_previews_navigation" added_in_milestone="74" hash_code="35725390" type="0" deprecated="2020-04-23" content_hash_code="84423109" file_path="chrome/browser/previews/previews_lite_page_redirect_serving_url_loader.cc"/>
- <item id="ice_config_fetcher" added_in_milestone="81" hash_code="137093034" type="0" content_hash_code="60051202" os_list="linux,windows" file_path="chrome/browser/sharing/webrtc/ice_config_fetcher.cc"/>
+ <item id="ice_config_fetcher" added_in_milestone="81" hash_code="137093034" type="0" deprecated="2020-10-13" content_hash_code="60051202" file_path="chrome/browser/sharing/webrtc/ice_config_fetcher.cc"/>
  <item id="icon_cacher" added_in_milestone="62" hash_code="103133150" type="0" content_hash_code="116368348" os_list="linux,windows" file_path="components/ntp_tiles/icon_cacher_impl.cc"/>
  <item id="icon_catcher_get_large_icon" added_in_milestone="62" hash_code="44494884" type="0" content_hash_code="98262037" os_list="linux,windows" file_path="components/ntp_tiles/icon_cacher_impl.cc"/>
  <item id="image_annotation" added_in_milestone="73" hash_code="107881858" type="0" content_hash_code="76229990" os_list="linux,windows" file_path="services/image_annotation/annotator.cc"/>
