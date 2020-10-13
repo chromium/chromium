@@ -142,7 +142,8 @@ char* PrependHexAddress(char* output, const void* address) {
 
 }  // namespace
 
-class SequenceManagerImpl::NativeWorkHandleImpl : public NativeWorkHandle {
+class SequenceManagerImpl::NativeWorkHandleImpl final
+    : public NativeWorkHandle {
  public:
   NativeWorkHandleImpl(SequenceManagerImpl* sequence_manager,
                        TaskQueue::QueuePriority priority)
