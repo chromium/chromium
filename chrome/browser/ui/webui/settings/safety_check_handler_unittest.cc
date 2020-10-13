@@ -1344,7 +1344,7 @@ INSTANTIATE_TEST_SUITE_P(
         safe_browsing::ChromeCleanerController::State::kReporterRunning,
         SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws,
         base::UTF8ToUTF16(
-            "Browser is checking your computer for harmful software..."))));
+            "Browser is checking your computer for harmful software…"))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_Scanning,
@@ -1353,7 +1353,7 @@ INSTANTIATE_TEST_SUITE_P(
         safe_browsing::ChromeCleanerController::State::kScanning,
         SafetyCheckHandler::ChromeCleanerStatus::kScanningForUws,
         base::UTF8ToUTF16(
-            "Browser is checking your computer for harmful software..."))));
+            "Browser is checking your computer for harmful software…"))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_Cleaning,
@@ -1362,7 +1362,7 @@ INSTANTIATE_TEST_SUITE_P(
         safe_browsing::ChromeCleanerController::State::kCleaning,
         SafetyCheckHandler::ChromeCleanerStatus::kRemovingUws,
         base::UTF8ToUTF16(
-            "Browser is removing harmful software from your computer..."))));
+            "Browser is removing harmful software from your computer…"))));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_Infected,
