@@ -273,8 +273,7 @@ ProcessExitResult RunSetup(const Configuration& configuration,
 bool IsAclSupportedForPath(const wchar_t* path) {
   PathString volume;
   DWORD flags = 0;
-  return ::GetVolumePathName(path, volume.get(),
-                             static_cast<DWORD>(volume.capacity())) &&
+  return ::GetVolumePathName(path, volume.get(), DWORD{volume.capacity()}) &&
          ::GetVolumeInformation(volume.get(), nullptr, 0, nullptr, nullptr,
                                 &flags, nullptr, 0) &&
          (flags & FILE_PERSISTENT_ACLS);
@@ -415,14 +414,13 @@ bool GetWorkDir(HMODULE module,
                 PathString* work_dir,
                 ProcessExitResult* exit_code) {
   PathString base_path;
-  DWORD len =
-      ::GetTempPath(static_cast<DWORD>(base_path.capacity()), base_path.get());
+  DWORD len = ::GetTempPath(DWORD{base_path.capacity()}, base_path.get());
   if (!len || len >= base_path.capacity() ||
       !CreateWorkDir(base_path.get(), work_dir, exit_code)) {
     // Problem creating the work dir under TEMP path, so try using the
     // current directory as the base path.
     len = ::GetModuleFileName(module, base_path.get(),
-                              static_cast<DWORD>(base_path.capacity()));
+                              DWORD{base_path.capacity()});
     if (len >= base_path.capacity() || !len)
       return false;  // Can't even get current directory? Return an error.
 
@@ -495,8 +493,7 @@ ProcessExitResult WMain(HMODULE module) {
   // While unpacking the binaries, we paged in a whole bunch of memory that
   // we don't need anymore.  Let's give it back to the pool before running
   // setup.
-  ::SetProcessWorkingSetSize(::GetCurrentProcess(), static_cast<SIZE_T>(-1),
-                             static_cast<SIZE_T>(-1));
+  ::SetProcessWorkingSetSize(::GetCurrentProcess(), SIZE_T{-1}, SIZE_T{-1});
 
   PathString setup_path;
   if (!setup_path.assign(unpack_path.value().c_str()) ||

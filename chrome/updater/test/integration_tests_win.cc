@@ -107,7 +107,7 @@ void EnterTestMode() {
                            L"http://localhost:8367"),
             ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(),
-                           static_cast<DWORD>(0)),
+                           DWORD{0}),
             ERROR_SUCCESS);
 }
 

@@ -225,12 +225,7 @@ UpdateService::UpdateState UpdaterObserver::QueryUpdateState(
       update_service_state.extra_code1 = extra_code1;
   }
 
-  DVLOG(4) << "{update state: " << static_cast<int>(update_service_state.state)
-           << ", downloaded_bytes: " << update_service_state.downloaded_bytes
-           << ", total_bytes: " << update_service_state.total_bytes
-           << ", install_progress: " << update_service_state.install_progress
-           << ", error_code: " << update_service_state.error_code
-           << ", extra_code1: " << update_service_state.extra_code1 << "}";
+  DVLOG(4) << update_service_state;
 
   return update_service_state;
 }
@@ -243,7 +238,7 @@ UpdateService::Result UpdaterObserver::QueryResult(
   base::win::ScopedBstr message;
   CHECK(SUCCEEDED(complete_status->get_statusCode(&code)));
 
-  DVLOG(2) << "ICompleteStatus::OnComplete(" << static_cast<int>(code) << ")";
+  DVLOG(2) << "ICompleteStatus::OnComplete(" << code << ")";
   return static_cast<UpdateService::Result>(code);
 }
 

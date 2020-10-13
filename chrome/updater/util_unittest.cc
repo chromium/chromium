@@ -4,6 +4,8 @@
 
 #include "chrome/updater/util.h"
 
+#include <ostream>
+
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,6 +16,10 @@ enum class MyEnum {
   kVal2 = 0,
   kVal3 = 1,
 };
+
+std::ostream& operator<<(std::ostream& os, const MyEnum& e) {
+  return os << "MyEnum: " << static_cast<int>(e);
+}
 
 template <>
 struct EnumTraits<MyEnum> {

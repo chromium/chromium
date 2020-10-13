@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/numerics/checked_math.h"
+#include "base/strings/string16.h"
 #include "base/win/pe_image_reader.h"
 #include "build/build_config.h"
 #include "chrome/updater/win/tag_extractor_impl.h"
@@ -97,8 +98,7 @@ std::string ReadTagUtf16(BinaryConstIt cert_begin, BinaryConstIt cert_end) {
   // Converts the UTF-16 tag from big-endian to little-endian.
   size_t tag_utf16_idx = 0;
   for (auto it = tag_buf; it < tag_buf_end; it += sizeof(uint16_t)) {
-    tag_utf16[tag_utf16_idx] =
-        static_cast<std::wstring::value_type>(BigEndianReadU16(it));
+    tag_utf16[tag_utf16_idx] = std::wstring::value_type{BigEndianReadU16(it)};
     ++tag_utf16_idx;
   }
 
@@ -157,7 +157,7 @@ BinaryConstIt AdvanceIt(BinaryConstIt it, size_t distance, BinaryConstIt end) {
   if (!base::CheckedNumeric<ptrdiff_t>(end - it).AssignIfValid(&dist_to_end))
     return end;
 
-  return it + std::min(distance, static_cast<size_t>(dist_to_end));
+  return it + std::min(distance, size_t{dist_to_end});
 }
 
 bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end) {
@@ -168,7 +168,7 @@ bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end) {
   if (!base::CheckedNumeric<ptrdiff_t>(end - it).AssignIfValid(&dist_to_end))
     return false;
 
-  return size <= static_cast<size_t>(dist_to_end);
+  return size <= size_t{dist_to_end};
 }
 
 std::string ExtractTagFromBuffer(const std::vector<uint8_t>& binary,
@@ -209,8 +209,8 @@ std::string ExtractTagFromFile(const std::wstring& path, TagEncoding encoding) {
   std::vector<uint8_t> binary(file_size.QuadPart);
 
   DWORD bytes_read = 0;
-  if (!::ReadFile(file_handle, &binary[0], static_cast<DWORD>(binary.size()),
-                  &bytes_read, nullptr)) {
+  if (!::ReadFile(file_handle, &binary[0], DWORD{binary.size()}, &bytes_read,
+                  nullptr)) {
     ::CloseHandle(file_handle);
     return std::string();
   }

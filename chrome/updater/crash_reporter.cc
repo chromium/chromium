@@ -116,8 +116,7 @@ int CrashReporterMain() {
   }
   argv_as_utf8[argv.size()] = nullptr;
 
-  return crashpad::HandlerMain(static_cast<int>(argv.size()),
-                               argv_as_utf8.get(),
+  return crashpad::HandlerMain(argv.size(), argv_as_utf8.get(),
                                /*user_stream_sources=*/nullptr);
 }
 

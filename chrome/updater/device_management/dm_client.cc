@@ -148,8 +148,7 @@ void DMClient::PostRegisterRequest(DMRequestCallback request_callback) {
   }
 
   if (result != RequestResult::kSuccess) {
-    VLOG(1) << "Device registration skipped with DM error: "
-            << static_cast<int>(result);
+    VLOG(1) << "Device registration skipped with DM error: " << result;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(request_callback_), result));
     return;
@@ -241,8 +240,7 @@ void DMClient::PostPolicyFetchRequest(DMRequestCallback request_callback) {
   }
 
   if (result != RequestResult::kSuccess) {
-    VLOG(1) << "Policy fetch skipped with DM error: "
-            << static_cast<int>(result);
+    VLOG(1) << "Policy fetch skipped with DM error: " << result;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(request_callback_), result));
     return;

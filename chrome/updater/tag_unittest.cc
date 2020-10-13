@@ -5,7 +5,6 @@
 #include "chrome/updater/tag.h"
 
 #include "base/strings/string_piece.h"
-#include "chrome/updater/unittest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

@@ -30,9 +30,8 @@ template <typename Error>
 HRESULT HRESULTFromUpdaterError(Error error) {
   constexpr ULONG kCustomerBit = 0x20000000;
   constexpr ULONG kFacilityOmaha = 67;
-  return static_cast<HRESULT>(static_cast<ULONG>(SEVERITY_ERROR) |
-                              kCustomerBit | (kFacilityOmaha << 16) |
-                              static_cast<ULONG>(error));
+  return HRESULT{ULONG{SEVERITY_ERROR} | kCustomerBit | (kFacilityOmaha << 16) |
+                 ULONG{error}};
 }
 
 // Checks whether a process is running with the image |executable|. Returns true

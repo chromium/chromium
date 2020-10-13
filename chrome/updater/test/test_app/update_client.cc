@@ -86,8 +86,7 @@ void UpdateClient::HandleStatusUpdate(UpdateService::UpdateState update_state) {
 void UpdateClient::RegistrationCompleted(base::OnceCallback<void(int)> callback,
                                          UpdateService::Result result) {
   if (result != UpdateService::Result::kSuccess) {
-    LOG(ERROR) << "Updater registration error: "
-               << base::NumberToString(static_cast<int>(result));
+    LOG(ERROR) << "Updater registration error: " << result;
   }
 
   callback_task_runner_->PostTask(

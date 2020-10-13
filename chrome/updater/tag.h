@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_TAG_H_
 #define CHROME_UPDATER_TAG_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -54,6 +55,8 @@ struct AppArgs {
   base::Optional<NeedsAdmin> needs_admin;
 };
 
+std::ostream& operator<<(std::ostream&, const AppArgs::NeedsAdmin&);
+
 // This struct contains the attributes parsed from a metainstaller tag. An empty
 // string in std::string members indicates that the given attribute did not
 // appear in the tag.
@@ -92,6 +95,8 @@ struct TagArgs {
   // List of apps to install.
   std::vector<AppArgs> apps;
 };
+
+std::ostream& operator<<(std::ostream&, const TagArgs::BrowserType&);
 
 // List of possible error states that the parser can encounter.
 enum class ErrorCode {
@@ -149,6 +154,8 @@ enum class ErrorCode {
   // stats.
   kGlobal_UsageStatsValueIsInvalid,
 };
+
+std::ostream& operator<<(std::ostream&, const ErrorCode&);
 
 // The metainstaller tag contains the metadata used to configure the updater as
 // a metainstaller. This usually comes from a 3rd party source, either as
@@ -214,6 +221,7 @@ enum class ErrorCode {
 ErrorCode Parse(base::StringPiece tag,
                 base::Optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args);
+
 }  // namespace tagging
 
 }  // namespace updater

@@ -65,8 +65,7 @@ bool DMPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
   if (!omaha_settings_.has_auto_update_check_period_minutes())
     return false;
 
-  *minutes =
-      static_cast<int>(omaha_settings_.auto_update_check_period_minutes());
+  *minutes = int{omaha_settings_.auto_update_check_period_minutes()};
   return true;
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_UTIL_H_
 #define CHROME_UPDATER_UTIL_H_
 
+#include <ostream>
 #include <type_traits>
 
 #include "base/files/file_path.h"
@@ -13,6 +14,20 @@
 #include "base/strings/string_util.h"
 
 class GURL;
+
+// Externally-defined printers for base types.
+namespace base {
+
+template <class T>
+std::ostream& operator<<(std::ostream& os, const base::Optional<T>& opt) {
+  if (opt.has_value()) {
+    return os << opt.value();
+  } else {
+    return os << "base::nullopt";
+  }
+}
+
+}  // namespace base
 
 namespace updater {
 

@@ -43,7 +43,7 @@ int ServiceMain::RunComService(const base::CommandLine* command_line) {
     return ERROR_BAD_ARGUMENTS;
 
   int ret = service->Start();
-  DCHECK_NE(ret, static_cast<int>(STILL_ACTIVE));
+  DCHECK_NE(ret, int{STILL_ACTIVE});
   return ret;
 }
 

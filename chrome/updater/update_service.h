@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_UPDATE_SERVICE_H_
 #define CHROME_UPDATER_UPDATE_SERVICE_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -54,6 +55,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
     // A function argument was invalid.
     kInvalidArgument = 7,
+
+    // Change the traits class in this file when adding new values.
   };
 
   // Run time errors are organized in specific categories to indicate the
@@ -203,6 +206,13 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
 // These specializations must be defined in the |updater| namespace.
 template <>
+struct EnumTraits<UpdateService::Result> {
+  using Result = UpdateService::Result;
+  static constexpr Result first_elem = Result::kSuccess;
+  static constexpr Result last_elem = Result::kInvalidArgument;
+};
+
+template <>
 struct EnumTraits<UpdateService::UpdateState::State> {
   using State = UpdateService::UpdateState::State;
   static constexpr State first_elem = State::kUnknown;
@@ -215,6 +225,14 @@ struct EnumTraits<UpdateService::ErrorCategory> {
   static constexpr ErrorCategory first_elem = ErrorCategory::kNone;
   static constexpr ErrorCategory last_elem = ErrorCategory::kUpdateCheck;
 };
+
+inline std::ostream& operator<<(std::ostream& os,
+                                const UpdateService::Result& result) {
+  return os << static_cast<int>(result);
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const UpdateService::UpdateState& update_state);
 
 // A factory method to create an UpdateService class instance.
 scoped_refptr<UpdateService> CreateUpdateService();

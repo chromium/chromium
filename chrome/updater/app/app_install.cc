@@ -157,7 +157,7 @@ void AppInstall::MaybeInstallApp() {
           return app_id;
         }
       } else {
-        VLOG(1) << "Tag parsing returned " << static_cast<int>(error) << ".";
+        VLOG(1) << "Tag parsing returned " << error << ".";
       }
     }
     return command_line->GetSwitchValueASCII(kAppIdSwitch);

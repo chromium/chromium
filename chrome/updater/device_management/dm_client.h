@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <ostream>
 #include <string>
 
 #include "base/callback.h"
@@ -134,6 +135,11 @@ class DMClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+inline std::ostream& operator<<(std::ostream& os,
+                                const DMClient::RequestResult& request_result) {
+  return os << static_cast<int>(request_result);
+}
 
 }  // namespace updater
 
