@@ -137,6 +137,16 @@ public class TrustedWebActivityDisclosureControllerTest {
 
     @Test
     @Feature("TrustedWebActivities")
+    public void reportsFirstTime_reportsSeenImmediately() {
+        doReturn(false).when(mStore).hasUserSeenTwaDisclosureForPackage(anyString());
+        enterVerifiedOrigin();
+        assertTrue(mModel.get(DISCLOSURE_FIRST_TIME));
+        mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();
+        assertFalse(mModel.get(DISCLOSURE_FIRST_TIME));
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
     public void recordsShown() {
         enterVerifiedOrigin();
         mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();

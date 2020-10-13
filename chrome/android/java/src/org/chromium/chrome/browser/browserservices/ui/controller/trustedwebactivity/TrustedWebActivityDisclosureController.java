@@ -73,6 +73,7 @@ public class TrustedWebActivityDisclosureController
     @Override
     public void onDisclosureShown() {
         mBrowserServicesStore.setUserSeenTwaDisclosureForPackage(mClientPackageNameProvider.get());
+        mModel.set(DISCLOSURE_FIRST_TIME, false);
     }
 
     /** Shows the disclosure if it is not already showing and hasn't been accepted. */
