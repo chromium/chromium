@@ -174,7 +174,7 @@ std::ostream& operator<<(std::ostream& os, Status status) {
 
 ArcTermsOfServiceNegotiator::NegotiationCallback UpdateStatusCallback(
     Status* status) {
-  return base::Bind(
+  return base::BindOnce(
       [](Status* status, bool accepted) {
         *status = accepted ? Status::ACCEPTED : Status::CANCELLED;
       },

@@ -102,9 +102,9 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
               ? url_loader_factory_for_testing()
               : g_browser_process->system_network_context_manager()
                     ->GetSharedURLLoaderFactory(),
-          base::Bind(&ArcActiveDirectoryEnrollmentTokenFetcher::
-                         OnEnrollmentTokenResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&ArcActiveDirectoryEnrollmentTokenFetcher::
+                             OnEnrollmentTokenResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
 
   em::ActiveDirectoryEnrollPlayUserRequest* enroll_request =
       config->request()->mutable_active_directory_enroll_play_user_request();
