@@ -7,10 +7,8 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -55,9 +53,6 @@ url::Origin GetTrustworthyInitiator(
 
   if (!request_initiator.has_value())
     return unique_origin_fallback;
-
-  if (!base::FeatureList::IsEnabled(features::kRequestInitiatorSiteLock))
-    return request_initiator.value();
 
   InitiatorLockCompatibility initiator_compatibility =
       VerifyRequestInitiatorLock(request_initiator_origin_lock,

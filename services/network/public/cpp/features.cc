@@ -46,12 +46,6 @@ const base::Feature kThrottleDelayable{"ThrottleDelayable",
 const base::Feature kDelayRequestsOnMultiplexedConnections{
     "DelayRequestsOnMultiplexedConnections", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When kRequestInitiatorSiteLock is enabled, then CORB, CORP and Sec-Fetch-Site
-// will validate network::ResourceRequest::request_initiator against
-// network::mojom::URLLoaderFactoryParams::request_initiator_origin_lock.
-const base::Feature kRequestInitiatorSiteLock{"RequestInitiatorSiteLock",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When kPauseBrowserInitiatedHeavyTrafficForP2P is enabled, then a subset of
 // the browser initiated traffic may be paused if there is at least one active
 // P2P connection and the network is estimated to be congested. This feature is
