@@ -124,9 +124,8 @@ class TranslateManager {
   // Starts the translation process for the page in the |page_lang| language.
   void InitiateTranslation(const std::string& page_lang);
 
-  // Starts the translation process for the page in the |page_language_code|
-  // language.
-  void InitiateTranslation();
+  // Maybe initiates translation when Autofill Assistant has finished.
+  void OnAutofillAssistantFinished();
 
   // Initiate a manually triggered translation process for the current page.
   // Collect source and target languages, and show translation UI. If
@@ -331,9 +330,9 @@ class TranslateManager {
 
   std::unique_ptr<metrics::TranslateEventProto> translate_event_;
 
-  // Language code of current page. Code is remember when translation is
-  // disabled by Autofill Assistant. This code is later used to translate page
-  // when Autofill Assistant finishes run.
+  // Language code of current page. Code is stored when translation is disabled
+  // by Autofill Assistant. This code is later used to translate page when
+  // Autofill Assistant finishes run.
   std::string page_language_code_;
 
   base::WeakPtrFactory<TranslateManager> weak_method_factory_{this};

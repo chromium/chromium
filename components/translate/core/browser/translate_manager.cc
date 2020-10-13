@@ -177,7 +177,7 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
                             target_lang);
 }
 
-void TranslateManager::InitiateTranslation() {
+void TranslateManager::OnAutofillAssistantFinished() {
   if (!page_language_code_.empty()) {
     InitiateTranslation(page_language_code_);
   }

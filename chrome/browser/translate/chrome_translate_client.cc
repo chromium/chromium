@@ -328,7 +328,7 @@ bool ChromeTranslateClient::IsAutofillAssistantRunning() const {
 
 void ChromeTranslateClient::OnStateChanged(autofill_assistant::UIState state) {
   if (state == autofill_assistant::UIState::kNotShown) {
-    GetTranslateManager()->InitiateTranslation();
+    GetTranslateManager()->OnAutofillAssistantFinished();
   }
 }
 
