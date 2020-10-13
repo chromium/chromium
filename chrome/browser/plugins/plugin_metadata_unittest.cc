@@ -60,9 +60,6 @@ TEST(PluginMetadataTest, SecurityStatus) {
 }
 
 TEST(PluginMetadataTest, DeprecatedSecurityStatus) {
-  const PluginMetadata::SecurityStatus kOutOfDate =
-      PluginMetadata::SECURITY_STATUS_OUT_OF_DATE;
-
   PluginMetadata plugin_metadata(
       "claybrick-writer", base::ASCIIToUTF16("ClayBrick Writer"), true, GURL(),
       GURL(), base::ASCIIToUTF16("ClayBrick"), std::string(),
@@ -77,7 +74,10 @@ TEST(PluginMetadataTest, DeprecatedSecurityStatus) {
   EXPECT_TRUE(plugin_metadata.plugin_is_deprecated());
 
   // All versions should be considered out of date for deprecated plugins.
-  EXPECT_EQ(kOutOfDate, GetSecurityStatus(&plugin_metadata, "foo"));
-  EXPECT_EQ(kOutOfDate, GetSecurityStatus(&plugin_metadata, "0"));
-  EXPECT_EQ(kOutOfDate, GetSecurityStatus(&plugin_metadata, "1.2.3"));
+  EXPECT_EQ(PluginMetadata::SECURITY_STATUS_DEPRECATED,
+            GetSecurityStatus(&plugin_metadata, "foo"));
+  EXPECT_EQ(PluginMetadata::SECURITY_STATUS_DEPRECATED,
+            GetSecurityStatus(&plugin_metadata, "0"));
+  EXPECT_EQ(PluginMetadata::SECURITY_STATUS_DEPRECATED,
+            GetSecurityStatus(&plugin_metadata, "1.2.3"));
 }

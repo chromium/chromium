@@ -100,11 +100,8 @@ bool PluginMetadata::ParseSecurityStatus(
 
 PluginMetadata::SecurityStatus PluginMetadata::GetSecurityStatus(
     const content::WebPluginInfo& plugin) const {
-  // Deprecated plugins should be treated as out-of-date by the renderer.
-  // The browser will show an infobar explaining that it is deprecated without
-  // the ability to update.
   if (plugin_is_deprecated())
-    return SECURITY_STATUS_OUT_OF_DATE;
+    return SECURITY_STATUS_DEPRECATED;
 
   if (versions_.empty()) {
     // Unknown plugins require authorization.

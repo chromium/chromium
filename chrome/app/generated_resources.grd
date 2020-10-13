@@ -5110,6 +5110,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PLUGIN_PREFER_HTML_BY_DEFAULT" desc="The placeholder text for a plugin with no fallback content when Prefer HTML5 By Default is on.">
         Click to enable <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph>
       </message>
+      <message name="IDS_PLUGIN_DEPRECATED" desc="The placeholder text for a deprecated plugin.">
+        <ph name="PLUGIN_NAME">$1<ex>Adobe Flash Player</ex></ph> is no longer supported
+      </message>
 
       <!-- Session Crashed Infobar/Bubble-->
       <message name="IDS_SESSION_CRASHED_BUBBLE_TITLE" desc="Title of the session crashed bubble view.">

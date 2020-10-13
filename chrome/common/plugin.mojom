@@ -54,6 +54,9 @@ enum PluginStatus {
   kNotFound,
   kOutdatedBlocked,
   kOutdatedDisallowed,
+  // Similar to kOutdatedBlocked or kOutdatedDisallowed, but with no hope of
+  // updating and running. This is distinct to allow for separate UI treatment.
+  kDeprecated,
   kPlayImportantContent,
   kRestartRequired,
   kUnauthorized,
