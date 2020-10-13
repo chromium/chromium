@@ -868,6 +868,17 @@ class FileTasks {
    * @private
    */
   async mountArchive_(url) {
+    const filename = util.extractFilePath(url).split('/').pop();
+
+    const item = new ProgressCenterItem();
+    item.id = 'mount-' + url;
+    item.type = ProgressItemType.MOUNT_ARCHIVE;
+    item.message = strf('ARCHIVE_MOUNT_MESSAGE', filename);
+
+    // Display progress panel.
+    item.state = ProgressItemState.PROGRESSING;
+    this.progressCenter_.updateItem(item);
+
     // First time, try without providing a password.
     try {
       return await this.volumeManager_.mountArchive(url);
@@ -876,19 +887,26 @@ class FileTasks {
       if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
         throw error;
       }
+    } finally {
+      // Remove progress panel.
+      item.state = ProgressItemState.COMPLETED;
+      this.progressCenter_.updateItem(item);
     }
 
     // We need a password.
     const unlock = await this.mutex_.lock();
     try {
       /** @type {?string} */ let password = null;
-      const filename = util.extractFilePath(url).split('/').pop();
       while (true) {
         // Ask for password.
         do {
           password =
               await this.ui_.passwordDialog.askForPassword(filename, password);
         } while (!password);
+
+        // Display progress panel.
+        item.state = ProgressItemState.PROGRESSING;
+        this.progressCenter_.updateItem(item);
 
         // Mount archive with password.
         try {
@@ -898,6 +916,10 @@ class FileTasks {
           if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
             throw error;
           }
+        } finally {
+          // Remove progress panel.
+          item.state = ProgressItemState.COMPLETED;
+          this.progressCenter_.updateItem(item);
         }
       }
     } finally {
@@ -916,6 +938,7 @@ class FileTasks {
   async mountArchiveAndChangeDirectory_(tracker, url) {
     try {
       const volumeInfo = await this.mountArchive_(url);
+
       if (tracker.hasChanged) {
         return;
       }
@@ -938,13 +961,12 @@ class FileTasks {
       }
 
       const filename = util.extractFilePath(url).split('/').pop();
-
-      const errorItem = new ProgressCenterItem();
-      errorItem.id = 'cannot-mount-' + url;
-      errorItem.type = ProgressItemType.MOUNT_ARCHIVE;
-      errorItem.message = strf('ARCHIVE_MOUNT_FAILED', filename);
-      errorItem.state = ProgressItemState.ERROR;
-      this.progressCenter_.updateItem(errorItem);
+      const item = new ProgressCenterItem();
+      item.id = 'cannot-mount-' + url;
+      item.type = ProgressItemType.MOUNT_ARCHIVE;
+      item.message = strf('ARCHIVE_MOUNT_FAILED', filename);
+      item.state = ProgressItemState.ERROR;
+      this.progressCenter_.updateItem(item);
 
       console.error(`Cannot mount '${url}':`);
       console.error(error);

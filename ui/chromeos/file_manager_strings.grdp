@@ -266,8 +266,11 @@
     <ph name="NUMBER_OF_FILES">$1<ex>3</ex></ph> items
   </message>
 
+  <message name="IDS_FILE_BROWSER_ARCHIVE_MOUNT_MESSAGE" desc="Message shown when opening an archive takes a long time.">
+    Opening "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>"
+  </message>
   <message name="IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED" desc="Error message when an archive mount operation failed.">
-    Unable to open "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>"
+    Could not open "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>"
   </message>
   <message name="IDS_FILE_BROWSER_UNMOUNT_FAILED" desc="Title of the error dialog when device unmount operation failed.">
    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Don't remove your device just yet!<ph name="END_BOLD">&lt;/b&gt;</ph>
