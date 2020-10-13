@@ -260,7 +260,8 @@ class CORE_EXPORT WebLocalFrameImpl final
                       bool new_session,
                       bool wrap_within_frame,
                       bool async) override;
-  void SetTickmarks(const WebVector<WebRect>&) override;
+  void SetTickmarks(const WebElement& target,
+                    const WebVector<WebRect>& tickmarks) override;
   WebNode ContextMenuNode() const override;
   void CopyImageAtForTesting(const gfx::Point&) override;
   void UsageCountChromeLoadTimes(const WebString& metric) override;

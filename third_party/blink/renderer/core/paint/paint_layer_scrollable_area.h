@@ -83,6 +83,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData {
   base::Optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
+  Vector<IntRect> tickmarks_override_;
 };
 
 // PaintLayerScrollableArea represents the scrollable area of a LayoutBox.
@@ -607,6 +608,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool HasPendingHistoryRestoreScrollOffset() override {
     return !!pending_view_state_;
   }
+
+  void SetTickmarksOverride(Vector<IntRect> tickmarks);
 
  private:
   bool NeedsScrollbarReconstruction() const;

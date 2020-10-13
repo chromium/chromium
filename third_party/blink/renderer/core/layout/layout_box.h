@@ -2049,6 +2049,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return rare_data_ && !rare_data_->partial_invalidation_rect_.IsEmpty();
   }
 
+  // Sets the coordinates of find-in-page scrollbar tickmarks, bypassing
+  // DocumentMarkerController.  This is used by the PDF plugin.
+  void OverrideTickmarks(Vector<IntRect> tickmarks);
+
+  // Issues a paint invalidation on the layout viewport's vertical scrollbar
+  // (which is responsible for painting the tickmarks).
+  void InvalidatePaintForTickmarks();
+
  protected:
   ~LayoutBox() override;
 

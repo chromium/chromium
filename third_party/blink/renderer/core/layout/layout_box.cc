@@ -28,6 +28,7 @@
 
 #include <math.h>
 #include <algorithm>
+#include <utility>
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -7780,6 +7781,23 @@ bool LayoutBox::NeedsScrollNode(
     return true;
 
   return GetScrollableArea()->ScrollsOverflow();
+}
+
+void LayoutBox::OverrideTickmarks(Vector<IntRect> tickmarks) {
+  NOT_DESTROYED();
+  GetScrollableArea()->SetTickmarksOverride(std::move(tickmarks));
+  InvalidatePaintForTickmarks();
+}
+
+void LayoutBox::InvalidatePaintForTickmarks() {
+  NOT_DESTROYED();
+  ScrollableArea* scrollable_area = GetScrollableArea();
+  if (!scrollable_area)
+    return;
+  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
+  if (!scrollbar)
+    return;
+  scrollbar->SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(~kThumbPart));
 }
 
 }  // namespace blink

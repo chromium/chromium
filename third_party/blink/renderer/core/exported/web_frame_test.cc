@@ -5197,31 +5197,69 @@ TEST_F(WebFrameTest, SetTickmarks) {
   RunPendingTasks();
   EXPECT_TRUE(find_in_page_client.FindResultsAreReady());
 
-  // Get the tickmarks for the original find request.
-  LocalFrameView* frame_view = web_view_helper.LocalMainFrame()->GetFrameView();
-  ScrollableArea* layout_viewport = frame_view->LayoutViewport();
-  Vector<IntRect> original_tickmarks = layout_viewport->GetTickmarks();
-  EXPECT_EQ(4u, original_tickmarks.size());
+  const Vector<IntRect> kExpectedOverridingTickmarks = {
+      IntRect(0, 0, 100, 100), IntRect(0, 20, 100, 100),
+      IntRect(0, 30, 100, 100)};
+  const Vector<IntRect> kResetTickmarks;
 
-  // Override the tickmarks.
-  Vector<IntRect> overriding_tickmarks_expected;
-  overriding_tickmarks_expected.push_back(IntRect(0, 0, 100, 100));
-  overriding_tickmarks_expected.push_back(IntRect(0, 20, 100, 100));
-  overriding_tickmarks_expected.push_back(IntRect(0, 30, 100, 100));
-  main_frame->SetTickmarks(overriding_tickmarks_expected);
+  {
+    // Test SetTickmarks() with a null target WebElement.
+    //
+    // Get the tickmarks for the original find request. It should have 4
+    // tickmarks, given the search performed above.
+    LocalFrameView* frame_view =
+        web_view_helper.LocalMainFrame()->GetFrameView();
+    ScrollableArea* layout_viewport = frame_view->LayoutViewport();
+    Vector<IntRect> original_tickmarks = layout_viewport->GetTickmarks();
+    EXPECT_EQ(4u, original_tickmarks.size());
 
-  // Check the tickmarks are overriden correctly.
-  Vector<IntRect> overriding_tickmarks_actual = layout_viewport->GetTickmarks();
-  EXPECT_EQ(overriding_tickmarks_expected, overriding_tickmarks_actual);
+    // Override the tickmarks.
+    main_frame->SetTickmarks(WebElement(), kExpectedOverridingTickmarks);
 
-  // Reset the tickmark behavior.
-  Vector<IntRect> reset_tickmarks;
-  main_frame->SetTickmarks(reset_tickmarks);
+    // Check the tickmarks are overridden correctly.
+    Vector<IntRect> overriding_tickmarks_actual =
+        layout_viewport->GetTickmarks();
+    EXPECT_EQ(kExpectedOverridingTickmarks, overriding_tickmarks_actual);
 
-  // Check that the original tickmarks are returned
-  Vector<IntRect> original_tickmarks_after_reset =
-      layout_viewport->GetTickmarks();
-  EXPECT_EQ(original_tickmarks, original_tickmarks_after_reset);
+    // Reset the tickmark behavior.
+    main_frame->SetTickmarks(WebElement(), kResetTickmarks);
+
+    // Check that the original tickmarks are returned
+    Vector<IntRect> original_tickmarks_after_reset =
+        layout_viewport->GetTickmarks();
+    EXPECT_EQ(original_tickmarks, original_tickmarks_after_reset);
+  }
+
+  {
+    // Test SetTickmarks() with a non-null target WebElement.
+    //
+    // Use an element from within find.html for testing. It has no tickmarks.
+    WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
+    WebElement target = frame->GetDocument().GetElementById("textarea1");
+    ASSERT_FALSE(target.IsNull());
+    LayoutBox* box = target.ConstUnwrap<Element>()->GetLayoutBoxForScrolling();
+    ASSERT_TRUE(box);
+    ScrollableArea* scrollable_area = box->GetScrollableArea();
+    ASSERT_TRUE(scrollable_area);
+    Vector<IntRect> original_tickmarks = scrollable_area->GetTickmarks();
+    EXPECT_EQ(0u, original_tickmarks.size());
+
+    // Override the tickmarks.
+    main_frame->SetTickmarks(target, kExpectedOverridingTickmarks);
+
+    // Check the tickmarks are overridden correctly.
+    Vector<IntRect> overriding_tickmarks_actual =
+        scrollable_area->GetTickmarks();
+    EXPECT_EQ(kExpectedOverridingTickmarks, overriding_tickmarks_actual);
+
+    // Reset the tickmark behavior.
+    main_frame->SetTickmarks(target, kResetTickmarks);
+
+    // Check that the original tickmarks are returned
+    Vector<IntRect> original_tickmarks_after_reset =
+        scrollable_area->GetTickmarks();
+    EXPECT_EQ(original_tickmarks, original_tickmarks_after_reset);
+  }
 }
 
 TEST_F(WebFrameTest, FindInPageJavaScriptUpdatesDOM) {

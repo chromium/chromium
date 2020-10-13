@@ -992,33 +992,12 @@ void LayoutView::UpdateCounters() {
 
 bool LayoutView::HasTickmarks() const {
   NOT_DESTROYED();
-  return !tickmarks_override_.IsEmpty() ||
-         GetDocument().Markers().PossiblyHasTextMatchMarkers();
+  return GetDocument().Markers().PossiblyHasTextMatchMarkers();
 }
 
 Vector<IntRect> LayoutView::GetTickmarks() const {
   NOT_DESTROYED();
-  if (!tickmarks_override_.IsEmpty())
-    return tickmarks_override_;
-
   return GetDocument().Markers().LayoutRectsForTextMatchMarkers();
-}
-
-void LayoutView::OverrideTickmarks(const Vector<IntRect>& tickmarks) {
-  NOT_DESTROYED();
-  tickmarks_override_ = tickmarks;
-  InvalidatePaintForTickmarks();
-}
-
-void LayoutView::InvalidatePaintForTickmarks() {
-  NOT_DESTROYED();
-  ScrollableArea* scrollable_area = GetScrollableArea();
-  if (!scrollable_area)
-    return;
-  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
-  if (!scrollbar)
-    return;
-  scrollbar->SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(~kThumbPart));
 }
 
 }  // namespace blink
