@@ -222,14 +222,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest, Install) {
       registrar.FindAppWithUrlInScope(content::GetWebUIURL("test-system-app/")),
       app_id);
 
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-    const extensions::Extension* extension =
-        extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-            app_id);
-    EXPECT_TRUE(extension->from_bookmark());
-    EXPECT_EQ(extensions::Manifest::EXTERNAL_COMPONENT, extension->location());
-  }
-
   // OS Integration only relevant for Chrome OS.
 #if defined(OS_CHROMEOS)
   apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
