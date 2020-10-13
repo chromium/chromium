@@ -547,6 +547,13 @@ class ArcVmClientAdapter : public ArcClientAdapter,
           << "StopArcInstance is called during browser shutdown. Do nothing.";
       return;
     }
+    if (current_cid_ == kInvalidCid) {
+      // No VM is currently running, avoid calling ConciergeClient::StopVm().
+      // TODO(wvk): Once StartMiniArc() is implemented, use a DCHECK here
+      // instead.
+      OnArcInstanceStopped();
+      return;
+    }
 
     if (should_backup_log) {
       GetDebugDaemonClient()->BackupArcBugReport(
