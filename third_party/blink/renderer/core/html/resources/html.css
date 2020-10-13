@@ -501,6 +501,7 @@ textarea {
     -webkit-appearance: textarea; /* AutoAppearanceFor() should match to this. */
     background-color: -internal-light-dark(white, black);
     border: 1px solid;
+    column-count: initial !important;
     -webkit-rtl-ordering: logical;
     flex-direction: column;
     resize: auto;
