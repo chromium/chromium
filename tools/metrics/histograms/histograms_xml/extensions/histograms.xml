@@ -1483,6 +1483,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
+    enum="BooleanCacheHit" expires_after="2021-01-24">
+  <owner>swapnilgupta@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>snijhara@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Records whether the extension is downloaded from cache or not. Recorded for
+    each forced extension that failed to install after 5 minutes with
+    Extensions.ForceInstalledFailureSandboxUnpackFailureReason equal to
+    CRX_HEADER_INVALID.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ForceInstalledFetchTries" units="retries"
     expires_after="2021-03-28">
   <owner>burunduk@chromium.org</owner>
