@@ -2394,7 +2394,6 @@ if (!is_android) {
         "../browser/chromeos/file_manager/audio_player_browsertest.cc",
         "../browser/chromeos/file_manager/devtools_listener.cc",
         "../browser/chromeos/file_manager/devtools_listener.h",
-        "../browser/chromeos/file_manager/devtools_listener_browsertest.cc",
         "../browser/chromeos/file_manager/external_filesystem_apitest.cc",
         "../browser/chromeos/file_manager/file_manager_base_jstest.cc",
         "../browser/chromeos/file_manager/file_manager_browsertest.cc",
