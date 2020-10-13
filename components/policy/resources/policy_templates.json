@@ -11667,11 +11667,9 @@
       'id': 185,
       'caption': '''Allow users to redeem offers through Chrome OS Registration''',
       'tags': [],
-      'desc': '''IT admins for enterprise devices can use this flag to control whether to allow users to redeem offers through Chrome OS Registration.
+      'desc': '''Setting the policy to Enabled or leaving it unset lets enterprise device users redeem offers through <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> Registration.
 
-      If this policy is set to true or left not set, users will be able to redeem offers through Chrome OS Registration.
-
-      If this policy is set to false, user will not be able to redeem offers.''',
+      Setting the policy to Disabled means users can't redeem these offers.''',
     },
     {
       'name': 'TermsOfServiceURL',
@@ -11687,11 +11685,9 @@
       'id': 186,
       'caption': '''Set the Terms of Service for a device-local account''',
       'tags': [],
-      'desc': '''Sets the Terms of Service that the user must accept before starting a device-local account session.
+      'desc': '''Setting the policy means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> downloads the Terms of Service and presents them to users whenever a device-local account session starts. Users can only sign in to the session after accepting the Terms of Service.
 
-      If this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will download the Terms of Service and present them to the user whenever a device-local account session is starting. The user will only be allowed into the session after accepting the Terms of Service.
-
-      If this policy is not set, no Terms of Service are shown.
+      Leaving the policy unset means no Terms of Service appear.
 
       The policy should be set to a URL from which <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can download the Terms of Service. The Terms of Service must be plain text, served as MIME type text/plain. No markup is allowed.''',
     },
@@ -13541,9 +13537,9 @@
       'id': 574,
       'caption': '''Enforce browser guest mode''',
       'tags': [],
-      'desc': '''If this policy is set to enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will enforce guest sessions and prevents profile logins. Guest logins are <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profiles where all windows are in incognito mode.
+      'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> enforces guest sessions and prevents profile sign-ins. Guest sign-ins are <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profiles where windows are in Incognito mode.
 
-      If this policy is set to disabled or not set or browser guest mode is disabled by <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME">BrowserGuestModeEnabled</ph> policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will allow using new and existing profiles.''',
+      Setting the policy to Disabled, leaving it unset, or disabling browser Guest mode (through <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME">BrowserGuestModeEnabled</ph>) allows the use of new and existing profiles.''',
     },
     {
       'name': 'BrowserAddPersonEnabled',
@@ -16211,11 +16207,11 @@
       'id': 469,
       'caption': '''Allow SMS Messages to be synced from phone to Chromebook.''',
       'tags': ['local-data-access', 'google-sharing'],
-      'desc': '''If this setting is enabled, users will be allowed to set up their devices to sync SMS messages between their phones and Chromebooks. Note that if this policy is allowed, users must explicitly opt into this feature by completing a setup flow. Once the setup flow is complete, users will be able to send and receive SMS messages on their Chromebooks.
+      'desc': '''Setting the policy to Enabled lets users set up their devices to sync their text messages to Chromebooks. Users must explicitly opt in to this feature by completing a setup flow. On completion, users can send and receive texts on their Chromebooks.
 
-      If this setting is disabled, users will not be allowed to set up SMS syncing.
+      Setting the policy to Disabled means users can't set up text syncing.
 
-      If this policy is left not set, the default is not allowed for managed users and allowed for non-managed users.''',
+      Leaving the policy unset means that by default, the feature isn't allowed for managed users but is allowed for other users.''',
     },
     {
       'name': 'SmartLockSigninAllowed',
@@ -16294,7 +16290,9 @@
       'id': 370,
       'caption': '''Allow queries to a Google time service''',
       'tags': [],
-      'desc': '''Setting this policy to false stops <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from occasionally sending queries to a Google server to retrieve an accurate timestamp. These queries will be enabled if this policy is set to True or is not set.''',
+      'desc': '''Setting the policy to Enabled or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> send occasional queries to a Google server to retrieve an accurate timestamp.
+
+      Setting the policy to Disabled stops <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from sending these queries.''',
     },
     {
       'name': 'DeviceSecondFactorAuthentication',
@@ -16521,18 +16519,15 @@
       'id': 377,
       'caption': '''Whitelist note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen''',
       'tags': [],
-      'desc': '''Specifies list of apps that can be enabled as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen.
+      'desc': '''This policy is deprecated, please use <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST">NoteTakingAppsLockScreenAllowlist</ph> instead.
 
-      If the preferred note-taking app is enabled on the lock screen, the lock screen will contain UI element for launching the preferred note taking app.
-      When launched, the app will be able to create an app window on top of the lock screen, and create data items (notes) in the lock screen context. The app will be able to import created notes to the primary user session, when the session is unlocked. Currently, only Chrome note-taking apps are supported on the lock screen.
+      Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen.
 
-      If the policy is set, the user will be allowed to enable an app on the lock screen only if the app's extension ID is contained in the policy list value.
-      As a consequence, setting this policy to an empty list will disable note-taking on the lock screen entirely.
-      Note that the policy containing an app ID does not necessarily mean that the user will be able to enable the app as a note-taking app on the lock screen - for example, on Chrome 61, the set of available apps is additionally restricted by the platform.
+      If the preferred app is on the lock screen, a UI element for launching the preferred note-taking app appears on the screen. When launched, the app can create a window on top of the lock screen and create notes in this context. The app can import created notes to the primary user session, when the session is unlocked. Only <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> note-taking apps are supported on the lock screen.
 
-      If the policy is left unset, there will be no restrictions on the set of apps the user can enable on the lock screen imposed by the policy.
+      Setting the policy means users can turn on an app on the lock screen if the app's extension ID is in the policy list value. So, setting it to an empty list will turn off note-taking on the lock screen. The policy with an app ID doesn't necessarily mean that users can turn the app on as a note-taking app on the lock screen. For example, on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 61, the set of available apps is also restricted by the platform.
 
-      This policy is deprecated, please use <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST">NoteTakingAppsLockScreenAllowlist</ph> instead.'''
+      Leaving the policy unset amounts to no restrictions on the set of apps users can enable on the lock screen imposed by the policy.'''
     },
     {
       'name': 'NoteTakingAppsLockScreenAllowlist',
@@ -16553,16 +16548,13 @@
       'id': 759,
       'caption': '''The list of note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen''',
       'tags': [],
-      'desc': '''The list of apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen.
+      'desc': '''Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> lock screen.
 
-      If the preferred note-taking app is enabled on the lock screen, the lock screen will contain UI element for launching the preferred note taking app.
-      When launched, the app will be able to create an app window on top of the lock screen, and create data items (notes) in the lock screen context. The app will be able to import created notes to the primary user session, when the session is unlocked. Currently, only Chrome note-taking apps are supported on the lock screen.
+      If the preferred app is on the lock screen, a UI element for launching the preferred note-taking app appears on the screen. When launched, the app can create a window on top of the lock screen and create notes in this context. The app can import created notes to the primary user session, when the session is unlocked. Only <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> note-taking apps are supported on the lock screen.
 
-      If the policy is set, the user will be allowed to enable an app on the lock screen only if the app's extension ID is contained in the policy list value.
-      As a consequence, setting this policy to an empty list will disable note-taking on the lock screen entirely.
-      Note that the policy containing an app ID does not necessarily mean that the user will be able to enable the app as a note-taking app on the lock screen - for example, on Chrome 61, the set of available apps is additionally restricted by the platform.
+      Setting the policy means users can turn on an app on the lock screen if the app's extension ID is in the policy list value. So, setting it to an empty list will turn off note-taking on the lock screen. The policy with an app ID doesn't necessarily mean that users can turn the app on as a note-taking app on the lock screen. For example, on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 61, the set of available apps is also restricted by the platform.
 
-      If the policy is left unset, there will be no restrictions on the set of apps the user can enable on the lock screen imposed by the policy.'''
+      Leaving the policy unset amounts to no restrictions on the set of apps users can enable on the lock screen imposed by the policy."'''
     },
     {
       'name': 'CastReceiverEnabled',
@@ -20659,11 +20651,9 @@
       'supported_on': ['chrome_os:77-'],
       'caption': '''Allow the device to request powerwash''',
       'tags': [],
-      'desc': '''
-      This policy when set to False, does not allow the device to trigger powerwash. An exception is if <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME">TPMFirmwareUpdateSettings</ph> policy is set to a value that allows the TPM firmware update and the TPM firmware was not updated yet.
-      When set to True, it allows the device to trigger powerwash.
-      If left unset, it defaults to True, meaning it allows the device to powerwash.
-      '''
+      'desc': '''Setting the policy to Enabled or leaving it unset lets a device trigger powerwash.
+
+      Setting the policy to Disabled doesn't let a device trigger powerwash. An exception to still allow a powerwash can occur if <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME">TPMFirmwareUpdateSettings</ph> is set to a value that lets the TPM firmware update, but it hasn't updated yet.'''
     },
     {
       'name': 'ExternalPrintServers',
@@ -20813,13 +20803,7 @@
       'example_value': 1,
       'id': 579,
       'caption': '''Allow users to manage installed CA certificates.''',
-      'desc': '''This policy controls whether user are able to import and remove CA certificates via Certificate Manager.
-
-      If this policy is set to ''Allow users to manage all certificates'' or left not set, users will be able to edit trust settings for all CA certificates, remove user-imported certificates and import certificates.
-
-      If this policy is set to ''Allow users to manage user certificates'', users will be able to manage only user-imported certificates and will not be able to change trust settings of built-in certificates.
-
-      If this policy is set to ''Disallow users to manage certificates'', users will not be able to manage CA certificates, they can only view CA certificates.''',
+      'desc': '''Setting the policy to All (0) or leaving it unset lets users edit trust settings for all CA certificates, remove user-imported certificates, and import certificates using Certificate Manager. Setting the policy to UserOnly (1) lets users manage only user-imported certificates, but not change trust settings of built-in certificates. Setting it to None (2) lets users view (not manage) CA certificates.''',
     },
     {
       'id': 581,
