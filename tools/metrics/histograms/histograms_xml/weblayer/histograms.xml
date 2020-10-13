@@ -1,0 +1,56 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of WebLayer histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="WebLayer.Startup.ClassLoaderCreationTime" units="ms"
+    expires_after="M98">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/weblayer/OWNERS</owner>
+  <summary>
+    The time it takes for the WebLayer class loader to be created. Recorded at
+    WebLayer startup.
+  </summary>
+</histogram>
+
+<histogram name="WebLayer.Startup.ContextCreationTime" units="ms"
+    expires_after="M98">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/weblayer/OWNERS</owner>
+  <summary>
+    The time it takes for the WebLayer context to be created. Recorded at
+    WebLayer startup.
+  </summary>
+</histogram>
+
+<histogram name="WebLayer.Startup.WebLayerLoaderCreationTime" units="ms"
+    expires_after="M98">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/weblayer/OWNERS</owner>
+  <summary>
+    The time it takes for the WebLayer loader to be created. Recorded at
+    WebLayer startup.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
