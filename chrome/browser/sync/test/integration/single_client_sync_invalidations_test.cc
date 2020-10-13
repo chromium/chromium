@@ -4,12 +4,17 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
+#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/test/fake_server/bookmark_entity_builder.h"
+#include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +26,9 @@ using testing::ElementsAre;
 using testing::Not;
 using testing::NotNull;
 
-MATCHER_P(HasInterestedDataTypes, expected_data_types, "") {
+const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
+
+MATCHER_P(InterestedDataTypesAre, expected_data_types, "") {
   syncer::ModelTypeSet data_types;
   for (const int field_number : arg.specifics()
                                     .device_info()
@@ -35,6 +42,22 @@ MATCHER_P(HasInterestedDataTypes, expected_data_types, "") {
     data_types.Put(data_type);
   }
   return data_types == expected_data_types;
+}
+
+MATCHER_P(InterestedDataTypesContain, expected_data_types, "") {
+  syncer::ModelTypeSet data_types;
+  for (const int field_number : arg.specifics()
+                                    .device_info()
+                                    .invalidation_fields()
+                                    .interested_data_type_ids()) {
+    syncer::ModelType data_type =
+        syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+    if (!syncer::IsRealDataType(data_type)) {
+      return false;
+    }
+    data_types.Put(data_type);
+  }
+  return data_types.HasAll(expected_data_types);
 }
 
 MATCHER(HasInstanceIdToken, "") {
@@ -92,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
           GetFakeServer(),
-          ElementsAre(AllOf(HasInterestedDataTypes(interested_data_types),
+          ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             Not(HasInstanceIdToken()))))
           .Wait());
 }
@@ -138,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
           GetFakeServer(),
-          ElementsAre(AllOf(HasInterestedDataTypes(interested_data_types),
+          ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
 }
@@ -157,8 +180,16 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
   ~SingleClientWithUseSyncInvalidationsForWalletAndOfferTest() override =
       default;
 
+  void InjectSyncedBookmark() {
+    fake_server::BookmarkEntityBuilder bookmark_builder =
+        entity_builder_factory_.NewBookmarkEntityBuilder("My Bookmark");
+    GetFakeServer()->InjectEntity(
+        bookmark_builder.BuildBookmark(GURL(kSyncedBookmarkURL)));
+  }
+
  private:
   base::test::ScopedFeatureList override_features_;
+  fake_server::EntityBuilderFactory entity_builder_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(
       SingleClientWithUseSyncInvalidationsForWalletAndOfferTest);
@@ -188,9 +219,48 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
           GetFakeServer(),
-          ElementsAre(AllOf(HasInterestedDataTypes(interested_data_types),
+          ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
+    EnableAndDisableADataType) {
+  ASSERT_TRUE(SetupSync());
+
+  // The local device should eventually be committed to the server. BOOKMARKS
+  // should be included in interested types, since it's enabled by default.
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(),
+                  ElementsAre(InterestedDataTypesContain(syncer::BOOKMARKS)))
+                  .Wait());
+
+  // Disable BOOKMARKS.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  // The local device should eventually be committed to the server. BOOKMARKS
+  // should not be included in interested types, as it was disabled.
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(
+          GetFakeServer(),
+          ElementsAre(Not(InterestedDataTypesContain(syncer::BOOKMARKS))))
+          .Wait());
+
+  // Create a bookmark on the server.
+  InjectSyncedBookmark();
+  // Enable BOOKMARKS again.
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
+  // The local device should eventually be committed to the server. BOOKMARKS
+  // should now be included in interested types.
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(),
+                  ElementsAre(InterestedDataTypesContain(syncer::BOOKMARKS)))
+                  .Wait());
+  // The bookmark should get synced now.
+  EXPECT_TRUE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
+      GURL(kSyncedBookmarkURL)));
 }
 
 }  // namespace
