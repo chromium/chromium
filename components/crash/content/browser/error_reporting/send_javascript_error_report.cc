@@ -267,8 +267,12 @@ void OnConsentCheckCompleted(
   params["browser"] = "Chrome";
   params["browser_version"] = platform.version;
   params["channel"] = platform.channel;
-  // TODO(https://crbug.com/1121816): Handle non-ChromeOS platforms.
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+  // base::SysInfo::OperatingSystemName() returns "Linux" on ChromeOS devices.
   params["os"] = "ChromeOS";
+#else
+  params["os"] = base::SysInfo::OperatingSystemName();
+#endif
   params["os_version"] = platform.os_version;
   params["full_url"] = source.spec();
   params["url"] = source.path();
