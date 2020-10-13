@@ -247,6 +247,8 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
       break;
     }
     case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: {
+      controller_->metrics_helper()->RecordUserInteraction(
+          security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
       controller_->OpenEnhancedProtectionSettings();
       break;
     }

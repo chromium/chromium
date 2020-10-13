@@ -102,6 +102,11 @@ void CertReportHelper::PopulateEnhancedProtectionMessage(
   if (!show)
     return;
 
+  if (metrics_helper_) {
+    metrics_helper_->RecordUserInteraction(
+        security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION);
+  }
+
   load_time_data->SetString(
       security_interstitials::kEnhancedProtectionMessage,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));

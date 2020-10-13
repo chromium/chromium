@@ -64590,6 +64590,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="EXTENDED_REPORTING_IS_ENABLED"/>
   <int value="10" label="REPORT_PHISHING_ERROR"/>
   <int value="11" label="SHOW_WHITEPAPER"/>
+  <int value="12" label="SHOW_ENHANCED_PROTECTION"/>
+  <int value="13" label="OPEN_ENHANCED_PROTECTION"/>
 </enum>
 
 <enum name="SecurityLevel">
