@@ -67,12 +67,18 @@ void DeviceManagerImpl::GetDevice(
     const std::string& guid,
     mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
-  scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
-  if (!device)
-    return;
+  return GetDeviceInternal(guid, std::move(device_receiver),
+                           std::move(device_client),
+                           /*allow_security_key_requests=*/false);
+}
 
-  DeviceImpl::Create(std::move(device), std::move(device_receiver),
-                     std::move(device_client));
+void DeviceManagerImpl::GetSecurityKeyDevice(
+    const std::string& guid,
+    mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
+    mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
+  return GetDeviceInternal(guid, std::move(device_receiver),
+                           std::move(device_client),
+                           /*allow_security_key_requests=*/true);
 }
 
 #if defined(OS_ANDROID)
@@ -204,6 +210,19 @@ void DeviceManagerImpl::WillDestroyUsbService() {
   // Close all the connections.
   receivers_.Clear();
   clients_.Clear();
+}
+
+void DeviceManagerImpl::GetDeviceInternal(
+    const std::string& guid,
+    mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
+    mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
+    bool allow_security_key_requests) {
+  scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
+  if (!device)
+    return;
+
+  DeviceImpl::Create(std::move(device), std::move(device_receiver),
+                     std::move(device_client), allow_security_key_requests);
 }
 
 }  // namespace usb

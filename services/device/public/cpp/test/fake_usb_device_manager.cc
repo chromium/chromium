@@ -60,6 +60,13 @@ void FakeUsbDeviceManager::GetDevice(
                         std::move(device_client));
 }
 
+void FakeUsbDeviceManager::GetSecurityKeyDevice(
+    const std::string& guid,
+    mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
+    mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
+  return GetDevice(guid, std::move(device_receiver), std::move(device_client));
+}
+
 #if defined(OS_ANDROID)
 void FakeUsbDeviceManager::RefreshDeviceInfo(
     const std::string& guid,

@@ -185,6 +185,7 @@ class USBDeviceImplTest : public testing::Test {
       const std::string& manufacturer,
       const std::string& product,
       const std::string& serial,
+      bool allow_security_key_requests,
       mojo::PendingRemote<mojom::UsbDeviceClient> client) {
     mock_device_ =
         new MockUsbDevice(vendor_id, product_id, manufacturer, product, serial);
@@ -192,7 +193,7 @@ class USBDeviceImplTest : public testing::Test {
 
     mojo::Remote<mojom::UsbDevice> proxy;
     DeviceImpl::Create(mock_device_, proxy.BindNewPipeAndPassReceiver(),
-                       std::move(client));
+                       std::move(client), allow_security_key_requests);
 
     // Set up mock handle calls to respond based on mock device configs
     // established by the test.
@@ -227,7 +228,14 @@ class USBDeviceImplTest : public testing::Test {
   mojo::Remote<mojom::UsbDevice> GetMockDeviceProxy(
       mojo::PendingRemote<mojom::UsbDeviceClient> client) {
     return GetMockDeviceProxy(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF",
+                              /*allow_security_key_requests=*/false,
                               std::move(client));
+  }
+
+  mojo::Remote<mojom::UsbDevice> GetMockSecurityKeyDeviceProxy() {
+    return GetMockDeviceProxy(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF",
+                              /*allow_security_key_requests=*/true,
+                              mojo::NullRemote());
   }
 
   mojo::Remote<mojom::UsbDevice> GetMockDeviceProxy() {
@@ -1019,6 +1027,82 @@ TEST_F(USBDeviceImplTest, IsochronousTransfer) {
 
   EXPECT_CALL(mock_handle(), Close());
 }
+
+class USBDeviceImplSecurityKeyTest : public USBDeviceImplTest,
+                                     public testing::WithParamInterface<bool> {
+};
+
+TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
+  const bool allow_security_key_requests = GetParam();
+  mojo::Remote<mojom::UsbDevice> device;
+  if (allow_security_key_requests) {
+    device = GetMockSecurityKeyDeviceProxy();
+  } else {
+    device = GetMockDeviceProxy();
+  }
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::RunLoop loop;
+    device->Open(base::BindOnce(
+        &ExpectOpenAndThen, mojom::UsbOpenDeviceError::OK, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  AddMockConfig(ConfigBuilder(1).AddInterface(7, 0, 1, 2, 3).Build());
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::RunLoop loop;
+    device->SetConfiguration(
+        1, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
+    loop.Run();
+  }
+
+  const char* data_str =
+      mojom::UsbControlTransferParams::kSecurityKeyAOAVersion;
+  const std::vector<uint8_t> data(
+      reinterpret_cast<const uint8_t*>(data_str),
+      reinterpret_cast<const uint8_t*>(data_str) + strlen(data_str));
+
+  if (allow_security_key_requests) {
+    AddMockOutboundData(data);
+    EXPECT_CALL(mock_handle(),
+                ControlTransferInternal(UsbTransferDirection::OUTBOUND,
+                                        UsbControlTransferType::VENDOR,
+                                        UsbControlTransferRecipient::DEVICE, 52,
+                                        0, 3, _, 0, _));
+  }
+
+  {
+    // This control transfer should be rejected, unless
+    // |allow_security_key_requests| is true, because it's a request to
+    // trigger security key functionality on Android devices.
+
+    auto params = mojom::UsbControlTransferParams::New();
+    params->type = UsbControlTransferType::VENDOR;
+    params->recipient = UsbControlTransferRecipient::DEVICE;
+    params->request = 52;
+    params->value = 0;
+    params->index = 3;
+    base::RunLoop loop;
+    device->ControlTransferOut(
+        std::move(params), data, 0,
+        base::BindOnce(&ExpectTransferStatusAndThen,
+                       allow_security_key_requests
+                           ? mojom::UsbTransferStatus::COMPLETED
+                           : mojom::UsbTransferStatus::PERMISSION_DENIED,
+                       loop.QuitClosure()));
+    loop.Run();
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+INSTANTIATE_TEST_SUITE_P(USBDeviceImplSecurityKeyTests,
+                         USBDeviceImplSecurityKeyTest,
+                         testing::Values(false, true));
 
 }  // namespace usb
 }  // namespace device

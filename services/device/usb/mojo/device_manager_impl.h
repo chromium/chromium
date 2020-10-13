@@ -56,6 +56,10 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
       const std::string& guid,
       mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
+  void GetSecurityKeyDevice(
+      const std::string& guid,
+      mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
+      mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
 
 #if defined(OS_ANDROID)
   void RefreshDeviceInfo(const std::string& guid,
@@ -97,6 +101,11 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   void WillDestroyUsbService() override;
 
   void MaybeRunDeviceChangesCallback();
+  void GetDeviceInternal(
+      const std::string& guid,
+      mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
+      mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
+      bool allow_security_key_requests);
 
   std::unique_ptr<UsbService> usb_service_;
   ScopedObserver<UsbService, UsbService::Observer> observer_;

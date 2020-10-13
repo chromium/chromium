@@ -31,13 +31,15 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
  public:
   static void Create(scoped_refptr<device::UsbDevice> device,
                      mojo::PendingReceiver<mojom::UsbDevice> receiver,
-                     mojo::PendingRemote<mojom::UsbDeviceClient> client);
+                     mojo::PendingRemote<mojom::UsbDeviceClient> client,
+                     bool allow_security_key_requests);
 
   ~DeviceImpl() override;
 
  private:
   DeviceImpl(scoped_refptr<device::UsbDevice> device,
-             mojo::PendingRemote<mojom::UsbDeviceClient> client);
+             mojo::PendingRemote<mojom::UsbDeviceClient> client,
+             bool allow_security_key_requests);
 
   // Closes the device if it's open. This will always set |device_handle_| to
   // null.
@@ -111,6 +113,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   bool opening_ = false;
   scoped_refptr<UsbDeviceHandle> device_handle_;
 
+  const bool allow_security_key_requests_;
   mojo::SelfOwnedReceiverRef<mojom::UsbDevice> receiver_;
   mojo::Remote<device::mojom::UsbDeviceClient> client_;
   base::WeakPtrFactory<DeviceImpl> weak_factory_{this};

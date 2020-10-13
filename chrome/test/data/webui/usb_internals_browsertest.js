@@ -71,6 +71,7 @@ UsbInternalsTest.prototype = {
         super([
           'enumerateDevicesAndSetClient',
           'getDevice',
+          'getSecurityKeyDevice',
           'getDevices',
           'checkAccess',
           'openFileDescriptor',
@@ -105,6 +106,8 @@ UsbInternalsTest.prototype = {
         const deviceRemote = this.deviceRemoteMap.get(guid);
         deviceRemote.router.$.bindHandle(devicePendingReceiver.handle);
       }
+
+      async getSecurityKeyDevice(guid, devicePendingReceiver, deviceClient) {}
 
       async getDevices() {
         this.methodCalled('getDevices');

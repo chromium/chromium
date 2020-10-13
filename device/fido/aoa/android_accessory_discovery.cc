@@ -58,9 +58,9 @@ void AndroidAccessoryDiscovery::OnDeviceAdded(
   }
 
   mojo::Remote<device::mojom::UsbDevice> device;
-  device_manager_->GetDevice(device_info->guid,
-                             device.BindNewPipeAndPassReceiver(),
-                             mojo::NullRemote() /* device_client */);
+  device_manager_->GetSecurityKeyDevice(device_info->guid,
+                                        device.BindNewPipeAndPassReceiver(),
+                                        /*device_client=*/mojo::NullRemote());
 
   auto* device_ptr = device.get();
   if (device_info->vendor_id == 0x18d1 &&
@@ -369,7 +369,9 @@ void AndroidAccessoryDiscovery::OnConfigurationStepComplete(
   } else if (step == kNumStrings) {
     device_ptr->ControlTransferOut(
         ControlTransferParams(kSendString, step),
-        VectorFromString(kCableOverAOAVersion), kTimeoutMilliseconds,
+        VectorFromString(
+            device::mojom::UsbControlTransferParams::kSecurityKeyAOAVersion),
+        kTimeoutMilliseconds,
         base::BindOnce(&AndroidAccessoryDiscovery::OnConfigurationStepComplete,
                        weak_factory_.GetWeakPtr(), std::move(device),
                        step + 1));
@@ -404,8 +406,9 @@ void AndroidAccessoryDiscovery::OnGetDevices(
     FIDO_LOG(DEBUG) << "Previously opened accessory device found.";
 
     mojo::Remote<device::mojom::UsbDevice> device;
-    device_manager_->GetDevice(guid, device.BindNewPipeAndPassReceiver(),
-                               mojo::NullRemote() /* device_client */);
+    device_manager_->GetSecurityKeyDevice(guid,
+                                          device.BindNewPipeAndPassReceiver(),
+                                          /*device_client=*/mojo::NullRemote());
 
     HandleAccessoryDevice(std::move(device), std::move(device_info));
   }

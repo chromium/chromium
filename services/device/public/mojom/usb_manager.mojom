@@ -24,6 +24,13 @@ interface UsbDeviceManager {
   GetDevice(string guid, pending_receiver<UsbDevice> device_receiver,
             pending_remote<UsbDeviceClient>? device_client);
 
+  // Requests a device by guid. The returned device will be permitted to send
+  // control transfers that attempt to configure an AOA[1] version that
+  // indicates a security key request. See comment in
+  // |UsbControlTransferParams|.
+  GetSecurityKeyDevice(string guid, pending_receiver<UsbDevice> device_receiver,
+                       pending_remote<UsbDeviceClient>? device_client);
+
   // Check Android permissions to access the device identified by |guid|. If
   // necessary the user is prompted to grant this access. If access is granted
   // the device information is refreshed to include data not previously
