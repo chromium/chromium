@@ -1655,6 +1655,24 @@
             ]
         }
     ],
+    "ClientSideDetectionModelOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithModel55",
+                    "params": {
+                        "ModelNum": "55"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionModelOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "CodeCacheDeletionWithoutFilter": [
         {
             "platforms": [
