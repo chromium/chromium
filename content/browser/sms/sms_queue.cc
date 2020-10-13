@@ -53,4 +53,29 @@ bool SmsQueue::HasSubscriber(const url::Origin& origin,
          subscribers_[origin].HasObserver(subscriber);
 }
 
+void SmsQueue::NotifyParsingFailure(SmsParsingStatus status) {
+  FailureType failure_type;
+  switch (status) {
+    case SmsParsingStatus::kOTPFormatRegexNotMatch:
+      failure_type = FailureType::kSmsNotParsed_OTPFormatRegexNotMatch;
+      break;
+    case SmsParsingStatus::kHostAndPortNotParsed:
+      failure_type = FailureType::kSmsNotParsed_HostAndPortNotParsed;
+      break;
+    case SmsParsingStatus::kGURLNotValid:
+      failure_type = FailureType::kSmsNotParsed_kGURLNotValid;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  for (auto& origin_to_subscriber_list : subscribers_) {
+    base::ObserverList<Subscriber>& subscribers =
+        origin_to_subscriber_list.second;
+    for (auto& subscriber : subscribers) {
+      subscriber.OnFailure(failure_type);
+    }
+  }
+}
+
 }  // namespace content

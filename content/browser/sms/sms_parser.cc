@@ -19,22 +19,30 @@ namespace content {
 // https://wicg.github.io/sms-one-time-codes/#parsing
 constexpr char kOtpFormatRegex[] = "(?:^|\\s)@([a-zA-Z0-9.-]+) #([^#\\s]+)";
 
+SmsParser::Result::Result(SmsParsingStatus status) : parsing_status(status) {
+  DCHECK(parsing_status != SmsParsingStatus::kParsed);
+}
 SmsParser::Result::Result(const url::Origin& origin,
                           const std::string& one_time_code)
-    : origin(std::move(origin)), one_time_code(one_time_code) {}
+    : origin(std::move(origin)), one_time_code(one_time_code) {
+  parsing_status = SmsParsingStatus::kParsed;
+}
 
 SmsParser::Result::~Result() {}
 
 // static
-base::Optional<SmsParser::Result> SmsParser::Parse(base::StringPiece sms) {
+SmsParser::Result SmsParser::Parse(base::StringPiece sms) {
   std::string url, otp;
+  // TODO(yigu): The existing kOtpFormatRegex may filter out invalid SMSes that
+  // would fall into |kHostAndPortNotParsed| or |kGURLNotValid| below. We should
+  // clean up the code if the statement is confirmed by metrics.
   if (!re2::RE2::PartialMatch(sms.as_string(), kOtpFormatRegex, &url, &otp))
-    return base::nullopt;
+    return Result(SmsParsingStatus::kOTPFormatRegexNotMatch);
 
   std::string host, scheme;
   int port;
   if (!net::ParseHostAndPort(url, &host, &port))
-    return base::nullopt;
+    return Result(SmsParsingStatus::kHostAndPortNotParsed);
 
   // Expect localhost to always be http.
   if (net::HostStringIsLocalhost(base::StringPiece(host))) {
@@ -46,7 +54,7 @@ base::Optional<SmsParser::Result> SmsParser::Parse(base::StringPiece sms) {
   GURL gurl(scheme + url);
 
   if (!gurl.is_valid())
-    return base::nullopt;
+    return Result(SmsParsingStatus::kGURLNotValid);
 
   return Result(url::Origin::Create(gurl), otp);
 }

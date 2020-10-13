@@ -11444,12 +11444,19 @@ be describing additional metrics about the same event.
   <owner>reillyg@chromium.org</owner>
   <owner>juncai@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <summary>
     Records performance metrics for SMSReceiver API.
   </summary>
   <metric name="Outcome" enum="SMSReceiverOutcome">
     <summary>
       Records the result of a call to the SmsReceiver API.
+    </summary>
+  </metric>
+  <metric name="SmsParsingStatus" enum="SmsParsingStatus">
+    <summary>
+      Records the status of parsing an incoming SMS when using the WebOTP API.
+      It records one sample per incoming SMS.
     </summary>
   </metric>
   <metric name="TimeSmsReceiveMs">

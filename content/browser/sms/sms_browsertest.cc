@@ -89,6 +89,27 @@ class SmsBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(ukm_recorder()->GetEntriesByName(Entry::kEntryName).empty());
   }
 
+  void ExpectSmsParsingStatusMetrics(
+      const base::HistogramTester& histogram_tester,
+      int status) {
+    histogram_tester.ExpectBucketCount("Blink.Sms.Receive.SmsParsingStatus",
+                                       status, 1);
+
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    ASSERT_FALSE(entries.empty());
+
+    for (const auto* const entry : entries) {
+      const int64_t* metric =
+          ukm_recorder()->GetEntryMetric(entry, "SmsParsingStatus");
+      if (metric && *metric == status) {
+        SUCCEED();
+        return;
+      }
+    }
+    FAIL() << "Expected UKM was not recorded";
+  }
+
   void ExpectSmsPrompt() {
     EXPECT_CALL(delegate_, CreateSmsPrompt(_, _, _, _, _))
         .WillOnce(Invoke([&](RenderFrameHost*, const url::Origin&,
@@ -832,6 +853,139 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordPendingOriginCount) {
 
   histogram_tester.ExpectBucketCount("Blink.Sms.PendingOriginCount", 1, 1);
   histogram_tester.ExpectBucketCount("Blink.Sms.PendingOriginCount", 2, 1);
+}
+
+// Verifies that the metrics are correctly recorded when an invalid SMS cannot
+// be parsed.
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsNotParsedMetrics) {
+  base::HistogramTester histogram_tester;
+
+  auto entries =
+      ukm_recorder_->GetEntriesByName(ukm::builders::SMSReceiver::kEntryName);
+  ASSERT_TRUE(entries.empty());
+
+  GURL url = GetTestUrl(nullptr, "simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  const std::string invalid_sms = "Your OTP is: 1234.\n!example.com #1234";
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
+    // Calls NotifyReceive with an invalid sms and record sms parse failure
+    // metrics.
+    mock_provider_ptr->NotifyReceiveForTesting(invalid_sms);
+    loop.Quit();
+  }));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        navigator.credentials.get({otp: {transport: ["sms"]}});
+    )"));
+  loop.Run();
+
+  ASSERT_TRUE(GetSmsFetcher()->HasSubscribers());
+  ASSERT_TRUE(mock_provider_ptr->HasObservers());
+
+  content::FetchHistogramsFromChildProcesses();
+  ExpectSmsParsingStatusMetrics(
+      histogram_tester,
+      static_cast<int>(SmsParser::SmsParsingStatus::kOTPFormatRegexNotMatch));
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.Sms.Receive.SmsParsingStatus",
+      static_cast<int>(SmsParser::SmsParsingStatus::kParsed), 0);
+}
+
+// Verifies that a valid SMS can be parsed and no metrics regarding parsing
+// failure should be recorded. Note that the metrics about successful parsing
+// are tested separately below.
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsParsed) {
+  base::HistogramTester histogram_tester;
+
+  auto entries =
+      ukm_recorder_->GetEntriesByName(ukm::builders::SMSReceiver::kEntryName);
+  ASSERT_TRUE(entries.empty());
+
+  GURL url = GetTestUrl(nullptr, "simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  shell()->web_contents()->SetDelegate(&delegate_);
+
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  const std::string valid_sms = "Your OTP is: 1234.\n@example.com #1234";
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
+    mock_provider_ptr->NotifyReceiveForTesting(valid_sms);
+    loop.Quit();
+  }));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        navigator.credentials.get({otp: {transport: ["sms"]}});
+    )"));
+  loop.Run();
+
+  ASSERT_TRUE(GetSmsFetcher()->HasSubscribers());
+  ASSERT_TRUE(mock_provider_ptr->HasObservers());
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.Sms.Receive.SmsParsingStatus",
+      static_cast<int>(SmsParser::SmsParsingStatus::kOTPFormatRegexNotMatch),
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.Sms.Receive.SmsParsingStatus",
+      static_cast<int>(SmsParser::SmsParsingStatus::kHostAndPortNotParsed), 0);
+  histogram_tester.ExpectBucketCount(
+      "Blink.Sms.Receive.SmsParsingStatus",
+      static_cast<int>(SmsParser::SmsParsingStatus::kGURLNotValid), 0);
+}
+
+// Verifies that after an SMS is parsed the metrics regarding successful parsing
+// are recorded.
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsParsedMetrics) {
+  base::HistogramTester histogram_tester;
+
+  GURL url = GetTestUrl(nullptr, "simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  shell()->web_contents()->SetDelegate(&delegate_);
+
+  ExpectSmsPrompt();
+
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
+    // WebOTP does not accept ports in the origin and the test server requires
+    // ports. Therefore we cannot create an SMS with valid origin from the test.
+    // Bypassing the issue by calling NotifyReceive directly to test metrics
+    // recording logic.
+    mock_provider_ptr->NotifyReceive(url::Origin::Create(url), "1234");
+    ConfirmPrompt();
+  }));
+
+  // Wait for UKM to be recorded to avoid race condition between outcome
+  // capture and evaluation.
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  EXPECT_EQ("1234", EvalJs(shell(), R"(
+    (async () => {
+      let cred = await navigator.credentials.get({otp: {transport: ["sms"]}});
+      return cred.code;
+    }) ();
+    )"));
+  ukm_loop.Run();
+
+  content::FetchHistogramsFromChildProcesses();
+  ExpectSmsParsingStatusMetrics(
+      histogram_tester, static_cast<int>(SmsParser::SmsParsingStatus::kParsed));
+  histogram_tester.ExpectBucketCount(
+      "Blink.Sms.Receive.SmsParsingStatus",
+      static_cast<int>(SmsParser::SmsParsingStatus::kOTPFormatRegexNotMatch),
+      0);
 }
 
 }  // namespace content

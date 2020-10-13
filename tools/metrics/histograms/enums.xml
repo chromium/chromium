@@ -67209,6 +67209,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Authenticated channel dropped"/>
 </enum>
 
+<enum name="SmsParsingStatus">
+  <int value="0" label="Parsed"/>
+  <int value="1" label="OTP format regex not match"/>
+  <int value="2" label="Host and port not parsed"/>
+  <int value="3" label="GURL not valid"/>
+</enum>
+
 <enum name="SmsReceiverDestroyedReason">
   <int value="0" label="Navigated to new page"/>
   <int value="1" label="Navigated to existing page"/>
