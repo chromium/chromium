@@ -206,8 +206,8 @@ public class IncognitoNotificationServiceTest {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         boolean isIncognitoNotificationDisplayed = false;
         for (StatusBarNotification statusBarNotification : nm.getActiveNotifications()) {
-            if (statusBarNotification.getTag().equals(
-                        IncognitoNotificationManager.INCOGNITO_TABS_OPEN_TAG)) {
+            if (IncognitoNotificationManager.INCOGNITO_TABS_OPEN_TAG.equals(
+                        statusBarNotification.getTag())) {
                 isIncognitoNotificationDisplayed = true;
             }
         }
