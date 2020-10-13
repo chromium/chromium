@@ -31,8 +31,6 @@ void IntSetToWorkarounds(const std::vector<int32_t>& enabled_workarounds,
 
   if (workarounds->max_copy_texture_chromium_size_1048576)
     workarounds->max_copy_texture_chromium_size = 1048576;
-  if (workarounds->max_copy_texture_chromium_size_262144)
-    workarounds->max_copy_texture_chromium_size = 262144;
 
   if (workarounds->max_3d_array_texture_size_1024)
     workarounds->max_3d_array_texture_size = 1024;

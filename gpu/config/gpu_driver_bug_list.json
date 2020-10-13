@@ -947,19 +947,6 @@
       ]
     },
     {
-      "id": 129,
-      "comment": "TODO(dshwang): Fix ANGLE crash. crbug.com/518889",
-      "description": "ANGLE crash on glReadPixels from incomplete cube map texture",
-      "cr_bugs": [518889],
-      "os": {
-        "type": "win"
-      },
-      "gl_renderer": "ANGLE.*",
-      "features": [
-        "force_cube_complete"
-      ]
-    },
-    {
       "id": 130,
       "description": "NVIDIA fails glReadPixels from incomplete cube map texture",
       "cr_bugs": [518889],
@@ -1094,17 +1081,6 @@
       "gl_renderer": "Adreno \\(TM\\) 4.*",
       "comment": "Originally on 418.",
       "disabled_extensions": ["GL_EXT_sRGB"]
-    },
-    {
-      "id": 141,
-      "cr_bugs": [570897],
-      "description": "Framebuffer discarding can hurt performance on non-tilers",
-      "os": {
-        "type": "win"
-      },
-      "features": [
-        "disable_discard_framebuffer"
-      ]
     },
     {
       "id": 142,
@@ -3444,6 +3420,9 @@
       "id": 343,
       "description": "Disable using GPU backed resource for imageBitmap from video on d3d9",
       "cr_bugs": [1098445, 1105923],
+      "os": {
+        "type": "win"
+      },
       "gl_renderer": ".*Direct3D9.*",
       "features": [
         "disable_imagebitmap_from_video_using_gpu"

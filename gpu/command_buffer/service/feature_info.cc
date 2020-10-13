@@ -1562,12 +1562,6 @@ void FeatureInfo::InitializeFeatures() {
     validators_.g_l_state.AddValue(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT);
   }
 
-#if !defined(OS_MAC)
-  if (workarounds_.ignore_egl_sync_failures) {
-    gl::GLFenceEGL::SetIgnoreFailures();
-  }
-#endif
-
   if (workarounds_.avoid_egl_image_target_texture_reuse) {
     TextureDefinition::AvoidEGLTargetTextureReuse();
   }
