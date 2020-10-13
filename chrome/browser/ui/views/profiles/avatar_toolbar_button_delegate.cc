@@ -89,6 +89,12 @@ gfx::Image GetAvatarImage(Profile* profile,
   return entry->GetAvatarIcon(preferred_size);
 }
 
+// TODO(crbug.com/1125474): Replace IsGuest(profile) calls with
+// Profile::IsGuestProfile() after IsEphemeralGuestProfile is fully migrated.
+bool IsGuest(Profile* profile) {
+  return profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
+}
+
 }  // namespace
 
 AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate() = default;
@@ -161,14 +167,14 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
 }
 
 int AvatarToolbarButtonDelegate::GetWindowCount() const {
-  if (profile_->IsGuestSession())
+  if (IsGuest(profile_))
     return BrowserList::GetGuestBrowserCount();
   DCHECK(profile_->IsOffTheRecord());
   return BrowserList::GetOffTheRecordBrowsersActiveForProfile(profile_);
 }
 
 AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
-  if (profile_->IsGuestSession())
+  if (IsGuest(profile_))
     return AvatarToolbarButton::State::kGuestSession;
 
   // Return |kIncognitoProfile| state for all OffTheRecord profile types except

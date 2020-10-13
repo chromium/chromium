@@ -153,6 +153,12 @@ bool IsSyncPaused(Profile* profile) {
          sync_ui_util::AUTH_ERROR;
 }
 
+// TODO(crbug.com/1125474): Replace IsGuest(profile) calls with
+// Profile::IsGuestProfile() after IsEphemeralGuestProfile is fully migrated.
+bool IsGuest(Profile* profile) {
+  return profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
+}
+
 }  // namespace
 
 // ProfileMenuView ---------------------------------------------------------
@@ -171,13 +177,12 @@ ProfileMenuView::~ProfileMenuView() = default;
 
 void ProfileMenuView::BuildMenu() {
   Profile* profile = browser()->profile();
-  const bool is_guest = profile->IsGuestSession();
-  if (profile->IsRegularProfile()) {
+  if (IsGuest(profile)) {
+    BuildGuestIdentity();
+  } else if (profile->IsRegularProfile()) {
     BuildIdentity();
     BuildSyncInfo();
     BuildAutofillButtons();
-  } else if (is_guest) {
-    BuildGuestIdentity();
   } else {
     NOTREACHED();
   }
@@ -186,7 +191,7 @@ void ProfileMenuView::BuildMenu() {
 
 //  ChromeOS doesn't support multi-profile.
 #if !defined(OS_CHROMEOS)
-  if (!(is_guest &&
+  if (!(IsGuest(profile) &&
         base::FeatureList::IsEnabled(features::kNewProfilePicker))) {
     BuildProfileManagementHeading();
     BuildSelectableProfiles();
@@ -580,9 +585,8 @@ void ProfileMenuView::BuildFeatureButtons() {
   Profile* profile = browser()->profile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  const bool is_guest = profile->IsGuestSession();
   const bool has_unconsented_account =
-      !is_guest &&
+      !IsGuest(profile) &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired);
 
   if (has_unconsented_account && !IsSyncPaused(profile)) {
@@ -606,7 +610,8 @@ void ProfileMenuView::BuildFeatureButtons() {
   }
 
   int window_count = CountBrowsersFor(profile);
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker) && is_guest) {
+  if (base::FeatureList::IsEnabled(features::kNewProfilePicker) &&
+      IsGuest(profile)) {
     AddFeatureButton(
         l10n_util::GetPluralStringFUTF16(IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON,
                                          window_count),
@@ -626,7 +631,7 @@ void ProfileMenuView::BuildFeatureButtons() {
 
 #if !defined(OS_CHROMEOS)
   const bool has_primary_account =
-      !is_guest && identity_manager->HasPrimaryAccount();
+      !IsGuest(profile) && identity_manager->HasPrimaryAccount();
   // The sign-out button is always at the bottom.
   if (has_unconsented_account && !has_primary_account) {
     AddFeatureButton(
@@ -666,7 +671,7 @@ void ProfileMenuView::BuildSelectableProfiles() {
 
   PrefService* service = g_browser_process->local_state();
   DCHECK(service);
-  if (!browser()->profile()->IsGuestSession() &&
+  if (!IsGuest(browser()->profile()) &&
       service->GetBoolean(prefs::kBrowserGuestModeEnabled)) {
     AddSelectableProfile(
         profiles::GetGuestAvatar(),
