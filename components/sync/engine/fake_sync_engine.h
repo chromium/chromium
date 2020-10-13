@@ -72,8 +72,6 @@ class FakeSyncEngine : public SyncEngine {
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
 
-  void GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) const override;
-
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
 

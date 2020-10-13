@@ -143,8 +143,6 @@ void SyncEngineBackend::OnInitializationComplete(
       /*types_to_add=*/ControlTypes(),
       /*types_to_remove=*/ModelTypeSet());
 
-  ModelSafeRoutingInfo routing_info;
-  registrar_->GetModelSafeRoutingInfo(&routing_info);
   SDVLOG(1) << "Control Types " << ModelTypeSetToString(new_control_types)
             << " added; calling ConfigureSyncer";
 
@@ -469,9 +467,7 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  ModelSafeRoutingInfo routing_info;
-  registrar_->GetModelSafeRoutingInfo(&routing_info);
-  ModelTypeSet enabled_types = GetRoutingInfoTypes(routing_info);
+  ModelTypeSet enabled_types = registrar_->GetTypesWithRoutingInfo();
   enabled_types.RemoveAll(ProxyTypes());
 
   const ModelTypeSet failed_configuration_types =

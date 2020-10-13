@@ -1483,17 +1483,12 @@ ProfileSyncService::GetTypeStatusMapForDebugging() {
   type_status_header->SetString("num_live", "Live Entries");
   type_status_header->SetString("message", "Message");
   type_status_header->SetString("state", "State");
-  type_status_header->SetString("group_type", "Group Type");
   result->Append(std::move(type_status_header));
 
-  ModelSafeRoutingInfo routing_info;
-  engine_->GetModelSafeRoutingInfo(&routing_info);
   const ModelTypeSet registered = GetRegisteredDataTypes();
   for (ModelType type : registered) {
     auto type_status = std::make_unique<base::DictionaryValue>();
     type_status->SetString("name", ModelTypeToString(type));
-    type_status->SetString("group_type",
-                           ModelSafeGroupToString(routing_info[type]));
 
     if (data_type_error_map_.find(type) != data_type_error_map_.end()) {
       const SyncError& error = data_type_error_map_.find(type)->second;
@@ -1516,12 +1511,9 @@ ProfileSyncService::GetTypeStatusMapForDebugging() {
     } else if (backed_off_types.Has(type)) {
       type_status->SetString("status", "warning");
       type_status->SetString("message", "Backed off");
-    } else if (routing_info.find(type) != routing_info.end()) {
+    } else {
       type_status->SetString("status", "ok");
       type_status->SetString("message", "");
-    } else {
-      type_status->SetString("status", "warning");
-      type_status->SetString("message", "Disabled by User");
     }
 
     const auto& dtc_iter = data_type_controllers_.find(type);

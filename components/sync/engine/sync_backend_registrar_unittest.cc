@@ -39,10 +39,9 @@ class SyncBackendRegistrarTest : public testing::Test {
     sync_thread_.FlushForTesting();
   }
 
-  void ExpectRoutingInfo(const ModelSafeRoutingInfo& expected_routing_info) {
-    ModelSafeRoutingInfo actual_routing_info;
-    registrar_->GetModelSafeRoutingInfo(&actual_routing_info);
-    EXPECT_EQ(expected_routing_info, actual_routing_info);
+  void ExpectRoutingInfo(ModelTypeSet expected_routing_info_types) {
+    EXPECT_EQ(expected_routing_info_types,
+              registrar_->GetTypesWithRoutingInfo());
   }
 
   size_t GetWorkersSize() {
@@ -78,7 +77,7 @@ TEST_F(SyncBackendRegistrarTest, ConstructorEmpty) {
   registrar()->SetInitialTypes(ModelTypeSet());
   EXPECT_FALSE(registrar()->IsNigoriEnabled());
   EXPECT_EQ(1u, GetWorkersSize());
-  ExpectRoutingInfo(ModelSafeRoutingInfo());
+  ExpectRoutingInfo(ModelTypeSet());
 }
 
 TEST_F(SyncBackendRegistrarTest, ConstructorNonEmpty) {
@@ -89,7 +88,7 @@ TEST_F(SyncBackendRegistrarTest, ConstructorNonEmpty) {
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
   // Bookmarks dropped because it is in ModelSafeGroup::GROUP_NON_BLOCKING.
   // Passwords dropped because of no password store.
-  ExpectRoutingInfo({{NIGORI, GROUP_PASSIVE}});
+  ExpectRoutingInfo({NIGORI});
 }
 
 TEST_F(SyncBackendRegistrarTest, ConstructorNonEmptyReversedInitialization) {
@@ -100,7 +99,7 @@ TEST_F(SyncBackendRegistrarTest, ConstructorNonEmptyReversedInitialization) {
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
   // Bookmarks dropped because it is in ModelSafeGroup::GROUP_NON_BLOCKING.
   // Passwords dropped because of no password store.
-  ExpectRoutingInfo({{NIGORI, GROUP_PASSIVE}});
+  ExpectRoutingInfo({NIGORI});
 }
 
 TEST_F(SyncBackendRegistrarTest, ConfigureDataTypes) {
@@ -110,21 +109,19 @@ TEST_F(SyncBackendRegistrarTest, ConfigureDataTypes) {
   // Add.
   const ModelTypeSet types1(BOOKMARKS, NIGORI, AUTOFILL);
   EXPECT_EQ(types1, registrar()->ConfigureDataTypes(types1, ModelTypeSet()));
-  ExpectRoutingInfo({{BOOKMARKS, GROUP_NON_BLOCKING},
-                     {NIGORI, GROUP_PASSIVE},
-                     {AUTOFILL, GROUP_PASSIVE}});
+  ExpectRoutingInfo({BOOKMARKS, NIGORI, AUTOFILL});
   EXPECT_EQ(types1, registrar()->GetLastConfiguredTypes());
 
   // Add and remove.
   const ModelTypeSet types2(PREFERENCES, THEMES);
   EXPECT_EQ(types2, registrar()->ConfigureDataTypes(types2, types1));
 
-  ExpectRoutingInfo({{PREFERENCES, GROUP_PASSIVE}, {THEMES, GROUP_PASSIVE}});
+  ExpectRoutingInfo({PREFERENCES, THEMES});
   EXPECT_EQ(types2, registrar()->GetLastConfiguredTypes());
 
   // Remove.
   EXPECT_TRUE(registrar()->ConfigureDataTypes(ModelTypeSet(), types2).Empty());
-  ExpectRoutingInfo(ModelSafeRoutingInfo());
+  ExpectRoutingInfo(ModelTypeSet());
   EXPECT_EQ(ModelTypeSet(), registrar()->GetLastConfiguredTypes());
 }
 
@@ -134,12 +131,12 @@ TEST_F(SyncBackendRegistrarTest, ConfigureDataType) {
   registrar()->RegisterDataType(AUTOFILL);
   registrar()->RegisterDataType(BOOKMARKS);
 
-  ExpectRoutingInfo(ModelSafeRoutingInfo());
+  ExpectRoutingInfo(ModelTypeSet());
   // Simulate that initial sync was already done for AUTOFILL.
   registrar()->AddRestoredDataType(AUTOFILL);
   // It should be added to routing info and set of configured types.
   EXPECT_EQ(ModelTypeSet(AUTOFILL), registrar()->GetLastConfiguredTypes());
-  ExpectRoutingInfo({{AUTOFILL, GROUP_NON_BLOCKING}});
+  ExpectRoutingInfo({AUTOFILL});
 
   // Configure two data types. Initial sync wasn't done for BOOKMARKS so
   // it should be included in types to be downloaded.
@@ -148,8 +145,7 @@ TEST_F(SyncBackendRegistrarTest, ConfigureDataType) {
       registrar()->ConfigureDataTypes(types_to_add, ModelTypeSet());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS), newly_added_types);
   EXPECT_EQ(types_to_add, registrar()->GetLastConfiguredTypes());
-  ExpectRoutingInfo(
-      {{AUTOFILL, GROUP_NON_BLOCKING}, {BOOKMARKS, GROUP_NON_BLOCKING}});
+  ExpectRoutingInfo({AUTOFILL, BOOKMARKS});
 }
 
 }  // namespace

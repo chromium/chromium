@@ -18,10 +18,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace syncer {
 
 using WorkCallback = base::OnceCallback<SyncerError(void)>;
@@ -37,8 +33,6 @@ enum ModelSafeGroup {
                        // forwarded to these models without ModelSafeWorker/
                        // SyncBackendRegistrar involvement.
 };
-
-std::string ModelSafeGroupToString(ModelSafeGroup group);
 
 // TODO(crbug.com/1102835): This class is a remainder from the old Directory
 // implementation and should be removed.
@@ -98,23 +92,6 @@ class ModelSafeWorker : public base::RefCountedThreadSafe<ModelSafeWorker> {
 
   DISALLOW_COPY_AND_ASSIGN(ModelSafeWorker);
 };
-
-// A map that details which ModelSafeGroup each ModelType
-// belongs to.  Routing info can change in response to the user enabling /
-// disabling sync for certain types, as well as model association completions.
-using ModelSafeRoutingInfo = std::map<ModelType, ModelSafeGroup>;
-
-// Caller takes ownership of return value.
-std::unique_ptr<base::DictionaryValue> ModelSafeRoutingInfoToValue(
-    const ModelSafeRoutingInfo& routing_info);
-
-std::string ModelSafeRoutingInfoToString(
-    const ModelSafeRoutingInfo& routing_info);
-
-ModelTypeSet GetRoutingInfoTypes(const ModelSafeRoutingInfo& routing_info);
-
-ModelSafeGroup GetGroupForModelType(const ModelType type,
-                                    const ModelSafeRoutingInfo& routes);
 
 }  // namespace syncer
 

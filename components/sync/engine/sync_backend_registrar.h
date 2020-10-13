@@ -83,17 +83,19 @@ class SyncBackendRegistrar {
   void RequestWorkerStopOnUIThread();
 
   void GetWorkers(std::vector<scoped_refptr<ModelSafeWorker>>* out);
-  void GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out);
+
+  // Returns the set of currently enabled types.
+  ModelTypeSet GetTypesWithRoutingInfo() const;
 
  private:
+  // Same as GetTypesWithRoutingInfo() but callers are responsible for holding
+  // |lock_|.
+  ModelTypeSet GetTypesWithRoutingInfoNoLock() const;
+
   // Add a worker for |group| to the worker map if one is successfully created
   // by |worker_factory|.
   void MaybeAddWorker(ModelSafeWorkerFactory worker_factory,
                       ModelSafeGroup group);
-
-  // Return true if |model_type| lives on the current thread.  Must be
-  // called with |lock_| held.  May be called on any thread.
-  bool IsCurrentThreadSafeForModel(ModelType model_type) const;
 
   // Returns model safe group that should be assigned to type when it is first
   // configured (before activation).
@@ -112,7 +114,7 @@ class SyncBackendRegistrar {
   std::map<ModelSafeGroup, scoped_refptr<ModelSafeWorker>> workers_;
 
   // Maps ModelType to ModelSafeGroup.
-  ModelSafeRoutingInfo routing_info_;
+  std::map<ModelType, ModelSafeGroup> routing_info_;
 
   // The types that were enabled as of the last configuration. Updated on each
   // call to ConfigureDataTypes as well as SetInitialTypes.

@@ -263,14 +263,6 @@ void SyncEngineImpl::HasUnsyncedItemsForTest(
       std::move(cb));
 }
 
-void SyncEngineImpl::GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) const {
-  if (IsInitialized()) {
-    registrar_->GetModelSafeRoutingInfo(out);
-  } else {
-    NOTREACHED();
-  }
-}
-
 void SyncEngineImpl::RequestBufferedProtocolEventsAndEnableForwarding() {
   sync_task_runner_->PostTask(
       FROM_HERE,

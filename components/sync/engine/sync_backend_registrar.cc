@@ -57,7 +57,7 @@ void SyncBackendRegistrar::SetInitialTypes(ModelTypeSet initial_types) {
 
   // Although this can re-set types in GROUP_NON_BLOCKING, this should be
   // idempotent.
-  last_configured_types_ = GetRoutingInfoTypes(routing_info_);
+  last_configured_types_ = GetTypesWithRoutingInfoNoLock();
 }
 
 void SyncBackendRegistrar::AddRestoredDataType(ModelType type) {
@@ -96,14 +96,11 @@ ModelTypeSet SyncBackendRegistrar::ConfigureDataTypes(
     routing_info_.erase(type);
   }
 
-  // TODO(akalin): Use SVLOG/SLOG if we add any more logging.
   DVLOG(1) << name_ << ": Adding types " << ModelTypeSetToString(types_to_add)
            << " (with newly-added types "
            << ModelTypeSetToString(newly_added_types) << ") and removing types "
-           << ModelTypeSetToString(types_to_remove)
-           << " to get new routing info "
-           << ModelSafeRoutingInfoToString(routing_info_);
-  last_configured_types_ = GetRoutingInfoTypes(routing_info_);
+           << ModelTypeSetToString(types_to_remove);
+  last_configured_types_ = GetTypesWithRoutingInfoNoLock();
 
   return newly_added_types;
 }
@@ -129,25 +126,17 @@ void SyncBackendRegistrar::GetWorkers(
   }
 }
 
-void SyncBackendRegistrar::GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) {
+ModelTypeSet SyncBackendRegistrar::GetTypesWithRoutingInfo() const {
   base::AutoLock lock(lock_);
-  ModelSafeRoutingInfo copy(routing_info_);
-  out->swap(copy);
+  return GetTypesWithRoutingInfoNoLock();
 }
 
-bool SyncBackendRegistrar::IsCurrentThreadSafeForModel(
-    ModelType model_type) const {
-  lock_.AssertAcquired();
-  ModelSafeGroup group = GetGroupForModelType(model_type, routing_info_);
-  DCHECK_NE(GROUP_NON_BLOCKING, group);
-
-  if (group == GROUP_PASSIVE) {
-    return IsControlType(model_type);
+ModelTypeSet SyncBackendRegistrar::GetTypesWithRoutingInfoNoLock() const {
+  ModelTypeSet types;
+  for (const auto& model_type_and_group : routing_info_) {
+    types.Put(model_type_and_group.first);
   }
-
-  auto it = workers_.find(group);
-  DCHECK(it != workers_.end());
-  return it->second->IsOnModelSequence();
+  return types;
 }
 
 SyncBackendRegistrar::~SyncBackendRegistrar() {

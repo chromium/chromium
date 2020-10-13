@@ -7,63 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/json/json_writer.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/values.h"
 
 namespace syncer {
-
-std::unique_ptr<base::DictionaryValue> ModelSafeRoutingInfoToValue(
-    const ModelSafeRoutingInfo& routing_info) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  for (auto it = routing_info.begin(); it != routing_info.end(); ++it) {
-    dict->SetString(ModelTypeToString(it->first),
-                    ModelSafeGroupToString(it->second));
-  }
-  return dict;
-}
-
-std::string ModelSafeRoutingInfoToString(
-    const ModelSafeRoutingInfo& routing_info) {
-  std::string json;
-  base::JSONWriter::Write(*ModelSafeRoutingInfoToValue(routing_info), &json);
-  return json;
-}
-
-ModelTypeSet GetRoutingInfoTypes(const ModelSafeRoutingInfo& routing_info) {
-  ModelTypeSet types;
-  for (auto it = routing_info.begin(); it != routing_info.end(); ++it) {
-    types.Put(it->first);
-  }
-  return types;
-}
-
-ModelSafeGroup GetGroupForModelType(const ModelType type,
-                                    const ModelSafeRoutingInfo& routes) {
-  auto it = routes.find(type);
-  if (it == routes.end()) {
-    if (type != UNSPECIFIED && type != TOP_LEVEL_FOLDER)
-      DVLOG(1) << "Entry does not belong to active ModelSafeGroup!";
-    return GROUP_PASSIVE;
-  }
-  return it->second;
-}
-
-std::string ModelSafeGroupToString(ModelSafeGroup group) {
-  switch (group) {
-    case GROUP_PASSIVE:
-      return "Group Passive";
-    case GROUP_NON_BLOCKING:
-      return "Group Non Blocking";
-  }
-  NOTREACHED();
-  return "Invalid";
-}
 
 ModelSafeWorker::ModelSafeWorker()
     : work_done_or_abandoned_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED) {
 }
+
 ModelSafeWorker::~ModelSafeWorker() {}
 
 void ModelSafeWorker::RequestStop() {

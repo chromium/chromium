@@ -51,7 +51,6 @@ class MockSyncEngine : public SyncEngine {
   MOCK_CONST_METHOD0(GetDetailedStatus, const SyncStatus&());
   MOCK_CONST_METHOD1(HasUnsyncedItemsForTest,
                      void(base::OnceCallback<void(bool)>));
-  MOCK_CONST_METHOD1(GetModelSafeRoutingInfo, void(ModelSafeRoutingInfo*));
   MOCK_METHOD0(RequestBufferedProtocolEventsAndEnableForwarding, void());
   MOCK_METHOD0(DisableProtocolEventForwarding, void());
   MOCK_METHOD1(ClearServerData, void(base::OnceClosure));

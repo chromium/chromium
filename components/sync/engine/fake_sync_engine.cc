@@ -75,8 +75,6 @@ const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
 void FakeSyncEngine::HasUnsyncedItemsForTest(
     base::OnceCallback<void(bool)> cb) const {}
 
-void FakeSyncEngine::GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) const {}
-
 void FakeSyncEngine::RequestBufferedProtocolEventsAndEnableForwarding() {}
 
 void FakeSyncEngine::DisableProtocolEventForwarding() {}

@@ -205,7 +205,6 @@ HARD_CODED_ABOUT_INFO = {
       'num_live': 'Live Entries',
       'message': 'Message',
       'state': 'State',
-      'group_type': 'Group Type',
     },
     {
       'status': 'ok',
@@ -214,7 +213,6 @@ HARD_CODED_ABOUT_INFO = {
       'num_live': 2793,
       'message': '',
       'state': 'Running',
-      'group_type': 'Group UI',
     },
   ],
   'unrecoverable_error_detected': false

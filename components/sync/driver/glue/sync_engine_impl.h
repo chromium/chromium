@@ -83,7 +83,6 @@ class SyncEngineImpl : public SyncEngine,
   const Status& GetDetailedStatus() const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
-  void GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) const override;
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
   void OnCookieJarChanged(bool account_mismatch,
