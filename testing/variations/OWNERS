@@ -1,5 +1,7 @@
 file://base/metrics/OWNERS
 
+per-file fieldtrial_testing_config.json=caitlinfischer@google.com
+
 # Use the following owners only if:
 #  - You work in the same area as them.
 #  - They are already aware of the field trial being modified.
