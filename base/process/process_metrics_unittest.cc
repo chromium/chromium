@@ -475,8 +475,6 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
   // Chrome OS exposes shmem.
   EXPECT_GT(info.shmem, 0);
   EXPECT_LT(info.shmem, info.total);
-  // Chrome unit tests are not run on actual Chrome OS hardware, so gem_objects
-  // and gem_size cannot be tested here.
 #endif
 }
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||

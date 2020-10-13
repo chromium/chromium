@@ -36,10 +36,11 @@ void OomMemoryDetails::OnDetailsAvailable() {
   // diagnose user-reported problems with frequently discarded tabs.
   std::string log_string = ToLogString(/*include_tab_title=*/false);
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
-  base::SystemMemoryInfoKB memory;
-  if (base::GetSystemMemoryInfo(&memory) && memory.gem_size != -1) {
-    log_string += "Graphics ";
-    log_string += base::UTF16ToASCII(ui::FormatBytes(memory.gem_size));
+  base::GraphicsMemoryInfoKB gpu_meminfo;
+  if (base::GetGraphicsMemoryInfo(&gpu_meminfo)) {
+    log_string +=
+        "Graphics " +
+        base::UTF16ToASCII(ui::FormatBytes(gpu_meminfo.gpu_memory_size));
   }
 #endif
   LOG(WARNING) << title_ << " (" << delta.InMilliseconds() << " ms):\n"

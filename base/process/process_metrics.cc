@@ -56,6 +56,7 @@ SystemMetrics SystemMetrics::Sample() {
 #endif
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   GetSwapInfo(&system_metrics.swap_info_);
+  GetGraphicsMemoryInfo(&system_metrics.gpu_memory_info_);
 #endif
 #if defined(OS_WIN)
   GetSystemPerformanceInfo(&system_metrics.performance_);
@@ -76,6 +77,7 @@ std::unique_ptr<Value> SystemMetrics::ToValue() const {
 #endif
 #if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   res->Set("swapinfo", swap_info_.ToValue());
+  res->Set("gpu_meminfo", gpu_memory_info_.ToValue());
 #endif
 #if defined(OS_WIN)
   res->Set("perfinfo", performance_.ToValue());
