@@ -17,9 +17,4 @@
 
 @end
 
-// A specialization of TabSwitcherLayout that shows the UI in its "reordering"
-// state, with the moving cell enlarged and the non-moving cells transparent.
-@interface TabSwitcherReorderingLayout : TabSwitcherLayout
-@end
-
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_TAB_SWITCHER_LAYOUT_H_
