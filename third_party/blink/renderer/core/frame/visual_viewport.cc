@@ -325,7 +325,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   parent_property_tree_state_ =
       PropertyTreeStateOrAlias(*transform_parent, *clip_parent, *effect_parent);
 
-  if (change == PaintPropertyChangeType::kNodeAddedOrRemoved)
+  if (change == PaintPropertyChangeType::kNodeAddedOrRemoved && MainFrame())
     MainFrame()->View()->SetVisualViewportNeedsRepaint();
 
   return change;
