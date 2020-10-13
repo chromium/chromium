@@ -44,8 +44,6 @@ public class AccountManagementFragmentTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        mSettingsActivityTestRule.startSettingsActivity();
     }
 
     @Test
@@ -53,6 +51,8 @@ public class AccountManagementFragmentTest {
     @Feature("RenderTest")
     @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementFragmentViewLegacy() throws Exception {
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSettingsActivityTestRule.startSettingsActivity();
         mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
                 "account_management_fragment_view_legacy");
     }
@@ -62,7 +62,21 @@ public class AccountManagementFragmentTest {
     @Feature("RenderTest")
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementFragmentView() throws Exception {
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSettingsActivityTestRule.startSettingsActivity();
         mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
                 "account_management_fragment_view");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testSignedInAccountShownOnTop() throws Exception {
+        mAccountManagerTestRule.addAccount("testSecondary@gmail.com");
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(mSettingsActivityTestRule.getFragment().getView(),
+                "account_management_fragment_signed_in_account_on_top");
     }
 }
