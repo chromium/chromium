@@ -122,6 +122,7 @@ public class AccountPickerBottomSheetRenderTest {
     @After
     public void tearDown() throws Exception {
         ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+        IncognitoUtils.setEnabledForTesting(null);
     }
 
     @AfterClass

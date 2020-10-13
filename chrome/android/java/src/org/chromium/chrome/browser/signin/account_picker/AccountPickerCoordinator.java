@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin.account_picker;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,9 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ItemType;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * The coordinator of account picker is the only public class in the account_picker package.
@@ -45,25 +41,6 @@ public class AccountPickerCoordinator {
         default void goIncognitoMode() {}
     }
 
-    /**
-     * Access points to record where account picker could be initiated.
-     */
-    @IntDef({AccountPickerAccessPoint.SETTING, AccountPickerAccessPoint.WEB})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AccountPickerAccessPoint {
-        /**
-         * When the account picker is used in settings > "Turn on Sync?" page >
-         * "Choose an account" dialog.
-         */
-        int SETTING = 0;
-
-        /**
-         * When the account picker is used in the expanded account list of the
-         * web sign-in bottom sheet.
-         */
-        int WEB = 1;
-    }
-
     private final AccountPickerMediator mMediator;
 
     /**
@@ -73,11 +50,11 @@ public class AccountPickerCoordinator {
      * @param listener Listener to notify when an account is selected or the user wants to add an
      *                 account.
      * @param selectedAccountName The name of the account that should be marked as selected.
-     * @param accessPoint Access point of the account picker
+     * @param showIncognitoRow whether to show the incognito row in the account picker.
      */
     @MainThread
     public AccountPickerCoordinator(RecyclerView view, Listener listener,
-            @Nullable String selectedAccountName, @AccountPickerAccessPoint int accessPoint) {
+            @Nullable String selectedAccountName, boolean showIncognitoRow) {
         assert listener != null : "The argument AccountPickerCoordinator.Listener cannot be null!";
 
         MVCListAdapter.ModelList listModel = new MVCListAdapter.ModelList();
@@ -92,7 +69,7 @@ public class AccountPickerCoordinator {
 
         view.setAdapter(adapter);
         mMediator = new AccountPickerMediator(
-                view.getContext(), listModel, listener, selectedAccountName, accessPoint);
+                view.getContext(), listModel, listener, selectedAccountName, showIncognitoRow);
     }
 
     /**

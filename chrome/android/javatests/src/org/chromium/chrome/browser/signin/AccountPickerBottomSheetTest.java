@@ -31,6 +31,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -129,6 +130,11 @@ public class AccountPickerBottomSheetTest {
         IncognitoUtils.setEnabledForTesting(true);
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
+    }
+
+    @After
+    public void tearDown() {
+        IncognitoUtils.setEnabledForTesting(null);
     }
 
     @Test
