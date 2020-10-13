@@ -54,6 +54,10 @@ TabsApiHandler = class {
    * @param {Object} tab
    */
   onCreated(tab) {
+    if (!tab.highlighted) {
+      return;
+    }
+
     if (TabsApiHandler.shouldOutputSpeechAndBraille) {
       ChromeVox.tts.speak(
           this.msg_('chrome_tab_created'), QueueMode.FLUSH,
