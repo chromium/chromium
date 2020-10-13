@@ -1049,10 +1049,10 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   ADS_HISTOGRAM("Bytes.MainFrame.Ads.Total2", PAGE_BYTES_HISTOGRAM, visibility,
                 main_frame_data_->ad_bytes());
   if (memory_request_) {
-    UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.Ads.Memory.MainFrame.Max",
-                              main_frame_data_->v8_max_memory_bytes_used());
-    UMA_HISTOGRAM_COUNTS_1000("PageLoad.Clients.Ads.Memory.UpdateCount",
-                              num_memory_updates_);
+    PAGE_BYTES_HISTOGRAM("PageLoad.Clients.Ads.Memory.MainFrame.Max",
+                         main_frame_data_->v8_max_memory_bytes_used());
+    UMA_HISTOGRAM_COUNTS_10000("PageLoad.Clients.Ads.Memory.UpdateCount",
+                               num_memory_updates_);
     UMA_HISTOGRAM_COUNTS_1000(
         "PageLoad.Clients.Ads.Memory.MissedMeasurementCount",
         num_missed_memory_measurements_);

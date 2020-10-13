@@ -232,8 +232,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
-    The maximum reported number of bytes of memory used by V8 by the main frame
-    in this pageload.
+    The maximum reported number of kilobytes of memory used by V8 by the main
+    frame in this pageload.
 
     Only recorded if the page has at least one identified ad frame. Recorded in
     PageLoadMetrics when the page is destroyed. An ad frame consists of the
@@ -1805,8 +1805,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
-    The maximum reported aggregate number of bytes of memory used by V8 by ad
-    frames in this pageload. The value recorded is the maximum simultaneous
+    The maximum reported aggregate number of kilobytes of memory used by V8 by
+    ad frames in this pageload. The value recorded is the maximum simultaneous
     usage by ad frames during this pageload.
 
     Only recorded if the page has at least one identified ad frame. Recorded in
@@ -1822,8 +1822,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
-    The maximum reported number of bytes of memory used by V8 by frames in the
-    ad frame tree in this pageload. The value recorded is the maximum
+    The maximum reported number of kilobytes of memory used by V8 by frames in
+    the ad frame tree in this pageload. The value recorded is the maximum
     simultaneous usage by ad frames in this ad frame tree.
 
     Only recorded if the page has at least one identified ad frame. Recorded in
