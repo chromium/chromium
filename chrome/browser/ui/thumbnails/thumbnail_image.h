@@ -94,6 +94,12 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   // Observer::OnCompressedThumbnailDataAvailable().
   void RequestCompressedThumbnailData();
 
+  // Returns the size of the compressed data backing this thumbnail.
+  // This size can be 0. Additionally, since this data is refcounted,
+  // it's possible this returns 0 even if the data is still allocated. A
+  // client can hold a reference to it after |this| drops its reference.
+  size_t GetCompressedDataSizeInBytes() const;
+
   void set_async_operation_finished_callback_for_testing(
       base::RepeatingClosure callback) {
     async_operation_finished_callback_ = std::move(callback);
