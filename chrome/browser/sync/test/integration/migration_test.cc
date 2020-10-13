@@ -149,7 +149,6 @@ class MigrationTest : public SyncTest  {
         // boolean pref clobbers the local value), so it doesn't work
         // for anything but single-client tests.
         ASSERT_EQ(1, num_clients());
-        ASSERT_TRUE(BooleanPrefMatches(prefs::kShowHomeButton));
         ChangeBooleanPref(0, prefs::kShowHomeButton);
         break;
       case MODIFY_BOOKMARK:

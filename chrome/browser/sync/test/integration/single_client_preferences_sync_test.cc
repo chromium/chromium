@@ -21,21 +21,21 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using preferences_helper::BooleanPrefMatches;
+namespace {
+
 using preferences_helper::BuildPrefStoreFromPrefsFile;
 using preferences_helper::ChangeBooleanPref;
+using preferences_helper::GetPrefs;
 using preferences_helper::GetRegistry;
-using user_prefs::PrefRegistrySyncable;
 using testing::Eq;
+using testing::Ne;
 using testing::NotNull;
-
-namespace {
+using user_prefs::PrefRegistrySyncable;
 
 class SingleClientPreferencesSyncTest : public SyncTest {
  public:
   SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
-
-  ~SingleClientPreferencesSyncTest() override {}
+  ~SingleClientPreferencesSyncTest() override = default;
 
   // If non-empty, |contents| will be written to the Preferences file of the
   // profile at |index| before that Profile object is created.
@@ -69,10 +69,13 @@ class SingleClientPreferencesSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(BooleanPrefMatches(prefs::kHomePageIsNewTabPage));
+
+  const bool kDefaultValue =
+      GetPrefs(/*index=*/0)->GetBoolean(prefs::kHomePageIsNewTabPage);
   ChangeBooleanPref(0, prefs::kHomePageIsNewTabPage);
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_TRUE(BooleanPrefMatches(prefs::kHomePageIsNewTabPage));
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_THAT(GetPrefs(/*index=*/0)->GetBoolean(prefs::kHomePageIsNewTabPage),
+              Ne(kDefaultValue));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,

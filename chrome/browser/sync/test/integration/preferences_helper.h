@@ -30,54 +30,29 @@ namespace preferences_helper {
 // Used to access the preferences within a particular sync profile.
 PrefService* GetPrefs(int index);
 
-// Used to access the preferences within the verifier sync profile.
-PrefService* GetVerifierPrefs();
-
 // Provides access to the syncable pref registy of a profile.
 user_prefs::PrefRegistrySyncable* GetRegistry(Profile* profile);
 
 // Inverts the value of the boolean preference with name |pref_name| in the
-// profile with index |index|. Also inverts its value in |verifier| if
-// DisableVerifier() hasn't been called.
+// profile with index |index|.
 void ChangeBooleanPref(int index, const char* pref_name);
 
 // Changes the value of the integer preference with name |pref_name| in the
-// profile with index |index| to |new_value|. Also changes its value in
-// |verifier| if DisableVerifier() hasn't been called.
+// profile with index |index| to |new_value|.
 void ChangeIntegerPref(int index, const char* pref_name, int new_value);
 
-// Changes the value of the int64_t preference with name |pref_name| in the
-// profile with index |index| to |new_value|. Also changes its value in
-// |verifier| if DisableVerifier() hasn't been called.
-void ChangeInt64Pref(int index, const char* pref_name, int64_t new_value);
-
-// Changes the value of the double preference with name |pref_name| in the
-// profile with index |index| to |new_value|. Also changes its value in
-// |verifier| if DisableVerifier() hasn't been called.
-void ChangeDoublePref(int index, const char* pref_name, double new_value);
-
 // Changes the value of the string preference with name |pref_name| in the
-// profile with index |index| to |new_value|. Also changes its value in
-// |verifier| if DisableVerifier() hasn't been called.
+// profile with index |index| to |new_value|.
 void ChangeStringPref(int index,
                       const char* pref_name,
                       const std::string& new_value);
 
 // Clears the value of the preference with name |pref_name| in the profile with
-// index |index|. Also changes its value in |verifier| if DisableVerifier()
-// hasn't been called.
+// index |index|.
 void ClearPref(int index, const char* pref_name);
 
-// Changes the value of the file path preference with name |pref_name| in the
-// profile with index |index| to |new_value|. Also changes its value in
-// |verifier| if DisableVerifier() hasn't been called.
-void ChangeFilePathPref(int index,
-                        const char* pref_name,
-                        const base::FilePath& new_value);
-
 // Changes the value of the list preference with name |pref_name| in the
-// profile with index |index| to |new_value|. Also changes its value in
-// |verifier| if DisableVerifier() hasn't been called.
+// profile with index |index| to |new_value|.
 void ChangeListPref(int index,
                     const char* pref_name,
                     const base::ListValue& new_value);
@@ -87,38 +62,19 @@ void ChangeListPref(int index,
 scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile);
 
 // Used to verify that the boolean preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
+// same value across all profiles.
 bool BooleanPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
 
 // Used to verify that the integer preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
+// same value across all profiles.
 bool IntegerPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
 
-// Used to verify that the int64_t preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
-bool Int64PrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
-
-// Used to verify that the double preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
-bool DoublePrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
-
 // Used to verify that the string preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
+// same value across all profiles.
 bool StringPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
 
-// Used to verify that the file path preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
-bool FilePathPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
-
 // Used to verify that the list preference with name |pref_name| has the
-// same value across all profiles. Also checks |verifier| if DisableVerifier()
-// hasn't been called.
+// same value across all profiles.
 bool ListPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
 
 }  // namespace preferences_helper
