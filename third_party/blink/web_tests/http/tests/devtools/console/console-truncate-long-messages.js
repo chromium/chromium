@@ -7,13 +7,13 @@
 
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.showPanel('console');
-  var consoleView = Console.ConsoleView.instance();
-
-  var maxLength = 40;
-  Console.ConsoleViewMessage._MaxTokenizableStringLength = maxLength;
+  const consoleView = Console.ConsoleView.instance();
+  const maxLength = 40;
+  Console.ConsoleViewMessage.setMaxTokenizableStringLength(maxLength);
   ObjectUI.ObjectPropertiesSection._maxRenderableStringLength = maxLength;
-  var visibleLength = Console.ConsoleViewMessage._LongStringVisibleLength = 20;
-  var overMaxLength = maxLength * 2;
+  const visibleLength = 20;
+  Console.ConsoleViewMessage.setLongStringVisibleLength(visibleLength);
+  const overMaxLength = maxLength * 2;
   TestRunner.addResult(`Setting max length to: ${maxLength}`);
   TestRunner.addResult(`Setting long string visible length to: ${visibleLength}`);
 
@@ -44,17 +44,17 @@
 
   function dumpMessageLengths() {
     consoleView._visibleViewMessages.forEach((message, index) => {
-      var text = consoleMessageText(index);
+      const text = consoleMessageText(index);
       TestRunner.addResult(`Message: ${index}, length: ${text.length}, ${text}`);
     });
 
     function consoleMessageText(index) {
-      var messageElement = consoleView._visibleViewMessages[index].element();
-      var anchor = messageElement.querySelector('.console-message-anchor');
+      const messageElement = consoleView._visibleViewMessages[index].element();
+      const anchor = messageElement.querySelector('.console-message-anchor');
       if (anchor)
         anchor.remove();
-      var links = messageElement.querySelectorAll('.devtools-link');
-      for (var link of links)
+      const links = messageElement.querySelectorAll('.devtools-link');
+      for (const link of links)
         TestRunner.addResult(`Link: ${link.textContent}`);
       return messageElement.deepTextContent();
     }
