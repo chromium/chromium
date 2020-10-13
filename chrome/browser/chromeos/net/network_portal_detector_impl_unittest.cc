@@ -169,8 +169,8 @@ class NetworkPortalDetectorImplTest
     return network_portal_detector()->state();
   }
 
-  bool StartPortalDetection(bool force) {
-    return network_portal_detector()->StartPortalDetection(force);
+  void StartPortalDetection() {
+    network_portal_detector()->StartPortalDetection();
   }
 
   void enable_error_screen_strategy() {
@@ -771,7 +771,7 @@ TEST_F(NetworkPortalDetectorImplTest, TestDetectionRestart) {
   // First portal detection attempts determines ONLINE state.
   SetConnected(kStubWireless1);
   ASSERT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
-  ASSERT_FALSE(StartPortalDetection(false /* force */));
+  StartPortalDetection();
 
   CompleteURLFetch(net::OK, 204, nullptr);
 

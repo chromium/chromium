@@ -124,8 +124,7 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   } else {
     auto_enrollment_controller_->Start();
   }
-  network_portal_detector::GetInstance()->StartPortalDetection(
-      false /* force */);
+  network_portal_detector::GetInstance()->StartPortalDetection();
 }
 
 void AutoEnrollmentCheckScreen::HideImpl() {}

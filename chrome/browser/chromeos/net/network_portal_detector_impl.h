@@ -100,7 +100,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   CaptivePortalState GetCaptivePortalState(const std::string& guid) override;
   bool IsEnabled() override;
   void Enable(bool start_detection) override;
-  bool StartPortalDetection(bool force) override;
+  void StartPortalDetection() override;
   void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
 
   // NetworkStateHandlerObserver implementation:

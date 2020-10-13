@@ -31,9 +31,7 @@ bool NetworkPortalDetectorStub::IsEnabled() {
 
 void NetworkPortalDetectorStub::Enable(bool start_detection) {}
 
-bool NetworkPortalDetectorStub::StartPortalDetection(bool force) {
-  return false;
-}
+void NetworkPortalDetectorStub::StartPortalDetection() {}
 
 void NetworkPortalDetectorStub::SetStrategy(
     PortalDetectorStrategy::StrategyId id) {}

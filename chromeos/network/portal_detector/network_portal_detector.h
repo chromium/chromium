@@ -97,10 +97,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   virtual void Enable(bool start_detection) = 0;
 
   // Starts or restarts portal detection for the default network. If not
-  // currently in the idle state, does nothing unless |force| is true in which
-  // case any current detection is stopped and a new attempt is started. Returns
-  // true if a new portal detection attempt was started.
-  virtual bool StartPortalDetection(bool force) = 0;
+  // currently in the idle state, does nothing. Returns true if a new portal
+  // detection attempt was started.
+  virtual void StartPortalDetection() = 0;
 
   // Sets current strategy according to |id|. If current detection id
   // doesn't equal to |id|, detection is restarted.

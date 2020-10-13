@@ -103,9 +103,9 @@ bool NetworkPortalDetectorTestImpl::IsEnabled() {
 void NetworkPortalDetectorTestImpl::Enable(bool start_detection) {
 }
 
-bool NetworkPortalDetectorTestImpl::StartPortalDetection(bool force) {
-  if (portal_detection_in_progress_ && !force)
-    return false;
+void NetworkPortalDetectorTestImpl::StartPortalDetection() {
+  if (portal_detection_in_progress_)
+    return;
 
   portal_detection_in_progress_ = true;
   std::vector<base::OnceClosure> callbacks =
@@ -113,7 +113,7 @@ bool NetworkPortalDetectorTestImpl::StartPortalDetection(bool force) {
   for (auto& callback : callbacks)
     std::move(callback).Run();
 
-  return true;
+  return;
 }
 
 void NetworkPortalDetectorTestImpl::SetStrategy(

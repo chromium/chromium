@@ -43,7 +43,7 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
       const std::string& service_path) override;
   bool IsEnabled() override;
   void Enable(bool start_detection) override;
-  bool StartPortalDetection(bool force) override;
+  void StartPortalDetection() override;
   void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
 
   PortalDetectorStrategy::StrategyId strategy_id() const {

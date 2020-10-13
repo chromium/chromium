@@ -97,7 +97,7 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
                  content::NotificationService::AllSources());
 
   NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
-  StartPortalDetection(false /* force */);
+  StartPortalDetection();
 }
 
 NetworkPortalDetectorImpl::~NetworkPortalDetectorImpl() {
@@ -173,14 +173,11 @@ NetworkPortalDetectorImpl::GetCaptivePortalState(const std::string& guid) {
   return it->second;
 }
 
-bool NetworkPortalDetectorImpl::StartPortalDetection(bool force) {
-  if (!is_idle()) {
-    if (!force)
-      return false;
-    StopDetection();
-  }
+void NetworkPortalDetectorImpl::StartPortalDetection() {
+  if (!is_idle())
+    return;
   StartDetection();
-  return true;
+  return;
 }
 
 void NetworkPortalDetectorImpl::SetStrategy(
@@ -188,7 +185,9 @@ void NetworkPortalDetectorImpl::SetStrategy(
   if (id == strategy_->Id())
     return;
   strategy_ = PortalDetectorStrategy::CreateById(id, this);
-  StartPortalDetection(true /* force */);
+  if (!is_idle())
+    StopDetection();
+  StartPortalDetection();
 }
 
 void NetworkPortalDetectorImpl::DefaultNetworkChanged(

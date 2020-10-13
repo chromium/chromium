@@ -301,8 +301,7 @@ void VersionUpdater::OnPortalDetectionCompleted(
     is_first_detection_notification_ = false;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce([]() {
-          network_portal_detector::GetInstance()->StartPortalDetection(
-              false /* force */);
+          network_portal_detector::GetInstance()->StartPortalDetection();
         }));
     return;
   }
