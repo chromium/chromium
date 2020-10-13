@@ -99,7 +99,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &feature_engagement::kIPHHomepagePromoCardFeature,
     &feed::kInterestFeedV1ClicksAndViewsConditionalUpload,
     &feed::kInterestFeedContentSuggestions,
-    &feed::kInterestFeedFeedback,
     &feed::kInterestFeedV2,
     &feed::kReportFeedUserActions,
     &kAdjustWebApkInstallationSpace,

@@ -30,9 +30,6 @@ const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess{
     &kInterestFeedContentSuggestions,
     "only_set_last_refresh_attempt_on_success", true};
 
-const base::Feature kInterestFeedFeedback{"InterestFeedFeedback",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kReportFeedUserActions{"ReportFeedUserActions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 

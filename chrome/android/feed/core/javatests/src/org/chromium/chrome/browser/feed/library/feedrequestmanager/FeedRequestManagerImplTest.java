@@ -235,6 +235,7 @@ public class FeedRequestManagerImplTest {
                                 getTestFeedRequestBuilder()
                                         .setFeedQuery(FeedQuery.newBuilder().setReason(
                                                 FeedQuery.RequestReason.SCHEDULED_REFRESH))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -313,8 +314,8 @@ public class FeedRequestManagerImplTest {
     }
 
     @Test
-    public void testTriggerRefresh_sendFeedbackCapabilityAddedWhenFlagIsOn() throws Exception {
-        testCapabilityAdded(ConfigKey.SEND_FEEDBACK_ENABLED, Capability.SEND_FEEDBACK);
+    public void testTriggerRefresh_sendFeedbackCapabilityAdded() throws Exception {
+        testCapabilityAdded(Capability.SEND_FEEDBACK);
     }
 
     @Test
@@ -396,6 +397,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -450,6 +452,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -504,6 +507,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -557,6 +561,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -621,6 +626,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -681,6 +687,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -740,6 +747,7 @@ public class FeedRequestManagerImplTest {
                                                                 expectedSemanticProperties)
                                                         .addAllFeedActionQueryDataItem(
                                                                 expectedDataItems))
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -901,6 +909,7 @@ public class FeedRequestManagerImplTest {
                                                                         .setScreenHeightInPixels(
                                                                                 470))
                                                         .build())
+                                        .addClientCapability(Capability.SEND_FEEDBACK)
                                         .addClientCapability(Capability.BASE_UI)
                                         .build())
                         .build();
@@ -1011,7 +1020,7 @@ public class FeedRequestManagerImplTest {
         HttpRequest httpRequest = mFakeNetworkClient.getLatestRequest();
         assertHttpRequestFormattedCorrectly(httpRequest, mContext);
 
-        Set<Capability> expectedCap = EnumSet.of(Capability.BASE_UI);
+        Set<Capability> expectedCap = EnumSet.of(Capability.BASE_UI, Capability.SEND_FEEDBACK);
         Collections.addAll(expectedCap, capability);
 
         Request request = getRequestFromHttpRequest(httpRequest);

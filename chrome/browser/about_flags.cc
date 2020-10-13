@@ -3488,9 +3488,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPostQuantumCECPQ2Description, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPostQuantumCECPQ2)},
 #if defined(OS_ANDROID)
-    {"interest-feed-feedback", flag_descriptions::kInterestFeedFeedbackName,
-     flag_descriptions::kInterestFeedFeedbackDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedFeedback)},
     {"interest-feed-v2", flag_descriptions::kInterestFeedV2Name,
      flag_descriptions::kInterestFeedV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInterestFeedV2)},

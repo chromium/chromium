@@ -2909,11 +2909,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "interest-feed-feedback",
-    "owners": [ "petewil", "//chrome/android/feed/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "interest-feed-v2",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 95

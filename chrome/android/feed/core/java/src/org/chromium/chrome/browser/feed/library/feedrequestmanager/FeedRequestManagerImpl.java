@@ -397,8 +397,7 @@ public class FeedRequestManagerImpl implements FeedRequestManager {
                     Capability.UNDOABLE_ACTIONS);
             addCapabilityIfConfigEnabled(feedRequestBuilder, ConfigKey.MANAGE_INTERESTS_ENABLED,
                     Capability.MANAGE_INTERESTS);
-            addCapabilityIfConfigEnabled(
-                    feedRequestBuilder, ConfigKey.SEND_FEEDBACK_ENABLED, Capability.SEND_FEEDBACK);
+            feedRequestBuilder.addClientCapability(Capability.SEND_FEEDBACK);
             addCapabilityIfConfigEnabled(
                     feedRequestBuilder, ConfigKey.ENABLE_CAROUSELS, Capability.CAROUSELS);
             if (mCardMenuTooltipWouldTrigger) {

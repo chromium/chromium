@@ -33,7 +33,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 
@@ -114,8 +113,6 @@ public class FeedFeedbackCollectorTest {
 
     @Test
     @Feature({"Feed"})
-    @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
-            ChromeFeatureList.INTEREST_FEED_FEEDBACK})
     public void
     testFeedSynchronousData() {
         @SuppressWarnings("unchecked")

@@ -3731,21 +3731,6 @@
             ]
         }
     ],
-    "InterestFeedFeedback": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InterestFeedFeedback"
-                    ]
-                }
-            ]
-        }
-    ],
     "InterestFeedV2": [
         {
             "platforms": [

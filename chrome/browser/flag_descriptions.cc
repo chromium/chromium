@@ -2834,10 +2834,6 @@ const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "
     "new Feed Component.";
 
-const char kInterestFeedFeedbackDescription[] =
-    "Allow the user to provide feedback from a feed card.";
-const char kInterestFeedFeedbackName[] = "Interest Feed Feedback";
-
 const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";

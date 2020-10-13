@@ -304,12 +304,6 @@ public final class FeedConfiguration {
                 MANAGE_INTERESTS_ENABLED_DEFAULT);
     }
 
-    /** @return Whether to show context menu option to send feedback. */
-    @VisibleForTesting
-    static boolean getSendFeedbackEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_FEEDBACK);
-    }
-
     /** @return The maximum number of times that the GC task can re-enqueue itself. */
     @VisibleForTesting
     static long getMaximumGcAttempts() {
@@ -459,7 +453,6 @@ public final class FeedConfiguration {
                         FeedConfiguration.getLoggingImmediateContentThresholdMs())
                 .put(ConfigKey.MANAGE_INTERESTS_ENABLED,
                         FeedConfiguration.getManageInterestsEnabled())
-                .put(ConfigKey.SEND_FEEDBACK_ENABLED, FeedConfiguration.getSendFeedbackEnabled())
                 .put(ConfigKey.MAXIMUM_GC_ATTEMPTS, FeedConfiguration.getMaximumGcAttempts())
                 .put(ConfigKey.NON_CACHED_MIN_PAGE_SIZE,
                         FeedConfiguration.getNonCachedMinPageSize())
