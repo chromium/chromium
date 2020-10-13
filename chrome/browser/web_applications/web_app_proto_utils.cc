@@ -148,6 +148,7 @@ base::Optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:

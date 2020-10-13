@@ -534,6 +534,25 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
     EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kBrowser);
     EXPECT_EQ(0u, GetErrorCount());
   }
+
+  // Parsing fails for 'window-controls-overlay' when WCO flag is disabled.
+  {
+    auto& manifest =
+        ParseManifest("{ \"display\": \"window-controls-overlay\" }");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
+
+  // Parsing fails for 'window-controls-overlay' when WCO flag is enabled.
+  {
+    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(true);
+    auto& manifest =
+        ParseManifest("{ \"display\": \"window-controls-overlay\" }");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
 }
 
 TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
@@ -660,6 +679,26 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
               blink::mojom::DisplayMode::kMinimalUi);
     EXPECT_EQ(manifest->display_override[2],
               blink::mojom::DisplayMode::kBrowser);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject 'window-controls-overlay' when WCO flag is disabled.
+  {
+    auto& manifest = ParseManifest(
+        "{ \"display_override\": [ \"window-controls-overlay\" ] }");
+    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'window-controls-overlay' when WCO flag is enabled.
+  {
+    ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(true);
+    auto& manifest = ParseManifest(
+        "{ \"display_override\": [ \"window-controls-overlay\" ] }");
+    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_EQ(manifest->display_override[0],
+              blink::mojom::DisplayMode::kWindowControlsOverlay);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }

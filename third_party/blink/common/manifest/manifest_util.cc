@@ -21,6 +21,8 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
       return "standalone";
     case blink::mojom::DisplayMode::kFullscreen:
       return "fullscreen";
+    case blink::mojom::DisplayMode::kWindowControlsOverlay:
+      return "window-controls-overlay";
   }
   return "";
 }
@@ -34,7 +36,20 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kStandalone;
   if (base::LowerCaseEqualsASCII(display, "fullscreen"))
     return blink::mojom::DisplayMode::kFullscreen;
+  if (base::LowerCaseEqualsASCII(display, "window-controls-overlay"))
+    return blink::mojom::DisplayMode::kWindowControlsOverlay;
   return blink::mojom::DisplayMode::kUndefined;
+}
+
+bool IsBasicDisplayMode(blink::mojom::DisplayMode display) {
+  if (display == blink::mojom::DisplayMode::kBrowser ||
+      display == blink::mojom::DisplayMode::kMinimalUi ||
+      display == blink::mojom::DisplayMode::kStandalone ||
+      display == blink::mojom::DisplayMode::kFullscreen) {
+    return true;
+  }
+
+  return false;
 }
 
 std::string WebScreenOrientationLockTypeToString(

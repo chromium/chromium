@@ -24,5 +24,7 @@ public @interface WebDisplayMode {
     int MINIMAL_UI = 2;
     int STANDALONE = 3;
     int FULLSCREEN = 4;
-    int LAST = 4;
+    // Not currently used.
+    int WINDOW_CONTROLS_OVERLAY = 5;
+    int LAST = 5;
 }

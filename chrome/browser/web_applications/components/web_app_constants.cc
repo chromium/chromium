@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/common/content_features.h"
 
 namespace web_app {
 
@@ -25,6 +26,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       FALLTHROUGH;
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
       return DisplayMode::kStandalone;
   }
 }
@@ -61,6 +63,7 @@ DisplayMode ResolveEffectiveDisplayMode(
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:
@@ -89,6 +92,8 @@ apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     case DisplayMode::kStandalone:
       return apps::mojom::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kFullscreen:
+      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    case DisplayMode::kWindowControlsOverlay:
       return apps::mojom::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kUndefined:
       return apps::mojom::LaunchContainer::kLaunchContainerNone;

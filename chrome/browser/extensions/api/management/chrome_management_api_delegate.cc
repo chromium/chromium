@@ -302,6 +302,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
         info.launch_type =
             extensions::api::management::LAUNCH_TYPE_OPEN_FULL_SCREEN;
         break;
+      // This mode is not supported by the extension app backend.
+      case web_app::DisplayMode::kWindowControlsOverlay:
       case web_app::DisplayMode::kUndefined:
         info.launch_type = extensions::api::management::LAUNCH_TYPE_NONE;
         break;

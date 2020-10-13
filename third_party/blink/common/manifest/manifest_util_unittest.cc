@@ -19,6 +19,8 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
       {blink::mojom::DisplayMode::kMinimalUi, "minimal-ui"},
       {blink::mojom::DisplayMode::kStandalone, "standalone"},
       {blink::mojom::DisplayMode::kFullscreen, "fullscreen"},
+      {blink::mojom::DisplayMode::kWindowControlsOverlay,
+       "window-controls-overlay"},
   };
 
   for (const ReversibleConversion& conversion : reversible_conversions) {

@@ -221,6 +221,7 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
     case DisplayMode::kMinimalUi:
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
       web_app_info.open_as_window = true;
       break;
   }

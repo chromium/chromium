@@ -60,6 +60,7 @@ void BookmarkAppRegistryController::SetAppUserDisplayMode(
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
       NOTREACHED();
       return;
   }

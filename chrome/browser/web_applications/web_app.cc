@@ -161,6 +161,7 @@ void WebApp::SetUserDisplayMode(DisplayMode user_display_mode) {
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:

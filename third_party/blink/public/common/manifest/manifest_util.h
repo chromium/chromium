@@ -27,6 +27,12 @@ BLINK_COMMON_EXPORT std::string DisplayModeToString(
 BLINK_COMMON_EXPORT blink::mojom::DisplayMode DisplayModeFromString(
     const std::string& display);
 
+// Returns true when 'display' is one of
+// https://www.w3.org/TR/appmanifest/#dfn-display-modes-values. This
+// differentiates the basic display modes from enhanced display modes that can
+// be declared in the display_overrides member of the manifest.
+BLINK_COMMON_EXPORT bool IsBasicDisplayMode(blink::mojom::DisplayMode display);
+
 // Converts a device::mojom::ScreenOrientationLockType to a string. Returns one
 // of https://www.w3.org/TR/screen-orientation/#orientationlocktype-enum. Return
 // values are lowercase. Returns an empty string for

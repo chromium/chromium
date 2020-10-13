@@ -302,8 +302,18 @@ blink::mojom::DisplayMode ManifestParser::ParseDisplay(
 
   blink::mojom::DisplayMode display_enum =
       DisplayModeFromString(display->Utf8());
-  if (display_enum == blink::mojom::DisplayMode::kUndefined)
+
+  if (display_enum == mojom::blink::DisplayMode::kUndefined) {
     AddErrorInfo("unknown 'display' value ignored.");
+    return display_enum;
+  }
+
+  // Ignore "enhanced" display modes.
+  if (!IsBasicDisplayMode(display_enum)) {
+    display_enum = mojom::blink::DisplayMode::kUndefined;
+    AddErrorInfo("inapplicable 'display' value ignored.");
+  }
+
   return display_enum;
 }
 
@@ -332,6 +342,11 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
     display_enum_string = display_enum_string.StripWhiteSpace();
     mojom::blink::DisplayMode display_enum =
         DisplayModeFromString(display_enum_string.Utf8());
+
+    if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled() &&
+        display_enum == mojom::blink::DisplayMode::kWindowControlsOverlay) {
+      display_enum = mojom::blink::DisplayMode::kUndefined;
+    }
 
     if (display_enum != mojom::blink::DisplayMode::kUndefined)
       display_override.push_back(display_enum);
