@@ -21,7 +21,6 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/mock_model_type_change_processor.h"
-#include "components/sync/model/recording_model_type_change_processor.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,12 +36,12 @@ using syncer::KeyAndData;
 using syncer::MetadataBatch;
 using syncer::MetadataChangeList;
 using syncer::MockModelTypeChangeProcessor;
-using syncer::RecordingModelTypeChangeProcessor;
 using testing::_;
 using testing::AllOf;
 using testing::Mock;
 using testing::NiceMock;
 using testing::Pointee;
+using testing::Return;
 
 namespace history {
 
@@ -79,6 +78,14 @@ MATCHER_P(HasURLInSpecifics, url, "") {
 // Matches that TypedUrlSpecifics has expected title.
 MATCHER_P(HasTitleInSpecifics, title, "") {
   return arg.specifics.typed_url().title() == title;
+}
+
+MATCHER(HasTypedUrlInSpecifics, "") {
+  return arg.specifics.has_typed_url();
+}
+
+MATCHER(IsValidStorageKey, "") {
+  return TypedURLSyncMetadataDatabase::StorageKeyToURLID(arg) > 0;
 }
 
 Time SinceEpoch(int64_t microseconds_since_epoch) {
@@ -300,7 +307,6 @@ class TypedURLSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     fake_history_backend_->Init(
         false, TestHistoryDatabaseParamsForPath(test_dir_.GetPath()));
-    mock_processor_.DelegateCallsByDefaultTo(&processor_);
     std::unique_ptr<TypedURLSyncBridge> bridge =
         std::make_unique<TypedURLSyncBridge>(
             fake_history_backend_.get(), fake_history_backend_->db(),
@@ -312,13 +318,13 @@ class TypedURLSyncBridgeTest : public testing::Test {
   }
 
   void TearDown() override {
-    VerifyProcessorReceivedValidEntityData();
     fake_history_backend_->Closing();
   }
 
   // Starts sync for |typed_url_sync_bridge_| with |initial_data| as the
   // initial sync data.
   void StartSyncing(const std::vector<TypedUrlSpecifics>& specifics) {
+    ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
     // Set change processor.
     const auto error =
         bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(),
@@ -455,13 +461,6 @@ class TypedURLSyncBridgeTest : public testing::Test {
                       base::BindOnce(&VerifyDataBatch, ExpectedMap(expected)));
   }
 
-  void VerifyProcessorReceivedValidEntityData() {
-    for (const auto& it : processor_.put_multimap()) {
-      EXPECT_GT(TypedURLSyncMetadataDatabase::StorageKeyToURLID(it.first), 0);
-      EXPECT_TRUE(it.second->specifics.has_typed_url());
-    }
-  }
-
   static void DiffVisits(const VisitVector& history_visits,
                          const sync_pb::TypedUrlSpecifics& sync_specifics,
                          std::vector<VisitInfo>* new_visits,
@@ -518,12 +517,6 @@ class TypedURLSyncBridgeTest : public testing::Test {
   base::ScopedTempDir test_dir_;
   scoped_refptr<TestHistoryBackend> fake_history_backend_;
   TypedURLSyncBridge* typed_url_sync_bridge_ = nullptr;
-  // TODO(crbug.com/791939): should be removed after moving to
-  // |mock_processor_|.
-  RecordingModelTypeChangeProcessor processor_;
-
-  // |mock_processor_| is preferred to use instead of |processor_|. The
-  // |processor_| will be removed in following patches.
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 };
 
@@ -791,7 +784,8 @@ TEST_F(TypedURLSyncBridgeTest, MergeUrlsWithUsernameAndPassword) {
   WriteToTypedUrlSpecifics(server_row, server_visits, typed_url);
 
   // Check username/password url is not synced.
-  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _));
 
   // Make sure there is no crash when merge two urls.
   StartSyncing({*typed_url});
@@ -816,7 +810,8 @@ TEST_F(TypedURLSyncBridgeTest, SimpleMerge) {
   sync_pb::TypedUrlSpecifics* typed_url = entity_specifics.mutable_typed_url();
   WriteToTypedUrlSpecifics(row2, visits2, typed_url);
 
-  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _));
   StartSyncing({*typed_url});
 
   // Check that the backend was updated correctly.
@@ -844,7 +839,7 @@ TEST_F(TypedURLSyncBridgeTest, AddLocalTypedUrl) {
   urls.push_back(kURL);
 
   EntityData entity_data;
-  EXPECT_CALL(mock_processor_, Put(_, _, _))
+  EXPECT_CALL(mock_processor_, Put(IsValidStorageKey(), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   StartSyncing(std::vector<TypedUrlSpecifics>());
   BuildAndPushLocalChanges(1, 0, urls, &url_rows, &visit_vectors);
@@ -918,7 +913,8 @@ TEST_F(TypedURLSyncBridgeTest, ReloadVisitLocalTypedUrl) {
 
   StartSyncing(std::vector<TypedUrlSpecifics>());
 
-  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _));
   BuildAndPushLocalChanges(1, 0, {kURL}, &url_rows, &visit_vectors);
 
   // Check that Put method has been already called.
@@ -948,7 +944,8 @@ TEST_F(TypedURLSyncBridgeTest, LinkVisitLocalTypedUrl) {
   urls.push_back(kURL);
 
   StartSyncing(std::vector<TypedUrlSpecifics>());
-  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _));
   BuildAndPushLocalChanges(1, 0, urls, &url_rows, &visit_vectors);
 
   // Check that Put method has been already called.
@@ -1022,7 +1019,9 @@ TEST_F(TypedURLSyncBridgeTest, DeleteLocalTypedUrl) {
   urls.push_back("http://foo.com/");
 
   StartSyncing(std::vector<TypedUrlSpecifics>());
-  EXPECT_CALL(mock_processor_, Put(_, _, _)).Times(4);
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _))
+      .Times(4);
   BuildAndPushLocalChanges(4, 0, urls, &url_rows, &visit_vectors);
 
   // Delete some urls from backend and create deleted row vector.
@@ -1088,7 +1087,9 @@ TEST_F(TypedURLSyncBridgeTest, ExpireLocalTypedUrl) {
   urls.push_back("http://bar.com/");
 
   // Add the URLs into the history db and notify the bridge.
-  EXPECT_CALL(mock_processor_, Put(_, _, _)).Times(urls.size());
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _))
+      .Times(urls.size());
   EXPECT_CALL(mock_processor_, UntrackEntityForStorageKey(_)).Times(0);
   BuildAndPushLocalChanges(urls.size(), 0, urls, &url_rows, &visit_vectors);
   // Store the typed_urls incl. metadata into the bridge's database.
@@ -1333,7 +1334,8 @@ TEST_F(TypedURLSyncBridgeTest, DeleteUrlAndVisits) {
   urls.push_back(kURL);
 
   StartSyncing(std::vector<TypedUrlSpecifics>());
-  EXPECT_CALL(mock_processor_, Put(_, _, _));
+  EXPECT_CALL(mock_processor_,
+              Put(IsValidStorageKey(), Pointee(HasTypedUrlInSpecifics()), _));
   BuildAndPushLocalChanges(1, 0, urls, &url_rows, &visit_vectors);
 
   Time visit_time = SinceEpoch(3);

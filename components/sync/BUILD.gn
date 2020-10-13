@@ -377,8 +377,6 @@ static_library("test_support_model") {
     "model/mock_model_type_change_processor.h",
     "model/model_type_store_test_util.cc",
     "model/model_type_store_test_util.h",
-    "model/recording_model_type_change_processor.cc",
-    "model/recording_model_type_change_processor.h",
     "model/stub_model_type_sync_bridge.cc",
     "model/stub_model_type_sync_bridge.h",
     "model/sync_change_processor_wrapper_for_test.cc",
