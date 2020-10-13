@@ -10,11 +10,19 @@
 namespace {
 // Matches the blink check for mixed content.
 bool IsInsecureFormAction(const GURL& action_url) {
-  if (action_url.SchemeIs(url::kBlobScheme) ||
-      action_url.SchemeIs(url::kFileSystemScheme))
+  // blob: and filesystem: URLs never hit the network, and access is restricted
+  // to same-origin contexts, so they are not blocked. Some forms use
+  // javascript URLs to handle submissions in JS, those don't count as mixed
+  // content either.
+  // The data scheme is explicitly allowed in order to match blink's equivalent
+  // check, since IsUrlPotentiallyTrustworthy excludes it.
+  if (action_url.SchemeIs(url::kJavaScriptScheme) ||
+      action_url.SchemeIs(url::kBlobScheme) ||
+      action_url.SchemeIs(url::kFileSystemScheme) ||
+      action_url.SchemeIs(url::kDataScheme)) {
     return false;
-  return !network::IsOriginPotentiallyTrustworthy(
-      url::Origin::Create(action_url));
+  }
+  return !network::IsUrlPotentiallyTrustworthy(action_url);
 }
 }  // namespace
 

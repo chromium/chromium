@@ -8664,6 +8664,39 @@ TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_MixedFormUserTyped) {
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
 }
 
+// Test that we don't treat javascript scheme target URLs as mixed forms.
+// Regression test for crbug.com/1135173
+TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_JavascriptUrlTarget) {
+  // Set up our form data, using a javascript scheme target URL.
+  FormData form;
+  form.name = ASCIIToUTF16("MyForm");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("javascript:alert('hello');");
+  FormFieldData field;
+  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
+  form.fields.push_back(field);
+  GetAutofillSuggestions(form, form.fields[0]);
+
+  // Check there is no warning.
+  EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
+}
+
+// Test that we don't treat about:blank target URLs as mixed forms.
+TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_AboutBlankTarget) {
+  // Set up our form data, using a javascript scheme target URL.
+  FormData form;
+  form.name = ASCIIToUTF16("MyForm");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("about:blank");
+  FormFieldData field;
+  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
+  form.fields.push_back(field);
+  GetAutofillSuggestions(form, form.fields[0]);
+
+  // Check there is no warning.
+  EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
+}
+
 // Desktop only tests.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 class AutofillManagerTestForVirtualCardOption : public AutofillManagerTest {
