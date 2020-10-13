@@ -307,6 +307,51 @@ IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottleStoppedOnRebuffer));
 }
 
+// When video is seeked throttling is stopped.
+IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest, StopsThrottlingOnPlaybackSeek) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
+
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "Media.VideoHeight.Initial.MSE", 1);
+
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+
+  // Trigger a media playback seek.
+  ASSERT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "document.querySelector('video').currentTime = 1"));
+
+  // Verify some responses were throttled and then throttling is stopped.
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "LiteVideo.HintsAgent.StopThrottling", 1);
+  EXPECT_GE(1U, histogram_tester()
+                    .GetAllSamples("LiteVideo.URLLoader.ThrottleLatency")
+                    .size());
+  EXPECT_EQ(1U, histogram_tester()
+                    .GetAllSamples("LiteVideo.HintsAgent.StopThrottling")
+                    .size());
+  EXPECT_GE(
+      1U, histogram_tester()
+              .GetAllSamples("LiteVideo.NavigationMetrics.FrameRebufferMapSize")
+              .size());
+
+  // Close the tab to flush the UKM metrics.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, media_url());
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingStartDecisionName,
+      static_cast<int>(lite_video::LiteVideoDecision::kAllowed));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kBlocklistReasonName,
+      static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
+}
+
 class LiteVideoAndLiteModeDisabledBrowserTest : public LiteVideoBrowserTest {
  public:
   LiteVideoAndLiteModeDisabledBrowserTest()

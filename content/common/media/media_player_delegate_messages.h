@@ -135,4 +135,7 @@ IPC_MESSAGE_ROUTED1(
 IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnBufferUnderflow,
                     int /* delegate_id, distinguishes instances */)
 
+IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnSeek,
+                    int /* delegate_id, distinguishes instances */)
+
 #endif  // CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_
