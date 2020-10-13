@@ -308,6 +308,15 @@ bool ShouldShowProfilePicker(const base::CommandLine& command_line,
     return false;
   }
 
+  // Don't show the picker if an app is explicitly requested to open. This URL
+  // param should be ideally paired with switches::kProfileDirectory but it's
+  // better to err on the side of opening the last profile than to err on the
+  // side of not opening the app directly.
+  if (command_line.HasSwitch(switches::kApp) ||
+      command_line.HasSwitch(switches::kAppId)) {
+    return false;
+  }
+
 // If the browser is launched due to activation on Windows native notification,
 // the profile id encoded in the notification launch id should be chosen over
 // the profile picker.

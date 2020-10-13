@@ -1976,4 +1976,26 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest,
   Browser* new_browser = FindOneOtherBrowser(browser());
   EXPECT_TRUE(new_browser);
 }
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerInAppMode) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kApp);
+
+  StartWithTwoProfiles(command_line);
+
+  // Skips the picker and creates a new browser window.
+  Browser* new_browser = FindOneOtherBrowser(browser());
+  EXPECT_TRUE(new_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithAppId) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kAppId);
+
+  StartWithTwoProfiles(command_line);
+
+  // Skips the picker and creates a new browser window.
+  Browser* new_browser = FindOneOtherBrowser(browser());
+  EXPECT_TRUE(new_browser);
+}
 #endif  // !defined(OS_CHROMEOS)
