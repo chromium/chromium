@@ -75,8 +75,7 @@ class TestThread : public PlatformThread::Delegate {
 }  // namespace
 
 #if defined(OS_ANDROID)
-// Flaky on Android. crbug.com/1113964
-#define MAYBE_SetThreadCpuAffinityMode DISABLED_SetThreadCpuAffinityMode
+#define MAYBE_SetThreadCpuAffinityMode SetThreadCpuAffinityMode
 #else
 // The test only considers Android device hardware models at the moment. Some
 // CrOS devices on the waterfall have asymmetric CPUs that aren't covered. The
@@ -102,6 +101,10 @@ TEST(CpuAffinityTest, MAYBE_SetThreadCpuAffinityMode) {
   } else if (device_model == "Pixel 3a" || device_model == "Pixel 3a XL") {
     expected_little_cores = 6;
     EXPECT_LT(expected_little_cores, expected_total_cores);
+  } else if (device_model == "Nexus 5") {
+    // On our Nexus 5 bots, something else in the system seems to set affinity
+    // for the test process, making these tests flaky (crbug.com/1113964).
+    return;
   }
 
   TestThread thread;
