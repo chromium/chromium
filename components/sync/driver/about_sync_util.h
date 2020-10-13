@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/util/type_safety/strong_alias.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/version_info/version_info.h"
 
@@ -65,10 +66,16 @@ extern const char kOnProtocolEvent[];
 extern const char kOnReceivedIncludeSpecificsInitialState[];
 extern const char kOnReceivedListOfTypes[];
 extern const char kTypes[];
+
+using IncludeSensitiveData =
+    util::StrongAlias<class IncludeSensitiveDataTag, bool>;
 // This function returns a DictionaryValue which contains all the information
 // required to populate the 'About' tab of about:sync.
 // Note that |service| may be null.
+// If |include_sensitive_data| is false, Personally Identifiable Information
+// won't be included in the return value.
 std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
+    IncludeSensitiveData include_sensitive_data,
     SyncService* service,
     version_info::Channel channel);
 

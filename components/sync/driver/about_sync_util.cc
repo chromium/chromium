@@ -120,9 +120,8 @@ class Stat : public StatBase {
 // fields.
 class Section {
  public:
-  explicit Section(const std::string& title) : title_(title) {}
-
-  void MarkSensitive() { is_sensitive_ = true; }
+  Section(const std::string& title, bool is_sensitive)
+      : title_(title), is_sensitive_(is_sensitive) {}
 
   Stat<bool>* AddBoolStat(const std::string& key) {
     return AddStat(key, false);
@@ -143,6 +142,8 @@ class Section {
     return result;
   }
 
+  bool is_sensitive() { return is_sensitive_; }
+
  private:
   template <typename T>
   Stat<T>* AddStat(const std::string& key, const T& default_value) {
@@ -161,15 +162,22 @@ class SectionList {
  public:
   SectionList() = default;
 
-  Section* AddSection(const std::string& title) {
-    sections_.push_back(std::make_unique<Section>(title));
+  // WARNING: If this section includes any Personally Identifiable Information,
+  // |is_sensitive| should be set to true.
+  Section* AddSection(const std::string& title, bool is_sensitive) {
+    sections_.push_back(std::make_unique<Section>(title, is_sensitive));
     return sections_.back().get();
   }
 
-  base::Value ToValue() const {
+  // If |include_sensitive_data| is true, returns all added sections. Otherwise,
+  // omits those added with |is_sensitive| set to true.
+  base::Value ToValue(IncludeSensitiveData include_sensitive_data) const {
     base::Value result(base::Value::Type::LIST);
-    for (const std::unique_ptr<Section>& section : sections_)
-      result.Append(section->ToValue());
+    for (const std::unique_ptr<Section>& section : sections_) {
+      if (include_sensitive_data || !section->is_sensitive()) {
+        result.Append(section->ToValue());
+      }
+    }
     return result;
   }
 
@@ -297,13 +305,15 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
 // which are grouped into sections and populated with the help of the SyncStat
 // classes defined above.
 std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
+    IncludeSensitiveData include_sensitive_data,
     SyncService* service,
     version_info::Channel channel) {
   auto about_info = std::make_unique<base::DictionaryValue>();
 
   SectionList section_list;
 
-  Section* section_summary = section_list.AddSection("Summary");
+  Section* section_summary =
+      section_list.AddSection("Summary", /*is_sensitive=*/false);
   Stat<std::string>* transport_state =
       section_summary->AddStringStat("Transport State");
   Stat<std::string>* disable_reasons =
@@ -318,13 +328,14 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       section_summary->AddBoolStat("Setup In Progress");
   Stat<std::string>* auth_error = section_summary->AddStringStat("Auth Error");
 
-  Section* section_version = section_list.AddSection("Version Info");
+  Section* section_version =
+      section_list.AddSection("Version Info", /*is_sensitive=*/false);
   Stat<std::string>* client_version =
       section_version->AddStringStat("Client Version");
   Stat<std::string>* server_url = section_version->AddStringStat("Server URL");
 
-  Section* section_identity = section_list.AddSection(kIdentityTitle);
-  section_identity->MarkSensitive();
+  Section* section_identity =
+      section_list.AddSection(kIdentityTitle, /*is_sensitive=*/true);
   Stat<std::string>* sync_client_id =
       section_identity->AddStringStat("Sync Client ID");
   Stat<std::string>* invalidator_id =
@@ -332,7 +343,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* username = section_identity->AddStringStat("Username");
   Stat<bool>* user_is_primary = section_identity->AddBoolStat("Is Primary");
 
-  Section* section_credentials = section_list.AddSection("Credentials");
+  Section* section_credentials =
+      section_list.AddSection("Credentials", /*is_sensitive=*/false);
   Stat<std::string>* token_request_time =
       section_credentials->AddStringStat("Requested Token");
   Stat<std::string>* token_response_time =
@@ -343,7 +355,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* next_token_request =
       section_credentials->AddStringStat("Next Token Request");
 
-  Section* section_local = section_list.AddSection("Local State");
+  Section* section_local =
+      section_list.AddSection("Local State", /*is_sensitive=*/false);
   Stat<std::string>* server_connection =
       section_local->AddStringStat("Server Connection");
   Stat<std::string>* last_synced = section_local->AddStringStat("Last Synced");
@@ -355,14 +368,16 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* local_backend_path =
       section_local->AddStringStat("Local Backend Path");
 
-  Section* section_network = section_list.AddSection("Network");
+  Section* section_network =
+      section_list.AddSection("Network", /*is_sensitive=*/false);
   Stat<bool>* is_any_throttled_or_backoff =
       section_network->AddBoolStat("Throttled or Backoff");
   Stat<std::string>* retry_time = section_network->AddStringStat("Retry Time");
   Stat<bool>* are_notifications_enabled =
       section_network->AddBoolStat("Notifications Enabled");
 
-  Section* section_encryption = section_list.AddSection("Encryption");
+  Section* section_encryption =
+      section_list.AddSection("Encryption", /*is_sensitive=*/false);
   Stat<bool>* is_using_explicit_passphrase =
       section_encryption->AddBoolStat("Explicit Passphrase");
   Stat<bool>* is_passphrase_required =
@@ -382,8 +397,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* passphrase_time =
       section_encryption->AddStringStat("Passphrase Time");
 
-  Section* section_last_session =
-      section_list.AddSection("Status from Last Completed Session");
+  Section* section_last_session = section_list.AddSection(
+      "Status from Last Completed Session", /*is_sensitive=*/false);
   Stat<std::string>* session_source =
       section_last_session->AddStringStat("Sync Source");
   Stat<std::string>* get_key_result =
@@ -393,7 +408,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<std::string>* commit_result =
       section_last_session->AddStringStat("Commit Step Result");
 
-  Section* section_counters = section_list.AddSection("Running Totals");
+  Section* section_counters =
+      section_list.AddSection("Running Totals", /*is_sensitive=*/false);
   Stat<int>* notifications_received =
       section_counters->AddIntStat("Notifications Received");
   Stat<int>* updates_received =
@@ -409,8 +425,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   Stat<int>* conflicts_resolved_server_wins =
       section_counters->AddIntStat("Conflicts Resolved: Server Wins");
 
-  Section* section_this_cycle =
-      section_list.AddSection("Transient Counters (this cycle)");
+  Section* section_this_cycle = section_list.AddSection(
+      "Transient Counters (this cycle)", /*is_sensitive=*/false);
   Stat<int>* encryption_conflicts =
       section_this_cycle->AddIntStat("Encryption Conflicts");
   Stat<int>* hierarchy_conflicts =
@@ -421,7 +437,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       section_this_cycle->AddIntStat("Committed Items");
 
   Section* section_that_cycle = section_list.AddSection(
-      "Transient Counters (last cycle of last completed session)");
+      "Transient Counters (last cycle of last completed session)",
+      /*is_sensitive=*/false);
   Stat<int>* updates_downloaded =
       section_that_cycle->AddIntStat("Updates Downloaded");
   Stat<int>* committed_count =
@@ -433,7 +450,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   if (!service) {
     transport_state->Set("Sync service does not exist");
-    about_info->SetKey(kDetailsKey, section_list.ToValue());
+    about_info->SetKey(kDetailsKey,
+                       section_list.ToValue(include_sensitive_data));
     return about_info;
   }
 
@@ -571,7 +589,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   // This list of sections belongs in the 'details' field of the returned
   // message.
-  about_info->SetKey(kDetailsKey, section_list.ToValue());
+  about_info->SetKey(kDetailsKey, section_list.ToValue(include_sensitive_data));
 
   // The values set from this point onwards do not belong in the
   // details list.

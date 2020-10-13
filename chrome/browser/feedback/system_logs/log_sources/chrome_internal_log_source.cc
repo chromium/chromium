@@ -393,35 +393,15 @@ void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
   if (!profile || !ProfileSyncServiceFactory::HasSyncService(profile))
     return;
 
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
-  std::unique_ptr<base::DictionaryValue> sync_logs(
-      syncer::sync_ui_util::ConstructAboutInformation(service,
-                                                      chrome::GetChannel()));
-
-  // Remove identity section.
-  base::ListValue* details = NULL;
-  sync_logs->GetList(syncer::sync_ui_util::kDetailsKey, &details);
-  if (!details)
-    return;
-  for (auto it = details->begin(); it != details->end(); ++it) {
-    base::DictionaryValue* dict = NULL;
-    if (it->GetAsDictionary(&dict)) {
-      std::string title;
-      dict->GetString("title", &title);
-      if (title == syncer::sync_ui_util::kIdentityTitle) {
-        details->Erase(it, NULL);
-        break;
-      }
-    }
-  }
-
-  // Add sync logs to logs.
-  std::string sync_logs_string;
-  JSONStringValueSerializer serializer(&sync_logs_string);
-  serializer.Serialize(*sync_logs.get());
-
-  response->emplace(kSyncDataKey, sync_logs_string);
+  // Add sync logs to |response|.
+  std::unique_ptr<base::DictionaryValue> sync_logs =
+      syncer::sync_ui_util::ConstructAboutInformation(
+          syncer::sync_ui_util::IncludeSensitiveData(false),
+          ProfileSyncServiceFactory::GetForProfile(profile),
+          chrome::GetChannel());
+  std::string serialized_sync_logs;
+  JSONStringValueSerializer(&serialized_sync_logs).Serialize(*sync_logs);
+  response->emplace(kSyncDataKey, serialized_sync_logs);
 }
 
 void ChromeInternalLogSource::PopulateExtensionInfoLogs(

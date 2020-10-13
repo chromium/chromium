@@ -267,10 +267,12 @@ void SyncInternalsMessageHandler::HandleJsEvent(
 }
 
 void SyncInternalsMessageHandler::SendAboutInfo() {
-  syncer::SyncService* sync_service = GetSyncService();
+  // This class serves to display debug information to the user, so it's fine to
+  // include sensitive data in ConstructAboutInformation().
   std::unique_ptr<base::DictionaryValue> value =
-      syncer::sync_ui_util::ConstructAboutInformation(sync_service,
-                                                      web_ui::GetChannel());
+      syncer::sync_ui_util::ConstructAboutInformation(
+          syncer::sync_ui_util::IncludeSensitiveData(true), GetSyncService(),
+          web_ui::GetChannel());
   DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
 }
 

@@ -65,7 +65,11 @@ bool GetIncludeSpecificsInitialState() {
 
 SyncInternalsMessageHandler::SyncInternalsMessageHandler()
     : SyncInternalsMessageHandler(base::BindRepeating(
-          &syncer::sync_ui_util::ConstructAboutInformation)) {}
+          &syncer::sync_ui_util::ConstructAboutInformation,
+          syncer::sync_ui_util::IncludeSensitiveData(true))) {
+  // This class serves to display debug information to the user, so it's fine to
+  // include sensitive data in ConstructAboutInformation() above.
+}
 
 SyncInternalsMessageHandler::SyncInternalsMessageHandler(
     AboutSyncDataDelegate about_sync_data_delegate)
