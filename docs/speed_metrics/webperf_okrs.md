@@ -2,6 +2,82 @@
 
 [TOC]
 
+## 2020 Q4 Objectives
+
+### New web performance APIs
+
+  * {#measure-memory-20204}**performance.measureMemory**:
+    * Add support for cross-origin iframes.
+    * Send Intent to Ship and ship --- API would become available early next year.
+  * {#spas-20204}**Single Page Apps**:
+    * Publish document for feedback on measurement issues, attributions issues, and other issues specific
+      to SPAs.
+    * Land support for User Timing hints in Chrome, and get 2+ frameworks to start using such hints.
+  * {#page-abandonment-20204}**Page abandonment**: publish data on abandonment rates, making a case for or against
+    an abandonment API.
+  * {#js-profiler-20204}**JS Sampling Profiler**:
+    * Implement the API so it requires COOP/COEP.
+    * Add support for warm codemap initialization.
+    * Add web platform tests.
+    * _(Stretch)_ Send Intent to Ship.
+  * {#smoothness-20204}**Smoothness** (FrameTiming):
+    * Discuss and socialize API shape.
+    * Propose API on WICG.
+    * Start a TAG review.
+  * {#bf-cache-20204}**Back-forward cache**: document and socialize a concrete proposal on a web API that supports
+    monitoring performance of sites on browsers that may perform back-forward navigations.
+  * {#responsiveness-20204}**Responsiveness**:
+    * Investigate internal metrics and potentially add new metrics to capture end-to-end responsiveness.
+    * Document how popular frameworks handle user interactions.
+    * Brainstorm on how to expand Event Timing to capture user handling for asynchronous work and to handle multiple
+      events referring to a single user interaction.
+    * Complete on-going investigation on whether scroll performance is also a problem in the web that needs a web API.
+
+### Existing web performance API improvements
+
+  * {#lcp-20204}**Largest Contentful Paint**:
+    * Complete [investigation](https://bugs.chromium.org/p/chromium/issues/detail?id=1045640) on removed nodes
+      and if needed update the API.
+    * [Ignore](https://bugs.chromium.org/p/chromium/issues/detail?id=1133883) images that occupy the full viewport.
+  * {#cls-20204}**Cumulative Layout Shift**: evaluate the impact of triggering on empty or invisible content and update
+    [spec](https://github.com/WICG/layout-instability/issues/61) and implementation accordingly.
+  * {#fcp-20204}**First Contentful Paint**: improve implementation to pass more
+    [tests](https://wpt.fyi/results/paint-timing?label=master&label=experimental).
+  * {#rt-worker-20204}**Navigation Timing**: [Fix](https://crbug.com/925239) encoded/decoded body sizes when going
+    through service workers.
+
+## 2020 Q3 Progress
+
+### New web performance APIs
+
+  * [performance.measureMemory](#measure-memory-20203):
+    * Spec was reviewed and polished.
+    * API support was added for workers (available from Chrome 87).
+  * [Page abandonment](#page-abandonment-20203): improved data was gathered, but more accuracy improvements are needed.
+  * [VisibilityStateEntry](#page-visibility-20203):
+    [explainer](https://docs.google.com/document/d/1l5kHiJRkdQwEN-CYI5_mUNODhQVB5rCyjN4jHDdXDHA/edit#),
+    [discussion](https://github.com/w3c/performance-timeline/issues/105), and TAG
+    [review](https://github.com/w3ctag/design-reviews/issues/534) kicked off, but no consensus yet on API shape.
+  * [FrameTiming](#frame-timing-20203): a lot of research on defining a good metric to capture smoothness.
+  * [isInputPending](#fb-driven-20203): shipped and available from Chrome 87!
+
+### Existing web performance API improvements
+
+  * [LargestContentfulPaint](#lcp-20203):
+    * Did analysis on how LCP would change when removed content is included.
+    * Ignored paints occurring with opacity 0.
+  * CumulativeLayoutShift [fixes](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/metrics_changelog/cls.md):
+    * Ignored shifts from video thumb sliders.
+    * Fixed computations for ink overflow and transforms.
+    * Updated computations when child moves alongside their parent element.
+
+### Interop
+
+  * [Web vitals specs](#vitals-specs-20203): triaged new
+    [issues](https://github.com/search?q=is%3Aissue+created%3A2020-06-01..2020-09-30+repo%3Awicg%2Flayout-instability+repo%3Awicg%2Flargest-contentful-paint+repo%3Awicg%2Fevent-timing&type=issues)
+    as well as existing ones.
+  * [Paint Timing](#paint-timing-20203): fixed two FCP tests by improving our implementation.
+
 ## 2020 Q3 Objectives
 
 ### New web performance APIs
