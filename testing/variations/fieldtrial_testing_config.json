@@ -6732,6 +6732,22 @@
             ]
         }
     ],
+    "TabSearch": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabSearch",
+                        "TabSearchFixedEntrypoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabToGTSAnimation": [
         {
             "platforms": [
