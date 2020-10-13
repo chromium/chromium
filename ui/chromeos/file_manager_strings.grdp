@@ -1308,11 +1308,11 @@
   <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_CROSTINI" desc="Message shown in FilesApp message bar when a user has shared a folder with the crostini container.">
     This folder is shared with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM" desc="Message shown in FilesApp message bar when a user has shared a folder with the crostini container and Windows.">
-    This folder is shared with Linux and Windows
+  <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM" desc="Message shown in FilesApp message bar when a user has shared a folder with the crostini container and with Parallels. Do not translate 'Linux' or 'Parallels Desktop'">
+    This folder is shared with Linux and Parallels Desktop
   </message>
-  <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Message shown in FilesApp message bar when a user has shared a folder with Windows.">
-    This folder is shared with Windows
+  <message name="IDS_FILE_BROWSER_MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Message shown in FilesApp message bar when a user has shared a folder with Parallels. Do not translate 'Parallels Desktop'">
+    This folder is shared with Parallels Desktop
   </message>
 
   <message name="IDS_FILE_BROWSER_FOLDER" desc="Folder entry type">
