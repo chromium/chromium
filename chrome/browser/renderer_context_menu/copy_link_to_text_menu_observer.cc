@@ -79,7 +79,8 @@ void CopyLinkToTextMenuObserver::OnGeneratedSelector(
   std::string url = url_.spec();
   if (!selector.empty())
     url += kTextFragmentUrlClassifier + selector;
-  scw.WriteText(selected_text_ + base::UTF8ToUTF16("\n" + url));
+  scw.WriteText(base::UTF8ToUTF16("\"") + selected_text_ +
+                base::UTF8ToUTF16("\"\n" + url));
 }
 
 void CopyLinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
