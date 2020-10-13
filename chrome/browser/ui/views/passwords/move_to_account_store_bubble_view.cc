@@ -39,26 +39,34 @@ namespace {
 
 constexpr int kImageSize = BadgedProfilePhoto::kImageSize;
 
-// An image source that represent a filled circle of the given size and color.
+// An image source that represents a circle of the given size, color and style.
 class CircleImageSource : public gfx::CanvasImageSource {
  public:
-  CircleImageSource(int size, SkColor color)
-      : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
+  CircleImageSource(int size, SkColor color, cc::PaintFlags::Style style)
+      : gfx::CanvasImageSource(gfx::Size(size, size)),
+        color_(color),
+        style_(style) {}
   ~CircleImageSource() override = default;
 
   void Draw(gfx::Canvas* canvas) override;
 
  private:
-  SkColor color_;
+  const SkColor color_;
+  const cc::PaintFlags::Style style_;
 };
 
 void CircleImageSource::Draw(gfx::Canvas* canvas) {
+  constexpr int kBorderThickness = 1;
   float radius = size().width() / 2.0f;
   cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setStyle(style_);
   flags.setAntiAlias(true);
   flags.setColor(color_);
-  canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
+  float half_thickness = kBorderThickness / 2.0f;
+  gfx::SizeF size_f(size());
+  gfx::RectF bounds(size_f);
+  bounds.Inset(half_thickness, half_thickness);
+  canvas->DrawRoundRect(bounds, radius, flags);
 }
 
 // A class represting an image with a badge. By default, the image is the globe
@@ -129,15 +137,28 @@ void ImageWithBadge::Render() {
 
   gfx::ImageSkia badge_background =
       gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-          gfx::kFaviconSize, GetNativeTheme()->GetSystemColor(
-                                 ui::NativeTheme::kColorId_BubbleBackground));
+          gfx::kFaviconSize,
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_BubbleBackground),
+          cc::PaintFlags::kFill_Style);
 
   gfx::ImageSkia rounded_badge_with_background =
       gfx::ImageSkiaOperations::CreateSuperimposedImage(
           badge_background, *rounded_badge.ToImageSkia());
 
+  gfx::ImageSkia main_image_border =
+      gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
+          kImageSize,
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_DefaultIconColor),
+          cc::PaintFlags::kStroke_Style);
+
+  gfx::ImageSkia main_image_with_border =
+      gfx::ImageSkiaOperations::CreateSuperimposedImage(GetMainImage(),
+                                                        main_image_border);
+
   gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
-      GetMainImage(), rounded_badge_with_background);
+      main_image_with_border, rounded_badge_with_background);
   SetImage(badged_image);
 }
 
@@ -244,7 +265,7 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
   AddChildView(CreateDescription());
 
   auto computer_view =
-      std::make_unique<ImageWithBadge>(kComputerWithCircleBackgroundIcon);
+      std::make_unique<ImageWithBadge>(kHardwareComputerSmallIcon);
   auto avatar_view = std::make_unique<ImageWithBadge>(
       *controller_.GetProfileIcon(kImageSize).ToImageSkia());
 
