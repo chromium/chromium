@@ -45,13 +45,20 @@ MATCHER_P(MatchValue, expected, "matches base::Value") {
     return false;
   }
   const base::Value& event = *events_list.begin();
-  const auto destination = event.FindIntKey("destination");
+
+  const auto* reporting_record_event = event.FindKey("reportingRecordEvent");
+  if (reporting_record_event == nullptr) {
+    LOG(ERROR) << "'reportingRecordEvent' is missing" << event;
+    return false;
+  }
+
+  const auto destination = reporting_record_event->FindIntKey("destination");
   if (!destination.has_value() ||
       destination.value() != Destination::MEET_DEVICE_TELEMETRY) {
     LOG(ERROR) << "'destination' is wrong or missing";
     return false;
   }
-  const std::string* const data = event.FindStringKey("data");
+  const std::string* const data = reporting_record_event->FindStringKey("data");
   if (!data) {
     LOG(ERROR) << "'data' is missing";
     return false;
