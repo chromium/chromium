@@ -91,8 +91,6 @@ target(link_target_type, "renderer") {
     "loader/request_extra_data.h",
     "loader/resource_dispatcher.cc",
     "loader/resource_dispatcher.h",
-    "loader/resource_load_stats.cc",
-    "loader/resource_load_stats.h",
     "loader/sync_load_context.cc",
     "loader/sync_load_context.h",
     "loader/sync_load_response.cc",

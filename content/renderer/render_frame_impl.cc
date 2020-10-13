@@ -3034,6 +3034,12 @@ void RenderFrameImpl::AddAutoplayFlags(const url::Origin& origin,
 // blink::mojom::ResourceLoadInfoNotifier implementation
 // --------------------------
 
+#if defined(OS_ANDROID)
+void RenderFrameImpl::NotifyUpdateUserGestureCarryoverInfo() {
+  GetFrameHost()->UpdateUserGestureCarryoverInfo();
+}
+#endif
+
 void RenderFrameImpl::NotifyResourceRedirectReceived(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr redirect_response) {}

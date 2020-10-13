@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "content/renderer/loader/resource_load_stats.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"

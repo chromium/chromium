@@ -20,14 +20,14 @@
 namespace blink {
 
 ResourceLoadInfoNotifierWrapper::ResourceLoadInfoNotifierWrapper(
-    base::WeakPtr<blink::WeakWrapperResourceLoadInfoNotifier>
+    base::WeakPtr<WeakWrapperResourceLoadInfoNotifier>
         weak_wrapper_resource_load_info_notifier)
     : ResourceLoadInfoNotifierWrapper(
           std::move(weak_wrapper_resource_load_info_notifier),
           base::ThreadTaskRunnerHandle::Get()) {}
 
 ResourceLoadInfoNotifierWrapper::ResourceLoadInfoNotifierWrapper(
-    base::WeakPtr<blink::WeakWrapperResourceLoadInfoNotifier>
+    base::WeakPtr<WeakWrapperResourceLoadInfoNotifier>
         weak_wrapper_resource_load_info_notifier,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : weak_wrapper_resource_load_info_notifier_(
@@ -38,6 +38,23 @@ ResourceLoadInfoNotifierWrapper::ResourceLoadInfoNotifierWrapper(
 }
 
 ResourceLoadInfoNotifierWrapper::~ResourceLoadInfoNotifierWrapper() = default;
+
+#if defined(OS_ANDROID)
+void ResourceLoadInfoNotifierWrapper::NotifyUpdateUserGestureCarryoverInfo() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (task_runner_->BelongsToCurrentThread()) {
+    if (weak_wrapper_resource_load_info_notifier_) {
+      weak_wrapper_resource_load_info_notifier_
+          ->NotifyUpdateUserGestureCarryoverInfo();
+    }
+    return;
+  }
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&mojom::ResourceLoadInfoNotifier::
+                                    NotifyUpdateUserGestureCarryoverInfo,
+                                weak_wrapper_resource_load_info_notifier_));
+}
+#endif
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
     int64_t request_id,
@@ -51,14 +68,14 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadInitiated(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   DCHECK(!resource_load_info_);
-  resource_load_info_ = blink::mojom::ResourceLoadInfo::New();
+  resource_load_info_ = mojom::ResourceLoadInfo::New();
   resource_load_info_->method = http_method;
   resource_load_info_->original_url = request_url;
   resource_load_info_->final_url = request_url;
   resource_load_info_->request_destination = request_destination;
   resource_load_info_->request_id = request_id;
   resource_load_info_->referrer = referrer;
-  resource_load_info_->network_info = blink::mojom::CommonNetworkInfo::New();
+  resource_load_info_->network_info = mojom::CommonNetworkInfo::New();
   resource_load_info_->request_priority = request_priority;
 }
 
@@ -70,15 +87,14 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceRedirectReceived(
   resource_load_info_->final_url = redirect_info.new_url;
   resource_load_info_->method = redirect_info.new_method;
   resource_load_info_->referrer = GURL(redirect_info.new_referrer);
-  blink::mojom::RedirectInfoPtr net_redirect_info =
-      blink::mojom::RedirectInfo::New();
+  mojom::RedirectInfoPtr net_redirect_info = mojom::RedirectInfo::New();
   net_redirect_info->origin_of_new_url =
       url::Origin::Create(redirect_info.new_url);
-  net_redirect_info->network_info = blink::mojom::CommonNetworkInfo::New();
+  net_redirect_info->network_info = mojom::CommonNetworkInfo::New();
   net_redirect_info->network_info->network_accessed =
       redirect_response->network_accessed;
   net_redirect_info->network_info->always_access_network =
-      blink::network_utils::AlwaysAccessNetwork(redirect_response->headers);
+      network_utils::AlwaysAccessNetwork(redirect_response->headers);
   net_redirect_info->network_info->remote_endpoint =
       redirect_response->remote_endpoint;
   resource_load_info_->redirect_info_chain.push_back(
@@ -107,7 +123,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
   resource_load_info_->network_info->network_accessed =
       response_head->network_accessed;
   resource_load_info_->network_info->always_access_network =
-      blink::network_utils::AlwaysAccessNetwork(response_head->headers);
+      network_utils::AlwaysAccessNetwork(response_head->headers);
   resource_load_info_->network_info->remote_endpoint =
       response_head->remote_endpoint;
 
@@ -128,12 +144,12 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
   }
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&blink::mojom::ResourceLoadInfoNotifier::
-                         NotifyResourceResponseReceived,
-                     weak_wrapper_resource_load_info_notifier_,
-                     resource_load_info_->request_id,
-                     resource_load_info_->final_url, std::move(response_head),
-                     resource_load_info_->request_destination, previews_state));
+      base::BindOnce(
+          &mojom::ResourceLoadInfoNotifier::NotifyResourceResponseReceived,
+          weak_wrapper_resource_load_info_notifier_,
+          resource_load_info_->request_id, resource_load_info_->final_url,
+          std::move(response_head), resource_load_info_->request_destination,
+          previews_state));
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(
@@ -149,18 +165,18 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceTransferSizeUpdated(
   }
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&blink::mojom::ResourceLoadInfoNotifier::
-                         NotifyResourceTransferSizeUpdated,
-                     weak_wrapper_resource_load_info_notifier_,
-                     resource_load_info_->request_id, transfer_size_diff));
+      base::BindOnce(
+          &mojom::ResourceLoadInfoNotifier::NotifyResourceTransferSizeUpdated,
+          weak_wrapper_resource_load_info_notifier_,
+          resource_load_info_->request_id, transfer_size_diff));
 }
 
 void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  blink::RecordLoadHistograms(
-      url::Origin::Create(resource_load_info_->final_url),
-      resource_load_info_->request_destination, status.error_code);
+  RecordLoadHistograms(url::Origin::Create(resource_load_info_->final_url),
+                       resource_load_info_->request_destination,
+                       status.error_code);
 
   resource_load_info_->was_cached = status.exists_in_cache;
   resource_load_info_->net_error = status.error_code;
@@ -177,7 +193,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &blink::mojom::ResourceLoadInfoNotifier::NotifyResourceLoadCompleted,
+          &mojom::ResourceLoadInfoNotifier::NotifyResourceLoadCompleted,
           weak_wrapper_resource_load_info_notifier_,
           std::move(resource_load_info_), status));
 }
@@ -185,9 +201,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
 void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCanceled(
     int net_error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  blink::RecordLoadHistograms(
-      url::Origin::Create(resource_load_info_->final_url),
-      resource_load_info_->request_destination, net_error);
+  RecordLoadHistograms(url::Origin::Create(resource_load_info_->final_url),
+                       resource_load_info_->request_destination, net_error);
 
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {
@@ -199,7 +214,7 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCanceled(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &blink::mojom::ResourceLoadInfoNotifier::NotifyResourceLoadCanceled,
+          &mojom::ResourceLoadInfoNotifier::NotifyResourceLoadCanceled,
           weak_wrapper_resource_load_info_notifier_,
           resource_load_info_->request_id));
 }

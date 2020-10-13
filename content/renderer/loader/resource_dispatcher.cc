@@ -26,7 +26,6 @@
 #include "content/public/renderer/request_peer.h"
 #include "content/public/renderer/resource_dispatcher_delegate.h"
 #include "content/renderer/loader/request_extra_data.h"
-#include "content/renderer/loader/resource_load_stats.h"
 #include "content/renderer/loader/sync_load_context.h"
 #include "content/renderer/loader/sync_load_response.h"
 #include "content/renderer/loader/url_loader_client_impl.h"
@@ -518,7 +517,7 @@ int ResourceDispatcher::StartAsync(
   DCHECK(!(request->is_main_frame &&
            blink::IsRequestDestinationFrame(request->destination)));
   if (request->has_user_gesture) {
-    NotifyUpdateUserGestureCarryoverInfo(request->render_frame_id);
+    resource_load_info_notifier_wrapper->NotifyUpdateUserGestureCarryoverInfo();
   }
 #endif
 

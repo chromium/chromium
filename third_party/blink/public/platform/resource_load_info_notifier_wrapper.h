@@ -34,14 +34,17 @@ class WeakWrapperResourceLoadInfoNotifier;
 class BLINK_PLATFORM_EXPORT ResourceLoadInfoNotifierWrapper {
  public:
   explicit ResourceLoadInfoNotifierWrapper(
-      base::WeakPtr<blink::WeakWrapperResourceLoadInfoNotifier>
+      base::WeakPtr<WeakWrapperResourceLoadInfoNotifier>
           weak_wrapper_resource_load_info_notifier);
   ResourceLoadInfoNotifierWrapper(
-      base::WeakPtr<blink::WeakWrapperResourceLoadInfoNotifier>
+      base::WeakPtr<WeakWrapperResourceLoadInfoNotifier>
           weak_wrapper_resource_load_info_notifier,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~ResourceLoadInfoNotifierWrapper();
 
+#if defined(OS_ANDROID)
+  void NotifyUpdateUserGestureCarryoverInfo();
+#endif
   void NotifyResourceLoadInitiated(
       int64_t request_id,
       const GURL& request_url,
@@ -65,13 +68,13 @@ class BLINK_PLATFORM_EXPORT ResourceLoadInfoNotifierWrapper {
 
   // |weak_wrapper_resource_load_info_notifier_| should only be dereferenced on
   // the same thread as |task_runner_| runs on.
-  base::WeakPtr<blink::WeakWrapperResourceLoadInfoNotifier>
+  base::WeakPtr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // This struct holds the loading stats passed to
   // |weak_wrapper_resource_load_info_notifier_|.
-  blink::mojom::ResourceLoadInfoPtr resource_load_info_;
+  mojom::ResourceLoadInfoPtr resource_load_info_;
 };
 
 }  // namespace blink

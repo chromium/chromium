@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
@@ -26,6 +27,9 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
 
   // blink::mojom::ResourceLoadInfoNotifier overrides, these methods should be
   // called from the same thread.
+#if defined(OS_ANDROID)
+  void NotifyUpdateUserGestureCarryoverInfo() override;
+#endif
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_response) override;

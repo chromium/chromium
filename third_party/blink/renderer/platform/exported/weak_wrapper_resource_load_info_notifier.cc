@@ -21,6 +21,14 @@ void WeakWrapperResourceLoadInfoNotifier::NotifyResourceRedirectReceived(
       redirect_info, std::move(redirect_response));
 }
 
+#if defined(OS_ANDROID)
+void WeakWrapperResourceLoadInfoNotifier::
+    NotifyUpdateUserGestureCarryoverInfo() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  resource_load_info_notifier_->NotifyUpdateUserGestureCarryoverInfo();
+}
+#endif
+
 void WeakWrapperResourceLoadInfoNotifier::NotifyResourceResponseReceived(
     int64_t request_id,
     const GURL& final_url,
