@@ -20,6 +20,22 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+// Define a custom FlexRule for |tabstrip_scroll_container_|. Equivalent to
+// using a (kScaleToMinimum, kPreferred) flex specification on the tabstrip
+// itself, bypassing the ScrollView.
+// TODO(1132488): Make ScrollView take on TabStrip's preferred size instead.
+gfx::Size TabScrollContainerFlexRule(const views::View* tab_strip,
+                                     const views::View* view,
+                                     const views::SizeBounds& size_bounds) {
+  const gfx::Size preferred_size = tab_strip->GetPreferredSize();
+  return gfx::Size(size_bounds.width().min_of(preferred_size.width()),
+                   preferred_size.height());
+}
+
+}  // namespace
+
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   views::FlexLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -30,6 +46,10 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
       base::BindRepeating(&TabStripRegionView::CalculateTabStripAvailableWidth,
                           base::Unretained(this)));
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    // TODO(https://crbug.com/1132488): ScrollView doesn't propagate changes to
+    // the TabStrip's preferred size; observe that manually.
+    tab_strip->View::AddObserver(this);
+
     views::ScrollView* tab_strip_scroll_container =
         AddChildView(std::make_unique<views::ScrollView>(
             views::ScrollView::ScrollWithLayers::kEnabled));
@@ -39,6 +59,13 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetTreatAllScrollEventsAsHorizontal(true);
     tab_strip_container_ = tab_strip_scroll_container;
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
+    // This base::Unretained is safe because the callback is called by the
+    // layout manager, which is cleaned up before view children like
+    // |tab_strip_scroll_container| (which owns |tab_strip_|).
+    tab_strip_scroll_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(base::BindRepeating(
+            &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
 
     auto left_scroll = std::make_unique<views::ImageButton>(base::BindRepeating(
         &TabStripRegionView::ScrollLeft, base::Unretained(this)));
@@ -49,16 +76,16 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     right_scroll_ = AddChildView(std::move(right_scroll));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
-  }
 
-  // Allow the |tab_strip_container_| to grow into the free space available in
-  // the TabStripRegionView.
-  const views::FlexSpecification tab_strip_container_flex_spec =
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded);
-  tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
-                                    tab_strip_container_flex_spec);
+    // Allow the |tab_strip_container_| to grow into the free space available in
+    // the TabStripRegionView.
+    const views::FlexSpecification tab_strip_container_flex_spec =
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred);
+    tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
+                                      tab_strip_container_flex_spec);
+  }
 
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
       base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
@@ -172,6 +199,17 @@ void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTabList;
 }
 
+void TabStripRegionView::OnViewPreferredSizeChanged(View* view) {
+  DCHECK_EQ(view, tab_strip_);
+
+  // The |tab_strip_|'s preferred size changing can change our own preferred
+  // size; however, with scrolling enabled, the ScrollView does not propagate
+  // ChildPreferredSizeChanged up the view hierarchy, instead assuming that its
+  // own preferred size is independent of its childrens'.
+  // TODO(https://crbug.com/1132488): Make ScrollView not be like that.
+  PreferredSizeChanged();
+}
+
 int TabStripRegionView::CalculateTabStripAvailableWidth() {
   // The tab strip can occupy the space not currently taken by its fixed-width
   // sibling views.
@@ -193,6 +231,7 @@ void TabStripRegionView::ScrollLeft() {
                    visible_content.height());
   scroll_view_container->contents()->ScrollRectToVisible(scroll);
 }
+
 void TabStripRegionView::ScrollRight() {
   views::ScrollView* scroll_view_container =
       static_cast<views::ScrollView*>(tab_strip_container_);

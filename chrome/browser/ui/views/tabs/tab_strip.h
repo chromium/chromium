@@ -599,6 +599,9 @@ class TabStrip : public views::View,
   // Calculates the width that can be occupied by the tabs in the strip.
   int CalculateAvailableWidthForTabs();
 
+  // Calculates the width that tabs would like to occupy.
+  int CalculatePreferredWidthForTabs() const;
+
   // Returns the total width available for the TabStrip's use.
   int GetAvailableWidthForTabStrip();
 

@@ -13,7 +13,8 @@ class TabStrip;
 
 // Container for the tabstrip, new tab button, and reserved grab handle space.
 // TODO (https://crbug.com/949660) Under construction.
-class TabStripRegionView final : public views::AccessiblePaneView {
+class TabStripRegionView final : public views::AccessiblePaneView,
+                                 views::ViewObserver {
  public:
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   ~TabStripRegionView() override;
@@ -40,6 +41,9 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetDefaultFocusableChild() override;
+
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(View* view) override;
 
   // TODO(958173): Override OnBoundsChanged to cancel tabstrip animations.
 

@@ -250,6 +250,10 @@ class TabScrubberTest : public InProcessBrowserTest,
     ASSERT_EQ(num_tabs, browser->tab_strip_model()->active_index());
     tab_strip->StopAnimating(true);
     ASSERT_FALSE(tab_strip->IsAnimating());
+    // Perform any scheduled layouts so the tabstrip is in a steady state.
+    BrowserView::GetBrowserViewForBrowser(browser)
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
   }
 
   // TabStripModelObserver overrides.

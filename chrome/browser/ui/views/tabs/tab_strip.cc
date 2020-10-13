@@ -584,7 +584,16 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   int GetTabAreaWidth() const override { return tab_strip_->GetTabAreaWidth(); }
 
   int GetTabDragAreaWidth() const override {
-    return tab_strip_->width() - tab_strip_->FrameGrabWidth();
+    // There are two cases here (with tab scrolling enabled):
+    // 1) If the tab strip is not wider than the tab strip region (and thus
+    // not scrollable), returning the available width for tabs rather than the
+    // actual width for tabs allows tabs to be dragged past the current bounds
+    // of the tabstrip, anywhere along the tab strip region.
+    // 2) If the tabstrip is wider than the tab strip region (and thus is
+    // scrollable), returning the tab area width allows tabs to be dragged
+    // anywhere within the tabstrip, not just in the leftmost region of it.
+    return std::max(tab_strip_->CalculateAvailableWidthForTabs(),
+                    tab_strip_->GetTabAreaWidth());
   }
 
   int TabDragAreaBeginX() const override {
@@ -819,6 +828,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       }
     }
     tab_strip_->SetTabSlotVisibility();
+    // The rightmost tab may have moved, which would change the tabstrip's
+    // preferred width.
+    tab_strip_->PreferredSizeChanged();
   }
 
   // Forces the entire tabstrip to lay out.
@@ -2215,7 +2227,7 @@ void TabStrip::Layout() {
     // width.
     // It should never be larger than its preferred width.
     const int max_width =
-        layout_helper_->CalculatePreferredWidth() + GetRightSideReservedWidth();
+        CalculatePreferredWidthForTabs() + GetRightSideReservedWidth();
     // It should never be smaller than its minimum width.
     const int min_width = GetMinimumSize().width();
     // If it can, it should fit within the tab strip region.
@@ -2408,7 +2420,7 @@ gfx::Size TabStrip::CalculatePreferredSize() const {
     // tab strip is sized to exactly fit the current position of the tabs.
     preferred_tab_area_width = max_x;
   } else {
-    preferred_tab_area_width = layout_helper_->CalculatePreferredWidth();
+    preferred_tab_area_width = CalculatePreferredWidthForTabs();
   }
   return gfx::Size(preferred_tab_area_width + GetRightSideReservedWidth(),
                    GetLayoutConstant(TAB_HEIGHT));
@@ -2775,6 +2787,8 @@ void TabStrip::SnapToIdealBounds() {
   }
 
   tab_controls_container_->SetBoundsRect(tab_controls_container_ideal_bounds_);
+
+  PreferredSizeChanged();
 }
 
 void TabStrip::ExitTabClosingMode() {
@@ -3486,6 +3500,12 @@ int TabStrip::UpdateIdealBoundsForPinnedTabs(int* first_non_pinned_index) {
 int TabStrip::CalculateAvailableWidthForTabs() {
   return override_available_width_for_tabs_.value_or(
       GetAvailableWidthForTabStrip() - GetRightSideReservedWidth());
+}
+
+int TabStrip::CalculatePreferredWidthForTabs() const {
+  return override_available_width_for_tabs_
+             ? override_available_width_for_tabs_.value()
+             : layout_helper_->CalculatePreferredWidth();
 }
 
 int TabStrip::GetAvailableWidthForTabStrip() {
