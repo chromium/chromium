@@ -395,6 +395,15 @@ TEST_F(CompositingReasonFinderTest, SVGCompositedTransformAnimation) {
         0% { transform: rotate(-5deg); }
         100% { transform: rotate(5deg); }
       }
+      .animate-mixed {
+        width: 100px;
+        height: 100px;
+        animation: mixed 1s infinite;
+      }
+      @keyframes mixed {
+        0% { transform: rotate(-5deg); stroke-dashoffset: 0; }
+        100% { transform: rotate(5deg); stroke-dashoffset: 180; }
+      }
     </style>
     <svg id="svg" class="animate">
       <rect id="rect" class="animate"/>
@@ -402,6 +411,7 @@ TEST_F(CompositingReasonFinderTest, SVGCompositedTransformAnimation) {
         <animateMotion dur="10s" repeatCount="indefinite"
                        path="M0,0 L100,100 z"/>
       </rect>
+      <rect id="rect-mixed" class="animate-mixed"/>
       <svg id="embedded-svg" class="animate"/>
       <foreignObject id="foreign" class="animate"/>
       <foreignObject id="foreign-zoomed" class="animate"
@@ -421,6 +431,9 @@ TEST_F(CompositingReasonFinderTest, SVGCompositedTransformAnimation) {
   EXPECT_EQ(CompositingReason::kNone,
             CompositingReasonFinder::DirectReasonsForPaintProperties(
                 *GetLayoutObjectByElementId("rect-smil")));
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(
+                *GetLayoutObjectByElementId("rect-mixed")));
   EXPECT_EQ(CompositingReason::kNone,
             CompositingReasonFinder::DirectReasonsForPaintProperties(
                 *GetLayoutObjectByElementId("embedded-svg")));
