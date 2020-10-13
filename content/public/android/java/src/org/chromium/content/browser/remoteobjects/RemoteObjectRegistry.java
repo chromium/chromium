@@ -83,7 +83,14 @@ final class RemoteObjectRegistry implements RemoteObjectImpl.ObjectIdAllocator {
     }
 
     public synchronized void unrefObjectById(int id) {
-        Entry entry = mEntriesById.get(id);
+        unrefObject(mEntriesById.get(id));
+    }
+
+    public synchronized void unrefObjectByObject(Object object) {
+        unrefObject(mEntriesByObject.get(object));
+    }
+
+    private synchronized void unrefObject(Entry entry) {
         if (entry == null) return;
 
         entry.referenceCount--;

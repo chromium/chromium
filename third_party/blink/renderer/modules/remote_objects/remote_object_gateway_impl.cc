@@ -113,12 +113,6 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
 
 void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id) {
   object_host_->ReleaseObject(object_id);
-  for (const auto& pair : named_objects_) {
-    if (pair.value == object_id) {
-      named_objects_.erase(pair.key);
-      break;
-    }
-  }
 }
 
 // static

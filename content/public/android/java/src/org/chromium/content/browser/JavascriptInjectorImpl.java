@@ -106,10 +106,15 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void removeInterface(String name) {
-        mInjectedObjects.remove(name);
-        if (mNativePtr != 0) {
-            JavascriptInjectorImplJni.get().removeInterface(
-                    mNativePtr, JavascriptInjectorImpl.this, name);
+        assert mUseMojo != null;
+        if (mUseMojo) {
+            mInjector.removeInterface(name);
+        } else {
+            mInjectedObjects.remove(name);
+            if (mNativePtr != 0) {
+                JavascriptInjectorImplJni.get().removeInterface(
+                        mNativePtr, JavascriptInjectorImpl.this, name);
+            }
         }
     }
 

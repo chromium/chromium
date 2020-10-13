@@ -58,10 +58,6 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
         mAllowInspection = allowInspection;
     }
 
-    public RemoteObjectRegistry getRegistry() {
-        return mRegistry.get();
-    }
-
     @Override
     public void getObject(int objectId, InterfaceRequest<RemoteObject> request) {
         try (InterfaceRequest<RemoteObject> autoClose = request) {
