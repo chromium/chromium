@@ -11,10 +11,6 @@ template("generate_grd") {
     }
 
     inputs = invoker.manifest_files
-    if (defined(invoker.input_files)) {
-      inputs += invoker.input_files
-    }
-
     outputs = [ invoker.out_grd ]
 
     args = [
