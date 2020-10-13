@@ -306,12 +306,6 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
   cast_channel::LastError last_error =
       cast_socket_service_->GetLogger()->GetLastError(socket.id());
   MediaRouterChannelError error_code = RecordError(error_state, last_error);
-  if (logger_.is_bound()) {
-    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StringPrintf("Cast Channel Error Code: %d",
-                                         static_cast<int>(error_code)),
-                      "", "", "");
-  }
 
   net::IPEndPoint ip_endpoint = socket.ip_endpoint();
   // Need a PostTask() here because RemoveSocket() will release the memory of
@@ -331,6 +325,13 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
       std::find_if(sinks.begin(), sinks.end(), [&socket_id](const auto& entry) {
         return entry.second.cast_data().cast_channel_id == socket_id;
       });
+  if (logger_.is_bound()) {
+    auto sink_id = sink_it == sinks.end() ? "" : sink_it->first;
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      base::StringPrintf("MediaRouterChannelError: %d",
+                                         static_cast<int>(error_code)),
+                      sink_id, "", "");
+  }
   if (sink_it == sinks.end()) {
     return;
   }
