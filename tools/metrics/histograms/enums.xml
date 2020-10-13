@@ -29775,10 +29775,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3565" label="IdentifiabilityStudyReserved3565"/>
   <int value="3566" label="V8BaseAudioContext_SampleRate_AttributeGetter"/>
   <int value="3567" label="WindowScreenId"/>
-  <int value="3568" label="IdentifiabilityStudyReserved3568"/>
-  <int value="3569" label="IdentifiabilityStudyReserved3569"/>
-  <int value="3570" label="IdentifiabilityStudyReserved3570"/>
-  <int value="3571" label="IdentifiabilityStudyReserved3571"/>
+  <int value="3568" label="WebGLRenderingContextGetParameter"/>
+  <int value="3569" label="WebGLRenderingContextGetRenderbufferParameter"/>
+  <int value="3570" label="WebGLRenderingContextGetShaderPrecisionFormat"/>
+  <int value="3571" label="WebGL2RenderingContextGetInternalFormatParameter"/>
   <int value="3572" label="IdentifiabilityStudyReserved3572"/>
   <int value="3573" label="IdentifiabilityStudyReserved3573"/>
   <int value="3574" label="IdentifiabilityStudyReserved3574"/>

@@ -551,15 +551,15 @@ interface mixin WebGLRenderingContextBase {
     [CallWith=ScriptState, HighEntropy, Measure] object? getExtension(DOMString name);
 
     [CallWith=ScriptState] any getFramebufferAttachmentParameter(GLenum target, GLenum attachment, GLenum pname);
-    [CallWith=ScriptState] any getParameter(GLenum pname);
+    [HighEntropy, MeasureAs=WebGLRenderingContextGetParameter, CallWith=ScriptState] any getParameter(GLenum pname);
     [CallWith=ScriptState] any getProgramParameter(WebGLProgram program, GLenum pname);
     DOMString? getProgramInfoLog(WebGLProgram program);
-    [CallWith=ScriptState] any getRenderbufferParameter(GLenum target, GLenum pname);
+    [HighEntropy, MeasureAs=WebGLRenderingContextGetRenderbufferParameter, CallWith=ScriptState] any getRenderbufferParameter(GLenum target, GLenum pname);
     [CallWith=ScriptState] any getShaderParameter(WebGLShader shader, GLenum pname);
 
     DOMString?   getShaderInfoLog(WebGLShader shader);
 
-    WebGLShaderPrecisionFormat getShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype);
+    [HighEntropy, MeasureAs=WebGLRenderingContextGetShaderPrecisionFormat] WebGLShaderPrecisionFormat getShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype);
 
     DOMString?   getShaderSource(WebGLShader shader);
 
