@@ -75,9 +75,8 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
   const DisplayItemClient& text_fragment =
       *cursor.Current().GetDisplayItemClient();
 
-  EXPECT_THAT(RootPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&ViewScrollingBackgroundClient(),
-                                   DisplayItem::kDocumentBackground),
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(&text_fragment, kForegroundType)));
   HitTestData scroll_hit_test;
   scroll_hit_test.scroll_translation =
@@ -85,9 +84,9 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
   scroll_hit_test.scroll_hit_test_rect = IntRect(0, 0, 40, 40);
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_THAT(
-        RootPaintController().PaintChunks(),
+        ContentPaintChunks(),
         ElementsAre(
-            IsPaintChunk(0, 0), IsPaintChunk(0, 1),  // LayoutView chunks.
+            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
             IsPaintChunk(
                 1, 1,
                 PaintChunk::Id(*scroller.Layer(), DisplayItem::kLayerChunk),
@@ -100,9 +99,9 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
             IsPaintChunk(1, 2)));
   } else {
     EXPECT_THAT(
-        RootPaintController().PaintChunks(),
+        ContentPaintChunks(),
         ElementsAre(
-            IsPaintChunk(0, 1),  // LayutView.
+            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
             IsPaintChunk(
                 1, 1,
                 PaintChunk::Id(root_fragment, DisplayItem::kScrollHitTest),

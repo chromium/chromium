@@ -1076,8 +1076,7 @@ void VisualViewport::DisposeImpl() {
 
 void VisualViewport::Paint(GraphicsContext& context) const {
   // TODO(crbug.com/1015625): Avoid scroll_layer_.
-  // For now disable scroll_layer_ for CAP to avoid updating unit tests.
-  if (scroll_layer_ && !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+  if (scroll_layer_) {
     auto state = parent_property_tree_state_;
     state.SetTransform(*scroll_translation_node_);
     DEFINE_STATIC_LOCAL(LiteralDebugNameClient, debug_name_client,

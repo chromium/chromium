@@ -61,7 +61,8 @@ class PaintChunkSubset {
       return *this;
     }
     Iterator operator+(wtf_size_t offset) const {
-      DCHECK_LT(subset_or_chunk_index_ + offset, subset_.size());
+      DCHECK_LE(subset_or_chunk_index_ + offset,
+                subset_.end().subset_or_chunk_index_);
       return Iterator(subset_, subset_or_chunk_index_ + offset);
     }
 
@@ -85,6 +86,7 @@ class PaintChunkSubset {
         : subset_(subset), subset_or_chunk_index_(subset_or_chunk_index) {}
 
     const PaintChunk& GetChunk() const {
+      DCHECK_LT(subset_or_chunk_index_, subset_.end().subset_or_chunk_index_);
       return subset_.paint_artifact_->PaintChunks()[IndexInPaintArtifact()];
     }
 

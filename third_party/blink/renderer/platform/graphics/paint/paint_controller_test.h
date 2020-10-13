@@ -161,8 +161,6 @@ MATCHER_P6(IsPaintChunk,
 const DisplayItem::Type kBackgroundType = DisplayItem::kBoxDecorationBackground;
 const DisplayItem::Type kForegroundType =
     static_cast<DisplayItem::Type>(DisplayItem::kDrawingPaintPhaseFirst + 5);
-const DisplayItem::Type kDocumentBackgroundType =
-    DisplayItem::kDocumentBackground;
 const DisplayItem::Type kClipType = DisplayItem::kClipPaintPhaseFirst;
 
 #define EXPECT_SUBSEQUENCE(client, expected_start_chunk_index,     \
@@ -175,6 +173,12 @@ const DisplayItem::Type kClipType = DisplayItem::kClipPaintPhaseFirst;
     EXPECT_EQ(static_cast<wtf_size_t>(expected_end_chunk_index),   \
               subsequence->end_chunk_index);                       \
   } while (false)
+
+#define EXPECT_SUBSEQUENCE_FROM_CHUNK(client, start_chunk_iterator, \
+                                      chunk_count)                  \
+  EXPECT_SUBSEQUENCE(                                               \
+      client, (start_chunk_iterator).IndexInPaintArtifact(),        \
+      (start_chunk_iterator).IndexInPaintArtifact() + chunk_count)
 
 #define EXPECT_NO_SUBSEQUENCE(client) \
   EXPECT_EQ(nullptr, GetSubsequenceMarkers(client))

@@ -1786,7 +1786,6 @@ static_library("test_support") {
     "testing/empty_web_media_player.cc",
     "testing/empty_web_media_player.h",
     "testing/fake_display_item_client.h",
-    "testing/fake_graphics_layer.h",
     "testing/fake_graphics_layer_client.h",
     "testing/find_cc_layer.cc",
     "testing/find_cc_layer.h",
@@ -1823,8 +1822,6 @@ static_library("test_support") {
     "testing/url_test_helpers.h",
     "testing/video_frame_utils.cc",
     "testing/video_frame_utils.h",
-    "testing/viewport_layers_setup.cc",
-    "testing/viewport_layers_setup.h",
     "testing/weburl_loader_mock.cc",
     "testing/weburl_loader_mock.h",
     "testing/weburl_loader_mock_factory_impl.cc",
@@ -2429,7 +2426,6 @@ source_set("unit_tests") {
   visibility = []
   visibility = [ "//third_party/blink/renderer/*" ]
   sources = [
-    "animation/animated_layers_test.cc",
     "graphics/animation_worklet_mutator_dispatcher_impl_test.cc",
     "graphics/canvas_2d_layer_bridge_test.cc",
     "graphics/canvas_color_params_test.cc",

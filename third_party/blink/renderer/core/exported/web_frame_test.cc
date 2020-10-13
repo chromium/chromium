@@ -185,6 +185,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -210,16 +211,6 @@ using testing::_;
 namespace blink {
 
 namespace {
-
-template <typename Function>
-void ForAllGraphicsLayers(GraphicsLayer& layer, const Function& function) {
-  bool recurse = function(layer);
-  if (!recurse)
-    return;
-  for (auto* child : layer.Children()) {
-    ForAllGraphicsLayers(*child, function);
-  }
-}
 
 const cc::ScrollNode* GetScrollNode(const cc::Layer* layer) {
   return layer->layer_tree_host()
@@ -8353,6 +8344,12 @@ TEST_F(WebFrameTest, OverlayFullscreenVideo) {
   EXPECT_FALSE(video->IsFullscreen());
   EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()), SK_AlphaOPAQUE);
 
+  const cc::Layer* root_layer = layer_tree_host->root_layer();
+  EXPECT_EQ(1u, CcLayersByName(root_layer, "Scrolling Contents Layer").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
+  // The video is not composited when it's not in full screen.
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "video").size());
+
   video->webkitEnterFullscreen();
   web_view_impl->DidEnterFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
@@ -8360,45 +8357,21 @@ TEST_F(WebFrameTest, OverlayFullscreenVideo) {
   EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()),
             SK_AlphaTRANSPARENT);
 
-  // Verify that the video layer is present in the painted graphics layer tree
-  // and that the non-video graphics layers (if any) don't paint anything. The
-  // goal is that the body text and sibling div content should not be visible.
-  // This test should be independent of the mechanism used to accomplish this,
-  // i.e. it could be done by deleting layers, marking them as not drawing, or
-  // by overriding the paint root.
-  GraphicsLayer* video_layer = ToLayoutBoxModelObject(video->GetLayoutObject())
-                                   ->Layer()
-                                   ->GetCompositedLayerMapping()
-                                   ->MainGraphicsLayer();
-  EXPECT_TRUE(video_layer);
-  GraphicsLayer* root_layer =
-      frame->View()->GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
-  EXPECT_TRUE(root_layer);
-  int actively_painting_layers = 0;
-  bool found_video_layer = false;
-  ForAllGraphicsLayers(*root_layer, [&](GraphicsLayer& layer) -> bool {
-    // The video layer is expected to be present, but don't recurse into it.
-    if (&layer == video_layer) {
-      found_video_layer = true;
-      return false;
-    }
-    if (!layer.PaintsContentOrHitTest() || !layer.HasLayerState() ||
-        !layer.DrawsContent()) {
-      // Recurse into non-drawing layers, but don't check if they paint.
-      return true;
-    }
-    layer.CapturePaintRecord();
-    if (!layer.GetPaintController().GetPaintArtifact().IsEmpty())
-      ++actively_painting_layers;
-    return true;
-  });
-  EXPECT_EQ(actively_painting_layers, 0);
-  EXPECT_TRUE(found_video_layer);
+  root_layer = layer_tree_host->root_layer();
+  EXPECT_EQ(0u, CcLayersByName(root_layer, "Scrolling Contents Layer").size());
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "other").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "video").size());
 
   web_view_impl->DidExitFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   EXPECT_FALSE(video->IsFullscreen());
   EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()), SK_AlphaOPAQUE);
+
+  root_layer = layer_tree_host->root_layer();
+  EXPECT_EQ(1u, CcLayersByName(root_layer, "Scrolling Contents Layer").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
+  // The video is not composited when it's not in full screen.
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "video").size());
 }
 
 TEST_F(WebFrameTest, OverlayFullscreenVideoInIframe) {
@@ -8471,6 +8444,13 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   document->SetIsXrOverlay(true, overlay);
   EXPECT_TRUE(document->IsXrOverlay());
 
+  const cc::Layer* root_layer = layer_tree_host->root_layer();
+  EXPECT_EQ(1u, CcLayersByName(root_layer, "Scrolling Contents Layer").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
+  // The overlay is not composited when it's not in full screen.
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "overlay").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner").size());
+
   web_view_impl->DidEnterFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   EXPECT_TRUE(Fullscreen::IsFullscreenElement(*overlay));
@@ -8485,66 +8465,24 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
           ->MainGraphicsLayer();
   EXPECT_TRUE(inner_layer);
 
-  // Verify that the overlay layer and inner layers are present in the painted
-  // graphics layer tree and that the non-overlay graphics layers (if any) don't
-  // paint anything. The goal is that the body text and sibling div content
-  // should not be visible. This test should be independent of the mechanism
-  // used to accomplish this, i.e. it could be done by deleting layers, marking
-  // them as not drawing, or by overriding the paint root.
-  GraphicsLayer* overlay_layer =
-      ToLayoutBoxModelObject(overlay->GetLayoutObject())
-          ->Layer()
-          ->GetCompositedLayerMapping()
-          ->MainGraphicsLayer();
-  EXPECT_TRUE(overlay_layer);
-  GraphicsLayer* root_layer =
-      frame->View()->GetLayoutView()->Compositor()->PaintRootGraphicsLayer();
-  EXPECT_TRUE(root_layer);
-  int actively_painting_layers = 0;
-  bool found_overlay_layer = false;
-  bool found_inner_layer = false;
-  ForAllGraphicsLayers(*root_layer, [&](GraphicsLayer& layer) -> bool {
-    // The overlay layers is expected to be present, but don't recurse into it.
-    // (This also skips the inner layer which is a child of the overlay layer.)
-    if (&layer == overlay_layer) {
-      found_overlay_layer = true;
-      return false;
-    }
-    if (&layer == inner_layer) {
-      // This shouldn't happen, the inner layer must remain inside the overlay
-      // layer.
-      found_inner_layer = true;
-    }
-    if (!layer.PaintsContentOrHitTest() || !layer.HasLayerState() ||
-        !layer.DrawsContent()) {
-      // Recurse into non-drawing layers, but don't check if they paint.
-      return true;
-    }
-    layer.CapturePaintRecord();
-    if (!layer.GetPaintController().GetPaintArtifact().IsEmpty())
-      ++actively_painting_layers;
-    return true;
-  });
-  EXPECT_EQ(actively_painting_layers, 0);
-  EXPECT_TRUE(found_overlay_layer);
-
-  // Check for the inner layer separately, the previous recursion was supposed
-  // to skip it due to being a child of the overlay layer.
-  EXPECT_FALSE(found_inner_layer);
-  ForAllGraphicsLayers(*root_layer, [&](GraphicsLayer& layer) -> bool {
-    if (&layer == inner_layer) {
-      found_inner_layer = true;
-      return false;
-    }
-    return true;
-  });
-  EXPECT_TRUE(found_inner_layer);
+  root_layer = layer_tree_host->root_layer();
+  EXPECT_EQ(0u, CcLayersByName(root_layer, "Scrolling Contents Layer").size());
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "other").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "overlay").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner").size());
 
   web_view_impl->DidExitFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   EXPECT_FALSE(Fullscreen::IsFullscreenElement(*overlay));
   EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()), SK_AlphaOPAQUE);
   document->SetIsXrOverlay(false, overlay);
+
+  root_layer = layer_tree_host->root_layer();
+  EXPECT_EQ(1u, CcLayersByName(root_layer, "Scrolling Contents Layer").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
+  // The overlay is not composited when it's not in full screen.
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "overlay").size());
+  EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner").size());
 }
 
 TEST_F(WebFrameTest, LayoutBlockPercentHeightDescendants) {

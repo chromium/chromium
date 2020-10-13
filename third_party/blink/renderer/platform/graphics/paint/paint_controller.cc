@@ -790,6 +790,7 @@ size_t PaintController::sum_num_items_ = 0;
 size_t PaintController::sum_num_cached_items_ = 0;
 size_t PaintController::sum_num_subsequences_ = 0;
 size_t PaintController::sum_num_cached_subsequences_ = 0;
+bool PaintController::disable_uma_reporting_ = false;
 
 void PaintController::UpdateUMACounts() {
   DCHECK_EQ(usage_, kMultiplePaints);
@@ -811,7 +812,7 @@ void PaintController::UpdateUMACountsOnFullyCached() {
 }
 
 void PaintController::ReportUMACounts() {
-  if (sum_num_items_ == 0)
+  if (sum_num_items_ == 0 || disable_uma_reporting_)
     return;
 
   UMA_HISTOGRAM_PERCENTAGE("Blink.Paint.CachedItemPercentage",

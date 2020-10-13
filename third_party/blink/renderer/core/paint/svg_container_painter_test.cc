@@ -59,26 +59,11 @@ TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
   const auto& after_properties = after->FirstFragment().ContentsProperties();
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintChunk::Id view_id(GetLayoutView(), DisplayItem::kScrollHitTest);
-    const auto& view_properties =
-        GetLayoutView().FirstFragment().LocalBorderBoxProperties();
-    auto scrolling_view_state =
-        GetLayoutView().FirstFragment().ContentsProperties();
-    HitTestData scroll_hit_test;
-    scroll_hit_test.scroll_translation =
-        &ToUnaliased(scrolling_view_state.Transform());
-    scroll_hit_test.scroll_hit_test_rect = IntRect(0, 0, 800, 600);
-    EXPECT_THAT(
-        RootPaintController().PaintChunks(),
-        ElementsAre(
-            IsPaintChunk(0, 0, view_id, view_properties, &scroll_hit_test),
-            IsPaintChunk(0, 1,
-                         PaintChunk::Id(ViewScrollingBackgroundClient(),
-                                        kDocumentBackgroundType),
-                         scrolling_view_state),
-            IsPaintChunk(1, 2, before_id, before_properties),
-            IsPaintChunk(2, 3, rect_id, container_properties),
-            IsPaintChunk(3, 4, after_id, after_properties)));
+    EXPECT_THAT(ContentPaintChunks(),
+                ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                            IsPaintChunk(1, 2, before_id, before_properties),
+                            IsPaintChunk(2, 3, rect_id, container_properties),
+                            IsPaintChunk(3, 4, after_id, after_properties)));
   } else {
     const auto* svg_paint_layer = ToLayoutSVGRoot(root)->Layer();
     const auto* svg_graphics_layer =

@@ -36,34 +36,25 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
   )HTML");
 
   LayoutObject& container = *GetLayoutObjectByElementId("container");
-
   const LayoutNGBlockFlow& block_flow = ToLayoutNGBlockFlow(container);
-
-  InvalidateAll(RootPaintController());
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
-  Paint(IntRect(0, 0, 640, 480));
-
   NGInlineCursor cursor;
   cursor.MoveTo(*block_flow.FirstChild());
   const DisplayItemClient& text_fragment =
       *cursor.Current().GetDisplayItemClient();
-
-  EXPECT_THAT(RootPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&ViewScrollingBackgroundClient(),
-                                   DisplayItem::kDocumentBackground),
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(&text_fragment, kForegroundType)));
 }
 
 TEST_P(NGTextFragmentPainterTest, LineBreak) {
   SetBodyInnerHTML("<span style='font-size: 20px'>A<br>B<br>C</span>");
   // 0: view background, 1: A, 2: B, 3: C
-  EXPECT_EQ(4u, RootPaintController().GetDisplayItemList().size());
+  EXPECT_EQ(4u, ContentDisplayItems().size());
 
   GetDocument().GetFrame()->Selection().SelectAll();
   UpdateAllLifecyclePhasesForTest();
   // 0: view background, 1: A, 2: <br>, 3: B, 4: <br>, 5: C
-  EXPECT_EQ(6u, RootPaintController().GetDisplayItemList().size());
+  EXPECT_EQ(6u, ContentDisplayItems().size());
 }
 
 TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {

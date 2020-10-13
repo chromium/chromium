@@ -475,6 +475,10 @@ class PLATFORM_EXPORT PaintController {
   static size_t sum_num_subsequences_;
   static size_t sum_num_cached_subsequences_;
 
+  // For testing, to disable ReportUMACounts(), to prevent the above sums from
+  // being cleared.
+  static bool disable_uma_reporting_;
+
   class PaintArtifactAsJSON;
 
   DISALLOW_COPY_AND_ASSIGN(PaintController);

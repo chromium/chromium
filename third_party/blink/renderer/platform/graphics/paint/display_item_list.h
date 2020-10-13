@@ -80,6 +80,10 @@ class PLATFORM_EXPORT DisplayItemList
     Iterator end() const { return end_; }
     wtf_size_t size() const { return end_ - begin_; }
 
+    // To meet the requirement of gmock ElementsAre().
+    using value_type = DisplayItem;
+    using const_iterator = DisplayItemList::const_iterator;
+
    private:
     Iterator begin_;
     Iterator end_;
