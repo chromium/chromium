@@ -448,25 +448,18 @@ bool IsDeviceOfType(const ui::GesturePropertyProvider::DevicePtr device,
   switch (type) {
     case ui::DT_KEYBOARD:
       return (evdev_class == EvdevClassKeyboard);
-      break;
     case ui::DT_MOUSE:
       return is_mouse;
-      break;
     case ui::DT_TOUCHPAD:
       return (!is_mouse) && is_touchpad;
-      break;
     case ui::DT_TOUCHSCREEN:
       return (evdev_class == EvdevClassTouchscreen);
-      break;
     case ui::DT_MULTITOUCH:
       return is_touchpad;
-      break;
     case ui::DT_MULTITOUCH_MOUSE:
       return is_mouse && is_touchpad;
-      break;
     case ui::DT_ALL:
       return true;
-      break;
     default:
       break;
   }
