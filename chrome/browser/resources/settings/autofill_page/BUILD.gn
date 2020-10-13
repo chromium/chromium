@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   closure_flags = settings_closure_flags
   deps = [
     ":address_edit_dialog",
+    ":address_remove_confirmation_dialog",
     ":autofill_page",
     ":autofill_section",
     ":avatar_icon",
@@ -72,6 +73,7 @@ js_library("autofill_page") {
 js_library("autofill_section") {
   deps = [
     ":address_edit_dialog",
+    ":address_remove_confirmation_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",
@@ -94,6 +96,13 @@ js_library("avatar_icon") {
 }
 
 js_library("blocking_request_manager") {
+}
+
+js_library("address_remove_confirmation_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
 }
 
 js_library("credit_card_edit_dialog") {
@@ -383,6 +392,7 @@ js_library("upi_id_list_entry") {
 html_to_js("web_components") {
   js_files = [
     "address_edit_dialog.js",
+    "address_remove_confirmation_dialog.js",
     "autofill_page.js",
     "avatar_icon.js",
     "autofill_section.js",

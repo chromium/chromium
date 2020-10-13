@@ -262,6 +262,12 @@
   <message name="IDS_SETTINGS_ADDRESS_REMOVE" desc="Label for a context menu item that removes the selected address." meaning="Remove selected address.">
     Remove
   </message>
+  <message name="IDS_SETTINGS_ADDRESS_REMOVE_CONFIRMATION_DESCRIPTION" desc="Description of confirmation phrase before remove address.">
+    Are you sure you want to remove this address?
+  </message>
+  <message name="IDS_SETTINGS_ADDRESS_REMOVE_CONFIRMATION_TITLE" desc="Address remove dialog confirmation title.">
+    Remove address
+  </message>
   <message name="IDS_SETTINGS_CREDIT_CARD_REMOVE" desc="Label for a context menu item that removes the selected credit card." meaning="Remove selected credit card.">
     Remove
   </message>

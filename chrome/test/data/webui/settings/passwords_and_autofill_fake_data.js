@@ -421,6 +421,7 @@ export class AutofillManagerExpectations {
   constructor() {
     this.requestedAddresses = 0;
     this.listeningAddresses = 0;
+    this.removeAddress = 0;
   }
 }
 
@@ -464,7 +465,9 @@ export class TestAutofillManager {
   saveAddress() {}
 
   /** @override */
-  removeAddress() {}
+  removeAddress() {
+    this.actual_.removeAddress++;
+  }
 
   /**
    * Verifies expectations.
@@ -474,6 +477,7 @@ export class TestAutofillManager {
     const actual = this.actual_;
     assertEquals(expected.requestedAddresses, actual.requestedAddresses);
     assertEquals(expected.listeningAddresses, actual.listeningAddresses);
+    assertEquals(expected.removeAddress, actual.removeAddress);
   }
 }
 

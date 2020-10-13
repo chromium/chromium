@@ -1,0 +1,12 @@
+<cr-dialog show-on-attach id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{removeAddressConfirmationTitle}</div>
+  <div slot="body">$i18n{removeAddressConfirmationDescription}</div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelClick" id="cancel">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onRemoveClick" id="remove">
+      $i18n{removeAddress}
+    </cr-button>
+  </div>
+</cr-dialog>

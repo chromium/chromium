@@ -17,6 +17,7 @@ import '../controls/extension_controlled_indicator.m.js';
 import '../controls/settings_toggle_button.m.js';
 import '../prefs/prefs.m.js';
 import './address_edit_dialog.js';
+import './address_remove_confirmation_dialog.js';
 import './passwords_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -121,6 +122,9 @@ Polymer({
 
     /** @private */
     showAddressDialog_: Boolean,
+
+    /** @private */
+    showAddressRemoveConfirmationDialog_: Boolean,
   },
 
   listeners: {
@@ -244,13 +248,26 @@ Polymer({
     window.open(loadTimeData.getString('manageAddressesUrl'));
   },
 
+  /** @private */
+  onAddressRemoveConfirmationDialogClose_: function() {
+    // Check if the dialog was confirmed before closing it.
+    if (/** @type {!SettingsAddressRemoveConfirmationDialogElement} */
+        (this.$$('settings-address-remove-confirmation-dialog'))
+            .wasConfirmed()) {
+      this.autofillManager_.removeAddress(
+          /** @type {string} */ (this.activeAddress.guid));
+    }
+    this.showAddressRemoveConfirmationDialog_ = false;
+    focusWithoutInk(assert(this.activeDialogAnchor_));
+    this.activeDialogAnchor_ = null;
+  },
+
   /**
    * Handles tapping on the "Remove" address button.
    * @private
    */
   onMenuRemoveAddressTap_() {
-    this.autofillManager_.removeAddress(
-        /** @type {string} */ (this.activeAddress.guid));
+    this.showAddressRemoveConfirmationDialog_ = true;
     this.$.addressSharedMenu.close();
   },
 

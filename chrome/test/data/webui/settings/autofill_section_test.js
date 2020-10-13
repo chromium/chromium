@@ -8,8 +8,8 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
-import {createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
+import {eventToPromise, whenAttributeIs} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /**
@@ -94,6 +94,44 @@ function createAddressDialog(address) {
       resolve(section);
     });
   });
+}
+
+/**
+ * Creates the remove address dialog. Simulate clicking "Remove" button in
+ * autofill section.
+ * @param {!TestAutofillManager} autofillManager
+ * @return {!SettingsAddressRemoveConfirmationDialogElement}
+ */
+function createRemoveAddressDialog(autofillManager) {
+  const address = createAddressEntry();
+
+  // Override the AutofillManagerImpl for testing.
+  autofillManager.data.addresses = [address];
+  AutofillManagerImpl.instance_ = autofillManager;
+
+  document.body.innerHTML = '';
+  const section = document.createElement('settings-autofill-section');
+  document.body.appendChild(section);
+  flush();
+
+  const addressList = section.$.addressList;
+  const row = addressList.children[0];
+  assertTrue(!!row);
+
+  // Simulate clicking the 'Remove' button in the menu.
+  assertTrue(!!section.$$('#addressMenu'));
+  section.$$('#addressMenu').click();
+  flush();
+
+  assertTrue(!!section.$$('#menuRemoveAddress'));
+  assertFalse(!!section.$$('settings-address-remove-confirmation-dialog'));
+  section.$$('#menuRemoveAddress').click();
+  flush();
+
+  assertTrue(!!section.$$('settings-address-remove-confirmation-dialog'));
+  const removeAddressDialog =
+      section.$$('settings-address-remove-confirmation-dialog');
+  return removeAddressDialog;
 }
 
 suite('AutofillSectionUiTest', function() {
@@ -254,6 +292,47 @@ suite('AutofillSectionAddressTests', function() {
       // populated.
       assertFalse(dialog.$.saveButton.disabled);
     });
+  });
+
+  test('verifyRemoveAddressDialogConfirmed', async function() {
+    const autofillManager = new TestAutofillManager();
+    const removeAddressDialog = createRemoveAddressDialog(autofillManager);
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(removeAddressDialog.$$('#dialog'), 'open', '');
+
+    assertTrue(!!removeAddressDialog.$$('#remove'));
+    removeAddressDialog.$$('#remove').click();
+
+    // Wait for the dialog to close.
+    await eventToPromise('close', removeAddressDialog);
+
+    assertTrue(removeAddressDialog.wasConfirmed());
+    const expected = new AutofillManagerExpectations();
+    expected.requestedAddresses = 1;
+    expected.listeningAddresses = 1;
+    expected.removeAddress = 1;
+    autofillManager.assertExpectations(expected);
+  });
+
+  test('verifyRemoveAddressDialogCanceled', async function() {
+    const autofillManager = new TestAutofillManager();
+    const removeAddressDialog = createRemoveAddressDialog(autofillManager);
+
+    // Wait for the dialog to open.
+    await whenAttributeIs(removeAddressDialog.$$('#dialog'), 'open', '');
+
+    assertTrue(!!removeAddressDialog.$$('#cancel'));
+    removeAddressDialog.$$('#cancel').click();
+
+    // Wait for the dialog to close.
+    await eventToPromise('close', removeAddressDialog);
+    assertFalse(removeAddressDialog.wasConfirmed());
+    const expected = new AutofillManagerExpectations();
+    expected.requestedAddresses = 1;
+    expected.listeningAddresses = 1;
+    expected.removeAddress = 0;
+    autofillManager.assertExpectations(expected);
   });
 
   test('verifyCountryIsSaved', function() {

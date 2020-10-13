@@ -77,3 +77,8 @@
           on-close="onAddressDialogClose_">
       </settings-address-edit-dialog>
     </template>
+    <template is="dom-if" if="[[showAddressRemoveConfirmationDialog_]]" restamp>
+      <settings-address-remove-confirmation-dialog
+          on-close="onAddressRemoveConfirmationDialogClose_">
+      </settings-address-remove-confirmation-dialog>
+    </template>

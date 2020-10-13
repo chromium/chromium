@@ -157,6 +157,7 @@ preprocess_grit("preprocess_generated") {
     "autofill_page/credit_card_edit_dialog.js",
     "autofill_page/autofill_section.js",
     "autofill_page/address_edit_dialog.js",
+    "autofill_page/address_remove_confirmation_dialog.js",
     "autofill_page/password_check.js",
     "autofill_page/password_check_edit_dialog.js",
     "autofill_page/password_check_edit_disclaimer_dialog.js",
