@@ -69,6 +69,7 @@ PropertyNode PropertyNode::FromPropertyFilter(
 PropertyNode::PropertyNode() = default;
 PropertyNode::PropertyNode(PropertyNode&& o)
     : key(std::move(o.key)),
+      target(std::move(o.target)),
       name_or_value(std::move(o.name_or_value)),
       parameters(std::move(o.parameters)),
       original_property(std::move(o.original_property)),
@@ -77,6 +78,7 @@ PropertyNode::~PropertyNode() = default;
 
 PropertyNode& PropertyNode::operator=(PropertyNode&& o) {
   key = std::move(o.key);
+  target = std::move(o.target);
   name_or_value = std::move(o.name_or_value);
   parameters = std::move(o.parameters);
   original_property = std::move(o.original_property);
@@ -154,6 +156,10 @@ std::string PropertyNode::ToString() const {
   if (!key.empty()) {
     out += key + ": ";
   }
+
+  if (!target.empty()) {
+    out += target + '.';
+  }
   out += name_or_value;
   if (parameters.size()) {
     out += '(';
@@ -172,15 +178,31 @@ std::string PropertyNode::ToString() const {
 PropertyNode::PropertyNode(PropertyNode::iterator key_begin,
                            PropertyNode::iterator key_end,
                            const std::string& name_or_value)
-    : key(key_begin, key_end), name_or_value(name_or_value) {}
+    : key(key_begin, key_end) {
+  Set(name_or_value.begin(), name_or_value.end());
+}
 PropertyNode::PropertyNode(PropertyNode::iterator begin,
-                           PropertyNode::iterator end)
-    : name_or_value(begin, end) {}
+                           PropertyNode::iterator end) {
+  Set(begin, end);
+}
 PropertyNode::PropertyNode(PropertyNode::iterator key_begin,
                            PropertyNode::iterator key_end,
                            PropertyNode::iterator value_begin,
                            PropertyNode::iterator value_end)
-    : key(key_begin, key_end), name_or_value(value_begin, value_end) {}
+    : key(key_begin, key_end), name_or_value(value_begin, value_end) {
+  Set(value_begin, value_end);
+}
+
+void PropertyNode::Set(PropertyNode::iterator begin,
+                       PropertyNode::iterator end) {
+  PropertyNode::iterator dot_operator = std::find(begin, end, '.');
+  if (dot_operator != end) {
+    target = std::string(begin, dot_operator);
+    name_or_value = std::string(dot_operator + 1, end);
+  } else {
+    name_or_value = std::string(begin, end);
+  }
+}
 
 // private static
 PropertyNode::iterator PropertyNode::Parse(PropertyNode* node,

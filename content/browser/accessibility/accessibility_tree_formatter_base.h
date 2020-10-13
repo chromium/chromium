@@ -49,6 +49,11 @@ class CONTENT_EXPORT PropertyNode final {
   // Key name in case of { key: value } dictionary.
   std::string key;
 
+  // An object the property should be called for, designated by a line number
+  // in accessible tree the object is located at. For example, :1 indicates
+  // that the property should be called for an object located at first line.
+  std::string target;
+
   // Value or a property name, for example 3 or AXLineForIndex
   std::string name_or_value;
 
@@ -61,7 +66,7 @@ class CONTENT_EXPORT PropertyNode final {
   std::string original_property;
 
   // The list of line indexes of accessible objects the property is allowed to
-  // be called for.
+  // be called for, used if no property target is provided.
   std::vector<std::string> line_indexes;
 
   bool IsMatching(const std::string& pattern) const;
@@ -87,6 +92,9 @@ class CONTENT_EXPORT PropertyNode final {
                iterator key_end,
                iterator value_begin,
                iterator value_end);
+
+  // Helper to set context and name.
+  void Set(iterator begin, iterator end);
 
   // Builds a property node struct for a string of NAME(ARG1, ..., ARGN) format,
   // where each ARG is a scalar value or a string of the same format.

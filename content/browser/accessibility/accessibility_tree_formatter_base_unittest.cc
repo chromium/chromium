@@ -48,6 +48,26 @@ void ParseAndCheck(const char* input, const char* expected) {
   EXPECT_EQ(got, expected);
 }
 
+struct ProperyNodeCheck {
+  std::string target;
+  std::string name_or_value;
+  std::vector<ProperyNodeCheck> parameters;
+};
+
+void Check(const PropertyNode& got, const ProperyNodeCheck& expected) {
+  EXPECT_EQ(got.target, expected.target);
+  EXPECT_EQ(got.name_or_value, expected.name_or_value);
+  EXPECT_EQ(got.parameters.size(), expected.parameters.size());
+  for (auto i = 0U;
+       i < std::min(expected.parameters.size(), got.parameters.size()); i++) {
+    Check(got.parameters[i], expected.parameters[i]);
+  }
+}
+
+void ParseAndCheck(const char* input, const ProperyNodeCheck& expected) {
+  Check(Parse(input), expected);
+}
+
 TEST_F(AccessibilityTreeFormatterBaseTest, ParseProperty) {
   // Properties and methods.
   ParseAndCheck("Role", "Role");
@@ -74,6 +94,17 @@ TEST_F(AccessibilityTreeFormatterBaseTest, ParseProperty) {
 
   // Line indexes filter.
   ParseAndCheck(":3,:5;AXDOMClassList", ":3,:5;AXDOMClassList");
+
+  // Context object.
+  ParseAndCheck(":1.AXDOMClassList", ":1.AXDOMClassList");
+  ParseAndCheck(":1.AXDOMClassList", {":1", "AXDOMClassList"});
+
+  ParseAndCheck(":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))",
+                ":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))");
+  ParseAndCheck(":1.AXIndexForTextMarker(:1.AXTextMarkerForIndex(0))",
+                {":1",
+                 "AXIndexForTextMarker",
+                 {{":1", "AXTextMarkerForIndex", {{"", "0"}}}}});
 
   // Wrong format.
   ParseAndCheck("Role(3", "Role(3)");
