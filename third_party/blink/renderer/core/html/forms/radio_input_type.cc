@@ -165,18 +165,22 @@ void RadioInputType::HandleKeydownEvent(KeyboardEvent& event) {
 }
 
 void RadioInputType::HandleKeyupEvent(KeyboardEvent& event) {
-  // If an unselected radio is tabbed into (because the entire group has nothing
-  // checked, or because of some explicit .focus() call), then allow space to
-  // check it.
-  if (GetElement().checked())
-    return;
-
   // Use Space key simulated click by default.
   // Use Enter key simulated click when Spatial Navigation enabled.
   if (event.key() == " " ||
       (IsSpatialNavigationEnabled(GetElement().GetDocument().GetFrame()) &&
        event.key() == "Enter")) {
-    DispatchSimulatedClickIfActive(event);
+    // If an unselected radio is tabbed into (because the entire group has
+    // nothing checked, or because of some explicit .focus() call), then allow
+    // space to check it.
+    if (GetElement().checked()) {
+      // If we are going to skip DispatchSimulatedClick, then at least call
+      // SetActive(false) to prevent the radio from being stuck in the active
+      // state.
+      GetElement().SetActive(false);
+    } else {
+      DispatchSimulatedClickIfActive(event);
+    }
   }
 }
 
