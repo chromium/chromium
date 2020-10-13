@@ -59,7 +59,7 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
   if (scanner_name.empty())
     std::move(callback).Run(false);
 
-  base::Time::Now().UTCExplode(&start_time_);
+  base::Time::Now().LocalExplode(&start_time_);
   save_failed_ = false;
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
