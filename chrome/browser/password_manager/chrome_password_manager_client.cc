@@ -568,7 +568,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     const base::string16& username) {
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChangeInSettings) &&
+          password_manager::features::kPasswordScriptsFetching) &&
       GetPasswordFeatureManager()->IsGenerationEnabled()) {
     PasswordScriptsFetcherFactory::GetInstance()
         ->GetForBrowserContext(web_contents()->GetBrowserContext())

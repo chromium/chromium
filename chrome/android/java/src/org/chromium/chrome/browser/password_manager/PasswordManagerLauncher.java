@@ -32,7 +32,7 @@ public class PasswordManagerLauncher {
     public static void showPasswordSettings(
             Activity activity, @ManagePasswordsReferrer int referrer) {
         if (isSyncingPasswordsWithoutCustomPassphrase()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHANGE_IN_SETTINGS)) {
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             PasswordScriptsFetcherBridge.prewarmCache();
         }
 
