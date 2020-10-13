@@ -158,4 +158,24 @@ XrResult CreateInstance(XrInstance* instance) {
   return xrCreateInstance(&instance_create_info, instance);
 }
 
+std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
+                                                           XrSystemId system) {
+  // Query the list of supported environment blend modes for the current system.
+  uint32_t blend_mode_count;
+  const XrViewConfigurationType kSupportedViewConfiguration =
+      XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+  if (XR_FAILED(xrEnumerateEnvironmentBlendModes(instance, system,
+                                                 kSupportedViewConfiguration, 0,
+                                                 &blend_mode_count, nullptr)))
+    return {};  // empty vector
+
+  std::vector<XrEnvironmentBlendMode> environment_blend_modes(blend_mode_count);
+  if (XR_FAILED(xrEnumerateEnvironmentBlendModes(
+          instance, system, kSupportedViewConfiguration, blend_mode_count,
+          &blend_mode_count, environment_blend_modes.data())))
+    return {};  // empty vector
+
+  return environment_blend_modes;
+}
+
 }  // namespace device

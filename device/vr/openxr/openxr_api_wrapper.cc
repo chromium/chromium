@@ -143,8 +143,7 @@ bool OpenXrApiWrapper::HasInstance() const {
 }
 
 bool OpenXrApiWrapper::HasSystem() const {
-  return system_ != kInvalidSystem && view_configs_.size() == kNumViews &&
-         HasBlendMode();
+  return system_ != kInvalidSystem && view_configs_.size() == kNumViews;
 }
 
 bool OpenXrApiWrapper::HasBlendMode() const {
@@ -202,8 +201,6 @@ XrResult OpenXrApiWrapper::InitializeSystem() {
       instance_, system, kSupportedViewConfiguration, view_count, &view_count,
       view_configs.data()));
 
-  RETURN_IF_XR_FAILED(PickEnvironmentBlendMode(system));
-
   // Only assign the member variables on success. If any of the above XR calls
   // fail, the vector cleans up view_configs if necessary. system does not need
   // to be cleaned up because it is not allocated.
@@ -213,32 +210,48 @@ XrResult OpenXrApiWrapper::InitializeSystem() {
   return XR_SUCCESS;
 }
 
-XrResult OpenXrApiWrapper::PickEnvironmentBlendMode(XrSystemId system) {
-  const std::array<XrEnvironmentBlendMode, 2> kSupportedBlendMode = {
-      XR_ENVIRONMENT_BLEND_MODE_ADDITIVE,
-      XR_ENVIRONMENT_BLEND_MODE_OPAQUE,
+device::mojom::XREnvironmentBlendMode OpenXrApiWrapper::GetMojoBlendMode(
+    XrEnvironmentBlendMode xr_blend_mode) {
+  switch (xr_blend_mode) {
+    case XR_ENVIRONMENT_BLEND_MODE_OPAQUE:
+      return device::mojom::XREnvironmentBlendMode::kOpaque;
+    case XR_ENVIRONMENT_BLEND_MODE_ADDITIVE:
+      return device::mojom::XREnvironmentBlendMode::kAdditive;
+    case XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND:
+      return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
+    case XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM:
+      NOTREACHED();
   };
+  return device::mojom::XREnvironmentBlendMode::kOpaque;
+}
+
+device::mojom::XREnvironmentBlendMode
+OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
+    device::mojom::XRSessionMode session_mode) {
   DCHECK(HasInstance());
+  std::vector<XrEnvironmentBlendMode> supported_blend_modes =
+      GetSupportedBlendModes(instance_, system_);
 
-  uint32_t blend_mode_count;
-  RETURN_IF_XR_FAILED(xrEnumerateEnvironmentBlendModes(
-      instance_, system, kSupportedViewConfiguration, 0, &blend_mode_count,
-      nullptr));
+  DCHECK(supported_blend_modes.size() > 0);
 
-  std::vector<XrEnvironmentBlendMode> blend_modes(blend_mode_count);
-  RETURN_IF_XR_FAILED(xrEnumerateEnvironmentBlendModes(
-      instance_, system, kSupportedViewConfiguration, blend_mode_count,
-      &blend_mode_count, blend_modes.data()));
+  blend_mode_ = supported_blend_modes[0];
 
-  auto* blend_mode_it =
-      std::find_first_of(kSupportedBlendMode.begin(), kSupportedBlendMode.end(),
-                         blend_modes.begin(), blend_modes.end());
-  if (blend_mode_it == kSupportedBlendMode.end()) {
-    return XR_ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED;
+  switch (session_mode) {
+    case device::mojom::XRSessionMode::kImmersiveVr:
+      if (base::Contains(supported_blend_modes,
+                         XR_ENVIRONMENT_BLEND_MODE_OPAQUE))
+        blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+      break;
+    case device::mojom::XRSessionMode::kImmersiveAr:
+      if (base::Contains(supported_blend_modes,
+                         XR_ENVIRONMENT_BLEND_MODE_ADDITIVE))
+        blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_ADDITIVE;
+      break;
+    case device::mojom::XRSessionMode::kInline:
+      NOTREACHED();
   }
 
-  blend_mode_ = *blend_mode_it;
-  return XR_SUCCESS;
+  return GetMojoBlendMode(blend_mode_);
 }
 
 bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {

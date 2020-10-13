@@ -216,6 +216,9 @@ void GvrSchedulerDelegate::ConnectPresentingService(
   auto* config = session->device_config.get();
 
   config->supports_viewport_scaling = true;
+  session->enviroment_blend_mode =
+      device::mojom::XREnvironmentBlendMode::kOpaque;
+  session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
   // This scalar will be applied in the renderer to the recommended render
   // target sizes. For WebVR it will always be applied, for WebXR it can be

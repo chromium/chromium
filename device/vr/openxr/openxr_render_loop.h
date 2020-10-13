@@ -39,6 +39,10 @@ class OpenXrRenderLoop : public XRCompositorCommon {
   bool PreComposite() override;
   bool HasSessionEnded() override;
   bool SubmitCompositedFrame() override;
+  device::mojom::XREnvironmentBlendMode GetEnvironmentBlendMode(
+      device::mojom::XRSessionMode session_mode) override;
+  device::mojom::XRInteractionMode GetInteractionMode(
+      device::mojom::XRSessionMode session_mode) override;
 
   void InitializeDisplayInfo();
   bool UpdateEyeParameters();

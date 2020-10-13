@@ -125,6 +125,16 @@ void OpenXrRenderLoop::StopRuntime() {
   texture_helper_.Reset();
 }
 
+device::mojom::XREnvironmentBlendMode OpenXrRenderLoop::GetEnvironmentBlendMode(
+    device::mojom::XRSessionMode session_mode) {
+  return openxr_->PickEnvironmentBlendModeForSession(session_mode);
+}
+
+device::mojom::XRInteractionMode OpenXrRenderLoop::GetInteractionMode(
+    device::mojom::XRSessionMode session_mode) {
+  return device::mojom::XRInteractionMode::kWorldSpace;
+}
+
 void OpenXrRenderLoop::OnSessionStart() {
   LogViewerType(VrViewerType::OPENXR_UNKNOWN);
 }

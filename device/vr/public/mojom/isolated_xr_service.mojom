@@ -132,6 +132,8 @@ struct XRDeviceData {
   [EnableIf=is_win]
   // The LUID of the GPU that the device is plugged into.
   gpu.mojom.Luid? luid;
+  // Indicates whether the device supports AR or not
+  bool is_ar_blend_mode_supported;
 };
 
 // Notify the browser process about a set of runtimes.  The browser process

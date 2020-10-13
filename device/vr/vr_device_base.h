@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
   bool IsPresenting() { return presenting_; }  // Exposed for test.
   void SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info);
   void OnVisibilityStateChanged(mojom::XRVisibilityState visibility_state);
+  void SetArBlendModeSupported(bool is_ar_blend_mode_supported);
 #if defined(OS_WIN)
   void SetLuid(const LUID& luid);
 #endif

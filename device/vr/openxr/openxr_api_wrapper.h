@@ -70,6 +70,9 @@ class OpenXrApiWrapper {
       const base::RepeatingCallback<void(mojom::XRVisibilityState)>&
           visibility_changed_callback);
 
+  device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
+      device::mojom::XRSessionMode session_mode);
+
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
  private:
@@ -78,7 +81,7 @@ class OpenXrApiWrapper {
   void Uninitialize();
 
   XrResult InitializeSystem();
-  XrResult PickEnvironmentBlendMode(XrSystemId system);
+  XrResult InitializeEnvironmentBlendMode(XrSystemId system);
   XrResult ProcessEvents();
   void EnsureEventPolling();
 
@@ -104,6 +107,9 @@ class OpenXrApiWrapper {
 
   uint32_t GetRecommendedSwapchainSampleCount() const;
   XrResult UpdateStageBounds();
+
+  device::mojom::XREnvironmentBlendMode GetMojoBlendMode(
+      XrEnvironmentBlendMode xr_blend_mode);
 
   // The session is running only after xrBeginSession and before xrEndSession.
   // It is not considered running after creation but before xrBeginSession.
