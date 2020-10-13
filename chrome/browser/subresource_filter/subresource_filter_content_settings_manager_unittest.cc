@@ -303,6 +303,62 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
   EXPECT_FALSE(settings_manager()->GetSiteMetadata(url));
 }
 
+// Tests that ClearSiteMetadata(origin) will result in clearing metadata for all
+// sites whose origin is |origin|, but will not clear metadata for sites with
+// different origins.
+TEST_F(SubresourceFilterContentSettingsManagerTest, ClearSiteMetadata) {
+  GURL initial_url("https://example.test/1");
+  GURL same_origin_url("https://example.test/2");
+  GURL different_origin_url("https://second_example.test/");
+
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+
+  settings_manager()->OnDidShowUI(initial_url);
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+
+  settings_manager()->OnDidShowUI(different_origin_url);
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+
+  settings_manager()->ClearSiteMetadata(initial_url);
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+
+  settings_manager()->ClearSiteMetadata(different_origin_url);
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+}
+
+// Tests that ClearMetadataForAllSites() does indeed clear metadata for all
+// sites.
+TEST_F(SubresourceFilterContentSettingsManagerTest, ClearMetadataForAllSites) {
+  GURL initial_url("https://example.test/1");
+  GURL same_origin_url("https://example.test/2");
+  GURL different_origin_url("https://second_example.test/");
+
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+
+  settings_manager()->OnDidShowUI(initial_url);
+  settings_manager()->OnDidShowUI(different_origin_url);
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+
+  settings_manager()->ClearMetadataForAllSites();
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(initial_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(same_origin_url));
+  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(different_origin_url));
+}
+
 TEST_F(SubresourceFilterContentSettingsManagerHistoryTest,
        HistoryUrlDeleted_ClearsWebsiteSetting) {
   // Simulate a history already populated with a URL.

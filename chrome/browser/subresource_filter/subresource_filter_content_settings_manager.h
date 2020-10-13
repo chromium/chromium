@@ -115,6 +115,12 @@ class SubresourceFilterContentSettingsManager
   // class comment for information on the metadata data model.
   bool GetSiteActivationFromMetadata(const GURL& url);
 
+  // Clears metadata for |url|.
+  void ClearSiteMetadata(const GURL& url);
+
+  // Clears metadata for all sites.
+  void ClearMetadataForAllSites();
+
   void set_clock_for_testing(std::unique_ptr<base::Clock> tick_clock) {
     clock_ = std::move(tick_clock);
   }

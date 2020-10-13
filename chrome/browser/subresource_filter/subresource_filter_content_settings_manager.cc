@@ -212,7 +212,7 @@ void SubresourceFilterContentSettingsManager::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {
-    settings_map_->ClearSettingsForOneType(ContentSettingsType::ADS_DATA);
+    ClearMetadataForAllSites();
     return;
   }
 
@@ -220,7 +220,7 @@ void SubresourceFilterContentSettingsManager::OnURLsDeleted(
     const GURL& origin = entry.first;
     int remaining_urls = entry.second.first;
     if (!origin.is_empty() && remaining_urls == 0)
-      SetSiteMetadata(origin, nullptr);
+      ClearSiteMetadata(origin);
   }
 }
 
@@ -241,4 +241,13 @@ bool SubresourceFilterContentSettingsManager::GetSiteActivationFromMetadata(
   // Otherwise it is metadata V2, we return the activation stored in
   // kActivatedKey.
   return !site_activation_status || *site_activation_status;
+}
+
+void SubresourceFilterContentSettingsManager::ClearSiteMetadata(
+    const GURL& url) {
+  SetSiteMetadata(url, nullptr);
+}
+
+void SubresourceFilterContentSettingsManager::ClearMetadataForAllSites() {
+  settings_map_->ClearSettingsForOneType(ContentSettingsType::ADS_DATA);
 }
