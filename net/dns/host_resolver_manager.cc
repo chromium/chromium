@@ -1093,7 +1093,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           SecureDnsMode secure_dns_mode,
           Delegate* delegate,
           const NetLogWithSource& job_net_log,
-          const base::TickClock* tick_clock)
+          const base::TickClock* tick_clock,
+          bool fallback_available)
       : client_(client),
         hostname_(hostname),
         resolve_context_(resolve_context),
@@ -1103,7 +1104,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         net_log_(job_net_log),
         num_completed_transactions_(0),
         tick_clock_(tick_clock),
-        task_start_time_(tick_clock_->NowTicks()) {
+        task_start_time_(tick_clock_->NowTicks()),
+        fallback_available_(fallback_available) {
     DCHECK(client_);
     if (secure_)
       DCHECK(client_->CanUseSecureDnsTransactions());
@@ -1186,7 +1188,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
             base::BindOnce(&DnsTask::OnTransactionComplete,
                            base::Unretained(this), tick_clock_->NowTicks(),
                            dns_query_type),
-            net_log_, secure_, secure_dns_mode_, resolve_context_);
+            net_log_, secure_, secure_dns_mode_, resolve_context_,
+            fallback_available_ /* fast_timeout */);
     trans->SetRequestPriority(delegate_->priority());
     return trans;
   }
@@ -1785,6 +1788,11 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // timeout parameters in net/base/features.h.
   base::OneShotTimer experimental_query_cancellation_timer_;
 
+  // If true, there are still significant fallback options available if this
+  // task completes unsuccessfully. Used as a signal that underlying
+  // transactions should timeout more quickly.
+  bool fallback_available_;
+
   DISALLOW_COPY_AND_ASSIGN(DnsTask);
 };
 
@@ -2300,7 +2308,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // running it, as a "started" job needs a task to be properly cleaned up.
     dns_task_.reset(new DnsTask(resolver_->dns_client_.get(), hostname_,
                                 query_type_, resolve_context_, secure,
-                                secure_dns_mode_, this, net_log_, tick_clock_));
+                                secure_dns_mode_, this, net_log_, tick_clock_,
+                                !tasks_.empty() /* fallback_available */));
     dns_task_->StartNextTransaction();
     // Schedule a second transaction, if needed. DoH queries can bypass the
     // dispatcher and start all of their transactions immediately.

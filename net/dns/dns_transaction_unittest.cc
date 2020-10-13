@@ -325,7 +325,7 @@ class TransactionHelper {
         base::BindOnce(&TransactionHelper::OnTransactionComplete,
                        base::Unretained(this)),
         NetLogWithSource::Make(&net_log_, net::NetLogSourceType::NONE), secure_,
-        factory->GetSecureDnsModeForTest(), context_);
+        factory->GetSecureDnsModeForTest(), context_, true /* fast_timeout */);
     transaction_->SetRequestPriority(DEFAULT_PRIORITY);
     EXPECT_EQ(hostname_, transaction_->GetHostname());
     EXPECT_EQ(qtype_, transaction_->GetType());

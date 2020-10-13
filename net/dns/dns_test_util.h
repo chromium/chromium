@@ -231,11 +231,21 @@ std::unique_ptr<DnsResponse> BuildTestDnsIntegrityResponse(
 
 struct MockDnsClientRule {
   enum ResultType {
-    NODOMAIN,   // Fail asynchronously with ERR_NAME_NOT_RESOLVED and NXDOMAIN.
-    FAIL,       // Fail asynchronously with ERR_NAME_NOT_RESOLVED.
-    TIMEOUT,    // Fail asynchronously with ERR_DNS_TIMED_OUT.
-    EMPTY,      // Return an empty response.
-    MALFORMED,  // "Succeed" but with an unparsable response.
+    // Fail asynchronously with ERR_NAME_NOT_RESOLVED and NXDOMAIN.
+    NODOMAIN,
+    // Fail asynchronously with ERR_NAME_NOT_RESOLVED.
+    FAIL,
+    // Fail asynchronously with ERR_DNS_TIMED_OUT.
+    TIMEOUT,
+    // Simulates a slow transaction that will complete only with a lenient
+    // timeout. Fails asynchronously with ERR_DNS_TIMED_OUT only if the
+    // transaction was created with |fast_timeout|. Otherwise completes
+    // successfully as if the ResultType were |OK|.
+    SLOW,
+    // Return an empty response.
+    EMPTY,
+    // "Succeed" but with an unparsable response.
+    MALFORMED,
 
     // Results in the response in |Result::response| or, if null, results in a
     // localhost IP response.
@@ -243,7 +253,8 @@ struct MockDnsClientRule {
   };
 
   struct Result {
-    explicit Result(ResultType type);
+    explicit Result(ResultType type,
+                    std::unique_ptr<DnsResponse> response = nullptr);
     explicit Result(std::unique_ptr<DnsResponse> response);
     Result(Result&& result);
     ~Result();
@@ -288,7 +299,8 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
       const NetLogWithSource&,
       bool secure,
       SecureDnsMode secure_dns_mode,
-      ResolveContext* resolve_context) override;
+      ResolveContext* resolve_context,
+      bool fast_timeout) override;
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
       ResolveContext* resolve_context) override;

@@ -1045,7 +1045,8 @@ class DnsTransactionImpl : public DnsTransaction,
                      const OptRecordRdata* opt_rdata,
                      bool secure,
                      SecureDnsMode secure_dns_mode,
-                     ResolveContext* resolve_context)
+                     ResolveContext* resolve_context,
+                     bool fast_timeout)
       : session_(session),
         hostname_(hostname),
         qtype_(qtype),
@@ -1485,11 +1486,11 @@ class DnsTransactionImpl : public DnsTransaction,
           DCHECK(result.attempt);
 
           // If attempt is not the most recent attempt, means this error is for
-          // a previous attempt that passed its fallback period and was treated
-          // as complete but allowed to continue attempting in parallel with new
-          // attempts (see the ERR_DNS_TIMED_OUT case above). As the failure was
-          // already recorded at fallback time and is no longer being waited on,
-          // ignore this failure.
+          // a previous attempt that already passed its fallback period and
+          // continued attempting in parallel with new attempts (see the
+          // ERR_DNS_TIMED_OUT case above). As the failure was already recorded
+          // at fallback time and is no longer being waited on, ignore this
+          // failure.
           if (result.attempt != attempts_.back().get()) {
             return AttemptResult(ERR_IO_PENDING, nullptr);
           }
@@ -1583,10 +1584,12 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
       const NetLogWithSource& net_log,
       bool secure,
       SecureDnsMode secure_dns_mode,
-      ResolveContext* resolve_context) override {
+      ResolveContext* resolve_context,
+      bool fast_timeout) override {
     return std::make_unique<DnsTransactionImpl>(
         session_.get(), hostname, qtype, std::move(callback), net_log,
-        opt_rdata_.get(), secure, secure_dns_mode, resolve_context);
+        opt_rdata_.get(), secure, secure_dns_mode, resolve_context,
+        fast_timeout);
   }
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(

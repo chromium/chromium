@@ -5996,6 +5996,118 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheHit) {
       testing::ElementsAre(kExpectedSecureIP));
 }
 
+// Test for a resolve with a transaction that takes longer than usual to
+// complete. With the typical behavior of using fast timeouts, this is expected
+// to timeout and fallback to the system resolver.
+TEST_F(HostResolverManagerDnsTest, SlowResolve) {
+  // Add a successful fallback result.
+  proc_->AddRuleForAllFamilies("slow_succeed", "192.168.1.211");
+
+  MockDnsClientRuleList rules = CreateDefaultDnsRules();
+  AddDnsRule(&rules, "slow_fail", dns_protocol::kTypeA, MockDnsClientRule::SLOW,
+             false /* delay */);
+  AddDnsRule(&rules, "slow_fail", dns_protocol::kTypeAAAA,
+             MockDnsClientRule::SLOW, false /* delay */);
+  AddDnsRule(&rules, "slow_succeed", dns_protocol::kTypeA,
+             MockDnsClientRule::SLOW, false /* delay */);
+  AddDnsRule(&rules, "slow_succeed", dns_protocol::kTypeAAAA,
+             MockDnsClientRule::SLOW, false /* delay */);
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  ResolveHostResponseHelper response0(resolver_->CreateRequest(
+      HostPortPair("ok", 80), NetworkIsolationKey(), NetLogWithSource(),
+      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+  ResolveHostResponseHelper response1(resolver_->CreateRequest(
+      HostPortPair("slow_fail", 80), NetworkIsolationKey(), NetLogWithSource(),
+      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+  ResolveHostResponseHelper response2(resolver_->CreateRequest(
+      HostPortPair("slow_succeed", 80), NetworkIsolationKey(),
+      NetLogWithSource(), base::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  proc_->SignalMultiple(3u);
+
+  EXPECT_THAT(response0.result_error(), IsOk());
+  EXPECT_THAT(response0.request()->GetAddressResults().value().endpoints(),
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                            CreateExpected("::1", 80)));
+  EXPECT_THAT(response1.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response2.result_error(), IsOk());
+  EXPECT_THAT(response2.request()->GetAddressResults().value().endpoints(),
+              testing::ElementsAre(CreateExpected("192.168.1.211", 80)));
+}
+
+// Test for a resolve with a secure transaction that takes longer than usual to
+// complete. In automatic mode, because fallback to insecure is available, the
+// secure transaction is expected to quickly timeout and fallback to insecure.
+TEST_F(HostResolverManagerDnsTest, SlowSecureResolve_AutomaticMode) {
+  set_allow_fallback_to_proctask(false);
+
+  MockDnsClientRuleList rules = CreateDefaultDnsRules();
+  AddSecureDnsRule(&rules, "slow_fail", dns_protocol::kTypeA,
+                   MockDnsClientRule::SLOW, false /* delay */);
+  AddSecureDnsRule(&rules, "slow_fail", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::SLOW, false /* delay */);
+  AddSecureDnsRule(&rules, "slow_succeed", dns_protocol::kTypeA,
+                   MockDnsClientRule::SLOW, false /* delay */);
+  AddSecureDnsRule(&rules, "slow_succeed", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::SLOW, false /* delay */);
+  AddDnsRule(&rules, "slow_succeed", dns_protocol::kTypeA,
+             IPAddress(111, 222, 112, 223), false /* delay */);
+  AddDnsRule(&rules, "slow_succeed", dns_protocol::kTypeAAAA,
+             MockDnsClientRule::EMPTY, false /* delay */);
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response0(resolver_->CreateRequest(
+      HostPortPair("secure", 80), NetworkIsolationKey(), NetLogWithSource(),
+      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+  ResolveHostResponseHelper response1(resolver_->CreateRequest(
+      HostPortPair("slow_fail", 80), NetworkIsolationKey(), NetLogWithSource(),
+      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+  ResolveHostResponseHelper response2(resolver_->CreateRequest(
+      HostPortPair("slow_succeed", 80), NetworkIsolationKey(),
+      NetLogWithSource(), base::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response0.result_error(), IsOk());
+  EXPECT_THAT(response0.request()->GetAddressResults().value().endpoints(),
+              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
+                                            CreateExpected("::1", 80)));
+  EXPECT_THAT(response1.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(response2.result_error(), IsOk());
+  EXPECT_THAT(response2.request()->GetAddressResults().value().endpoints(),
+              testing::ElementsAre(CreateExpected("111.222.112.223", 80)));
+}
+
+// Test for a resolve with a secure transaction that takes longer than usual to
+// complete. In secure mode, because no fallback is available, this is expected
+// to wait longer before timeout and complete successfully.
+TEST_F(HostResolverManagerDnsTest, SlowSecureResolve_SecureMode) {
+  MockDnsClientRuleList rules = CreateDefaultDnsRules();
+  AddSecureDnsRule(&rules, "slow", dns_protocol::kTypeA,
+                   MockDnsClientRule::SLOW, false /* delay */);
+  AddSecureDnsRule(&rules, "slow", dns_protocol::kTypeAAAA,
+                   MockDnsClientRule::SLOW, false /* delay */);
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response0(resolver_->CreateRequest(
+      HostPortPair("secure", 80), NetworkIsolationKey(), NetLogWithSource(),
+      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+  ResolveHostResponseHelper response1(resolver_->CreateRequest(
+      HostPortPair("slow", 80), NetworkIsolationKey(), NetLogWithSource(),
+      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
+
+  EXPECT_THAT(response0.result_error(), IsOk());
+  EXPECT_THAT(response1.result_error(), IsOk());
+}
+
 // Test the case where only a single transaction slot is available.
 TEST_F(HostResolverManagerDnsTest, SerialResolver) {
   CreateSerialResolver();

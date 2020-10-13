@@ -90,12 +90,13 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // session.
   size_t NumAvailableDohServers(const DnsSession* session) const;
 
-  // Record that server failed to respond (due to SRV_FAIL or fallback). If
-  // |is_doh_server| and the number of failures has surpassed a threshold,
-  // sets the DoH probe state to unavailable. Noop if |session| is not the
-  // current session. Should only be called with with server failure |rv|s,
-  // not eg OK, ERR_NAME_NOT_RESOLVED (which at the transaction level is
-  // expected to be nxdomain), or ERR_IO_PENDING.
+  // Record failure to get a response from the server (e.g. SERVFAIL, connection
+  // failures, or that the server failed to respond before the fallback period
+  // elapsed. If |is_doh_server| and the number of failures has surpassed a
+  // threshold, sets the DoH probe state to unavailable. Noop if |session| is
+  // not the current session. Should only be called with with server failure
+  // |rv|s, not e.g. OK, ERR_NAME_NOT_RESOLVED (which at the transaction level
+  // is expected to be nxdomain), or ERR_IO_PENDING.
   void RecordServerFailure(size_t server_index,
                            bool is_doh_server,
                            int rv,
@@ -115,16 +116,16 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
                  int rv,
                  const DnsSession* session);
 
-  // Return the period the next query should run before fallback to next attempt
-  // or out of the transaction. (Not actually a "timeout" because queries are
-  // not typically cancelled as additional attempts are made.) |attempt| counts
-  // from 0 and is used for exponential backoff.
+  // Return the period the next query should run before fallback to next
+  // attempt. (Not actually a "timeout" because queries are not typically
+  // cancelled as additional attempts are made.) |attempt| counts from 0 and is
+  // used for exponential backoff.
   base::TimeDelta NextClassicFallbackPeriod(size_t classic_server_index,
                                             int attempt,
                                             const DnsSession* session);
 
   // Return the period the next DoH query should run before fallback to next
-  // attempt or out of the transaction.
+  // attempt.
   base::TimeDelta NextDohFallbackPeriod(size_t doh_server_index,
                                         const DnsSession* session);
 

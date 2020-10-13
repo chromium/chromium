@@ -22,7 +22,6 @@ class Value;
 
 namespace net {
 
-// Default to 1 second fallback period (before exponential backoff).
 constexpr base::TimeDelta kDnsDefaultFallbackPeriod =
     base::TimeDelta::FromSeconds(1);
 
@@ -79,6 +78,9 @@ struct NET_EXPORT DnsConfig {
   // Minimum number of dots before global resolution precedes |search|.
   int ndots;
   // Time between retransmissions, see res_state.retrans.
+  // Used by Chrome as the initial transaction attempt fallback period (before
+  // exponential backoff and dynamic period determination based on previous
+  // attempts.)
   base::TimeDelta fallback_period;
   // Maximum number of attempts, see res_state.retry.
   int attempts;
