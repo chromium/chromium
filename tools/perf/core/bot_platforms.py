@@ -347,7 +347,6 @@ _WIN_7_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _WIN_7_GPU_BENCHMARK_CONFIGS = PerfSuite(['rendering.desktop']).Abridge(
     ['rendering.desktop'])
-_WIN_7_GPU_EXECUTABLE_CONFIGS = frozenset([_ANGLE_PERFTESTS])
 _ANDROID_GO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_mobile'),
     _GetBenchmarkConfig('system_health.common_mobile'),
@@ -455,9 +454,8 @@ WIN_10 = PerfPlatform(
     ' Intel Kaby Lake HD Graphics 630', _WIN_10_BENCHMARK_CONFIGS,
     26, 'win', executables=_WIN_10_EXECUTABLE_CONFIGS)
 WIN_7 = PerfPlatform('Win 7 Perf', 'N/A', _WIN_7_BENCHMARK_CONFIGS, 4, 'win')
-WIN_7_GPU = PerfPlatform(
-    'Win 7 Nvidia GPU Perf', 'N/A', _WIN_7_GPU_BENCHMARK_CONFIGS,
-    4, 'win', executables=_WIN_7_GPU_EXECUTABLE_CONFIGS)
+WIN_7_GPU = PerfPlatform('Win 7 Nvidia GPU Perf', 'N/A',
+                         _WIN_7_GPU_BENCHMARK_CONFIGS, 4, 'win')
 
 # Android
 ANDROID_GO = PerfPlatform(
