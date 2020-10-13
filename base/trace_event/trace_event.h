@@ -22,7 +22,6 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/log_message.h"
 #include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_arguments.h"
@@ -389,45 +388,6 @@
           ##__VA_ARGS__);                                            \
     }                                                                \
   } while (0)
-
-#define INTERNAL_TRACE_LOG_MESSAGE(file, message, line)                        \
-  TRACE_EVENT_INSTANT1(                                                        \
-      "log", "LogMessage",                                                     \
-      TRACE_EVENT_FLAG_TYPED_PROTO_ARGS | TRACE_EVENT_SCOPE_THREAD, "message", \
-      std::make_unique<base::trace_event::LogMessage>(file, message, line))
-
-#if BUILDFLAG(ENABLE_LOCATION_SOURCE)
-
-// Implementation detail: internal macro to trace a task execution with the
-// location where it was posted from.
-//
-// This implementation is for when location sources are available.
-// TODO(ssid): The program counter of the current task should be added here.
-#define INTERNAL_TRACE_TASK_EXECUTION(run_function, task)                      \
-  INTERNAL_TRACE_EVENT_ADD_SCOPED_WITH_FLAGS(                                  \
-      "toplevel", run_function, TRACE_EVENT_FLAG_TYPED_PROTO_ARGS, "src_file", \
-      (task).posted_from.file_name(), "src_func",                              \
-      (task).posted_from.function_name());                                     \
-  TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION INTERNAL_TRACE_EVENT_UID(      \
-      task_event)((task).posted_from.file_name());                             \
-  TRACE_HEAP_PROFILER_API_SCOPED_WITH_PROGRAM_COUNTER                          \
-  INTERNAL_TRACE_EVENT_UID(task_pc_event)((task).posted_from.program_counter());
-
-#else
-
-// TODO(http://crbug.com760702) remove file name and just pass the program
-// counter to the heap profiler macro.
-// TODO(ssid): The program counter of the current task should be added here.
-#define INTERNAL_TRACE_TASK_EXECUTION(run_function, task)                 \
-  INTERNAL_TRACE_EVENT_ADD_SCOPED_WITH_FLAGS(                             \
-      "toplevel", run_function, TRACE_EVENT_FLAG_TYPED_PROTO_ARGS, "src", \
-      (task).posted_from.ToString())                                      \
-  TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION INTERNAL_TRACE_EVENT_UID( \
-      task_event)((task).posted_from.file_name());                        \
-  TRACE_HEAP_PROFILER_API_SCOPED_WITH_PROGRAM_COUNTER                     \
-  INTERNAL_TRACE_EVENT_UID(task_pc_event)((task).posted_from.program_counter());
-
-#endif
 
 namespace trace_event_internal {
 

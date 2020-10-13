@@ -67,12 +67,6 @@ constexpr uint64_t kAbsoluteThreadTimeTrackUuidBit = static_cast<uint64_t>(1u)
 constexpr uint64_t kThreadInstructionCountTrackUuidBit =
     static_cast<uint64_t>(1u) << 34;
 
-// Names of events that should be converted into a TaskExecution event.
-const char* kTaskExecutionEventCategory = "toplevel";
-const char* kTaskExecutionEventNames[3] = {"ThreadControllerImpl::RunTask",
-                                           "ThreadPool_RunTask",
-                                           "SimpleAlarmTimer::OnTimerFired"};
-
 void AddConvertableToTraceFormat(
     base::trace_event::ConvertableToTraceFormat* value,
     perfetto::protos::pbzero::DebugAnnotation* annotation) {
@@ -474,13 +468,6 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
   const size_t kMaxSize = base::trace_event::TraceArguments::kMaxSize;
   InterningIndexEntry interned_annotation_names[kMaxSize] = {
       InterningIndexEntry{}};
-  InterningIndexEntry interned_source_location{};
-  InterningIndexEntry interned_log_message_body{};
-
-  const char* src_file = nullptr;
-  const char* src_func = nullptr;
-  const char* log_message_body = nullptr;
-  int line_number = 0;
 
   // No need to write the event name for end events (sync or nestable async).
   // Trace processor will match them without, provided event nesting is correct.
@@ -510,49 +497,8 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
       }
     }
   } else {
-    // TODO(eseckler): Remove special handling of typed events here once we
-    // support them in TRACE_EVENT macros.
-
     if (flags & TRACE_EVENT_FLAG_TYPED_PROTO_ARGS) {
-      if (trace_event->arg_size() == 2u) {
-        DCHECK_EQ(strcmp(category_name, kTaskExecutionEventCategory), 0);
-        DCHECK(strcmp(trace_event->name(), kTaskExecutionEventNames[0]) == 0 ||
-               strcmp(trace_event->name(), kTaskExecutionEventNames[1]) == 0 ||
-               strcmp(trace_event->name(), kTaskExecutionEventNames[2]) == 0);
-        // Double argument task execution event (src_file, src_func).
-        DCHECK_EQ(trace_event->arg_type(0), TRACE_VALUE_TYPE_STRING);
-        DCHECK_EQ(trace_event->arg_type(1), TRACE_VALUE_TYPE_STRING);
-        src_file = trace_event->arg_value(0).as_string;
-        src_func = trace_event->arg_value(1).as_string;
-      } else {
-        // arg_size == 1 enforced by the maximum number of parameter == 2.
-        DCHECK_EQ(trace_event->arg_size(), 1u);
-
-        if (trace_event->arg_type(0) == TRACE_VALUE_TYPE_STRING) {
-          // Single argument task execution event (src_file).
-          DCHECK_EQ(strcmp(category_name, kTaskExecutionEventCategory), 0);
-          DCHECK(
-              strcmp(trace_event->name(), kTaskExecutionEventNames[0]) == 0 ||
-              strcmp(trace_event->name(), kTaskExecutionEventNames[1]) == 0 ||
-              strcmp(trace_event->name(), kTaskExecutionEventNames[2]) == 0);
-          src_file = trace_event->arg_value(0).as_string;
-        } else {
-          DCHECK_EQ(trace_event->arg_type(0), TRACE_VALUE_TYPE_CONVERTABLE);
-          DCHECK(strcmp(category_name, "log") == 0);
-          DCHECK(strcmp(trace_event->name(), "LogMessage") == 0);
-          const base::trace_event::LogMessage* value =
-              static_cast<base::trace_event::LogMessage*>(
-                  trace_event->arg_value(0).as_convertable);
-          src_file = value->file();
-          line_number = value->line_number();
-          log_message_body = value->message().c_str();
-
-          interned_log_message_body =
-              interned_log_message_bodies_.LookupOrAdd(value->message());
-        }  // else
-      }    // else
-      interned_source_location = interned_source_locations_.LookupOrAdd(
-          std::make_tuple(src_file, src_func, line_number));
+      NOTREACHED();
     } else if (!privacy_filtering_enabled_) {
       for (size_t i = 0;
            i < trace_event->arg_size() && trace_event->arg_name(i); ++i) {
@@ -626,14 +572,7 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
     track_event->add_category_iids(interned_category.id);
   }
 
-  if (interned_log_message_body.id) {
-    auto* log_message = track_event->set_log_message();
-    log_message->set_source_location_iid(interned_source_location.id);
-    log_message->set_body_iid(interned_log_message_body.id);
-  } else if (interned_source_location.id) {
-    track_event->set_task_execution()->set_posted_from_iid(
-        interned_source_location.id);
-  } else if (!privacy_filtering_enabled_) {
+  if (!privacy_filtering_enabled_) {
     WriteDebugAnnotations(trace_event, track_event, interned_annotation_names);
   }
 
@@ -796,19 +735,7 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
         std::make_tuple(IndexType::kName, IndexData{trace_event_name},
                         std::move(interned_name)));
   }
-  if (interned_log_message_body.id && !interned_log_message_body.was_emitted) {
-    pending_interning_updates_.push_back(
-        std::make_tuple(IndexType::kLogMessage, IndexData{log_message_body},
-                        std::move(interned_log_message_body)));
-  }
-  if (interned_source_location.id) {
-    if (!interned_source_location.was_emitted) {
-      pending_interning_updates_.push_back(std::make_tuple(
-          IndexType::kSourceLocation,
-          IndexData{std::make_tuple(src_file, src_func, line_number)},
-          std::move(interned_source_location)));
-    }
-  } else if (!privacy_filtering_enabled_) {
+  if (!privacy_filtering_enabled_) {
     for (size_t i = 0; i < trace_event->arg_size() && trace_event->arg_name(i);
          ++i) {
       DCHECK(interned_annotation_names[i].id);
