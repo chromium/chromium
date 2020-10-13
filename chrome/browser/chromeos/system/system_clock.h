@@ -39,7 +39,27 @@ class SystemClock : public chromeos::LoginState::Observer,
   SystemClock();
   ~SystemClock() override;
 
-  void SetLastFocusedPodHourClockType(base::HourClockType hour_clock_type);
+  // Could be used to temporary set the required clock type. At most one should
+  // exist at the time.
+  class ScopedHourClockType {
+   public:
+    explicit ScopedHourClockType(base::WeakPtr<SystemClock> system_clock);
+    ~ScopedHourClockType();
+
+    ScopedHourClockType(const ScopedHourClockType&) = delete;
+    ScopedHourClockType& operator=(const ScopedHourClockType&) = delete;
+
+    ScopedHourClockType(ScopedHourClockType&&);
+    ScopedHourClockType& operator=(ScopedHourClockType&&);
+
+    void UpdateClockType(base::HourClockType clock_type);
+
+   private:
+    base::WeakPtr<SystemClock> system_clock_;
+  };
+
+  ScopedHourClockType CreateScopedHourClockType(
+      base::HourClockType hour_clock_type);
 
   void AddObserver(SystemClockObserver* observer);
   void RemoveObserver(SystemClockObserver* observer);
@@ -67,8 +87,7 @@ class SystemClock : public chromeos::LoginState::Observer,
 
   void UpdateClockType();
 
-  bool user_pod_was_focused_ = false;
-  base::HourClockType last_focused_pod_hour_clock_type_ = base::k12HourClock;
+  base::Optional<base::HourClockType> scoped_hour_clock_type_;
 
   Profile* user_profile_ = nullptr;
   ScopedObserver<Profile, ProfileObserver> profile_observer_{this};

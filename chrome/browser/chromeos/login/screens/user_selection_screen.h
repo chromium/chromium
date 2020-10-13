@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/chromeos/system/system_clock.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/account_id/account_id.h"
@@ -185,6 +186,8 @@ class UserSelectionScreen
   user_manager::UserList users_to_send_;
 
   AccountId focused_pod_account_id_;
+  base::Optional<system::SystemClock::ScopedHourClockType>
+      focused_user_clock_type_;
 
   // Sometimes we might get focused pod while user session is still active. e.g.
   // while creating lock screen. So postpone any work until after the session

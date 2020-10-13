@@ -9,6 +9,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 
 namespace chromeos {
 
@@ -21,7 +23,16 @@ class TestMainExtraPart : public ChromeBrowserMainExtraParts {
   ~TestMainExtraPart() override = default;
 
   // ChromeBrowserMainExtraParts:
-  void PostEarlyInitialization() override { delegate_->SetUpLocalState(); }
+  void PostEarlyInitialization() override {
+    // SaveKnownUser depends on UserManager to get the local state that has to
+    // be updated, and do ephemeral user checks.
+    // Given that user manager does not exist yet (by design), create a
+    // temporary fake user manager instance.
+    auto user_manager = std::make_unique<user_manager::FakeUserManager>();
+    user_manager->set_local_state(g_browser_process->local_state());
+    user_manager::ScopedUserManager scoper(std::move(user_manager));
+    delegate_->SetUpLocalState();
+  }
 
  private:
   LocalStateMixin::Delegate* const delegate_;

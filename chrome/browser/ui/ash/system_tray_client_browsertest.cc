@@ -8,8 +8,10 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "base/i18n/time_formatting.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
+#include "chrome/browser/chromeos/login/test/local_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
@@ -22,6 +24,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -144,6 +147,39 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockTest, FocusedPod24HourClock) {
   EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id1_));
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id2_));
+  EXPECT_FALSE(tray_test_api->Is24HourClock());
+}
+
+class SystemTrayClientClockUnknownPrefTest
+    : public SystemTrayClientClockTest,
+      public chromeos::LocalStateMixin::Delegate {
+ public:
+  // chromeos::localStateMixin::Delegate:
+  void SetUpLocalState() override {
+    // Set preference for the first user only.
+    user_manager::known_user::SetBooleanPref(account_id1_,
+                                             ::prefs::kUse24HourClock, true);
+
+    ASSERT_FALSE(user_manager::known_user::GetBooleanPref(
+        account_id2_, ::prefs::kUse24HourClock, nullptr));
+  }
+
+ protected:
+  chromeos::LocalStateMixin local_state_{&mixin_host_, this};
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
+  // Check default value.
+  ASSERT_EQ(base::GetHourClockType(), base::k12HourClock);
+
+  auto tray_test_api = ash::SystemTrayTestApi::Create();
+  // Check user with the set preference.
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id1_));
+  EXPECT_TRUE(tray_test_api->Is24HourClock());
+
+  // Should get back to the default 12 hours because there is not preference for
+  // the second user.
   EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id2_));
   EXPECT_FALSE(tray_test_api->Is24HourClock());
 }

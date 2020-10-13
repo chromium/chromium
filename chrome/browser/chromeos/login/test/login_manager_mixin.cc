@@ -23,9 +23,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
 
 namespace chromeos {
 
@@ -108,38 +106,28 @@ bool LoginManagerMixin::SetUpUserDataDirectory() {
 }
 
 void LoginManagerMixin::SetUpLocalState() {
-  // SaveKnownUser depends on UserManager to get the local state that has to
-  // be updated, and do ephemeral user checks.
-  // Given that user manager does not exist yet (by design), create a
-  // temporary fake user manager instance.
-  {
-    auto user_manager = std::make_unique<user_manager::FakeUserManager>();
-    user_manager->set_local_state(g_browser_process->local_state());
-    user_manager::ScopedUserManager scoper(std::move(user_manager));
-    for (const auto& user : initial_users_) {
-      ListPrefUpdate users_pref(g_browser_process->local_state(),
-                                "LoggedInUsers");
-      users_pref->AppendIfNotPresent(
-          std::make_unique<base::Value>(user.account_id.GetUserEmail()));
+  for (const auto& user : initial_users_) {
+    ListPrefUpdate users_pref(g_browser_process->local_state(),
+                              "LoggedInUsers");
+    users_pref->AppendIfNotPresent(
+        std::make_unique<base::Value>(user.account_id.GetUserEmail()));
 
-      DictionaryPrefUpdate user_type_update(g_browser_process->local_state(),
-                                            "UserType");
-      user_type_update->SetKey(user.account_id.GetAccountIdKey(),
-                               base::Value(static_cast<int>(user.user_type)));
+    DictionaryPrefUpdate user_type_update(g_browser_process->local_state(),
+                                          "UserType");
+    user_type_update->SetKey(user.account_id.GetAccountIdKey(),
+                             base::Value(static_cast<int>(user.user_type)));
 
-      DictionaryPrefUpdate user_token_update(g_browser_process->local_state(),
-                                             "OAuthTokenStatus");
-      user_token_update->SetKey(
-          user.account_id.GetUserEmail(),
-          base::Value(static_cast<int>(user.token_status)));
+    DictionaryPrefUpdate user_token_update(g_browser_process->local_state(),
+                                           "OAuthTokenStatus");
+    user_token_update->SetKey(user.account_id.GetUserEmail(),
+                              base::Value(static_cast<int>(user.token_status)));
 
-      user_manager::known_user::UpdateId(user.account_id);
+    user_manager::known_user::UpdateId(user.account_id);
 
-      if (user.user_type == user_manager::USER_TYPE_CHILD) {
-        user_manager::known_user::SetProfileRequiresPolicy(
-            user.account_id,
-            user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired);
-      }
+    if (user.user_type == user_manager::USER_TYPE_CHILD) {
+      user_manager::known_user::SetProfileRequiresPolicy(
+          user.account_id,
+          user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired);
     }
   }
 

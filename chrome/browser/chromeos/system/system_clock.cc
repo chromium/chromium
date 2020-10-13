@@ -19,7 +19,6 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -113,21 +112,42 @@ void SystemClock::SetProfile(Profile* profile) {
   UpdateClockType();
 }
 
-void SystemClock::SetLastFocusedPodHourClockType(
+SystemClock::ScopedHourClockType::ScopedHourClockType(
+    base::WeakPtr<SystemClock> system_clock)
+    : system_clock_(std::move(system_clock)) {}
+
+SystemClock::ScopedHourClockType::~ScopedHourClockType() {
+  if (!system_clock_)
+    return;
+  system_clock_->scoped_hour_clock_type_.reset();
+  system_clock_->UpdateClockType();
+}
+
+SystemClock::ScopedHourClockType::ScopedHourClockType(
+    ScopedHourClockType&& other) = default;
+
+SystemClock::ScopedHourClockType& SystemClock::ScopedHourClockType::operator=(
+    ScopedHourClockType&& other) = default;
+
+void SystemClock::ScopedHourClockType::UpdateClockType(
+    base::HourClockType clock_type) {
+  if (!system_clock_)
+    return;
+  system_clock_->scoped_hour_clock_type_ = clock_type;
+  system_clock_->UpdateClockType();
+}
+
+SystemClock::ScopedHourClockType SystemClock::CreateScopedHourClockType(
     base::HourClockType hour_clock_type) {
-  user_pod_was_focused_ = true;
-  last_focused_pod_hour_clock_type_ = hour_clock_type;
+  DCHECK(!scoped_hour_clock_type_.has_value());
+  scoped_hour_clock_type_ = hour_clock_type;
   UpdateClockType();
+  return ScopedHourClockType(weak_ptr_factory_.GetWeakPtr());
 }
 
 bool SystemClock::ShouldUse24HourClock() const {
-  const session_manager::SessionState session_state =
-      session_manager::SessionManager::Get()->session_state();
-  if (session_state == session_manager::SessionState::LOGIN_PRIMARY ||
-      session_state == session_manager::SessionState::LOCKED) {
-    if (user_pod_was_focused_)
-      return last_focused_pod_hour_clock_type_ == base::k24HourClock;
-  }
+  if (scoped_hour_clock_type_.has_value())
+    return scoped_hour_clock_type_ == base::k24HourClock;
   // default is used for kUse24HourClock preference on login screen and whenever
   // set so in user's preference
   const chromeos::LoginState::LoggedInUserType status =

@@ -828,18 +828,27 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
   lock_screen_utils::SetKeyboardSettings(account_id);
 
   bool use_24hour_clock = false;
-  if (user_manager::known_user::GetBooleanPref(
+  if (!user_manager::known_user::GetBooleanPref(
           account_id, ::prefs::kUse24HourClock, &use_24hour_clock)) {
-    g_browser_process->platform_part()
-        ->GetSystemClock()
-        ->SetLastFocusedPodHourClockType(use_24hour_clock ? base::k24HourClock
-                                                          : base::k12HourClock);
+    focused_user_clock_type_.reset();
+  } else {
+    base::HourClockType clock_type =
+        use_24hour_clock ? base::k24HourClock : base::k12HourClock;
+    if (focused_user_clock_type_.has_value()) {
+      focused_user_clock_type_->UpdateClockType(clock_type);
+    } else {
+      focused_user_clock_type_ = g_browser_process->platform_part()
+                                     ->GetSystemClock()
+                                     ->CreateScopedHourClockType(clock_type);
+    }
   }
+
   focused_pod_account_id_ = account_id;
 }
 
 void UserSelectionScreen::HandleNoPodFocused() {
   focused_pod_account_id_ = EmptyAccountId();
+  focused_user_clock_type_.reset();
   if (display_type_ == OobeUI::kLoginDisplay)
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
 }
