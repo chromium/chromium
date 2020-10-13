@@ -88,14 +88,21 @@ class SubresourceFilterAgent
       blink::mojom::AdFrameType ad_frame_type) override;
 
  private:
-  // Assumes that the parent will be in a local frame relative to this one, upon
-  // construction.
-  virtual mojom::ActivationState GetParentActivationState(
+  // Returns the activation state for the |render_frame| to inherit. Main frames
+  // inherit from their opener frames, and subframes inherit from their parent
+  // frames. Assumes that the parent/opener is in a local frame relative to this
+  // one, upon construction. This function is virtual (and not static) to ease
+  // testing.
+  // TODO(crbug.com/1134747): Modify the test harness to allow this to be static
+  virtual mojom::ActivationState GetInheritedActivationState(
       content::RenderFrame* render_frame);
 
   void RecordHistogramsOnFilterCreation(
       const mojom::ActivationState& activation_state);
   void ResetInfoForNextDocument();
+
+  void ConstructFilter(const mojom::ActivationState activation_state,
+                       const GURL& url);
 
   mojom::SubresourceFilterHost* GetSubresourceFilterHost();
 

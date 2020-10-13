@@ -154,6 +154,9 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(
 void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     const GURL& url,
     std::unique_ptr<base::DictionaryValue> dict) {
+  if (url.is_empty())
+    return;
+
   // Metadata expires after kMaxPersistMetadataDuration by default. If
   // kNonRenewingExpiryTime was previously set, then we are storing ads
   // intervention metadata and should not override the expiry time that

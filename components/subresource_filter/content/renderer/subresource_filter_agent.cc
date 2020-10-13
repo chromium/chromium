@@ -46,6 +46,18 @@ SubresourceFilterAgent::SubresourceFilterAgent(
   DCHECK(ruleset_dealer);
   // |render_frame| can be nullptr in unit tests.
   if (render_frame) {
+    // If a mainframe has an activated opener, we activate the initial empty
+    // document, which is created before this constructor. This ensures that a
+    // popup's final document is appropriately activated, even when the the
+    // initial navigation is aborted and there are no further documents created.
+    if (render_frame->IsMainFrame() &&
+        GetInheritedActivationState(render_frame).activation_level !=
+            mojom::ActivationLevel::kDisabled) {
+      const GURL& url = GetDocumentURL();
+      DCHECK(url.is_empty());
+      DCHECK(ShouldInheritActivation(url));
+      ConstructFilter(GetInheritedActivationState(render_frame), url);
+    }
     render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
         base::BindRepeating(
             &SubresourceFilterAgent::OnSubresourceFilterAgentRequest,
@@ -101,16 +113,34 @@ void SubresourceFilterAgent::SetIsAdSubframe(
   render_frame()->GetWebFrame()->SetIsAdSubframe(ad_frame_type);
 }
 
-mojom::ActivationState SubresourceFilterAgent::GetParentActivationState(
+mojom::ActivationState SubresourceFilterAgent::GetInheritedActivationState(
     content::RenderFrame* render_frame) {
-  blink::WebFrame* parent =
-      render_frame ? render_frame->GetWebFrame()->Parent() : nullptr;
-  if (parent && parent->IsWebLocalFrame()) {
-    auto* agent = SubresourceFilterAgent::Get(
-        content::RenderFrame::FromWebFrame(parent->ToWebLocalFrame()));
+  DCHECK(ShouldInheritActivation(GetDocumentURL()));
+  if (!render_frame)
+    return mojom::ActivationState();
+
+  blink::WebFrame* frame_to_inherit_from =
+      render_frame->IsMainFrame() ? render_frame->GetWebFrame()->Opener()
+                                  : render_frame->GetWebFrame()->Parent();
+
+  if (!frame_to_inherit_from || !frame_to_inherit_from->IsWebLocalFrame())
+    return mojom::ActivationState();
+
+  // TODO(crbug.com/1134740): Add an IsSameOriginWith() function to
+  // WebSecurityOrigin to avoid unnecessary conversions to url::Origin.
+  url::Origin render_frame_origin =
+      render_frame->GetWebFrame()->GetSecurityOrigin();
+  url::Origin inherited_origin = frame_to_inherit_from->GetSecurityOrigin();
+
+  // Only inherit from same-origin frames.
+  if (render_frame_origin.IsSameOriginWith(inherited_origin)) {
+    auto* agent =
+        SubresourceFilterAgent::Get(content::RenderFrame::FromWebFrame(
+            frame_to_inherit_from->ToWebLocalFrame()));
     if (agent && agent->filter_for_last_created_document_)
       return agent->filter_for_last_created_document_->activation_state();
   }
+
   return mojom::ActivationState();
 }
 
@@ -173,8 +203,7 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
   const bool should_record_histograms =
       !first_document_ &&
       !(IsMainFrame() && !url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsFile());
-  if (first_document_) {
-    first_document_ = false;
+  if (first_document_ && !IsMainFrame()) {
     DCHECK(!filter_for_last_created_document_);
 
     // Local subframes will first create an initial empty document (with url
@@ -191,22 +220,28 @@ void SubresourceFilterAgent::DidCreateNewDocument() {
         SendFrameIsAdSubframe();
     }
   }
-
-  // Filter may outlive us, so reset the ad tracker.
-  if (filter_for_last_created_document_)
-    filter_for_last_created_document_->set_ad_resource_tracker(nullptr);
-  filter_for_last_created_document_.reset();
+  first_document_ = false;
 
   const mojom::ActivationState activation_state =
-      (!IsMainFrame() && ShouldUseParentActivation(url))
-          ? GetParentActivationState(render_frame())
-          : activation_state_for_next_document_;
+      ShouldInheritActivation(url) ? GetInheritedActivationState(render_frame())
+                                   : activation_state_for_next_document_;
 
   ResetInfoForNextDocument();
 
   if (should_record_histograms) {
     RecordHistogramsOnFilterCreation(activation_state);
   }
+
+  ConstructFilter(activation_state, url);
+}
+
+void SubresourceFilterAgent::ConstructFilter(
+    const mojom::ActivationState activation_state,
+    const GURL& url) {
+  // Filter may outlive us, so reset the ad tracker.
+  if (filter_for_last_created_document_)
+    filter_for_last_created_document_->set_ad_resource_tracker(nullptr);
+  filter_for_last_created_document_.reset();
 
   if (activation_state.activation_level == mojom::ActivationLevel::kDisabled ||
       !ruleset_dealer_->IsRulesetFileAvailable())

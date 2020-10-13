@@ -1,0 +1,31 @@
+<html>
+  <head><script>
+    function popupLoadsDisallowedResource(popup_url) {
+      popup = window.open(popup_url);
+      doc = popup.document;
+      doc.open();
+      doc.write(
+        "<html><body>Rewritten. <img src='/ad_tagging/pixel.png?ad=true' " +
+        "onload='window.document.title = \"loaded\";' " +
+        "onerror='window.document.title = \"failed\";'></body></html>");
+      doc.close();
+    }
+    function popupLoadsDisallowedResourceAsDescendant(popup_url) {
+      popup = window.open(popup_url);
+      doc = popup.document;
+      doc.open();
+      doc.write(
+          "<html><head><script>" +
+          "function onLoadHandler() {" +
+          "  iframe = document.getElementById('child');" +
+          "  if (iframe.contentDocument) {" +
+          "     window.document.title = 'loaded';" +
+          "  } else {" +
+          "     window.document.title = 'failed';" +
+          "  }}</scr" + "ipt></head>" +
+          "<body>Rewritten. <iframe id='child' src='/empty.html?ad=true' " +
+          "onload='onLoadHandler();'></body></html>");
+      doc.close();
+    }
+  </script></head>
+</html>

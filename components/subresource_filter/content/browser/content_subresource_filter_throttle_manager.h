@@ -189,6 +189,16 @@ class ContentSubresourceFilterThrottleManager
   AsyncDocumentSubresourceFilter* GetParentFrameFilter(
       content::NavigationHandle* child_frame_navigation);
 
+  // Returns nullptr if the frame is not activated (and therefore has no
+  // subresource filter).
+  AsyncDocumentSubresourceFilter* GetFrameFilter(
+      content::RenderFrameHost* frame_host);
+
+  // Returns the activation state of the frame's filter. If the frame is not
+  // activated (and therefore has no subresource filter), returns base::nullopt.
+  const base::Optional<subresource_filter::mojom::ActivationState>
+  GetFrameActivationState(content::RenderFrameHost* frame_host);
+
   // Calls ShowNotification on |client_| at most once per committed,
   // non-same-page navigation in the main frame.
   void MaybeShowNotification();
@@ -206,12 +216,14 @@ class ContentSubresourceFilterThrottleManager
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
 
-  // Adds the navigation's RenderFrameHost to activated_frame_hosts_ if it is a
-  // special navigation which did not go through navigation throttles and its
-  // parent frame is activated as well. The filter for these frames is set
-  // to nullptr.
-  void MaybeActivateSubframeSpecialUrls(
-      content::NavigationHandle* navigation_handle);
+  // Gets a filter for the navigation from |throttle|, creates and returns a new
+  // filter, or returns |nullptr|. Also updates |frame_host_filter_map_| as
+  // appropriate. |frame_host| is provided as |navigation_handle|'s getter
+  // cannot be used when the navigation has not committed.
+  AsyncDocumentSubresourceFilter* FilterForFinishedNavigation(
+      content::NavigationHandle* navigation_handle,
+      ActivationStateComputingNavigationThrottle* throttle,
+      content::RenderFrameHost* frame_host);
 
   // For each RenderFrameHost where the last committed load has subresource
   // filtering activated, owns the corresponding AsyncDocumentSubresourceFilter.
@@ -224,12 +236,13 @@ class ContentSubresourceFilterThrottleManager
       frame_host_filter_map_;
 
   // Set of RenderFrameHosts that have had at least one committed or aborted
-  // navigation. Main frames with only aborted navigations are not included.
+  // navigation.
   std::set<content::RenderFrameHost*> navigated_frames_;
 
   // For each ongoing navigation that requires activation state computation,
   // keeps track of the throttle that is carrying out that computation, so that
   // the result can be retrieved when the navigation is ready to commit.
+  // TODO(crbug.com/1134311): Key with navigation IDs instead of raw pointers.
   std::map<content::NavigationHandle*,
            ActivationStateComputingNavigationThrottle*>
       ongoing_activation_throttles_;

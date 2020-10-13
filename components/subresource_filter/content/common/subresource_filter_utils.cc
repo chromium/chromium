@@ -8,7 +8,7 @@
 
 namespace subresource_filter {
 
-bool ShouldUseParentActivation(const GURL& url) {
+bool ShouldInheritActivation(const GURL& url) {
   return !content::IsURLHandledByNetworkStack(url);
 }
 

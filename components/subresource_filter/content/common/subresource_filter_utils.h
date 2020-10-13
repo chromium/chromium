@@ -9,10 +9,14 @@ class GURL;
 
 namespace subresource_filter {
 
-// Subframe navigations matching these URLs/schemes will not trigger
-// ReadyToCommitNavigation in the browser process, so they must be treated
-// specially to maintain activation. Should only be invoked for subframes.
-bool ShouldUseParentActivation(const GURL& url);
+// Subframe navigations and initial mainframe navigations matching these URLs/
+// schemes will not trigger ReadyToCommitNavigation in the browser process, so
+// they must be treated specially to maintain activation. Each should inherit
+// the activation of its parent in the case of a subframe and its opener in the
+// case of a mainframe. This also accounts for the ability of the parent/opener
+// to affect the frame's content more directly, e.g. through document.write(),
+// even though these URLs won't match a filter list rule by themselves.
+bool ShouldInheritActivation(const GURL& url);
 
 }  // namespace subresource_filter
 
