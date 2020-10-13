@@ -186,11 +186,18 @@ class ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::RunLanConnectivityRoutineCallback
           callback) = 0;
 
-  // Requests that cros_healthd runs the lan connectivity routine. See
+  // Requests that cros_healthd runs the signal strength routine. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunSignalStrengthRoutine(
       mojom::CrosHealthdDiagnosticsService::RunSignalStrengthRoutineCallback
+          callback) = 0;
+
+  // Requests that cros_healthd runs the gateway can be pinged routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunGatewayCanBePingedRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunGatewayCanBePingedRoutineCallback
           callback) = 0;
 
   // Subscribes to cros_healthd's Bluetooth-related events. See

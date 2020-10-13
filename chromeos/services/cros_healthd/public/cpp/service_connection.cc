@@ -110,6 +110,9 @@ class ServiceConnectionImpl : public ServiceConnection {
   void RunSignalStrengthRoutine(
       mojom::CrosHealthdDiagnosticsService::RunSignalStrengthRoutineCallback
           callback) override;
+  void RunGatewayCanBePingedRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunGatewayCanBePingedRoutineCallback
+          callback) override;
   void AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer)
       override;
@@ -374,6 +377,15 @@ void ServiceConnectionImpl::RunSignalStrengthRoutine(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunSignalStrengthRoutine(
+      std::move(callback));
+}
+
+void ServiceConnectionImpl::RunGatewayCanBePingedRoutine(
+    mojom::CrosHealthdDiagnosticsService::RunGatewayCanBePingedRoutineCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  cros_healthd_diagnostics_service_->RunGatewayCanBePingedRoutine(
       std::move(callback));
 }
 

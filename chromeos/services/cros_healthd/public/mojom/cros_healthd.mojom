@@ -326,6 +326,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunSignalStrengthRoutine() => (RunRoutineResponse response);
+
+  // Requests that the GatewayCanBePinged routine is created and started on the
+  // platform. This routine checks whether the gateway of connected networks is
+  // pingable. This routine is only available if GetAvailableRoutines returned
+  // kGatewayCanBePinged.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunGatewayCanBePingedRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
