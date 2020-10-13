@@ -50,6 +50,11 @@ void DocumentResourceCoordinator::SetHasNonEmptyBeforeUnload(
   service_->SetHasNonEmptyBeforeUnload(has_nonempty_beforeunload);
 }
 
+void DocumentResourceCoordinator::SetViewportIntersection(
+    const gfx::Rect& viewport_intersection) {
+  service_->SetViewportIntersection(viewport_intersection);
+}
+
 void DocumentResourceCoordinator::SetOriginTrialFreezePolicy(
     InterventionPolicy policy) {
   service_->SetOriginTrialFreezePolicy(policy);

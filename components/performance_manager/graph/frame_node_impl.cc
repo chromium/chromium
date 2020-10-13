@@ -229,6 +229,13 @@ bool FrameNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
+const gfx::Rect& FrameNodeImpl::viewport_intersection() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The viewport intersection of the main frame is not tracked.
+  DCHECK(!IsMainFrame());
+  return viewport_intersection_.value();
+}
+
 void FrameNodeImpl::SetIsCurrent(bool is_current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_current_.SetAndMaybeNotify(this, is_current);
@@ -272,6 +279,14 @@ void FrameNodeImpl::SetIsAudible(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(is_audible, is_audible_.value());
   is_audible_.SetAndMaybeNotify(this, is_audible);
+}
+
+void FrameNodeImpl::SetViewportIntersection(
+    const gfx::Rect& viewport_intersection) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The viewport intersection of the main frame is not tracked.
+  DCHECK(!IsMainFrame());
+  viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
 }
 
 void FrameNodeImpl::OnNavigationCommitted(const GURL& url, bool same_document) {
@@ -495,6 +510,11 @@ bool FrameNodeImpl::HadFormInteraction() const {
 bool FrameNodeImpl::IsAudible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_audible();
+}
+
+const gfx::Rect& FrameNodeImpl::GetViewportIntersection() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return viewport_intersection();
 }
 
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {

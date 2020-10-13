@@ -151,6 +151,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -3815,6 +3816,34 @@ void LocalFrameView::NotifyFrameRectsChangedIfNeeded() {
   if (root_layer_did_scroll_) {
     root_layer_did_scroll_ = false;
     PropagateFrameRects();
+  }
+}
+
+void LocalFrameView::SetViewportIntersection(
+    const ViewportIntersectionState& intersection_state) {
+  // The viewport intersection of the main frame is not tracked.
+  DCHECK(!GetFrame().IsMainFrame());
+
+  if (auto* document_resource_coordinator =
+          frame_->GetDocument()->GetResourceCoordinator()) {
+    gfx::RectF transform_rect =
+        gfx::RectF(gfx::Rect(intersection_state.viewport_intersection));
+
+    // The viewport intersection in the child frame's coordinate system is
+    // transformed into the intersection in the viewport's coordinate system.
+    intersection_state.main_frame_transform.TransformRect(&transform_rect);
+
+    // Get rid of the possible floating point values for x and y of the
+    // resulting rectangle.
+    IntRect rect = EnclosingIntRect(
+        FloatRect(transform_rect.x(), transform_rect.y(),
+                  transform_rect.width(), transform_rect.height()));
+
+    // Return <0, 0, 0, 0> if there is no area.
+    if (rect.IsEmpty())
+      rect.SetLocation(IntPoint(0, 0));
+
+    document_resource_coordinator->SetViewportIntersection(rect);
   }
 }
 

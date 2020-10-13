@@ -7,6 +7,7 @@ module performance_manager.mojom;
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "components/performance_manager/public/mojom/lifecycle.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Any new type here needs to be mirrored between coordination_unit_types.h and
 // coordination_unit.mojom, and have mappings between the two defined in
@@ -37,6 +38,7 @@ interface DocumentCoordinationUnit {
   SetNetworkAlmostIdle();
   SetLifecycleState(LifecycleState state);
   SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
+
   // Called the first time a form in this document is interacted with.
   SetHadFormInteraction();
 
@@ -47,6 +49,11 @@ interface DocumentCoordinationUnit {
   SetOriginTrialFreezePolicy(InterventionPolicy policy);
 
   SetIsAdFrame();
+
+  // Called when the intersection between this frame and the viewport changes.
+  // The viewport is the rectangular area of the top-level document that is
+  // visible. This is used to drive the frame prioritization logic.
+  SetViewportIntersection(gfx.mojom.Rect viewport_intersection);
 
   // Event signals.
 
