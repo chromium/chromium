@@ -1065,6 +1065,10 @@ void WebTestControlHost::DidUpdateFaviconURL(
   }
 }
 
+void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {
+  main_window_render_view_hosts_.erase(render_view_host);
+}
+
 void WebTestControlHost::RenderProcessHostDestroyed(
     RenderProcessHost* render_process_host) {
   render_process_host_observer_.Remove(render_process_host);
