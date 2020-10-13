@@ -28,4 +28,14 @@ function setupEnhancedProtectionMessage() {
     });
   }
   $('enhanced-protection-message').classList.remove('hidden');
+
+  const billing =
+      interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
+
+  let className = 'ssl-enhanced-protection-message';
+  if (interstitialType === 'SAFEBROWSING' && !billing) {
+    className = 'safe-browsing-enhanced-protection-message';
+  }
+
+  $('enhanced-protection-message').classList.add(className);
 }

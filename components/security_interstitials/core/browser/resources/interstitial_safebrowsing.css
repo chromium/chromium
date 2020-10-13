@@ -74,4 +74,11 @@ body.safe-browsing {
       url(images/2x/triangle_red.png) 2x);
 }
 
+.safe-browsing-enhanced-protection-message {
+  background-color: var(--google-red-700);
+  border: 1px solid var(--google-red-900);
+}
 
+.safe-browsing-enhanced-protection-message .icon {
+  background-image: url(images/light_bulb_white.svg);
+}
