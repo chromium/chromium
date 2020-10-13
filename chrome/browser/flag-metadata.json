@@ -4054,7 +4054,7 @@
   {
     "name": "safety-tips",
     "owners": [ "jdeblasio", "estark", "meacer" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 88
   },
   {
     "name": "same-site-by-default-cookies",
