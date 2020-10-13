@@ -174086,6 +174086,10 @@
        "c96eebc3dfbf174fa5a6fc256345e0b696f62592",
        []
       ],
+      "inline-children-root-linebox-crash-001-expected.txt": [
+       "fc955e2536391d600e4cd44418547e6c84f351ae",
+       []
+      ],
       "inline-formatting-context-001-ref.xht": [
        "d142292ad802391482d806bdc24374b5ee50ca28",
        []
@@ -174124,6 +174128,10 @@
       ],
       "inline-formatting-context-023-ref.xht": [
        "a4f783d8b6c759f1d7f9643134a131b948cc12ea",
+       []
+      ],
+      "inline-negative-margin-minmax-crash-001-expected.txt": [
+       "fc955e2536391d600e4cd44418547e6c84f351ae",
        []
       ],
       "leading-001-ref.xht": [
@@ -175356,6 +175364,10 @@
       ],
       "abspos-inline-007-ref.xht": [
        "742ef0cbe1eb5859d85a307332ff930c789be607",
+       []
+      ],
+      "abspos-inline-container-in-inline-block-expected.txt": [
+       "fc955e2536391d600e4cd44418547e6c84f351ae",
        []
       ],
       "abspos-negative-margin-001-ref.html": [
@@ -193745,6 +193757,14 @@
        []
       ]
      },
+     "position-absolute-crash-chrome-001-expected.txt": [
+      "fc955e2536391d600e4cd44418547e6c84f351ae",
+      []
+     ],
+     "position-absolute-crash-chrome-012-expected.txt": [
+      "fc955e2536391d600e4cd44418547e6c84f351ae",
+      []
+     ],
      "position-absolute-large-negative-inset-ref.html": [
       "e04afce6ebd42889a3937823e86fcfd7b92da433",
       []
@@ -199995,6 +200015,10 @@
      ],
      "text-decoration-width-initial-expected.txt": [
       "cd582e81b24d0c96c7213f01d9f77df284a2b2b0",
+      []
+     ],
+     "text-emphasis-unrepresentable-characters-expected.txt": [
+      "fc955e2536391d600e4cd44418547e6c84f351ae",
       []
      ]
     },
@@ -223743,7 +223767,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "130ac68f4776f51379255b634f69421bda642148",
+       "614f7a62f221fae6f717838dac05a426d4702fa4",
        []
       ],
       "transfer-errors.window-expected.txt": [
@@ -237257,7 +237281,7 @@
      []
     ],
     "testharness.js": [
-     "2c7dcd8df4aa59043cdd14d37ac9cb38f14c8e89",
+     "cf61b2ae273b0f9d543ad59557383ed11c5ac9a2",
      []
     ],
     "testharness.js.headers": [
