@@ -3221,6 +3221,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
     "java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsLauncher.java",
     "java/src/org/chromium/chrome/browser/screenshot/EditorScreenshotTask.java",
     "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
     "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",

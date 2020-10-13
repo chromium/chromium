@@ -6,7 +6,9 @@
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if defined(OS_ANDROID)
+#include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
+#else
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #endif
@@ -22,7 +24,7 @@ ChromeSettingsPageHelper::CreateChromeSettingsPageHelper() {
 void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
     content::WebContents* web_contents) const {
 #if defined(OS_ANDROID)
-  // TODO(crbug.com/1130721): Implement on Android.
+  safe_browsing::ShowSafeBrowsingSettings(web_contents);
 #else
   chrome::ShowSafeBrowsingEnhancedProtection(
       chrome::FindBrowserWithWebContents(web_contents));

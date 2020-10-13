@@ -21,6 +21,8 @@ enum class SettingsAccessPoint : int {
   kSafetyCheck = 2,
   // From PromoSlinger on Surface Explorer on Android.
   kSurfaceExplorerPromoSlinger = 3,
+  // From security interstitial.
+  kSecurityInterstitial = 4,
   kMaxValue = kSurfaceExplorerPromoSlinger
 };
 
