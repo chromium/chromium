@@ -65,6 +65,13 @@ class ASH_EXPORT AmbientBackendModel {
   // If the hash matches the hash of the next image to be displayed.
   bool HashMatchesNextImage(const std::string& hash) const;
 
+  // Record that fetching an image has failed.
+  void AddImageFailure();
+
+  void ResetImageFailures();
+
+  bool ImageLoadingFailed();
+
   // Get/Set the photo refresh interval.
   base::TimeDelta GetPhotoRefreshInterval();
   void SetPhotoRefreshInterval(base::TimeDelta interval);
@@ -98,6 +105,7 @@ class ASH_EXPORT AmbientBackendModel {
 
  private:
   friend class AmbientBackendModelTest;
+  friend class AmbientAshTestBase;
 
   void NotifyTopicsChanged();
   void NotifyImagesChanged();
@@ -114,6 +122,9 @@ class ASH_EXPORT AmbientBackendModel {
   gfx::ImageSkia weather_condition_icon_;
   float temperature_fahrenheit_ = 0.0f;
   bool show_celsius_ = false;
+
+  // The number of consecutive failures to load the next image.
+  int failures_ = 0;
 
   // The interval to refresh photos.
   base::TimeDelta photo_refresh_interval_;

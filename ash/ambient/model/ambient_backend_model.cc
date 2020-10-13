@@ -8,6 +8,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "base/logging.h"
 
 namespace ash {
 
@@ -62,6 +63,7 @@ bool AmbientBackendModel::ImagesReady() const {
 
 void AmbientBackendModel::AddNextImage(
     const PhotoWithDetails& photo_with_details) {
+  ResetImageFailures();
   if (current_image_.IsNull()) {
     current_image_ = photo_with_details;
   } else if (next_image_.IsNull()) {
@@ -77,6 +79,23 @@ void AmbientBackendModel::AddNextImage(
 
 bool AmbientBackendModel::HashMatchesNextImage(const std::string& hash) const {
   return GetNextImage().hash == hash;
+}
+
+void AmbientBackendModel::AddImageFailure() {
+  failures_++;
+  if (ImageLoadingFailed()) {
+    DVLOG(3) << "image loading failed";
+    for (auto& observer : observers_)
+      observer.OnImagesFailed();
+  }
+}
+
+void AmbientBackendModel::ResetImageFailures() {
+  failures_ = 0;
+}
+
+bool AmbientBackendModel::ImageLoadingFailed() {
+  return !ImagesReady() && failures_ >= kMaxConsecutiveReadPhotoFailures;
 }
 
 base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() {
