@@ -162,6 +162,11 @@
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"]
   },
+  "declarativeNetRequest.getAvailableStaticRuleCount": {
+    // TODO(crbug.com/983299): Enable on stable once the global rules limit
+    // feature is enabled by default.
+    "channel": "trunk"
+  },
   "declarativeNetRequest.onRuleMatchedDebug": {
     "dependencies": ["permission:declarativeNetRequest", "permission:declarativeNetRequestFeedback"],
     "location": "unpacked"

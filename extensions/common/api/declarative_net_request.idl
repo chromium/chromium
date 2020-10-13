@@ -440,6 +440,7 @@ namespace declarativeNetRequest {
   callback GetMatchedRulesCallback = void(RulesMatchedDetails details);
   callback GetEnabledRulesetsCallback = void(DOMString[] rulesetIds);
   callback IsRegexSupportedCallback = void(IsRegexSupportedResult result);
+  callback GetAvailableStaticRuleCountCallback = void(long count);
 
   interface Functions {
 
@@ -518,6 +519,11 @@ namespace declarativeNetRequest {
     // expression is supported and the reason if not.
     static void isRegexSupported(RegexOptions regexOptions,
                                  IsRegexSupportedCallback callback);
+
+    // Returns the number of static rules an extension can enable before the
+    // global static rule limit is reached.
+    // TODO(crbug.com/983299): Add documentation once implementation is complete.
+    [nodoc] static void getAvailableStaticRuleCount(GetAvailableStaticRuleCountCallback callback);
   };
 
   interface Properties {

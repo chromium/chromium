@@ -127,13 +127,16 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
   return true;
 }
 
+size_t GlobalRulesTracker::GetUnallocatedRuleCount() const {
+  return GetGlobalStaticRuleLimit() - allocated_global_rule_count_;
+}
+
 size_t GlobalRulesTracker::GetAvailableAllocation(
     const ExtensionId& extension_id) const {
   size_t allocated_rule_count = 0;
   extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,
                                                    &allocated_rule_count);
-  return (GetGlobalStaticRuleLimit() - allocated_global_rule_count_) +
-         allocated_rule_count;
+  return GetUnallocatedRuleCount() + allocated_rule_count;
 }
 
 void GlobalRulesTracker::ClearExtensionAllocation(

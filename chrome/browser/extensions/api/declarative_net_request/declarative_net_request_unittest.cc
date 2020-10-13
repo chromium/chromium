@@ -311,6 +311,23 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       EXPECT_EQ(*expected_rules_count, actual_rules_count);
   }
 
+  void VerifyGetAvailableStaticRuleCountFunction(
+      const Extension& extension,
+      size_t expected_available_rule_count) {
+    auto function = base::MakeRefCounted<
+        DeclarativeNetRequestGetAvailableStaticRuleCountFunction>();
+    function->set_extension(&extension);
+    function->set_has_callback(true);
+
+    std::unique_ptr<base::Value> result =
+        api_test_utils::RunFunctionAndReturnSingleResult(
+            function.get(), "[]" /* args */, browser_context());
+    ASSERT_TRUE(result);
+
+    EXPECT_EQ(expected_available_rule_count,
+              static_cast<size_t>(result->GetInt()));
+  }
+
   const ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
   ChromeTestExtensionLoader* extension_loader() { return loader_.get(); }
@@ -2003,6 +2020,81 @@ TEST_P(MultipleRulesetsGlobalRulesTest,
   VerifyPublicRulesetIDs(*extension(), {kId1, kId3});
   VerifyGetEnabledRulesetsFunction(*extension(), {kId1, kId3});
   CheckExtensionAllocationInPrefs(extension()->id(), 200);
+}
+
+// Test that getAvailableStaticRuleCount returns the correct number of rules an
+// extension can still enable.
+TEST_P(MultipleRulesetsGlobalRulesTest, GetAvailableStaticRuleCount) {
+  // Override the API guaranteed minimum to prevent a timeout on loading the
+  // extension.
+  base::AutoReset<int> guaranteed_minimum_override =
+      CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
+
+  // Similarly, override the global limit to prevent a timeout.
+  base::AutoReset<int> global_limit_override =
+      CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
+
+  ASSERT_EQ(300, GetStaticRuleLimit());
+
+  AddRuleset(CreateRuleset(kId1, 50, 0, true));
+  AddRuleset(CreateRuleset(kId2, 100, 0, false));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+
+  LoadAndExpectSuccess(150, 50);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+  scoped_refptr<const Extension> first_extension = extension();
+  ASSERT_TRUE(first_extension.get());
+  ExtensionId first_extension_id = first_extension.get()->id();
+
+  // Initially, the extension should have 250 more static rules available, and
+  // no rules allocated from the global pool.
+  VerifyPublicRulesetIDs(*first_extension.get(), {kId1});
+  CheckExtensionAllocationInPrefs(first_extension_id, base::nullopt);
+  VerifyGetAvailableStaticRuleCountFunction(*first_extension.get(), 250);
+
+  // Enabling |kId2| should result in 50 rules allocated in the global pool, and
+  // 150 more rules available for the extension to enable.
+  RunUpdateEnabledRulesetsFunction(*first_extension.get(), {}, {kId2},
+                                   base::nullopt /* expected_error */);
+  VerifyPublicRulesetIDs(*first_extension.get(), {kId1, kId2});
+  CheckExtensionAllocationInPrefs(first_extension_id, 50);
+  VerifyGetAvailableStaticRuleCountFunction(*first_extension.get(), 150);
+
+  // Disabling all rulesets should result in 300 rules available.
+  RunUpdateEnabledRulesetsFunction(*first_extension.get(), {kId1, kId2}, {},
+                                   base::nullopt /* expected_error */);
+  VerifyPublicRulesetIDs(*first_extension.get(), {});
+  CheckExtensionAllocationInPrefs(first_extension_id, base::nullopt);
+  VerifyGetAvailableStaticRuleCountFunction(*first_extension.get(), 300);
+
+  // Load another extension with one ruleset with 300 rules.
+  UpdateExtensionLoaderAndPath(
+      temp_dir().GetPath().Append(FILE_PATH_LITERAL("test_extension_2")));
+  ClearRulesets();
+
+  AddRuleset(CreateRuleset(kId3, GetStaticRuleLimit(), 0, true));
+  DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
+      GetStaticRuleLimit(), GetStaticRuleLimit(),
+      true /* expect_rulesets_indexed */);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(2);
+  scoped_refptr<const Extension> second_extension = extension();
+  ASSERT_TRUE(second_extension.get());
+  ExtensionId second_extension_id = second_extension.get()->id();
+
+  VerifyPublicRulesetIDs(*second_extension.get(), {kId3});
+  CheckExtensionAllocationInPrefs(second_extension_id, 200);
+
+  // The first extension should still have GetStaticGuaranteedMinimumRuleCount()
+  // rules available as it has no rules enabled and the global pool is full.
+  VerifyGetAvailableStaticRuleCountFunction(
+      *first_extension.get(), GetStaticGuaranteedMinimumRuleCount());
+
+  // The second extension should not have any rules available since its
+  // allocation consists of the entire global pool.
+  VerifyGetAvailableStaticRuleCountFunction(*second_extension.get(), 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

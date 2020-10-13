@@ -131,6 +131,21 @@ class DeclarativeNetRequestIsRegexSupportedFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class DeclarativeNetRequestGetAvailableStaticRuleCountFunction
+    : public ExtensionFunction {
+ public:
+  DeclarativeNetRequestGetAvailableStaticRuleCountFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "declarativeNetRequest.getAvailableStaticRuleCount",
+      DECLARATIVENETREQUEST_GETAVAILABLESTATICRULECOUNT)
+
+ protected:
+  ~DeclarativeNetRequestGetAvailableStaticRuleCountFunction() override;
+
+  // ExtensionFunction override:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_API_H_

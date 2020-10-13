@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -17,9 +18,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
+#include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -59,6 +62,23 @@ bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
     *error = declarative_net_request::kErrorGetMatchedRulesMissingPermissions;
 
   return can_call;
+}
+
+size_t GetEnabledStaticRuleCount(
+    const declarative_net_request::CompositeMatcher* composite_matcher) {
+  size_t enabled_static_rule_count = 0;
+
+  if (composite_matcher) {
+    for (const std::unique_ptr<declarative_net_request::RulesetMatcher>&
+             matcher : composite_matcher->matchers()) {
+      if (matcher->id() == declarative_net_request::kDynamicRulesetID)
+        continue;
+
+      enabled_static_rule_count += matcher->GetRulesCount();
+    }
+  }
+
+  return enabled_static_rule_count;
 }
 
 }  // namespace
@@ -413,6 +433,59 @@ DeclarativeNetRequestIsRegexSupportedFunction::Run() {
 
   return RespondNow(
       ArgumentList(dnr_api::IsRegexSupported::Results::Create(result)));
+}
+
+DeclarativeNetRequestGetAvailableStaticRuleCountFunction::
+    DeclarativeNetRequestGetAvailableStaticRuleCountFunction() = default;
+DeclarativeNetRequestGetAvailableStaticRuleCountFunction::
+    ~DeclarativeNetRequestGetAvailableStaticRuleCountFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
+  auto* rules_monitor_service =
+      declarative_net_request::RulesMonitorService::Get(browser_context());
+  DCHECK(rules_monitor_service);
+
+  declarative_net_request::CompositeMatcher* composite_matcher =
+      rules_monitor_service->ruleset_manager()->GetMatcherForExtension(
+          extension_id());
+
+  // First get the total enabled static rule count for the extension.
+  size_t enabled_static_rule_count =
+      GetEnabledStaticRuleCount(composite_matcher);
+  size_t static_rule_limit =
+      static_cast<size_t>(declarative_net_request::GetStaticRuleLimit());
+  DCHECK_LE(enabled_static_rule_count, static_rule_limit);
+
+  size_t available_static_rule_count = 0;
+  if (!base::FeatureList::IsEnabled(
+          declarative_net_request::kDeclarativeNetRequestGlobalRules)) {
+    available_static_rule_count = static_rule_limit - enabled_static_rule_count;
+    DCHECK_GE(static_rule_limit, available_static_rule_count);
+
+    return RespondNow(OneArgument(std::make_unique<base::Value>(
+        static_cast<int>(available_static_rule_count))));
+  }
+
+  const declarative_net_request::GlobalRulesTracker& global_rules_tracker =
+      rules_monitor_service->global_rules_tracker();
+
+  available_static_rule_count = global_rules_tracker.GetUnallocatedRuleCount();
+
+  // If an extension's rule count is below the guaranteed minimum, include the
+  // difference.
+  size_t guaranteed_static_minimum =
+      declarative_net_request::GetStaticGuaranteedMinimumRuleCount();
+  if (enabled_static_rule_count < guaranteed_static_minimum) {
+    available_static_rule_count +=
+        (guaranteed_static_minimum - enabled_static_rule_count);
+  }
+
+  // Ensure conversion to int below doesn't underflow.
+  DCHECK_LE(available_static_rule_count,
+            static_cast<size_t>(std::numeric_limits<int>::max()));
+  return RespondNow(OneArgument(std::make_unique<base::Value>(
+      static_cast<int>(available_static_rule_count))));
 }
 
 }  // namespace extensions

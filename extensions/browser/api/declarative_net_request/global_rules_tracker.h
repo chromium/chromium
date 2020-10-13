@@ -29,6 +29,9 @@ class GlobalRulesTracker {
   bool OnExtensionRuleCountUpdated(const ExtensionId& extension_id,
                                    size_t new_rule_count);
 
+  // Returns the number of unallocated rules in the global pool.
+  size_t GetUnallocatedRuleCount() const;
+
   // Returns the number of rules in the global pool available for the extension
   // before the global limit is reached. This includes the extension's global
   // pool allocation.
