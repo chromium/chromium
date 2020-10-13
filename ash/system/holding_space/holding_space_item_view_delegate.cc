@@ -4,7 +4,6 @@
 
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -12,7 +11,6 @@
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/bind.h"
@@ -108,19 +106,6 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
   // Since we are starting a new mouse pressed/released sequence, we need to
   // clear any view that we had cached to ignore mouse released events for.
   ignore_mouse_released_ = nullptr;
-
-  // If ChromeVox is enabled, we assume this mouse `event` to be a result of
-  // having pressed Search + Space. In this case, we'll open the selected
-  // holding space items. If the "pressed" `view` is not part of the current
-  // selection it will become the entire selection.
-  const bool spoken_feedback_enabled =
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
-  if (spoken_feedback_enabled) {
-    if (!view->selected())
-      SetSelection(view);
-    OpenItems(GetSelection());
-    return true;
-  }
 
   // If the `view` is already selected, mouse press is a no-op. Actions taken on
   // selected views are performed on mouse released in order to give drag/drop
