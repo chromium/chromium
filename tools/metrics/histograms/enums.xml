@@ -29749,7 +29749,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3541" label="V8WheelEvent_DeltaMode_AttributeGetter"/>
   <int value="3542" label="V8Touch_Force_AttributeGetter"/>
   <int value="3543" label="WebGLRenderingContextMakeXRCompatible"/>
-  <int value="3544" label="IdentifiabilityStudyReserved3544"/>
+  <int value="3544"
+      label="V8WebGLCompressedTextureASTC_GetSupportedProfiles_Method"/>
   <int value="3545" label="IdentifiabilityStudyReserved3545"/>
   <int value="3546"
       label="V8BeforeInstallPromptEvent_Platforms_AttributeGetter"/>

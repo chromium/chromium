@@ -2872,7 +2872,7 @@ enum WebFeature {
   kV8WheelEvent_DeltaMode_AttributeGetter = 3541,
   kV8Touch_Force_AttributeGetter = 3542,
   kWebGLRenderingContextMakeXRCompatible = 3543,
-  kIdentifiabilityStudyReserved3544 = 3544,
+  kV8WebGLCompressedTextureASTC_GetSupportedProfiles_Method = 3544,
   kIdentifiabilityStudyReserved3545 = 3545,
   kV8BeforeInstallPromptEvent_Platforms_AttributeGetter = 3546,
   kIdentifiabilityStudyReserved3547 = 3547,
