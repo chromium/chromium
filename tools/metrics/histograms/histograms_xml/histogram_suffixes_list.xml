@@ -16140,7 +16140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Security.SafetyTips.OpenTime.DismissWithEsc"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.DismissWithIgnore"/>
   <affected-histogram name="Security.SafetyTips.OpenTime.LeaveSite"/>
-  <affected-histogram name="Security.SafetyTips.OpenTime.NoActionTaken"/>
+  <affected-histogram name="Security.SafetyTips.OpenTime.NoAction"/>
   <affected-histogram name="Security.SafetyTips.PageInfo.Action"/>
   <affected-histogram name="Security.SiteEngagement"/>
   <affected-histogram name="Security.SiteEngagementDelta"/>
