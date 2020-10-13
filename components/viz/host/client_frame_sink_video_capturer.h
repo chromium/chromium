@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_HOST_CLIENT_FRAME_SINK_VIDEO_CAPTURER_H_
 #define COMPONENTS_VIZ_HOST_CLIENT_FRAME_SINK_VIDEO_CAPTURER_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
