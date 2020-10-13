@@ -24,14 +24,6 @@
 #include "ui/events/test/test_event_target.h"
 #include "ui/gfx/transform.h"
 
-#if defined(USE_X11)
-#include "ui/events/test/events_test_utils_x11.h"
-#include "ui/events/x/x11_event_translation.h"  // nogncheck
-#include "ui/gfx/x/event.h"                     // nogncheck
-#include "ui/gfx/x/x11.h"                       // nogncheck
-#include "ui/gfx/x/x11_types.h"                 // nogncheck
-#endif
-
 namespace ui {
 
 TEST(EventTest, NoNativeEvent) {
@@ -45,14 +37,6 @@ TEST(EventTest, NativeEvent) {
   KeyEvent keyev(native_event);
   EXPECT_TRUE(keyev.HasNativeEvent());
 #endif
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    ScopedXI2Event event;
-    event.InitKeyEvent(ET_KEY_RELEASED, VKEY_A, EF_NONE);
-    auto keyev = ui::BuildKeyEventFromXEvent(*event);
-    EXPECT_FALSE(keyev->HasNativeEvent());
-  }
-#endif
 }
 
 TEST(EventTest, GetCharacter) {
@@ -64,20 +48,6 @@ TEST(EventTest, GetCharacter) {
   // Check if Enter returns 13.
   KeyEvent keyev2(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
   EXPECT_EQ(13, keyev2.GetCharacter());
-
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // For X11, test the functions with native_event() as well. crbug.com/107837
-    ScopedXI2Event event;
-    event.InitKeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_CONTROL_DOWN);
-    auto keyev3 = ui::BuildKeyEventFromXEvent(*event);
-    EXPECT_EQ(10, keyev3->GetCharacter());
-
-    event.InitKeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
-    auto keyev4 = ui::BuildKeyEventFromXEvent(*event);
-    EXPECT_EQ(13, keyev4->GetCharacter());
-  }
-#endif
 
   // Check if expected Unicode character was returned for a key combination
   // contains Control.
@@ -319,43 +289,6 @@ TEST(EventTest, KeyEventDirectUnicode) {
 }
 
 TEST(EventTest, NormalizeKeyEventFlags) {
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // Normalize flags when KeyEvent is created from XEvent.
-    ScopedXI2Event event;
-    {
-      event.InitKeyEvent(ET_KEY_PRESSED, VKEY_SHIFT, EF_SHIFT_DOWN);
-      auto keyev = ui::BuildKeyEventFromXEvent(*event);
-      EXPECT_EQ(EF_SHIFT_DOWN, keyev->flags());
-    }
-    {
-      event.InitKeyEvent(ET_KEY_RELEASED, VKEY_SHIFT, EF_SHIFT_DOWN);
-      auto keyev = ui::BuildKeyEventFromXEvent(*event);
-      EXPECT_EQ(EF_NONE, keyev->flags());
-    }
-    {
-      event.InitKeyEvent(ET_KEY_PRESSED, VKEY_CONTROL, EF_CONTROL_DOWN);
-      auto keyev = ui::BuildKeyEventFromXEvent(*event);
-      EXPECT_EQ(EF_CONTROL_DOWN, keyev->flags());
-    }
-    {
-      event.InitKeyEvent(ET_KEY_RELEASED, VKEY_CONTROL, EF_CONTROL_DOWN);
-      auto keyev = ui::BuildKeyEventFromXEvent(*event);
-      EXPECT_EQ(EF_NONE, keyev->flags());
-    }
-    {
-      event.InitKeyEvent(ET_KEY_PRESSED, VKEY_MENU, EF_ALT_DOWN);
-      auto keyev = ui::BuildKeyEventFromXEvent(*event);
-      EXPECT_EQ(EF_ALT_DOWN, keyev->flags());
-    }
-    {
-      event.InitKeyEvent(ET_KEY_RELEASED, VKEY_MENU, EF_ALT_DOWN);
-      auto keyev = ui::BuildKeyEventFromXEvent(*event);
-      EXPECT_EQ(EF_NONE, keyev->flags());
-    }
-  }
-#endif
-
   // Do not normalize flags for synthesized events without
   // KeyEvent::NormalizeFlags called explicitly.
   {
@@ -424,15 +357,6 @@ TEST(EventTest, KeyEventCode) {
     KeyEvent key(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE);
     EXPECT_EQ(kCodeForSpace, key.GetCodeString());
   }
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // KeyEvent converts from the native keycode (XKB) to the code.
-    ScopedXI2Event xevent;
-    xevent.InitKeyEvent(ET_KEY_PRESSED, VKEY_SPACE, kNativeCodeSpace);
-    auto keyev = ui::BuildKeyEventFromXEvent(*xevent);
-    EXPECT_EQ(kCodeForSpace, keyev->GetCodeString());
-  }
-#endif  // USE_X11
 #if defined(OS_WIN)
   {
     // Test a non extended key.
@@ -461,135 +385,6 @@ TEST(EventTest, KeyEventCode) {
   }
 #endif  // OS_WIN
 }
-
-#if defined(USE_X11)
-namespace {
-
-void SetKeyEventTimestamp(x11::Event* event, int64_t time64) {
-  uint32_t time = time64 & UINT32_MAX;
-  event->As<x11::KeyEvent>()->time = static_cast<x11::Time>(time);
-}
-
-void AdvanceKeyEventTimestamp(x11::Event* event) {
-  auto time = static_cast<uint32_t>(event->As<x11::KeyEvent>()->time) + 1;
-  event->As<x11::KeyEvent>()->time = static_cast<x11::Time>(time);
-}
-
-}  // namespace
-
-TEST(EventTest, AutoRepeat) {
-  if (features::IsUsingOzonePlatform())
-    return;
-  const uint16_t kNativeCodeA =
-      ui::KeycodeConverter::DomCodeToNativeKeycode(DomCode::US_A);
-  const uint16_t kNativeCodeB =
-      ui::KeycodeConverter::DomCodeToNativeKeycode(DomCode::US_B);
-
-  ScopedXI2Event native_event_a_pressed;
-  native_event_a_pressed.InitKeyEvent(ET_KEY_PRESSED, VKEY_A, kNativeCodeA);
-  ScopedXI2Event native_event_a_pressed_1500;
-  native_event_a_pressed_1500.InitKeyEvent(ET_KEY_PRESSED, VKEY_A,
-                                           kNativeCodeA);
-  ScopedXI2Event native_event_a_pressed_3000;
-  native_event_a_pressed_3000.InitKeyEvent(ET_KEY_PRESSED, VKEY_A,
-                                           kNativeCodeA);
-
-  ScopedXI2Event native_event_a_released;
-  native_event_a_released.InitKeyEvent(ET_KEY_RELEASED, VKEY_A, kNativeCodeA);
-  ScopedXI2Event native_event_b_pressed;
-  native_event_b_pressed.InitKeyEvent(ET_KEY_PRESSED, VKEY_B, kNativeCodeB);
-  ScopedXI2Event native_event_a_pressed_nonstandard_state;
-  native_event_a_pressed_nonstandard_state.InitKeyEvent(ET_KEY_PRESSED, VKEY_A,
-                                                        kNativeCodeA);
-  // IBUS-GTK uses the mask (1 << 25) to detect reposted event.
-  {
-    x11::Event& event = *native_event_a_pressed_nonstandard_state;
-    int mask = static_cast<int>(event.As<x11::KeyEvent>()->state) | 1 << 25;
-    event.As<x11::KeyEvent>()->state = static_cast<x11::KeyButMask>(mask);
-  }
-
-  int64_t ticks_base =
-      (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds() - 5000;
-  SetKeyEventTimestamp(native_event_a_pressed, ticks_base);
-  SetKeyEventTimestamp(native_event_a_pressed_1500, ticks_base + 1500);
-  SetKeyEventTimestamp(native_event_a_pressed_3000, ticks_base + 3000);
-
-  {
-    auto key_a1 = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a1->is_repeat());
-
-    auto key_a1_released = BuildKeyEventFromXEvent(*native_event_a_released);
-    EXPECT_FALSE(key_a1_released->is_repeat());
-
-    auto key_a2 = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a2->is_repeat());
-
-    AdvanceKeyEventTimestamp(native_event_a_pressed);
-    auto key_a2_repeated = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_TRUE(key_a2_repeated->is_repeat());
-
-    auto key_a2_released = BuildKeyEventFromXEvent(*native_event_a_released);
-    EXPECT_FALSE(key_a2_released->is_repeat());
-  }
-
-  // Interleaved with different key press.
-  {
-    auto key_a3 = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a3->is_repeat());
-
-    auto key_b = BuildKeyEventFromXEvent(*native_event_b_pressed);
-    EXPECT_FALSE(key_b->is_repeat());
-
-    AdvanceKeyEventTimestamp(native_event_a_pressed);
-    auto key_a3_again = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a3_again->is_repeat());
-
-    AdvanceKeyEventTimestamp(native_event_a_pressed);
-    auto key_a3_repeated = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_TRUE(key_a3_repeated->is_repeat());
-
-    AdvanceKeyEventTimestamp(native_event_a_pressed);
-    auto key_a3_repeated2 = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_TRUE(key_a3_repeated2->is_repeat());
-
-    auto key_a3_released = BuildKeyEventFromXEvent(*native_event_a_released);
-    EXPECT_FALSE(key_a3_released->is_repeat());
-  }
-
-  // Hold the key longer than max auto repeat timeout.
-  {
-    auto key_a4_0 = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a4_0->is_repeat());
-
-    auto key_a4_1500 = BuildKeyEventFromXEvent(*native_event_a_pressed_1500);
-    EXPECT_TRUE(key_a4_1500->is_repeat());
-
-    auto key_a4_3000 = BuildKeyEventFromXEvent(*native_event_a_pressed_3000);
-    EXPECT_TRUE(key_a4_3000->is_repeat());
-
-    auto key_a4_released = BuildKeyEventFromXEvent(*native_event_a_released);
-    EXPECT_FALSE(key_a4_released->is_repeat());
-  }
-
-  {
-    auto key_a4_pressed = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a4_pressed->is_repeat());
-
-    auto key_a4_pressed_nonstandard_state =
-        BuildKeyEventFromXEvent(*native_event_a_pressed_nonstandard_state);
-    EXPECT_FALSE(key_a4_pressed_nonstandard_state->is_repeat());
-  }
-
-  {
-    auto key_a1 = BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a1->is_repeat());
-
-    auto key_a1_with_same_event =
-        BuildKeyEventFromXEvent(*native_event_a_pressed);
-    EXPECT_FALSE(key_a1_with_same_event->is_repeat());
-  }
-}
-#endif  // USE_X11
 
 TEST(EventTest, TouchEventRadiusDefaultsToOtherAxis) {
   const base::TimeTicks time = base::TimeTicks::Now();
@@ -852,59 +647,12 @@ TEST(EventTest, OrdinalMotionConversion) {
   EXPECT_FALSE(mouseev3.flags() & EF_UNADJUSTED_MOUSE);
 }
 
-// Checks that Event.Latency.OS.TOUCH_PRESSED, TOUCH_MOVED,
-// and TOUCH_RELEASED histograms are computed properly.
-#if defined(USE_X11)
-TEST(EventTest, EventLatencyOSTouchHistograms) {
-  if (features::IsUsingOzonePlatform())
-    return;
-  base::HistogramTester histogram_tester;
-  ScopedXI2Event scoped_xevent;
-
-  // SetUp for test
-  DeviceDataManagerX11::CreateInstance();
-  std::vector<int> devices;
-  devices.push_back(0);
-  ui::SetUpTouchDevicesForTest(devices);
-
-  // Init touch begin, update, and end events with tracking id 5, touch id 0.
-  scoped_xevent.InitTouchEvent(0, x11::Input::DeviceEvent::TouchBegin, 5,
-                               gfx::Point(10, 10), {});
-  auto touch_begin = ui::BuildTouchEventFromXEvent(*scoped_xevent);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_PRESSED", 1);
-  scoped_xevent.InitTouchEvent(0, x11::Input::DeviceEvent::TouchUpdate, 5,
-                               gfx::Point(20, 20), {});
-  auto touch_update = ui::BuildTouchEventFromXEvent(*scoped_xevent);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_MOVED", 1);
-  scoped_xevent.InitTouchEvent(0, x11::Input::DeviceEvent::TouchEnd, 5,
-                               gfx::Point(30, 30), {});
-  auto touch_end = ui::BuildTouchEventFromXEvent(*scoped_xevent);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_RELEASED", 1);
-}
-#endif
-
 // Checks that Event.Latency.OS.MOUSE_WHEEL histogram is computed properly.
 TEST(EventTest, EventLatencyOSMouseWheelHistogram) {
 #if defined(OS_WIN)
   base::HistogramTester histogram_tester;
   MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
   MouseWheelEvent mouseWheelEvent(event);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
-#endif
-#if defined(USE_X11)
-  if (features::IsUsingOzonePlatform())
-    return;
-  base::HistogramTester histogram_tester;
-  DeviceDataManagerX11::CreateInstance();
-
-  // Initializes a native event and uses it to generate a MouseWheel event.
-  xcb_generic_event_t ge;
-  memset(&ge, 0, sizeof(ge));
-  auto* button = reinterpret_cast<xcb_button_press_event_t*>(&ge);
-  button->response_type = x11::ButtonEvent::Press;
-  button->detail = 4;  // A valid wheel button number between min and max.
-  x11::Event native_event(&ge, x11::Connection::Get());
-  auto mouse_ev = ui::BuildMouseWheelEventFromXEvent(native_event);
   histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
 #endif
 }
