@@ -94,6 +94,10 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   // This call should return prematurely.
   provider.ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
 
+  // No metrics were recorded.
+  histogram_tester.ExpectTotalCount(
+      FamilyUserMetricsProvider::kFamilyUserLogSegmentHistogramName, 0);
+
   logged_in_user_mixin_.LogInUser();
 
   const FamilyUserMetricsProvider::LogSegment log_segment = GetParam();

@@ -15,10 +15,10 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace {
@@ -64,7 +64,12 @@ void FamilyUserMetricsProvider::ProvideCurrentSessionData(
     return;
   if (!IsLoggedIn())
     return;
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user || !primary_user->is_profile_created())
+    return;
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
   DCHECK(profile);
   DCHECK(chromeos::ProfileHelper::IsRegularProfile(profile));
   signin::IdentityManager* identity_manager =
