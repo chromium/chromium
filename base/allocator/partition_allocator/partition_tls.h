@@ -6,10 +6,15 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TLS_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX)
 #include <pthread.h>
+#endif
+
+#if defined(OS_WIN)
+#include <windows.h>
 #endif
 
 // Barebones TLS implementation for use in PartitionAlloc. This doesn't use the
@@ -21,33 +26,48 @@ namespace internal {
 #if defined(OS_POSIX)
 typedef pthread_key_t PartitionTlsKey;
 
-inline bool PartitionTlsCreate(PartitionTlsKey* key,
-                               void (*destructor)(void*)) {
+ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
+                                      void (*destructor)(void*)) {
   return !pthread_key_create(key, destructor);
 }
-inline void* PartitionTlsGet(PartitionTlsKey key) {
+ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
   return pthread_getspecific(key);
 }
-inline void PartitionTlsSet(PartitionTlsKey key, void* value) {
+ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
   int ret = pthread_setspecific(key, value);
   PA_DCHECK(!ret);
 }
-#else
-// Not implemented.
-typedef int PartitionTlsKey;
+#elif defined(OS_WIN)
+// Note: supports only a single TLS key on Windows. Not a hard constraint, may
+// be lifted.
+typedef unsigned long PartitionTlsKey;
 
-inline bool PartitionTlsCreate(PartitionTlsKey* key,
-                               void (*destructor)(void*)) {
-  // Cannot use NOIMPLEMENTED() as it may allocate.
+BASE_EXPORT bool PartitionTlsCreate(PartitionTlsKey* key,
+                                    void (*destructor)(void*));
+
+ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
+  return TlsGetValue(key);
+}
+
+ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
+  BOOL ret = TlsSetValue(key, value);
+  PA_DCHECK(ret);
+}
+#else
+// Not supported.
+typedef int PartitionTlsKey;
+ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
+                                      void (*destructor)(void*)) {
+  // NOTIMPLEMENTED() may allocate, crash instead.
   IMMEDIATE_CRASH();
 }
-inline void* PartitionTlsGet(PartitionTlsKey key) {
+ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
   IMMEDIATE_CRASH();
 }
-inline void PartitionTlsSet(PartitionTlsKey key, void* value) {
+ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
   IMMEDIATE_CRASH();
 }
-#endif  // defined(OS_POSIX)
+#endif  // defined(OS_WIN)
 
 }  // namespace internal
 }  // namespace base

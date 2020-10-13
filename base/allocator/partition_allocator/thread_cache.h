@@ -19,6 +19,11 @@
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"
 
+// Need TLS support.
+#if defined(OS_POSIX) || defined(OS_WIN)
+#define PA_THREAD_CACHE_SUPPORTED
+#endif
+
 namespace base {
 
 namespace internal {

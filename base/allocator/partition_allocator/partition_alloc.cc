@@ -320,7 +320,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // this operation is idempotent, so there is no harm.
   InitBucketIndexLookup(this);
 
-#if !defined(OS_POSIX)
+#if !defined(PA_THREAD_CACHE_SUPPORTED)
   // TLS in ThreadCache not supported on other OSes.
   with_thread_cache = false;
 #else

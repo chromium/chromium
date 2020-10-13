@@ -28,7 +28,7 @@
 // disable the cache (and tests)
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&  \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS))
+    defined(PA_THREAD_CACHE_SUPPORTED)
 
 namespace base {
 namespace internal {
@@ -404,4 +404,4 @@ TEST_F(ThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
 
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
-        // (defined(OS_LINUX) || defined(OS_CHROMEOS))
+        // defined(PA_THREAD_CACHE_SUPPORTED)

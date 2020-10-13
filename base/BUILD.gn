@@ -1793,8 +1793,10 @@ component("base") {
         "allocator/partition_allocator/yield_processor.h",
       ]
       if (is_win) {
-        sources +=
-            [ "allocator/partition_allocator/page_allocator_internals_win.h" ]
+        sources += [
+          "allocator/partition_allocator/page_allocator_internals_win.h",
+          "allocator/partition_allocator/partition_tls_win.cc",
+        ]
       } else if (is_posix) {
         sources +=
             [ "allocator/partition_allocator/page_allocator_internals_posix.h" ]
