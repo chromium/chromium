@@ -19,6 +19,7 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/util/fps_meter.h"
+#include "device/vr/util/sliding_average.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -180,6 +181,11 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
 
   void GetRenderedFrameStats();
   void FinishRenderingFrame();
+  base::TimeDelta EstimatedArCoreFrameTime();
+  base::TimeDelta WaitTimeForArCoreUpdate();
+  base::TimeDelta WaitTimeForRenderCompletion();
+  void ScheduleGetFrameData();
+  void RunPendingGetFrameData();
 
   bool IsFeatureEnabled(mojom::XRSessionFeature feature);
 
@@ -250,6 +256,13 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   bool is_paused_ = true;
 
   bool restrict_frame_data_ = false;
+
+  base::TimeTicks last_arcore_update_time_;
+  base::TimeDelta last_arcore_frame_timestamp_;
+
+  device::SlidingTimeDeltaAverage average_animate_time_;
+  device::SlidingTimeDeltaAverage average_process_time_;
+  device::SlidingTimeDeltaAverage average_render_time_;
 
   FPSMeter fps_meter_;
 

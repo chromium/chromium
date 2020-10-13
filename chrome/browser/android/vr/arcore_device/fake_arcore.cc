@@ -17,6 +17,10 @@ FakeArCore::FakeArCore()
 
 FakeArCore::~FakeArCore() = default;
 
+ArCore::MinMaxRange FakeArCore::GetTargetFramerateRange() {
+  return {30.f, 30.f};
+}
+
 bool FakeArCore::Initialize(
     base::android::ScopedJavaLocalRef<jobject> application_context,
     const std::unordered_set<device::mojom::XRSessionFeature>&

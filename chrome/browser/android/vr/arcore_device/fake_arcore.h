@@ -26,6 +26,7 @@ class FakeArCore : public ArCore {
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           enabled_features) override;
+  MinMaxRange GetTargetFramerateRange() override;
   void SetCameraTexture(uint32_t texture) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;

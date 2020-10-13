@@ -31,6 +31,7 @@ namespace {
   DO(ArCameraConfig_destroy)                                       \
   DO(ArCameraConfig_getDepthSensorUsage)                           \
   DO(ArCameraConfig_getFacingDirection)                            \
+  DO(ArCameraConfig_getFpsRange)                                   \
   DO(ArCameraConfig_getImageDimensions)                            \
   DO(ArCameraConfig_getTextureDimensions)                          \
   DO(ArCameraConfigFilter_create)                                  \
@@ -273,6 +274,14 @@ void ArCameraConfig_getFacingDirection(
     ArCameraConfigFacingDirection* out_facing) {
   return g_arcore_api->impl_ArCameraConfig_getFacingDirection(
       session, camera_config, out_facing);
+}
+
+void ArCameraConfig_getFpsRange(const ArSession* session,
+                                const ArCameraConfig* camera_config,
+                                int32_t* out_min_fps,
+                                int32_t* out_max_fps) {
+  return g_arcore_api->impl_ArCameraConfig_getFpsRange(
+      session, camera_config, out_min_fps, out_max_fps);
 }
 
 void ArCameraConfig_getImageDimensions(const ArSession* session,

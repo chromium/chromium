@@ -110,6 +110,7 @@ class ArCoreImpl : public ArCore {
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           enabled_features) override;
+  MinMaxRange GetTargetFramerateRange() override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
   void SetCameraTexture(uint32_t camera_texture_id) override;
@@ -189,6 +190,9 @@ class ArCoreImpl : public ArCore {
   // multiple XRSessions.
   internal::ScopedArCoreObject<ArSession*> arcore_session_;
   internal::ScopedArCoreObject<ArFrame*> arcore_frame_;
+
+  // Target framerate reflecting the current camera configuration.
+  MinMaxRange target_framerate_range_ = {30.f, 30.f};
 
   // ArCore light estimation data
   internal::ScopedArCoreObject<ArLightEstimate*> arcore_light_estimate_;
@@ -291,7 +295,7 @@ class ArCoreImpl : public ArCore {
   // Helper, attempts to configure ArSession's camera for use. Note that this is
   // happening during initialization, before arcore_session_ is set.
   // Returns true if configuration succeeded, false otherwise.
-  bool ConfigureCamera(ArSession* ar_session) const;
+  bool ConfigureCamera(ArSession* ar_session);
 
   // Must be last.
   base::WeakPtrFactory<ArCoreImpl> weak_ptr_factory_{this};

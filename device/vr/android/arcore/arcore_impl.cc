@@ -430,7 +430,7 @@ bool ArCoreImpl::Initialize(
   return true;
 }
 
-bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) const {
+bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) {
   internal::ScopedArCoreObject<ArCameraConfigFilter*> camera_config_filter;
   ArCameraConfigFilter_create(
       ar_session, internal::ScopedArCoreObject<ArCameraConfigFilter*>::Receiver(
@@ -522,11 +522,16 @@ bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) const {
       ArCameraConfig_getDepthSensorUsage(ar_session, camera_config.get(),
                                          &depth_sensor_usage);
 
+      int32_t min_fps, max_fps;
+      ArCameraConfig_getFpsRange(ar_session, camera_config.get(), &min_fps,
+                                 &max_fps);
+
       DVLOG(3) << __func__
                << ": matching camera config found, texture dimensions="
                << tex_width << "x" << tex_height
                << ", image dimensions= " << img_width << "x" << img_height
-               << ", depth sensor usage=" << depth_sensor_usage;
+               << ", depth sensor usage=" << depth_sensor_usage
+               << ", min_fps=" << min_fps << ", max_fps=" << max_fps;
     }
 #endif
 
@@ -601,6 +606,11 @@ bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) const {
         }
       });
 
+  int32_t fps_min, fps_max;
+  ArCameraConfig_getFpsRange(ar_session, best_config->get(), &fps_min,
+                             &fps_max);
+  target_framerate_range_ = {fps_min, fps_max};
+
 #if DCHECK_IS_ON()
   {
     int32_t tex_width, tex_height;
@@ -617,7 +627,9 @@ bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) const {
     DVLOG(3) << __func__
              << ": selected camera config with texture dimensions=" << tex_width
              << "x" << tex_height << ", image dimensions=" << img_width << "x"
-             << img_height << ", depth sensor usage=" << depth_sensor_usage;
+             << img_height << ", depth sensor usage=" << depth_sensor_usage
+             << ", min_fps=" << target_framerate_range_.min
+             << ", max_fps=" << target_framerate_range_.max;
   }
 #endif
 
@@ -628,6 +640,10 @@ bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) const {
   }
 
   return true;
+}
+
+ArCore::MinMaxRange ArCoreImpl::GetTargetFramerateRange() {
+  return target_framerate_range_;
 }
 
 void ArCoreImpl::SetCameraTexture(uint32_t camera_texture_id) {
