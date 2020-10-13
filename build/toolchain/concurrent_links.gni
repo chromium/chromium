@@ -23,7 +23,10 @@ declare_args() {
 
 if (concurrent_links == -1) {
   if (use_thin_lto) {
-    _args = [ "--reserve_mem_gb=10" ]
+    _args = [
+      "--thin-lto",
+      "--reserve_mem_gb=10",
+    ]
     if (is_win) {
       # Based on measurements of linking chrome.dll and chrome_child.dll, plus
       # a little padding to account for future growth.
@@ -76,21 +79,15 @@ if (concurrent_links == -1) {
   # so that we can compute better values.
   _command_dict = exec_script("get_concurrent_links.py", _args, "scope")
 
-  if (use_thin_lto) {
-    concurrent_links = 1
-    concurrent_links_logs =
-        [ "thinlto -- only one link at once but every link can use all cores" ]
-  } else {
-    concurrent_links = _command_dict.primary_pool_size
-    concurrent_links_logs = _command_dict.explanation
+  concurrent_links = _command_dict.primary_pool_size
+  concurrent_links_logs = _command_dict.explanation
 
-    if (_command_dict.secondary_pool_size >= concurrent_links) {
-      # Have R8 / Lint share the link pool unless we would safely get more
-      # concurrency out of using a separate one.
-      # On low-RAM machines, this allows an apk's native library to link at the
-      # same time as its java is optimized with R8.
-      java_cmd_pool_size = _command_dict.secondary_pool_size
-    }
+  if (_command_dict.secondary_pool_size >= concurrent_links) {
+    # Have R8 / Lint share the link pool unless we would safely get more
+    # concurrency out of using a separate one.
+    # On low-RAM machines, this allows an apk's native library to link at the
+    # same time as its java is optimized with R8.
+    java_cmd_pool_size = _command_dict.secondary_pool_size
   }
 } else {
   assert(!use_thin_lto || concurrent_links == 1,
