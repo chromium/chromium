@@ -28,6 +28,7 @@
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "content/child/browser_font_resource_trusted.h"
 #include "content/child/child_process.h"
+#include "content/ppapi_plugin/broker_process_dispatcher.h"
 #include "content/ppapi_plugin/plugin_process_dispatcher.h"
 #include "content/ppapi_plugin/ppapi_blink_platform_impl.h"
 #include "content/public/common/content_client.h"
@@ -482,13 +483,24 @@ bool PpapiThread::SetupChannel(base::ProcessId renderer_pid,
 
   ppapi::proxy::ProxyChannel* dispatcher = nullptr;
   bool init_result = false;
-  DCHECK(!is_broker_);
-  DCHECK_NE(base::kNullProcessId, renderer_pid);
-  PluginProcessDispatcher* plugin_dispatcher = new PluginProcessDispatcher(
-      plugin_entry_points_.get_interface, permissions_, incognito);
-  init_result = plugin_dispatcher->InitPluginWithChannel(
-      this, renderer_pid, pipe.handle0.release(), false);
-  dispatcher = plugin_dispatcher;
+  if (is_broker_) {
+    bool peer_is_browser = renderer_pid == base::kNullProcessId;
+    BrokerProcessDispatcher* broker_dispatcher =
+        new BrokerProcessDispatcher(plugin_entry_points_.get_interface,
+                                    connect_instance_func_, peer_is_browser);
+    init_result = broker_dispatcher->InitBrokerWithChannel(
+        this, renderer_pid, pipe.handle0.release(), false);
+    dispatcher = broker_dispatcher;
+  } else {
+    DCHECK_NE(base::kNullProcessId, renderer_pid);
+    PluginProcessDispatcher* plugin_dispatcher =
+        new PluginProcessDispatcher(plugin_entry_points_.get_interface,
+                                    permissions_,
+                                    incognito);
+    init_result = plugin_dispatcher->InitPluginWithChannel(
+        this, renderer_pid, pipe.handle0.release(), false);
+    dispatcher = plugin_dispatcher;
+  }
 
   if (!init_result) {
     delete dispatcher;

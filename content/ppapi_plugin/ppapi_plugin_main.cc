@@ -23,6 +23,7 @@
 #include "content/public/common/main_function_params.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/proxy/plugin_globals.h"
+#include "ppapi/proxy/proxy_module.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "ui/base/ui_base_switches.h"
 

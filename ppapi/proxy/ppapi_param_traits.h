@@ -34,6 +34,7 @@ struct PPBFlash_DrawGlyphs_Params;
 struct PPBURLLoader_UpdateProgress_Params;
 struct SerializedDirEntry;
 struct SerializedFontDescription;
+class SerializedFlashMenu;
 class SerializedHandle;
 class SerializedVar;
 
@@ -166,6 +167,15 @@ struct ParamTraits<ppapi::PepperFilePath> {
   static void Log(const param_type& p, std::string* l);
 };
 
+template<>
+struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::proxy::SerializedFlashMenu> {
+  typedef ppapi::proxy::SerializedFlashMenu param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
 
 template<>

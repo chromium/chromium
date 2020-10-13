@@ -165,6 +165,10 @@
 #include "device/fido/mac/credential_store.h"
 #endif  // defined(OS_MAC)
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
+
 using base::UserMetricsAction;
 using content::BrowserContext;
 using content::BrowserThread;
@@ -262,6 +266,10 @@ bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
 ChromeBrowsingDataRemoverDelegate::ChromeBrowsingDataRemoverDelegate(
     BrowserContext* browser_context)
     : profile_(Profile::FromBrowserContext(browser_context))
+#if BUILDFLAG(ENABLE_PLUGINS)
+      ,
+      flash_lso_helper_(BrowsingDataFlashLSOHelper::Create(browser_context))
+#endif
 #if defined(OS_ANDROID)
       ,
       webapp_registry_(new WebappRegistry())
@@ -1017,6 +1025,16 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
   }
 
+//////////////////////////////////////////////////////////////////////////////
+// DATA_TYPE_PLUGINS
+// Plugins are known to //content and their bulk deletion is implemented in
+// PluginDataRemover. However, the filtered deletion uses
+// BrowsingDataFlashLSOHelper which (currently) has strong dependencies
+// on //chrome.
+// TODO(msramek): Investigate these dependencies and move the plugin deletion
+// to BrowsingDataRemoverImpl in //content. Note that code in //content
+// can simply take advantage of PluginDataRemover directly to delete plugin
+// data in bulk.
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Plugin is data not separated for protected and unprotected web origins. We
   // check the origin_type_mask_ to prevent unintended deletion.
@@ -1026,8 +1044,25 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     base::RecordAction(UserMetricsAction("ClearBrowsingData_LSOData"));
 
     if (filter_builder->MatchesAllOriginsAndDomains()) {
-      // TODO(bbudge) Figure out how to delete Flash plugin data without a
-      // Flash plugin.
+      DCHECK(!plugin_data_remover_);
+      plugin_data_remover_.reset(content::PluginDataRemover::Create(profile_));
+      base::WaitableEvent* event =
+          plugin_data_remover_->StartRemoving(delete_begin_);
+
+      base::WaitableEventWatcher::EventCallback watcher_callback =
+          base::BindOnce(
+              &ChromeBrowsingDataRemoverDelegate::OnWaitableEventSignaled,
+              weak_ptr_factory_.GetWeakPtr(),
+              CreateTaskCompletionClosure(TracingDataType::kPluginData));
+      watcher_.StartWatching(event, std::move(watcher_callback),
+                             base::SequencedTaskRunnerHandle::Get());
+    } else {
+      // TODO(msramek): Store filters from the currently executed task on the
+      // object to avoid having to copy them to callback methods.
+      flash_lso_helper_->StartFetching(base::BindOnce(
+          &ChromeBrowsingDataRemoverDelegate::OnSitesWithFlashDataFetched,
+          weak_ptr_factory_.GetWeakPtr(), filter_builder->BuildPluginFilter(),
+          CreateTaskCompletionClosure(TracingDataType::kFlashLsoHelper)));
     }
   }
 #endif
@@ -1038,6 +1073,21 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // TODO(jrummell): This UMA should be renamed to indicate it is for Media
     // Licenses.
     base::RecordAction(UserMetricsAction("ClearBrowsingData_ContentLicenses"));
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+    // Flash does not support filtering by domain, so skip this if clearing only
+    // a specified set of sites.
+    if (filter_builder->GetMode() != BrowsingDataFilterBuilder::Mode::kDelete) {
+      // Will be completed in OnDeauthorizeFlashContentLicensesCompleted()
+      OnTaskStarted(TracingDataType::kFlashDeauthorization);
+      if (!pepper_flash_settings_manager_.get()) {
+        pepper_flash_settings_manager_.reset(
+            new PepperFlashSettingsManager(this, profile_));
+      }
+      deauthorize_flash_content_licenses_request_id_ =
+          pepper_flash_settings_manager_->DeauthorizeContentLicenses(prefs);
+    }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if defined(OS_CHROMEOS)
     // On Chrome OS, delete any content protection platform keys.
@@ -1255,6 +1305,13 @@ void ChromeBrowsingDataRemoverDelegate::OverrideWebappRegistryForTesting(
 }
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+void ChromeBrowsingDataRemoverDelegate::OverrideFlashLSOHelperForTesting(
+    scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper) {
+  flash_lso_helper_ = flash_lso_helper;
+}
+#endif
+
 void ChromeBrowsingDataRemoverDelegate::
     OverrideDomainReliabilityClearerForTesting(
         DomainReliabilityClearer clearer) {
@@ -1272,5 +1329,42 @@ void ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys(
   LOG_IF(ERROR, !result.has_value() || !result.value())
       << "Failed to clear platform keys.";
   std::move(done).Run();
+}
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+void ChromeBrowsingDataRemoverDelegate::OnWaitableEventSignaled(
+    base::OnceClosure done,
+    base::WaitableEvent* waitable_event) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  plugin_data_remover_.reset();
+  watcher_.StopWatching();
+  std::move(done).Run();
+}
+
+void ChromeBrowsingDataRemoverDelegate::OnSitesWithFlashDataFetched(
+    base::RepeatingCallback<bool(const std::string&)> plugin_filter,
+    base::OnceClosure done,
+    const std::vector<std::string>& sites) {
+  std::vector<std::string> sites_to_delete;
+  for (const std::string& site : sites) {
+    if (plugin_filter.Run(site))
+      sites_to_delete.push_back(site);
+  }
+
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(sites_to_delete.size(), std::move(done));
+
+  for (const std::string& site : sites_to_delete) {
+    flash_lso_helper_->DeleteFlashLSOsForSite(site, barrier);
+  }
+}
+
+void ChromeBrowsingDataRemoverDelegate::
+    OnDeauthorizeFlashContentLicensesCompleted(uint32_t request_id,
+                                               bool /* success */) {
+  DCHECK_EQ(request_id, deauthorize_flash_content_licenses_request_id_);
+  OnTaskComplete(TracingDataType::kFlashDeauthorization,
+                 /*data_type_mask=*/0, /*success=*/true);
 }
 #endif

@@ -138,6 +138,8 @@ component("proxy") {
     "proxy_channel.cc",
     "proxy_channel.h",
     "proxy_completion_callback_factory.h",
+    "proxy_module.cc",
+    "proxy_module.h",
     "proxy_object_var.cc",
     "proxy_object_var.h",
     "resource_creation_proxy.cc",

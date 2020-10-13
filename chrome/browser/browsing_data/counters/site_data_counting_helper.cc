@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -89,6 +90,17 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
     dom_storage->GetLocalStorageUsage(std::move(local_callback));
     // TODO(772337): Enable session storage counting when deletion is fixed.
   }
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Count origins with flash data.
+  flash_lso_helper_ = BrowsingDataFlashLSOHelper::Create(profile_);
+  if (flash_lso_helper_) {
+    tasks_ += 1;
+    flash_lso_helper_->StartFetching(
+        base::BindOnce(&SiteDataCountingHelper::SitesWithFlashDataCallback,
+                       base::Unretained(this)));
+  }
+#endif
 
 #if defined(OS_ANDROID)
   // Count origins with media licenses on Android.
@@ -179,6 +191,15 @@ void SiteDataCountingHelper::GetLocalStorageUsageInfoCallback(
         (!policy || !policy->IsStorageProtected(info.origin.GetURL()))) {
       origins.push_back(info.origin.GetURL());
     }
+  }
+  Done(origins);
+}
+
+void SiteDataCountingHelper::SitesWithFlashDataCallback(
+    const std::vector<std::string>& sites) {
+  std::vector<GURL> origins;
+  for (const std::string& site : sites) {
+    origins.push_back(GURL(site));
   }
   Done(origins);
 }

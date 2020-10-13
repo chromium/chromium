@@ -1,0 +1,170 @@
+/* Copyright 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/**
+ * This file contains the <code>PPP_Flash_BrowserOperations</code> interface.
+ */
+
+label Chrome {
+  M20 = 1.0,
+  M21 = 1.2,
+  M22 = 1.3
+};
+
+[assert_size(4)]
+enum PP_Flash_BrowserOperations_SettingType {
+  PP_FLASH_BROWSEROPERATIONS_SETTINGTYPE_CAMERAMIC = 0,
+  PP_FLASH_BROWSEROPERATIONS_SETTINGTYPE_PEERNETWORKING = 1,
+  PP_FLASH_BROWSEROPERATIONS_SETTINGTYPE_LAST = PP_FLASH_BROWSEROPERATIONS_SETTINGTYPE_PEERNETWORKING
+};
+
+[assert_size(4)]
+enum PP_Flash_BrowserOperations_Permission {
+  // This value is only used with <code>SetSitePermission()</code>.
+  PP_FLASH_BROWSEROPERATIONS_PERMISSION_DEFAULT = 0,
+  PP_FLASH_BROWSEROPERATIONS_PERMISSION_ALLOW = 1,
+  PP_FLASH_BROWSEROPERATIONS_PERMISSION_BLOCK = 2,
+  PP_FLASH_BROWSEROPERATIONS_PERMISSION_ASK = 3,
+  PP_FLASH_BROWSEROPERATIONS_PERMISSION_LAST = PP_FLASH_BROWSEROPERATIONS_PERMISSION_ASK
+};
+
+struct PP_Flash_BrowserOperations_SiteSetting {
+  cstr_t site;
+  PP_Flash_BrowserOperations_Permission permission;
+};
+
+typedef void PPB_Flash_BrowserOperations_GetSettingsCallback(
+    [inout] mem_t user_data,
+    [in] PP_Bool success,
+    [in] PP_Flash_BrowserOperations_Permission default_permission,
+    [in] uint32_t site_count,
+    [in, size_is(site_count)] PP_Flash_BrowserOperations_SiteSetting[] sites);
+
+/**
+ * This interface allows the browser to request the plugin do things.
+ */
+interface PPP_Flash_BrowserOperations {
+  /**
+   * This function allows the plugin to implement the "Clear site data" feature.
+   *
+   * @param[in] plugin_data_path String containing the directory where the
+   * plugin data is
+   * stored. On UTF16 systems (Windows), this will be encoded as UTF-8. It will
+   * be an absolute path and will not have a directory separator (slash) at the
+   * end.
+   * @param[in] site String specifying which site to clear the data for. This
+   * will be null to clear data for all sites.
+   * @param[in] flags Currently always 0 in Chrome to clear all data. This may
+   * be extended in the future to clear only specific types of data.
+   * @param[in] max_age The maximum age in seconds to clear data for. This
+   * allows the plugin to implement "clear past hour" and "clear past data",
+   * etc.
+   *
+   * @return PP_TRUE on success, PP_FALSE on failure.
+   *
+   * See also the NPP_ClearSiteData function in NPAPI.
+   * https://wiki.mozilla.org/NPAPI:ClearSiteData
+   */
+  PP_Bool ClearSiteData([in] str_t plugin_data_path,
+                        [in] str_t site,
+                        [in] uint64_t flags,
+                        [in] uint64_t max_age);
+
+  /**
+   * Requests the plugin to deauthorize content licenses. It prevents Flash from
+   * playing protected content, such as movies and music the user may have
+   * rented or purchased.
+   *
+   * @param[in] plugin_data_path String containing the directory where the
+   * plugin settings are stored.
+   *
+   * @return <code>PP_TRUE</code> on success, <code>PP_FALSE</code> on failure.
+   */
+  [version=1.2]
+  PP_Bool DeauthorizeContentLicenses([in] str_t plugin_data_path);
+
+  /**
+   * Gets permission settings. <code>callback</code> will be called exactly once
+   * to return the settings.
+   *
+   * @param[in] plugin_data_path String containing the directory where the
+   * plugin settings are stored.
+   * @param[in] setting_type What type of setting to retrieve.
+   * @param[in] callback The callback to return retrieved data.
+   * @param[inout] user_data An opaque pointer that will be passed to
+   * <code>callback</code>.
+   */
+  [version=1.2]
+  void GetPermissionSettings(
+      [in] str_t plugin_data_path,
+      [in] PP_Flash_BrowserOperations_SettingType setting_type,
+      [in] PPB_Flash_BrowserOperations_GetSettingsCallback callback,
+      [inout] mem_t user_data);
+
+  /**
+   * Sets default permission. It applies to all sites except those with
+   * site-specific settings.
+   *
+   * @param[in] plugin_data_path String containing the directory where the
+   * plugin settings are stored.
+   * @param[in] setting_type What type of setting to set.
+   * @param[in] permission The default permission.
+   * @param[in] clear_site_specific Whether to remove all site-specific
+   * settings.
+   *
+   * @return <code>PP_TRUE</code> on success, <code>PP_FALSE</code> on failure.
+   */
+  [version=1.2]
+  PP_Bool SetDefaultPermission(
+      [in] str_t plugin_data_path,
+      [in] PP_Flash_BrowserOperations_SettingType setting_type,
+      [in] PP_Flash_BrowserOperations_Permission permission,
+      [in] PP_Bool clear_site_specific);
+
+  /**
+   * Sets site-specific permission. If a site has already got site-specific
+   * permission and it is not in <code>sites</code>, it won't be affected.
+   *
+   * @param[in] plugin_data_path String containing the directory where the
+   * plugin settings are stored.
+   * @param[in] setting_type What type of setting to set.
+   * @param[in] site_count How many items are there in <code>sites</code>.
+   * @param[in] sites The site-specific settings. If a site is specified with
+   * <code>PP_FLASH_BROWSEROPERATIONS_PERMISSION_DEFAULT</code> permission, it
+   * will be removed from the site-specific list.
+   *
+   * @return <code>PP_TRUE</code> on success, <code>PP_FALSE</code> on failure.
+   */
+  [version=1.2]
+  PP_Bool SetSitePermission(
+      [in] str_t plugin_data_path,
+      [in] PP_Flash_BrowserOperations_SettingType setting_type,
+      [in] uint32_t site_count,
+      [in, size_is(site_count)] PP_Flash_BrowserOperations_SiteSetting[] sites);
+
+  /**
+   * Returns a list of sites that have stored data, for use with the
+   * "Clear site data" feature.
+   *
+   * @param[in] plugin_data_path String containing the directory where the
+   * plugin data is stored.
+   * @param[out] sites A NULL-terminated array of sites that have stored data.
+   * Use FreeSiteList on the array when done.
+   *
+   * See also the NPP_GetSitesWithData function in NPAPI:
+   * https://wiki.mozilla.org/NPAPI:ClearSiteData
+   */
+  [version=1.3]
+  void GetSitesWithData([in] str_t plugin_data_path,
+                        [out] str_t[] sites);
+
+  /**
+   * Frees the list of sites returned by GetSitesWithData.
+   *
+   * @param[in] sites A NULL-terminated array of strings.
+   */
+  [version=1.3]
+  void FreeSiteList([inout] str_t[] sites);
+};

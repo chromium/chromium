@@ -26,11 +26,17 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/pepper_flash_settings_manager.h"
+#endif
+
+class BrowsingDataFlashLSOHelper;
 class Profile;
 class WebappRegistry;
 
 namespace content {
 class BrowserContext;
+class PluginDataRemover;
 }
 
 namespace webrtc_event_logging {
@@ -42,6 +48,10 @@ class WebRtcEventLogManager;
 class ChromeBrowsingDataRemoverDelegate
     : public content::BrowsingDataRemoverDelegate,
       public KeyedService
+#if BUILDFLAG(ENABLE_PLUGINS)
+    ,
+      public PepperFlashSettingsManager::Client
+#endif
 {
  public:
   // This is an extension of content::BrowsingDataRemover::RemoveDataMask which
@@ -186,6 +196,12 @@ class ChromeBrowsingDataRemoverDelegate
       std::unique_ptr<WebappRegistry> webapp_registry);
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Used for testing.
+  void OverrideFlashLSOHelperForTesting(
+      scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper);
+#endif
+
   using DomainReliabilityClearer = base::RepeatingCallback<void(
       content::BrowsingDataFilterBuilder* filter_builder,
       network::mojom::NetworkContext_DomainReliabilityClearMode,
@@ -208,7 +224,7 @@ class ChromeBrowsingDataRemoverDelegate
     kAutofillData = 6,
     kAutofillOrigins = 7,
     kPluginData = 8,
-    kFlashLsoHelper = 9,  // deprecated
+    kFlashLsoHelper = 9,
     kDomainReliability = 10,
     kNetworkPredictor = 11,
     kWebrtcLogs = 12,
@@ -282,6 +298,16 @@ class ChromeBrowsingDataRemoverDelegate
   // Called when plugin data has been cleared. Invokes NotifyIfDone.
   void OnWaitableEventSignaled(base::OnceClosure done,
                                base::WaitableEvent* waitable_event);
+
+  // Called when the list of |sites| storing Flash LSO cookies is fetched.
+  void OnSitesWithFlashDataFetched(
+      base::RepeatingCallback<bool(const std::string&)> plugin_filter,
+      base::OnceClosure done,
+      const std::vector<std::string>& sites);
+
+  // PepperFlashSettingsManager::Client implementation.
+  void OnDeauthorizeFlashContentLicensesCompleted(uint32_t request_id,
+                                                  bool success) override;
 #endif
 
   // The profile for which the data will be deleted.
@@ -304,6 +330,20 @@ class ChromeBrowsingDataRemoverDelegate
   // Fires after some time to track slow tasks. Cancelled when all tasks
   // are finished.
   base::CancelableClosure slow_pending_tasks_closure_;
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Used to delete plugin data.
+  std::unique_ptr<content::PluginDataRemover> plugin_data_remover_;
+  base::WaitableEventWatcher watcher_;
+
+  // Used for per-site plugin data deletion.
+  scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper_;
+
+  uint32_t deauthorize_flash_content_licenses_request_id_ = 0;
+
+  // Used to deauthorize content licenses for Pepper Flash.
+  std::unique_ptr<PepperFlashSettingsManager> pepper_flash_settings_manager_;
+#endif
 
   DomainReliabilityClearer domain_reliability_clearer_;
 

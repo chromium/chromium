@@ -3759,6 +3759,12 @@ static void Pnacl_M19_PPB_X509Certificate_Private_GetField(struct PP_Var* _struc
 
 /* Not generating wrapper methods for PPP_Find_Private_0_3 */
 
+/* Not generating wrapper methods for PPP_Flash_BrowserOperations_1_0 */
+
+/* Not generating wrapper methods for PPP_Flash_BrowserOperations_1_2 */
+
+/* Not generating wrapper methods for PPP_Flash_BrowserOperations_1_3 */
+
 /* Begin wrapper methods for PPP_Instance_Private_0_1 */
 
 static struct PP_Var Pnacl_M18_PPP_Instance_Private_GetInstanceObject(PP_Instance instance) {
@@ -4783,6 +4789,12 @@ static const struct PPB_X509Certificate_Private_0_1 Pnacl_Wrappers_PPB_X509Certi
 };
 
 /* Not generating wrapper interface for PPP_Find_Private_0_3 */
+
+/* Not generating wrapper interface for PPP_Flash_BrowserOperations_1_0 */
+
+/* Not generating wrapper interface for PPP_Flash_BrowserOperations_1_2 */
+
+/* Not generating wrapper interface for PPP_Flash_BrowserOperations_1_3 */
 
 static const struct PPP_Instance_Private_0_1 Pnacl_Wrappers_PPP_Instance_Private_0_1 = {
     .GetInstanceObject = &Pnacl_M18_PPP_Instance_Private_GetInstanceObject
