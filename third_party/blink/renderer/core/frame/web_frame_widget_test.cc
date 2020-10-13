@@ -10,6 +10,7 @@
 #include "cc/layers/solid_color_layer.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -116,6 +117,47 @@ TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
   EXPECT_TRUE(layer_tree_host->TakeForceSendMetadataRequest());
 }
 #endif  // defined(OS_ANDROID)
+
+// A test that forces a RemoteMainFrame to be created and the LocalFrameRoot
+// to be a WebFrameWidgetImpl.
+class WebFrameWidgetImplSimTest : public SimTest {
+ public:
+  void SetUp() override {
+    SimTest::SetUp();
+    InitializeRemote();
+    CHECK(static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
+              ->ForSubframe());
+  }
+
+  WebFrameWidgetImpl* LocalFrameRootWidget() {
+    return static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget());
+  }
+};
+
+// Tests that the value of VisualProperties::is_pinch_gesture_active is
+// propagated to the LayerTreeHost when properties are synced for child local
+// roots.
+TEST_F(WebFrameWidgetImplSimTest,
+       ActivePinchGestureUpdatesLayerTreeHostSubFrame) {
+  cc::LayerTreeHost* layer_tree_host = LocalFrameRootWidget()->LayerTreeHost();
+  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+  blink::VisualProperties visual_properties;
+
+  // Sync visual properties on a child widget.
+  visual_properties.is_pinch_gesture_active = true;
+  LocalFrameRootWidget()->ApplyVisualProperties(visual_properties);
+  // We expect the |is_pinch_gesture_active| value to propagate to the
+  // LayerTreeHost for sub-frames. Since GesturePinch events are handled
+  // directly in the main-frame's layer tree (and only there), information about
+  // whether or not we're in a pinch gesture must be communicated separately to
+  // sub-frame layer trees, via OnUpdateVisualProperties. This information
+  // is required to allow sub-frame compositors to throttle rastering while
+  // pinch gestures are active.
+  EXPECT_TRUE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+  visual_properties.is_pinch_gesture_active = false;
+  LocalFrameRootWidget()->ApplyVisualProperties(visual_properties);
+  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+}
 
 const char EVENT_LISTENER_RESULT_HISTOGRAM[] = "Event.PassiveListeners";
 
