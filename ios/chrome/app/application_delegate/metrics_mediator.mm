@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -110,6 +111,10 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 + (void)recordNumTabAtStartup:(int)numTabs;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
 + (void)recordNumTabAtResume:(int)numTabs;
+// Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
++ (void)recordNumNTPTabAtStartup:(int)numTabs;
+// Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
++ (void)recordNumNTPTabAtResume:(int)numTabs;
 
 @end
 
@@ -150,6 +155,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
             (id<StartupInformation>)startupInformation
                                connectedScenes:(NSArray<SceneState*>*)scenes {
   int numTabs = 0;
+  int numNTPTabs = 0;
   for (SceneState* scene in scenes) {
     if (!scene.interfaceProvider) {
       // The scene might not yet be initiated.
@@ -157,14 +163,23 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
       // counted in sessions instead of scenes.
       continue;
     }
-    numTabs += scene.interfaceProvider.mainInterface.browser->GetWebStateList()
-                   ->count();
+
+    const WebStateList* web_state_list =
+        scene.interfaceProvider.mainInterface.browser->GetWebStateList();
+    numTabs += web_state_list->count();
+    for (int i = 0; i < web_state_list->count(); i++) {
+      if (IsURLNewTabPage(web_state_list->GetWebStateAt(i)->GetVisibleURL())) {
+        numNTPTabs++;
+      }
+    }
   }
 
   if (startupInformation.isColdStart) {
     [self recordNumTabAtStartup:numTabs];
+    [self recordNumNTPTabAtStartup:numNTPTabs];
   } else {
     [self recordNumTabAtResume:numTabs];
+    [self recordNumNTPTabAtResume:numNTPTabs];
   }
 
   if (UIAccessibilityIsVoiceOverRunning()) {
@@ -425,6 +440,14 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
 + (void)recordNumTabAtResume:(int)numTabs {
   base::UmaHistogramCounts100("Tabs.CountAtResume", numTabs);
+}
+
++ (void)recordNumNTPTabAtStartup:(int)numTabs {
+  base::UmaHistogramCounts100("Tabs.NTPCountAtStartup", numTabs);
+}
+
++ (void)recordNumNTPTabAtResume:(int)numTabs {
+  base::UmaHistogramCounts100("Tabs.NTPCountAtResume", numTabs);
 }
 
 - (void)setBreakpadUploadingEnabled:(BOOL)enableUploading {
