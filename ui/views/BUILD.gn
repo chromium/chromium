@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -761,6 +762,8 @@ component("views") {
         "//ui/base/cursor",
         "//ui/base/cursor/mojom:cursor_type",
       ]
+      deps += [ "//build:chromeos_buildflags" ]
+
       if (use_x11) {
         public_deps += [
           "//ui/base/x",
@@ -783,6 +786,9 @@ component("views") {
       if (use_ozone) {
         public += [ "widget/desktop_aura/desktop_screen_ozone.h" ]
         sources += [ "widget/desktop_aura/desktop_screen_ozone.cc" ]
+      }
+      if (is_lacros) {
+        deps += [ "//ui/base:ui_data_pack" ]
       }
       if (is_linux || is_chromeos) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_linux.h" ]
