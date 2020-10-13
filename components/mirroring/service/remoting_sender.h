@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
 
   void OnRemotingDataStreamError();
 
+  // Returns true if OnRemotingDataStreamError was called.
+  bool HadError() const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::TickClock* clock_;

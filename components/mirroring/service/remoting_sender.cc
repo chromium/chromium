@@ -104,6 +104,10 @@ void RemotingSender::ProcessNextInputTask() {
 void RemotingSender::ReadFrame(uint32_t size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_reading_);
+
+  if (HadError()) {
+    return;
+  }
   if (!data_pipe_reader_->IsPipeValid()) {
     VLOG(1) << "Data pipe handle no longer valid.";
     OnRemotingDataStreamError();
@@ -206,10 +210,16 @@ void RemotingSender::OnInputTaskComplete() {
 }
 
 void RemotingSender::OnRemotingDataStreamError() {
+  // NOTE: This method must be idemptotent as it may be called more than once.
   data_pipe_reader_.reset();
   stream_sender_.reset();
   if (!error_callback_.is_null())
     std::move(error_callback_).Run();
+}
+
+bool RemotingSender::HadError() const {
+  DCHECK_EQ(!data_pipe_reader_, !stream_sender_.is_bound());
+  return !data_pipe_reader_;
 }
 
 }  // namespace mirroring
