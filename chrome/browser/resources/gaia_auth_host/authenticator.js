@@ -640,6 +640,9 @@ cr.define('cr.login', function() {
       if (data.enterpriseDisplayDomain) {
         url = appendParam(url, 'manageddomain', data.enterpriseDisplayDomain);
       }
+      if (data.enterpriseDomainManager) {
+        url = appendParam(url, 'devicemanager', data.enterpriseDomainManager);
+      }
       if (data.clientVersion) {
         url = appendParam(url, 'client_version', data.clientVersion);
       }
