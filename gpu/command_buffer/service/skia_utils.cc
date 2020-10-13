@@ -61,7 +61,7 @@ void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
   auto* fence_helper =
       context_state->vk_context_provider()->GetDeviceQueue()->GetFenceHelper();
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
-      [](const sk_sp<GrContext>& gr_context, sk_sp<T> sk_object,
+      [](const sk_sp<GrDirectContext>& gr_context, sk_sp<T> sk_object,
          gpu::VulkanDeviceQueue* device_queue, bool is_lost) {},
       sk_ref_sp(context_state->gr_context()), std::move(sk_object)));
 #endif
@@ -180,8 +180,9 @@ void DeleteGrBackendTexture(SharedContextState* context_state,
   auto* fence_helper =
       context_state->vk_context_provider()->GetDeviceQueue()->GetFenceHelper();
   fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
-      [](const sk_sp<GrContext>& gr_context, GrBackendTexture backend_texture,
-         gpu::VulkanDeviceQueue* device_queue, bool is_lost) {
+      [](const sk_sp<GrDirectContext>& gr_context,
+         GrBackendTexture backend_texture, gpu::VulkanDeviceQueue* device_queue,
+         bool is_lost) {
         if (!gr_context->abandoned())
           gr_context->deleteBackendTexture(std::move(backend_texture));
       },
