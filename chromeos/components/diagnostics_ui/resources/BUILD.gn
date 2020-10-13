@@ -26,6 +26,7 @@ js_type_check("closure_compile_module") {
     ":overview_card",
     ":percent_bar_chart",
     ":realtime_cpu_chart",
+    ":routine_list_executor",
     ":routine_result_entry",
     ":routine_result_list",
     ":routine_section",
@@ -134,6 +135,10 @@ js_library("realtime_cpu_chart") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("routine_list_executor") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("routine_result_entry") {

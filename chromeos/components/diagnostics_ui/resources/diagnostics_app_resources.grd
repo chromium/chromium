@@ -31,6 +31,7 @@
       <include name="IDR_DIAGNOSTICS_OVERVIEW_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/overview_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_PERCENT_BAR_CHART_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/percent_bar_chart.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_REALTIME_CPU_CHART_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/realtime_cpu_chart.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_ROUTINE_LIST_EXECUTOR_JS" file="routine_list_executor.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ROUTINE_RESULT_ENTRY_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/routine_result_entry.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ROUTINE_RESULT_LIST_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/routine_result_list.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_ROUTINE_SECTION_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/routine_section.js" use_base_dir="false" type="BINDATA"/>
