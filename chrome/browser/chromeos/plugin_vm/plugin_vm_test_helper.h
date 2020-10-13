@@ -10,6 +10,10 @@
 
 class TestingProfile;
 
+namespace chromeos {
+class ScopedSetRunningOnChromeOSForTesting;
+}  // namespace chromeos
+
 namespace user_manager {
 class ScopedUserManager;
 }  // namespace user_manager
@@ -47,6 +51,7 @@ class PluginVmTestHelper {
   TestingProfile* testing_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<chromeos::ScopedSetRunningOnChromeOSForTesting> fake_release_;
 
   DISALLOW_COPY_AND_ASSIGN(PluginVmTestHelper);
 };

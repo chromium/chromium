@@ -6,11 +6,14 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/common/chrome_features.h"
@@ -29,6 +32,9 @@ const char kDiskImageImportCommandUuid[] = "3922722bd7394acf85bf4d5a330d4a47";
 const char kPluginVmLicenseKey[] = "LICENSE_KEY";
 const char kDomain[] = "example.com";
 const char kDeviceId[] = "device_id";
+const char kLsbRelease[] =
+    "CHROMEOS_RELEASE_NAME=Chrome OS\n"
+    "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
 
 // For adding a fake shelf item without requiring opening an actual window.
 class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
@@ -118,6 +124,9 @@ void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {
       account_id, true, user_manager::USER_TYPE_REGULAR);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(mock_user_manager));
+  fake_release_ =
+      std::make_unique<chromeos::ScopedSetRunningOnChromeOSForTesting>(
+          kLsbRelease, base::Time::Now());
 }
 
 void PluginVmTestHelper::EnablePluginVmFeature() {

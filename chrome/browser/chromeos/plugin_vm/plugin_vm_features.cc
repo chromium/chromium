@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 
 #include "base/feature_list.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -61,8 +62,8 @@ bool PluginVmFeatures::IsAllowed(const Profile* profile) {
   if (!base::FeatureList::IsEnabled(features::kPluginVm))
     return false;
 
-  // Bypass other checks when a fake policy is set
-  if (FakeLicenseKeyIsSet())
+  // Bypass other checks when a fake policy is set, or running linux-chromeos.
+  if (FakeLicenseKeyIsSet() || !base::SysInfo::IsRunningOnChromeOS())
     return true;
 
   // Check that the device is enterprise enrolled.
