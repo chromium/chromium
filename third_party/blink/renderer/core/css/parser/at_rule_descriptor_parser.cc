@@ -205,7 +205,7 @@ CSSValue* ConsumeFontMetricOverride(CSSParserTokenRange& range,
 
 CSSValue* ConsumeAdvanceOverride(CSSParserTokenRange& range,
                                  const CSSParserContext& context) {
-  if (!RuntimeEnabledFeatures::CSSFontMetricsOverrideEnabled())
+  if (!RuntimeEnabledFeatures::CSSFontFaceAdvanceOverrideEnabled())
     return nullptr;
   return css_parsing_utils::ConsumeNumber(range, context, kValueRangeAll);
 }

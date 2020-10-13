@@ -3241,6 +3241,34 @@ TEST_F(StyleEngineTest, MediaAttributeChangeUpdatesFontCacheVersion) {
   UpdateAllLifecyclePhases();
 }
 
+// https://crbug.com/1137624
+TEST_F(StyleEngineTest, DisabledAdvanceOverrideDescriptor) {
+  ScopedCSSFontFaceAdvanceOverrideForTest advance_override_disabled(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(fake-font.woff);
+        advance-override: 0.1;
+      }
+    </style>
+  )HTML");
+
+  // Shouldn't crash.
+  UpdateAllLifecyclePhases();
+
+  // 'advance-override' should be ignored when disabled.
+  const FontFace* font_face = GetStyleEngine()
+                                  .GetFontSelector()
+                                  ->GetFontFaceCache()
+                                  ->CssConnectedFontFaces()
+                                  .front()
+                                  .Get();
+  ASSERT_TRUE(font_face);
+  EXPECT_FALSE(font_face->HasFontMetricsOverride());
+}
+
 class StyleEngineSimTest : public SimTest {};
 
 TEST_F(StyleEngineSimTest, OwnerColorScheme) {
