@@ -33,6 +33,8 @@ config("wtf_config") {
 }
 
 component("wtf") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "allocator/allocator.cc",
     "allocator/allocator.h",

@@ -22,6 +22,8 @@ group("make_generated") {
 }
 
 blink_platform_sources("network") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "content_security_policy_parsers.cc",
     "content_security_policy_parsers.h",

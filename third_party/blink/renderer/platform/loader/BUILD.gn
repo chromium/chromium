@@ -12,6 +12,8 @@ make_names("make_platform_loader_generated_fetch_initiator_type_names") {
 }
 
 blink_platform_sources("loader") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "allowed_by_nosniff.cc",
     "allowed_by_nosniff.h",

@@ -43,6 +43,8 @@ source_set("heap_unsanitized") {
 }
 
 blink_platform_sources("heap") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "atomic_entry_flag.h",
     "blink_gc.cc",
