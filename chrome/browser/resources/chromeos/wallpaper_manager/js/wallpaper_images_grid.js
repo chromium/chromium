@@ -84,6 +84,16 @@ cr.define('wallpapers', function() {
         return;
       }
 
+      this.setAttribute('aria-label', this.dataItem.ariaLabel);
+      this.tabIndex = 0;
+      this.addEventListener('keypress', e => {
+        if (e.keyCode == 13)
+          this.parentNode.selectedItem = this.dataItem;
+      });
+      this.addEventListener('mousedown', e => {
+        e.preventDefault();
+      });
+
       if (this.thumbnail_) {
         this.appendChild(this.thumbnail_);
         this.callback_(this.dataModelId_, this.dataItem.wallpaperId);
@@ -94,15 +104,6 @@ cr.define('wallpapers', function() {
       // Do not show the image until |cropImageToFitGrid_| is done.
       imageEl.style.visibility = 'hidden';
       imageEl.setAttribute('aria-hidden', 'true');
-      this.setAttribute('aria-label', this.dataItem.ariaLabel);
-      this.tabIndex = 0;
-      this.addEventListener('keypress', e => {
-        if (e.keyCode == 13)
-          this.parentNode.selectedItem = this.dataItem;
-      });
-      this.addEventListener('mousedown', e => {
-        e.preventDefault();
-      });
 
       imageEl.classList.add('thumbnail');
       cr.defineProperty(imageEl, 'offline', cr.PropertyKind.BOOL_ATTR);
