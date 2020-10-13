@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/vr/android_vr_utils.h"
+#include "components/webxr/android/webxr_utils.h"
 
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
-namespace vr {
+namespace webxr {
 
 content::WebContents* GetWebContents(int render_process_id,
                                      int render_frame_id) {
@@ -29,4 +29,4 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
       ->GetJavaWebContents();
 }
 
-}  // namespace vr
+}  // namespace webxr

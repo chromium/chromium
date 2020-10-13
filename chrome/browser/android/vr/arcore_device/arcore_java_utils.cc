@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/android/vr/android_vr_utils.h"
 #include "chrome/browser/android/vr/ar_jni_headers/ArCoreJavaUtils_jni.h"
+#include "components/webxr/android/webxr_utils.h"
 #include "device/vr/android/arcore/arcore_shim.h"
 
 using base::android::AttachCurrentThread;
@@ -49,7 +49,8 @@ void ArCoreJavaUtils::RequestArSession(
 
   Java_ArCoreJavaUtils_startSession(
       env, j_arcore_java_utils_,
-      GetJavaWebContents(render_process_id, render_frame_id), use_overlay);
+      webxr::GetJavaWebContents(render_process_id, render_frame_id),
+      use_overlay);
 }
 
 void ArCoreJavaUtils::EndSession() {

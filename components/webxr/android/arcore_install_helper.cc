@@ -15,6 +15,8 @@
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webxr/android/ar_jni_headers/ArCoreInstallUtils_jni.h"
+#include "components/webxr/android/webxr_utils.h"
+#include "components/webxr/android/xr_install_helper_delegate.h"
 #include "components/webxr/android/xr_install_infobar.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -22,29 +24,12 @@
 using base::android::AttachCurrentThread;
 
 namespace webxr {
-namespace {
-content::WebContents* GetWebContents(int render_process_id,
-                                     int render_frame_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  DCHECK(render_frame_host);
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents);
+ArCoreInstallHelper::ArCoreInstallHelper(
+    std::unique_ptr<XrInstallHelperDelegate> install_delegate)
+    : install_delegate_(std::move(install_delegate)) {
+  DCHECK(install_delegate_);
 
-  return web_contents;
-}
-
-base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
-    int render_process_id,
-    int render_frame_id) {
-  return GetWebContents(render_process_id, render_frame_id)
-      ->GetJavaWebContents();
-}
-}  // namespace
-
-ArCoreInstallHelper::ArCoreInstallHelper() {
   // As per documentation, it's recommended to issue a call to
   // ArCoreApk.checkAvailability() early in application lifecycle & ignore the
   // result so that subsequent calls can return cached result:
@@ -71,7 +56,6 @@ ArCoreInstallHelper::~ArCoreInstallHelper() {
 void ArCoreInstallHelper::EnsureInstalled(
     int render_process_id,
     int render_frame_id,
-    infobars::InfoBarManager* infobar_manager,
     base::OnceCallback<void(bool)> install_callback) {
   DCHECK(!install_finished_callback_);
   install_finished_callback_ = std::move(install_callback);
@@ -84,7 +68,7 @@ void ArCoreInstallHelper::EnsureInstalled(
   // ARCore is not installed or requires an update.
   if (Java_ArCoreInstallUtils_shouldRequestInstallSupportedArCore(
           AttachCurrentThread())) {
-    ShowInfoBar(render_process_id, render_frame_id, infobar_manager);
+    ShowInfoBar(render_process_id, render_frame_id);
     return;
   }
 
@@ -93,10 +77,12 @@ void ArCoreInstallHelper::EnsureInstalled(
   OnRequestInstallSupportedArCoreResult(nullptr, true);
 }
 
-void ArCoreInstallHelper::ShowInfoBar(
-    int render_process_id,
-    int render_frame_id,
-    infobars::InfoBarManager* infobar_manager) {
+void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
+                                      int render_frame_id) {
+  infobars::InfoBarManager* infobar_manager =
+      install_delegate_->GetInfoBarManager(
+          GetWebContents(render_process_id, render_frame_id));
+
   // We can't show an infobar without an |infobar_manager|, so if it's null,
   // report that we are not installed and stop processing.
   if (!infobar_manager) {

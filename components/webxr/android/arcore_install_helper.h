@@ -5,16 +5,17 @@
 #ifndef COMPONENTS_WEBXR_ANDROID_ARCORE_INSTALL_HELPER_H_
 #define COMPONENTS_WEBXR_ANDROID_ARCORE_INSTALL_HELPER_H_
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-
-namespace infobars {
-class InfoBarManager;
-}
+#include "content/public/browser/xr_install_helper.h"
 
 namespace webxr {
+class XrInstallHelperDelegate;
+
 // Equivalent of ArCoreApk.Availability enum.
 // For detailed description, please see:
 // https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk.Availability
@@ -29,26 +30,30 @@ enum class ArCoreAvailability : int {
   kUnsupportedDeviceNotCapable = 6,
 };
 
-class ArCoreInstallHelper {
+// Helper class to ensure that ArCore has been properly installed from the
+// store, per the ArCore Apk's installation implementation. Inherits from
+// content::XrInstallHelper so that it may be returned by the
+// XrIntegrationClient.
+class ArCoreInstallHelper : public content::XrInstallHelper {
  public:
-  ArCoreInstallHelper();
-  virtual ~ArCoreInstallHelper();
+  explicit ArCoreInstallHelper(
+      std::unique_ptr<XrInstallHelperDelegate> install_delegate);
+  ~ArCoreInstallHelper() override;
 
   ArCoreInstallHelper(const ArCoreInstallHelper&) = delete;
   ArCoreInstallHelper& operator=(const ArCoreInstallHelper&) = delete;
 
-  void EnsureInstalled(int render_process_id,
-                       int render_frame_id,
-                       infobars::InfoBarManager* infobar_manager,
-                       base::OnceCallback<void(bool)> install_callback);
+  // content::XrInstallHelper implementation.
+  void EnsureInstalled(
+      int render_process_id,
+      int render_frame_id,
+      base::OnceCallback<void(bool)> install_callback) override;
 
   // Called from Java end.
   void OnRequestInstallSupportedArCoreResult(JNIEnv* env, bool success);
 
  private:
-  void ShowInfoBar(int render_process_id,
-                   int render_frame_id,
-                   infobars::InfoBarManager* infobar_manager);
+  void ShowInfoBar(int render_process_id, int render_frame_id);
   void OnInfoBarResponse(int render_process_id,
                          int render_frame_id,
                          bool try_install);
@@ -56,6 +61,7 @@ class ArCoreInstallHelper {
 
   base::OnceCallback<void(bool)> install_finished_callback_;
   base::android::ScopedJavaGlobalRef<jobject> java_install_utils_;
+  std::unique_ptr<XrInstallHelperDelegate> install_delegate_;
 
   // Must be last.
   base::WeakPtrFactory<ArCoreInstallHelper> weak_ptr_factory_{this};

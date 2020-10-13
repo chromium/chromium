@@ -6075,7 +6075,10 @@ static_library("browser") {
 
     if (is_android) {
       if (enable_arcore) {
-        deps += [ "//device/vr/android/arcore" ]
+        deps += [
+          "//components/webxr/android",
+          "//device/vr/android/arcore",
+        ]
       }
     } else {
       deps += [ "//device/vr/public/mojom" ]

@@ -16,6 +16,9 @@ namespace webxr {
 // control a ConfirmInfoBar.
 class XrInstallInfoBar : public ConfirmInfoBarDelegate {
  public:
+  // Constructor for XrInstallInfoBar, the callback is guaranteed to be called,
+  // if the InfoBar is accepted, cancelled, or dismissed. The Callback will be
+  // passed a bool indicating whether the result of the InfoBar was "accepted."
   XrInstallInfoBar(InfoBarIdentifier identifier,
                    int icon_id,
                    int message_id,

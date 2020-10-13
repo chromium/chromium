@@ -23,12 +23,33 @@
 #include "chrome/browser/android/vr/gvr_install_helper.h"
 #include "device/vr/android/gvr/gvr_device_provider.h"
 #if BUILDFLAG(ENABLE_ARCORE)
-#include "chrome/browser/android/vr/chrome_arcore_install_helper.h"
+#include "chrome/browser/infobars/infobar_service.h"
+#include "components/webxr/android/arcore_install_helper.h"
+#include "components/webxr/android/xr_install_helper_delegate.h"
 #include "device/vr/android/arcore/arcore_device_provider_factory.h"
 #endif  // ENABLE_ARCORE
 #endif  // OS_WIN/OS_ANDROID
 
 namespace vr {
+
+// Note that this doesn't technically need to be behind this buildflag, but
+// ArCore is the only thing that's using it right now.
+#if BUILDFLAG(ENABLE_ARCORE)
+class ChromeXrInstallHelperDelegate : public webxr::XrInstallHelperDelegate {
+ public:
+  ChromeXrInstallHelperDelegate() = default;
+  ~ChromeXrInstallHelperDelegate() override = default;
+
+  ChromeXrInstallHelperDelegate(const ChromeXrInstallHelperDelegate&) = delete;
+  ChromeXrInstallHelperDelegate& operator=(
+      const ChromeXrInstallHelperDelegate&) = delete;
+
+  infobars::InfoBarManager* GetInfoBarManager(
+      content::WebContents* web_contents) override {
+    return InfoBarService::FromWebContents(web_contents);
+  }
+};
+#endif
 
 std::unique_ptr<content::XrInstallHelper>
 ChromeXrIntegrationClient::GetInstallHelper(
@@ -39,7 +60,8 @@ ChromeXrIntegrationClient::GetInstallHelper(
       return std::make_unique<GvrInstallHelper>();
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
-      return std::make_unique<ChromeArCoreInstallHelper>();
+      return std::make_unique<webxr::ArCoreInstallHelper>(
+          std::make_unique<ChromeXrInstallHelperDelegate>());
 #endif  // ENABLE_ARCORE
 #endif  // OS_ANDROID
     default:

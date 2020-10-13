@@ -7,8 +7,21 @@ import("//device/vr/buildflags/buildflags.gni")
 
 assert(enable_vr)
 
+source_set("android_utils") {
+  sources = [
+    "webxr_utils.cc",
+    "webxr_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
 source_set("android") {
   sources = [
+    "xr_install_helper_delegate.h",
     "xr_install_infobar.cc",
     "xr_install_infobar.h",
   ]
@@ -21,6 +34,7 @@ source_set("android") {
   }
 
   deps = [
+    ":android_utils",
     "//base",
     "//components/infobars/core",
     "//components/resources:android_resources",

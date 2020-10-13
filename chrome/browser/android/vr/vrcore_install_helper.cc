@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "chrome/android/features/vr/jni_headers/VrCoreInstallUtils_jni.h"
-#include "chrome/browser/android/vr/android_vr_utils.h"
 #include "chrome/browser/android/vr/vr_module_provider.h"
+#include "components/webxr/android/webxr_utils.h"
 
 using base::android::AttachCurrentThread;
 
@@ -65,7 +65,7 @@ void VrCoreInstallHelper::EnsureInstalled(
     // When completed, java will call: OnInstallResult
     Java_VrCoreInstallUtils_requestInstallVrCore(
         env, java_install_utils_,
-        GetJavaWebContents(render_process_id, render_frame_id));
+        webxr::GetJavaWebContents(render_process_id, render_frame_id));
     return;
   }
 
