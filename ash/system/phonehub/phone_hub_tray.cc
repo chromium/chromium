@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/phone_hub_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/focus_cycler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -187,6 +188,14 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
                                                 false /* is_persistent */);
 
   SetIsActive(true);
+
+  // Only focus the widget if it's opened by the keyboard.
+  if (!show_by_click) {
+    views::Widget* widget = bubble_->GetBubbleWidget();
+    widget->widget_delegate()->SetCanActivate(true);
+    Shell::Get()->focus_cycler()->FocusWidget(widget);
+    widget->Activate();
+  }
 }
 
 TrayBubbleView* PhoneHubTray::GetBubbleView() {

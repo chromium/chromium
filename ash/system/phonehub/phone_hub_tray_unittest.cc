@@ -75,6 +75,12 @@ class PhoneHubTrayTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void PressReturnKeyOnTrayButton() {
+    const ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+                                 ui::EF_NONE);
+    phone_hub_tray_->PerformAction(key_event);
+  }
+
   void ClickTrayButton() { ClickOnAndWait(phone_hub_tray_); }
 
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
@@ -138,9 +144,20 @@ TEST_F(PhoneHubTrayTest, ClickTrayButton) {
 
   ClickTrayButton();
   EXPECT_TRUE(phone_hub_tray_->is_active());
+  // We only want to focus the bubble widget when it's opened by keyboard.
+  EXPECT_FALSE(phone_hub_tray_->GetBubbleView()->GetWidget()->IsActive());
 
   ClickTrayButton();
   EXPECT_FALSE(phone_hub_tray_->is_active());
+}
+
+TEST_F(PhoneHubTrayTest, FocusBubbleWhenOpenedByKeyboard) {
+  EXPECT_TRUE(phone_hub_tray_->GetVisible());
+  PressReturnKeyOnTrayButton();
+
+  // The bubble widget should get focus when it's opened by keyboard.
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_TRUE(phone_hub_tray_->GetBubbleView()->GetWidget()->IsActive());
 }
 
 TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
