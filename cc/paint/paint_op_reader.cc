@@ -265,7 +265,13 @@ void PaintOpReader::Read(PaintFlags* flags) {
   ReadSimple(&flags->color_);
   Read(&flags->width_);
   Read(&flags->miter_limit_);
+
   ReadSimple(&flags->blend_mode_);
+  if (flags->blend_mode_ > static_cast<uint32_t>(SkBlendMode::kLastMode)) {
+    SetInvalid();
+    return;
+  }
+
   ReadSimple(&flags->bitfields_uint_);
 
   ReadFlattenable(&flags->path_effect_);
