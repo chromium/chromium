@@ -644,6 +644,13 @@ var PrintPreviewDestinationStoreTestCros = class extends PrintPreviewTest {
 };
 
 TEST_F(
+    'PrintPreviewDestinationStoreTestCros',
+    'MultipleRecentDestinationsAccountsCros', function() {
+      this.runMochaTest(destination_store_test.TestNames
+                            .MultipleRecentDestinationsAccountsCros);
+    });
+
+TEST_F(
     'PrintPreviewDestinationStoreTestCros', 'LoadSaveToDriveCros', function() {
       this.runMochaTest(destination_store_test.TestNames.LoadSaveToDriveCros);
     });
@@ -1286,13 +1293,6 @@ TEST_F(
 TEST_F('PrintPreviewDestinationSelectTestCrOS', 'EulaIsDisplayed', function() {
   this.runMochaTest(destination_select_test_cros.TestNames.EulaIsDisplayed);
 });
-
-TEST_F(
-    'PrintPreviewDestinationSelectTestCrOS', 'SelectDriveDestination',
-    function() {
-      this.runMochaTest(
-          destination_select_test_cros.TestNames.SelectDriveDestination);
-    });
 
 // eslint-disable-next-line no-var
 var PrintPreviewPrinterStatusTestCros = class extends PrintPreviewTest {

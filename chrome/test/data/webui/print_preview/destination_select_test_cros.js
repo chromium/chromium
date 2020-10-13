@@ -353,7 +353,6 @@ destination_select_test_cros.TestNames = {
   ChangeIcon: 'change icon',
   ChangeIconDeprecationWarnings: 'change icon deprecation warnings',
   EulaIsDisplayed: 'eula is displayed',
-  SelectDriveDestination: 'select drive destination',
 };
 
 suite(destination_select_test_cros.suiteName, function() {
@@ -594,40 +593,5 @@ suite(destination_select_test_cros.suiteName, function() {
         destinationSelect.set(
             'destination.eulaUrl', 'chrome://os-credits/eula');
         assertFalse(destinationEulaWrapper.hidden);
-      });
-
-  // Tests that the correct drive destination is in the select based on value of
-  // printSaveToDrive flag.
-  test(
-      assert(destination_select_test_cros.TestNames.SelectDriveDestination),
-      function() {
-        const driveDestinationKey = `${Destination.GooglePromotedId.DOCS}/${
-            DestinationOrigin.COOKIES}/${account}`;
-        const printSaveToDriveEnabled =
-            loadTimeData.getBoolean('printSaveToDrive');
-        const expectedKey = printSaveToDriveEnabled ?
-            SAVE_TO_DRIVE_CROS_DESTINATION_KEY :
-            driveDestinationKey;
-        const wrongKey = !printSaveToDriveEnabled ?
-            SAVE_TO_DRIVE_CROS_DESTINATION_KEY :
-            driveDestinationKey;
-
-        return waitBeforeNextRender(destinationSelect)
-            .then(() => {
-              destinationSelect.driveDestinationKey = driveDestinationKey;
-              destinationSelect.destination = recentDestinationList[0];
-              destinationSelect.updateDestination();
-
-              assertTrue(
-                  !!Array.from(destinationSelect.$$('.md-select').options)
-                        .find(option => option.value === expectedKey));
-              assertTrue(!Array.from(destinationSelect.$$('.md-select').options)
-                              .find(option => option.value === wrongKey));
-              return selectOption(destinationSelect, expectedKey);
-            })
-            .then(() => {
-              assertEquals(
-                  expectedKey, destinationSelect.$$('.md-select').value);
-            });
       });
 });

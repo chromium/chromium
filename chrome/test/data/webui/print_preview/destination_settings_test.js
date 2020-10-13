@@ -5,6 +5,7 @@
 import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationType, Error, LocalDestinationInfo, makeRecentDestination, NativeLayer, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, RecentDestination, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -72,6 +73,15 @@ suite(destination_settings_test.suiteName, function() {
 
   /** @type {string} */
   const defaultUser = 'foo@chromium.org';
+
+  /** @type {boolean} */
+  const saveToDriveFlagEnabled =
+      isChromeOS && loadTimeData.getBoolean('printSaveToDrive');
+
+  /** @type {string} */
+  let dropdownDriveDestination = isChromeOS && saveToDriveFlagEnabled ?
+      'Save to Drive CrOS/local/' :
+      '__google__docs/cookies/foo@chromium.org';
 
   /** @override */
   suiteSetup(function() {
@@ -259,7 +269,11 @@ suite(destination_settings_test.suiteName, function() {
                   destinationSettings.destination.id);
               assertFalse(
                   destinationSettings.$$('#destinationSelect').disabled);
-              assertDropdownItems(['Save as PDF/local/']);
+              const dropdownItems = ['Save as PDF/local/'];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
 
               // If the user is signed in, Save to Drive should be displayed.
               return signIn();
@@ -267,7 +281,7 @@ suite(destination_settings_test.suiteName, function() {
             .then(() => {
               assertDropdownItems([
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
             });
       });
@@ -294,12 +308,16 @@ suite(destination_settings_test.suiteName, function() {
               assertEquals('ID1', destinationSettings.destination.id);
               assertFalse(
                   destinationSettings.$$('#destinationSelect').disabled);
-              assertDropdownItems([
+              const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
-              ]);
+              ];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
 
               // If the user is signed in, Save to Drive should be displayed.
               return signIn();
@@ -310,7 +328,7 @@ suite(destination_settings_test.suiteName, function() {
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
             });
       });
@@ -345,11 +363,15 @@ suite(destination_settings_test.suiteName, function() {
               assertEquals('ID1', destinationSettings.destination.id);
               assertFalse(
                   destinationSettings.$$('#destinationSelect').disabled);
-              assertDropdownItems([
+              const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
-              ]);
+              ];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
 
               // If the user is signed in, Save to Drive should be displayed.
               return signIn();
@@ -359,7 +381,7 @@ suite(destination_settings_test.suiteName, function() {
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
             });
       });
@@ -383,12 +405,16 @@ suite(destination_settings_test.suiteName, function() {
           // destination.
           assertEquals('ID1', destinationSettings.destination.id);
           assertFalse(destinationSettings.$$('#destinationSelect').disabled);
-          assertDropdownItems([
+          const dropdownItems = [
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID3'),
             makeLocalDestinationKey('ID4'),
             'Save as PDF/local/',
-          ]);
+          ];
+          if (isChromeOS && saveToDriveFlagEnabled) {
+            dropdownItems.push(dropdownDriveDestination);
+          }
+          assertDropdownItems(dropdownItems);
 
           // If the user is signed in, Save to Drive should be displayed.
           return signIn();
@@ -399,7 +425,7 @@ suite(destination_settings_test.suiteName, function() {
             makeLocalDestinationKey('ID3'),
             makeLocalDestinationKey('ID4'),
             'Save as PDF/local/',
-            '__google__docs/cookies/foo@chromium.org',
+            dropdownDriveDestination,
           ]);
         });
   });
@@ -430,12 +456,16 @@ suite(destination_settings_test.suiteName, function() {
 
               // Google Drive does not show up even though it is recent, since
               // the user is not signed in and the destination is not available.
-              assertDropdownItems([
+              const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-              ]);
+              ];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
 
               // If the user is signed in, Save to Drive should be displayed.
               return signIn();
@@ -446,7 +476,7 @@ suite(destination_settings_test.suiteName, function() {
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
             });
       });
@@ -486,7 +516,7 @@ suite(destination_settings_test.suiteName, function() {
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
             });
       });
@@ -513,12 +543,16 @@ suite(destination_settings_test.suiteName, function() {
           // destination.
           assertEquals('ID1', destinationSettings.destination.id);
           assertFalse(dropdown.disabled);
-          assertDropdownItems([
+          const dropdownItems = [
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID3'),
             makeLocalDestinationKey('ID4'),
             'Save as PDF/local/',
-          ]);
+          ];
+          if (isChromeOS && saveToDriveFlagEnabled) {
+            dropdownItems.push(dropdownDriveDestination);
+          }
+          assertDropdownItems(dropdownItems);
           // Most recent destination is selected by default.
           assertEquals('ID1', destinationSettings.destination.id);
 
@@ -561,12 +595,16 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertDropdownItems([
+              const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-              ]);
+              ];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
               assertFalse(dropdown.disabled);
 
               // If the user is signed in, Save to Drive should be displayed.
@@ -578,7 +616,7 @@ suite(destination_settings_test.suiteName, function() {
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
 
               // Most recent destination is still selected.
@@ -588,14 +626,14 @@ suite(destination_settings_test.suiteName, function() {
               const whenDestinationSelect = eventToPromise(
                   DestinationStore.EventType.DESTINATION_SELECT,
                   destinationSettings.getDestinationStoreForTest());
-              dropdown.fire(
-                  'selected-option-change',
-                  '__google__docs/cookies/foo@chromium.org');
+              dropdown.fire('selected-option-change', dropdownDriveDestination);
               return whenDestinationSelect;
             })
             .then(() => {
               assertEquals(
-                  Destination.GooglePromotedId.DOCS,
+                  isChromeOS && saveToDriveFlagEnabled ?
+                      Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS :
+                      Destination.GooglePromotedId.DOCS,
                   destinationSettings.destination.id);
             });
       });
@@ -621,12 +659,16 @@ suite(destination_settings_test.suiteName, function() {
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
               assertFalse(dropdown.disabled);
-              assertDropdownItems([
+              const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
-              ]);
+              ];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
 
               // Simulate selection of Save as PDF printer.
               const whenDestinationSelect = eventToPromise(
@@ -658,12 +700,16 @@ suite(destination_settings_test.suiteName, function() {
           // destination.
           assertEquals('ID1', destinationSettings.destination.id);
           assertFalse(dropdown.disabled);
-          assertDropdownItems([
+          const dropdownItems = [
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID2'),
             makeLocalDestinationKey('ID3'),
             'Save as PDF/local/',
-          ]);
+          ];
+          if (isChromeOS && saveToDriveFlagEnabled) {
+            dropdownItems.push(dropdownDriveDestination);
+          }
+          assertDropdownItems(dropdownItems);
 
           dropdown.fire('selected-option-change', 'seeMore');
           return waitBeforeNextRender(destinationSettings);
@@ -717,7 +763,7 @@ suite(destination_settings_test.suiteName, function() {
                 'FooCloud/cookies/foo@chromium.org',
                 makeLocalDestinationKey('ID1'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
 
               dropdown.fire('selected-option-change', 'seeMore');
@@ -736,11 +782,14 @@ suite(destination_settings_test.suiteName, function() {
               return whenAdded;
             })
             .then(() => {
+              dropdownDriveDestination = isChromeOS && saveToDriveFlagEnabled ?
+                  'Save to Drive CrOS/local/' :
+                  '__google__docs/cookies/bar@chromium.org';
               assertDropdownItems([
                 'BarCloud/cookies/bar@chromium.org',
                 makeLocalDestinationKey('ID1'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/bar@chromium.org',
+                dropdownDriveDestination,
               ]);
             });
       });
@@ -875,7 +924,7 @@ suite(destination_settings_test.suiteName, function() {
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-                '__google__docs/cookies/foo@chromium.org',
+                dropdownDriveDestination,
               ]);
 
               // Sign out.
@@ -885,12 +934,16 @@ suite(destination_settings_test.suiteName, function() {
               assertEquals('ID2', destinationSettings.destination.id);
               assertFalse(
                   destinationSettings.$$('#destinationSelect').disabled);
-              assertDropdownItems([
+              const dropdownItems = [
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
                 makeLocalDestinationKey('ID4'),
                 'Save as PDF/local/',
-              ]);
+              ];
+              if (isChromeOS && saveToDriveFlagEnabled) {
+                dropdownItems.push(dropdownDriveDestination);
+              }
+              assertDropdownItems(dropdownItems);
 
               // Now that the selected destination is local, signing in and out
               // shouldn't impact it.
@@ -920,7 +973,10 @@ suite(destination_settings_test.suiteName, function() {
             .then(() => {
               // Because the 'Save as PDF' fallback is unavailable, the first
               // destination is selected.
-              assertDropdownItems([makeLocalDestinationKey('ID1')]);
+              const expectedDestination = isChromeOS && saveToDriveFlagEnabled ?
+                  'Save to Drive CrOS/local/' :
+                  makeLocalDestinationKey('ID1');
+              assertDropdownItems([expectedDestination]);
             });
       });
 
@@ -932,6 +988,7 @@ suite(destination_settings_test.suiteName, function() {
 
     // Initialize destination settings with the PDF printer disabled.
     pdfPrinterDisabled = true;
+    isDriveMounted = false;
     initialize();
 
     // 'getPrinters' will be called because there are no printers known to

@@ -449,7 +449,7 @@ const base::Feature kPrintJobManagementApp{"PrintJobManagementApp",
 
 // Changes Print Preview Save to Drive to use local Drive.
 const base::Feature kPrintSaveToDrive{"PrintSaveToDrive",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable quick answers.
 const base::Feature kQuickAnswers{"QuickAnswers",
