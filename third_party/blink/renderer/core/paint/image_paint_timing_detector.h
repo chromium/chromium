@@ -266,7 +266,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // an image is recorded before stopping recording, and finish loading after
   // stopping recording, the detector can still observe the loading being
   // finished.
-  inline void StopRecordEntries() { is_recording_ = false; }
+  void StopRecordEntries();
   inline bool IsRecording() const { return is_recording_; }
   inline bool FinishedReportingImages() const {
     return !is_recording_ && num_pending_swap_callbacks_ == 0;
@@ -321,6 +321,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // This need to be set whenever changes that can affect the output of
   // |FindLargestPaintCandidate| occur during the paint tree walk.
   bool need_update_timing_at_frame_end_ = false;
+
+  bool contains_full_viewport_image_ = false;
 
   // We cache the viewport size computation to avoid performing it on every
   // image. This value is reset when paint is finished and is computed if unset

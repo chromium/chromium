@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/image_paint_timing_detector.h"
 
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
@@ -175,6 +177,17 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
   need_update_timing_at_frame_end_ = true;
 }
 
+void ImagePaintTimingDetector::StopRecordEntries() {
+  is_recording_ = false;
+  if (frame_view_->GetFrame().IsMainFrame()) {
+    DCHECK(frame_view_->GetFrame().GetDocument());
+    ukm::builders::Blink_PaintTiming(
+        frame_view_->GetFrame().GetDocument()->UkmSourceID())
+        .SetLCPDebugging_HasViewportImage(contains_full_viewport_image_)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 void ImagePaintTimingDetector::RegisterNotifySwapTime() {
   auto callback = WTF::Bind(&ImagePaintTimingDetector::ReportSwapTime,
                             WrapCrossThreadWeakPersistent(this),
@@ -307,8 +320,10 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
   // SVG, so |rect_size| can be larger than |*viewport_size| in edge cases. If
   // the rect occupies the whole viewport, disregard this candidate by saying
   // the size is 0.
-  if (rect_size >= *viewport_size_)
+  if (rect_size >= *viewport_size_) {
+    contains_full_viewport_image_ = true;
     return 0;
+  }
 
   rect_size = DownScaleIfIntrinsicSizeIsSmaller(
       rect_size, intrinsic_size.Area(),
