@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
+import static org.chromium.content_public.browser.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -31,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -71,6 +71,7 @@ public class SwitchToTabTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     private static final int INVALID_INDEX = -1;
+    private static final long SEARCH_ACTIVITY_MAX_TIME_TO_POLL = 10000L;
 
     private EmbeddedTestServer mTestServer;
 
@@ -133,7 +134,7 @@ public class SwitchToTabTest {
             } catch (InterruptedException e) {
                 throw new CriteriaNotSatisfiedException(e);
             }
-        });
+        }, SEARCH_ACTIVITY_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -243,7 +244,7 @@ public class SwitchToTabTest {
         Intent intent = new Intent();
         SearchWidgetProvider.startSearchActivity(intent, /* isVoiceSearch = */ false);
         Activity searchActivity = instrumentation.waitForMonitorWithTimeout(
-                searchMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+                searchMonitor, SEARCH_ACTIVITY_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);
         Assert.assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
         instrumentation.removeMonitor(searchMonitor);
@@ -348,7 +349,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1114938")
     @EnableFeatures("OmniboxTabSwitchSuggestions")
     public void testSwitchToTabInSearchActivity() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
@@ -370,7 +370,7 @@ public class SwitchToTabTest {
             // Make sure chrome fully in background.
             Criteria.checkThat(tab.getWindowAndroid().getActivityState(),
                     Matchers.isOneOf(ActivityState.STOPPED, ActivityState.DESTROYED));
-        });
+        }, SEARCH_ACTIVITY_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
 
         final LocationBarLayout locationBarLayout =
                 (LocationBarLayout) searchActivity.findViewById(R.id.search_location_bar);
@@ -385,6 +385,6 @@ public class SwitchToTabTest {
             Criteria.checkThat(
                     tab.getWindowAndroid().getActivityState(), Matchers.is(ActivityState.RESUMED));
             Assert.assertEquals(tab, aboutTab);
-        });
+        }, SEARCH_ACTIVITY_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
     }
 }
