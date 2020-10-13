@@ -91,6 +91,9 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
 
 }  // namespace
 
+// static
+const base::TimeDelta ResolveContext::kMinTransactionTimeout;
+
 ResolveContext::ServerStats::ServerStats(
     std::unique_ptr<base::SampleVector> buckets)
     : last_failure_count(0), rtt_histogram(std::move(buckets)) {}
@@ -263,6 +266,31 @@ base::TimeDelta ResolveContext::NextDohFallbackPeriod(
       0 /* num_backoffs */);
 }
 
+base::TimeDelta ResolveContext::SecureTransactionTimeout(
+    SecureDnsMode secure_dns_mode,
+    const DnsSession* session) {
+  // Currently only implemented for Secure mode as other modes are assumed to
+  // always use aggressive timeouts. If that ever changes, need to implement
+  // only accounting for available DoH servers when not Secure mode.
+  DCHECK_EQ(secure_dns_mode, SecureDnsMode::kSecure);
+
+  if (!IsCurrentSession(session))
+    return kMinTransactionTimeout;
+
+  // Should not need to call if there are no DoH servers configured.
+  DCHECK(!doh_server_stats_.empty());
+
+  base::TimeDelta shortest_fallback_period = base::TimeDelta::Max();
+  for (const ServerStats& stats : doh_server_stats_) {
+    shortest_fallback_period =
+        std::min(shortest_fallback_period,
+                 NextFallbackPeriodHelper(&stats, 0 /* num_backoffs */));
+  }
+
+  return std::max(kMinTransactionTimeout,
+                  shortest_fallback_period * kTimeoutMultiplier);
+}
+
 void ResolveContext::RegisterDohStatusObserver(DohStatusObserver* observer) {
   DCHECK(observer);
   doh_status_observers_.AddObserver(observer);
@@ -365,7 +393,7 @@ ResolveContext::ServerStats* ResolveContext::GetServerStats(
 }
 
 base::TimeDelta ResolveContext::NextFallbackPeriodHelper(
-    ServerStats* server_stats,
+    const ServerStats* server_stats,
     int num_backoffs) {
   // Respect initial fallback period (from config or field trial) if it exceeds
   // max.

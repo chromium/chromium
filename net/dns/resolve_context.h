@@ -43,6 +43,13 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // failures, and the outcome of fallback queries is not taken into account.
   static const int kAutomaticModeFailureLimit = 10;
 
+  // Multiplier applied to current fallback periods in determining a transaction
+  // timeout.
+  static constexpr float kTimeoutMultiplier = 7.5;
+
+  static constexpr base::TimeDelta kMinTransactionTimeout =
+      base::TimeDelta::FromSeconds(12);
+
   class DohStatusObserver : public base::CheckedObserver {
    public:
     // Notification indicating that the current session for which DoH servers
@@ -129,6 +136,18 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   base::TimeDelta NextDohFallbackPeriod(size_t doh_server_index,
                                         const DnsSession* session);
 
+  // Return a timeout for a transaction (from Transaction::Start()). Expected
+  // that the transaction will skip waiting for this timeout if it is using
+  // fast timeouts, and also expected that transactions will always wait for all
+  // attempts to run for at least their fallback period before dying with
+  // timeout.
+  //
+  // Currently only implemented for secure transactions as insecure transactions
+  // are assumed to always use aggressive timeouts (but a
+  // ClassicTransactionTimeout() could be implemented if ever needed).
+  base::TimeDelta SecureTransactionTimeout(SecureDnsMode secure_dns_mode,
+                                           const DnsSession* session);
+
   void RegisterDohStatusObserver(DohStatusObserver* observer);
   void UnregisterDohStatusObserver(const DohStatusObserver* observer);
 
@@ -200,7 +219,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   ServerStats* GetServerStats(size_t server_index, bool is_doh_server);
 
   // Return the fallback period for the next query.
-  base::TimeDelta NextFallbackPeriodHelper(ServerStats* server_stats,
+  base::TimeDelta NextFallbackPeriodHelper(const ServerStats* server_stats,
                                            int attempt);
 
   // Record the time to perform a query.
