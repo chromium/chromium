@@ -48,7 +48,6 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
 
   bool SupportsCustomIPD() const;
   bool SupportsNonEmulatedHeight() const;
-  bool SupportsArBlendMode();
 
   device::mojom::XRRuntime* GetRuntime() { return runtime_.get(); }
 

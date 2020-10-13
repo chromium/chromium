@@ -471,19 +471,6 @@ void MixedRealityRenderLoop::EnsureStageBounds() {
   bounds_updated_ = (bounds_.size() != 0);
 }
 
-device::mojom::XREnvironmentBlendMode
-MixedRealityRenderLoop::GetEnvironmentBlendMode(
-    device::mojom::XRSessionMode session_mode) {
-  DCHECK_EQ(session_mode, mojom::XRSessionMode::kImmersiveVr);
-  return device::mojom::XREnvironmentBlendMode::kOpaque;
-}
-
-device::mojom::XRInteractionMode MixedRealityRenderLoop::GetInteractionMode(
-    device::mojom::XRSessionMode session_mode) {
-  DCHECK_EQ(session_mode, mojom::XRSessionMode::kImmersiveVr);
-  return device::mojom::XRInteractionMode::kWorldSpace;
-}
-
 void MixedRealityRenderLoop::OnSessionStart() {
   LogViewerType(VrViewerType::WINDOWS_MIXED_REALITY_UNKNOWN);
 

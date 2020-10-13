@@ -307,8 +307,8 @@ XRSession::XRSession(
     mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
         client_receiver,
     device::mojom::blink::XRSessionMode mode,
-    device::mojom::blink::XREnvironmentBlendMode environment_blend_mode,
-    device::mojom::blink::XRInteractionMode interaction_mode,
+    EnvironmentBlendMode environment_blend_mode,
+    InteractionMode interaction_mode,
     device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     bool sensorless_session,
     XRSessionFeatureSet enabled_features)
@@ -346,13 +346,13 @@ XRSession::XRSession(
            << ": supports_viewport_scaling_=" << supports_viewport_scaling_;
 
   switch (environment_blend_mode) {
-    case device::mojom::blink::XREnvironmentBlendMode::kOpaque:
+    case kBlendModeOpaque:
       blend_mode_string_ = "opaque";
       break;
-    case device::mojom::blink::XREnvironmentBlendMode::kAdditive:
+    case kBlendModeAdditive:
       blend_mode_string_ = "additive";
       break;
-    case device::mojom::blink::XREnvironmentBlendMode::kAlphaBlend:
+    case kBlendModeAlphaBlend:
       blend_mode_string_ = "alpha-blend";
       break;
     default:
@@ -361,10 +361,10 @@ XRSession::XRSession(
   }
 
   switch (interaction_mode) {
-    case device::mojom::blink::XRInteractionMode::kScreenSpace:
+    case kInteractionModeScreen:
       interaction_mode_string_ = "screen-space";
       break;
-    case device::mojom::blink::XRInteractionMode::kWorldSpace:
+    case kInteractionModeWorld:
       interaction_mode_string_ = "world-space";
       break;
   }

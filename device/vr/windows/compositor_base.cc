@@ -44,15 +44,6 @@ bool XRDeviceAbstraction::HasSessionEnded() {
   return false;
 }
 void XRDeviceAbstraction::OnLayerBoundsChanged() {}
-device::mojom::XREnvironmentBlendMode
-XRDeviceAbstraction::GetEnvironmentBlendMode(
-    device::mojom::XRSessionMode session_mode) {
-  return device::mojom::XREnvironmentBlendMode::kOpaque;
-}
-device::mojom::XRInteractionMode XRDeviceAbstraction::GetInteractionMode(
-    device::mojom::XRSessionMode session_mode) {
-  return device::mojom::XRInteractionMode::kWorldSpace;
-}
 
 XRCompositorCommon::OutstandingFrame::OutstandingFrame() = default;
 XRCompositorCommon::OutstandingFrame::~OutstandingFrame() = default;
@@ -199,6 +190,7 @@ void XRCompositorCommon::RequestSession(
         on_visibility_state_changed,
     mojom::XRRuntimeSessionOptionsPtr options,
     RequestSessionCallback callback) {
+  DCHECK_EQ(options->mode, mojom::XRSessionMode::kImmersiveVr);
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
@@ -250,8 +242,6 @@ void XRCompositorCommon::RequestSession(
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->uses_input_eventing = UsesInputEventing();
-  session->enviroment_blend_mode = GetEnvironmentBlendMode(options->mode);
-  session->interaction_mode = GetInteractionMode(options->mode);
 
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true, std::move(session)));

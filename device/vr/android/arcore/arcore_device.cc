@@ -76,9 +76,6 @@ ArCoreDevice::ArCoreDevice(
   // it obvious if we're using this data instead of the actual values we get
   // from the output drawing surface.
   SetVRDisplayInfo(CreateVRDisplayInfo({16, 16}));
-
-  // ARCORE always support AR blend modes
-  SetArBlendModeSupported(true);
 }
 
 ArCoreDevice::~ArCoreDevice() {
@@ -106,7 +103,6 @@ void ArCoreDevice::RequestSession(
     mojom::XRRuntime::RequestSessionCallback callback) {
   DVLOG(1) << __func__;
   DCHECK(IsOnMainThread());
-  DCHECK(options->mode == device::mojom::XRSessionMode::kImmersiveAr);
 
   if (HasExclusiveSession()) {
     DVLOG(1) << __func__ << ": Rejecting additional session request";
@@ -285,11 +281,6 @@ void ArCoreDevice::OnCreateSessionCallback(
   auto* config = session->device_config.get();
 
   config->supports_viewport_scaling = true;
-
-  // ARCORE only supports immersive-ar sessions
-  session->enviroment_blend_mode =
-      device::mojom::XREnvironmentBlendMode::kAlphaBlend;
-  session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
   std::move(deferred_callback)
       .Run(std::move(session), std::move(session_controller));

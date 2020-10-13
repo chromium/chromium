@@ -50,7 +50,6 @@ class DEVICE_VR_EXPORT OpenXrDevice
                               bool result,
                               mojom::XRSessionPtr session);
   void OnPresentingControllerMojoConnectionError();
-  bool IsArBlendModeSupported(OpenXrStatics* openxr_statics);
 
   XrInstance instance_;
   std::unique_ptr<OpenXrRenderLoop> render_loop_;

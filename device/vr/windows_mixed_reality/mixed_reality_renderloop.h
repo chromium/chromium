@@ -54,10 +54,6 @@ class MixedRealityRenderLoop : public XRCompositorCommon {
   void StopRuntime() override;
   void OnSessionStart() override;
   bool UsesInputEventing() override;
-  device::mojom::XREnvironmentBlendMode GetEnvironmentBlendMode(
-      device::mojom::XRSessionMode session_mode) override;
-  device::mojom::XRInteractionMode GetInteractionMode(
-      device::mojom::XRSessionMode session_mode) override;
 
   // XRDeviceAbstraction:
   mojom::XRFrameDataPtr GetNextFrameData() override;

@@ -87,27 +87,6 @@ enum XRSessionMode {
   kImmersiveAr = 3,
 };
 
-// These enum names come from the WebXR spec:
-// https://immersive-web.github.io/webxr-ar-module/#enumdef-xrenvironmentblendmode
-// When presenting content to the XR device, the XR Compositor MUST apply the
-// appropriate blend technique to combine virtual pixels with the
-// real-world environment.
-enum XREnvironmentBlendMode {
-  kOpaque = 1,
-  kAlphaBlend = 2,
-  kAdditive = 3,
-};
-
-// These enum names come from the WebXR spec:
-// https://immersive-web.github.io/webxr-ar-module/#enumdef-xrinteractionmode
-// The interactionMode attribute describes the best space
-// (according to the user agent) for the application to draw interactive
-// UI for the current session.
-enum XRInteractionMode {
-  kScreenSpace = 1,
-  kWorldSpace = 2,
-};
-
 struct XRSessionOptions {
   // Represents the type of session that is being requested.
   XRSessionMode mode;
@@ -168,9 +147,6 @@ struct XRSession {
 
   // Description of the device's active configuration.
   XRSessionDeviceConfig device_config;
-
-  XREnvironmentBlendMode enviroment_blend_mode;
-  XRInteractionMode interaction_mode;
 };
 
 // This structure contains the infomation and interfaces needed to create a two

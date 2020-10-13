@@ -60,9 +60,6 @@ XrResult GetSystem(XrInstance instance, XrSystemId* system);
 
 XrResult CreateInstance(XrInstance* instance);
 
-std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
-                                                           XrSystemId system);
-
 }  // namespace device
 
 #endif  // DEVICE_VR_OPENXR_OPENXR_UTIL_H_

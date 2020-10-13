@@ -119,20 +119,7 @@ void OculusRenderLoop::StopRuntime() {
   ovr_frame_index_ = 0;
 }
 
-device::mojom::XREnvironmentBlendMode OculusRenderLoop::GetEnvironmentBlendMode(
-    device::mojom::XRSessionMode session_mode) {
-  DCHECK_EQ(session_mode, mojom::XRSessionMode::kImmersiveVr);
-  return device::mojom::XREnvironmentBlendMode::kOpaque;
-}
-
-device::mojom::XRInteractionMode OculusRenderLoop::GetInteractionMode(
-    device::mojom::XRSessionMode session_mode) {
-  DCHECK_EQ(session_mode, mojom::XRSessionMode::kImmersiveVr);
-  return device::mojom::XRInteractionMode::kWorldSpace;
-}
-
-void OculusRenderLoop::OnSessionStart()
-) {
+void OculusRenderLoop::OnSessionStart() {
   LogViewerType(VrViewerType::OCULUS_UNKNOWN);
 }
 

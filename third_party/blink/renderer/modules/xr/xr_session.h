@@ -86,6 +86,14 @@ class XRSession final
   // they are run in the same turn of the render loop.
   using ExecuteVfcCallback = base::OnceCallback<void(double)>;
 
+  enum EnvironmentBlendMode {
+    kBlendModeOpaque = 0,
+    kBlendModeAdditive,
+    kBlendModeAlphaBlend
+  };
+
+  enum InteractionMode { kInteractionModeScreen = 0, kInteractionModeWorld };
+
   struct MetricsReporter {
     explicit MetricsReporter(
         mojo::Remote<device::mojom::blink::XRSessionMetricsRecorder> recorder);
@@ -106,8 +114,8 @@ class XRSession final
             mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
                 client_receiver,
             device::mojom::blink::XRSessionMode mode,
-            device::mojom::blink::XREnvironmentBlendMode environment_blend_mode,
-            device::mojom::blink::XRInteractionMode interaction_mode,
+            EnvironmentBlendMode environment_blend_mode,
+            InteractionMode interaction_mode,
             device::mojom::blink::XRSessionDeviceConfigPtr device_config,
             bool sensorless_session,
             XRSessionFeatureSet enabled_features);

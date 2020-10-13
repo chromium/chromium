@@ -338,10 +338,6 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
   NOTREACHED();
 }
 
-bool BrowserXRRuntimeImpl::SupportsArBlendMode() {
-  return device_data_->is_ar_blend_mode_supported;
-}
-
 void BrowserXRRuntimeImpl::OnDisplayInfoChanged(
     device::mojom::VRDisplayInfoPtr vr_device_info) {
   bool had_display_info = !!display_info_;

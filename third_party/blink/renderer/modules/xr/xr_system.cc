@@ -1403,17 +1403,31 @@ void XRSystem::OnRequestSessionReturned(
   DVLOG(2) << __func__
            << ": environment_integration=" << environment_integration;
 
+  // TODO(https://crbug.com/944936): The blend mode could be "additive".
+  XRSession::EnvironmentBlendMode blend_mode = XRSession::kBlendModeOpaque;
+  if (environment_integration)
+    blend_mode = XRSession::kBlendModeAlphaBlend;
+
+  // TODO(https://crbug.com/1069350): The runtime should be the one to
+  // communicate the interaction mode, but for the moment we're going to use
+  // session mode and assume all AR is phone AR.
+  XRSession::InteractionMode interaction_mode =
+      XRSession::kInteractionModeWorld;
+  if (query->mode() == device::mojom::blink::XRSessionMode::kInline ||
+      query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr)
+    interaction_mode = XRSession::kInteractionModeScreen;
+
   XRSessionFeatureSet enabled_features;
   for (const auto& feature : session_ptr->enabled_features) {
     DVLOG(2) << __func__ << ": feature " << feature << " will be enabled";
     enabled_features.insert(feature);
   }
 
-  XRSession* session = CreateSession(
-      query->mode(), session_ptr->enviroment_blend_mode,
-      session_ptr->interaction_mode, std::move(session_ptr->client_receiver),
-      std::move(session_ptr->display_info),
-      std::move(session_ptr->device_config), enabled_features);
+  XRSession* session =
+      CreateSession(query->mode(), blend_mode, interaction_mode,
+                    std::move(session_ptr->client_receiver),
+                    std::move(session_ptr->display_info),
+                    std::move(session_ptr->device_config), enabled_features);
 
   frameProvider()->OnSessionStarted(session, std::move(session_ptr));
 
@@ -1512,8 +1526,8 @@ void XRSystem::ContextDestroyed() {
 // A session is always created and returned.
 XRSession* XRSystem::CreateSession(
     device::mojom::blink::XRSessionMode mode,
-    device::mojom::blink::XREnvironmentBlendMode blend_mode,
-    device::mojom::blink::XRInteractionMode interaction_mode,
+    XRSession::EnvironmentBlendMode blend_mode,
+    XRSession::InteractionMode interaction_mode,
     mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
         client_receiver,
     device::mojom::blink::VRDisplayInfoPtr display_info,
@@ -1532,10 +1546,9 @@ XRSession* XRSystem::CreateSession(
 
 XRSession* XRSystem::CreateSensorlessInlineSession() {
   // TODO(https://crbug.com/944936): The blend mode could be "additive".
-  device::mojom::blink::XREnvironmentBlendMode blend_mode =
-      device::mojom::blink::XREnvironmentBlendMode::kOpaque;
-  device::mojom::blink::XRInteractionMode interaction_mode =
-      device::mojom::blink::XRInteractionMode::kScreenSpace;
+  XRSession::EnvironmentBlendMode blend_mode = XRSession::kBlendModeOpaque;
+  XRSession::InteractionMode interaction_mode =
+      XRSession::kInteractionModeScreen;
   device::mojom::blink::XRSessionDeviceConfigPtr device_config =
       device::mojom::blink::XRSessionDeviceConfig::New();
   return CreateSession(device::mojom::blink::XRSessionMode::kInline, blend_mode,
