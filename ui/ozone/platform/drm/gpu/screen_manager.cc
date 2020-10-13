@@ -93,6 +93,13 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
   return nullptr;
 }
 
+std::vector<uint64_t> GetModifiersForPrimaryFormat(
+    HardwareDisplayController* controller) {
+  gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
+  uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(format);
+  return controller->GetFormatModifiersForModesetting(fourcc_format);
+}
+
 }  // namespace
 
 ScreenManager::ScreenManager() = default;
@@ -425,38 +432,32 @@ void ScreenManager::UpdateControllerToWindowMapping() {
 
 DrmOverlayPlane ScreenManager::GetModesetBuffer(
     HardwareDisplayController* controller,
-    const gfx::Rect& bounds) {
-  DrmWindow* window = FindWindowAt(bounds);
-
-  gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
-  uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(format);
-  const auto& modifiers =
-      controller->GetFormatModifiersForModesetting(fourcc_format);
-  if (window) {
-    const DrmOverlayPlane* primary = window->GetLastModesetBuffer();
-    const DrmDevice* drm = controller->GetDrmDevice().get();
-    if (primary && primary->buffer->size() == bounds.size() &&
-        primary->buffer->drm_device() == drm) {
-      // If the controller doesn't advertise modifiers, wont have a
-      // modifier either and we can reuse the buffer. Otherwise, check
-      // to see if the controller supports the buffers format
-      // modifier.
-      if (modifiers.empty())
-        return primary->Clone();
-      for (const uint64_t modifier : modifiers) {
-        if (modifier == primary->buffer->format_modifier())
-          return primary->Clone();
-      }
-    }
-  }
-
+    const gfx::Rect& bounds,
+    const std::vector<uint64_t>& modifiers) {
   scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
+  uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+      display::DisplaySnapshot::PrimaryFormat());
+  // Get the buffer that best reflects what the next Page Flip will look like,
+  // which is using the preferred modifiers from the controllers.
   std::unique_ptr<GbmBuffer> buffer =
       drm->gbm_device()->CreateBufferWithModifiers(
           fourcc_format, bounds.size(), GBM_BO_USE_SCANOUT, modifiers);
   if (!buffer) {
     LOG(ERROR) << "Failed to create scanout buffer";
     return DrmOverlayPlane::Error();
+  }
+
+  // If the current primary plane matches what we need for the next page flip,
+  // we can clone it.
+  DrmWindow* window = FindWindowAt(bounds);
+  if (window) {
+    const DrmOverlayPlane* primary = window->GetLastModesetBuffer();
+    const DrmDevice* drm = controller->GetDrmDevice().get();
+    if (primary && primary->buffer->size() == bounds.size() &&
+        primary->buffer->drm_device() == drm) {
+      if (primary->buffer->format_modifier() == buffer->GetFormatModifier())
+        return primary->Clone();
+    }
   }
 
   scoped_refptr<DrmFramebuffer> framebuffer = DrmFramebuffer::AddFramebuffer(
@@ -481,7 +482,9 @@ DrmOverlayPlane ScreenManager::GetModesetBuffer(
 bool ScreenManager::EnableController(HardwareDisplayController* controller) {
   DCHECK(!controller->crtc_controllers().empty());
   gfx::Rect rect(controller->origin(), controller->GetModeSize());
-  DrmOverlayPlane plane = GetModesetBuffer(controller, rect);
+
+  auto modifiers = GetModifiersForPrimaryFormat(controller);
+  DrmOverlayPlane plane = GetModesetBuffer(controller, rect, modifiers);
   if (!plane.buffer || !controller->Enable(plane)) {
     LOG(ERROR) << "Failed to enable controller";
     return false;
@@ -497,7 +500,8 @@ bool ScreenManager::ModesetController(HardwareDisplayController* controller,
   gfx::Rect rect(origin, gfx::Size(mode.hdisplay, mode.vdisplay));
   controller->set_origin(origin);
 
-  DrmOverlayPlane plane = GetModesetBuffer(controller, rect);
+  auto modifiers = GetModifiersForPrimaryFormat(controller);
+  DrmOverlayPlane plane = GetModesetBuffer(controller, rect, modifiers);
   if (!plane.buffer || !controller->Modeset(plane, mode)) {
     LOG(ERROR) << "Failed to modeset controller";
     return false;
