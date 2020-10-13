@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
+#include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 
 namespace chromeos {
 namespace input_method {

@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_impl.h"
+#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_delegate_impl.h"
 
 #include <stddef.h>
 
@@ -159,20 +159,24 @@ void OnFilePathChecked(Profile* profile,
 
 }  // namespace
 
-ComponentExtensionIMEManagerImpl::ComponentExtensionIMEManagerImpl() {
+ComponentExtensionIMEManagerDelegateImpl::
+    ComponentExtensionIMEManagerDelegateImpl() {
   ReadComponentExtensionsInfo(&component_extension_list_);
 }
 
-ComponentExtensionIMEManagerImpl::~ComponentExtensionIMEManagerImpl() = default;
+ComponentExtensionIMEManagerDelegateImpl::
+    ~ComponentExtensionIMEManagerDelegateImpl() = default;
 
-std::vector<ComponentExtensionIME> ComponentExtensionIMEManagerImpl::ListIME() {
+std::vector<ComponentExtensionIME>
+ComponentExtensionIMEManagerDelegateImpl::ListIME() {
   return component_extension_list_;
 }
 
-void ComponentExtensionIMEManagerImpl::Load(Profile* profile,
-                                            const std::string& extension_id,
-                                            const std::string& manifest,
-                                            const base::FilePath& file_path) {
+void ComponentExtensionIMEManagerDelegateImpl::Load(
+    Profile* profile,
+    const std::string& extension_id,
+    const std::string& manifest,
+    const base::FilePath& file_path) {
   // Check the existence of file path to avoid unnecessary extension loading
   // and InputMethodEngine creation, so that the virtual keyboard web content
   // url won't be override by IME component extensions.
@@ -189,21 +193,23 @@ void ComponentExtensionIMEManagerImpl::Load(Profile* profile,
 }
 
 std::unique_ptr<base::DictionaryValue>
-ComponentExtensionIMEManagerImpl::GetManifest(
+ComponentExtensionIMEManagerDelegateImpl::GetManifest(
     const std::string& manifest_string) {
   std::string error;
   JSONStringValueDeserializer deserializer(manifest_string);
   std::unique_ptr<base::Value> manifest =
-      deserializer.Deserialize(NULL, &error);
+      deserializer.Deserialize(nullptr, &error);
   if (!manifest.get())
     LOG(ERROR) << "Failed at getting manifest";
 
-  return std::unique_ptr<base::DictionaryValue>(
+  std::unique_ptr<base::DictionaryValue> ret(
       static_cast<base::DictionaryValue*>(manifest.release()));
+  return ret;
 }
 
 // static
-bool ComponentExtensionIMEManagerImpl::IsIMEExtensionID(const std::string& id) {
+bool ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
+    const std::string& id) {
   for (auto& extension : allowlisted_component_extensions) {
     if (base::LowerCaseEqualsASCII(id, extension.id))
       return true;
@@ -212,7 +218,7 @@ bool ComponentExtensionIMEManagerImpl::IsIMEExtensionID(const std::string& id) {
 }
 
 // static
-bool ComponentExtensionIMEManagerImpl::ReadEngineComponent(
+bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     const ComponentExtensionIME& component_extension,
     const base::DictionaryValue& dict,
     ComponentExtensionEngine* out) {
@@ -230,14 +236,14 @@ bool ComponentExtensionIMEManagerImpl::ReadEngineComponent(
     out->indicator = "";
 
   std::set<std::string> languages;
-  const base::Value* language_value = NULL;
+  const base::Value* language_value = nullptr;
   if (dict.Get(extensions::manifest_keys::kLanguage, &language_value)) {
     if (language_value->is_string()) {
       std::string language_str;
       language_value->GetAsString(&language_str);
       languages.insert(language_str);
     } else if (language_value->is_list()) {
-      const base::ListValue* language_list = NULL;
+      const base::ListValue* language_list = nullptr;
       language_value->GetAsList(&language_list);
       for (size_t j = 0; j < language_list->GetSize(); ++j) {
         std::string language_str;
@@ -249,7 +255,7 @@ bool ComponentExtensionIMEManagerImpl::ReadEngineComponent(
   DCHECK(!languages.empty());
   out->language_codes.assign(languages.begin(), languages.end());
 
-  const base::ListValue* layouts = NULL;
+  const base::ListValue* layouts = nullptr;
   if (!dict.GetList(extensions::manifest_keys::kLayouts, &layouts))
     return false;
 
@@ -270,8 +276,7 @@ bool ComponentExtensionIMEManagerImpl::ReadEngineComponent(
     return false;
   out->input_view_url = url;
 #else
-  if (dict.GetString(extensions::manifest_keys::kInputView,
-                     &url_string)) {
+  if (dict.GetString(extensions::manifest_keys::kInputView, &url_string)) {
     GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
@@ -282,8 +287,7 @@ bool ComponentExtensionIMEManagerImpl::ReadEngineComponent(
   }
 #endif
 
-  if (dict.GetString(extensions::manifest_keys::kOptionsPage,
-                     &url_string)) {
+  if (dict.GetString(extensions::manifest_keys::kOptionsPage, &url_string)) {
     GURL url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
@@ -300,7 +304,7 @@ bool ComponentExtensionIMEManagerImpl::ReadEngineComponent(
 }
 
 // static
-bool ComponentExtensionIMEManagerImpl::ReadExtensionInfo(
+bool ComponentExtensionIMEManagerDelegateImpl::ReadExtensionInfo(
     const base::DictionaryValue& manifest,
     const std::string& extension_id,
     ComponentExtensionIME* out) {
@@ -325,7 +329,7 @@ bool ComponentExtensionIMEManagerImpl::ReadExtensionInfo(
 }
 
 // static
-void ComponentExtensionIMEManagerImpl::ReadComponentExtensionsInfo(
+void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     std::vector<ComponentExtensionIME>* out_imes) {
   DCHECK(out_imes);
   for (auto& extension : allowlisted_component_extensions) {

@@ -55,12 +55,6 @@ ComponentExtensionIME::ComponentExtensionIME(
 
 ComponentExtensionIME::~ComponentExtensionIME() = default;
 
-ComponentExtensionIMEManagerDelegate::ComponentExtensionIMEManagerDelegate() =
-    default;
-
-ComponentExtensionIMEManagerDelegate::~ComponentExtensionIMEManagerDelegate() =
-    default;
-
 ComponentExtensionIMEManager::ComponentExtensionIMEManager() {
   for (const auto& input_method : input_method::kInputMethods) {
     if (input_method.is_login_keyboard)

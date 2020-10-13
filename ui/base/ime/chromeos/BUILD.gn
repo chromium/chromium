@@ -14,6 +14,7 @@ component("chromeos") {
   sources = [
     "component_extension_ime_manager.cc",
     "component_extension_ime_manager.h",
+    "component_extension_ime_manager_delegate.h",
     "extension_ime_util.cc",
     "extension_ime_util.h",
     "fake_ime_keyboard.cc",

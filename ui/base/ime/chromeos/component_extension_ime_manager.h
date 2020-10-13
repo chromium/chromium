@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "ui/base/ime/chromeos/component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 
 class Profile;
@@ -45,24 +46,6 @@ struct COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIME {
   GURL options_page_url;
   base::FilePath path;
   std::vector<ComponentExtensionEngine> engines;
-};
-
-// Provides an interface to list/load/unload for component extension IME.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
-    ComponentExtensionIMEManagerDelegate {
- public:
-  ComponentExtensionIMEManagerDelegate();
-  virtual ~ComponentExtensionIMEManagerDelegate();
-
-  // Lists installed component extension IMEs.
-  virtual std::vector<ComponentExtensionIME> ListIME() = 0;
-
-  // Loads component extension IME associated with |extension_id|.
-  // Returns false if it fails, otherwise returns true.
-  virtual void Load(Profile* profile,
-                    const std::string& extension_id,
-                    const std::string& manifest,
-                    const base::FilePath& path) = 0;
 };
 
 // This class manages component extension input method.

@@ -18,7 +18,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
-#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_impl.h"
+#include "chrome/browser/chromeos/input_method/component_extension_ime_manager_delegate_impl.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
 
@@ -48,7 +48,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   }
 
 #if defined(OS_CHROMEOS)
-  if (chromeos::ComponentExtensionIMEManagerImpl::IsIMEExtensionID(
+  if (chromeos::ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
           extension_id)) {
     return true;
   }
