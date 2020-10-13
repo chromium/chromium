@@ -35,7 +35,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
         super.attachBaseContext(context);
     }
 
-    protected Impl createNonBrowserApplication() {
-        return new Impl();
+    protected MainDexApplicationImpl createNonBrowserApplication() {
+        return new MainDexApplicationImpl();
     }
 }

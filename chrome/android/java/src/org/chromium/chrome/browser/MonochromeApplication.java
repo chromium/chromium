@@ -32,7 +32,7 @@ public class MonochromeApplication extends ChromeApplication {
     }
 
     /** Monochrome application logic. */
-    public static class MonochromeApplicationImpl extends ChromeApplication.ChromeApplicationImpl {
+    public static class MonochromeApplicationImpl extends ChromeApplicationImpl {
         public MonochromeApplicationImpl() {}
 
         @Override
