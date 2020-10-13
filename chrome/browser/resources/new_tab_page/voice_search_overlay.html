@@ -68,6 +68,8 @@
   *[text='waiting'],
   *[text='speak'] {
     opacity: 0;
+    /* Hiding overflow to prevent jitter when the content area is narrow. */
+    overflow-x: hidden;
     padding-inline-start: 50px;
   }
 
