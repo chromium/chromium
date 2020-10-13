@@ -79,6 +79,9 @@ class DomKey {
                 "suspicious representation change");
 
  public:
+  // Following block is a technique to add inlined constant with C++14
+  // compatible way. These can be replaced with inline constexpr after
+  // C++17 support.
   enum InvalidKey : Base { NONE = 0 };
 // |dom_key_data.inc| describes the non-printable DomKey values, and is
 // included here to create constants for them in the DomKey:: scope.
@@ -91,14 +94,14 @@ class DomKey {
 #undef DOM_KEY_UNI
 
   // Create a DomKey, with the undefined-value sentinel DomKey::NONE.
-  DomKey() : value_(NONE) {}
+  constexpr DomKey() = default;
 
   // Create a DomKey from an encoded integer value. This is implicit so
   // that DomKey::NAME constants don't need to be explicitly converted
   // to DomKey.
-  DomKey(Base value) : value_(value) {
-    DCHECK(value == 0 || IsValid()) << value;
-  }
+  // After switching to C++17, this can be replaced by inline constexpr,
+  // so can be private. On runtime, FromBase is preferred.
+  constexpr DomKey(Base value) : value_(value) {}
 
   // Factory that returns a DomKey for the specified value. Returns nullopt if
   // |value| is not a valid value (or NONE).
@@ -161,7 +164,7 @@ class DomKey {
  private:
   static bool IsValidValue(Base value) { return (value & TYPE_MASK) != 0; }
 
-  Base value_;
+  Base value_ = NONE;
 };
 
 }  // namespace ui

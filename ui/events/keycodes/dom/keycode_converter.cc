@@ -44,7 +44,7 @@ inline constexpr uint32_t CodeIfOnKeyboardPage(uint32_t usage) {
 #else
 #error Unsupported platform
 #endif
-#define DOM_CODE_DECLARATION const KeycodeMapEntry kDomCodeMappings[] =
+#define DOM_CODE_DECLARATION constexpr KeycodeMapEntry kDomCodeMappings[] =
 #include "ui/events/keycodes/dom/dom_code_data.inc"
 #undef DOM_CODE
 #undef DOM_CODE_DECLARATION
@@ -55,7 +55,7 @@ struct DomKeyMapEntry {
   const char* string;
 };
 
-#define DOM_KEY_MAP_DECLARATION const DomKeyMapEntry kDomKeyMappings[] =
+#define DOM_KEY_MAP_DECLARATION constexpr DomKeyMapEntry kDomKeyMappings[] =
 #define DOM_KEY_UNI(key, id, value) {DomKey::id, key}
 #define DOM_KEY_MAP(key, id, value) {DomKey::id, key}
 #include "ui/events/keycodes/dom/dom_key_data.inc"
