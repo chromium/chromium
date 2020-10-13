@@ -91,7 +91,7 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         '../../chrome/browser/media/router/providers/cast/cast_internal_message_util.cc',  #pylint: disable=line-too-long
         '../../components/cast_channel/cast_channel_enum.cc',
         '../../components/cast_channel/cast_message_util.cc',
-        '../../components/media_router/common/providers/cast/cast_media_source.cc',
+        '../../components/media_router/common/providers/cast/cast_media_source.cc',  #pylint: disable=line-too-long
         '../../ui/events/keycodes/dom/keycode_converter.cc',
         # TODO(crbug.com/1051561): angle_unittests affected by coverage.
         '../../base/message_loop/message_pump_default.cc',
@@ -145,10 +145,13 @@ def _remove_flags_from_command(command):
   try:
     while True:
       idx = command.index(start_flag, start_idx)
-      start_idx = idx + 1
       if command[idx:idx + num_flags] == _COVERAGE_FLAGS:
         del command[idx:idx + num_flags]
-        break
+        # There can be multiple sets of _COVERAGE_FLAGS. All of these need to be
+        # removed.
+        start_idx = idx
+      else:
+        start_idx = idx + 1
   except ValueError:
     pass
 
