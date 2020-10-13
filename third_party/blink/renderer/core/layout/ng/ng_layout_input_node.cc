@@ -95,6 +95,10 @@ wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
   return To<LayoutNGTableCell>(box_)->ComputedRowSpan();
 }
 
+bool NGLayoutInputNode::IsTextControlPlaceholder() const {
+  return IsBlock() && blink::IsTextControlPlaceholder(GetDOMNode());
+}
+
 MinMaxSizesResult NGLayoutInputNode::ComputeMinMaxSizes(
     WritingMode writing_mode,
     const MinMaxSizesInput& input,

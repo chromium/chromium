@@ -343,6 +343,12 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // |ruby_text_child|. This is called only if IsRubyText() returns true.
   void LayoutRubyText(NGLayoutInputNode* ruby_text_child);
 
+  // Layout |placeholder| content, and decide the location of |placeholder|.
+  // This is called only if |this| is a text control.
+  void HandleTextControlPlaceholder(
+      NGBlockNode placeholder,
+      const NGPreviousInflowPosition& previous_inflow_position);
+
   // Adjusts the inline offset of the slider thumb box from the value of
   // HTMLInputElement.
   LogicalOffset AdjustSliderThumbInlineOffset(

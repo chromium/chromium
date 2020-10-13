@@ -230,7 +230,8 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
     // We don't check IsRubyText() here intentionally. RubyText width should
     // affect this width.
     if (child.IsOutOfFlowPositioned() ||
-        (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc()))
+        (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc()) ||
+        child.IsTextControlPlaceholder())
       continue;
 
     const ComputedStyle& child_style = child.Style();
@@ -632,6 +633,9 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
       break;
     } else if (IsRubyText(child)) {
       ruby_text_child = child;
+    } else if (child.IsTextControlPlaceholder()) {
+      HandleTextControlPlaceholder(To<NGBlockNode>(child),
+                                   previous_inflow_position);
     } else {
       // If this is the child we had previously determined to break before, do
       // so now and finish layout.
@@ -2854,6 +2858,24 @@ void NGBlockLayoutAlgorithm::LayoutRubyText(
   // layout.
   if (!container_builder_.Baseline())
     PropagateBaselineFromChild(ruby_text_fragment, ruby_text_box_top);
+}
+
+void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
+    NGBlockNode placeholder,
+    const NGPreviousInflowPosition& previous_inflow_position) {
+  DCHECK(Node().IsTextControl()) << Node().GetLayoutBox();
+
+  const bool is_new_fc = placeholder.CreatesNewFormattingContext();
+  const NGConstraintSpace space = CreateConstraintSpaceForChild(
+      placeholder,
+      ComputeChildData(previous_inflow_position, placeholder,
+                       /* child_break_token */ nullptr, is_new_fc),
+      ChildAvailableSize(), is_new_fc);
+
+  scoped_refptr<const NGLayoutResult> result = placeholder.Layout(space);
+  container_builder_.AddResult(*result, BorderScrollbarPadding().StartOffset());
+  // This function doesn't update previous_inflow_position. Other children in
+  // this container should ignore |placeholder|.
 }
 
 LogicalOffset NGBlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
