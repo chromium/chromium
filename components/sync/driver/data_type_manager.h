@@ -102,9 +102,6 @@ class DataTypeManager {
   // KEEP_DATA was used when stopping (or if the datatype was never started).
   virtual ModelTypeSet GetPurgedDataTypes() const = 0;
 
-  // Whether or not we are syncing encryption keys.
-  virtual bool IsNigoriEnabled() const = 0;
-
   // The current state of the data type manager.
   virtual State state() const = 0;
 };

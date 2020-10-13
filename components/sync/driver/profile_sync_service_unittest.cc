@@ -84,7 +84,6 @@ class FakeDataTypeManager : public DataTypeManager {
   void Stop(ShutdownReason reason) override {}
   ModelTypeSet GetActiveDataTypes() const override { return desired_types_; }
   ModelTypeSet GetPurgedDataTypes() const override { return ModelTypeSet(); }
-  bool IsNigoriEnabled() const override { return true; }
   State state() const override { return state_; }
 
  private:

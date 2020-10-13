@@ -900,10 +900,6 @@ ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {
   return purged_types;
 }
 
-bool DataTypeManagerImpl::IsNigoriEnabled() const {
-  return downloaded_types_.Has(NIGORI);
-}
-
 DataTypeManager::State DataTypeManagerImpl::state() const {
   return state_;
 }

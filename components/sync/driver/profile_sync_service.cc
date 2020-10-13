@@ -2001,7 +2001,6 @@ void ProfileSyncService::OnSetupInProgressHandleDestroyed() {
 
 void ProfileSyncService::ReconfigureDueToPassphrase(ConfigureReason reason) {
   if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
-    DCHECK(data_type_manager_->IsNigoriEnabled());
     ConfigureDataTypeManager(reason);
   }
   // Notify observers that the passphrase status may have changed, regardless of
