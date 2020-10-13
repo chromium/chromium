@@ -54,6 +54,17 @@ bool GetDisplayBounds(const std::string& spec,
       sscanf(spec.c_str(), "%d+%d-%dx%d*%f", &x, &y, &width, &height,
              device_scale_factor) >= 4) {
     bounds->SetRect(x, y, width, height);
+
+    auto equals_within_epsilon = [device_scale_factor](float dsf) {
+      return std::abs(*device_scale_factor - dsf) < 0.01f;
+    };
+    if (equals_within_epsilon(1.77f)) {
+      *device_scale_factor = kDsf_1_777;
+    } else if (equals_within_epsilon(2.25f)) {
+      *device_scale_factor = kDsf_2_252;
+    } else if (equals_within_epsilon(2.66)) {
+      *device_scale_factor = kDsf_2_666;
+    }
     return true;
   }
   return false;
