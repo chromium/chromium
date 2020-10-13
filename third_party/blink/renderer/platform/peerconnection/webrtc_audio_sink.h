@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
-#include "third_party/webrtc/pc/media_stream_track.h"
+#include "third_party/webrtc/api/media_stream_track.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 #include "third_party/webrtc/rtc_base/timestamp_aligner.h"
 
