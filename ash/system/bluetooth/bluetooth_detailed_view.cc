@@ -4,20 +4,22 @@
 
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 
-#include <map>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -110,15 +112,21 @@ void LogUserBluetoothEvent(const BluetoothAddress& device_address) {
   }
 }
 
+HoverHighlightView* GetScrollListItemForDevice(
+    const std::unordered_map<HoverHighlightView*, BluetoothAddress>& device_map,
+    const BluetoothAddress& address) {
+  for (const auto& view_and_address : device_map) {
+    if (view_and_address.second == address)
+      return view_and_address.first;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 BluetoothDetailedView::BluetoothDetailedView(DetailedViewDelegate* delegate,
                                              LoginStatus login)
-    : TrayDetailedView(delegate),
-      login_(login),
-      toggle_(nullptr),
-      settings_(nullptr),
-      disabled_panel_(nullptr) {
+    : TrayDetailedView(delegate), login_(login) {
   CreateItems();
 }
 
@@ -180,31 +188,50 @@ void BluetoothDetailedView::UpdateDeviceScrollList(
   for (const auto& device : paired_not_connected_devices)
     paired_not_connected_devices_.push_back(device->Clone());
 
-  base::Optional<BluetoothAddress> focused_device_address =
-      GetFocusedDeviceAddress();
-
+  // Keep track of previous device_map_ so that existing scroll list
+  // item views can be re-used. This is required for a11y so that
+  // keyboard focus and screen-reader call outs are not disrupted
+  // by frequent device list updates.
+  std::unordered_map<HoverHighlightView*, BluetoothAddress> old_device_map =
+      device_map_;
   device_map_.clear();
-  scroll_content()->RemoveAllChildViews(true);
 
   // Add paired devices and their section header to the list.
   bool has_paired_devices = !connected_devices.empty() ||
                             !connecting_devices.empty() ||
                             !paired_not_connected_devices.empty();
+  int index = 0;
   if (has_paired_devices) {
-    AddScrollListSubHeader(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_DEVICES);
-    AppendSameTypeDevicesToScrollList(connected_devices, true, true);
-    AppendSameTypeDevicesToScrollList(connecting_devices, true, false);
-    AppendSameTypeDevicesToScrollList(paired_not_connected_devices, false,
-                                      false);
+    paired_devices_heading_ =
+        AddSubHeading(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_DEVICES,
+                      paired_devices_heading_, index++);
+    index = AddSameTypeDevicesToScrollList(connected_devices, old_device_map,
+                                           index, true, true);
+    index = AddSameTypeDevicesToScrollList(connecting_devices, old_device_map,
+                                           index, true, false);
+    index = AddSameTypeDevicesToScrollList(paired_not_connected_devices,
+                                           old_device_map, index, false, false);
+  } else if (paired_devices_heading_) {
+    scroll_content()->RemoveChildView(paired_devices_heading_);
+    paired_devices_heading_ = nullptr;
   }
 
   // Add unpaired devices to the list. If at least one paired device is
   // present, also add a section header above the unpaired devices.
   if (!discovered_not_paired_devices.empty()) {
-    if (has_paired_devices)
-      AddScrollListSubHeader(IDS_ASH_STATUS_TRAY_BLUETOOTH_UNPAIRED_DEVICES);
-    AppendSameTypeDevicesToScrollList(discovered_not_paired_devices, false,
-                                      false);
+    if (has_paired_devices) {
+      unpaired_devices_heading_ =
+          AddSubHeading(IDS_ASH_STATUS_TRAY_BLUETOOTH_UNPAIRED_DEVICES,
+                        unpaired_devices_heading_, index++);
+    }
+    index = AddSameTypeDevicesToScrollList(discovered_not_paired_devices,
+                                           old_device_map, index, false, false);
+  }
+
+  if (unpaired_devices_heading_ &&
+      (discovered_not_paired_devices.empty() || !has_paired_devices)) {
+    scroll_content()->RemoveChildView(unpaired_devices_heading_);
+    unpaired_devices_heading_ = nullptr;
   }
 
   // Show user Bluetooth state if there is no bluetooth devices in list.
@@ -213,9 +240,12 @@ void BluetoothDetailedView::UpdateDeviceScrollList(
         nullptr /* delegate */, IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING));
   }
 
-  // Focus the device which was focused before the device-list update.
-  if (focused_device_address)
-    FocusDeviceByAddress(focused_device_address.value());
+  // Remove views for devices from old_device_map that are not in device_map_.
+  for (auto& view_and_address : old_device_map) {
+    if (device_map_.find(view_and_address.first) == device_map_.end()) {
+      scroll_content()->RemoveChildView(view_and_address.first);
+    }
+  }
 
   scroll_content()->InvalidateLayout();
 
@@ -236,15 +266,38 @@ void BluetoothDetailedView::CreateItems() {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
 }
 
-void BluetoothDetailedView::AppendSameTypeDevicesToScrollList(
+TriView* BluetoothDetailedView::AddSubHeading(int text_id,
+                                              TriView* sub_heading_view,
+                                              int child_index) {
+  if (!sub_heading_view) {
+    sub_heading_view = AddScrollListSubHeader(text_id);
+  }
+  scroll_content()->ReorderChildView(sub_heading_view, child_index);
+  return sub_heading_view;
+}
+
+int BluetoothDetailedView::AddSameTypeDevicesToScrollList(
     const BluetoothDeviceList& list,
+    const std::unordered_map<HoverHighlightView*, BluetoothAddress>&
+        old_device_list,
+    int child_index,
     bool highlight,
     bool checked) {
   for (const auto& device : list) {
     const gfx::VectorIcon& icon =
         GetBluetoothDeviceIcon(device->device_type, device->connection_state);
-    HoverHighlightView* container = AddScrollListItem(
-        icon, device::GetBluetoothDeviceNameForDisplay(device));
+    base::string16 device_name =
+        device::GetBluetoothDeviceNameForDisplay(device);
+    HoverHighlightView* container =
+        GetScrollListItemForDevice(old_device_list, device->address);
+    if (!container) {
+      container = AddScrollListItem(icon, device_name);
+    } else {
+      container->text_label()->SetText(device_name);
+      container->left_icon()->SetImage(gfx::CreateVectorIcon(
+          icon, AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    }
     container->SetAccessibleName(
         device::GetBluetoothDeviceLabelForAccessibility(device));
     switch (device->connection_state) {
@@ -261,8 +314,10 @@ void BluetoothDetailedView::AppendSameTypeDevicesToScrollList(
                            : base::nullopt);
         break;
     }
+    scroll_content()->ReorderChildView(container, child_index++);
     device_map_[container] = device->address;
   }
+  return child_index;
 }
 
 bool BluetoothDetailedView::FoundDevice(
@@ -277,11 +332,9 @@ bool BluetoothDetailedView::FoundDevice(
 
 void BluetoothDetailedView::UpdateClickedDevice(
     const BluetoothAddress& device_address,
-    views::View* item_container) {
+    HoverHighlightView* item_container) {
   if (FoundDevice(device_address, paired_not_connected_devices_)) {
-    HoverHighlightView* container =
-        static_cast<HoverHighlightView*>(item_container);
-    SetupConnectingScrollListItem(container);
+    SetupConnectingScrollListItem(item_container);
     scroll_content()->SizeToPreferredSize();
     scroller()->Layout();
   }
@@ -318,8 +371,9 @@ void BluetoothDetailedView::HandleViewClicked(views::View* view) {
   if (helper->GetBluetoothState() != BluetoothSystem::State::kPoweredOn)
     return;
 
-  std::map<views::View*, BluetoothAddress>::iterator find;
-  find = device_map_.find(view);
+  HoverHighlightView* container = static_cast<HoverHighlightView*>(view);
+  std::unordered_map<HoverHighlightView*, BluetoothAddress>::iterator find;
+  find = device_map_.find(container);
   if (find == device_map_.end())
     return;
 
@@ -327,7 +381,7 @@ void BluetoothDetailedView::HandleViewClicked(views::View* view) {
   if (FoundDevice(device_address, connecting_devices_))
     return;
 
-  UpdateClickedDevice(device_address, view);
+  UpdateClickedDevice(device_address, container);
   LogUserBluetoothEvent(device_address);
   helper->ConnectToBluetoothDevice(device_address);
 }
