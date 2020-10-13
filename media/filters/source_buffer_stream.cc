@@ -165,9 +165,10 @@ SourceBufferStream::SourceBufferStream(const AudioDecoderConfig& audio_config,
       highest_output_buffer_timestamp_(kNoTimestamp),
       max_interbuffer_distance_(
           base::TimeDelta::FromMilliseconds(kMinimumInterbufferDistanceInMs)),
-      memory_limit_(GetDemuxerStreamAudioMemoryLimit()) {
+      memory_limit_(GetDemuxerStreamAudioMemoryLimit(&audio_config)) {
   DCHECK(audio_config.IsValidConfig());
   audio_configs_.push_back(audio_config);
+  DVLOG(2) << __func__ << ": audio_buffer_size= " << memory_limit_;
 }
 
 SourceBufferStream::SourceBufferStream(const VideoDecoderConfig& video_config,
@@ -179,9 +180,12 @@ SourceBufferStream::SourceBufferStream(const VideoDecoderConfig& video_config,
       highest_output_buffer_timestamp_(kNoTimestamp),
       max_interbuffer_distance_(
           base::TimeDelta::FromMilliseconds(kMinimumInterbufferDistanceInMs)),
-      memory_limit_(GetDemuxerStreamVideoMemoryLimit()) {
+      memory_limit_(
+          GetDemuxerStreamVideoMemoryLimit(Demuxer::DemuxerTypes::kChunkDemuxer,
+                                           &video_config)) {
   DCHECK(video_config.IsValidConfig());
   video_configs_.push_back(video_config);
+  DVLOG(2) << __func__ << ": video_buffer_size= " << memory_limit_;
 }
 
 SourceBufferStream::SourceBufferStream(const TextTrackConfig& text_config,
@@ -194,7 +198,8 @@ SourceBufferStream::SourceBufferStream(const TextTrackConfig& text_config,
       highest_output_buffer_timestamp_(kNoTimestamp),
       max_interbuffer_distance_(
           base::TimeDelta::FromMilliseconds(kMinimumInterbufferDistanceInMs)),
-      memory_limit_(GetDemuxerStreamAudioMemoryLimit()) {}
+      memory_limit_(
+          GetDemuxerStreamAudioMemoryLimit(nullptr /*audio_config*/)) {}
 
 SourceBufferStream::~SourceBufferStream() = default;
 

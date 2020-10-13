@@ -484,6 +484,11 @@ class MEDIA_EXPORT SourceBufferStream {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 
   // The maximum amount of data in bytes the stream will keep in memory.
+  // |memory_limit_| is initialized based on the audio/video configuration in
+  // the constructor, but either user-setting of |memory_limit_| or
+  // memory-pressure-based adjustment to determine effective limit in the
+  // eviction heuristic can cause the result to vary from the value set in
+  // constructor.
   size_t memory_limit_;
 
   // Indicates that a kConfigChanged status has been reported by GetNextBuffer()

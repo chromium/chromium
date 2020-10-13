@@ -73,6 +73,12 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
       base::OnceCallback<void(DemuxerStream::Type type,
                               const std::vector<DemuxerStream*>&)>;
 
+  enum DemuxerTypes {
+    kChunkDemuxer,
+    kFFmpegDemuxer,
+    kMediaUrlDemuxer,
+  };
+
   Demuxer();
   ~Demuxer() override;
 

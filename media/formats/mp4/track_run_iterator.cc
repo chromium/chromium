@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/demuxer.h"
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
@@ -424,7 +425,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       // Avoid allocating insane sample counts for invalid media.
       const size_t max_sample_count =
-          GetDemuxerMemoryLimit() / sizeof(decltype(tri.samples)::value_type);
+          GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kChunkDemuxer) /
+          sizeof(decltype(tri.samples)::value_type);
       RCHECK_MEDIA_LOGGED(
           base::strict_cast<size_t>(trun.sample_count) <= max_sample_count,
           media_log_, "Metadata overhead exceeds storage limit.");

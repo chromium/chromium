@@ -428,10 +428,14 @@ source_set("base") {
     public_deps += [ "//media/base/win:mf_cdm_proxy" ]
   }
 
-  if (is_chromecast || is_fuchsia) {
-    sources += [ "demuxer_memory_limit_low.cc" ]
-  } else if (is_android) {
+  # TODO(ziyangch): Check |is_chromecast| first when using cast media pipeline
+  # on Android cast devices.
+  if (is_android) {
     sources += [ "demuxer_memory_limit_android.cc" ]
+  } else if (is_chromecast) {
+    sources += [ "demuxer_memory_limit_cast.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "demuxer_memory_limit_low.cc" ]
   } else {
     sources += [ "demuxer_memory_limit_default.cc" ]
   }
@@ -632,6 +636,10 @@ source_set("unit_tests") {
       "d3d11.lib",
       "mfplat.lib",
     ]
+  }
+
+  if (is_chromecast && !is_android) {
+    sources += [ "demuxer_memory_limit_cast_unittest.cc" ]
   }
 }
 

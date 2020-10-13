@@ -28,7 +28,8 @@ size_t SelectLimit(size_t default_limit,
 
 }  // namespace
 
-size_t GetDemuxerStreamAudioMemoryLimit() {
+size_t GetDemuxerStreamAudioMemoryLimit(
+    const AudioDecoderConfig* /*audio_config*/) {
   static const size_t limit =
       SelectLimit(internal::kDemuxerStreamAudioMemoryLimitDefault,
                   internal::kDemuxerStreamAudioMemoryLimitLow,
@@ -36,7 +37,9 @@ size_t GetDemuxerStreamAudioMemoryLimit() {
   return limit;
 }
 
-size_t GetDemuxerStreamVideoMemoryLimit() {
+size_t GetDemuxerStreamVideoMemoryLimit(
+    Demuxer::DemuxerTypes /*demuxer_type*/,
+    const VideoDecoderConfig* /*video_config*/) {
   static const size_t limit =
       SelectLimit(internal::kDemuxerStreamVideoMemoryLimitDefault,
                   internal::kDemuxerStreamVideoMemoryLimitLow,
@@ -44,9 +47,9 @@ size_t GetDemuxerStreamVideoMemoryLimit() {
   return limit;
 }
 
-size_t GetDemuxerMemoryLimit() {
-  return GetDemuxerStreamAudioMemoryLimit() +
-         GetDemuxerStreamVideoMemoryLimit();
+size_t GetDemuxerMemoryLimit(Demuxer::DemuxerTypes demuxer_type) {
+  return GetDemuxerStreamAudioMemoryLimit(nullptr) +
+         GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }
 
 }  // namespace media
