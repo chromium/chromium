@@ -392,6 +392,24 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // GetSiteURL().
   const SiteInfo& GetSiteInfo();
 
+  // Derives a new SiteInfo based on this SiteInstance's current state, and
+  // the information provided in |url_info|. This function is slightly different
+  // than ComputeSiteInfo() because it takes into account information specific
+  // to this SiteInstance, like whether it is a guest or not, and changes its
+  // behavior accordingly.
+  // |is_related| - Controls the SiteInfo returned for non-guest SiteInstances.
+  //  Set to true if the caller wants the SiteInfo for an existing related
+  //  SiteInstance associated with |url_info|. This is identical to what you
+  //  would get from GetRelatedSiteInstanceImpl(url_info)->GetSiteInfo(). This
+  //  may return the SiteInfo for the default SiteInstance so callers must be
+  //  prepared to deal with that. If set to false, a SiteInfo created with
+  //  ComputeSiteInfo() is returned.
+  //
+  // For guest SiteInstances, |site_info_| is returned because guests are not
+  // allowed to derive new guest SiteInfos. All guest navigations must stay in
+  // the same SiteInstance with the same SiteInfo.
+  SiteInfo DeriveSiteInfo(const UrlInfo& url_info, bool is_related = false);
+
   // Returns a ProcessLock that can be used with SetProcessLock to lock a
   // process to this SiteInstance's SiteInfo. The ProcessLock relies heavily on
   // the SiteInfo's process_lock_url() for security decisions.

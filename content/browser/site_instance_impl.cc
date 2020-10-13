@@ -665,6 +665,23 @@ const SiteInfo& SiteInstanceImpl::GetSiteInfo() {
   return site_info_;
 }
 
+SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
+                                          bool is_related) {
+  if (IsGuest()) {
+    // Guests currently must stay in the same SiteInstance no matter what the
+    // information in |url_info| so we return the current SiteInfo.
+    return site_info_;
+  }
+
+  if (is_related) {
+    return browsing_instance_->GetSiteInfoForURL(
+        url_info, /* allow_default_instance */ true);
+  }
+
+  return ComputeSiteInfo(GetIsolationContext(), url_info,
+                         GetCoopCoepCrossOriginIsolatedInfo());
+}
+
 const ProcessLock SiteInstanceImpl::GetProcessLock() const {
   return ProcessLock(site_info_);
 }
@@ -724,11 +741,10 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   // Note: This call must return information that is identical to what
   // would be reported in the SiteInstance returned by
   // GetRelatedSiteInstance(url).
-  SiteInfo site_info = browsing_instance_->GetSiteInfoForURL(
-      url_info, /* allow_default_instance */ true);
+  SiteInfo site_info = DeriveSiteInfo(url_info, /* is_related= */ true);
 
   // If this is a default SiteInstance and the BrowsingInstance gives us a
-  // non-default site URL even when we explicitly allow the default SiteInstance
+  // non-default SiteInfo even when we explicitly allow the default SiteInstance
   // to be considered, then |url| does not belong in the same process as this
   // SiteInstance. This can happen when the
   // kProcessSharingWithDefaultSiteInstances feature is not enabled and the
@@ -752,10 +768,12 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
       return true;
 
     // If there is no process but there is a site, then the process must have
-    // been discarded after we navigated away.  If the site URLs match, then it
-    // is safe to use this SiteInstance.
+    // been discarded after we navigated away.  If the SiteInfos match, then it
+    // is safe to use this SiteInstance unless it is a guest. Guests are a
+    // special case because we need to be consistent with the HasProcess() path
+    // and the IsSuitableHost() call below always returns false for guests.
     if (site_info_ == site_info)
-      return true;
+      return !IsGuest();
 
     // If the site URLs do not match, but neither this SiteInstance nor the
     // destination site_url require dedicated processes, then it is safe to use

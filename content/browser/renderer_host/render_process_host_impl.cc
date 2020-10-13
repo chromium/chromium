@@ -4112,8 +4112,10 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // Do not allow sharing of guest hosts. This is to prevent bugs where guest
   // and non-guest storage gets mixed. In the future, we might consider
   // enabling the sharing of guests, in this case this check should be removed
-  // and InSameStoragePartition should handle the possible sharing.
-  if (host->IsForGuestsOnly())
+  // and InSameStoragePartition should handle the possible sharing. Also
+  // deny any attempt where a guest request tries to use a |host| that is not
+  // explicitly created for guests.
+  if (host->IsForGuestsOnly() || is_guest)
     return false;
 
   // Check whether the given host and the intended site_url will be using the

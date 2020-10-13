@@ -1853,9 +1853,14 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // thus use the correct process.
     DCHECK_EQ(controller.GetBrowserContext(),
               current_instance_impl->GetBrowserContext());
-    const SiteInfo dest_site_info = SiteInstanceImpl::ComputeSiteInfo(
-        current_instance_impl->GetIsolationContext(), dest_url_info,
-        cross_origin_isolated_info);
+
+    // TODO(acolwell): Remove DCHECK once |cross_origin_isolated_info| has been
+    // moved into UrlInfo and becomes part of |dest_url_info|. The
+    // DeriveSiteInfo() call below is depending on the COOP/COEP info matching.
+    DCHECK(cross_origin_isolated_info ==
+           current_instance_impl->GetCoopCoepCrossOriginIsolatedInfo());
+    const SiteInfo dest_site_info =
+        current_instance_impl->DeriveSiteInfo(dest_url_info);
     bool use_process_per_site =
         RenderProcessHostImpl::ShouldUseProcessPerSite(
             current_instance_impl->GetBrowserContext(), dest_site_info) &&
