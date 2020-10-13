@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
   const tab_groups::TabGroupVisualData group1_data =
       *tsm->group_model()->GetTabGroup(group1)->visual_data();
   const tab_groups::TabGroupVisualData group2_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kBlue);
+      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kBlue, true);
   tsm->group_model()->GetTabGroup(group2)->SetVisualData(group2_data);
 
   Browser* const new_browser = QuitBrowserAndRestore(browser(), 5);
@@ -1080,10 +1080,13 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
       new_tsm->group_model()->GetTabGroup(group1)->visual_data();
   const tab_groups::TabGroupVisualData* const group2_restored_data =
       new_tsm->group_model()->GetTabGroup(group2)->visual_data();
+
   EXPECT_EQ(group1_data.title(), group1_restored_data->title());
   EXPECT_EQ(group1_data.color(), group1_restored_data->color());
+  EXPECT_EQ(group1_data.is_collapsed(), group1_restored_data->is_collapsed());
   EXPECT_EQ(group2_data.title(), group2_restored_data->title());
   EXPECT_EQ(group2_data.color(), group2_restored_data->color());
+  EXPECT_EQ(group2_data.is_collapsed(), group2_restored_data->is_collapsed());
 }
 
 INSTANTIATE_TEST_SUITE_P(WithAndWithoutReset,
