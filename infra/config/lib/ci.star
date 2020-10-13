@@ -15,7 +15,6 @@ to set the default value. Can also be accessed through `ci.defaults`.
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
-load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builders")
@@ -30,91 +29,6 @@ defaults = args.defaults(
     repo = None,
     refs = None,
 )
-
-def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
-    if not branches.matches(branch_selector):
-        return
-
-    luci.bucket(
-        name = milestone_vars.ci_bucket,
-        acls = [
-            acl.entry(
-                roles = acl.BUILDBUCKET_READER,
-                groups = "all",
-            ),
-            acl.entry(
-                roles = acl.BUILDBUCKET_TRIGGERER,
-                groups = "project-chromium-ci-schedulers",
-            ),
-            acl.entry(
-                roles = acl.BUILDBUCKET_OWNER,
-                groups = "google/luci-task-force@google.com",
-            ),
-        ],
-    )
-
-    luci.gitiles_poller(
-        name = milestone_vars.ci_poller,
-        bucket = milestone_vars.ci_bucket,
-        repo = "https://chromium.googlesource.com/chromium/src",
-        refs = [milestone_vars.ref],
-    )
-
-    # TODO(gbeaty) Determine what should be in each main console and define it
-    # separately
-    for name, title in (
-        (milestone_vars.main_console_name, milestone_vars.main_console_title),
-        (milestone_vars.cq_mirrors_console_name, milestone_vars.cq_mirrors_console_title),
-    ):
-        ci.overview_console_view(
-            name = name,
-            branch_selector = branch_selector,
-            repo = "https://chromium.googlesource.com/chromium/src",
-            refs = [milestone_vars.ref],
-            title = title,
-            top_level_ordering = [
-                "chromium",
-                "chromium.win",
-                "chromium.mac",
-                "chromium.linux",
-                "chromium.chromiumos",
-                "chromium.android",
-                "chrome",
-                "chromium.memory",
-                "chromium.dawn",
-                "chromium.gpu",
-                "chromium.fyi",
-                "chromium.android.fyi",
-                "chromium.clang",
-                "chromium.fuzz",
-                "chromium.gpu.fyi",
-                "chromium.swangle",
-            ],
-        )
-
-def set_defaults(milestone_vars, **kwargs):
-    default_values = dict(
-        add_to_console_view = milestone_vars.is_master,
-        bucket = milestone_vars.ci_bucket,
-        build_numbers = True,
-        configure_kitchen = True,
-        cores = 8,
-        cpu = builders.cpu.X86_64,
-        executable = "recipe:chromium",
-        execution_timeout = 3 * time.hour,
-        os = builders.os.LINUX_DEFAULT,
-        pool = "luci.chromium.ci",
-        project_trigger_overrides = {"chromium": settings.project} if not settings.is_master else None,
-        repo = "https://chromium.googlesource.com/chromium/src",
-        refs = [milestone_vars.ref],
-        service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-        swarming_tags = ["vpython:native-python-wrapper"],
-        triggered_by = [milestone_vars.ci_poller],
-        # TODO(crbug.com/1129723): set default goma_backend here.
-    )
-    default_values.update(kwargs)
-    for k, v in default_values.items():
-        getattr(defaults, k).set(v)
 
 def _console_view_ordering_graph_key(console_name):
     return graph.key("@chromium", "", "console_view_ordering", console_name)
@@ -1085,14 +999,19 @@ def win_builder(
     )
 
 ci = struct(
-    builder = ci_builder,
-    console_view = console_view,
-    console_view_entry = console_view_entry,
-    declare_bucket = declare_bucket,
+    # Module-level defaults for ci functions
     defaults = defaults,
+
+    # Functions for declaring automatically maintained consoles
+    console_view = console_view,
     overview_console_view = overview_console_view,
     ordering = ordering,
-    set_defaults = set_defaults,
+
+    # Functions for declaring CI builders
+    builder = ci_builder,
+    console_view_entry = console_view_entry,
+
+    # More specific builder wrapper functions
     android_builder = android_builder,
     android_fyi_builder = android_fyi_builder,
     chromium_builder = chromium_builder,

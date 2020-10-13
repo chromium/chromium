@@ -35,7 +35,7 @@ defaults.service_account.set(
     "goma-release-testing@chops-service-accounts.iam.gserviceaccount.com",
 )
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
-defaults.triggered_by.set(["master-gitiles-trigger"])
+defaults.triggered_by.set(["chromium-gitiles-trigger"])
 
 # Builders appear after the function used to define them, with all builders
 # defined using the same function ordered lexicographically by name

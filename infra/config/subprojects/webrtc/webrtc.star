@@ -36,7 +36,7 @@ defaults.execution_timeout.set(2 * time.hour)
 defaults.os.set(os.LINUX_DEFAULT)
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
-defaults.triggered_by.set(["master-gitiles-trigger"])
+defaults.triggered_by.set(["chromium-gitiles-trigger"])
 
 defaults.properties.set({
     "perf_dashboard_machine_group": "ChromiumWebRTC",

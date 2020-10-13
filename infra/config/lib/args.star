@@ -35,8 +35,11 @@ def defaults(extends = None, **vars):
       * get_value_from_kwargs(name, kwargs) - Gets the value of a keyword
         argument. If `name` is in `kwargs`, `kwargs[name]` is returned. Otherwise,
         the module-level default for `name` is returned.
+      * set(**kwargs) - Sets module-level defaults. For each keyword, sets the
+        module-level default with the keyword as the name to the value of the
+        keyword.
     """
-    methods = ["get_value", "get_value_from_kwargs"]
+    methods = ["get_value", "get_value_from_kwargs", "set"]
     for m in methods:
         if m in vars:
             fail("{!r} can't be used as the name of a default: it is a method"
@@ -55,9 +58,14 @@ def defaults(extends = None, **vars):
     def get_value_from_kwargs(name, kwargs):
         return get_value(name, kwargs.get(name, DEFAULT))
 
+    def set(**kwargs):
+        for k, v in kwargs.items():
+            vars[k].set(v)
+
     return struct(
         get_value = get_value,
         get_value_from_kwargs = get_value_from_kwargs,
+        set = set,
         **vars
     )
 

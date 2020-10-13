@@ -39,94 +39,6 @@ defaults = args.defaults(
     subproject_list_view = None,
 )
 
-def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
-    if not branches.matches(branch_selector):
-        return
-
-    luci.bucket(
-        name = milestone_vars.try_bucket,
-        acls = [
-            acl.entry(
-                roles = acl.BUILDBUCKET_READER,
-                groups = "all",
-            ),
-            acl.entry(
-                roles = acl.BUILDBUCKET_TRIGGERER,
-                users = [
-                    "findit-for-me@appspot.gserviceaccount.com",
-                    "tricium-prod@appspot.gserviceaccount.com",
-                ],
-                groups = [
-                    "project-chromium-tryjob-access",
-                    # Allow Pinpoint to trigger builds for bisection
-                    "service-account-chromeperf",
-                    "service-account-cq",
-                ],
-                projects = milestone_vars.try_triggering_projects,
-            ),
-            acl.entry(
-                roles = acl.BUILDBUCKET_OWNER,
-                groups = "service-account-chromium-tryserver",
-            ),
-        ],
-    )
-
-    luci.cq_group(
-        name = milestone_vars.cq_group,
-        retry_config = cq.RETRY_ALL_FAILURES,
-        tree_status_host = milestone_vars.tree_status_host,
-        watch = cq.refset(
-            repo = "https://chromium.googlesource.com/chromium/src",
-            refs = [milestone_vars.cq_ref_regexp],
-        ),
-        acls = [
-            acl.entry(
-                acl.CQ_COMMITTER,
-                groups = "project-chromium-committers",
-            ),
-            acl.entry(
-                acl.CQ_DRY_RUNNER,
-                groups = "project-chromium-tryjob-access",
-            ),
-        ],
-    )
-
-    try_.list_view(
-        name = milestone_vars.main_list_view_name,
-        branch_selector = branch_selector,
-        title = milestone_vars.main_list_view_title,
-    )
-
-def set_defaults(milestone_vars, **kwargs):
-    default_values = dict(
-        add_to_list_view = milestone_vars.is_master,
-        bucket = milestone_vars.try_bucket,
-        build_numbers = True,
-        caches = [
-            swarming.cache(
-                name = "win_toolchain",
-                path = "win_toolchain",
-            ),
-        ],
-        configure_kitchen = True,
-        cores = 8,
-        cpu = builders.cpu.X86_64,
-        cq_group = milestone_vars.cq_group,
-        executable = "recipe:chromium_trybot",
-        execution_timeout = 4 * time.hour,
-        # Max. pending time for builds. CQ considers builds pending >2h as timed
-        # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
-        expiration_timeout = 2 * time.hour,
-        os = builders.os.LINUX_DEFAULT,
-        pool = "luci.chromium.try",
-        service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
-        swarming_tags = ["vpython:native-python-wrapper"],
-        task_template_canary_percentage = 5,
-    )
-    default_values.update(kwargs)
-    for k, v in default_values.items():
-        getattr(defaults, k).set(v)
-
 def _sorted_list_view_graph_key(console_name):
     return graph.key("@chromium", "", "sorted_list_view", console_name)
 
@@ -525,12 +437,17 @@ def gpu_chromium_win_builder(*, name, os = builders.os.WINDOWS_ANY, **kwargs):
     )
 
 try_ = struct(
+    # Module-level defaults for try functions
     defaults = defaults,
-    builder = try_builder,
-    declare_bucket = declare_bucket,
-    job = tryjob,
+
+    # Functions for declaring automatically maintained list views
     list_view = list_view,
-    set_defaults = set_defaults,
+
+    # Functions for declaring try builders
+    builder = try_builder,
+    job = tryjob,
+
+    # More specific builder wrapper functions
     blink_builder = blink_builder,
     blink_mac_builder = blink_mac_builder,
     chromium_builder = chromium_builder,

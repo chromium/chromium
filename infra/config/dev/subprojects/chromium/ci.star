@@ -26,7 +26,7 @@ luci.bucket(
 )
 
 luci.gitiles_poller(
-    name = "master-gitiles-trigger",
+    name = "chromium-gitiles-trigger",
     bucket = "ci",
     repo = "https://chromium.googlesource.com/chromium/src",
 )
@@ -51,7 +51,7 @@ defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 def ci_builder(*, name, **kwargs):
     return builder(
         name = name,
-        triggered_by = ["master-gitiles-trigger"],
+        triggered_by = ["chromium-gitiles-trigger"],
         resultdb_bigquery_exports = [resultdb.export_test_results(
             bq_table = "luci-resultdb-dev.chromium.ci_test_results",
         )],
