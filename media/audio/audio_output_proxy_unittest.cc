@@ -640,6 +640,32 @@ TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_AfterStop) {
   DispatcherDestroyed_AfterStop(std::move(resampler_));
 }
 
+TEST_F(AudioOutputProxyTest, DispatcherDeviceChangeClosesIdleStreams) {
+  // Set close delay so long that it triggers a test timeout if relied upon.
+  InitDispatcher(base::TimeDelta::FromSeconds(1000));
+
+  MockAudioOutputStream stream(&manager_, params_);
+
+  EXPECT_CALL(manager(), MakeAudioOutputStream(_, _, _))
+      .WillOnce(Return(&stream));
+  EXPECT_CALL(stream, Open()).WillOnce(Return(true));
+
+  AudioOutputProxy* proxy = dispatcher_impl_->CreateStreamProxy();
+  EXPECT_TRUE(proxy->Open());
+
+  // Close the stream and verify it doesn't happen immediately.
+  proxy->Close();
+  Mock::VerifyAndClear(&stream);
+
+  // This should trigger a true close on the stream.
+  dispatcher_impl_->OnDeviceChange();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(stream, Close())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  run_loop.Run();
+}
+
 // Simulate AudioOutputStream::Create() failure with a low latency stream and
 // ensure AudioOutputResampler falls back to the high latency path.
 TEST_F(AudioOutputResamplerTest, LowLatencyCreateFailedFallback) {

@@ -23,13 +23,16 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_dispatcher.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
 class AudioLog;
 
-class MEDIA_EXPORT AudioOutputDispatcherImpl : public AudioOutputDispatcher {
+class MEDIA_EXPORT AudioOutputDispatcherImpl
+    : public AudioOutputDispatcher,
+      public AudioManager::AudioDeviceListener {
  public:
   // |close_delay| specifies delay after the stream is idle until the audio
   // device is closed.
@@ -48,6 +51,9 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl : public AudioOutputDispatcher {
   void StreamVolumeSet(AudioOutputProxy* stream_proxy, double volume) override;
   void CloseStream(AudioOutputProxy* stream_proxy) override;
   void FlushStream(AudioOutputProxy* stream_proxy) override;
+
+  // AudioDeviceListener implementation.
+  void OnDeviceChange() override;
 
   // Returns true if there are any open AudioOutputProxy objects.
   bool HasOutputProxies() const;
