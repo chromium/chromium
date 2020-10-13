@@ -142465,6 +142465,19 @@
        ]
       ]
      },
+     "is-where-pseudo-elements.html": [
+      "428b3b9a2d8747674b66aacffff17c730097d135",
+      [
+       null,
+       [
+        [
+         "/css/selectors/is-where-pseudo-elements-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "not-links.html": [
       "d49a86fd0ea710d8fd36798e84034f3042e58e81",
       [
@@ -207677,6 +207690,10 @@
        []
       ]
      },
+     "is-where-pseudo-elements-ref.html": [
+      "3a17efedfbbaa0558ab73a16aef42ce626e27b7d",
+      []
+     ],
      "not-links-ref.html": [
       "1efe5943f4e33eb0046fa89dfac8a97eeff3da85",
       []
@@ -306461,6 +306478,13 @@
      ],
      "is-where-parsing.html": [
       "b93cbda6749b12d95bae28e05f27b0098ab6b7a1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "is-where-pseudo-classes.html": [
+      "c3f1cfa81856a7c4083ed6a9bd100e098889fff0",
       [
        null,
        {}
