@@ -6320,7 +6320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="ContentSuggestions.Feed.VisualElement.Viewed.TimeSinceElementFetched"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FeedIsSynthetic" separator="." ordering="suffix">
+<histogram_suffixes name="FeedIsSynthetic" separator=".">
   <suffix name="NotSynthetic"
       label="Continuations that require making remote requests to fetch more
              articles."/>
