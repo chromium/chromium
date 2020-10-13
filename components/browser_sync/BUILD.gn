@@ -47,7 +47,6 @@ source_set("unit_tests") {
 
   deps = [
     ":browser_sync",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
@@ -71,26 +70,5 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "test_http_bridge_factory.cc",
-    "test_http_bridge_factory.h",
-  ]
-
-  deps = [
-    ":browser_sync",
-    "//base",
-    "//base/test:test_support",
-    "//components/bookmarks/browser",
-    "//components/history/core/browser",
-    "//components/sync",
-    "//components/sync:test_support",
-    "//components/sync_preferences:test_support",
-    "//components/sync_sessions:test_support",
-    "//services/network:test_support",
   ]
 }

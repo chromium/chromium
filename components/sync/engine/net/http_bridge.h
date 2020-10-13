@@ -12,7 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
@@ -39,10 +39,7 @@ namespace syncer {
 // Provides a way for the sync backend to use Chromium directly for HTTP
 // requests rather than depending on a third party provider (e.g libcurl).
 // This is a one-time use bridge. Create one for each request you want to make.
-// It is RefCountedThreadSafe because it can PostTask to the io loop, and thus
-// needs to stick around across context switches, etc.
-class HttpBridge : public base::RefCountedThreadSafe<HttpBridge>,
-                   public HttpPostProviderInterface {
+class HttpBridge : public HttpPostProviderInterface {
  public:
   HttpBridge(const std::string& user_agent,
              std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -85,7 +82,6 @@ class HttpBridge : public base::RefCountedThreadSafe<HttpBridge>,
   }
 
  private:
-  friend class base::RefCountedThreadSafe<HttpBridge>;
   FRIEND_TEST_ALL_PREFIXES(SyncHttpBridgeTest,
                            AbortAndReleaseBeforeFetchComplete);
   // Test is disabled on Android.
@@ -204,8 +200,7 @@ class HttpBridgeFactory : public HttpPostProviderFactory {
   ~HttpBridgeFactory() override;
 
   // HttpPostProviderFactory:
-  HttpPostProviderInterface* Create() override;
-  void Destroy(HttpPostProviderInterface* http) override;
+  scoped_refptr<HttpPostProviderInterface> Create() override;
 
  private:
   // The user agent to use in all requests.

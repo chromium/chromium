@@ -76,7 +76,7 @@ class Connection : public CancelationObserver {
   // operation should be aborted.
   CancelationSignal* const cancelation_signal_;
 
-  HttpPostProviderInterface* const post_provider_;
+  scoped_refptr<HttpPostProviderInterface> const post_provider_;
 
   std::string buffer_;
 
@@ -93,29 +93,24 @@ Connection::Connection(HttpPostProviderFactory* factory,
   DCHECK(post_provider_);
 }
 
-Connection::~Connection() {
-  factory_->Destroy(post_provider_);
-}
+Connection::~Connection() = default;
 
 bool Connection::Init(const std::string& connection_url,
                       int sync_server_port,
                       const std::string& access_token,
                       const std::string& payload,
                       HttpResponse* response) {
-  std::string sync_server;
-
-  HttpPostProviderInterface* http = post_provider_;
-  http->SetURL(connection_url.c_str(), sync_server_port);
+  post_provider_->SetURL(connection_url.c_str(), sync_server_port);
 
   if (!access_token.empty()) {
     std::string headers;
     headers = "Authorization: Bearer " + access_token;
-    http->SetExtraRequestHeaders(headers.c_str());
+    post_provider_->SetExtraRequestHeaders(headers.c_str());
   }
 
   // Must be octet-stream, or the payload may be parsed for a cookie.
-  http->SetPostPayload("application/octet-stream", payload.length(),
-                       payload.data());
+  post_provider_->SetPostPayload("application/octet-stream", payload.length(),
+                                 payload.data());
 
   // Issue the POST, blocking until it finishes.
   int net_error_code = 0;
@@ -130,7 +125,8 @@ bool Connection::Init(const std::string& connection_url,
       &CancelationSignal::UnregisterHandler,
       base::Unretained(cancelation_signal_), base::Unretained(this)));
 
-  if (!http->MakeSynchronousPost(&net_error_code, &http_status_code)) {
+  if (!post_provider_->MakeSynchronousPost(&net_error_code,
+                                           &http_status_code)) {
     DCHECK_NE(net_error_code, net::OK);
     DVLOG(1) << "Http POST failed, error returns: " << net_error_code;
     response->server_status = HttpResponse::CONNECTION_UNAVAILABLE;
@@ -141,9 +137,9 @@ bool Connection::Init(const std::string& connection_url,
   // We got a server response, copy over response codes and content.
   response->http_status_code = http_status_code;
   response->content_length =
-      static_cast<int64_t>(http->GetResponseContentLength());
+      static_cast<int64_t>(post_provider_->GetResponseContentLength());
   response->payload_length =
-      static_cast<int64_t>(http->GetResponseContentLength());
+      static_cast<int64_t>(post_provider_->GetResponseContentLength());
   if (response->http_status_code == net::HTTP_OK)
     response->server_status = HttpResponse::SERVER_CONNECTION_OK;
   else if (response->http_status_code == net::HTTP_UNAUTHORIZED)
@@ -152,7 +148,8 @@ bool Connection::Init(const std::string& connection_url,
     response->server_status = HttpResponse::SYNC_SERVER_ERROR;
 
   // Write the content into our buffer.
-  buffer_.assign(http->GetResponseContent(), http->GetResponseContentLength());
+  buffer_.assign(post_provider_->GetResponseContent(),
+                 post_provider_->GetResponseContentLength());
   return true;
 }
 

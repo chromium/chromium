@@ -6485,7 +6485,6 @@ static_library("test_support") {
     "//chrome/browser/subresource_filter:test_support",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
-    "//components/browser_sync:test_support",
     "//components/consent_auditor:test_support",
     "//components/invalidation/impl",
     "//components/invalidation/impl:test_support",

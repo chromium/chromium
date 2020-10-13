@@ -27,7 +27,6 @@ class BlockingHttpPost : public HttpPostProviderInterface {
   BlockingHttpPost()
       : wait_for_abort_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
-  ~BlockingHttpPost() override {}
 
   void SetExtraRequestHeaders(const char* headers) override {}
   void SetURL(const char* url, int port) override {}
@@ -49,18 +48,17 @@ class BlockingHttpPost : public HttpPostProviderInterface {
   void Abort() override { wait_for_abort_.Signal(); }
 
  private:
+  ~BlockingHttpPost() override = default;
+
   base::WaitableEvent wait_for_abort_;
 };
 
 class BlockingHttpPostFactory : public HttpPostProviderFactory {
  public:
-  ~BlockingHttpPostFactory() override {}
+  ~BlockingHttpPostFactory() override = default;
 
-  HttpPostProviderInterface* Create() override {
+  scoped_refptr<HttpPostProviderInterface> Create() override {
     return new BlockingHttpPost();
-  }
-  void Destroy(HttpPostProviderInterface* http) override {
-    delete static_cast<BlockingHttpPost*>(http);
   }
 };
 
@@ -130,7 +128,6 @@ class FailingHttpPost : public HttpPostProviderInterface {
  public:
   explicit FailingHttpPost(int net_error_code)
       : net_error_code_(net_error_code) {}
-  ~FailingHttpPost() override {}
 
   void SetExtraRequestHeaders(const char* headers) override {}
   void SetURL(const char* url, int port) override {}
@@ -151,6 +148,8 @@ class FailingHttpPost : public HttpPostProviderInterface {
   void Abort() override {}
 
  private:
+  ~FailingHttpPost() override = default;
+
   int net_error_code_;
 };
 
@@ -158,13 +157,10 @@ class FailingHttpPostFactory : public HttpPostProviderFactory {
  public:
   explicit FailingHttpPostFactory(int net_error_code)
       : net_error_code_(net_error_code) {}
-  ~FailingHttpPostFactory() override {}
+  ~FailingHttpPostFactory() override = default;
 
-  HttpPostProviderInterface* Create() override {
+  scoped_refptr<HttpPostProviderInterface> Create() override {
     return new FailingHttpPost(net_error_code_);
-  }
-  void Destroy(HttpPostProviderInterface* http) override {
-    delete static_cast<FailingHttpPost*>(http);
   }
 
  private:

@@ -67,17 +67,12 @@ HttpBridgeFactory::HttpBridgeFactory(
 
 HttpBridgeFactory::~HttpBridgeFactory() = default;
 
-HttpPostProviderInterface* HttpBridgeFactory::Create() {
+scoped_refptr<HttpPostProviderInterface> HttpBridgeFactory::Create() {
   DCHECK(url_loader_factory_);
 
-  scoped_refptr<HttpBridge> http = new HttpBridge(
+  scoped_refptr<HttpPostProviderInterface> http = new HttpBridge(
       user_agent_, url_loader_factory_->Clone(), network_time_update_callback_);
-  http->AddRef();
-  return http.get();
-}
-
-void HttpBridgeFactory::Destroy(HttpPostProviderInterface* http) {
-  static_cast<HttpBridge*>(http)->Release();
+  return http;
 }
 
 HttpBridge::URLFetchState::URLFetchState()
@@ -103,7 +98,7 @@ HttpBridge::HttpBridge(
                                      {base::MayBlock()})),
       network_time_update_callback_(network_time_update_callback) {}
 
-HttpBridge::~HttpBridge() {}
+HttpBridge::~HttpBridge() = default;
 
 void HttpBridge::SetExtraRequestHeaders(const char* headers) {
   DCHECK(extra_headers_.empty())

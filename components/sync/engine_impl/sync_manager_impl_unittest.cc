@@ -69,8 +69,6 @@ namespace {
 
 class TestHttpPostProviderInterface : public HttpPostProviderInterface {
  public:
-  ~TestHttpPostProviderInterface() override {}
-
   void SetExtraRequestHeaders(const char* headers) override {}
   void SetURL(const char* url, int port) override {}
   void SetPostPayload(const char* content_type,
@@ -87,16 +85,16 @@ class TestHttpPostProviderInterface : public HttpPostProviderInterface {
     return std::string();
   }
   void Abort() override {}
+
+ private:
+  ~TestHttpPostProviderInterface() override = default;
 };
 
 class TestHttpPostProviderFactory : public HttpPostProviderFactory {
  public:
-  ~TestHttpPostProviderFactory() override {}
-  HttpPostProviderInterface* Create() override {
+  ~TestHttpPostProviderFactory() override = default;
+  scoped_refptr<HttpPostProviderInterface> Create() override {
     return new TestHttpPostProviderInterface();
-  }
-  void Destroy(HttpPostProviderInterface* http) override {
-    delete static_cast<TestHttpPostProviderInterface*>(http);
   }
 };
 

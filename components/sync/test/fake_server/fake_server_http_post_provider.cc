@@ -24,18 +24,12 @@ FakeServerHttpPostProviderFactory::FakeServerHttpPostProviderFactory(
     : fake_server_(fake_server),
       fake_server_task_runner_(fake_server_task_runner) {}
 
-FakeServerHttpPostProviderFactory::~FakeServerHttpPostProviderFactory() {}
+FakeServerHttpPostProviderFactory::~FakeServerHttpPostProviderFactory() =
+    default;
 
-syncer::HttpPostProviderInterface* FakeServerHttpPostProviderFactory::Create() {
-  FakeServerHttpPostProvider* http =
-      new FakeServerHttpPostProvider(fake_server_, fake_server_task_runner_);
-  http->AddRef();
-  return http;
-}
-
-void FakeServerHttpPostProviderFactory::Destroy(
-    syncer::HttpPostProviderInterface* http) {
-  static_cast<FakeServerHttpPostProvider*>(http)->Release();
+scoped_refptr<syncer::HttpPostProviderInterface>
+FakeServerHttpPostProviderFactory::Create() {
+  return new FakeServerHttpPostProvider(fake_server_, fake_server_task_runner_);
 }
 
 FakeServerHttpPostProvider::FakeServerHttpPostProvider(

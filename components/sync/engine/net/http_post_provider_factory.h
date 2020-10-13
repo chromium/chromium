@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sync/engine/net/network_time_update_callback.h"
 
 namespace network {
@@ -25,19 +26,10 @@ class HttpPostProviderInterface;
 // HttpPostProviders.
 class HttpPostProviderFactory {
  public:
-  virtual ~HttpPostProviderFactory() {}
+  virtual ~HttpPostProviderFactory() = default;
 
   // Obtain a new HttpPostProviderInterface instance, owned by caller.
-  virtual HttpPostProviderInterface* Create() = 0;
-
-  // When the provider is no longer needed (ready to be cleaned up), clients
-  // must call Destroy().
-  // This allows actual HttpPostProvider subclass implementations to be
-  // reference counted, which is useful if a particular implementation uses
-  // multiple threads to serve network requests.
-  // TODO(crbug.com/951350): Either pass out unique_ptrs to providers, or make
-  // the provider interface refcounted, to avoid this manual destruction.
-  virtual void Destroy(HttpPostProviderInterface* http) = 0;
+  virtual scoped_refptr<HttpPostProviderInterface> Create() = 0;
 };
 
 using CreateHttpPostProviderFactory =

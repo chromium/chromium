@@ -22,9 +22,7 @@ namespace fake_server {
 
 class FakeServer;
 
-class FakeServerHttpPostProvider
-    : public syncer::HttpPostProviderInterface,
-      public base::RefCountedThreadSafe<FakeServerHttpPostProvider> {
+class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
  public:
   FakeServerHttpPostProvider(
       const base::WeakPtr<FakeServer>& fake_server,
@@ -90,8 +88,7 @@ class FakeServerHttpPostProviderFactory
   ~FakeServerHttpPostProviderFactory() override;
 
   // HttpPostProviderFactory:
-  syncer::HttpPostProviderInterface* Create() override;
-  void Destroy(syncer::HttpPostProviderInterface* http) override;
+  scoped_refptr<syncer::HttpPostProviderInterface> Create() override;
 
  private:
   // |fake_server_| should only be dereferenced on the same thread as
