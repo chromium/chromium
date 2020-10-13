@@ -421,10 +421,6 @@ void ExtensionInstallDialogView::OnShutdown(
   CloseDialog();
 }
 
-ax::mojom::Role ExtensionInstallDialogView::GetAccessibleWindowRole() {
-  return ax::mojom::Role::kAlertDialog;
-}
-
 base::string16 ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
   return title_;
 }

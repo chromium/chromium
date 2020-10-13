@@ -69,7 +69,6 @@ class ExtensionInstallDialogView
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // views::WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() override;
   base::string16 GetAccessibleWindowTitle() const override;
   ui::ModalType GetModalType() const override;
 
