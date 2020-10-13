@@ -362,6 +362,34 @@ public class SyncAndServicesSettingsTest {
         });
     }
 
+    @Test
+    @LargeTest
+    @Feature({"Preference"})
+    @DisableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
+    public void testMetricsSettingsHiddenFlagOff() {
+        final SyncAndServicesSettings syncAndServicesSettings = startSyncAndServicesPreferences();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("Metrics settings should be null when the flag is off.",
+                    syncAndServicesSettings.findPreference(
+                            SyncAndServicesSettings.PREF_METRICS_SETTINGS));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Preference"})
+    @EnableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
+    public void testMetricsSettingsShownFlagOn() {
+        final SyncAndServicesSettings syncAndServicesSettings = startSyncAndServicesPreferences();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNotNull("Metrics settings should exist when the flag is on.",
+                    syncAndServicesSettings.findPreference(
+                            SyncAndServicesSettings.PREF_METRICS_SETTINGS));
+        });
+    }
+
     private void setAutofillAssistantSwitchValue(boolean newValue) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);

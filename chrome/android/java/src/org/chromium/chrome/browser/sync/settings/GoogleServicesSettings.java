@@ -63,6 +63,7 @@ public class GoogleServicesSettings
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
     private static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
+    private static final String PREF_METRICS_SETTINGS = "metrics_settings";
 
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final PrivacyPreferencesManager mPrivacyPrefManager =
@@ -132,6 +133,11 @@ public class GoogleServicesSettings
                     (ChromeSwitchPreference) findPreference(PREF_SAFE_BROWSING_SCOUT_REPORTING);
             mSafeBrowsingReporting.setOnPreferenceChangeListener(this);
             mSafeBrowsingReporting.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
+
+        // If the metrics-settings-android flag is not enabled, remove the corresponding element.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.METRICS_SETTINGS_ANDROID)) {
+            removePreference(getPreferenceScreen(), findPreference(PREF_METRICS_SETTINGS));
         }
 
         mUsageAndCrashReporting =

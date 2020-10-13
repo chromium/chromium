@@ -42656,6 +42656,7 @@ from previous Chrome versions.
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
+  <int value="-946366838" label="MetricsSettingsAndroid:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
@@ -43364,6 +43365,7 @@ from previous Chrome versions.
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>
   <int value="-199690952" label="PageInfoV2:enabled"/>
+  <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
   <int value="-195029497" label="MediaRemoting:disabled"/>
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>

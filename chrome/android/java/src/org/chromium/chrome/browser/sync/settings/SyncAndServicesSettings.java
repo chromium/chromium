@@ -115,6 +115,8 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
     @VisibleForTesting
     public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
+    @VisibleForTesting
+    public static final String PREF_METRICS_SETTINGS = "metrics_settings";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
 
@@ -238,6 +240,11 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
                     (ChromeSwitchPreference) findPreference(PREF_SAFE_BROWSING_SCOUT_REPORTING);
             mSafeBrowsingReporting.setOnPreferenceChangeListener(this);
             mSafeBrowsingReporting.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
+
+        // If the metrics-settings-android flag is not enabled, remove the corresponding element.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.METRICS_SETTINGS_ANDROID)) {
+            removePreference(servicesCategory, findPreference(PREF_METRICS_SETTINGS));
         }
 
         mUsageAndCrashReporting =

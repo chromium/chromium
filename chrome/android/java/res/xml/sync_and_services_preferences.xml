@@ -45,6 +45,11 @@
         android:key="services_category"
         android:title="@string/services_category_title">
 
+        <!-- Only shown when metrics-settings-android flag is on. -->
+        <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            android:key="metrics_settings"
+            android:title="@string/manage_metrics_settings"
+            android:fragment="org.chromium.chrome.browser.metrics_settings.MetricsSettingsFragment"/>
         <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="search_suggestions"
             android:title="@string/autocomplete_searches_and_urls_title"
