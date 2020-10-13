@@ -5,6 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_FUTEX_LINUX_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_FUTEX_LINUX_H_
 
+#include <algorithm>
 #include <atomic>
 
 #include "base/allocator/partition_allocator/yield_processor.h"
@@ -65,13 +66,28 @@ class BASE_EXPORT SpinningFutex {
 
 ALWAYS_INLINE void SpinningFutex::Acquire() {
   int tries = 0;
+  int backoff = 1;
   // Busy-waiting is inlined, which is fine as long as we have few callers. This
   // is only used for the partition lock, so this is the case.
   do {
     if (LIKELY(Try()))
       return;
-    YIELD_PROCESSOR;
-    tries++;
+    // Note: Per the intel optimization manual
+    // (https://software.intel.com/content/dam/develop/public/us/en/documents/64-ia-32-architectures-optimization-manual.pdf),
+    // the "pause" instruction is more costly on Skylake Client than on previous
+    // (and subsequent?) architectures. The latency is found to be 141 cycles
+    // there. This is not a big issue here as we don't spin long enough for this
+    // to become a problem, as we spend a maximum of ~141k cycles ~= 47us at
+    // 3GHz in "pause".
+    //
+    // Also, loop several times here, following the guidelines in section 2.3.4
+    // of the manual, "Pause latency in Skylake Client Microarchitecture".
+    for (int yields = 0; yields < backoff; yields++) {
+      YIELD_PROCESSOR;
+      tries++;
+    }
+    constexpr int kMaxBackoff = 64;
+    backoff = std::min(kMaxBackoff, backoff << 1);
   } while (tries < kSpinCount);
 
   LockSlow();
