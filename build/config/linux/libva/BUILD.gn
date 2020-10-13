@@ -8,6 +8,10 @@ assert(is_linux || is_chromeos, "This file should only be referenced on Linux")
 
 pkg_config("libva") {
   packages = [ "libva" ]
+
   # Do not use exec_script to check the version here. It is done with a
   # static_assert instead.
+
+  # vaapi decoders use dlopen pre-sandbox anyway to improve startup times.
+  ignore_libs = true
 }
