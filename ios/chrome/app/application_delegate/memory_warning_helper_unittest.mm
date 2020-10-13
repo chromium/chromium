@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
+#import "components/previous_session_info/previous_session_info.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

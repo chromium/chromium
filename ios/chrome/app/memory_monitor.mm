@@ -17,8 +17,8 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

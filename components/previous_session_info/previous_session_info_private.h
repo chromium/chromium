@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_METRICS_PREVIOUS_SESSION_INFO_PRIVATE_H_
-#define IOS_CHROME_BROWSER_METRICS_PREVIOUS_SESSION_INFO_PRIVATE_H_
+#ifndef COMPONENTS_PREVIOUS_SESSION_INFO_PREVIOUS_SESSION_INFO_PRIVATE_H_
+#define COMPONENTS_PREVIOUS_SESSION_INFO_PREVIOUS_SESSION_INFO_PRIVATE_H_
 
-#import "ios/chrome/browser/metrics/previous_session_info.h"
+#import "components/previous_session_info/previous_session_info.h"
 
 @interface PreviousSessionInfo (TestingOnly)
 
@@ -33,4 +33,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_METRICS_PREVIOUS_SESSION_INFO_PRIVATE_H_
+#endif  // COMPONENTS_PREVIOUS_SESSION_INFO_PREVIOUS_SESSION_INFO_PRIVATE_H_

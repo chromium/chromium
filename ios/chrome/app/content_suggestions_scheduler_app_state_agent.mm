@@ -5,8 +5,8 @@
 #import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 
 #include "components/ntp_snippets/content_suggestions_service.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 

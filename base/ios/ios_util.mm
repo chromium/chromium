@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
+#include "base/ios/multi_window_buildflags.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"
 
@@ -68,6 +69,24 @@ FilePath FilePathOfEmbeddedICU() {
     return FilePath(*g_icudtl_path_override);
   }
   return FilePath();
+}
+
+bool IsMultiwindowSupported() {
+#if BUILDFLAG(IOS_MULTIWINDOW_ENABLED)
+  return IsRunningOnIOS13OrLater();
+#else
+  return false;
+#endif
+}
+
+bool IsSceneStartupSupported() {
+  if (IsMultiwindowSupported())
+    return true;
+#if BUILDFLAG(IOS_SCENE_STARTUP_ENABLED)
+  return base::ios::IsRunningOnIOS13OrLater();
+#else
+  return false;
+#endif
 }
 
 }  // namespace ios

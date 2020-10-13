@@ -126,9 +126,9 @@ source_set("content_suggestions_scheduler_app_state_agent") {
   ]
   deps = [
     "//components/ntp_snippets",
+    "//components/previous_session_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/ui/main:scene_state_header",
   ]
@@ -158,6 +158,7 @@ source_set("app_internal") {
     ":mode",
     ":tests_hook",
     "//base",
+    "//base/ios:ios_multi_window_buildflags",
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/browser_sync",
@@ -178,6 +179,7 @@ source_set("app_internal") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/previous_session_info",
     "//components/proxy_config",
     "//components/suggestions",
     "//components/sync",
@@ -213,7 +215,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/memory",
     "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/metrics:previous_session_info",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/omaha",
@@ -242,7 +243,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/ui/toolbar:toolbar_ui",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:ios_multi_window_buildflags",
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/webui:webui_internal",
     "//ios/chrome/browser/upgrade",

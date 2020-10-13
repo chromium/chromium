@@ -6,6 +6,7 @@ include_rules = [
   "+components/component_updater/installer_policies",
   "+components/content_settings",
   "+components/crash/core/common",
+  "+components/previous_session_info/previous_session_info.h",
   "+components/favicon/core",
   "+components/favicon_base",
   "+components/feature_engagement",
@@ -39,3 +40,9 @@ include_rules = [
   "+components/strings",
   "+ios/chrome/grit",
 ]
+
+specific_include_rules = {
+  ".*test\.mm": [
+    "+components/previous_session_info/previous_session_info_private.h",
+  ],
+}

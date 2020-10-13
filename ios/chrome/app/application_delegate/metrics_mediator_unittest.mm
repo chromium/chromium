@@ -8,12 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #include "components/metrics/metrics_service.h"
+#import "components/previous_session_info/previous_session_info.h"
+#import "components/previous_session_info/previous_session_info_private.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
-#import "ios/chrome/browser/metrics/previous_session_info_private.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"

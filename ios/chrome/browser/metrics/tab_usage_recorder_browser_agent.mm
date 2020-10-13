@@ -7,10 +7,10 @@
 #import <UIKit/UIKit.h>
 
 #include "base/metrics/histogram_macros.h"
+#import "components/previous_session_info/previous_session_info.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"

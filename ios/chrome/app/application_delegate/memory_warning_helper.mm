@@ -6,8 +6,8 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_macros.h"
+#import "components/previous_session_info/previous_session_info.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -18,6 +18,7 @@ include_rules = [
   "+components/enterprise",
   "+components/error_page/common",
   "+components/favicon/core",
+  "+components/previous_session_info/previous_session_info.h",
   "+components/favicon/ios",
   "+components/favicon_base",
   "+components/feature_engagement",
@@ -149,3 +150,9 @@ include_rules = [
   "+components/strings/grit",
   "+ios/chrome/grit",
 ]
+
+specific_include_rules = {
+  ".*test\.mm": [
+    "+components/previous_session_info/previous_session_info_private.h",
+  ],
+}

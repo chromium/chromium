@@ -214,6 +214,7 @@ test("components_unittests") {
       "//components/language/ios/browser:unit_tests",
       "//components/password_manager/core/common:unit_tests",
       "//components/password_manager/ios:unit_tests",
+      "//components/previous_session_info:unit_tests",
       "//components/safe_browsing/ios:unit_tests",
       "//components/security_state/ios:unit_tests",
       "//components/signin/ios/browser:unit_tests",

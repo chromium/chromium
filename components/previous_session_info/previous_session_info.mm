@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/metrics/previous_session_info.h"
+#import "components/previous_session_info/previous_session_info.h"
 
 #import <UIKit/UIKit.h>
 
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#import "components/previous_session_info/previous_session_info_private.h"
 #include "components/version_info/version_info.h"
-#import "ios/chrome/browser/metrics/previous_session_info_private.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -263,7 +263,7 @@ static PreviousSessionInfo* gSharedInstance = nil;
   // Set the current Multi-Window support state.
   // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
   // sessions is done.
-  [defaults setBool:IsMultiwindowSupported()
+  [defaults setBool:base::ios::IsMultiwindowSupported()
              forKey:kPreviousSessionInfoMultiWindowEnabled];
 
   // Clear the memory warning flag.
@@ -514,7 +514,8 @@ static PreviousSessionInfo* gSharedInstance = nil;
       // flag so it's not used again in the same run.
       // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
       // sessions is done.
-      gSharedInstance.isMultiWindowEnabledSession = IsMultiwindowSupported();
+      gSharedInstance.isMultiWindowEnabledSession =
+          base::ios::IsMultiwindowSupported();
     }
   }));
 }
