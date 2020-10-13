@@ -527,7 +527,6 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK(!current_paint_);
-  DCHECK(resource_sync_tokens_.empty());
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       size, BufferFormat(format), mipmap, std::move(color_space),
@@ -706,6 +705,9 @@ void SkiaOutputSurfaceImpl::CopyOutput(
 void SkiaOutputSurfaceImpl::ScheduleOverlays(
     OverlayList overlays,
     std::vector<gpu::SyncToken> sync_tokens) {
+  std::move(resource_sync_tokens_.begin(), resource_sync_tokens_.end(),
+            std::back_inserter(sync_tokens));
+  resource_sync_tokens_.clear();
   auto task =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::ScheduleOverlays,
                      base::Unretained(impl_on_gpu_.get()), std::move(overlays),

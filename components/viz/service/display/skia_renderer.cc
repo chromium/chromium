@@ -2585,10 +2585,13 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   overlay->rpdq = nullptr;
   gfx::Transform target_to_device =
       current_frame()->window_matrix * current_frame()->projection_matrix;
-  const gfx::Rect* scissor = is_scissor_enabled_ ? &scissor_rect_ : nullptr;
-
+  // Use nullptr scissor, so we can always render the whole render pass in an
+  // overlay backing.
+  // TODO(penghuang): reusing overlay backing from previous frame to avoid
+  // reproducing the overlay backing if the render pass content quad properties
+  // and content are not changed.
   DrawQuadParams params = CalculateDrawQuadParams(
-      target_to_device, scissor, quad, /*draw_region=*/nullptr);
+      target_to_device, /*scissor=*/nullptr, quad, /*draw_region=*/nullptr);
   DrawRPDQParams rpdq_params = CalculateRPDQParams(quad, &params);
 
   // |filter_bounds| is the content space bounds that includes any filtered
