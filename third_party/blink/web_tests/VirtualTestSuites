@@ -687,11 +687,6 @@
     "args": [ "--js-flags=--harmony-weak-refs" ]
   },
   {
-    "prefix": "media-devtools",
-    "bases": [ "inspector-protocol/media" ],
-    "args": ["--enable-features=MediaInspectorLogging"]
-  },
-  {
     "prefix": "link-disabled-old-behavior",
     "bases": [ "external/wpt/css/cssom" ],
     "args": ["--disable-features=LinkDisabledNewSpecBehavior"]

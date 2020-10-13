@@ -153,7 +153,6 @@ MEDIA_EXPORT extern const base::Feature kMediaEngagementHTTPSOnly;
 MEDIA_EXPORT extern const base::Feature kMediaFeeds;
 MEDIA_EXPORT extern const base::Feature kMediaFeedsBackgroundFetching;
 MEDIA_EXPORT extern const base::Feature kMediaFeedsSafeSearch;
-MEDIA_EXPORT extern const base::Feature kMediaInspectorLogging;
 MEDIA_EXPORT extern const base::Feature kMediaLearningExperiment;
 MEDIA_EXPORT extern const base::Feature kMediaLearningFramework;
 MEDIA_EXPORT extern const base::Feature kMediaLearningSmoothnessExperiment;

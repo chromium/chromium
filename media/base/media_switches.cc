@@ -740,10 +740,6 @@ const base::Feature kMediaFeedsBackgroundFetching{
 const base::Feature kMediaFeedsSafeSearch{"MediaFeedsSafeSearch",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Send events to devtools rather than to chrome://media-internals
-const base::Feature kMediaInspectorLogging{"MediaInspectorLogging",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables experimental local learning for media. Used in the context of media
 // capabilities only. Adds reporting only; does not change media behavior.
 const base::Feature kMediaLearningExperiment{"MediaLearningExperiment",
