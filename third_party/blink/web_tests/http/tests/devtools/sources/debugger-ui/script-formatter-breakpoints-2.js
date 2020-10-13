@@ -49,7 +49,7 @@
             .then(() => SourcesTestRunner.dumpBreakpointSidebarPane('while paused in raw'))
             .then(() => SourcesTestRunner.resumeExecution(next));
         SourcesTestRunner.removeBreakpoint(formattedSourceFrame, 3);
-        await Formatter.sourceFormatter.discardFormattedUISourceCode(panel.visibleView.uiSourceCode());
+        await Formatter.SourceFormatter.instance().discardFormattedUISourceCode(panel.visibleView.uiSourceCode());
       }
     }
   ]);

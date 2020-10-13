@@ -9,7 +9,7 @@
   await TestRunner.addStylesheetTag('resources/style-formatter-obfuscated.css');
 
   var uiSourceCode = await TestRunner.waitForUISourceCode('style-formatter-obfuscated.css');
-  var formatData = await Formatter.sourceFormatter.format(uiSourceCode);
+  var formatData = await Formatter.SourceFormatter.instance().format(uiSourceCode);
   var targetContent = (await formatData.formattedSourceCode.requestContent()).content;
 
   TestRunner.addResult(`Formatted:\n${targetContent}`);
@@ -33,7 +33,7 @@
   TestRunner.addResult('Location mapping with formatted source:');
   await dumpLocations();
 
-  await Formatter.sourceFormatter.discardFormattedUISourceCode(formatData.formattedSourceCode);
+  await Formatter.SourceFormatter.instance().discardFormattedUISourceCode(formatData.formattedSourceCode);
 
   TestRunner.addResult('Location mapping without formatted source:');
   await dumpLocations();

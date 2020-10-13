@@ -18,7 +18,7 @@
 
   TestRunner.addResult("\n\nFormatting source now...\n\n");
 
-  const formatData = await Formatter.sourceFormatter.format(source);
+  const formatData = await Formatter.SourceFormatter.instance().format(source);
   const formattedSource = formatData.formattedSourceCode;
   var formattedContent = (await formatData.formattedSourceCode.requestContent()).content;
   TestRunner.addResult(`Formatted Content:\n${formattedContent}`);
