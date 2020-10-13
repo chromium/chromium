@@ -32,11 +32,10 @@ class SyncServerConnectionManager : public ServerConnectionManager {
   ~SyncServerConnectionManager() override;
 
  protected:
-  bool PostBufferToPath(const std::string& buffer_in,
-                        const std::string& path,
-                        const std::string& access_token,
-                        std::string* buffer_out,
-                        HttpResponse* http_response) override;
+  HttpResponse PostBufferToPath(const std::string& buffer_in,
+                                const std::string& path,
+                                const std::string& access_token,
+                                std::string* buffer_out) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SyncServerConnectionManagerTest, VeryEarlyAbortPost);

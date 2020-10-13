@@ -64,6 +64,7 @@ struct HttpResponse {
   static HttpResponse Uninitialized();
   static HttpResponse ForNetError(int net_error_code);
   static HttpResponse ForIoError();
+  // TODO(crbug.com/951350): Rename to ForHttpStatusCode.
   static HttpResponse ForHttpError(int http_status_code);
   static HttpResponse ForSuccess();
 
@@ -95,13 +96,10 @@ class ServerConnectionManager {
   ServerConnectionManager();
   virtual ~ServerConnectionManager();
 
-  // POSTS buffer_in and reads a http_response into buffer_out.
-  // Uses our currently set access token in our headers.
-  //
-  // Returns true if executed successfully.
-  bool PostBufferWithCachedAuth(const std::string& buffer_in,
-                                std::string* buffer_out,
-                                HttpResponse* http_response);
+  // POSTs |buffer_in| and reads the body of the response into |buffer_out|.
+  // Uses the currently set access token in the headers.
+  HttpResponse PostBufferWithCachedAuth(const std::string& buffer_in,
+                                        std::string* buffer_out);
 
   void AddListener(ServerConnectionEventListener* listener);
   void RemoveListener(ServerConnectionEventListener* listener);
@@ -145,11 +143,10 @@ class ServerConnectionManager {
 
   // Internal PostBuffer base function which subclasses are expected to
   // implement.
-  virtual bool PostBufferToPath(const std::string& buffer_in,
-                                const std::string& path,
-                                const std::string& access_token,
-                                std::string* buffer_out,
-                                HttpResponse* http_response) = 0;
+  virtual HttpResponse PostBufferToPath(const std::string& buffer_in,
+                                        const std::string& path,
+                                        const std::string& access_token,
+                                        std::string* buffer_out) = 0;
 
   void ClearAccessToken();
 

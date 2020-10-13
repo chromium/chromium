@@ -13,6 +13,7 @@
 #include "components/sync/engine_impl/syncer_proto_util.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using std::find;
@@ -65,27 +66,29 @@ void MockConnectionManager::SetMidCommitObserver(
   mid_commit_observer_ = observer;
 }
 
-bool MockConnectionManager::PostBufferToPath(const std::string& buffer_in,
-                                             const std::string& path,
-                                             const std::string& access_token,
-                                             std::string* buffer_out,
-                                             HttpResponse* http_response) {
+HttpResponse MockConnectionManager::PostBufferToPath(
+    const std::string& buffer_in,
+    const std::string& path,
+    const std::string& access_token,
+    std::string* buffer_out) {
   ClientToServerMessage post;
   if (!post.ParseFromString(buffer_in)) {
     ADD_FAILURE();
-    return false;
+    // Note: Here and below, ForIoError() is chosen somewhat arbitrarily, since
+    // HttpResponse doesn't have any better-fitting type of error.
+    return HttpResponse::ForIoError();
   }
   if (!post.has_protocol_version()) {
     ADD_FAILURE();
-    return false;
+    return HttpResponse::ForIoError();
   }
   if (!post.has_api_key()) {
     ADD_FAILURE();
-    return false;
+    return HttpResponse::ForIoError();
   }
   if (!post.has_bag_of_chips()) {
     ADD_FAILURE();
-    return false;
+    return HttpResponse::ForIoError();
   }
 
   requests_.push_back(post);
@@ -94,29 +97,25 @@ bool MockConnectionManager::PostBufferToPath(const std::string& buffer_in,
   client_to_server_response.Clear();
 
   if (access_token.empty()) {
-    http_response->server_status = HttpResponse::SYNC_AUTH_ERROR;
-    return false;
+    return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 
   if (access_token != kValidAccessToken) {
     // Simulate server-side auth failure.
-    http_response->server_status = HttpResponse::SYNC_AUTH_ERROR;
     ClearAccessToken();
+    return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
   }
 
   if (--countdown_to_postbuffer_fail_ == 0) {
     // Fail as countdown hits zero.
-    http_response->server_status = HttpResponse::SYNC_SERVER_ERROR;
-    return false;
+    return HttpResponse::ForHttpError(net::HTTP_BAD_REQUEST);
   }
 
   if (!server_reachable_) {
-    http_response->server_status = HttpResponse::CONNECTION_UNAVAILABLE;
-    return false;
+    return HttpResponse::ForNetError(net::ERR_FAILED);
   }
 
   // Default to an ok connection.
-  http_response->server_status = HttpResponse::SERVER_CONNECTION_OK;
   client_to_server_response.set_error_code(SyncEnums::SUCCESS);
   const string current_store_birthday = store_birthday();
   client_to_server_response.set_store_birthday(current_store_birthday);
@@ -126,9 +125,8 @@ bool MockConnectionManager::PostBufferToPath(const std::string& buffer_in,
     client_to_server_response.set_error_message("Merry Unbirthday!");
     client_to_server_response.SerializeToString(buffer_out);
     store_birthday_sent_ = true;
-    return true;
+    return HttpResponse::ForSuccess();
   }
-  bool result = true;
   EXPECT_TRUE(!store_birthday_sent_ || post.has_store_birthday() ||
               post.message_contents() ==
                   ClientToServerMessage::CLEAR_SERVER_DATA);
@@ -136,21 +134,21 @@ bool MockConnectionManager::PostBufferToPath(const std::string& buffer_in,
 
   if (post.message_contents() == ClientToServerMessage::COMMIT) {
     if (!ProcessCommit(&post, &client_to_server_response)) {
-      return false;
+      return HttpResponse::ForIoError();
     }
 
   } else if (post.message_contents() == ClientToServerMessage::GET_UPDATES) {
     if (!ProcessGetUpdates(&post, &client_to_server_response)) {
-      return false;
+      return HttpResponse::ForIoError();
     }
   } else if (post.message_contents() ==
              ClientToServerMessage::CLEAR_SERVER_DATA) {
     if (!ProcessClearServerData(&post, &client_to_server_response)) {
-      return false;
+      return HttpResponse::ForIoError();
     }
   } else {
     EXPECT_TRUE(false) << "Unknown/unsupported ClientToServerMessage";
-    return false;
+    return HttpResponse::ForIoError();
   }
 
   {
@@ -187,7 +185,7 @@ bool MockConnectionManager::PostBufferToPath(const std::string& buffer_in,
     mid_commit_observer_->Observe();
   }
 
-  return result;
+  return HttpResponse::ForSuccess();
 }
 
 sync_pb::GetUpdatesResponse* MockConnectionManager::GetUpdateResponse() {

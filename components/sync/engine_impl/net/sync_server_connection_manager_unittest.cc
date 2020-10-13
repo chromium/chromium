@@ -72,12 +72,9 @@ TEST(SyncServerConnectionManagerTest, VeryEarlyAbortPost) {
       "server", 0, true, std::make_unique<BlockingHttpPostFactory>(), &signal);
 
   std::string buffer_out;
-  HttpResponse http_response = HttpResponse::Uninitialized();
+  HttpResponse http_response =
+      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
 
-  bool result = server.PostBufferToPath("", "/testpath", "testauth",
-                                        &buffer_out, &http_response);
-
-  EXPECT_FALSE(result);
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
 
@@ -87,14 +84,12 @@ TEST(SyncServerConnectionManagerTest, EarlyAbortPost) {
   SyncServerConnectionManager server(
       "server", 0, true, std::make_unique<BlockingHttpPostFactory>(), &signal);
 
-  std::string buffer_out;
-  HttpResponse http_response = HttpResponse::Uninitialized();
 
   signal.Signal();
-  bool result = server.PostBufferToPath("", "/testpath", "testauth",
-                                        &buffer_out, &http_response);
+  std::string buffer_out;
+  HttpResponse http_response =
+      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
 
-  EXPECT_FALSE(result);
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
 
@@ -112,12 +107,9 @@ TEST(SyncServerConnectionManagerTest, AbortPost) {
       TestTimeouts::tiny_timeout());
 
   std::string buffer_out;
-  HttpResponse http_response = HttpResponse::Uninitialized();
+  HttpResponse http_response =
+      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
 
-  bool result = server.PostBufferToPath("", "/testpath", "testauth",
-                                        &buffer_out, &http_response);
-
-  EXPECT_FALSE(result);
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
   abort_thread.Stop();
 }
@@ -179,12 +171,9 @@ TEST(SyncServerConnectionManagerTest, FailPostWithTimedOut) {
       std::make_unique<FailingHttpPostFactory>(net::ERR_TIMED_OUT), &signal);
 
   std::string buffer_out;
-  HttpResponse http_response = HttpResponse::Uninitialized();
+  HttpResponse http_response =
+      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
 
-  bool result = server.PostBufferToPath("", "/testpath", "testauth",
-                                        &buffer_out, &http_response);
-
-  EXPECT_FALSE(result);
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
 

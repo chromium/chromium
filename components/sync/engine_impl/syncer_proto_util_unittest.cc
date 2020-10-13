@@ -214,27 +214,26 @@ TEST_F(SyncerProtoUtilTest, VerifyEncryptionObsolete) {
 
 class DummyConnectionManager : public ServerConnectionManager {
  public:
-  DummyConnectionManager() : send_error_(false) {}
+  DummyConnectionManager() = default;
 
-  bool PostBufferToPath(const std::string& buffer_in,
-                        const std::string& path,
-                        const std::string& access_token,
-                        std::string* buffer_out,
-                        HttpResponse* response) override {
+  HttpResponse PostBufferToPath(const std::string& buffer_in,
+                                const std::string& path,
+                                const std::string& access_token,
+                                std::string* buffer_out) override {
     if (send_error_) {
-      return false;
+      return HttpResponse::ForIoError();
     }
 
     sync_pb::ClientToServerResponse client_to_server_response;
     client_to_server_response.SerializeToString(buffer_out);
 
-    return true;
+    return HttpResponse::ForSuccess();
   }
 
   void set_send_error(bool send) { send_error_ = send; }
 
  private:
-  bool send_error_;
+  bool send_error_ = false;
 };
 
 TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {

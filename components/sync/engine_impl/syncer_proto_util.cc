@@ -356,11 +356,11 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
 
   const base::Time start_time = base::Time::Now();
 
+  // Fills in buffer_out.
   std::string buffer_out;
-  HttpResponse http_response = HttpResponse::Uninitialized();
-
-  // Fills in buffer_out and http_response.
-  if (!scm->PostBufferWithCachedAuth(buffer_in, &buffer_out, &http_response)) {
+  HttpResponse http_response =
+      scm->PostBufferWithCachedAuth(buffer_in, &buffer_out);
+  if (http_response.server_status != HttpResponse::SERVER_CONNECTION_OK) {
     LOG(WARNING) << "Error posting from syncer:" << http_response;
     return false;
   }

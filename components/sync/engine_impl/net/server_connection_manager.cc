@@ -75,9 +75,13 @@ HttpResponse HttpResponse::ForIoError() {
 // static
 HttpResponse HttpResponse::ForHttpError(int http_status_code) {
   HttpResponse response;
-  response.server_status = http_status_code == net::HTTP_UNAUTHORIZED
-                               ? SYNC_AUTH_ERROR
-                               : SYNC_SERVER_ERROR;
+  if (http_status_code == net::HTTP_OK) {
+    response.server_status = SERVER_CONNECTION_OK;
+  } else if (http_status_code == net::HTTP_UNAUTHORIZED) {
+    response.server_status = SYNC_AUTH_ERROR;
+  } else {
+    response.server_status = SYNC_SERVER_ERROR;
+  }
   response.http_status_code = http_status_code;
   return response;
 }
@@ -140,17 +144,16 @@ void ServerConnectionManager::NotifyStatusChanged() {
         ServerConnectionEvent(server_response_.server_status));
 }
 
-bool ServerConnectionManager::PostBufferWithCachedAuth(
+HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
-    std::string* buffer_out,
-    HttpResponse* http_response) {
+    std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string path =
       MakeSyncServerPath(proto_sync_path(), MakeSyncQueryString(client_id_));
-  bool result = PostBufferToPath(buffer_in, path, access_token_, buffer_out,
-                                 http_response);
-  SetServerResponse(*http_response);
-  return result;
+  HttpResponse http_response =
+      PostBufferToPath(buffer_in, path, access_token_, buffer_out);
+  SetServerResponse(http_response);
+  return http_response;
 }
 
 void ServerConnectionManager::AddListener(

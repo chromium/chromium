@@ -13,14 +13,13 @@ LoopbackConnectionManager::LoopbackConnectionManager(
     const base::FilePath& persistent_file)
     : loopback_server_(persistent_file) {}
 
-LoopbackConnectionManager::~LoopbackConnectionManager() {}
+LoopbackConnectionManager::~LoopbackConnectionManager() = default;
 
-bool LoopbackConnectionManager::PostBufferToPath(
+HttpResponse LoopbackConnectionManager::PostBufferToPath(
     const std::string& buffer_in,
     const std::string& path,
     const std::string& access_token,
-    std::string* buffer_out,
-    HttpResponse* http_response) {
+    std::string* buffer_out) {
   buffer_out->clear();
 
   sync_pb::ClientToServerMessage message;
@@ -28,22 +27,23 @@ bool LoopbackConnectionManager::PostBufferToPath(
   DCHECK(parsed) << "Unable to parse the ClientToServerMessage.";
 
   sync_pb::ClientToServerResponse client_to_server_response;
-  http_response->http_status_code =
+  HttpResponse http_response = HttpResponse::Uninitialized();
+  http_response.http_status_code =
       loopback_server_.HandleCommand(message, &client_to_server_response);
 
   if (client_to_server_response.IsInitialized()) {
     *buffer_out = client_to_server_response.SerializeAsString();
   }
 
-  DCHECK_GE(http_response->http_status_code, 0);
+  DCHECK_GE(http_response.http_status_code, 0);
 
-  if (http_response->http_status_code != net::HTTP_OK) {
-    http_response->server_status = HttpResponse::SYNC_SERVER_ERROR;
-    return false;
+  if (http_response.http_status_code != net::HTTP_OK) {
+    http_response.server_status = HttpResponse::SYNC_SERVER_ERROR;
+  } else {
+    http_response.server_status = HttpResponse::SERVER_CONNECTION_OK;
   }
 
-  http_response->server_status = HttpResponse::SERVER_CONNECTION_OK;
-  return true;
+  return http_response;
 }
 
 }  // namespace syncer

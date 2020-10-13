@@ -49,17 +49,11 @@ class Connection : public CancelationObserver {
              CancelationSignal* cancelation_signal);
   ~Connection() override;
 
-  // TODO(crbug.com/951350): Return the HttpResponse by value. It's not
-  // obvious what the boolean return value means. (True means success or HTTP
-  // error, false means canceled or network error.)
-  bool Init(const std::string& connection_url,
-            int sync_server_port,
-            const std::string& access_token,
-            const std::string& payload,
-            HttpResponse* response);
-  bool ReadBufferResponse(std::string* buffer_out,
-                          HttpResponse* response,
-                          bool require_response);
+  HttpResponse Init(const std::string& connection_url,
+                    int sync_server_port,
+                    const std::string& access_token,
+                    const std::string& payload);
+  bool ReadBufferResponse(std::string* buffer_out, HttpResponse* response);
   bool ReadDownloadResponse(HttpResponse* response, std::string* buffer_out);
 
   // CancelationObserver overrides.
@@ -95,11 +89,10 @@ Connection::Connection(HttpPostProviderFactory* factory,
 
 Connection::~Connection() = default;
 
-bool Connection::Init(const std::string& connection_url,
-                      int sync_server_port,
-                      const std::string& access_token,
-                      const std::string& payload,
-                      HttpResponse* response) {
+HttpResponse Connection::Init(const std::string& connection_url,
+                              int sync_server_port,
+                              const std::string& access_token,
+                              const std::string& payload) {
   post_provider_->SetURL(connection_url.c_str(), sync_server_port);
 
   if (!access_token.empty()) {
@@ -113,55 +106,45 @@ bool Connection::Init(const std::string& connection_url,
                                  payload.data());
 
   // Issue the POST, blocking until it finishes.
-  int net_error_code = 0;
-  int http_status_code = 0;
   if (!cancelation_signal_->TryRegisterHandler(this)) {
     // Return early because cancelation signal was signaled.
     // TODO(crbug.com/951350): Introduce an extra status code for canceled?
-    response->server_status = HttpResponse::CONNECTION_UNAVAILABLE;
-    return false;
+    return HttpResponse::ForNetError(0);
   }
   base::ScopedClosureRunner auto_unregister(base::BindOnce(
       &CancelationSignal::UnregisterHandler,
       base::Unretained(cancelation_signal_), base::Unretained(this)));
 
+  int net_error_code = 0;
+  int http_status_code = 0;
   if (!post_provider_->MakeSynchronousPost(&net_error_code,
                                            &http_status_code)) {
     DCHECK_NE(net_error_code, net::OK);
     DVLOG(1) << "Http POST failed, error returns: " << net_error_code;
-    response->server_status = HttpResponse::CONNECTION_UNAVAILABLE;
-    response->net_error_code = net_error_code;
-    return false;
+    return HttpResponse::ForNetError(net_error_code);
   }
 
   // We got a server response, copy over response codes and content.
-  response->http_status_code = http_status_code;
-  response->content_length =
+  HttpResponse response = HttpResponse::ForHttpError(http_status_code);
+  response.content_length =
       static_cast<int64_t>(post_provider_->GetResponseContentLength());
-  response->payload_length =
+  response.payload_length =
       static_cast<int64_t>(post_provider_->GetResponseContentLength());
-  if (response->http_status_code == net::HTTP_OK)
-    response->server_status = HttpResponse::SERVER_CONNECTION_OK;
-  else if (response->http_status_code == net::HTTP_UNAUTHORIZED)
-    response->server_status = HttpResponse::SYNC_AUTH_ERROR;
-  else
-    response->server_status = HttpResponse::SYNC_SERVER_ERROR;
 
-  // Write the content into our buffer.
+  // Write the content into the buffer.
   buffer_.assign(post_provider_->GetResponseContent(),
                  post_provider_->GetResponseContentLength());
-  return true;
+  return response;
 }
 
 bool Connection::ReadBufferResponse(std::string* buffer_out,
-                                    HttpResponse* response,
-                                    bool require_response) {
+                                    HttpResponse* response) {
   if (net::HTTP_OK != response->http_status_code) {
     response->server_status = HttpResponse::SYNC_SERVER_ERROR;
     return false;
   }
 
-  if (require_response && (1 > response->content_length))
+  if (response->content_length <= 0)
     return false;
 
   const int64_t bytes_read =
@@ -218,23 +201,20 @@ SyncServerConnectionManager::SyncServerConnectionManager(
 
 SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 
-bool SyncServerConnectionManager::PostBufferToPath(
+HttpResponse SyncServerConnectionManager::PostBufferToPath(
     const std::string& buffer_in,
     const std::string& path,
     const std::string& access_token,
-    std::string* buffer_out,
-    HttpResponse* http_response) {
+    std::string* buffer_out) {
   if (access_token.empty()) {
-    http_response->server_status = HttpResponse::SYNC_AUTH_ERROR;
     // Print a log to distinguish this "known failure" from others.
     DVLOG(1) << "ServerConnectionManager forcing SYNC_AUTH_ERROR due to missing"
                 " access token";
-    return false;
+    return HttpResponse::ForHttpError(net::HTTP_UNAUTHORIZED);
   }
 
   if (cancelation_signal_->IsSignalled()) {
-    http_response->server_status = HttpResponse::CONNECTION_UNAVAILABLE;
-    return false;
+    return HttpResponse::ForNetError(0);
   }
 
   auto connection = std::make_unique<Connection>(post_provider_factory_.get(),
@@ -243,21 +223,19 @@ bool SyncServerConnectionManager::PostBufferToPath(
 
   // Note that |post| may be aborted by now, which will just cause Init to fail
   // with CONNECTION_UNAVAILABLE.
-  bool ok = connection->Init(connection_url, sync_server_port_, access_token,
-                             buffer_in, http_response);
+  HttpResponse http_response = connection->Init(
+      connection_url, sync_server_port_, access_token, buffer_in);
 
-  if (http_response->server_status == HttpResponse::SYNC_AUTH_ERROR) {
+  if (http_response.server_status == HttpResponse::SYNC_AUTH_ERROR) {
     ClearAccessToken();
   }
 
-  if (!ok || net::HTTP_OK != http_response->http_status_code)
-    return false;
-
-  if (connection->ReadBufferResponse(buffer_out, http_response, true)) {
-    http_response->server_status = HttpResponse::SERVER_CONNECTION_OK;
-    return true;
+  if (http_response.server_status != HttpResponse::SERVER_CONNECTION_OK) {
+    return http_response;
   }
-  return false;
+
+  connection->ReadBufferResponse(buffer_out, &http_response);
+  return http_response;
 }
 
 }  // namespace syncer
