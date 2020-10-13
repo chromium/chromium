@@ -887,6 +887,30 @@ TEST_F(NGInlineNodeTest, CollectInlinesShouldNotClearFirstInlineFragment) {
   }
 }
 
+TEST_F(NGInlineNodeTest, SegmentBidiChangeSetsNeedsLayout) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" dir="rtl">
+      abc-<span id="span">xyz</span>
+    </div>
+  )HTML");
+
+  // Because "-" is a neutral character, changing the following character to RTL
+  // will change its bidi level.
+  Element* span = GetElementById("span");
+  span->setTextContent(u"\u05D1");
+
+  // |NGInlineNode::SegmentBidiRuns| sets |NeedsLayout|. Run the lifecycle only
+  // up to |PrepareLayout|.
+  GetDocument().UpdateStyleAndLayoutTree();
+  LayoutBlockFlow* container =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  NGInlineNode node(container);
+  node.PrepareLayoutIfNeeded();
+
+  LayoutText* abc = To<LayoutText>(container->FirstChild());
+  EXPECT_TRUE(abc->NeedsLayout());
+}
+
 TEST_F(NGInlineNodeTest, InvalidateAddSpan) {
   SetupHtml("t", "<div id=t>before</div>");
   EXPECT_FALSE(layout_block_flow_->NeedsCollectInlines());

@@ -138,6 +138,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   };
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(NGInlineNodeTest, SegmentBidiChangeSetsNeedsLayout);
+
   bool IsPrepareLayoutFinished() const;
 
   // Prepare inline and text content for layout. Must be called before
