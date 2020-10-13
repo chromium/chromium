@@ -27,13 +27,14 @@ OverlayProcessorWin::OverlayProcessorWin(
     OutputSurface* output_surface,
     std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor)
     : output_surface_(output_surface),
-      supports_dc_layers_(output_surface->capabilities().supports_dc_layers),
-      dc_layer_overlay_processor_(std::move(dc_layer_overlay_processor)) {}
+      dc_layer_overlay_processor_(std::move(dc_layer_overlay_processor)) {
+  DCHECK(output_surface_->capabilities().supports_dc_layers);
+}
 
 OverlayProcessorWin::~OverlayProcessorWin() = default;
 
 bool OverlayProcessorWin::IsOverlaySupported() const {
-  return supports_dc_layers_;
+  return true;
 }
 
 gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
@@ -84,9 +85,6 @@ void OverlayProcessorWin::ProcessForOverlays(
       !supports_rgb10a2_overlay) {
     return;
   }
-
-  if (!supports_dc_layers_)
-    return;
 
   dc_layer_overlay_processor_->Process(
       resource_provider, gfx::RectF(root_render_pass->output_rect),

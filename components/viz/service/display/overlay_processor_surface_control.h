@@ -13,7 +13,7 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
     : public OverlayProcessorUsingStrategy {
  public:
-  explicit OverlayProcessorSurfaceControl(bool enable_overlay);
+  OverlayProcessorSurfaceControl();
   ~OverlayProcessorSurfaceControl() override;
 
   bool IsOverlaySupported() const override;
@@ -32,7 +32,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
       const OverlayCandidate& overlay) const override;
 
  private:
-  const bool overlay_enabled_;
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
   gfx::Size viewport_size_;
 };

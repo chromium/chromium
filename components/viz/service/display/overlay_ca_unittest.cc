@@ -95,8 +95,7 @@ class OverlayOutputSurface : public OutputSurface {
 class CATestOverlayProcessor : public OverlayProcessorMac {
  public:
   CATestOverlayProcessor()
-      : OverlayProcessorMac(true /* could_overlay */,
-                            true /* enable_ca_overlay */) {}
+      : OverlayProcessorMac(true /* enable_ca_overlay */) {}
 };
 
 std::unique_ptr<AggregatedRenderPass> CreateRenderPass() {

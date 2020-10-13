@@ -18,7 +18,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
     : public OverlayProcessorUsingStrategy {
  public:
   OverlayProcessorOzone(
-      bool overlay_enabled,
       std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
       std::vector<OverlayStrategy> available_strategies,
       gpu::SharedImageInterface* shared_image_interface);
@@ -44,8 +43,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   // be found.
   bool SetNativePixmapForCandidate(ui::OverlaySurfaceCandidate* candidate,
                                    const gpu::Mailbox& mailbox);
-
-  const bool overlay_enabled_;
 
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates_;
   const std::vector<OverlayStrategy> available_strategies_;

@@ -70,8 +70,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
  private:
   OutputSurface* const output_surface_;
-  // Whether direct composition layers are supported by the output surface.
-  const bool supports_dc_layers_;
   // Whether direct composition layers are being used with SetEnableDCLayers().
   bool using_dc_layers_ = false;
   // Number of frames since the last time direct composition layers were used.

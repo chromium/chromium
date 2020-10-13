@@ -30,19 +30,16 @@ gfx::RectF ClipFromOrigin(gfx::RectF input) {
 
 }  // namespace
 
-OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl(
-    bool enable_overlay)
-    : OverlayProcessorUsingStrategy(), overlay_enabled_(enable_overlay) {
-  if (overlay_enabled_) {
-    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
-        this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
-  }
+OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl()
+    : OverlayProcessorUsingStrategy() {
+  strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
+      this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
 }
 
 OverlayProcessorSurfaceControl::~OverlayProcessorSurfaceControl() {}
 
 bool OverlayProcessorSurfaceControl::IsOverlaySupported() const {
-  return overlay_enabled_;
+  return true;
 }
 
 bool OverlayProcessorSurfaceControl::NeedsSurfaceDamageRectList() const {
