@@ -543,7 +543,7 @@ template <bool thread_safe>
 void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionRoot<thread_safe>* root,
     int flags,
-    size_t size,
+    size_t raw_size,
     bool* is_already_zeroed) {
   // The slow path is called when the freelist is empty.
   PA_DCHECK(!active_pages_head->freelist_head);
@@ -567,11 +567,11 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   // the empty or decommitted lists which affects the subsequent conditional.
   bool return_null = flags & PartitionAllocReturnNull;
   if (UNLIKELY(is_direct_mapped())) {
-    PA_DCHECK(size > kMaxBucketed);
+    PA_DCHECK(raw_size > kMaxBucketed);
     PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(active_pages_head ==
               PartitionPage<thread_safe>::get_sentinel_page());
-    if (size > MaxDirectMapped()) {
+    if (raw_size > MaxDirectMapped()) {
       if (return_null)
         return nullptr;
       // The lock is here to protect PA from:
@@ -596,10 +596,10 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       // equivalent, but that's violating the contract of
       // base::OnNoMemoryInternal().
       ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-      PartitionExcessiveAllocationSize(size);
+      PartitionExcessiveAllocationSize(raw_size);
       IMMEDIATE_CRASH();  // Not required, kept as documentation.
     }
-    new_page = PartitionDirectMap(root, flags, size);
+    new_page = PartitionDirectMap(root, flags, raw_size);
     if (new_page)
       new_page_bucket = new_page->bucket;
     // New pages from PageAllocator are always zeroed.
@@ -659,13 +659,13 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       return nullptr;
     // See comment above.
     ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-    root->OutOfMemory(size);
+    root->OutOfMemory(raw_size);
     IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
   PA_DCHECK(new_page_bucket != &root->sentinel_bucket);
   new_page_bucket->active_pages_head = new_page;
-  new_page->set_raw_size(size);
+  new_page->set_raw_size(raw_size);
 
   // If we found an active page with free slots, or an empty page, we have a
   // usable freelist head.

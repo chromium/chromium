@@ -152,8 +152,10 @@ struct BASE_EXPORT PartitionRoot {
                                         size_t alignment,
                                         size_t size);
 
-  ALWAYS_INLINE void* Alloc(size_t size, const char* type_name);
-  ALWAYS_INLINE void* AllocFlags(int flags, size_t size, const char* type_name);
+  ALWAYS_INLINE void* Alloc(size_t requested_size, const char* type_name);
+  ALWAYS_INLINE void* AllocFlags(int flags,
+                                 size_t requested_size,
+                                 const char* type_name);
   // Same as |AllocFlags()|, but bypasses the allocator hooks.
   //
   // This is separate from AllocFlags() because other callers of AllocFlags()
@@ -163,7 +165,7 @@ struct BASE_EXPORT PartitionRoot {
   // taking the extra branch in the non-malloc() case doesn't hurt. In addition,
   // for the malloc() case, the compiler correctly removes the branch, since
   // this is marked |ALWAYS_INLINE|.
-  ALWAYS_INLINE void* AllocFlagsNoHooks(int flags, size_t size);
+  ALWAYS_INLINE void* AllocFlagsNoHooks(int flags, size_t requested_size);
 
   ALWAYS_INLINE void* Realloc(void* ptr, size_t newize, const char* type_name);
   // Overload that may return nullptr if reallocation isn't possible. In this
@@ -219,20 +221,23 @@ struct BASE_EXPORT PartitionRoot {
   }
 
  private:
-  // Allocates memory, without any cookies / tags.
+  // Allocates memory, without initializing extras.
   //
-  // |flags| and |size| are as in AllocFlags(). |allocated_size| and
-  // is_already_zeroed| are output only. |allocated_size| is guaranteed to be
-  // larger or equal to |size|.
+  // - |flags| are as in AllocFlags().
+  // - |raw_size| should accommodate extras on top of AllocFlags()'s
+  //   |requested_size|.
+  // - |utilized_slot_size| and |is_already_zeroed| are output only.
+  //   |utilized_slot_size| is guaranteed to be larger or equal to
+  //   |raw_size|.
   ALWAYS_INLINE void* RawAlloc(Bucket* bucket,
                                int flags,
-                               size_t size,
-                               size_t* allocated_size,
+                               size_t raw_size,
+                               size_t* utilized_slot_size,
                                bool* is_already_zeroed);
   ALWAYS_INLINE void* AllocFromBucket(Bucket* bucket,
                                       int flags,
-                                      size_t size,
-                                      size_t* allocated_size,
+                                      size_t raw_size,
+                                      size_t* utilized_slot_size,
                                       bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 

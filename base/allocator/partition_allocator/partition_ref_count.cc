@@ -21,13 +21,13 @@ void PartitionRefCount::Free() {
   auto* root = PartitionRoot<ThreadSafe>::FromPage(page);
 
 #ifdef ADDRESS_SANITIZER
-  size_t allocated_size = page->GetAllocatedSize();
+  size_t utilized_slot_size = page->GetUtilizedSlotSize();
   // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
   // supports extras.
   PA_DCHECK(root->allow_extras);
-  size_t size_with_no_extras = internal::PartitionSizeAdjustSubtract(
-      /* allow_extras= */ true, allocated_size);
-  ASAN_UNPOISON_MEMORY_REGION(this, size_with_no_extras);
+  size_t usable_size = internal::PartitionSizeAdjustSubtract(
+      /* allow_extras= */ true, utilized_slot_size);
+  ASAN_UNPOISON_MEMORY_REGION(this, usable_size);
 #endif
 
   if (root->is_thread_safe) {

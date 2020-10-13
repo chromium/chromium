@@ -60,7 +60,7 @@ struct PartitionBucket {
   // Note the matching Free() functions are in PartitionPage.
   BASE_EXPORT NOINLINE void* SlowPathAlloc(PartitionRoot<thread_safe>* root,
                                            int flags,
-                                           size_t size,
+                                           size_t raw_size,
                                            bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 

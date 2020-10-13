@@ -123,14 +123,14 @@ struct PartitionPage {
   ALWAYS_INLINE static PartitionPage* FromPointerNoAlignmentCheck(void* ptr);
   ALWAYS_INLINE static PartitionPage* FromPointer(void* ptr);
 
-  // Returns either the exact allocated size for direct-mapped and single-slot
-  // buckets, or the slot size. The second one is an overestimate of the real
-  // allocated size.
-  ALWAYS_INLINE size_t GetAllocatedSize() const {
-    // Allocated size can be:
+  // Returns size of the region used within a slot. The used region comprises
+  // of actual allocated data, extras and possibly empty space.
+  ALWAYS_INLINE size_t GetUtilizedSlotSize() const {
+    // The returned size can be:
     // - The slot size for small buckets.
-    // - Stored exactly, for large buckets and direct-mapped allocations (see
-    // the comment in get_raw_size_ptr()).
+    // - Exact needed size to satisfy allocation (incl. extras), for large
+    //   buckets and direct-mapped allocations (see the comment in
+    //   get_raw_size_ptr() for more info).
     size_t result = bucket->slot_size;
     if (UNLIKELY(get_raw_size_ptr()))  // has raw size.
       result = get_raw_size();
@@ -274,8 +274,8 @@ ALWAYS_INLINE const size_t* PartitionPage<thread_safe>::get_raw_size_ptr()
     const {
   // For direct-map as well as single-slot buckets which span more than
   // |kMaxPartitionPagesPerSlotSpan| partition pages, we have some spare
-  // metadata space to store the raw allocation size. We can use this to report
-  // better statistics.
+  // metadata space to store the raw size needed to satisfy the allocation
+  // (requested size + extras). We can use this to report better statistics.
   if (LIKELY(bucket->slot_size <=
              MaxSystemPagesPerSlotSpan() * SystemPageSize()))
     return nullptr;

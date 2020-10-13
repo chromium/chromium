@@ -312,11 +312,11 @@ TEST_F(ThreadCacheTest, RecordStats) {
   EXPECT_EQ(10u, cache_fill_misses_counter.Delta());
 
   // Memory footprint.
-  size_t allocated_size = g_root->buckets[bucket_index].slot_size;
   ThreadCacheStats stats;
   ThreadCacheRegistry::Instance().DumpStats(true, &stats);
-  EXPECT_EQ(allocated_size * ThreadCache::kMaxCountPerBucket,
-            stats.bucket_total_memory);
+  EXPECT_EQ(
+      g_root->buckets[bucket_index].slot_size * ThreadCache::kMaxCountPerBucket,
+      stats.bucket_total_memory);
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }
 
@@ -332,9 +332,9 @@ TEST_F(ThreadCacheTest, MultipleThreadCachesAccounting) {
 
     ThreadCacheStats stats;
     ThreadCacheRegistry::Instance().DumpStats(false, &stats);
-    size_t allocated_size = g_root->buckets[bucket_index].slot_size;
     // 2* for this thread and the parent one.
-    EXPECT_EQ(2 * allocated_size, stats.bucket_total_memory);
+    EXPECT_EQ(2 * g_root->buckets[bucket_index].slot_size,
+              stats.bucket_total_memory);
     EXPECT_EQ(2 * sizeof(ThreadCache), stats.metadata_overhead);
 
     uint64_t this_thread_alloc_count =

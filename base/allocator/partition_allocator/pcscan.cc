@@ -180,10 +180,10 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
       Page::FromPointerNoAlignmentCheck(reinterpret_cast<void*>(base));
   PA_DCHECK(&root_ == PartitionRoot<thread_safe>::FromPage(target_page));
 
-  const size_t object_size = PartitionSizeAdjustSubtract(
-      root_.allow_extras, target_page->GetAllocatedSize());
+  const size_t usable_size = PartitionSizeAdjustSubtract(
+      root_.allow_extras, target_page->GetUtilizedSlotSize());
   // Range check for inner pointers.
-  if (maybe_ptr >= base + object_size)
+  if (maybe_ptr >= base + usable_size)
     return 0;
 
   // Now we are certain that |maybe_ptr| is a dangling pointer. Mark it again in
@@ -208,9 +208,9 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
       auto* page = Page::FromPointerNoAlignmentCheck(object);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartition.
-      memset(
-          object, 0,
-          PartitionSizeAdjustSubtract(allow_extras, page->GetAllocatedSize()));
+      memset(object, 0,
+             PartitionSizeAdjustSubtract(allow_extras,
+                                         page->GetUtilizedSlotSize()));
     });
   }
 }
