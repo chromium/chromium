@@ -72,7 +72,7 @@ void DevToolsListener::Detach(content::DevToolsAgentHost* host) {
 }
 
 std::string DevToolsListener::HostString(content::DevToolsAgentHost* host,
-                                         const std::string& prefix) {
+                                         const std::string& prefix = "") {
   std::string result = base::StrCat(
       {prefix, " ", host->GetType(), " title: ", host->GetTitle()});
   std::string description = host->GetDescription();

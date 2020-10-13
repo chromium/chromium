@@ -42,7 +42,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // Returns a string that uniquely identifies a host
   // with an optional prefix.
   static std::string HostString(content::DevToolsAgentHost* host,
-                                const std::string& prefix = {});
+                                const std::string& prefix);
 
  private:
   // Enable CDP on host.
