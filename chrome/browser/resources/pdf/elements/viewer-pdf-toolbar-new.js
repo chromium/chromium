@@ -76,6 +76,8 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
         type: Number,
         observer: 'viewportZoomChanged_',
       },
+      /** @type {!{min: number, max: number}} */
+      zoomBounds: Object,
 
       sidenavCollapsed: Boolean,
       twoUpViewEnabled: Boolean,
@@ -127,9 +129,6 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
     /** @private {boolean} */
     this.moreMenuOpen_ = false;
-
-    /** @private {?number} */
-    this.zoomTimeout_ = null;
   }
 
   /**
@@ -293,20 +292,25 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   }
 
   /** @private */
-  onZoomInput_() {
-    if (this.zoomTimeout_) {
-      clearTimeout(this.zoomTimeout_);
+  onZoomChange_() {
+    const input = this.getZoomInput_();
+    let value = Number.parseInt(input.value, 10);
+    value = Math.max(Math.min(value, this.zoomBounds.max), this.zoomBounds.min);
+    if (this.sendZoomChanged_(value)) {
+      return;
     }
-    this.zoomTimeout_ = setTimeout(() => this.sendZoomChanged_(), 250);
+
+    const zoom = Math.round(this.viewportZoom * 100);
+    const zoomString = `${zoom}%`;
+    input.value = zoomString;
   }
 
   /**
+   * @param {number} value The new zoom value
    * @return {boolean} Whether the zoom-changed event was sent.
    * @private
    */
-  sendZoomChanged_() {
-    this.zoomTimeout_ = null;
-    const value = Number.parseInt(this.getZoomInput_().value, 10);
+  sendZoomChanged_(value) {
     if (Number.isNaN(value)) {
       return false;
     }
@@ -318,21 +322,6 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
     this.dispatchEvent(new CustomEvent('zoom-changed', {detail: value}));
     return true;
-  }
-
-  /** @private */
-  onZoomInputBlur_() {
-    if (this.zoomTimeout_) {
-      clearTimeout(this.zoomTimeout_);
-    }
-
-    if (this.sendZoomChanged_()) {
-      return;
-    }
-
-    const zoom = Math.round(this.viewportZoom * 100);
-    const zoomString = `${zoom}%`;
-    this.getZoomInput_().value = zoomString;
   }
 
   /**

@@ -169,6 +169,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       pdfAnnotationsEnabled_: Boolean,
       printingEnabled_: Boolean,
       viewportZoom_: Number,
+      zoomBounds_: Object,
     };
   }
 
@@ -231,6 +232,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     /** @private {number} */
     this.viewportZoom_ = 1;
+
+    /** @private {!{ min: number, max: number }} */
+    this.zoomBounds_ = {min: 0, max: 0};
 
     // Non-Polymer properties
 
@@ -751,6 +755,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
     this.pdfFormSaveEnabled_ = loadTimeData.getBoolean('pdfFormSaveEnabled');
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
+    const presetZoomFactors = this.viewport.presetZoomFactors;
+    this.zoomBounds_.min = Math.round(presetZoomFactors[0] * 100);
+    this.zoomBounds_.max =
+        Math.round(presetZoomFactors[presetZoomFactors.length - 1] * 100);
   }
 
   /** @override */

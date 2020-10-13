@@ -190,8 +190,8 @@
       </cr-icon-button>
       <input type="text" value="100%"
           aria-label="$i18n{zoomTextInputAriaLabel}"
-          on-input="onZoomInput_" on-pointerup="onZoomInputPointerup_"
-          on-blur="onZoomInputBlur_">
+          on-change="onZoomChange_" on-pointerup="onZoomInputPointerup_"
+          on-blur="onZoomChange_">
       </input>
       <cr-icon-button iron-icon="pdf:add" title="$i18n{tooltipZoomIn}"
           aria-label="$i18n{tooltipZoomIn}" on-click="onZoomInClick_">

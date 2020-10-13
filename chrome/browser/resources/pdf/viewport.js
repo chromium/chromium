@@ -501,6 +501,11 @@ export class Viewport {
     return this.zoomManager_.applyBrowserZoom(this.internalZoom_);
   }
 
+  /** @return {!Array<number>} The preset zoom factors. */
+  get presetZoomFactors() {
+    return this.presetZoomFactors_;
+  }
+
   /** @param {!ZoomManager} manager */
   setZoomManager(manager) {
     this.resetTracker();
