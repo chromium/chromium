@@ -673,10 +673,10 @@ gfx::Point WebPluginContainerImpl::LocalToRootFramePoint(
 }
 
 bool WebPluginContainerImpl::WasTargetForLastMouseEvent() {
-  return element_->GetDocument()
-             .GetFrame()
-             ->GetEventHandler()
-             .GetElementUnderMouse() == element_;
+  auto* frame = element_->GetDocument().GetFrame();
+  if (!frame)
+    return false;
+  return frame->GetEventHandler().GetElementUnderMouse() == element_;
 }
 
 void WebPluginContainerImpl::DidReceiveResponse(
