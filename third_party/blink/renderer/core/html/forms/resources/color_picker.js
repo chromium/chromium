@@ -4,6 +4,8 @@
 
 /**
  * @fileoverview Color picker used by <input type='color' />
+ *
+ * This can be debugged with manual_tests/forms/color-suggestion-picker.html
  */
 
 function initializeColorPicker() {

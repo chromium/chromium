@@ -2,82 +2,112 @@
 <html>
 <head>
 <meta charset=utf-8>
-<title>Color Suggestion Picker test</title>
+<title>&lt;input type=color&gt;</title>
 <style>
-body {
+  body {
     background-color: #eeffff;
-}
-iframe {
+  }
+  iframe {
     z-index: 2147483647;
     width: 180px;
     height: 240px;
     border: 0;
     overflow: hidden;
-}
+  }
+  textarea {
+    width: 350px;
+    height: 150px;
+  }
 </style>
 </head>
 <body>
 
-<p>This is a testbed for a color suggestion picker.</p>
+<h3>This is a testbed for &lt;input type=color&gt;</h3>
 
-<div><input type="color" id="color"></div>
-<iframe></iframe>
+<h3>Regular popup &lt;input type=color&gt; <input type="color" id="color"></h3>
 
-<ol id="console" style="font-family:monospace;">
-</ol>
+<h3>Inline iframe &lt;input type=color&gt;</h3>
+<div>Set arguments for the color picker with this textarea.</div>
+<div>The arguments are used inside the picker as "global.params".</div>
+<div>The string must be JSON formatted with double quotes.</div>
+<div><textarea id=argsTextarea></textarea></div>
+<div><button id=restartbutton>Restart picker with args</button></div>
+<br>
+<div id=iframecontainer></div>
+
+<ol id="console" style="font-family:monospace;"></ol>
 
 <script>
-var arguments = {
-    values : ['#000000', '#404040', '#808080', '#c0c0c0', '#ffffff', '#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#4a86e8', '#0000ff', '#9900ff', '#ff00ff', '#404040', '#808080', '#c0c0c0', '#ffffff', '#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#4a86e8', '#0000ff', '#9900ff', '#ff00ff'],
-    otherColorLabel: 'Other...'
-};
+argsTextarea.textContent = `{
+  "selectedColor": "#aaaaaa"
+}`;
 
-function openColorPicker(args) {
-    var frame = document.getElementsByTagName('iframe')[0];
-    var doc = frame.contentDocument;
-    doc.documentElement.innerHTML = '<head></head><body><div id=main>Loading...</div></body>';
-    var commonCssLink = doc.createElement('link');
-    commonCssLink.rel = 'stylesheet';
-    commonCssLink.href = '../../Source/core/html/forms/resources/pickerCommon.css?' + (new Date()).getTime();
-    doc.head.appendChild(commonCssLink);
-    var link = doc.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '../../Source/core/html/forms/resources/colorSuggestionPicker.css?' + (new Date()).getTime();
-    doc.head.appendChild(link);
-    var commonJsScript = doc.createElement('script');
-    commonJsScript.src = '../../Source/core/html/forms/resources/pickerCommon.js?' + (new Date()).getTime();
-    doc.body.appendChild(commonJsScript);
-    var script = doc.createElement('script');
-    script.src = '../../Source/core/html/forms/resources/colorSuggestionPicker.js?' + (new Date()).getTime();
-    doc.body.appendChild(script);
+restartbutton.onclick = openColorPicker;
 
-    var pagePopupController = {
-        setValueAndClosePopup: function(numValue, stringValue) {
-            window.log('number=' + numValue + ', string="' + stringValue + '"');
-            if (numValue === 0)
-                window.document.getElementById('color').value = stringValue;
-        },
-        setValue: function(value) {
-            window.log('value="' + value + '"');
-            window.document.getElementById('color').value = value;
-        },
-        closePopup: function() {
-        },
-    }
+function openColorPicker() {
+  const oldFrame = document.getElementById('coloriframe');
+  if (oldFrame)
+    oldFrame.remove();
+  const frame = document.createElement('iframe');
+  frame.id = 'coloriframe';
+  iframecontainer.appendChild(frame);
+  const doc = frame.contentDocument;
 
-    setTimeout(function() {
-        frame.contentWindow.postMessage(JSON.stringify(args), "*");
-        frame.contentWindow.pagePopupController = pagePopupController;
-    }, 100);
+  // The following code sets up a color picker inside an iframe as similarly as
+  // possible to ColorChooserPopupUIController::WriteColorPickerDocument.
+  // https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/html/forms/color_chooser_popup_ui_controller.cc;l=97;drc=cc7f2a9e51671f702fd5e6a07c0ffda834fa8a38
+
+  doc.documentElement.innerHTML = `
+    <head>
+      <meta charset='UTF-8'>
+      <link rel=stylesheet href="../../renderer/core/html/forms/resources/pickerCommon.css">
+      <link rel=stylesheet href="../../renderer/core/html/forms/resources/color_picker.css">
+    </head>
+    <body>
+      <div id=main>Loading...</div>
+    </body>
+  `;
+
+  const pickerCommon = doc.createElement('script');
+  pickerCommon.src = "../../renderer/core/html/forms/resources/pickerCommon.js";
+  doc.body.appendChild(pickerCommon);
+
+  const colorPicker = doc.createElement('script');
+  colorPicker.src = "../../renderer/core/html/forms/resources/color_picker.js";
+  doc.body.appendChild(colorPicker);
+
+  const colorPickerCommon = doc.createElement('script');
+  colorPickerCommon.src = "../../renderer/core/html/forms/resources/color_picker_common.js";
+  doc.body.appendChild(colorPickerCommon);
+
+  const pagePopupController = frame.contentWindow.pagePopupController = {
+    setValueAndClosePopup: function(numValue, stringValue) {
+      window.log('number=' + numValue + ', string="' + stringValue + '"');
+      if (numValue === 0)
+        window.document.getElementById('color').value = stringValue;
+    },
+    setValue: function(value) {
+      window.log('value="' + value + '"');
+      window.document.getElementById('color').value = value;
+    },
+    closePopup: function() {
+    },
+  };
+
+  setTimeout(function() {
+    frame.contentWindow.postMessage(argsTextarea.textContent, "*");
+    frame.contentWindow.pagePopupController = pagePopupController;
+  }, 100);
 }
 
 function log(str) {
-    var entry = document.createElement('li');
-    entry.innerText = str;
-    document.getElementById('console').appendChild(entry);
+  var entry = document.createElement('li');
+  entry.innerText = str;
+  document.getElementById('console').appendChild(entry);
 }
 
-openColorPicker(arguments);
+openColorPicker();
+
 </script>
 </body>
 </html>
