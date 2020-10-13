@@ -931,6 +931,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       SelectorCheckingContext sub_context(context);
       sub_context.is_sub_selector = true;
       sub_context.in_nested_complex_selector = true;
+      sub_context.pseudo_id = kPseudoIdNone;
       if (!selector.SelectorList())
         break;
       for (sub_context.selector = selector.SelectorList()->First();
