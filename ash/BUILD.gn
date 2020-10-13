@@ -1327,8 +1327,6 @@ component("ash") {
     "system/unified/ime_mode_view.h",
     "system/unified/managed_device_tray_item_view.cc",
     "system/unified/managed_device_tray_item_view.h",
-    "system/unified/media_controls_chip_view.cc",
-    "system/unified/media_controls_chip_view.h",
     "system/unified/notification_counter_view.cc",
     "system/unified/notification_counter_view.h",
     "system/unified/notification_hidden_view.cc",
