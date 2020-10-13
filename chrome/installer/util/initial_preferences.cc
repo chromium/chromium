@@ -116,26 +116,26 @@ void MasterPreferences::InitializeFromCommandLine(
     const char* distribution_switch;
   } translate_switches[] = {
       {installer::switches::kAllowDowngrade,
-       installer::master_preferences::kAllowDowngrade},
+       installer::initial_preferences::kAllowDowngrade},
       {installer::switches::kDisableLogging,
-       installer::master_preferences::kDisableLogging},
-      {installer::switches::kMsi, installer::master_preferences::kMsi},
+       installer::initial_preferences::kDisableLogging},
+      {installer::switches::kMsi, installer::initial_preferences::kMsi},
       {installer::switches::kDoNotRegisterForUpdateLaunch,
-       installer::master_preferences::kDoNotRegisterForUpdateLaunch},
+       installer::initial_preferences::kDoNotRegisterForUpdateLaunch},
       {installer::switches::kDoNotLaunchChrome,
-       installer::master_preferences::kDoNotLaunchChrome},
+       installer::initial_preferences::kDoNotLaunchChrome},
       {installer::switches::kMakeChromeDefault,
-       installer::master_preferences::kMakeChromeDefault},
+       installer::initial_preferences::kMakeChromeDefault},
       {installer::switches::kSystemLevel,
-       installer::master_preferences::kSystemLevel},
+       installer::initial_preferences::kSystemLevel},
       {installer::switches::kVerboseLogging,
-       installer::master_preferences::kVerboseLogging},
+       installer::initial_preferences::kVerboseLogging},
   };
 
-  std::string name(installer::master_preferences::kDistroDict);
+  std::string name(installer::initial_preferences::kDistroDict);
   for (size_t i = 0; i < base::size(translate_switches); ++i) {
     if (cmd_line.HasSwitch(translate_switches[i].cmd_line_switch)) {
-      name.assign(installer::master_preferences::kDistroDict);
+      name.assign(installer::initial_preferences::kDistroDict);
       name.append(".").append(translate_switches[i].distribution_switch);
       master_dictionary_->SetBoolean(name, true);
     }
@@ -145,8 +145,8 @@ void MasterPreferences::InitializeFromCommandLine(
   std::wstring str_value(
       cmd_line.GetSwitchValueNative(installer::switches::kLogFile));
   if (!str_value.empty()) {
-    name.assign(installer::master_preferences::kDistroDict);
-    name.append(".").append(installer::master_preferences::kLogFile);
+    name.assign(installer::initial_preferences::kDistroDict);
+    name.append(".").append(installer::initial_preferences::kLogFile);
     master_dictionary_->SetString(name, str_value);
   }
 
@@ -158,14 +158,14 @@ void MasterPreferences::InitializeFromCommandLine(
     env->GetVar(env_vars::kGoogleUpdateIsMachineEnvVar, &is_machine_var);
     if (is_machine_var == "1") {
       VLOG(1) << "Taking system-level from environment.";
-      name.assign(installer::master_preferences::kDistroDict);
-      name.append(".").append(installer::master_preferences::kSystemLevel);
+      name.assign(installer::initial_preferences::kDistroDict);
+      name.append(".").append(installer::initial_preferences::kSystemLevel);
       master_dictionary_->SetBoolean(name, true);
     }
   }
 
   // Cache a pointer to the distribution dictionary. Ignore errors if any.
-  master_dictionary_->GetDictionary(installer::master_preferences::kDistroDict,
+  master_dictionary_->GetDictionary(installer::initial_preferences::kDistroDict,
                                     &distribution_);
 #endif
 }
@@ -195,7 +195,7 @@ bool MasterPreferences::InitializeFromString(const std::string& json_data) {
   } else {
     // Cache a pointer to the distribution dictionary.
     master_dictionary_->GetDictionary(
-        installer::master_preferences::kDistroDict, &distribution_);
+        installer::initial_preferences::kDistroDict, &distribution_);
   }
 
   EnforceLegacyPreferences();
@@ -216,9 +216,9 @@ void MasterPreferences::EnforceLegacyPreferences() {
   GetBool(kCreateAllShortcuts, &create_all_shortcuts);
   if (!create_all_shortcuts) {
     distribution_->SetBoolean(
-        installer::master_preferences::kDoNotCreateDesktopShortcut, true);
+        installer::initial_preferences::kDoNotCreateDesktopShortcut, true);
     distribution_->SetBoolean(
-        installer::master_preferences::kDoNotCreateQuickLaunchShortcut, true);
+        installer::initial_preferences::kDoNotCreateQuickLaunchShortcut, true);
   }
 
   // Deprecated boolean import master preferences now mapped to their duplicates
@@ -282,8 +282,8 @@ std::vector<std::string> MasterPreferences::GetFirstRunTabs() const {
 
 bool MasterPreferences::GetExtensionsBlock(
     base::DictionaryValue** extensions) const {
-  return master_dictionary_->GetDictionary(master_preferences::kExtensionsBlock,
-                                           extensions);
+  return master_dictionary_->GetDictionary(
+      initial_preferences::kExtensionsBlock, extensions);
 }
 
 std::string MasterPreferences::GetCompressedVariationsSeed() const {

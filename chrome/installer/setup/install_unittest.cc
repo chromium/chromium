@@ -280,9 +280,9 @@ class InstallShortcutTest : public testing::Test {
       const char* pref_name;
       bool is_desired;
     } desired_prefs[] = {
-        {installer::master_preferences::kDoNotCreateDesktopShortcut,
+        {installer::initial_preferences::kDoNotCreateDesktopShortcut,
          do_not_create_desktop_shortcut},
-        {installer::master_preferences::kDoNotCreateQuickLaunchShortcut,
+        {installer::initial_preferences::kDoNotCreateQuickLaunchShortcut,
          do_not_create_quick_launch_shortcut},
     };
 

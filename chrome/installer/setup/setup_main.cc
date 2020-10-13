@@ -1203,7 +1203,7 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
       installer_state.SetStage(FINISHING);
 
       bool do_not_register_for_update_launch = false;
-      prefs.GetBool(master_preferences::kDoNotRegisterForUpdateLaunch,
+      prefs.GetBool(initial_preferences::kDoNotRegisterForUpdateLaunch,
                     &do_not_register_for_update_launch);
 
       bool write_chrome_launch_string = (!do_not_register_for_update_launch &&
@@ -1217,7 +1217,7 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
         VLOG(1) << "First install successful.";
         // We never want to launch Chrome in system level install mode.
         bool do_not_launch_chrome = false;
-        prefs.GetBool(master_preferences::kDoNotLaunchChrome,
+        prefs.GetBool(initial_preferences::kDoNotLaunchChrome,
                       &do_not_launch_chrome);
         if (!system_install && !do_not_launch_chrome)
           LaunchChromeBrowser(installer_state.target_path());
@@ -1236,7 +1236,7 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
         installer_state.target_path().AppendASCII(
             installer::kDefaultMasterPrefs));
     std::string install_id;
-    if (prefs.GetString(installer::master_preferences::kMsiProductId,
+    if (prefs.GetString(installer::initial_preferences::kMsiProductId,
                         &install_id)) {
       // A currently active MSI install will have specified the master-
       // preferences file on the command-line that includes the product-id.
@@ -1322,7 +1322,7 @@ int WINAPI wWinMain(HINSTANCE instance,
   InitializeInstallDetails(cmd_line, prefs);
 
   bool system_install = false;
-  prefs.GetBool(installer::master_preferences::kSystemLevel, &system_install);
+  prefs.GetBool(installer::initial_preferences::kSystemLevel, &system_install);
   VLOG(1) << "system install is " << system_install;
 
   InstallationState original_state;

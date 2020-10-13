@@ -5,7 +5,7 @@
 #include "chrome/installer/util/initial_preferences_constants.h"
 
 namespace installer {
-namespace master_preferences {
+namespace initial_preferences {
 
 const char kDisableLogging[] = "disable_logging";
 const char kDistroDict[] = "distribution";
@@ -31,5 +31,5 @@ const char kVerboseLogging[] = "verbose_logging";
 const char kExtensionsBlock[] = "extensions.settings";
 const char kAllowDowngrade[] = "allow_downgrade";
 
-}  // namespace master_preferences
+}  // namespace initial_preferences
 }  // namespace installer

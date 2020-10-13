@@ -63,14 +63,14 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
                                 const InstallationState& machine_state) {
   Clear();
 
-  set_level(GetMasterPreference(prefs, master_preferences::kSystemLevel, false)
+  set_level(GetMasterPreference(prefs, initial_preferences::kSystemLevel, false)
                 ? SYSTEM_LEVEL
                 : USER_LEVEL);
 
   verbose_logging_ =
-      GetMasterPreference(prefs, master_preferences::kVerboseLogging, false);
+      GetMasterPreference(prefs, initial_preferences::kVerboseLogging, false);
 
-  msi_ = GetMasterPreference(prefs, master_preferences::kMsi, false);
+  msi_ = GetMasterPreference(prefs, initial_preferences::kMsi, false);
   if (!msi_) {
     const ProductState* product_state =
         machine_state.GetProductState(system_install());

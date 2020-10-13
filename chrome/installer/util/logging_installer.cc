@@ -80,7 +80,7 @@ void InitInstallerLogging(const installer::MasterPreferences& prefs) {
   installer_logging_ = true;
 
   bool value = false;
-  if (prefs.GetBool(installer::master_preferences::kDisableLogging, &value) &&
+  if (prefs.GetBool(installer::initial_preferences::kDisableLogging, &value) &&
       value) {
     return;
   }
@@ -93,7 +93,7 @@ void InitInstallerLogging(const installer::MasterPreferences& prefs) {
   settings.log_file_path = log_file_path.value().c_str();
   logging::InitLogging(settings);
 
-  if (prefs.GetBool(installer::master_preferences::kVerboseLogging, &value) &&
+  if (prefs.GetBool(installer::initial_preferences::kVerboseLogging, &value) &&
       value) {
     logging::SetMinLogLevel(logging::LOG_VERBOSE);
   } else {
@@ -112,7 +112,7 @@ void EndInstallerLogging() {
 
 base::FilePath GetLogFilePath(const installer::MasterPreferences& prefs) {
   std::string path;
-  prefs.GetString(installer::master_preferences::kLogFile, &path);
+  prefs.GetString(installer::initial_preferences::kLogFile, &path);
   if (!path.empty())
     return base::FilePath(base::UTF8ToWide(path));
 

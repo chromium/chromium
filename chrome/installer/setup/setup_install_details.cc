@@ -60,7 +60,7 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
   // In all three cases the value is sussed out in MasterPreferences
   // initialization.
   bool system_level = false;
-  master_preferences.GetBool(installer::master_preferences::kSystemLevel,
+  master_preferences.GetBool(installer::initial_preferences::kSystemLevel,
                              &system_level);
   details->set_system_level(system_level);
 

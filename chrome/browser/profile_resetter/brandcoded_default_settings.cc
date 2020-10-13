@@ -67,8 +67,7 @@ bool BrandcodedDefaultSettings::GetExtensions(
   base::DictionaryValue* extensions = NULL;
   if (master_dictionary_ &&
       master_dictionary_->GetDictionary(
-          installer::master_preferences::kExtensionsBlock,
-          &extensions)) {
+          installer::initial_preferences::kExtensionsBlock, &extensions)) {
     for (base::DictionaryValue::Iterator extension_id(*extensions);
          !extension_id.IsAtEnd(); extension_id.Advance()) {
       if (crx_file::id_util::IdIsValid(extension_id.key()))

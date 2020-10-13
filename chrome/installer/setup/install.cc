@@ -320,7 +320,7 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
                              InstallShortcutLevel install_level,
                              InstallShortcutOperation install_operation) {
   bool do_not_create_any_shortcuts = false;
-  prefs.GetBool(master_preferences::kDoNotCreateAnyShortcuts,
+  prefs.GetBool(initial_preferences::kDoNotCreateAnyShortcuts,
                 &do_not_create_any_shortcuts);
   if (do_not_create_any_shortcuts)
     return;
@@ -329,11 +329,11 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   bool do_not_create_desktop_shortcut = false;
   bool do_not_create_quick_launch_shortcut = false;
   bool do_not_create_taskbar_shortcut = false;
-  prefs.GetBool(master_preferences::kDoNotCreateDesktopShortcut,
+  prefs.GetBool(initial_preferences::kDoNotCreateDesktopShortcut,
                 &do_not_create_desktop_shortcut);
-  prefs.GetBool(master_preferences::kDoNotCreateQuickLaunchShortcut,
+  prefs.GetBool(initial_preferences::kDoNotCreateQuickLaunchShortcut,
                 &do_not_create_quick_launch_shortcut);
-  prefs.GetBool(master_preferences::kDoNotCreateTaskbarShortcut,
+  prefs.GetBool(initial_preferences::kDoNotCreateTaskbarShortcut,
                 &do_not_create_taskbar_shortcut);
 
   // The default operation on update is to overwrite shortcuts with the
@@ -505,7 +505,8 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
     installer_state.SetStage(REGISTERING_CHROME);
 
     bool make_chrome_default = false;
-    prefs.GetBool(master_preferences::kMakeChromeDefault, &make_chrome_default);
+    prefs.GetBool(initial_preferences::kMakeChromeDefault,
+                  &make_chrome_default);
 
     // If this is not the user's first Chrome install, but they have chosen
     // Chrome to become their default browser on the download page, we must
@@ -514,7 +515,7 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
     bool force_chrome_default_for_user = false;
     if (result == NEW_VERSION_UPDATED || result == INSTALL_REPAIRED ||
         result == OLD_VERSION_DOWNGRADE || result == IN_USE_DOWNGRADE) {
-      prefs.GetBool(master_preferences::kMakeChromeDefaultForUser,
+      prefs.GetBool(initial_preferences::kMakeChromeDefaultForUser,
                     &force_chrome_default_for_user);
     }
 

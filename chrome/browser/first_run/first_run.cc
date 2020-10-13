@@ -262,17 +262,17 @@ void SetupInitialPrefsFromInstallPrefs(
 
   bool value = false;
   if (install_prefs.GetBool(
-          installer::master_preferences::kMakeChromeDefaultForUser,
-          &value) && value) {
+          installer::initial_preferences::kMakeChromeDefaultForUser, &value) &&
+      value) {
     out_prefs->make_chrome_default_for_user = true;
   }
 
   install_prefs.GetString(
-      installer::master_preferences::kDistroImportBookmarksFromFilePref,
+      installer::initial_preferences::kDistroImportBookmarksFromFilePref,
       &out_prefs->import_bookmarks_path);
 
   install_prefs.GetString(
-      installer::master_preferences::kDistroSuppressDefaultBrowserPromptPref,
+      installer::initial_preferences::kDistroSuppressDefaultBrowserPromptPref,
       &out_prefs->suppress_default_browser_prompt_for_version);
 }
 
@@ -417,7 +417,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
     // for use in Chrome's PrefService. Strip them from the initial dictionary
     // before mapping it to prefs.
     initial_dictionary->RemoveWithoutPathExpansion(
-        installer::master_preferences::kDistroDict, nullptr);
+        installer::initial_preferences::kDistroDict, nullptr);
 
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
