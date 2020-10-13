@@ -126,14 +126,11 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  if (IsBlendingAllowed()) {
-    bool has_blend_mode_changed =
-        (old_style && old_style->HasBlendMode()) == !StyleRef().HasBlendMode();
-    if (Parent() && has_blend_mode_changed) {
-      Parent()->DescendantIsolationRequirementsChanged(
-          StyleRef().HasBlendMode() ? kDescendantIsolationRequired
-                                    : kDescendantIsolationNeedsUpdate);
-    }
+  if (diff.BlendModeChanged() && Parent()) {
+    DCHECK(IsBlendingAllowed());
+    Parent()->DescendantIsolationRequirementsChanged(
+        StyleRef().HasBlendMode() ? kDescendantIsolationRequired
+                                  : kDescendantIsolationNeedsUpdate);
   }
 
   if (diff.CompositingReasonsChanged())
