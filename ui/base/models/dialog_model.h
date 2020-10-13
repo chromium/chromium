@@ -111,8 +111,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // with the DialogModel so uses of it will not result in use-after-frees.
     DialogModel* model() { return model_.get(); }
 
-    Builder& SetShowCloseButton(bool show_close_button) {
-      model_->show_close_button_ = show_close_button;
+    // Overrides the close-x use for the dialog. Should be avoided as the
+    // close-x is generally derived from dialog modality. Kept to allow
+    // conversion of dialogs that currently do not allow style.
+    // TODO(pbos): Propose UX updates to existing dialogs that require this,
+    // then remove OverrideShowCloseButton().
+    Builder& OverrideShowCloseButton(bool show_close_button) {
+      model_->override_show_close_button_ = show_close_button;
       return *this;
     }
 
@@ -267,8 +272,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     host_ = host;
   }
 
-  bool show_close_button(util::PassKey<DialogModelHost>) const {
-    return show_close_button_;
+  const base::Optional<bool>& override_show_close_button(
+      util::PassKey<DialogModelHost>) const {
+    return override_show_close_button_;
   }
 
   const base::string16& title(util::PassKey<DialogModelHost>) const {
@@ -318,7 +324,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::unique_ptr<DialogModelDelegate> delegate_;
   DialogModelHost* host_ = nullptr;
 
-  bool show_close_button_ = false;
+  base::Optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;
   base::string16 title_;
 

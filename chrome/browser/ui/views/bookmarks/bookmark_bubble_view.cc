@@ -176,7 +176,6 @@ void BookmarkBubbleView::ShowBubble(
 
   auto dialog_model =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique))
-          .SetShowCloseButton(true)
           .SetTitle(l10n_util::GetStringUTF16(
               already_bookmarked ? IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK
                                  : IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARKED))

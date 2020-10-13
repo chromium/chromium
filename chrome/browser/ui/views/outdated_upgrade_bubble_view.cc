@@ -115,7 +115,6 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
 
   auto dialog_model =
       ui::DialogModel::Builder()
-          .SetShowCloseButton(true)
           .SetTitle(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TITLE))
           .AddOkButton(
               base::BindOnce(&OnDialogAccepted, navigator, auto_update_enabled),

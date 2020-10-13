@@ -226,7 +226,7 @@ views::BubbleDialogDelegateView* SessionCrashedBubbleView::ShowBubble(
   SessionCrashedBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
   ui::DialogModel::Builder dialog_builder(std::move(bubble_delegate_unique));
-  dialog_builder.SetShowCloseButton(true)
+  dialog_builder
       .SetTitle(l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_BUBBLE_TITLE))
       .DisableCloseOnDeactivate()
       .SetIsAlertDialog()

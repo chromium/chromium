@@ -134,7 +134,11 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   SetButtons(button_mask);
 
   SetTitle(model_->title(GetPassKey()));
-  SetShowCloseButton(model_->show_close_button(GetPassKey()));
+  if (model_->override_show_close_button(GetPassKey())) {
+    SetShowCloseButton(*model_->override_show_close_button(GetPassKey()));
+  } else {
+    SetShowCloseButton(!IsModalDialog());
+  }
   if (model_->is_alert_dialog(GetPassKey()))
     SetAccessibleRole(ax::mojom::Role::kAlertDialog);
 
@@ -482,6 +486,10 @@ std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return text_label;
+}
+
+bool BubbleDialogModelHost::IsModalDialog() const {
+  return GetModalType() != ui::MODAL_TYPE_NONE;
 }
 
 BEGIN_METADATA(BubbleDialogModelHost, BubbleDialogDelegateView)

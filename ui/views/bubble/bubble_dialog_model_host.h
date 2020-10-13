@@ -74,6 +74,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
 
   View* FieldToView(ui::DialogModelField* field);
 
+  bool IsModalDialog() const;
+
   std::unique_ptr<ui::DialogModel> model_;
   base::flat_map<ui::DialogModelField*, View*> field_to_view_;
   std::vector<PropertyChangedSubscription> property_changed_subscriptions_;
