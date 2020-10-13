@@ -418,6 +418,10 @@ void EventReportValidator::ValidateField(
       << "Mismatch in field " << field_key;
 }
 
+void EventReportValidator::ExpectNoReport() {
+  EXPECT_CALL(*client_, UploadRealtimeReport_(_, _)).Times(0);
+}
+
 void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {
   done_closure_ = std::move(closure);
 }

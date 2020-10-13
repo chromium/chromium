@@ -98,6 +98,8 @@ class EventReportValidator {
       int expected_content_size,
       const std::string& expected_result);
 
+  void ExpectNoReport();
+
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
 

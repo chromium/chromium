@@ -241,7 +241,7 @@ class DownloadDeepScanningBrowserTest
   }
 
   const enterprise_connectors::ContentAnalysisRequest&
-  last_enterprise_content_analysis_request() {
+  last_enterprise_content_analysis_request() const {
     return last_enterprise_content_analysis_request_;
   }
 
@@ -866,6 +866,228 @@ IN_PROC_BROWSER_TEST_F(WhitelistedUrlDeepScanningBrowserTest,
             download::DownloadDangerType::
                 DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK);
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
+}
+
+enum class ScanningVerdict { MALWARE, UNWANTED, SAFE };
+
+// This test validates that metadata check verdicts and deep scanning verdicts
+// override each other correctly and only report up to 1 event.
+class MetadataCheckAndDeepScanningBrowserTest
+    : public DownloadDeepScanningBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<ClientDownloadResponse::Verdict, ScanningVerdict>> {
+ public:
+  ClientDownloadResponse::Verdict metadata_check_verdict() const {
+    return std::get<0>(GetParam());
+  }
+
+  ScanningVerdict scanning_verdict() const { return std::get<1>(GetParam()); }
+
+  enterprise_connectors::ContentAnalysisResponse scanning_response() const {
+    enterprise_connectors::ContentAnalysisResponse response;
+    response.set_request_token(
+        last_enterprise_content_analysis_request().request_token());
+    auto* result = response.add_results();
+    result->set_tag("malware");
+    result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    if (scanning_verdict() == ScanningVerdict::MALWARE) {
+      auto* rule = result->add_triggered_rules();
+      rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+      rule->set_rule_name("malware");
+    } else if (scanning_verdict() == ScanningVerdict::UNWANTED) {
+      auto* rule = result->add_triggered_rules();
+      rule->set_action(enterprise_connectors::TriggeredRule::WARN);
+      rule->set_rule_name("uws");
+    }
+    return response;
+  }
+
+  std::string metadata_check_threat_type() const {
+    switch (metadata_check_verdict()) {
+      case ClientDownloadResponse::UNKNOWN:
+      case ClientDownloadResponse::SAFE:
+        return "";
+      case ClientDownloadResponse::DANGEROUS:
+        return "DANGEROUS";
+      case ClientDownloadResponse::UNCOMMON:
+        return "UNCOMMON";
+      case ClientDownloadResponse::POTENTIALLY_UNWANTED:
+        return "POTENTIALLY_UNWANTED";
+      case ClientDownloadResponse::DANGEROUS_HOST:
+        return "DANGEROUS_HOST";
+    }
+  }
+
+  std::string expected_threat_type() const {
+    // These results exempt the file from being deep scanned.
+    if (metadata_check_verdict() == ClientDownloadResponse::DANGEROUS ||
+        metadata_check_verdict() == ClientDownloadResponse::DANGEROUS_HOST) {
+      return metadata_check_threat_type();
+    }
+    switch (scanning_verdict()) {
+      case ScanningVerdict::MALWARE:
+        return "DANGEROUS";
+      case ScanningVerdict::UNWANTED:
+        return "POTENTIALLY_UNWANTED";
+      case ScanningVerdict::SAFE:
+        return metadata_check_threat_type();
+    }
+  }
+
+  download::DownloadDangerType expected_danger_type() const {
+    switch (metadata_check_verdict()) {
+      case ClientDownloadResponse::DANGEROUS:
+        return download::DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT;
+      case ClientDownloadResponse::DANGEROUS_HOST:
+        return download::DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST;
+      case ClientDownloadResponse::UNCOMMON:
+        if (scanning_verdict() != ScanningVerdict::MALWARE) {
+          return download::DownloadDangerType::
+              DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT;
+        }
+        break;
+
+      case ClientDownloadResponse::POTENTIALLY_UNWANTED:
+        if (scanning_verdict() != ScanningVerdict::MALWARE) {
+          return download::DownloadDangerType::
+              DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED;
+        }
+        break;
+      case ClientDownloadResponse::UNKNOWN:
+      case ClientDownloadResponse::SAFE:
+        break;
+    }
+
+    switch (scanning_verdict()) {
+      case ScanningVerdict::MALWARE:
+        return download::DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT;
+      case ScanningVerdict::UNWANTED:
+        return download::DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED;
+      case ScanningVerdict::SAFE:
+        return download::DownloadDangerType::
+            DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
+    }
+  }
+
+  bool deep_scan_needed() const {
+    return metadata_check_verdict() != ClientDownloadResponse::DANGEROUS &&
+           metadata_check_verdict() != ClientDownloadResponse::DANGEROUS_HOST;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MetadataCheckAndDeepScanningBrowserTest,
+    testing::Combine(
+        testing::Values(ClientDownloadResponse::SAFE,
+                        ClientDownloadResponse::DANGEROUS,
+                        ClientDownloadResponse::UNCOMMON,
+                        ClientDownloadResponse::POTENTIALLY_UNWANTED,
+                        ClientDownloadResponse::DANGEROUS_HOST,
+                        ClientDownloadResponse::UNKNOWN),
+        testing::Values(ScanningVerdict::MALWARE,
+                        ScanningVerdict::UNWANTED,
+                        ScanningVerdict::SAFE)));
+
+IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
+  SetUpReporting();
+  SetDlpPolicyForConnectors(CheckContentComplianceValues::CHECK_NONE);
+  base::HistogramTester histograms;
+
+  // Set up the metadata response.
+  ClientDownloadResponse metadata_response;
+  metadata_response.set_verdict(metadata_check_verdict());
+  ExpectMetadataResponse(metadata_response);
+
+  // Nothing is returned synchronously.
+  if (deep_scan_needed()) {
+    enterprise_connectors::ContentAnalysisResponse sync_response;
+    sync_response.set_request_token(
+        last_enterprise_content_analysis_request().request_token());
+    ExpectContentAnalysisSynchronousResponse(/*is_advanced_protection=*/false,
+                                             sync_response, {"malware"});
+  }
+
+  GURL url = embedded_test_server()->GetURL(
+      "/safe_browsing/download_protection/zipfile_two_archives.zip");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  WaitForMetadataCheck();
+  if (deep_scan_needed())
+    WaitForDeepScanRequest(/*is_advanced_protection=*/false);
+
+  // Both the DLP and malware violations generate an event.
+  std::set<std::string> zip_types = {"application/zip",
+                                     "application/x-zip-compressed"};
+  EventReportValidator validator(client());
+  std::string threat_type = expected_threat_type();
+  if (threat_type.empty()) {
+    validator.ExpectNoReport();
+  } else {
+    validator.ExpectDangerousDeepScanningResult(
+        /*url*/ url.spec(),
+        /*filename*/
+        (*download_items().begin())->GetTargetFilePath().AsUTF8Unsafe(),
+        // sha256sum chrome/test/data/safe_browsing/download_protection/\
+        // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
+        /*sha*/
+        "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C",
+        /*threat_type*/ threat_type,
+        /*trigger*/
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*mimetypes*/ &zip_types,
+        /*size*/ 276,
+        /*result*/ EventResultToString(EventResult::WARNED));
+  }
+
+  // The deep scanning malware verdict is returned asynchronously. It is not
+  // done if the previous verdict is DANGEROUS or DANGEROUS_HOST.
+  if (deep_scan_needed()) {
+    SendFcmMessage(scanning_response());
+  } else {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    validator.SetDoneClosure(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The file should be blocked.
+  ASSERT_EQ(download_items().size(), 1u);
+  download::DownloadItem* item = *download_items().begin();
+  EXPECT_EQ(item->GetDangerType(), expected_danger_type());
+  EXPECT_EQ(item->GetState(), download::DownloadItem::IN_PROGRESS);
+
+  if (metadata_check_verdict() == ClientDownloadResponse::UNCOMMON) {
+    // UNCOMMON is not a verdict that's considered malicious, so the download
+    // will not allow Chrome to close before being accepted or cancelled first
+    // (see DownloadManagerImpl::NonMaliciousInProgressCount). This makes the
+    // test crash after it runs as some callbacks are left unresolved, so a
+    // "cancel" is simulated.
+    item->SimulateErrorForTesting(
+        download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+  }
+
+  if (threat_type.empty()) {
+    // Safe verdicts on both SB and deep scanning tests need to wait for the
+    // download to complete so they don't crash after being done.
+    WaitForDownloadToFinish();
+    EXPECT_EQ(item->GetDangerType(), expected_danger_type());
+    EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
+  }
+
+  // UMAs for this request should only be recorded once, and only if the malware
+  // deep scan takes place.
+  int samples = deep_scan_needed() ? 1 : 0;
+  histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.Result",
+                                BinaryUploadService::Result::SUCCESS, samples);
+  histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.MalwareResult",
+                                true, samples);
 }
 
 }  // namespace safe_browsing
