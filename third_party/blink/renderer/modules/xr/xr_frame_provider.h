@@ -62,8 +62,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
     return immersive_data_provider_.get();
   }
 
+  // Adds an ImmersiveSessionObserver. Observers will be automatically removed
+  // by Oilpan when they are destroyed, and their WeakMember becomes null.
   void AddImmersiveSessionObserver(ImmersiveSessionObserver*);
-  void RemoveImmersiveSessionObserver(ImmersiveSessionObserver*);
 
   virtual void Trace(Visitor*) const;
 
@@ -115,6 +116,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
       immersive_presentation_provider_;
   device::mojom::blink::VRPosePtr immersive_frame_pose_;
   bool is_immersive_frame_position_emulated_ = false;
+
+  // Note: Oilpan automatically removes destroyed observers from
+  // |immersive_observers_| and does not need an explicit removal.
   HeapHashSet<WeakMember<ImmersiveSessionObserver>> immersive_observers_;
 
   // Time the first immersive frame has arrived - used to align the monotonic
