@@ -374,6 +374,11 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                                  section_index);
   }
 
+  void SetIsLineClampContext(bool is_line_clamp_context) {
+    DCHECK(!is_new_fc_);
+    space_.bitfields_.is_line_clamp_context = is_line_clamp_context;
+  }
+
   void SetLinesUntilClamp(const base::Optional<int>& clamp) {
 #if DCHECK_IS_ON()
     DCHECK(!is_lines_until_clamp_set_);

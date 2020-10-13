@@ -372,10 +372,10 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // break. In that case we'll break before first_overflowing_line_. In this
   // case there'll either be enough widows for the next fragment, or we have
   // determined that we're unable to fulfill the widows request.
-  bool fit_all_lines_ = false;
+  bool fit_all_lines_ : 1;
 
   // Set if we're resuming layout of a node that has already produced fragments.
-  bool is_resuming_;
+  bool is_resuming_ : 1;
 
   // Set when we're to abort if the BFC block offset gets resolved or updated.
   // Sometimes we walk past elements (i.e. floats) that depend on the BFC block
@@ -383,21 +383,24 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // When this happens, and we finally manage to resolve (or update) the BFC
   // block offset at some subsequent element, we need to check if this flag is
   // set, and abort layout if it is.
-  bool abort_when_bfc_block_offset_updated_ = false;
+  bool abort_when_bfc_block_offset_updated_ : 1;
 
   // This will be set during block fragmentation once we've processed the first
   // in-flow child of a container. It is used to check if we're at a valid class
   // A or B breakpoint (between block-level siblings or line box siblings).
-  bool has_processed_first_child_ = false;
+  bool has_processed_first_child_ : 1;
 
-  NGExclusionSpace exclusion_space_;
+  // If true, ignore the line-clamp property as truncation wont be required.
+  bool ignore_line_clamp_ : 1;
+
+  // If this is within a -webkit-line-clamp context.
+  bool is_line_clamp_context_ : 1;
 
   // If set, this is the number of lines until a clamp. A value of 1 indicates
   // the current line should be clamped. This may go negative.
   base::Optional<int> lines_until_clamp_;
 
-  // If true, ignore the line-clamp property as truncation wont be required.
-  bool ignore_line_clamp_ = false;
+  NGExclusionSpace exclusion_space_;
 
   // If set, one of the lines was clamped and this is the intrinsic size at the
   // time of the clamp.

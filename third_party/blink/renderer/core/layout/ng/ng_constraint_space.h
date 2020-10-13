@@ -603,6 +603,9 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->ClearanceOffset() : LayoutUnit::Min();
   }
 
+  // Return true if this is participating within a -webkit-line-clamp context.
+  bool IsLineClampContext() const { return bitfields_.is_line_clamp_context; }
+
   base::Optional<int> LinesUntilClamp() const {
     return HasRareData() ? rare_data_->LinesUntilClamp() : base::nullopt;
   }
@@ -1244,6 +1247,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_anonymous(false),
           is_new_formatting_context(false),
           is_orthogonal_writing_mode_root(false),
+          is_line_clamp_context(false),
           is_painted_atomically(false),
           use_first_line_style(false),
           ancestor_has_clearance_past_adjoining_floats(false),
@@ -1271,6 +1275,7 @@ class CORE_EXPORT NGConstraintSpace final {
              is_new_formatting_context == other.is_new_formatting_context &&
              is_orthogonal_writing_mode_root ==
                  other.is_orthogonal_writing_mode_root &&
+             is_line_clamp_context == other.is_line_clamp_context &&
              is_painted_atomically == other.is_painted_atomically &&
              use_first_line_style == other.use_first_line_style &&
              ancestor_has_clearance_past_adjoining_floats ==
@@ -1299,6 +1304,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_anonymous : 1;
     unsigned is_new_formatting_context : 1;
     unsigned is_orthogonal_writing_mode_root : 1;
+    unsigned is_line_clamp_context : 1;
 
     unsigned is_painted_atomically : 1;
     unsigned use_first_line_style : 1;
