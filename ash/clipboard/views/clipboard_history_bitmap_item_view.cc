@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/layer.h"
@@ -43,6 +44,9 @@ constexpr base::TimeDelta kFadeInDurationMs =
 
 // The radius of the image's rounded corners.
 constexpr int kRoundedCornerRadius = 4;
+
+// The thickness of the image border.
+constexpr int kBorderThickness = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FadeImageView
@@ -236,6 +240,10 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
   auto image_view = BuildImageView();
   image_view->SetPreferredSize(gfx::Size(INT_MAX, kBitmapHeight));
   image_view_ = contents_view->AddChildView(std::move(image_view));
+  image_view_->SetBorder(views::CreateRoundedRectBorder(
+      kBorderThickness, kRoundedCornerRadius,
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kHairlineBorderColor)));
   contents_view->InstallDeleteButton();
   return contents_view;
 }
