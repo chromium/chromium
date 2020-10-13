@@ -154,7 +154,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/browsing_data/mock_browsing_data_flash_lso_helper.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -647,91 +646,6 @@ class RemovePermissionPromptCountsTest {
 
   DISALLOW_COPY_AND_ASSIGN(RemovePermissionPromptCountsTest);
 };
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-// A small modification to MockBrowsingDataFlashLSOHelper so that it responds
-// immediately and does not wait for the Notify() call. Otherwise it would
-// deadlock BrowsingDataRemoverImpl::RemoveImpl.
-class TestBrowsingDataFlashLSOHelper : public MockBrowsingDataFlashLSOHelper {
- public:
-  explicit TestBrowsingDataFlashLSOHelper(TestingProfile* profile)
-      : MockBrowsingDataFlashLSOHelper(profile) {}
-
-  void StartFetching(GetSitesWithFlashDataCallback callback) override {
-    MockBrowsingDataFlashLSOHelper::StartFetching(std::move(callback));
-    Notify();
-  }
-
- private:
-  ~TestBrowsingDataFlashLSOHelper() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowsingDataFlashLSOHelper);
-};
-
-class RemovePluginDataTester {
- public:
-  explicit RemovePluginDataTester(TestingProfile* profile)
-      : helper_(new TestBrowsingDataFlashLSOHelper(profile)) {
-    static_cast<ChromeBrowsingDataRemoverDelegate*>(
-        profile->GetBrowsingDataRemoverDelegate())
-        ->OverrideFlashLSOHelperForTesting(helper_);
-  }
-
-  void AddDomain(const std::string& domain) {
-    helper_->AddFlashLSODomain(domain);
-  }
-
-  const std::vector<std::string>& GetDomains() {
-    // TestBrowsingDataFlashLSOHelper is synchronous, so we can immediately
-    // return the fetched domains.
-    helper_->StartFetching(
-        base::BindOnce(&RemovePluginDataTester::OnSitesWithFlashDataFetched,
-                       base::Unretained(this)));
-    return domains_;
-  }
-
- private:
-  void OnSitesWithFlashDataFetched(const std::vector<std::string>& sites) {
-    domains_ = sites;
-  }
-
-  std::vector<std::string> domains_;
-  scoped_refptr<TestBrowsingDataFlashLSOHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovePluginDataTester);
-};
-
-// Waits until a change is observed in content settings.
-class FlashContentSettingsChangeWaiter : public content_settings::Observer {
- public:
-  explicit FlashContentSettingsChangeWaiter(Profile* profile)
-      : profile_(profile) {
-    HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
-  }
-  ~FlashContentSettingsChangeWaiter() override {
-    HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
-        this);
-  }
-
-  // content_settings::Observer:
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const std::string& resource_identifier) override {
-    if (content_type == ContentSettingsType::PLUGINS)
-      run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  Profile* profile_;
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashContentSettingsChangeWaiter);
-};
-#endif
 
 // Custom matcher to test the equivalence of two URL filters. Since those are
 // blackbox predicates, we can only approximate the equivalence by testing
@@ -2794,84 +2708,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
                         CONTENT_SETTING_ASK);
   }
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Check the |ContentSettingsType::PLUGINS_DATA| content setting is cleared
-// with browsing data.
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearFlashPreviouslyChanged) {
-  ChromePluginServiceFilter::GetInstance()->RegisterProfile(GetProfile());
-
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(GetProfile());
-
-  // PLUGINS_DATA gets cleared with history OR site usage data.
-  for (ChromeBrowsingDataRemoverDelegate::DataType data_type :
-       {ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_USAGE_DATA,
-        ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY}) {
-    FlashContentSettingsChangeWaiter waiter(GetProfile());
-    host_content_settings_map->SetContentSettingDefaultScope(
-        Origin1(), Origin1(), ContentSettingsType::PLUGINS, std::string(),
-        CONTENT_SETTING_ALLOW);
-    host_content_settings_map->SetContentSettingDefaultScope(
-        Origin2(), Origin2(), ContentSettingsType::PLUGINS, std::string(),
-        CONTENT_SETTING_BLOCK);
-    waiter.Wait();
-
-    // Check that as a result, the PLUGINS_DATA prefs were populated.
-    EXPECT_NE(nullptr,
-              host_content_settings_map->GetWebsiteSetting(
-                  Origin1(), Origin1(), ContentSettingsType::PLUGINS_DATA,
-                  std::string(), nullptr));
-    EXPECT_NE(nullptr,
-              host_content_settings_map->GetWebsiteSetting(
-                  Origin2(), Origin2(), ContentSettingsType::PLUGINS_DATA,
-                  std::string(), nullptr));
-
-    std::unique_ptr<BrowsingDataFilterBuilder> filter(
-        BrowsingDataFilterBuilder::Create(
-            BrowsingDataFilterBuilder::Mode::kPreserve));
-    BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(), data_type,
-                                std::move(filter));
-    EXPECT_EQ(nullptr,
-              host_content_settings_map->GetWebsiteSetting(
-                  Origin1(), Origin1(), ContentSettingsType::PLUGINS_DATA,
-                  std::string(), nullptr));
-    EXPECT_EQ(nullptr,
-              host_content_settings_map->GetWebsiteSetting(
-                  Origin2(), Origin2(), ContentSettingsType::PLUGINS_DATA,
-                  std::string(), nullptr));
-  }
-}
-
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePluginData) {
-  RemovePluginDataTester tester(GetProfile());
-
-  tester.AddDomain(Origin1().host());
-  tester.AddDomain(Origin2().host());
-  tester.AddDomain(Origin3().host());
-
-  std::vector<std::string> expected = {Origin1().host(), Origin2().host(),
-                                       Origin3().host()};
-  EXPECT_EQ(expected, tester.GetDomains());
-
-  // Delete data with a filter for the registrable domain of |Origin3()|.
-  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder(
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kDelete));
-  filter_builder->AddRegisterableDomain(kTestRegisterableDomain3);
-  BlockUntilOriginDataRemoved(
-      base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA,
-      std::move(filter_builder));
-
-  // Plugin data for |Origin3().host()| should have been removed.
-  expected.pop_back();
-  EXPECT_EQ(expected, tester.GetDomains());
-
-  // TODO(msramek): Mock PluginDataRemover and test the complete deletion
-  // of plugin data as well.
-}
-#endif
 
 // Test that the remover clears language model data (normally added by the
 // LanguageDetectionDriver).

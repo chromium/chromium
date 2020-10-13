@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -159,7 +158,6 @@ bool TypeIsProtected(CookieTreeNode::DetailedInfo::NodeType type) {
     // Fall through each below cases to return false.
     case CookieTreeNode::DetailedInfo::TYPE_COOKIE:
     case CookieTreeNode::DetailedInfo::TYPE_QUOTA:
-    case CookieTreeNode::DetailedInfo::TYPE_FLASH_LSO:
     case CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE:
       return false;
     default:
@@ -287,13 +285,6 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitCacheStorage(
   Init(TYPE_CACHE_STORAGE);
   this->usage_info = usage_info;
   this->origin = usage_info->origin;
-  return *this;
-}
-
-CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitFlashLSO(
-    const std::string& flash_lso_domain) {
-  Init(TYPE_FLASH_LSO);
-  this->flash_lso_domain = flash_lso_domain;
   return *this;
 }
 
@@ -1164,38 +1155,6 @@ class CookieTreeCacheStoragesNode : public CookieTreeCollectionNode {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// CookieTreeFlashLSONode
-
-class CookieTreeFlashLSONode : public CookieTreeNode {
- public:
-  explicit CookieTreeFlashLSONode(const std::string& domain)
-      : domain_(domain) {}
-  ~CookieTreeFlashLSONode() override = default;
-
-  // CookieTreeNode methods:
-  void DeleteStoredObjects() override {
-    // We are one level below the host node.
-    CookieTreeHostNode* host = static_cast<CookieTreeHostNode*>(parent());
-    CHECK_EQ(host->GetDetailedInfo().node_type,
-             CookieTreeNode::DetailedInfo::TYPE_HOST);
-    LocalDataContainer* container = GetModel()->data_container();
-    container->flash_lso_helper_->DeleteFlashLSOsForSite(domain_,
-                                                         base::OnceClosure());
-    auto entry = std::find(container->flash_lso_domain_list_.begin(),
-                           container->flash_lso_domain_list_.end(), domain_);
-    container->flash_lso_domain_list_.erase(entry);
-  }
-  DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().InitFlashLSO(domain_);
-  }
-
- private:
-  std::string domain_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeFlashLSONode);
-};
-
-///////////////////////////////////////////////////////////////////////////////
 // CookieTreeMediaLicensesNode
 
 class CookieTreeMediaLicensesNode : public CookieTreeCollectionNode {
@@ -1343,16 +1302,6 @@ CookieTreeHostNode::GetOrCreateCacheStoragesNode() {
   cache_storages_child_ = new CookieTreeCacheStoragesNode;
   AddChildSortedByTitle(base::WrapUnique(cache_storages_child_));
   return cache_storages_child_;
-}
-
-CookieTreeFlashLSONode* CookieTreeHostNode::GetOrCreateFlashLSONode(
-    const std::string& domain) {
-  DCHECK_EQ(GetHost(), domain);
-  if (flash_lso_child_)
-    return flash_lso_child_;
-  flash_lso_child_ = new CookieTreeFlashLSONode(domain);
-  AddChildSortedByTitle(base::WrapUnique(flash_lso_child_));
-  return flash_lso_child_;
 }
 
 CookieTreeMediaLicensesNode*
@@ -1532,7 +1481,6 @@ void CookiesTreeModel::UpdateSearchResults(const base::string16& filter) {
   PopulateServiceWorkerUsageInfoWithFilter(data_container(), &notifier, filter);
   PopulateSharedWorkerInfoWithFilter(data_container(), &notifier, filter);
   PopulateCacheStorageUsageInfoWithFilter(data_container(), &notifier, filter);
-  PopulateFlashLSOInfoWithFilter(data_container(), &notifier, filter);
   PopulateMediaLicenseInfoWithFilter(data_container(), &notifier, filter);
 }
 
@@ -1623,12 +1571,6 @@ void CookiesTreeModel::PopulateCacheStorageUsageInfo(
   ScopedBatchUpdateNotifier notifier(this, GetRoot());
   PopulateCacheStorageUsageInfoWithFilter(container, &notifier,
                                           base::string16());
-}
-
-void CookiesTreeModel::PopulateFlashLSOInfo(
-      LocalDataContainer* container) {
-  ScopedBatchUpdateNotifier notifier(this, GetRoot());
-  PopulateFlashLSOInfoWithFilter(container, &notifier, base::string16());
 }
 
 void CookiesTreeModel::PopulateMediaLicenseInfo(LocalDataContainer* container) {
@@ -1923,27 +1865,6 @@ void CookiesTreeModel::PopulateQuotaInfoWithFilter(
   }
 }
 
-void CookiesTreeModel::PopulateFlashLSOInfoWithFilter(
-    LocalDataContainer* container,
-    ScopedBatchUpdateNotifier* notifier,
-    const base::string16& filter) {
-  CookieTreeRootNode* root = static_cast<CookieTreeRootNode*>(GetRoot());
-
-  if (container->flash_lso_domain_list_.empty())
-    return;
-
-  std::string filter_utf8 = base::UTF16ToUTF8(filter);
-  notifier->StartBatchUpdate();
-  for (const std::string& domain : container->flash_lso_domain_list_) {
-    if (filter_utf8.empty() || domain.find(filter_utf8) != std::string::npos) {
-      // Create a fake origin for GetOrCreateHostNode().
-      GURL origin("http://" + domain);
-      CookieTreeHostNode* host_node = root->GetOrCreateHostNode(origin);
-      host_node->GetOrCreateFlashLSONode(domain);
-    }
-  }
-}
-
 void CookiesTreeModel::PopulateMediaLicenseInfoWithFilter(
     LocalDataContainer* container,
     ScopedBatchUpdateNotifier* notifier,
@@ -2051,13 +1972,6 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
                                             profile->GetResourceContext()),
       new browsing_data::CacheStorageHelper(
           storage_partition->GetCacheStorageContext()),
-#if defined(OS_ANDROID)
-      // Android doesn't have flash LSO hence it cannot be created for
-      // android build.
-      nullptr,
-#else
-      BrowsingDataFlashLSOHelper::Create(profile),
-#endif
       BrowsingDataMediaLicenseHelper::Create(file_system_context));
 
 #if !defined(OS_ANDROID)

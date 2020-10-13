@@ -35,7 +35,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_data_remover_helper.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #endif
 
@@ -387,8 +386,8 @@ bool BrowsingDataRemoverFunction::IsPauseSyncAllowed() {
 #if BUILDFLAG(ENABLE_PLUGINS)
 void BrowsingDataRemoverFunction::CheckRemovingPluginDataSupported(
     scoped_refptr<PluginPrefs> plugin_prefs) {
-  if (!PluginDataRemoverHelper::IsSupported(plugin_prefs.get()))
-    removal_mask_ &= ~ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA;
+  // We don't support this after Flash deprecation.
+  removal_mask_ &= ~ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PLUGIN_DATA;
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

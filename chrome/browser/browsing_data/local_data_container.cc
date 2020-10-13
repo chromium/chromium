@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
@@ -27,7 +26,6 @@ LocalDataContainer::LocalDataContainer(
     scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
     scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
     scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
-    scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper,
     scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper)
     : appcache_helper_(std::move(appcache_helper)),
       cookie_helper_(std::move(cookie_helper)),
@@ -40,7 +38,6 @@ LocalDataContainer::LocalDataContainer(
       service_worker_helper_(std::move(service_worker_helper)),
       shared_worker_helper_(std::move(shared_worker_helper)),
       cache_storage_helper_(std::move(cache_storage_helper)),
-      flash_lso_helper_(std::move(flash_lso_helper)),
       media_license_helper_(std::move(media_license_helper)) {}
 
 LocalDataContainer::~LocalDataContainer() {}
@@ -126,13 +123,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     batches_started_++;
     cache_storage_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnCacheStorageModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (flash_lso_helper_.get()) {
-    batches_started_++;
-    flash_lso_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnFlashLSOInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -223,13 +213,6 @@ void LocalDataContainer::OnCacheStorageModelInfoLoaded(
   cache_storage_info_list_ = cache_storage_info;
   DCHECK(model_);
   model_->PopulateCacheStorageUsageInfo(this);
-}
-
-void LocalDataContainer::OnFlashLSOInfoLoaded(
-    const FlashLSODomainList& domains) {
-  flash_lso_domain_list_ = domains;
-  DCHECK(model_);
-  model_->PopulateFlashLSOInfo(this);
 }
 
 void LocalDataContainer::OnMediaLicenseInfoLoaded(

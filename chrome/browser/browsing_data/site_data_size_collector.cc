@@ -35,8 +35,7 @@ SiteDataSizeCollector::SiteDataSizeCollector(
     browsing_data::IndexedDBHelper* indexed_db_helper,
     browsing_data::FileSystemHelper* file_system_helper,
     browsing_data::ServiceWorkerHelper* service_worker_helper,
-    browsing_data::CacheStorageHelper* cache_storage_helper,
-    BrowsingDataFlashLSOHelper* flash_lso_helper)
+    browsing_data::CacheStorageHelper* cache_storage_helper)
     : default_storage_partition_path_(default_storage_partition_path),
       appcache_helper_(appcache_helper),
       cookie_helper_(cookie_helper),
@@ -46,7 +45,6 @@ SiteDataSizeCollector::SiteDataSizeCollector(
       file_system_helper_(file_system_helper),
       service_worker_helper_(service_worker_helper),
       cache_storage_helper_(cache_storage_helper),
-      flash_lso_helper_(flash_lso_helper),
       in_flight_operations_(0),
       total_bytes_(0) {}
 
@@ -106,12 +104,6 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   if (cache_storage_helper_.get()) {
     cache_storage_helper_->StartFetching(
         base::BindOnce(&SiteDataSizeCollector::OnCacheStorageModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
-  if (flash_lso_helper_.get()) {
-    flash_lso_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnFlashLSOInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
     in_flight_operations_++;
   }
@@ -199,25 +191,6 @@ void SiteDataSizeCollector::OnCacheStorageModelInfoLoaded(
   for (const auto& cache_storage_info : cache_storage_info_list)
     total_size += cache_storage_info.total_size_bytes;
   OnStorageSizeFetched(total_size);
-}
-
-void SiteDataSizeCollector::OnFlashLSOInfoLoaded(
-    const FlashLSODomainList& domains) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(fukino): Flash is not the only plugin. We should check all types of
-  // plugin data.
-  if (domains.empty()) {
-    OnStorageSizeFetched(0);
-    return;
-  }
-  base::FilePath pepper_data_dir_path = default_storage_partition_path_
-      .Append(content::kPepperDataDirname);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&base::ComputeDirectorySize, pepper_data_dir_path),
-      base::BindOnce(&SiteDataSizeCollector::OnStorageSizeFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SiteDataSizeCollector::OnStorageSizeFetched(int64_t size) {

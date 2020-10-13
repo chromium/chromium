@@ -59,7 +59,6 @@
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/c/private/ppb_pdf.h"
-#include "ppapi/c/private/ppp_flash_browser_operations.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/proxy/host_resolver_private_resource.h"
 #include "ppapi/proxy/network_list_resource.h"
@@ -82,7 +81,6 @@
 #include "ppapi/shared_impl/ppb_input_event_shared.h"
 #include "ppapi/shared_impl/ppb_tcp_socket_shared.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
-#include "ppapi/shared_impl/ppp_flash_browser_operations_shared.h"
 #include "ppapi/shared_impl/private/ppb_x509_certificate_private_shared.h"
 #include "ppapi/shared_impl/socket_option_data.h"
 #include "ppapi/shared_impl/url_request_info_data.h"
@@ -99,10 +97,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(PP_AudioSampleRate, PP_AUDIOSAMPLERATE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_DeviceType_Dev, PP_DEVICETYPE_DEV_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_FileSystemType, PP_FILESYSTEMTYPE_ISOLATED)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_FileType, PP_FILETYPE_OTHER)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_Flash_BrowserOperations_Permission,
-                          PP_FLASH_BROWSEROPERATIONS_PERMISSION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_Flash_BrowserOperations_SettingType,
-                          PP_FLASH_BROWSEROPERATIONS_SETTINGTYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_ImageDataFormat, PP_IMAGEDATAFORMAT_LAST)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_InputEvent_MouseButton,
                               PP_INPUTEVENT_MOUSEBUTTON_FIRST,
@@ -442,11 +436,6 @@ IPC_STRUCT_TRAITS_BEGIN(ppapi::FileRefCreateInfo)
   IPC_STRUCT_TRAITS_MEMBER(file_system_plugin_resource)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(ppapi::FlashSiteSetting)
-  IPC_STRUCT_TRAITS_MEMBER(site)
-  IPC_STRUCT_TRAITS_MEMBER(permission)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(ppapi::MediaStreamAudioTrackShared::Attributes)
   IPC_STRUCT_TRAITS_MEMBER(buffers)
   IPC_STRUCT_TRAITS_MEMBER(duration)
@@ -650,66 +639,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_LogInterfaceUsage,
 // PPP_NetworkState_Dev.
 IPC_MESSAGE_CONTROL1(PpapiMsg_SetNetworkState,
                      bool /* online */)
-
-// Requests a list of sites that have data stored from the plugin. The plugin
-// process will respond with PpapiHostMsg_GetSitesWithDataResult. This is used
-// for Flash.
-IPC_MESSAGE_CONTROL2(PpapiMsg_GetSitesWithData,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_GetSitesWithDataResult,
-                     uint32_t /* request_id */,
-                     std::vector<std::string> /* sites */)
-
-// Instructs the plugin to clear data for the given site & time. The plugin
-// process will respond with PpapiHostMsg_ClearSiteDataResult. This is used
-// for Flash.
-IPC_MESSAGE_CONTROL5(PpapiMsg_ClearSiteData,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     std::string /* site */,
-                     uint64_t /* flags */,
-                     uint64_t /* max_age */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_ClearSiteDataResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-IPC_MESSAGE_CONTROL2(PpapiMsg_DeauthorizeContentLicenses,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_DeauthorizeContentLicensesResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-IPC_MESSAGE_CONTROL3(PpapiMsg_GetPermissionSettings,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     PP_Flash_BrowserOperations_SettingType /* setting_type */)
-IPC_MESSAGE_CONTROL4(
-    PpapiHostMsg_GetPermissionSettingsResult,
-    uint32_t /* request_id */,
-    bool /* success */,
-    PP_Flash_BrowserOperations_Permission /* default_permission */,
-    ppapi::FlashSiteSettings /* sites */)
-
-IPC_MESSAGE_CONTROL5(PpapiMsg_SetDefaultPermission,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     PP_Flash_BrowserOperations_SettingType /* setting_type */,
-                     PP_Flash_BrowserOperations_Permission /* permission */,
-                     bool /* clear_site_specific */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_SetDefaultPermissionResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
-
-IPC_MESSAGE_CONTROL4(PpapiMsg_SetSitePermission,
-                     uint32_t /* request_id */,
-                     base::FilePath /* plugin_data_path */,
-                     PP_Flash_BrowserOperations_SettingType /* setting_type */,
-                     ppapi::FlashSiteSettings /* sites */)
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_SetSitePermissionResult,
-                     uint32_t /* request_id */,
-                     bool /* success */)
 
 // Broker Process.
 IPC_SYNC_MESSAGE_CONTROL2_1(PpapiMsg_ConnectToPlugin,

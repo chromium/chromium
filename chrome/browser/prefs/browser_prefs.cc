@@ -192,7 +192,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/pepper_flash_settings_manager.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/plugins/plugins_resource_service.h"
 #include "chrome/browser/renderer_host/pepper/device_id_fetcher.h"
@@ -832,7 +831,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   DeviceIDFetcher::RegisterProfilePrefs(registry);
-  PepperFlashSettingsManager::RegisterProfilePrefs(registry);
   PluginInfoHostImpl::RegisterUserPrefs(registry);
 #endif
 
