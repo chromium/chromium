@@ -68,10 +68,6 @@ void FakeSyncService::StopAndClear() {}
 
 void FakeSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
 
-ModelTypeSet FakeSyncService::GetRegisteredDataTypes() const {
-  return ModelTypeSet();
-}
-
 ModelTypeSet FakeSyncService::GetPreferredDataTypes() const {
   return ModelTypeSet();
 }

@@ -122,7 +122,6 @@ class ProfileSyncService : public SyncService,
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
   bool IsSetupInProgress() const override;
-  ModelTypeSet GetRegisteredDataTypes() const override;
   ModelTypeSet GetPreferredDataTypes() const override;
   ModelTypeSet GetActiveDataTypes() const override;
   ModelTypeSet GetBackedOffDataTypes() const override;
@@ -238,6 +237,8 @@ class ProfileSyncService : public SyncService,
   void OverrideNetworkForTest(const CreateHttpPostProviderFactory&
                                   create_http_post_provider_factory_cb);
 
+  ModelTypeSet GetRegisteredDataTypesForTest() const;
+
   bool IsDataTypeControllerRunningForTest(ModelType type) const;
 
   // Some tests rely on injecting calls to the encryption observer.
@@ -293,6 +294,10 @@ class ProfileSyncService : public SyncService,
   void ConfigureDataTypeManager(ConfigureReason reason);
 
   bool UseTransportOnlyMode() const;
+
+  // Returns the set of data types that are supported in principle, possibly
+  // influenced by command-line options.
+  ModelTypeSet GetRegisteredDataTypes() const;
 
   // Returns the ModelTypes allowed in transport-only mode (i.e. those that are
   // not tied to sync-the-feature).

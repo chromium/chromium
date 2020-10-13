@@ -300,10 +300,6 @@ class SyncService : public KeyedService {
   // DATA TYPE STATE
   //////////////////////////////////////////////////////////////////////////////
 
-  // Returns the set of data types that are supported in principle. These will
-  // typically only change via a command-line option.
-  virtual syncer::ModelTypeSet GetRegisteredDataTypes() const = 0;
-
   // Returns the set of types which are preferred for enabling. This is a
   // superset of the active types (see GetActiveDataTypes()). This also includes
   // any forced types.

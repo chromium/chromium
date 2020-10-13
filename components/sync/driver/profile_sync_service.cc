@@ -370,6 +370,10 @@ void ProfileSyncService::StartSyncingWithServer() {
   }
 }
 
+ModelTypeSet ProfileSyncService::GetRegisteredDataTypesForTest() const {
+  return GetRegisteredDataTypes();
+}
+
 bool ProfileSyncService::IsDataTypeControllerRunningForTest(
     ModelType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1249,18 +1253,6 @@ bool ProfileSyncService::HasObserver(
   return observers_.HasObserver(observer);
 }
 
-ModelTypeSet ProfileSyncService::GetRegisteredDataTypes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ModelTypeSet registered_types;
-  // The |data_type_controllers_| are determined by command-line flags;
-  // that's effectively what controls the values returned here.
-  for (const std::pair<const ModelType, std::unique_ptr<DataTypeController>>&
-           type_and_controller : data_type_controllers_) {
-    registered_types.Put(type_and_controller.first);
-  }
-  return registered_types;
-}
-
 ModelTypeSet ProfileSyncService::GetPreferredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_settings_->GetPreferredDataTypes();
@@ -1366,6 +1358,18 @@ bool ProfileSyncService::UseTransportOnlyMode() const {
   // Note: When local Sync is enabled, then we want full-sync mode (not just
   // transport), even though Sync-the-feature is not considered enabled.
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
+}
+
+ModelTypeSet ProfileSyncService::GetRegisteredDataTypes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ModelTypeSet registered_types;
+  // The |data_type_controllers_| are determined by command-line flags;
+  // that's effectively what controls the values returned here.
+  for (const std::pair<const ModelType, std::unique_ptr<DataTypeController>>&
+           type_and_controller : data_type_controllers_) {
+    registered_types.Put(type_and_controller.first);
+  }
+  return registered_types;
 }
 
 ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {

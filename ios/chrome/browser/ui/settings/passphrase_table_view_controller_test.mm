@@ -89,8 +89,6 @@ void PassphraseTableViewControllerTest::SetUp() {
       ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           chrome_browser_state_.get(),
           base::BindRepeating(&CreateNiceMockSyncService)));
-  ON_CALL(*fake_sync_service_, GetRegisteredDataTypes())
-      .WillByDefault(Return(syncer::ModelTypeSet()));
 
   // Set up non-default return values for our sync service mock.
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())

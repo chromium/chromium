@@ -127,7 +127,7 @@ class EnableDisableSingleClientTest : public SyncTest {
       ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
     }
 
-    registered_data_types_ = GetSyncService(0)->GetRegisteredDataTypes();
+    registered_data_types_ = GetSyncService(0)->GetRegisteredDataTypesForTest();
     multi_grouped_types_ = MultiGroupTypes(registered_data_types_);
     registered_selectable_types_ = GetRegisteredSelectableTypes(0);
   }

@@ -72,7 +72,6 @@ class TestSyncService : public SyncService {
       override;
   bool IsSetupInProgress() const override;
 
-  ModelTypeSet GetRegisteredDataTypes() const override;
   ModelTypeSet GetPreferredDataTypes() const override;
   ModelTypeSet GetActiveDataTypes() const override;
   ModelTypeSet GetBackedOffDataTypes() const override;

@@ -18,8 +18,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/data_type_controller.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/driver/sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -187,9 +187,9 @@ TEST_F(ProfileSyncServiceFactoryTest, DisableSyncFlag) {
 // Verify that a normal (no command line flags) PSS can be created and
 // properly initialized.
 TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDefault) {
-  syncer::SyncService* pss =
-      ProfileSyncServiceFactory::GetForProfile(profile());
-  syncer::ModelTypeSet types = pss->GetRegisteredDataTypes();
+  syncer::ProfileSyncService* pss =
+      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
+  syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, syncer::ModelTypeSet());
 
@@ -202,9 +202,9 @@ TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDefault) {
 TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableOne) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
   SetDisabledTypes(disabled_types);
-  syncer::SyncService* pss =
-      ProfileSyncServiceFactory::GetForProfile(profile());
-  syncer::ModelTypeSet types = pss->GetRegisteredDataTypes();
+  syncer::ProfileSyncService* pss =
+      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
+  syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, disabled_types);
 
@@ -218,9 +218,9 @@ TEST_F(ProfileSyncServiceFactoryTest, CreatePSSDisableMultiple) {
   syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
                                       syncer::BOOKMARKS);
   SetDisabledTypes(disabled_types);
-  syncer::SyncService* pss =
-      ProfileSyncServiceFactory::GetForProfile(profile());
-  syncer::ModelTypeSet types = pss->GetRegisteredDataTypes();
+  syncer::ProfileSyncService* pss =
+      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile());
+  syncer::ModelTypeSet types = pss->GetRegisteredDataTypesForTest();
   EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
   CheckDefaultDatatypesInSetExcept(types, disabled_types);
 

@@ -45,7 +45,6 @@ class MockSyncService : public SyncService {
                std::unique_ptr<SyncSetupInProgressHandle>());
   MOCK_CONST_METHOD0(IsSetupInProgress, bool());
 
-  MOCK_CONST_METHOD0(GetRegisteredDataTypes, ModelTypeSet());
   MOCK_CONST_METHOD0(GetPreferredDataTypes, ModelTypeSet());
   MOCK_CONST_METHOD0(GetActiveDataTypes, ModelTypeSet());
   MOCK_CONST_METHOD0(GetBackedOffDataTypes, ModelTypeSet());
