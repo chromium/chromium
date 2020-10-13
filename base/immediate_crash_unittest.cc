@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/base_paths.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -15,6 +16,7 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -163,6 +165,39 @@ std::vector<Instruction> MaybeSkipOptionalFooter(
   return std::vector<Instruction>(iter, instructions.end());
 }
 
+#if BUILDFLAG(USE_CLANG_COVERAGE)
+bool MatchPrefix(const std::vector<Instruction>& haystack,
+                 const base::span<const Instruction>& needle) {
+  for (size_t i = 0; i < needle.size(); i++) {
+    if (i >= haystack.size() || needle[i] != haystack[i])
+      return false;
+  }
+  return true;
+}
+
+std::vector<Instruction> DropUntilMatch(
+    std::vector<Instruction> haystack,
+    const base::span<const Instruction>& needle) {
+  while (!haystack.empty() && !MatchPrefix(haystack, needle))
+    haystack.erase(haystack.begin());
+  return haystack;
+}
+#endif  // USE_CLANG_COVERAGE
+
+std::vector<Instruction> MaybeSkipCoverageHook(
+    std::vector<Instruction> instructions) {
+#if BUILDFLAG(USE_CLANG_COVERAGE)
+  // Warning: it is not illegal for the entirety of the expected crash sequence
+  // to appear as a subsequence of the coverage hook code. If that happens, this
+  // code will falsely exit early, having not found the real expected crash
+  // sequence, so this may not adequately ensure that the immediate crash
+  // sequence is present. We do check when not under coverage, at least.
+  return DropUntilMatch(instructions, base::make_span(kRequiredBody));
+#else
+  return instructions;
+#endif  // USE_CLANG_COVERAGE
+}
+
 }  // namespace
 
 // Checks that the IMMEDIATE_CRASH() macro produces specific instructions; see
@@ -177,8 +212,10 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
-  auto result = ExpectImmediateCrashInvocation(body);
+  base::Optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
+  result = ExpectImmediateCrashInvocation(result.value());
   result = MaybeSkipOptionalFooter(result.value());
+  result = MaybeSkipCoverageHook(result.value());
   result = ExpectImmediateCrashInvocation(result.value());
   ASSERT_TRUE(result);
 }
