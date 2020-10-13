@@ -5725,9 +5725,6 @@ crbug.com/907125 external/wpt/lifecycle/child-out-of-viewport.tentative.html [ T
 crbug.com/907125 external/wpt/lifecycle/child-display-none.tentative.html [ Timeout Failure ]
 crbug.com/907125 external/wpt/lifecycle/worker-dispay-none.tentative.html [ Timeout Failure ]
 
-# Tests that json modules load correctly within the context of service workers
-crbug.com/967018 external/wpt/html/semantics/scripting-1/the-script-element/json-module/json-module-service-worker-test.https.tentative.html [ Failure ]
-
 # Sheriff 2019-11-04
 # Updated by Sheriff on 2020-05-29: flaky on all platforms.
 crbug.com/1084441 media/controls/video-overlay-cast-dark-rendering.html [ Pass Failure ]
