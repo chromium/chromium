@@ -11,8 +11,10 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import './customize_backgrounds.js';
 import './customize_shortcuts.js';
+import './customize_modules.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -91,6 +93,12 @@ class CustomizeDialogElement extends PolymerElement {
         computed: `computeIsRefreshToggleChecked_(theme, selectedCollection_,
             backgroundSelection)`,
       },
+
+      /** @private */
+      modulesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesEnabled'),
+      },
     };
   }
 
@@ -153,6 +161,9 @@ class CustomizeDialogElement extends PolymerElement {
   onDoneClick_() {
     this.$.customizeThemes.confirmThemeChanges();
     this.shadowRoot.querySelector('ntp-customize-shortcuts').apply();
+    if (this.modulesEnabled_) {
+      this.shadowRoot.querySelector('ntp-customize-modules').apply();
+    }
     switch (this.backgroundSelection.type) {
       case BackgroundSelectionType.NO_BACKGROUND:
         this.pageHandler_.setNoBackgroundImage();

@@ -50,6 +50,7 @@ class MockPage : public new_tab_page::mojom::Page {
   MOCK_METHOD1(SetTheme, void(new_tab_page::mojom::ThemePtr));
   MOCK_METHOD1(SetFakeboxFocused, void(bool));
   MOCK_METHOD1(SetFakeboxVisible, void(bool));
+  MOCK_METHOD1(SetModulesVisible, void(bool));
   MOCK_METHOD1(AutocompleteResultChanged,
                void(search::mojom::AutocompleteResultPtr));
   MOCK_METHOD3(AutocompleteMatchImageAvailable,

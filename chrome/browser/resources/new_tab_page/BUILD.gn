@@ -253,6 +253,7 @@ html_to_js("web_components_local") {
     "realbox.js",
     "iframe.js",
     "voice_search_overlay.js",
+    "customize_modules.js",
   ]
 }
 

@@ -154,6 +154,10 @@
     -webkit-mask-image: url(icons/link.svg);
   }
 
+  #modulesIcon {
+    -webkit-mask-image: url(icons/cards.svg);
+  }
+
   #themesIcon {
     -webkit-mask-image: url(icons/colors.svg);
   }
@@ -214,6 +218,11 @@
               <div id="shortcutsIcon" class="menu-item-icon"></div>
               $i18n{shortcutsMenuItem}
             </div>
+            <div class="menu-item" page-name="modules" tabindex="0"
+                hidden$="[[!modulesEnabled_]]">
+              <div id="modulesIcon" class="menu-item-icon"></div>
+              $i18n{modulesMenuItem}
+            </div>
             <div class="menu-item" page-name="themes" tabindex="0">
               <div id="themesIcon" class="menu-item-icon"></div>
               $i18n{themesMenuItem}
@@ -231,6 +240,9 @@
             </ntp-customize-backgrounds>
             <ntp-customize-shortcuts page-name="shortcuts">
             </ntp-customize-shortcuts>
+            <ntp-customize-modules page-name="modules"
+                hidden$="[[!modulesEnabled_]]">
+            </ntp-customize-modules>
             <cr-customize-themes id="customizeThemes" page-name="themes">
             </cr-customize-themes>
           </iron-pages>

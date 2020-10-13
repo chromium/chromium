@@ -56,6 +56,7 @@
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
@@ -70,6 +71,8 @@
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
+
+constexpr char kModulesVisiblePrefName[] = "NewTabPage.ModulesVisible";
 
 new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   auto theme = new_tab_page::mojom::Theme::New();
@@ -399,6 +402,11 @@ NewTabPageHandler::~NewTabPageHandler() {
   }
 }
 
+// static
+void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kModulesVisiblePrefName, true);
+}
+
 void NewTabPageHandler::AddMostVisitedTile(
     const GURL& url,
     const std::string& title,
@@ -663,6 +671,16 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
   const std::string histogram_prefix(kModuleRestoredHistogram);
   base::UmaHistogramExactLinear(histogram_prefix, 1, 1);
   base::UmaHistogramExactLinear(histogram_prefix + "." + module_id, 1, 1);
+}
+
+void NewTabPageHandler::SetModulesVisible(bool visible) {
+  profile_->GetPrefs()->SetBoolean(kModulesVisiblePrefName, visible);
+  UpdateModulesVisible();
+}
+
+void NewTabPageHandler::UpdateModulesVisible() {
+  page_->SetModulesVisible(
+      profile_->GetPrefs()->GetBoolean(kModulesVisiblePrefName));
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

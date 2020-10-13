@@ -439,26 +439,32 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
-    test('modules appended to page', async () => {
-      // Act.
-      moduleResolver.resolve([
-        {
-          id: 'foo',
-          element: document.createElement('div'),
-          title: 'Foo Title',
-        },
-        {
-          id: 'bar',
-          element: document.createElement('div'),
-          title: 'Bar Title',
-        }
-      ]);
-      await flushTasks();  // Wait for module descriptor resolution.
+    [true, false].forEach(visible => {
+      test(`modules appended to page if visibility ${visible}`, async () => {
+        // Act.
+        moduleResolver.resolve([
+          {
+            id: 'foo',
+            element: document.createElement('div'),
+            title: 'Foo Title',
+          },
+          {
+            id: 'bar',
+            element: document.createElement('div'),
+            title: 'Bar Title',
+          }
+        ]);
+        testProxy.callbackRouterRemote.setModulesVisible(visible);
+        await flushTasks();  // Wait for module descriptor resolution.
 
-      // Assert.
-      const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
-      assertEquals(2, modules.length);
-      assertEquals(1, testProxy.handler.getCallCount('onModulesRendered'));
+        // Assert.
+        const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
+        assertEquals(2, modules.length);
+        assertEquals(
+            visible ? 1 : 0,
+            testProxy.handler.getCallCount('onModulesRendered'));
+        assertEquals(1, testProxy.handler.getCallCount('updateModulesVisible'));
+      });
     });
 
     test('modules can be dismissed and restored', async () => {

@@ -1,0 +1,52 @@
+<style include="cr-icons">
+  :host {
+    line-height: 20px;
+  }
+
+  #hide {
+    align-items: center;
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: flex;
+    height: 64px;
+    max-width: 544px;
+    width: 100%;
+  }
+
+  :host([hide_]) #hide {
+    background-color: var(--ntp-selected-background-color);
+    border-color: var(--ntp-selected-border-color);
+    color: var(--ntp-selected-border-color);
+  }
+
+  #hideIcon {
+    margin-inline-end: 20px;
+    margin-inline-start: 24px;
+  }
+
+  :host([hide_]) #hideIcon {
+    background-color: var(--ntp-selected-border-color);
+  }
+
+  #hideTitleContainer {
+    flex-grow: 1;
+  }
+
+  #hideTitle {
+    font-weight: bold;
+  }
+
+  cr-toggle {
+    margin-inline-end: 20px;
+  }
+</style>
+<div id="hide">
+  <div id="hideIcon" class="cr-icon icon-visibility-off"></div>
+  <div id="hideTitleContainer">
+    <div id="hideTitle">$i18n{hideModules}</div>
+    $i18n{hideModulesDesc}
+  </div>
+  <cr-toggle id="hideToggle" title="$i18n{hideModules}" checked="[[hide_]]"
+      on-change="onHideChange_"></cr-toggle>
+</div>

@@ -241,6 +241,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
@@ -888,6 +889,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   HistoryUI::RegisterProfilePrefs(registry);
   InstantService::RegisterProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
+  NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabUI::RegisterProfilePrefs(registry);
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
