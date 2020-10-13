@@ -71690,6 +71690,15 @@ would be helpful to identify which type is being sent.
   </int>
 </enum>
 
+<enum name="TouchpadSensitivity">
+  <int value="0" label="NONE"/>
+  <int value="1" label="Slowest"/>
+  <int value="2" label="Slow"/>
+  <int value="3" label="Medium"/>
+  <int value="4" label="Fast"/>
+  <int value="5" label="Fastest"/>
+</enum>
+
 <enum name="TouchTargetAndDispatchResultType">
   <int value="0"
       label="Non-root-scroller, non-scrollable document, not handled"/>

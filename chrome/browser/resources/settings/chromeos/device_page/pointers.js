@@ -57,6 +57,7 @@ Polymer({
     /**
      * TODO(michaelpg): settings-slider should optionally take a min and max so
      * we don't have to generate a simple range of natural numbers ourselves.
+     * These values match the TouchpadSensitivity enum in enums.xml.
      * @type {!Array<number>}
      * @private
      */

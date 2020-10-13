@@ -30,6 +30,14 @@
           value: {boolValue: /** @type {boolean} */ (prefValue)}
         };
 
+      // device_page/pointers.js
+      case 'settings.touchpad.sensitivity2':
+        console.log(prefValue);
+        return {
+          setting: chromeos.settings.mojom.Setting.kTouchpadSpeed,
+          value: {intValue: /** @type {number} */ (prefValue)}
+        };
+
       // pref to setting metric not implemented.
       default:
         return null;
