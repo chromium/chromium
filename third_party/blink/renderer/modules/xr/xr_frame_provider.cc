@@ -200,8 +200,9 @@ void XRFrameProvider::RequestFrame(XRSession* session) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(session);
 
-  auto options = device::mojom::blink::XRFrameDataRequestOptions::New(
-      session->LightEstimationEnabled());
+  auto options = device::mojom::blink::XRFrameDataRequestOptions::New();
+  options->include_lighting_estimation_data = session->LightEstimationEnabled();
+  options->stage_parameters_id = session->StageParametersId();
 
   // Immersive frame logic.
   if (session->immersive()) {
@@ -424,8 +425,10 @@ void XRFrameProvider::RequestNonImmersiveFrameData(XRSession* session) {
     request->value = nullptr;
   } else {
     auto& data_provider = provider->value->Value();
-    auto options = device::mojom::blink::XRFrameDataRequestOptions::New(
-        session->LightEstimationEnabled());
+    auto options = device::mojom::blink::XRFrameDataRequestOptions::New();
+    options->include_lighting_estimation_data =
+        session->LightEstimationEnabled();
+    options->stage_parameters_id = session->StageParametersId();
 
     data_provider->GetFrameData(
         std::move(options),
@@ -503,8 +506,9 @@ void XRFrameProvider::ProcessScheduledFrame(
                                               frame_data->right_eye);
     }
 
-    if (frame_data && frame_data->stage_parameters_updated) {
-      immersive_session_->UpdateStageParameters(frame_data->stage_parameters);
+    if (frame_data) {
+      immersive_session_->UpdateStageParameters(frame_data->stage_parameters_id,
+                                                frame_data->stage_parameters);
     }
 
     // Run immersive_session_->OnFrame() in a posted task to ensure that
@@ -549,6 +553,11 @@ void XRFrameProvider::ProcessScheduledFrame(
       // processing.
       if (session->ended())
         continue;
+
+      if (inline_frame_data) {
+        session->UpdateStageParameters(inline_frame_data->stage_parameters_id,
+                                       inline_frame_data->stage_parameters);
+      }
 
       if (inline_frame_data && inline_frame_data->mojo_space_reset) {
         session->OnMojoSpaceReset();

@@ -103,6 +103,7 @@ class MixedRealityRenderLoop : public XRCompositorCommon {
 
   std::unique_ptr<MixedRealityWindow> window_;
   mojom::VRDisplayInfoPtr current_display_info_;
+  mojom::VRStageParametersPtr current_stage_parameters_;
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;
 

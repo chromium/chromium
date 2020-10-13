@@ -289,6 +289,20 @@ void XRCompositorCommon::SetVisibilityState(
   }
 }
 
+void XRCompositorCommon::SetStageParameters(
+    mojom::VRStageParametersPtr stage_parameters) {
+  // If the stage parameters are identical no need to update them.
+  if ((!current_stage_parameters_ && !stage_parameters) ||
+      (current_stage_parameters_ && stage_parameters &&
+       current_stage_parameters_.Equals(stage_parameters))) {
+    return;
+  }
+
+  // If they have changed, increment the ID and save the new parameters.
+  stage_parameters_id_++;
+  current_stage_parameters_ = std::move(stage_parameters);
+}
+
 void XRCompositorCommon::Init() {}
 
 void XRCompositorCommon::StartPendingFrame() {
@@ -337,6 +351,14 @@ void XRCompositorCommon::GetFrameData(
   webxr_has_pose_ = true;
   pending_frame_->webxr_has_pose_ = true;
   pending_frame_->sent_frame_data_time_ = base::TimeTicks::Now();
+
+  // If the stage parameters have been updated since the last frame that was
+  // sent, send the updated values.
+  pending_frame_->frame_data_->stage_parameters_id = stage_parameters_id_;
+  if (options->stage_parameters_id != stage_parameters_id_) {
+    pending_frame_->frame_data_->stage_parameters =
+        current_stage_parameters_.Clone();
+  }
 
   // Yield here to let the event queue process pending mojo messages,
   // specifically the next gamepad callback request that's likely to

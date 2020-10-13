@@ -284,10 +284,11 @@ class XRSession final
       const device::mojom::blink::VREyeParametersPtr& left_eye,
       const device::mojom::blink::VREyeParametersPtr& right_eye);
   void UpdateStageParameters(
+      uint32_t stage_parameters_id,
       const device::mojom::blink::VRStageParametersPtr& stage_parameters);
   // Incremented every time stage_parameters_ is changed, so that other objects
   // that depend on it can know when they need to update.
-  unsigned int StageParametersId() const { return stage_parameters_id_; }
+  uint32_t StageParametersId() const { return stage_parameters_id_; }
 
   // Returns true if the session recognizes passed in hit_test_source as still
   // existing. Intended to be used by XRFrame to implement
@@ -514,7 +515,7 @@ class XRSession final
   HashSet<uint64_t> hit_test_source_ids_;
   HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
 
-  unsigned int view_parameters_id_ = 0;
+  uint32_t view_parameters_id_ = 0;
   HeapVector<Member<XRViewData>> views_;
   Vector<device::mojom::blink::VREyeParametersPtr> pending_view_parameters_;
 
@@ -530,7 +531,7 @@ class XRSession final
   HeapHashSet<Member<ScriptPromiseResolver>> request_hit_test_source_promises_;
   HeapVector<Member<XRReferenceSpace>> reference_spaces_;
 
-  unsigned int stage_parameters_id_ = 0;
+  uint32_t stage_parameters_id_ = 0;
   device::mojom::blink::VRStageParametersPtr stage_parameters_;
 
   HeapMojoReceiver<device::mojom::blink::XRSessionClient,

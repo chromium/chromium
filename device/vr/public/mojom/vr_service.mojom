@@ -316,7 +316,6 @@ struct VRStageParameters {
 };
 
 struct VRDisplayInfo {
-  VRStageParameters? stage_parameters;
   // Parameters required to distort a scene for viewing in a VR headset. Only
   // required for devices which have the can_present capability.
   VREyeParameters? left_eye;
@@ -647,8 +646,9 @@ struct XRFrameData {
   // periodically.  However, setting the stage parameters to null is perfectly
   // valid in some cases (e.g. we've lost tracking), so we can't just use
   // whether they are present or not to indicate that they have been updated
-  // so we have an extra flag to indicate to us that they have been updated.
-  bool stage_parameters_updated;
+  // so we compare IDs against the value sent in the XRFrameDataRequestOptions
+  // to determine when updates are needed.
+  uint32 stage_parameters_id;
   VRStageParameters? stage_parameters;
 
   // Detected plane information. Only present if plane detection is enabled.
@@ -898,6 +898,12 @@ struct XRFrameDataRequestOptions {
   // Controls whether |XRFrameData.light_estimation_data| should be populated
   // by the request to |XRFrameDataProvider.GetFrameData()|.
   bool include_lighting_estimation_data;
+
+  // The ID of the last known stage parameters set sent to the requesting
+  // session. The XRFrameData should only send new stage parameters if it has
+  // a higher ID. (Zero would indicate that the stage parameters should always
+  // sent.)
+  uint32 stage_parameters_id;
 };
 
 // Provides the necessary functionality for a WebXR session to get data for

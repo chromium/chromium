@@ -58,21 +58,14 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
       frame_data->pose->position = position;
   }
 
+  UpdateStageParameters();
+
   bool updated_eye_parameters = UpdateEyeParameters();
 
   if (updated_eye_parameters) {
     frame_data->left_eye = current_display_info_->left_eye.Clone();
     frame_data->right_eye = current_display_info_->right_eye.Clone();
-  }
 
-  bool updated_stage_parameters = UpdateStageParameters();
-  if (updated_stage_parameters) {
-    frame_data->stage_parameters_updated = true;
-    frame_data->stage_parameters =
-        current_display_info_->stage_parameters.Clone();
-  }
-
-  if (updated_eye_parameters || updated_stage_parameters) {
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(on_display_info_changed_,
                                   current_display_info_.Clone()));
@@ -241,38 +234,21 @@ bool OpenXrRenderLoop::UpdateEye(const XrView& view_head,
   return changed;
 }
 
-bool OpenXrRenderLoop::UpdateStageParameters() {
-  bool changed = false;
+void OpenXrRenderLoop::UpdateStageParameters() {
   XrExtent2Df stage_bounds;
   gfx::Transform local_from_stage;
   if (openxr_->GetStageParameters(&stage_bounds, &local_from_stage)) {
-    if (!current_display_info_->stage_parameters) {
-      current_display_info_->stage_parameters = mojom::VRStageParameters::New();
-      changed = true;
-    }
-
-    if (current_stage_bounds_.width != stage_bounds.width ||
-        current_stage_bounds_.height != stage_bounds.height) {
-      current_display_info_->stage_parameters->bounds =
-          vr_utils::GetStageBoundsFromSize(stage_bounds.width,
-                                           stage_bounds.height);
-      changed = true;
-    }
-
+    mojom::VRStageParametersPtr stage_parameters =
+        mojom::VRStageParameters::New();
     // mojo_from_local is identity, as is stage_from_floor, so we can directly
-    // compare and assign local_from_stage and mojo_from_floor.
-    if (current_display_info_->stage_parameters->mojo_from_floor !=
-        local_from_stage) {
-      current_display_info_->stage_parameters->mojo_from_floor =
-          local_from_stage;
-      changed = true;
-    }
-  } else if (current_display_info_->stage_parameters) {
-    current_display_info_->stage_parameters = nullptr;
-    changed = true;
+    // assign local_from_stage and mojo_from_floor.
+    stage_parameters->mojo_from_floor = local_from_stage;
+    stage_parameters->bounds = vr_utils::GetStageBoundsFromSize(
+        stage_bounds.width, stage_bounds.height);
+    SetStageParameters(std::move(stage_parameters));
+  } else {
+    SetStageParameters(nullptr);
   }
-
-  return changed;
 }
 
 }  // namespace device

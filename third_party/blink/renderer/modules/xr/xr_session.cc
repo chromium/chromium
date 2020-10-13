@@ -502,23 +502,13 @@ void XRSession::UpdateEyeParameters(
 }
 
 void XRSession::UpdateStageParameters(
+    uint32_t stage_parameters_id,
     const device::mojom::blink::VRStageParametersPtr& stage_parameters) {
-  // We don't necessarily trust the backend to only send us display info changes
-  // when something has actually changed, and a change here can trigger several
-  // other interfaces to recompute data or fire events, so it's worthwhile to
-  // validate that an actual change has occurred.
-  if (stage_parameters_) {
-    // If the new parameters are identical to the old ones we don't need to
-    // update.
-    if (stage_parameters_->Equals(*stage_parameters))
-      return;
-  } else if (!stage_parameters) {
-    // Don't bother updating from null to null either.
-    return;
+  // Only update if the ID is different, indicating a change.
+  if (stage_parameters_id_ != stage_parameters_id) {
+    stage_parameters_id_ = stage_parameters_id;
+    stage_parameters_ = stage_parameters.Clone();
   }
-
-  stage_parameters_id_++;
-  stage_parameters_ = stage_parameters.Clone();
 }
 
 ScriptPromise XRSession::requestReferenceSpace(
@@ -2095,7 +2085,6 @@ bool XRSession::RemoveHitTestSource(
 void XRSession::SetXRDisplayInfo(
     device::mojom::blink::VRDisplayInfoPtr display_info) {
   UpdateEyeParameters(display_info->left_eye, display_info->right_eye);
-  UpdateStageParameters(display_info->stage_parameters);
 }
 
 const HeapVector<Member<XRViewData>>& XRSession::views() {

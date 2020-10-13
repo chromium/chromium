@@ -275,6 +275,9 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   mojom::VRDisplayInfoPtr display_info_;
   bool display_info_changed_ = false;
 
+  mojom::VRStageParametersPtr stage_parameters_;
+  uint32_t stage_parameters_id_;
+
   // Currently estimated floor height.
   base::Optional<float> floor_height_estimate_;
 

@@ -45,14 +45,13 @@ class OpenXrRenderLoop : public XRCompositorCommon {
   bool UpdateEye(const XrView& view_head,
                  const gfx::Size& view_size,
                  mojom::VREyeParametersPtr* eye) const;
-  bool UpdateStageParameters();
+  void UpdateStageParameters();
 
   // Owned by OpenXrStatics
   XrInstance instance_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
   std::unique_ptr<OpenXRInputHelper> input_helper_;
-  XrExtent2Df current_stage_bounds_;
 
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;
