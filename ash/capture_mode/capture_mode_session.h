@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -56,9 +57,6 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   CaptureModeBarView* capture_mode_bar_view() const {
     return capture_mode_bar_view_;
   }
-  views::Widget* dimensions_label_widget() {
-    return dimensions_label_widget_.get();
-  }
   bool is_selecting_region() const { return is_selecting_region_; }
 
   // Gets the current window selected for |kWindow| capture source. Returns
@@ -88,6 +86,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   views::Widget* capture_label_widget_for_testing() const {
     return capture_label_widget_.get();
+  }
+  views::Widget* dimensions_label_widget_for_testing() const {
+    return dimensions_label_widget_.get();
+  }
+  const MagnifierGlass& magnifier_glass_for_testing() const {
+    return magnifier_glass_;
   }
 
  private:
@@ -130,6 +134,14 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // exist.
   void UpdateDimensionsLabelBounds();
 
+  // If |fine_tune_position_| is not a corner, do nothing. Otherwise show
+  // |magnifier_glass_| at |location_in_root| in the current root window and
+  // hide the cursor.
+  void MaybeShowMagnifierGlassAtPoint(const gfx::Point& location_in_root);
+
+  // Closes |magnifier_glass_| and shows the cursor.
+  void CloseMagnifierGlass();
+
   // Retrieves the anchor points on the current selected region associated with
   // |position|. The anchor points are described as the points that do not
   // change when resizing the capture region while dragging one of the drag
@@ -168,6 +180,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // starting capturing, the widget will transform into a 3-second countdown
   // timer.
   std::unique_ptr<views::Widget> capture_label_widget_;
+
+  // Magnifier glass used during a region capture session.
+  MagnifierGlass magnifier_glass_;
 
   // Stores the data needed to select a region during a region capture session.
   // This variable indicates if the user is currently selecting a region to

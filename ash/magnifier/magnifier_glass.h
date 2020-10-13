@@ -58,6 +58,8 @@ class ASH_EXPORT MagnifierGlass : public aura::WindowObserver,
   // Closes the magnifier glass widget.
   void Close();
 
+  views::Widget* host_widget_for_testing() const { return host_widget_; }
+
  private:
   friend class PartialMagnificationControllerTestApi;
   class BorderRenderer;

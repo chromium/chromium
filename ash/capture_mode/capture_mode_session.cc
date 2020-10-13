@@ -7,8 +7,10 @@
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/display/mouse_cursor_event_filter.h"
+#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -48,6 +50,23 @@ constexpr int kAffordanceCircleRadiusDp = 5;
 
 // The hit radius of the drag affordance circles touch events.
 constexpr int kAffordanceCircleTouchHitRadiusDp = 16;
+
+// Capture region magnifier parameters.
+constexpr MagnifierGlass::Params kMagnifierParams{
+    /*scale=*/2.f,
+    /*radius=*/60,
+    /*border_size=*/2,
+    /*border_outline_thickness=*/0,
+    /*border_color=*/SK_ColorWHITE,
+    /*border_outline_color=*/SK_ColorTRANSPARENT,
+    /*bottom_shadow=*/
+    gfx::ShadowValue(gfx::Vector2d(0, 1),
+                     2,
+                     SkColorSetARGB(0x4C, 0x00, 0x00, 0x00)),
+    /*top_shadow=*/
+    gfx::ShadowValue(gfx::Vector2d(0, 1),
+                     3,
+                     SkColorSetARGB(0x26, 0x00, 0x00, 0x00))};
 
 constexpr int kSizeLabelBorderRadius = 4;
 
@@ -92,34 +111,6 @@ aura::Window* GetParentContainer(aura::Window* root) {
   return root->GetChildById(kShellWindowId_OverlayContainer);
 }
 
-// Retrieves the point on the |rect| associated with |position|.
-gfx::Point GetLocationForPosition(const gfx::Rect& rect,
-                                  FineTunePosition position) {
-  switch (position) {
-    case FineTunePosition::kTopLeft:
-      return rect.origin();
-    case FineTunePosition::kTopCenter:
-      return rect.top_center();
-    case FineTunePosition::kTopRight:
-      return rect.top_right();
-    case FineTunePosition::kRightCenter:
-      return rect.right_center();
-    case FineTunePosition::kBottomRight:
-      return rect.bottom_right();
-    case FineTunePosition::kBottomCenter:
-      return rect.bottom_center();
-    case FineTunePosition::kBottomLeft:
-      return rect.bottom_left();
-    case FineTunePosition::kLeftCenter:
-      return rect.left_center();
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return gfx::Point();
-}
-
 // Returns the smallest rect that contains all of |points|.
 gfx::Rect GetRectEnclosingPoints(const std::vector<gfx::Point>& points) {
   DCHECK_GE(points.size(), 2u);
@@ -160,6 +151,7 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
     : controller_(controller),
       current_root_(root),
       capture_mode_bar_view_(new CaptureModeBarView()),
+      magnifier_glass_(kMagnifierParams),
       old_mouse_warp_status_(SetMouseWarpEnabled(controller_->source() !=
                                                  CaptureModeSource::kRegion)) {
   Shell::Get()->AddPreTargetHandler(this);
@@ -443,7 +435,7 @@ void CaptureModeSession::OnLocatedEventPressed(
 
   // Calculate the position and anchor points of the current pressed event.
   fine_tune_position_ = FineTunePosition::kNone;
-  // In the case of overlapping affordances, prioritize the bottomm right
+  // In the case of overlapping affordances, prioritize the bottom right
   // corner, then the rest of the corners, then the edges.
   static const std::vector<FineTunePosition> drag_positions = {
       FineTunePosition::kBottomRight,  FineTunePosition::kBottomLeft,
@@ -456,12 +448,14 @@ void CaptureModeSession::OnLocatedEventPressed(
   const int hit_radius_squared = hit_radius * hit_radius;
   for (FineTunePosition position : drag_positions) {
     const gfx::Point position_location =
-        GetLocationForPosition(controller_->user_capture_region(), position);
+        capture_mode_util::GetLocationForFineTunePosition(
+            controller_->user_capture_region(), position);
     // If |location_in_root| is within |hit_radius| of |position_location| for
     // both x and y, then |position| is the current pressed down affordance.
     if ((position_location - location_in_root).LengthSquared() <=
         hit_radius_squared) {
       fine_tune_position_ = position;
+      MaybeShowMagnifierGlassAtPoint(position_location);
       break;
     }
   }
@@ -516,6 +510,7 @@ void CaptureModeSession::OnLocatedEventDragged(
   DCHECK(!points.empty());
   points.push_back(location_in_root);
   UpdateCaptureRegion(GetRectEnclosingPoints(points), /*is_resizing=*/true);
+  MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
 
 void CaptureModeSession::OnLocatedEventReleased(
@@ -531,6 +526,7 @@ void CaptureModeSession::OnLocatedEventReleased(
   layer()->SchedulePaint(damage_region);
 
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
+  CloseMagnifierGlass();
 
   if (!is_selecting_region_)
     return;
@@ -622,6 +618,20 @@ void CaptureModeSession::UpdateDimensionsLabelBounds() {
   bounds.AdjustToFit(screen_region);
 
   dimensions_label_widget_->SetBounds(bounds);
+}
+
+void CaptureModeSession::MaybeShowMagnifierGlassAtPoint(
+    const gfx::Point& location_in_root) {
+  if (!capture_mode_util::IsCornerFineTunePosition(fine_tune_position_))
+    return;
+
+  // TODO(richui): Hide cursor here.
+  magnifier_glass_.ShowFor(current_root_, location_in_root);
+}
+
+void CaptureModeSession::CloseMagnifierGlass() {
+  magnifier_glass_.Close();
+  // TODO(richui): Show cursor here.
 }
 
 std::vector<gfx::Point> CaptureModeSession::GetAnchorPointsForPosition(

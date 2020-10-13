@@ -13,9 +13,11 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -125,6 +127,27 @@ class CaptureModeTest : public AshTestBase {
         ->close_button();
   }
 
+  aura::Window* GetDimensionsLabelWindow() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    auto* widget = controller->capture_mode_session()
+                       ->dimensions_label_widget_for_testing();
+    return widget ? widget->GetNativeWindow() : nullptr;
+  }
+
+  base::Optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    auto& magnifier =
+        controller->capture_mode_session()->magnifier_glass_for_testing();
+    if (magnifier.host_widget_for_testing()) {
+      return magnifier.host_widget_for_testing()
+          ->GetWindowBoundsInScreen()
+          .CenterPoint();
+    }
+    return base::nullopt;
+  }
+
   // Start Capture Mode with source region and type image.
   CaptureModeController* StartImageRegionCapture() {
     auto* controller = CaptureModeController::Get();
@@ -147,14 +170,6 @@ class CaptureModeTest : public AshTestBase {
     if (release_mouse)
       event_generator->ReleaseLeftButton();
     EXPECT_EQ(region, controller->user_capture_region());
-  }
-
-  aura::Window* GetDimensionsLabelWindow() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    auto* widget =
-        controller->capture_mode_session()->dimensions_label_widget();
-    return widget ? widget->GetNativeWindow() : nullptr;
   }
 
   void WaitForCountDownToFinish() {
@@ -477,7 +492,78 @@ TEST_F(CaptureModeTest, CaptureRegionCoversCaptureModeBar) {
   EXPECT_FALSE(controller->IsActive());
 }
 
-TEST_F(CaptureModeTest, DimensionsLabelLocation) {
+// Tests that the magnifying glass appears while fine tuning the capture region.
+TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
+  const gfx::Vector2d kDragDelta(50, 50);
+  UpdateDisplay("800x800");
+
+  // Start Capture Mode in a region in image mode.
+  StartImageRegionCapture();
+
+  // Press down and drag to select a region. The magnifier should not be
+  // visible yet.
+  gfx::Rect capture_region{200, 200, 400, 400};
+  SelectRegion(capture_region);
+  EXPECT_EQ(base::nullopt, GetMagnifierGlassCenterPoint());
+
+  auto check_magnifier_shows_properly = [this](const gfx::Point& origin,
+                                               const gfx::Point& destination,
+                                               bool should_show) {
+    // If |should_show|, check that the magnifying glass is centered on the
+    // mouse after press and during drag. If not |should_show|, check that
+    // the magnifying glass never shows. Should always be not visible when
+    // mouse button is released.
+    auto* event_generator = GetEventGenerator();
+    base::Optional<gfx::Point> expected_origin =
+        should_show ? base::make_optional(origin) : base::nullopt;
+    base::Optional<gfx::Point> expected_destination =
+        should_show ? base::make_optional(destination) : base::nullopt;
+
+    // Move cursor to |origin| and click.
+    event_generator->set_current_screen_location(origin);
+    event_generator->PressLeftButton();
+    EXPECT_EQ(expected_origin, GetMagnifierGlassCenterPoint());
+
+    // Drag to |destination| while holding left button.
+    event_generator->MoveMouseTo(destination);
+    EXPECT_EQ(expected_destination, GetMagnifierGlassCenterPoint());
+
+    // Drag back to |origin| while still holding left button.
+    event_generator->MoveMouseTo(origin);
+    EXPECT_EQ(expected_origin, GetMagnifierGlassCenterPoint());
+
+    // Release left button.
+    event_generator->ReleaseLeftButton();
+    EXPECT_EQ(base::nullopt, GetMagnifierGlassCenterPoint());
+  };
+
+  // Drag the capture region from within the existing selected region. The
+  // magnifier should not be visible at any point.
+  check_magnifier_shows_properly(gfx::Point(400, 250), gfx::Point(500, 350),
+                                 /*should_show=*/false);
+
+  // Check that each corner fine tune position shows the magnifier when
+  // dragging.
+  struct {
+    std::string trace;
+    FineTunePosition position;
+  } kFineTunePositions[] = {{"top_left", FineTunePosition::kTopLeft},
+                            {"top_right", FineTunePosition::kTopRight},
+                            {"bottom_right", FineTunePosition::kBottomRight},
+                            {"bottom_left", FineTunePosition::kBottomLeft}};
+  for (const auto& fine_tune_position : kFineTunePositions) {
+    SCOPED_TRACE(fine_tune_position.trace);
+    const gfx::Point drag_affordance_location =
+        capture_mode_util::GetLocationForFineTunePosition(
+            capture_region, fine_tune_position.position);
+    check_magnifier_shows_properly(drag_affordance_location,
+                                   drag_affordance_location + kDragDelta,
+                                   /*should_show=*/true);
+  }
+}
+
+// Tests that the dimensions label properly renders for capture regions.
+TEST_F(CaptureModeTest, CaptureRegionDimensionsLabelLocation) {
   UpdateDisplay("800x800");
 
   // Start Capture Mode in a region in image mode.
