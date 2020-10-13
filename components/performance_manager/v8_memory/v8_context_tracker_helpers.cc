@@ -178,5 +178,21 @@ base::Optional<bool> ExpectIframeAttributionDataForV8ContextDescription(
   return false;
 }
 
+void MarkedObjectCount::Mark() {
+  DCHECK_LT(marked_count_, count_);
+  ++marked_count_;
+}
+
+void MarkedObjectCount::Decrement(bool marked) {
+  DCHECK_LT(0u, count_);
+  if (marked) {
+    DCHECK_LT(0u, marked_count_);
+    --marked_count_;
+  } else {
+    DCHECK_LT(marked_count_, count_);
+  }
+  --count_;
+}
+
 }  // namespace v8_memory
 }  // namespace performance_manager

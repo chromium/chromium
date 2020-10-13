@@ -221,6 +221,75 @@ TEST_F(V8ContextTrackerInternalTest,
   EXPECT_EQ(0u, data_store()->GetV8ContextDataCount());
 }
 
+TEST_F(V8ContextTrackerInternalTest, ContextCounts) {
+  auto* process_data = ProcessData::GetOrCreate(
+      static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));
+
+  std::unique_ptr<ExecutionContextData> ec_data =
+      std::make_unique<ExecutionContextData>(
+          process_data, mock_graph_.frame->frame_token(), base::nullopt);
+  auto* raw_ec_data = ec_data.get();
+
+  std::unique_ptr<V8ContextData> v8_data1 = std::make_unique<V8ContextData>(
+      process_data, V8ContextDescription(), ec_data.get());
+  auto* raw_v8_data1 = v8_data1.get();
+
+  std::unique_ptr<V8ContextData> v8_data2 = std::make_unique<V8ContextData>(
+      process_data, V8ContextDescription(), ec_data.get());
+
+  data_store()->Pass(std::move(ec_data));
+  data_store()->Pass(std::move(v8_data1));
+  data_store()->Pass(std::move(v8_data2));
+
+  EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
+  EXPECT_EQ(0u, data_store()->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(2u, data_store()->GetV8ContextDataCount());
+  EXPECT_EQ(0u, data_store()->GetDetachedV8ContextDataCount());
+  EXPECT_EQ(1u, process_data->GetExecutionContextDataCount());
+  EXPECT_EQ(0u, process_data->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(2u, process_data->GetV8ContextDataCount());
+  EXPECT_EQ(0u, process_data->GetDetachedV8ContextDataCount());
+
+  EXPECT_FALSE(raw_ec_data->destroyed);
+  data_store()->MarkDestroyed(raw_ec_data);
+  EXPECT_TRUE(raw_ec_data->destroyed);
+
+  EXPECT_FALSE(raw_v8_data1->detached);
+  data_store()->MarkDetached(raw_v8_data1);
+  EXPECT_TRUE(raw_v8_data1->detached);
+
+  EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
+  EXPECT_EQ(1u, data_store()->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(2u, data_store()->GetV8ContextDataCount());
+  EXPECT_EQ(1u, data_store()->GetDetachedV8ContextDataCount());
+  EXPECT_EQ(1u, process_data->GetExecutionContextDataCount());
+  EXPECT_EQ(1u, process_data->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(2u, process_data->GetV8ContextDataCount());
+  EXPECT_EQ(1u, process_data->GetDetachedV8ContextDataCount());
+
+  data_store()->Destroy(raw_v8_data1->GetToken());
+
+  EXPECT_EQ(1u, data_store()->GetExecutionContextDataCount());
+  EXPECT_EQ(1u, data_store()->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(1u, data_store()->GetV8ContextDataCount());
+  EXPECT_EQ(0u, data_store()->GetDetachedV8ContextDataCount());
+  EXPECT_EQ(1u, process_data->GetExecutionContextDataCount());
+  EXPECT_EQ(1u, process_data->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(1u, process_data->GetV8ContextDataCount());
+  EXPECT_EQ(0u, process_data->GetDetachedV8ContextDataCount());
+
+  process_data->TearDown();
+
+  EXPECT_EQ(0u, data_store()->GetExecutionContextDataCount());
+  EXPECT_EQ(0u, data_store()->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(0u, data_store()->GetV8ContextDataCount());
+  EXPECT_EQ(0u, data_store()->GetDetachedV8ContextDataCount());
+  EXPECT_EQ(0u, process_data->GetExecutionContextDataCount());
+  EXPECT_EQ(0u, process_data->GetDestroyedExecutionContextDataCount());
+  EXPECT_EQ(0u, process_data->GetV8ContextDataCount());
+  EXPECT_EQ(0u, process_data->GetDetachedV8ContextDataCount());
+}
+
 namespace {
 
 class V8ContextTrackerInternalTearDownOrderTest

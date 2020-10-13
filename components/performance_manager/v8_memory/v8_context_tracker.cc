@@ -12,6 +12,8 @@
 namespace performance_manager {
 namespace v8_memory {
 
+using ProcessData = internal::ProcessData;
+
 ////////////////////////////////////////////////////////////////////////////////
 // V8ContextTracker::ExecutionContextState implementation:
 
@@ -91,24 +93,54 @@ void V8ContextTracker::OnTakenFromGraph(Graph* graph) {
 base::Value V8ContextTracker::DescribeFrameNodeData(
     const FrameNode* node) const {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
+
+  size_t v8_context_count = 0;
+  const auto* ec_data =
+      data_store_->Get(blink::ExecutionContextToken(node->GetFrameToken()));
+  if (ec_data)
+    v8_context_count = ec_data->v8_context_count();
+
   base::Value dict(base::Value::Type::DICTIONARY);
-  // TODO(chrisha): Implement me.
+  dict.SetIntKey("v8_context_count", v8_context_count);
   return dict;
 }
 
 base::Value V8ContextTracker::DescribeProcessNodeData(
     const ProcessNode* node) const {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
+
+  size_t v8_context_count = 0;
+  size_t detached_v8_context_count = 0;
+  size_t execution_context_count = 0;
+  size_t destroyed_execution_context_count = 0;
+  const auto* process_data = ProcessData::Get(ProcessNodeImpl::FromNode(node));
+  if (process_data) {
+    v8_context_count = process_data->GetV8ContextDataCount();
+    detached_v8_context_count = process_data->GetDetachedV8ContextDataCount();
+    execution_context_count = process_data->GetExecutionContextDataCount();
+    destroyed_execution_context_count =
+        process_data->GetDestroyedExecutionContextDataCount();
+  }
+
   base::Value dict(base::Value::Type::DICTIONARY);
-  // TODO(chrisha): Implement me.
+  dict.SetIntKey("v8_context_count", v8_context_count);
+  dict.SetIntKey("detached_v8_context_count", detached_v8_context_count);
+  dict.SetIntKey("execution_context_count", execution_context_count);
+  dict.SetIntKey("destroyed_execution_context_count",
+                 destroyed_execution_context_count);
   return dict;
 }
 
 base::Value V8ContextTracker::DescribeWorkerNodeData(
     const WorkerNode* node) const {
-  DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
+  size_t v8_context_count = 0;
+  const auto* ec_data =
+      data_store_->Get(ToExecutionContextToken(node->GetWorkerToken()));
+  if (ec_data)
+    v8_context_count = ec_data->v8_context_count();
+
   base::Value dict(base::Value::Type::DICTIONARY);
-  // TODO(chrisha): Implement me.
+  dict.SetIntKey("v8_context_count", v8_context_count);
   return dict;
 }
 

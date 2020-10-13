@@ -20,6 +20,7 @@
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
+#include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_types.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -99,6 +100,10 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   // Decrements |v8_context_count_|, and returns true if the object has
   // transitioned to "ShouldDestroy".
   WARN_UNUSED_RESULT bool DecrementV8ContextCount(util::PassKey<V8ContextData>);
+
+  // Marks this context as destroyed. Returns true if the state changed, false
+  // if it was already destroyed.
+  WARN_UNUSED_RESULT bool MarkDestroyed(util::PassKey<ProcessData>);
 
  private:
   ProcessData* const process_data_;
@@ -180,6 +185,10 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
   // Returns the ExecutionContextData associated with this V8ContextData.
   ExecutionContextData* GetExecutionContextData() const;
 
+  // Marks this context as detached. Returns true if the state changed, false
+  // if it was already detached.
+  WARN_UNUSED_RESULT bool MarkDetached(util::PassKey<ProcessData>);
+
  private:
   ProcessData* const process_data_;
 };
@@ -190,6 +199,8 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
 class ProcessData : public NodeAttachedDataImpl<ProcessData> {
  public:
   struct Traits : public NodeAttachedDataInMap<ProcessNodeImpl> {};
+
+  using PassKey = util::PassKey<ProcessData>;
 
   explicit ProcessData(const ProcessNodeImpl* process_node);
   ~ProcessData() override;
@@ -217,6 +228,27 @@ class ProcessData : public NodeAttachedDataImpl<ProcessData> {
               RemoteFrameData* rf_data);
   void Remove(util::PassKey<V8ContextTrackerDataStore>, V8ContextData* v8_data);
 
+  // For marking objects detached/destroyed. Returns true if the state
+  // actually changed, false otherwise.
+  WARN_UNUSED_RESULT bool MarkDestroyed(
+      util::PassKey<V8ContextTrackerDataStore>,
+      ExecutionContextData* ec_data);
+  WARN_UNUSED_RESULT bool MarkDetached(util::PassKey<V8ContextTrackerDataStore>,
+                                       V8ContextData* v8_data);
+
+  size_t GetExecutionContextDataCount() const {
+    return counts_.GetExecutionContextDataCount();
+  }
+  size_t GetDestroyedExecutionContextDataCount() const {
+    return counts_.GetDestroyedExecutionContextDataCount();
+  }
+  size_t GetV8ContextDataCount() const {
+    return counts_.GetV8ContextDataCount();
+  }
+  size_t GetDetachedV8ContextDataCount() const {
+    return counts_.GetDetachedV8ContextDataCount();
+  }
+
  private:
   // Used to initialize |data_store_| at construction.
   static V8ContextTrackerDataStore* GetDataStore(
@@ -226,6 +258,9 @@ class ProcessData : public NodeAttachedDataImpl<ProcessData> {
 
   // Pointer to the DataStore that implicitly owns us.
   V8ContextTrackerDataStore* const data_store_;
+
+  // Counts the number of ExecutionContexts and V8Contexts.
+  ContextCounts counts_;
 
   // List of ExecutionContextDatas associated with this process.
   base::LinkedList<ExecutionContextData> execution_context_datas_;
@@ -262,11 +297,22 @@ class V8ContextTrackerDataStore {
   RemoteFrameData* Get(const blink::RemoteFrameToken& token);
   V8ContextData* Get(const blink::V8ContextToken& token);
 
+  // For marking objects as detached/destroyed.
+  void MarkDestroyed(ExecutionContextData* ec_data);
+  void MarkDetached(V8ContextData* v8_data);
+
   // Destroys objects by token. They must exist ("Get" should return non
   // nullptr).
   void Destroy(const blink::ExecutionContextToken& token);
   void Destroy(const blink::RemoteFrameToken& token);
   void Destroy(const blink::V8ContextToken& token);
+
+  size_t GetDestroyedExecutionContextDataCount() const {
+    return destroyed_execution_context_count_;
+  }
+  size_t GetDetachedV8ContextDataCount() const {
+    return detached_v8_context_count_;
+  }
 
   size_t GetExecutionContextDataCount() const {
     return global_execution_context_datas_.size();
@@ -279,6 +325,9 @@ class V8ContextTrackerDataStore {
   }
 
  private:
+  size_t destroyed_execution_context_count_ = 0;
+  size_t detached_v8_context_count_ = 0;
+
   // Browser wide registry of ExecutionContextData objects.
   std::set<std::unique_ptr<ExecutionContextData>,
            ExecutionContextData::Comparator>

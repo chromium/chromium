@@ -60,6 +60,13 @@ bool ExecutionContextData::DecrementV8ContextCount(
   return ShouldDestroy();
 }
 
+bool ExecutionContextData::MarkDestroyed(util::PassKey<ProcessData>) {
+  if (destroyed)
+    return false;
+  destroyed = true;
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // RemoteFrameData implementation:
 
@@ -128,6 +135,13 @@ ExecutionContextData* V8ContextData::GetExecutionContextData() const {
   return static_cast<ExecutionContextData*>(execution_context_state);
 }
 
+bool V8ContextData::MarkDetached(util::PassKey<ProcessData>) {
+  if (detached)
+    return false;
+  detached = true;
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ProcessData implementation:
 
@@ -181,6 +195,7 @@ void ProcessData::Add(util::PassKey<V8ContextTrackerDataStore>,
   DCHECK(!ec_data->ShouldDestroy());
   DCHECK(!ec_data->IsTracked());
   execution_context_datas_.Append(ec_data);
+  counts_.IncrementExecutionContextDataCount();
 }
 
 void ProcessData::Add(util::PassKey<V8ContextTrackerDataStore>,
@@ -197,6 +212,7 @@ void ProcessData::Add(util::PassKey<V8ContextTrackerDataStore>,
   DCHECK_EQ(this, v8_data->process_data());
   DCHECK(!v8_data->IsTracked());
   v8_context_datas_.Append(v8_data);
+  counts_.IncrementV8ContextDataCount();
 }
 
 void ProcessData::Remove(util::PassKey<V8ContextTrackerDataStore>,
@@ -205,6 +221,7 @@ void ProcessData::Remove(util::PassKey<V8ContextTrackerDataStore>,
   DCHECK_EQ(this, ec_data->process_data());
   DCHECK(ec_data->IsTracked());
   DCHECK(ec_data->ShouldDestroy());
+  counts_.DecrementExecutionContextDataCount(ec_data->destroyed);
   ec_data->RemoveFromList();
 }
 
@@ -221,7 +238,24 @@ void ProcessData::Remove(util::PassKey<V8ContextTrackerDataStore>,
   DCHECK(v8_data);
   DCHECK_EQ(this, v8_data->process_data());
   DCHECK(v8_data->IsTracked());
+  counts_.DecrementV8ContextDataCount(v8_data->detached);
   v8_data->RemoveFromList();
+}
+
+bool ProcessData::MarkDestroyed(util::PassKey<V8ContextTrackerDataStore>,
+                                ExecutionContextData* ec_data) {
+  bool result = ec_data->MarkDestroyed(PassKey());
+  if (result)
+    counts_.MarkExecutionContextDataDestroyed();
+  return result;
+}
+
+bool ProcessData::MarkDetached(util::PassKey<V8ContextTrackerDataStore>,
+                               V8ContextData* v8_data) {
+  bool result = v8_data->MarkDetached(PassKey());
+  if (result)
+    counts_.MarkV8ContextDataDetached();
+  return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -281,11 +315,35 @@ V8ContextData* V8ContextTrackerDataStore::Get(
   return it->get();
 }
 
+void V8ContextTrackerDataStore::MarkDestroyed(ExecutionContextData* ec_data) {
+  DCHECK(ec_data);
+  if (ec_data->process_data()->MarkDestroyed(PassKey(), ec_data)) {
+    DCHECK_LT(destroyed_execution_context_count_,
+              global_execution_context_datas_.size());
+    ++destroyed_execution_context_count_;
+  }
+}
+
+void V8ContextTrackerDataStore::MarkDetached(V8ContextData* v8_data) {
+  DCHECK(v8_data);
+  if (v8_data->process_data()->MarkDetached(PassKey(), v8_data)) {
+    DCHECK_LT(detached_v8_context_count_, global_v8_context_datas_.size());
+    ++detached_v8_context_count_;
+  }
+}
+
 void V8ContextTrackerDataStore::Destroy(
     const blink::ExecutionContextToken& token) {
   auto it = global_execution_context_datas_.find(token);
   DCHECK(it != global_execution_context_datas_.end());
   auto* ec_data = it->get();
+  if (ec_data->destroyed) {
+    DCHECK_LT(0u, destroyed_execution_context_count_);
+    --destroyed_execution_context_count_;
+  } else {
+    DCHECK_LT(destroyed_execution_context_count_,
+              global_execution_context_datas_.size());
+  }
   ec_data->process_data()->Remove(PassKey(), ec_data);
   global_execution_context_datas_.erase(it);
 }
@@ -302,6 +360,12 @@ void V8ContextTrackerDataStore::Destroy(const blink::V8ContextToken& token) {
   auto it = global_v8_context_datas_.find(token);
   DCHECK(it != global_v8_context_datas_.end());
   auto* v8_data = it->get();
+  if (v8_data->detached) {
+    DCHECK_LT(0u, detached_v8_context_count_);
+    --detached_v8_context_count_;
+  } else {
+    DCHECK_LT(detached_v8_context_count_, global_v8_context_datas_.size());
+  }
   v8_data->process_data()->Remove(PassKey(), v8_data);
   global_v8_context_datas_.erase(it);
 }
