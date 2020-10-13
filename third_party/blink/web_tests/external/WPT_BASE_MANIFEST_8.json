@@ -89560,7 +89560,7 @@
       ]
      ],
      "active-selection-021.html": [
-      "2061385d6c564c32ff2e36fc096df5b633d7ec2a",
+      "bfa7eee77706c3a64e5c3247c9aee1c46a457a7b",
       [
        null,
        [
@@ -92965,6 +92965,19 @@
      ]
     },
     "css-shadow-parts": {
+     "interaction-with-nested-pseudo-class.html": [
+      "1061e4b0e3501535d2bebf741e4986a2a6779c1a",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow-parts/interaction-with-nested-pseudo-class-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "interaction-with-placeholder.html": [
       "a064789f06111bf5ce791650207bcee195d346ab",
       [
@@ -112345,6 +112358,19 @@
        [
         [
          "/css/css-text-decor/reference/text-decoration-color-recalc-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-color-selection-001.html": [
+      "beababcf4cd228fc40c2165ac3a410bc0aafd0d9",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-color-selection-001-ref.html",
          "=="
         ]
        ],
@@ -194295,7 +194321,7 @@
        []
       ],
       "active-selection-021-ref.html": [
-       "7790a3fad8a36f1709fea6a4155ed5af0f3c49d7",
+       "a5d0e4e32a3545318320c734cb77bcd334078773",
        []
       ],
       "active-selection-025-ref.html": [
@@ -194787,6 +194813,10 @@
      ],
      "host-part-001-expected.txt": [
       "eee037eb8ffe8d29bf0902318211e05a7543fba3",
+      []
+     ],
+     "interaction-with-nested-pseudo-class-ref.html": [
+      "e3b99d43a69e6ff44899e6512237978883df06cf",
       []
      ],
      "interaction-with-placeholder-ref.html": [
@@ -199646,6 +199676,10 @@
       ],
       "text-decoration-color-ref.html": [
        "3ae7777ef06cf3fa3bebcf385d8462cf8453ae64",
+       []
+      ],
+      "text-decoration-color-selection-001-ref.html": [
+       "d9811874eef87fe37bf5173c0dccc380907cf439",
        []
       ],
       "text-decoration-line-010-ref.xht": [
@@ -237110,7 +237144,7 @@
       []
      ],
      "mock-imagecapture.js": [
-      "035b5241ae989161bfc604b5607a81734a9bdb8d",
+      "a8f5c896b1f2cc2c90240bd053d218c28dc549dd",
       []
      ],
      "mock-screenenumeration.js": [
@@ -237170,7 +237204,7 @@
       []
      ],
      "webxr-test.js": [
-      "6b6c41de0c4c1082affb2ec54208c326a755b425",
+      "c661971285cd01b31ab57ede8e543293dfc56948",
       []
      ],
      "webxr-test.js.headers": [
@@ -306394,8 +306428,15 @@
        {}
       ]
      ],
+     "is-where-not.html": [
+      "f3d27db317cee1316efaba3f89d8812f726f09c7",
+      [
+       null,
+       {}
+      ]
+     ],
      "is-where-parsing.html": [
-      "33cb6ad726b8eef630d03ffbba243c066e004d3e",
+      "b93cbda6749b12d95bae28e05f27b0098ab6b7a1",
       [
        null,
        {}
@@ -359566,6 +359607,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "radio-double-activate-pseudo.html": [
+        "287dc7d58edddacb3bd282eae8450f89f5128345",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "radio-groupname-case.html": [
@@ -417026,7 +417076,7 @@
        ]
       ],
       "offlineaudiocontext-detached-execution-context.tentative.html": [
-       "ba44829f122d9ad0064b4b793578326c8190ce50",
+       "66d62cf6aa4e210b6fa2228b2ddfcd9724241d5b",
        [
         null,
         {}
@@ -441780,6 +441830,13 @@
      }
     },
     "css-text-decor": {
+     "text-decoration-color-selection-002.html": [
+      "1ee903c08a45decef3206668b24726e064aa3369",
+      [
+       null,
+       {}
+      ]
+     ],
      "text-decoration-visibility-001.xht": [
       "1451ae9c6b5199bacb758f31b906a6753c1f99e4",
       [
