@@ -13,7 +13,6 @@
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/idle_event_notifier.h"
-#include "chrome/browser/chromeos/power/ml/smart_dim/model.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_ukm_logger.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
@@ -85,8 +84,7 @@ class UserActivityManager : public ui::UserActivityObserver,
       chromeos::PowerManagerClient* power_manager_client,
       session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-      const chromeos::ChromeUserManager* user_manager,
-      SmartDimModel* smart_dim_model);
+      const chromeos::ChromeUserManager* user_manager);
   ~UserActivityManager() override;
 
   // ui::UserActivityObserver overrides.
@@ -155,11 +153,8 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   void ResetAfterLogging();
 
-  // Cancel any pending request to |smart_dim_model_| to get a dim decision.
+  // Cancel any pending request to `SmartDimMlAgent` to get a dim decision.
   void CancelDimDecisionRequest();
-
-  // If old smart dim model or new SmartDimMlAgent is ready, based on Finch.
-  bool SmartDimModelReady();
 
   // Time when an idle event is received and we start logging. Null if an idle
   // event hasn't been observed.
@@ -189,8 +184,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   BootClock boot_clock_;
 
   UserActivityUkmLogger* const ukm_logger_;
-
-  SmartDimModel* const smart_dim_model_;
 
   ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observer_;
@@ -235,7 +228,7 @@ class UserActivityManager : public ui::UserActivityObserver,
   // set to true after we've received an idle event, but haven't received final
   // action to log the event.
   bool waiting_for_final_action_ = false;
-  // Whether we are waiting for a decision from the |smart_dim_model_|
+  // Whether we are waiting for a decision from the `SmartDimMlAgent`
   // regarding whether to proceed with a dim or not. It is only set
   // to true in OnIdleEventObserved() when we request a dim decision.
   bool waiting_for_model_decision_ = false;

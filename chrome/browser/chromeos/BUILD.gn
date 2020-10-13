@@ -3612,7 +3612,6 @@ source_set("unit_tests") {
     "power/ml/recent_events_counter_unittest.cc",
     "power/ml/smart_dim/ml_agent_unittest.cc",
     "power/ml/smart_dim/ml_agent_util_unittest.cc",
-    "power/ml/smart_dim/model_unittest.cc",
     "power/ml/user_activity_manager_unittest.cc",
     "power/ml/user_activity_ukm_logger_helpers_unittest.cc",
     "power/ml/user_activity_ukm_logger_unittest.cc",
