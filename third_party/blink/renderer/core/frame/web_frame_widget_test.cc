@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -102,6 +103,19 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
   EXPECT_EQ(main_frame_sink_id, frame_sink_id);
   EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
 }
+
+#if defined(OS_ANDROID)
+TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
+  cc::LayerTreeHost* layer_tree_host =
+      WebView().MainFrameViewWidget()->LayerTreeHost();
+  // We should not have any force send metadata requests at start.
+  EXPECT_FALSE(layer_tree_host->TakeForceSendMetadataRequest());
+  // ShowVirtualKeyboard will trigger a text input state update.
+  WebView().MainFrameViewWidget()->ShowVirtualKeyboard();
+  // We should now have a force send metadata request.
+  EXPECT_TRUE(layer_tree_host->TakeForceSendMetadataRequest());
+}
+#endif  // defined(OS_ANDROID)
 
 const char EVENT_LISTENER_RESULT_HISTOGRAM[] = "Event.PassiveListeners";
 

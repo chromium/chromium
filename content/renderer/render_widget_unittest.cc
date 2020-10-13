@@ -216,16 +216,4 @@ TEST_F(RenderWidgetSubFrameUnittest,
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
 }
 
-#if defined(OS_ANDROID)
-TEST_F(RenderWidgetUnittest, ForceSendMetadataOnInput) {
-  cc::LayerTreeHost* layer_tree_host = widget()->layer_tree_host();
-  // We should not have any force send metadata requests at start.
-  EXPECT_FALSE(layer_tree_host->TakeForceSendMetadataRequest());
-  // ShowVirtualKeyboard will trigger a text input state update.
-  widget()->GetWebWidget()->ShowVirtualKeyboard();
-  // We should now have a force send metadata request.
-  EXPECT_TRUE(layer_tree_host->TakeForceSendMetadataRequest());
-}
-#endif  // !defined(OS_ANDROID)
-
 }  // namespace content
