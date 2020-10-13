@@ -202,6 +202,7 @@ crbug.com/591099 external/wpt/css/css-text/text-transform/text-transform-shaping
 crbug.com/591099 external/wpt/css/css-text/white-space/control-chars-00C.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/line-edge-white-space-collapse-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/line-edge-white-space-collapse-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text/white-space/pre-line-with-space-and-newline.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-012.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-013.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-014.html [ Failure ]
