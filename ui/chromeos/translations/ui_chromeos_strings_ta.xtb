@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">தேடுவதற்கான ஸ்லைடர்</translation>
 <translation id="1399648040768741453">தெலுங்கு விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
-<translation id="1433600251059882049">இந்தக் கோப்புறையானது Linux உடனும் Windows உடனும் பகிரப்பட்டுள்ளது</translation>
 <translation id="1435838927755162558">Parallels Desktop மூலம் கோப்புறையைப் பகிருங்கள்</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />க்கு நகர்த்தப்பட்டது.</translation>
 <translation id="1441841714100794440">வியட்நாமிய விசைப்பலகை (டெலெக்ஸ்)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Linux கோப்புகளைத் திறக்கிறது...</translation>
 <translation id="1547964879613821194">கனடியன் ஆங்கிலம்</translation>
 <translation id="1556189134700913550">எல்லாவற்றிற்கும் பயன்படுத்து</translation>
+<translation id="1561842594491319104">Chrome சாதனங்கள்</translation>
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
 <translation id="158809615184981282">ஃபாரோயீஸ் விசைப்பலகை</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> பெ.பை.</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">ஒலிபெயர்ப்பு (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows கோப்புகள்</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> மூலம் பகிர்</translation>
+<translation id="3083975830683400843">Chromebits</translation>
 <translation id="3116361045094675131">யுகே விசைப்பலகை</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">முடிந்தது</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">ஹாங்குல் 2 செட்</translation>
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
 <translation id="4479812471636796472">அமெரிக்க துவோரக் விசைப்பலகை</translation>
-<translation id="4481711095103932593">இந்தக் கோப்புறையானது Windows உடன் பகிரப்பட்டுள்ளது</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
-<translation id="4542387084127299777">"<ph name="PATH" />" ஐத் திறக்க முடியவில்லை</translation>
 <translation id="4552678318981539154">கூடுதல் சேமிப்பிடத்தை வாங்கு</translation>
 <translation id="4559767610552730302">பொக்கே</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> கோப்பு</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">அவகாடோ</translation>
 <translation id="4823651846660089135">படிப்பதற்கு மட்டுமேயான சாதனம்</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> உருப்படிகள் தேர்ந்தெடுக்கப்பட்டன</translation>
+<translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">ஜெர்மன் (பெல்ஜியம்)</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="485316830061041779">ஜெர்மன்</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">உங்கள் Google இயக்ககத்தில் உள்ள கோப்புகளைத் திருத்த Linux ஆப்ஸுக்கு அனுமதி வழங்கவும். மாற்றங்கள் உங்கள் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்</translation>
+<translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">வரிசைப்படுத்தல் விருப்பங்கள்</translation>
 <translation id="6005282720244019462">லத்தீன் அமெரிக்கன் விசைப்பலகை</translation>
 <translation id="6007237601604674381">நகர்வு தோல்வி. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
         <ph name="MARKUP_4" />பதிவிறக்கக் கோப்புறையிலிருந்து கோப்புகளை நீக்கவும்<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">சாதனத்தை வடிவமை</translation>
 <translation id="7799329977874311193">HTML ஆவணம்</translation>
+<translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> உள்ளது.
     <ph name="LINE_BREAK1" />

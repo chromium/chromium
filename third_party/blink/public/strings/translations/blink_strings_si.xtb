@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">සම්මාන</translation>
 <translation id="1342835525016946179">ලිපිය</translation>
 <translation id="1359897965706325498">බැනරය</translation>
+<translation id="145015347812617860">අයිතම <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">බහුතේරිය හැකි, <ph name="COUNT" />කින් <ph name="SELECTED" />ක් තෝරන ලදි.</translation>
 <translation id="1589122976691792535">කලාපය</translation>
 <translation id="1591562245178063882">මෙම මාසය</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">සතිය <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ඛණ්ඩය <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">තේරීම් කොටුව</translation>
+<translation id="2307576640803031502">ලැයිස්තුව තුළ, අයිතම <ph name="COUNT" />කින් <ph name="INDEX" />ක්</translation>
 <translation id="2311842470354187719">පිටු බිඳුම</translation>
 <translation id="2335594187091864976">දිනය හා වේලාව තෝරකය</translation>
 <translation id="2393030564806080191">ෂෂ්ඨ දශක වර්ණ අගය</translation>

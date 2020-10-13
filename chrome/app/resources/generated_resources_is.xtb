@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">Gildir í <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Halda uppsetningu áfram</translation>
 <translation id="1436784010935106834">Fjarlægð</translation>
+<translation id="1437986450143295708">Lýstu vandamálinu í smáatriðum</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> valin</translation>
 <translation id="1442851588227551435">Stilla virkan Kerberos miða</translation>
 <translation id="1444628761356461360">Eigandi tækisins, <ph name="OWNER_EMAIL" />, stjórnar þessari stillingu.</translation>
@@ -2819,6 +2820,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4301671483919369635">Þessi síða hefur heimild til að breyta skrám</translation>
 <translation id="4303079906735388947">Settu upp nýtt PIN-númer fyrir öryggislykilinn</translation>
 <translation id="4305402730127028764">Afrita í <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Skipta</translation>
 <translation id="4306119971288449206">Forrit verða að vera birt með efnistegundinni „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4307992518367153382">Grunnatriði</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB í notkun)</translation>
@@ -5889,7 +5891,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7982789257301363584">Net</translation>
 <translation id="7984068253310542383">Spegla <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Viltu nota snertiauðkenni á <ph name="APP_NAME" /> í huliðsstillingu?</translation>
-<translation id="79859296434321399">Til að skoða efni aukins veruleika skaltu setja upp ARCore</translation>
 <translation id="7986295104073916105">Lesa og breyta stillingum vistaðra aðgangsorða</translation>
 <translation id="7987814697832569482">Tengjast alltaf í gegnum þetta VPN-net</translation>
 <translation id="7988355189918024273">Virkja aðgengiseiginleika</translation>
@@ -6360,7 +6361,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8557022314818157177">Haltu áfram að ýta á öryggislykilinn þinn þangað til fingrafarið greinist</translation>
 <translation id="855773602626431402">Komið var í veg fyrir keyrslu óafmarkaðrar viðbótar á þessari síðu.</translation>
 <translation id="8557930019681227453">Upplýsingaskrá</translation>
-<translation id="8558485628462305855">Til að skoða efni aukins veruleika skaltu uppfæra ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Opna allt í &amp;nýjum glugga}=1{Opna í &amp;nýjum glugga}one{Opna allt ({COUNT}) í &amp;nýjum glugga}other{Opna allt ({COUNT}) í &amp;nýjum glugga}}</translation>
 <translation id="8561206103590473338">Fíll</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6405,7 +6405,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Foreldrar þínir hafa enn ekki samþykkt þetta</translation>
 <translation id="8620617069779373398">Reikistaða</translation>
-<translation id="8620765578342452535">Stilla nettengingar</translation>
 <translation id="8621866727807194849">Skaðlegur hugbúnaður er á tölvunni þinni. Chrome er að fjarlægja hann, endurheimta stillingar þínar og gera viðbætur óvirkar. Þetta lætur vafrann virka aftur eins og ætla skyldi.</translation>
 <translation id="8621979332865976405">Deildu öllum skjánum</translation>
 <translation id="862542460444371744">Viðbætur</translation>

@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">crèdits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bàner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> elements</translation>
 <translation id="1480676835519562650">multiseleccionable; se n'han seleccionat <ph name="SELECTED" /> de <ph name="COUNT" /></translation>
 <translation id="1589122976691792535">regió</translation>
 <translation id="1591562245178063882">Aquest mes</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">quadrícula d'arbre</translation>
 <translation id="1822429046913737220">a. m./p. m.</translation>
+<translation id="1823704031293214298">peu de pàgina</translation>
 <translation id="1832974991323546415">reprodueix al dispositiu remot</translation>
 <translation id="190587075670221089">supressió</translation>
 <translation id="1907737156431278478">exemple</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Setmana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">casella de selecció</translation>
+<translation id="2307576640803031502">a la llista; element <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">salt de pàgina</translation>
 <translation id="2335594187091864976">selector de data i hora</translation>
 <translation id="2393030564806080191">Valor hexadecimal del color</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Mostra el mes anterior</translation>
 <translation id="421884353938374759">selector de color</translation>
 <translation id="4248100235867064564">barra de menús</translation>
+<translation id="4293574643247337246">encapçalament de pàgina</translation>
 <translation id="4360991593054037559">Introduïu un valor vàlid. Els valors vàlids més propers són <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Preguntes</translation>
 <translation id="4444765639179266822">Sembla que diu "<ph name="OCR_TEXT" />"</translation>

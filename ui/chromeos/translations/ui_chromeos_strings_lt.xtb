@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Paieškos šliaužiklis</translation>
 <translation id="1399648040768741453">Telugiška klaviatūra (fonetinė)</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
-<translation id="1433600251059882049">Šis aplankas bendrinamas su „Linux“ ir „Windows“</translation>
 <translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439494416798956626">Perkelta į aplanką „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="1441841714100794440">Vietnamietiška klaviatūra (telekso išdėstymas)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Atidaromi „Linux“ failai...</translation>
 <translation id="1547964879613821194">Kanados anglų</translation>
 <translation id="1556189134700913550">Taikyti visiems</translation>
+<translation id="1561842594491319104">„Chrome“ įrenginiai</translation>
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
 <translation id="158809615184981282">Farerų klaviatūra</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Transliteracija (zdravo → здраво)</translation>
 <translation id="3067790092342515856">„Windows“ failai</translation>
 <translation id="3078461028045006476">Bendrinti su „<ph name="EXTENSION_NAME" />“</translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">JK klaviatūra</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ATLIKTA</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Hangul 2 rinkinys</translation>
 <translation id="4477219268485577442">Fonetinė bulgarų</translation>
 <translation id="4479812471636796472">JAV Dvorako klaviatūra</translation>
-<translation id="4481711095103932593">Šis aplankas bendrinamas su „Windows“</translation>
 <translation id="4522570452068850558">Išsami informacija</translation>
-<translation id="4542387084127299777">Nepavyko atidaryti „<ph name="PATH" />“</translation>
 <translation id="4552678318981539154">Įsigyti daugiau atminties</translation>
 <translation id="4559767610552730302">„Bokeh“ efektas</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> failas</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Avokadas</translation>
 <translation id="4823651846660089135">Įrenginys yra tik skaitomas</translation>
 <translation id="4839847978919684242">Pasirinkta elementų: <ph name="SELCTED_FILES_COUNT" /></translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">Vokiečių k. (Belgija)</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
 <translation id="485316830061041779">Vokiečių</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Suteikite „Linux“ programoms leidimą keisti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="5955954492236143329">Elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Rūšiuoti parinktis</translation>
 <translation id="6005282720244019462">Lotynų amerikiečių klaviatūra</translation>
 <translation id="6007237601604674381">Nepavyko perkelti. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
     <ph name="MARKUP_4" />ištrinkite failus iš atsisiuntimų aplanko<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formatuoti įrenginį</translation>
 <translation id="7799329977874311193">HTML dokumentas</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7821462174190887129">Rasta: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

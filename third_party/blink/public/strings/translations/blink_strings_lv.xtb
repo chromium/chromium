@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">pateicības</translation>
 <translation id="1342835525016946179">raksts</translation>
 <translation id="1359897965706325498">reklāmkarogs</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> vienumi</translation>
 <translation id="1480676835519562650">vairākas atlasāmas iespējas; tika atlasītas <ph name="SELECTED" /> no <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">reģions</translation>
 <translation id="1591562245178063882">Šis mēnesis</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">brīdinājuma dialoglodziņš</translation>
 <translation id="1821985195704844674">koka režģis</translation>
 <translation id="1822429046913737220">priekšpusdienā/pēcpusdienā</translation>
+<translation id="1823704031293214298">lapas kājene</translation>
 <translation id="1832974991323546415">atskaņot attālinātā ierīcē</translation>
 <translation id="190587075670221089">dzēšana</translation>
 <translation id="1907737156431278478">piemērs</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedēļa, <ph name="YEAR" />. gads</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. ieraksts</translation>
 <translation id="2291999235780842123">izvēles rūtiņa</translation>
+<translation id="2307576640803031502">sarakstā, vienums numur <ph name="INDEX" />, kopā ir <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">lappuses pārtraukums</translation>
 <translation id="2335594187091864976">datuma un laika atlasītājs</translation>
 <translation id="2393030564806080191">Heksadecimāla krāsas vērtība</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Rādīt iepriekšējo mēnesi</translation>
 <translation id="421884353938374759">krāsu izvēle</translation>
 <translation id="4248100235867064564">izvēļņu josla</translation>
+<translation id="4293574643247337246">lapas galvene</translation>
 <translation id="4360991593054037559">Lūdzu, ievadiet derīgu vērtību. Divas tuvākās derīgās vērtības ir <ph name="VALID_VALUE_LOW" /> un <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Jautājumi un atbildes</translation>
 <translation id="4444765639179266822">Izklausās: <ph name="OCR_TEXT" /></translation>

@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">קרדיטים</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">מודעת באנר</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
 <translation id="1480676835519562650">ניתן לבחור יותר מאפשרות אחת, נבחרו <ph name="SELECTED" /> מתוך <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">אזור</translation>
 <translation id="1591562245178063882">החודש</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">רשת של עץ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">הכותרת התחתונה של הדף</translation>
 <translation id="1832974991323546415">הפעלה במכשיר מרוחק</translation>
 <translation id="190587075670221089">מחיקה</translation>
 <translation id="1907737156431278478">דוגמה</translation>
@@ -41,11 +43,12 @@
 <translation id="2060505056492490888">נעשה שימוש ב-'<ph name="DOT" />' במיקום שגוי ב-'<ph name="INVALIDDOMAIN" />'.</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2158401438286456825">רשימת דפים</translation>
-<translation id="2226276347425096477">קצר טקסט זה ל-<ph name="MAX_CHARACTERS" /> תווים או פחות (אתה משתמש כעת ב-<ph name="CURRENT_LENGTH" /> תווים).</translation>
+<translation id="2226276347425096477">צריך לקצר את הטקסט ל-<ph name="MAX_CHARACTERS" /> תווים או פחות (כרגע: <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="2246498165605549352">קובץ מקומי</translation>
 <translation id="2247351761944213033">שבוע <ph name="WEEKNUMBER" />‏, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">רצועה <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">תיבת סימון</translation>
+<translation id="2307576640803031502">ברשימה, פריט <ph name="INDEX" /> מתוך <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">מעבר דף</translation>
 <translation id="2335594187091864976">בוחר תאריך ושעה</translation>
 <translation id="2393030564806080191">הערך ההקסדצימלי של הצבע</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">הצג חודש קודם</translation>
 <translation id="421884353938374759">color picker</translation>
 <translation id="4248100235867064564">שורת תפריטים</translation>
+<translation id="4293574643247337246">הכותרת העליונה של הדף</translation>
 <translation id="4360991593054037559">הזן ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">שאלות ותשובות</translation>
 <translation id="4444765639179266822">נראה שכתובים כאן הדברים הבאים: <ph name="OCR_TEXT" /></translation>
@@ -138,7 +142,7 @@
 <translation id="5143125788380636750">אפילוג</translation>
 <translation id="5164977714490026579">הערך חייב להיות גדול מ-<ph name="MINIMUM" /> או שווה לו.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5307600278924710095">הזן חלק ולאחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
+<translation id="5307600278924710095">יש להזין חלק ואחריו '<ph name="ATSIGN" />'‏. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
 <translation id="5334352251556557839">לא ניתן להפעיל את המדיה.</translation>
 <translation id="537648784377940524">התאריך המוקדם ביותר (<ph name="MIN_DATE_OR_TIME" />) חייב לחול לפני התאריך המאוחר ביותר (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5406322316791861025">ספרה</translation>
@@ -175,8 +179,8 @@
 <translation id="6281588256137006900">בהירות</translation>
 <translation id="6281763101136022427">‏כתובת URL</translation>
 <translation id="6310801910862476708">יציאה ממצב 'תמונה בתוך תמונה'</translation>
-<translation id="6398862346408813489">הצג חלונית לבחירת חודש</translation>
-<translation id="6404546809543547843">מסתיר משך אודיו</translation>
+<translation id="6398862346408813489">הצגת חלונית לבחירת חודש</translation>
+<translation id="6404546809543547843">מחוון משך אודיו</translation>
 <translation id="6443871981718447451">הצגת תפריט כתוביות</translation>
 <translation id="6453774872122745852">תודות</translation>
 <translation id="648732519525291180">בוחר שעות</translation>

@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Αποθήκευση καρτών…</translation>
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
 <translation id="1062160989074299343">Prc10 (Φάκελος)</translation>
+<translation id="1066573427009091463">Επιστροφή μετρητών <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Σελιδοδείκτες επιτραπέζιου υπολογιστή</translation>
 <translation id="1068672505746868501">Να μην γίνεται μετάφραση σελίδων στα <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Νύχτα</translation>
@@ -497,6 +498,7 @@
 <translation id="2955913368246107853">Κλείσιμο γραμμής εύρεσης</translation>
 <translation id="2969319727213777354">Για την επίτευξη μιας ασφαλούς σύνδεσης, θα πρέπει να γίνει σωστή ρύθμιση του ρολογιού σας. Αυτό οφείλεται στο γεγονός ότι τα πιστοποιητικά που χρησιμοποιούν οι ιστότοποι για την ταυτοποίησή τους είναι έγκυρα μόνο για συγκεκριμένες χρονικές περιόδους. Εφόσον το ρολόι της συσκευής σας δεν είναι σωστά ρυθμισμένο, το Google Chrome δεν μπορεί να επαληθεύσει αυτά τα πιστοποιητικά.</translation>
 <translation id="2972581237482394796">&amp;Επανάληψη ενέργειας</translation>
+<translation id="2975775789586780239">Έκπτωση <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">Έχει επιλεγεί ο λογαριασμός <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Εάν ενεργοποιηθεί, το Chromium θα αποθηκεύσει ένα αντίγραφο της κάρτας σας σε αυτήν τη συσκευή για ταχύτερη συμπλήρωση φορμών.</translation>
 <translation id="2985398929374701810">Εισαγάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
@@ -702,6 +704,7 @@
 <translation id="3784372983762739446">Συσκευές Bluetooth</translation>
 <translation id="3787705759683870569">Λήγει <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Μέγεθος 16</translation>
+<translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="3793574014653384240">Αριθμοί και αιτίες των σφαλμάτων που παρουσιάστηκαν πρόσφατα</translation>
 <translation id="3797522431967816232">Prc3 (Φάκελος)</translation>
 <translation id="3799805948399000906">Ζητήθηκε γραμματοσειρά</translation>
@@ -1740,6 +1743,7 @@
 <translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">Για να δείτε περιεχόμενο επαυξημένης πραγματικότητας, εγκαταστήστε το ARCore</translation>
 <translation id="799149739215780103">Δέσιμο</translation>
 <translation id="7995512525968007366">Δεν καθορίστηκε</translation>
 <translation id="800218591365569300">Δοκιμάστε να κλείσετε τις άλλες καρτέλες ή τα άλλα προγράμματα για να απελευθερώσετε μνήμη.</translation>
@@ -1873,6 +1877,7 @@
 <translation id="8542014550340843547">Τριπλή συρραφή στο κάτω μέρος</translation>
 <translation id="8543181531796978784">Μπορείτε να <ph name="BEGIN_ERROR_LINK" />αναφέρετε ένα πρόβλημα εντοπισμού<ph name="END_ERROR_LINK" /> ή, εάν κατανοείτε τους κινδύνους ασφαλείας, να <ph name="BEGIN_LINK" />επισκεφτείτε αυτόν τον μη ασφαλή ιστότοπο<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">Ο κωδικός CVC βρίσκεται στο πίσω μέρος της κάρτας.</translation>
+<translation id="8558485628462305855">Για να δείτε περιεχόμενο επαυξημένης πραγματικότητας, ενημερώστε το ARCore</translation>
 <translation id="8559762987265718583">Δεν είναι δυνατή η επίτευξη ιδιωτικής σύνδεσης με τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή η ημερομηνία και η ώρα (<ph name="DATE_AND_TIME" />) της συσκευής σας είναι λανθασμένες.</translation>
 <translation id="8564182942834072828">Ξεχωριστά έγγραφα/Αντίγραφα χωρίς συρραφή</translation>
 <translation id="8564985650692024650">Το Chromium συνιστά την επαναφορά του κωδικού πρόσβασης <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, εάν τον έχετε χρησιμοποιήσει και σε άλλους ιστοτόπους.</translation>
@@ -1895,6 +1900,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Διαθέσιμο</translation>
 <translation id="868922510921656628">Σελίδες ανά δευτερόλεπτο</translation>
+<translation id="8697373104056314601">Για να λάβετε το υψηλότερο επίπεδο ασφάλειας του Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ενεργοποιήστε τη βελτιωμένη προστασία<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699041776323235191">Συσκευή HID</translation>
 <translation id="8703575177326907206">Η σύνδεσή σας με τον τομέα <ph name="DOMAIN" /> δεν είναι κρυπτογραφημένη.</translation>

@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Glisor pentru căutare</translation>
 <translation id="1399648040768741453">Tastatură telugu (Fonetică)</translation>
 <translation id="1430915738399379752">Printează</translation>
-<translation id="1433600251059882049">Linux și Windows au acces la acest dosar</translation>
 <translation id="1435838927755162558">Permite accesul Parallels Desktop la dosar</translation>
 <translation id="1439494416798956626">Mutat în <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Tastatură vietnameză (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Se deschid fișierele Linux...</translation>
 <translation id="1547964879613821194">Engleză canadiană</translation>
 <translation id="1556189134700913550">Aplicați tuturor</translation>
+<translation id="1561842594491319104">Dispozitivele Chrome</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="158809615184981282">Tastatură feroeză</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Transliterație (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Fișiere Windows</translation>
 <translation id="3078461028045006476">Permite accesul pentru <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Dispozitivele Chromebit</translation>
 <translation id="3116361045094675131">Tastatură UK</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">TERMINAT</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Hangul setul 2</translation>
 <translation id="4477219268485577442">Bulgară fonetică</translation>
 <translation id="4479812471636796472">Tastatură S.U.A. Dvorak</translation>
-<translation id="4481711095103932593">Windows are acces la acest dosar</translation>
 <translation id="4522570452068850558">Detalii</translation>
-<translation id="4542387084127299777">Nu se poate deschide „<ph name="PATH" />”</translation>
 <translation id="4552678318981539154">Cumpărați mai mult spațiu de stocare</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fișier <ph name="FILE_TYPE" /></translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4823651846660089135">Dispozitivul este numai în citire</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elemente selectate</translation>
+<translation id="4843566743023903107">Dispozitivele Chromebase</translation>
 <translation id="4849981557599196363">Germană (Belgia)</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="485316830061041779">Germană</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Acordă aplicațiilor Linux permisiunea de a modifica fișiere în Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elemente</translation>
+<translation id="5957366693331451795">Chromeboxurile</translation>
 <translation id="5982621672636444458">Opțiuni de sortare</translation>
 <translation id="6005282720244019462">Tastatură America Latină</translation>
 <translation id="6007237601604674381">Mutarea nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
     <ph name="MARKUP_4" />ștergeți fișierele din dosarul Descărcări.<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formatați dispozitivul</translation>
 <translation id="7799329977874311193">Document HTML</translation>
+<translation id="7801354353640549019">Chromebookuri</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7821462174190887129">S-au găsit <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

@@ -3,6 +3,7 @@
 <translationbundle lang="sr-Latn">
 <translation id="1276998909102132017">Slike u galeriji</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1473110567575736769">Tajmer za 3 sekunde</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4×4</translation>
 <translation id="1664224225747386870">Ništa nije snimljeno</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">Snimanje uspravne slike nije uspelo</translation>
 <translation id="3569311554794739032">Želite li stvarno da uklonite datoteku <ph name="FILE" />?</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="4000398125663085899">Nove slike i video snimci će sada biti sačuvani u folderu u aplikaciji Fajlovi: Moji fajlovi &gt; Kamera</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4329152592498422850">Pređi na režim za snimanje slika u obliku kvadrata</translation>
@@ -62,6 +64,7 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="698156982839284926">3 sekunde</translation>
 <translation id="712848772518857951">Želite li stvarno da uklonite ove stavke (<ph name="COUNT" />)?</translation>
+<translation id="7134221860976209830">Tajmer za 10 sekundi</translation>
 <translation id="7243947652761655814">Rezolucija video snimka</translation>
 <translation id="7337660886763914220">Greške sistema datoteka.</translation>
 <translation id="7557677699350329807">Pređi na sledeću kameru</translation>

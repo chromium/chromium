@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">کریڈٹس</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">بینر</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> آئٹمز</translation>
 <translation id="1480676835519562650">متعدد قابل انتخاب، <ph name="COUNT" /> میں سے <ph name="SELECTED" /> کو منتخب کیا گیا۔</translation>
 <translation id="1589122976691792535">علاقہ</translation>
 <translation id="1591562245178063882">اس مہینے</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ٹری گرڈ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">صفحے کا فٹر</translation>
 <translation id="1832974991323546415">ریموٹ آلہ پر چلائیں</translation>
 <translation id="190587075670221089">حذف کرنا</translation>
 <translation id="1907737156431278478">مثال</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> کو ٹریک کریں</translation>
 <translation id="2291999235780842123">چیک باکس</translation>
+<translation id="2307576640803031502">فہرست میں موجود، <ph name="COUNT" /> آئٹم میں سے <ph name="INDEX" /></translation>
 <translation id="2311842470354187719">صفحہ کا انقطاع</translation>
 <translation id="2335594187091864976">تاریخ اور وقت کا منتخب کنندہ</translation>
 <translation id="2393030564806080191">رنگ کی ہیگسا ڈیسیمل قدر</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">پچھلا مہینہ دکھائیں</translation>
 <translation id="421884353938374759">رنگ کا منتخب کنندہ</translation>
 <translation id="4248100235867064564">مینو بار</translation>
+<translation id="4293574643247337246">صفحے کا ہیڈر</translation>
 <translation id="4360991593054037559">براہ کرم ایک درست قدر درج کریں۔ دو قریب ترین درست اقدار <ph name="VALID_VALUE_LOW" /> اور <ph name="VALID_VALUE_HIGHER" /> ہیں۔</translation>
 <translation id="4384583879834880242">سوال و جواب</translation>
 <translation id="4444765639179266822">بظاہر یہ لکھا ہے: <ph name="OCR_TEXT" /></translation>

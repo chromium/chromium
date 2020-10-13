@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">ghi nhận tác giả</translation>
 <translation id="1342835525016946179">bài viết</translation>
 <translation id="1359897965706325498">biểu ngữ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> mục</translation>
 <translation id="1480676835519562650">có thể chọn nhiều mục, đã chọn <ph name="SELECTED" />/<ph name="COUNT" /> mục.</translation>
 <translation id="1589122976691792535">khu vực</translation>
 <translation id="1591562245178063882">Tháng này</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Tuần <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Bản nhạc <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">hộp kiểm</translation>
+<translation id="2307576640803031502">trong danh sách, mục <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ngắt trang</translation>
 <translation id="2335594187091864976">bộ chọn ngày và giờ</translation>
 <translation id="2393030564806080191">Giá trị màu thập lục phân</translation>

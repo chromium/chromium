@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">​ແຖບເລື່ອນ​ຊອກ​ຫາ</translation>
 <translation id="1399648040768741453">ຄີບອດພາສາເຕກູລູ (ການອອກສຽງ​)</translation>
 <translation id="1430915738399379752">ພິມ</translation>
-<translation id="1433600251059882049">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux ແລະ Windows</translation>
 <translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
 <translation id="1439494416798956626">ຍ້າຍໄປໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
 <translation id="1441841714100794440">ຄີບອດພາສາ​ຫວຽດ​ນາມ (Telex​)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">ກຳລັງເປີດໄຟລ໌ Linux...</translation>
 <translation id="1547964879613821194">ພາ​ສາ​ອັງ​ກິດກາ​ນາ​ດາ​</translation>
 <translation id="1556189134700913550">ໃຊ້ກັບ​ທັງ​ຫມົດ</translation>
+<translation id="1561842594491319104">ອຸປະກອນ Chrome</translation>
 <translation id="1572585716423026576">ຕັ້ງເປັນພາບພື້ນຫຼັງ</translation>
 <translation id="158809615184981282">ແປ້ນ​ພິມ​ພາ​ສາ​ຟາ​ໂຣ​ອີ​ສ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">ການປ່ຽນ​ຖ່າຍ​ຕົວ​ອັກສອນ (zdravo →ຊະດຣາໂວ​)</translation>
 <translation id="3067790092342515856">ໄຟລ໌ Windows</translation>
 <translation id="3078461028045006476">ແບ່ງປັນກັບ <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">ຄີບອດສະ​ຫະ​ລາດຊະອານາຈັກ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ສໍາເລັດ</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">ຮາງກຸລ 2 ຊຸດ</translation>
 <translation id="4477219268485577442">ການອອກສຽງພາສາບຸນ​ກາ​ຣີ</translation>
 <translation id="4479812471636796472">ຄີບອດດີວໍຣັກສະ​ຫະ​ລັດ</translation>
-<translation id="4481711095103932593">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Windows</translation>
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
-<translation id="4542387084127299777">ບໍ່ສາມາດເປີດ "<ph name="PATH" />" ໄດ້</translation>
 <translation id="4552678318981539154">ຊື້​ບ່ອນເກັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="4559767610552730302">ຮູບໜ້າແຈ້ງຫຼັງມົວ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ໄຟລ​໌</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">ອາໂວຄາໂດ</translation>
 <translation id="4823651846660089135">ອຸປະກອນເປັນແບບອ່ານເທົ່ານັ້ນ</translation>
 <translation id="4839847978919684242">ເລືອກ <ph name="SELCTED_FILES_COUNT" /> ລາຍ​ການແລ້ວ</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">ເຢຍລະມັນ (ເບວຢຽມ)</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
@@ -472,6 +472,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">ໃຫ້ການອະນຸຍາດແກ່ແອັບ Linux ເພື່ອແກ້ໄຂໄຟລ໌ຕ່າງໆໃນ Google Drive ຂອງທ່ານ. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນຂອງທ່ານ.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ລາຍການ</translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ລຽງ​ລຳ​ດັບ​ທາງ​ເລືອກ</translation>
 <translation id="6005282720244019462">ຄີບອດພາສາອາເມຣິກາລາຕິນ</translation>
 <translation id="6007237601604674381">ຍ້າຍບໍ່ສໍາເລັດ. <ph name="ERROR_MESSAGE" /></translation>
@@ -631,6 +632,7 @@
     <ph name="MARKUP_4" />ລຶບໄຟລ໌ຈາກໂຟລເດີດາວໂຫຼດຂອງທ່ານ<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ຟໍແມັດອຸ​ປະ​ກອນ​</translation>
 <translation id="7799329977874311193">ເອ​ກະ​ສານ HTML</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7821462174190887129">ພົບ <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

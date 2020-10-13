@@ -692,6 +692,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3784372983762739446">Bluetooth bidezko gailuak</translation>
 <translation id="3787705759683870569">Iraungitze-data: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Tamaina: 16</translation>
+<translation id="3789841737615482174">Instalatu</translation>
 <translation id="3793574014653384240">Azkenaldian gertatutako hutsegiteen kopurua eta arrazoiak</translation>
 <translation id="3797522431967816232">Prc3 (gutun-azala)</translation>
 <translation id="3799805948399000906">Eskatutako letra</translation>
@@ -1723,6 +1724,7 @@ Xehetasun gehiago:
 <translation id="7976214039405368314">Eskaera gehiegi daude</translation>
 <translation id="7977538094055660992">Irteera-gailua</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">Errealitate areagotuko edukia ikusteko, instalatu ARCore</translation>
 <translation id="799149739215780103">Koadernatu</translation>
 <translation id="7995512525968007366">Ez da zehaztu</translation>
 <translation id="800218591365569300">Saiatu beste fitxa edo programa batzuk ixten memoria gehiago uzteko erabilgarri.</translation>
@@ -1856,6 +1858,7 @@ Xehetasun gehiago:
 <translation id="8542014550340843547">Hiru grapa behean</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Detekzio-arazoaren berri eman dezakezu<ph name="END_ERROR_LINK" /> edo, segurtasunari eragiten dioten arriskuak ulertzen badituzu, <ph name="BEGIN_LINK" />webgune ez-segurura joan zaitezke<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">Txartelaren atzealdean agertzen da CVC kodea.</translation>
+<translation id="8558485628462305855">Errealitate areagotuko edukia ikusteko, eguneratu ARCore</translation>
 <translation id="8559762987265718583">Ezin da ezarri <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeinurako konexio pribatua gailuaren data eta ordua (<ph name="DATE_AND_TIME" />) okerrak direlako.</translation>
 <translation id="8564182942834072828">Dokumentu bereiziak / Elkartu gabeko kopiak</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chromium-ek.</translation>

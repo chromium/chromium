@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">參與名單</translation>
 <translation id="1342835525016946179">文章</translation>
 <translation id="1359897965706325498">橫額</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> 個項目</translation>
 <translation id="1480676835519562650">可以揀幾個項目，揀咗 <ph name="SELECTED" /> 個，總共有 <ph name="COUNT" /> 個。</translation>
 <translation id="1589122976691792535">區域</translation>
 <translation id="1591562245178063882">本月</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" /> 年，第 <ph name="WEEKNUMBER" /> 週</translation>
 <translation id="2277199496770840904">曲目 <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">選框</translation>
+<translation id="2307576640803031502">清單入面嘅第 <ph name="INDEX" /> 個項目，總共有 <ph name="COUNT" /> 項</translation>
 <translation id="2311842470354187719">分頁</translation>
 <translation id="2335594187091864976">日期和時間點選器</translation>
 <translation id="2393030564806080191">十六進制顏色值</translation>

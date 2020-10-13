@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">amakhredithi</translation>
 <translation id="1342835525016946179">i-athikili</translation>
 <translation id="1359897965706325498">isibhengezo</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> izinto</translation>
 <translation id="1480676835519562650">i-multiselectable, okungu-<ph name="SELECTED" /> kokukhethiwe okungu-<ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">isifunda</translation>
 <translation id="1591562245178063882">Le nyanga</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Iviki elingu-<ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Ithrekhi engu-<ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">chofoza</translation>
+<translation id="2307576640803031502">phakathi kohlu, into engu-<ph name="INDEX" /> kwezingu-<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ukuhlukana kwekhasi</translation>
 <translation id="2335594187091864976">isikhi sedethi nesesikhathi</translation>
 <translation id="2393030564806080191">Inani lombala we-Hexadecimal</translation>

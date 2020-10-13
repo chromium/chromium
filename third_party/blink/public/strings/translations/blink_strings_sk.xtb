@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">titulky</translation>
 <translation id="1342835525016946179">článok</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860">Počet položiek: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">s viacerými výbermi, vybrané: <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">oblasť</translation>
 <translation id="1591562245178063882">Tento mesiac</translation>
@@ -47,6 +48,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týždeň, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Skladba <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">začiarkavacie políčko</translation>
+<translation id="2307576640803031502">v zozname, <ph name="INDEX" />. položka z <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">zlom strany</translation>
 <translation id="2335594187091864976">výber dátumu a času</translation>
 <translation id="2393030564806080191">Hodnota farby v šestnástkovej sústave</translation>

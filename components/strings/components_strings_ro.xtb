@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Se salvează cardurile…</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="1062160989074299343">Prc10 (Plic)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> returnare de numerar</translation>
 <translation id="106701514854093668">Marcaje desktop</translation>
 <translation id="1068672505746868501">Nu traduce niciodată paginile în <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noapte</translation>
@@ -495,6 +496,7 @@
 <translation id="2955913368246107853">Închide Bara de căutare</translation>
 <translation id="2969319727213777354">Pentru a stabili o conexiune securizată, ceasul trebuie să fie setat corect, deoarece certificatele pe care site-urile le folosesc pentru a se identifica sunt valabile numai pentru anumite intervale de timp. Din moment ce ora de pe dispozitiv este incorectă, Google Chrome nu poate verifica aceste certificate.</translation>
 <translation id="2972581237482394796">&amp;Repetă</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> reducere</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Dacă opțiunea este activată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
@@ -700,6 +702,7 @@
 <translation id="3784372983762739446">Dispozitive Bluetooth</translation>
 <translation id="3787705759683870569">Expiră în <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Mărimea 16</translation>
+<translation id="3789841737615482174">Instalează</translation>
 <translation id="3793574014653384240">Numărul și cauzele blocărilor apărute recent</translation>
 <translation id="3797522431967816232">Prc3 (Plic)</translation>
 <translation id="3799805948399000906">Font solicitat</translation>
@@ -1737,6 +1740,7 @@ Detalii suplimentare:
 <translation id="7976214039405368314">Prea multe solicitări</translation>
 <translation id="7977538094055660992">Dispozitiv de ieșire</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">Pentru a vedea conținut din realitatea augmentată, instalează ARCore</translation>
 <translation id="799149739215780103">Legare</translation>
 <translation id="7995512525968007366">Nespecificată</translation>
 <translation id="800218591365569300">Încearcă să închizi celelalte file sau programe pentru a elibera memoria.</translation>
@@ -1870,6 +1874,7 @@ Detalii suplimentare:
 <translation id="8542014550340843547">Capsare triplă în partea de jos</translation>
 <translation id="8543181531796978784">Poți să <ph name="BEGIN_ERROR_LINK" />raportezi o problemă privind detectarea<ph name="END_ERROR_LINK" /> sau, dacă îți asumi riscurile de securitate, poți să <ph name="BEGIN_LINK" />accesezi acest site nesigur<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">Codul CVC se află pe spatele cardului.</translation>
+<translation id="8558485628462305855">Pentru a vedea conținut din realitatea augmentată, actualizează ARCore</translation>
 <translation id="8559762987265718583">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora dispozitivului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>
 <translation id="8564182942834072828">Documente separate/Copii necolaționate</translation>
 <translation id="8564985650692024650">Chromium îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
@@ -1892,6 +1897,7 @@ Detalii suplimentare:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Disponibilă</translation>
 <translation id="868922510921656628">Pagini per set</translation>
+<translation id="8697373104056314601">Pentru a beneficia de cel mai înalt nivel de securitate, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activează protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699041776323235191">Dispozitiv HID</translation>
 <translation id="8703575177326907206">Conexiunea la <ph name="DOMAIN" /> nu este criptată.</translation>

@@ -61,6 +61,7 @@
 <translation id="1545749641540134597">QR кодыг скан хийх</translation>
 <translation id="1552525382687785070">Таны админ синк хийхийг идэвхгүй болгосон байна</translation>
 <translation id="1554477036522844996">Шинэ цонх</translation>
+<translation id="1580715474678097352">Аюултай вебсайтуудаас хамгаалалттай байгаарай</translation>
 <translation id="1580783302095112590">Шуудан илгээгдсэн байна.</translation>
 <translation id="1582732959743469162">Энэ нь таны одоогийн татан авалтын бүх үйл явцыг зогсооно.</translation>
 <translation id="1605405588277479165">Унтраалттай - Санал болгохгүй</translation>
@@ -727,6 +728,8 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9087108903408689779">Chrome-с санал болгосон нууц үг:</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>
+<translation id="9107664647686727385">Алдагдсан нууц үгнүүдийг шалгана</translation>
+<translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>
 <translation id="9152539721251340337">QR код үүсгэх</translation>
 <translation id="9157836665414082580">Харилцах цонхыг зогсоох</translation>

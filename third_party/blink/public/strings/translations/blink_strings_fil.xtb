@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">mga credit</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
 <translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> sa <ph name="COUNT" /> ang pinili.</translation>
 <translation id="1589122976691792535">rehiyon</translation>
 <translation id="1591562245178063882">Buwang ito</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">tree grid</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">footer ng page</translation>
 <translation id="1832974991323546415">i-play sa malayuang device</translation>
 <translation id="190587075670221089">pag-delete</translation>
 <translation id="1907737156431278478">halimbawa</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">checkbox</translation>
+<translation id="2307576640803031502">nasa listahan, item <ph name="INDEX" /> sa <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">page break</translation>
 <translation id="2335594187091864976">picker ng petsa at oras</translation>
 <translation id="2393030564806080191">Hexadecimal na value ng kulay</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
 <translation id="421884353938374759">tagapili ng kulay</translation>
 <translation id="4248100235867064564">menu bar</translation>
+<translation id="4293574643247337246">header ng page</translation>
 <translation id="4360991593054037559">Mangyaring maglagay ng isang wastong value. Ang dalawang pinakamalapit na wastong value ay <ph name="VALID_VALUE_LOW" /> at <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Q&amp;A</translation>
 <translation id="4444765639179266822">Mukhang ang sabi ay: <ph name="OCR_TEXT" /></translation>

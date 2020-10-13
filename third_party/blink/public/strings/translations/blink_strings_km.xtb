@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">ការថ្លែងអំណរគុណ</translation>
 <translation id="1342835525016946179">អត្ថបទ</translation>
 <translation id="1359897965706325498">បដា</translation>
+<translation id="145015347812617860">ធាតុ <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">អាចជ្រើសរើសបានច្រើន បានជ្រើសរើស <ph name="SELECTED" /> ក្នុងចំណោម <ph name="COUNT" />។</translation>
 <translation id="1589122976691792535">តំបន់</translation>
 <translation id="1591562245178063882">ខែនេះ</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ប្រអប់ធីក</translation>
+<translation id="2307576640803031502">នៅក្នុងបញ្ជី ធាតុ <ph name="INDEX" /> នៃ <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">បំបែក​ទំព័រ</translation>
 <translation id="2335594187091864976">កម្មវិធីជ្រើសកាលបរិច្ឆេទ និងម៉ោង</translation>
 <translation id="2393030564806080191">តម្លៃពណ៌​គោលដប់ប្រាំមួយ</translation>

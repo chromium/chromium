@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">Validez: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="1436784010935106834">Eliminado</translation>
+<translation id="1437986450143295708">Describe el problema detalladamente</translation>
 <translation id="144283815522798837">Elementos seleccionados: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Establecer ticket de Kerberos activo</translation>
 <translation id="1444628761356461360">Esta opción está administrada por el propietario del dispositivo, <ph name="OWNER_EMAIL" />.</translation>
@@ -2818,6 +2819,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4301671483919369635">Esta página tiene permiso para editar archivos</translation>
 <translation id="4303079906735388947">Configura un nuevo PIN para tu llave de seguridad</translation>
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">Las aplicaciones deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K activos)</translation>
@@ -5888,7 +5890,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984068253310542383">Proyectar <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">¿Quieres utilizar Touch ID con <ph name="APP_NAME" /> en el modo de incógnito?</translation>
-<translation id="79859296434321399">Instala ARCore para visualizar contenido de realidad aumentada</translation>
 <translation id="7986295104073916105">Leer y cambiar la configuración de contraseñas guardadas</translation>
 <translation id="7987814697832569482">Conectar siempre a través de esta VPN</translation>
 <translation id="7988355189918024273">Habilita las funciones de accesibilidad</translation>
@@ -6360,7 +6361,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8557022314818157177">Sigue pulsando tu llave de seguridad hasta que tu huella digital quede registrada.</translation>
 <translation id="855773602626431402">Se ha evitado que un complemento no incluido en la zona de pruebas se ejecutara en esta página.</translation>
 <translation id="8557930019681227453">Archivo de manifiesto</translation>
-<translation id="8558485628462305855">Actualiza ARCore para visualizar contenido de realidad aumentada</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todas en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todas ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6405,7 +6405,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Tus padres aún no lo han aprobado</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
-<translation id="8620765578342452535">Configurar conexiones de red</translation>
 <translation id="8621866727807194849">Se ha detectado software dañino en tu ordenador. Chrome está eliminándolo, restaurando la configuración y desactivando las extensiones. Así, el navegador volverá a funcionar con normalidad.</translation>
 <translation id="8621979332865976405">Compartir toda la pantalla</translation>
 <translation id="862542460444371744">&amp;Extensiones</translation>

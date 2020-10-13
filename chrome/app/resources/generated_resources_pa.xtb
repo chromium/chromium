@@ -2817,6 +2817,7 @@
 <translation id="4301671483919369635">ਇਸ ਪੰਨੇ ਕੋਲ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="4303079906735388947">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਲਈ ਇੱਕ ਨਵਾਂ ਪਿੰਨ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="4305817255990598646">ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="4306119971288449206">ਐਪਾਂ ਨੂੰ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਸਮੱਗਰੀ-ਪ੍ਰਕਾਰ "<ph name="CONTENT_TYPE" />" ਵਿੱਚ ਦੇਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="4307992518367153382">ਮੂਲ</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ਲਾਈਵ)</translation>
@@ -5886,7 +5887,6 @@
 <translation id="7982789257301363584">ਨੈੱਟਵਰਕ</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> ਨੂੰ ਪ੍ਰਤੀਬਿੰਬਤ ਕਰੋ</translation>
 <translation id="7985283639530788531">ਕੀ ਤੁਸੀਂ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ <ph name="APP_NAME" /> ਨਾਲ ਸਪਰਸ਼ ਆਈ.ਡੀ. ਵਰਤਣੀ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="79859296434321399">ਸੰਵਰਧਿਤ ਵਾਸਤਵਿਕਤਾ ਵਾਲੀ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ, ARCore ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="7986295104073916105">ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਪਾਸਵਰਡ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="7987814697832569482">ਹਮੇਸ਼ਾਂ ਇਸ VPN ਰਾਹੀਂ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7988355189918024273">ਪਹੁੰਚਯੋਗਤਾ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਯੋਗ ਬਣਾਓ</translation>
@@ -6356,7 +6356,6 @@
 <translation id="8557022314818157177">ਤੁਹਾਡੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਕੈਪਚਰ ਹੋਣ ਤੱਕ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
 <translation id="855773602626431402">ਸੈਂਡਬਾਕਸ ਰਹਿਤ ਪਲੱਗਇਨ ਨੂੰ ਇਸ ਪੰਨੇ 'ਤੇ ਚੱਲਣ ਤੋਂ ਰੋਕਿਆ ਗਿਆ ਸੀ।</translation>
 <translation id="8557930019681227453">ਮੈਨੀਫ਼ੈਸਟ</translation>
-<translation id="8558485628462305855">ਸੰਵਰਧਿਤ ਵਾਸਤਵਿਕਤਾ ਵਾਲੀ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ, ARCore ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ਸਾਰੇ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਾਰੇ ({COUNT}) &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
 <translation id="8561206103590473338">ਹਾਥੀ</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6401,7 +6400,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">ਤੁਹਾਡੇ ਮਾਪਿਆਂ ਨੇ ਹਾਲੇ ਇਸ ਦੀ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="8620617069779373398">ਰੋਮਿੰਗ ਅਵਸਥਾ</translation>
-<translation id="8620765578342452535">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="8621866727807194849">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਹੈ। Chrome ਇਸਨੂੰ ਹਟਾ ਰਿਹਾ ਹੈ, ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰ ਰਿਹਾ ਹੈ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰ ਰਿਹਾ ਹੈ। ਇੰਝ ਕਰਨ ਨਾਲ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਰ ਦੁਬਾਰਾ ਆਮ ਵਾਂਗ ਕੰਮ ਕਰਨ ਲੱਗੇਗਾ।</translation>
 <translation id="8621979332865976405">ਆਪਣੀ ਪੂਰੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="862542460444371744">&amp;ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>

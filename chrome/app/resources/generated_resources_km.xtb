@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">មាន​សុពលភាពរយៈពេល <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">បន្ត​រៀបចំ</translation>
 <translation id="1436784010935106834">បានដកចេញ</translation>
+<translation id="1437986450143295708">ពណ៌នាអំពីបញ្ហាឱ្យបានលម្អិត</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ត្រូវបានជ្រើសរើស</translation>
 <translation id="1442851588227551435">កំណត់​សំបុត្រ Kerberos សកម្ម</translation>
 <translation id="1444628761356461360">ការកំណត់នេះត្រូវបានគ្រប់គ្រងដោយម្ចាស់ឧបករណ៍ <ph name="OWNER_EMAIL" />។</translation>
@@ -2819,6 +2820,7 @@
 <translation id="4301671483919369635">ទំព័រនេះ​ត្រូវបានអនុញ្ញាត​ឱ្យកែ​ឯកសារ</translation>
 <translation id="4303079906735388947">រៀបចំ​កូដ PIN ថ្មី​សម្រាប់សោ​សុវត្ថិភាព​របស់អ្នក</translation>
 <translation id="4305402730127028764">ចម្លង​ទៅ <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">ប្ដូរ​</translation>
 <translation id="4306119971288449206">កម្មវិធី​ត្រូវបាន​ផ្ដល់​ជា​ប្រភេទ​ខ្លឹមសារ "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">មូលដ្ឋាន</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
@@ -5890,7 +5892,6 @@
 <translation id="7982789257301363584">បណ្តាញ</translation>
 <translation id="7984068253310542383">បញ្ចាំង <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">តើអ្នក​ចង់ប្រើ Touch ID ជាមួយ <ph name="APP_NAME" /> នៅក្នុង​មុខងារឯកជន​ដែរទេ?</translation>
-<translation id="79859296434321399">ដើម្បី​មើលខ្លឹមសារ AR សូមដំឡើង ARCore</translation>
 <translation id="7986295104073916105">អាន និងប្តូរការកំណត់ពាក្យសម្ងាត់ដែលបានរក្សាទុក</translation>
 <translation id="7987814697832569482">ភ្ជាប់​តាមរយៈ VPN នេះជានិច្ច</translation>
 <translation id="7988355189918024273">បើកដំណើរការមុខងារលទ្ធភាពប្រើប្រាស់</translation>
@@ -6361,7 +6362,6 @@
 <translation id="8557022314818157177">បន្ត​ចុច​សោសុវត្ថិភាព​ រហូតទាល់តែ​ថតបាន​ស្នាមម្រាមដៃ​របស់អ្នក</translation>
 <translation id="855773602626431402">កម្មវិធីជំនួយដែលមិនបានសេនបក់ត្រូវបានបង្ការពីការដំណើរការនៅលើទំព័រនេះ។</translation>
 <translation id="8557930019681227453">ជាក់លាក់</translation>
-<translation id="8558485628462305855">ដើម្បី​មើលខ្លឹមសារ AR សូមដំឡើងជំនាន់ ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{បើកទាំងអស់នៅក្នុង&amp;វិនដូថ្មី}=1{បើកនៅក្នុង&amp;វិនដូថ្មី}other{បើកទាំងអស់ ({COUNT}) នៅក្នុង&amp;វិនដូថ្មី}}</translation>
 <translation id="8561206103590473338">ដំរី</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6406,7 +6406,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">មាតាបិតារបស់អ្នកមិនទាន់យល់ព្រមនៅឡើយទេ</translation>
 <translation id="8620617069779373398">ស្ថានភាពរ៉ូមីង</translation>
-<translation id="8620765578342452535">កំណត់រចនាសម្ព័នការភ្ជាប់បណ្តាញ</translation>
 <translation id="8621866727807194849">មាន​កម្មវិធី​បង្ក​គ្រោះថ្នាក់​នៅលើ​កុំព្យូទ័រ​របស់អ្នក។ Chrome កំពុង​លុបកម្មវិធី​នេះ ដោយស្ដារការកំណត់​របស់អ្នក និងបិទ​កម្មវិធីបន្ថែម។ សកម្មភាព​នេះនឹងធ្វើឱ្យ​កម្មវិធី​រុករកតាម​អ៊ីនធឺណិត​របស់អ្នក​ដំណើរការជា​ធម្មតា​ឡើងវិញ។</translation>
 <translation id="8621979332865976405">ចែករំលែក​អេក្រង់​ទាំងមូល​របស់អ្នក</translation>
 <translation id="862542460444371744">កម្មវិធីបន្ថែម</translation>

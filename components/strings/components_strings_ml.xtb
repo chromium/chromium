@@ -700,6 +700,7 @@
 <translation id="3784372983762739446">Bluetooth ഉപകരണങ്ങൾ</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />-ൽ അവസാനിക്കുന്നു</translation>
 <translation id="3789155188480882154">വലുപ്പം 16</translation>
+<translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="3793574014653384240">അടുത്തിടെയുണ്ടായ ക്രാഷുകളുടെ എണ്ണവും കാരണങ്ങളും</translation>
 <translation id="3797522431967816232">Prc3 (എൻവലപ്പ്)</translation>
 <translation id="3799805948399000906">അഭ്യർത്ഥിച്ച ഫോണ്ട്</translation>
@@ -1733,6 +1734,7 @@
 <translation id="7976214039405368314">നിരവധി അഭ്യർത്ഥനകൾ</translation>
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">അനുബന്ധ യാഥാർത്ഥ്യ ഉള്ളടക്കം കാണാൻ, ARCore ഇൻസ്‌റ്റാൾ ചെയ്യൂ</translation>
 <translation id="799149739215780103">ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="7995512525968007366">വ്യക്തമാക്കിയിട്ടില്ല</translation>
 <translation id="800218591365569300">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
@@ -1866,6 +1868,7 @@
 <translation id="8542014550340843547">താഴെ മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="8543181531796978784">നിങ്ങൾക്ക് <ph name="BEGIN_ERROR_LINK" />സുരക്ഷാപ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യാം<ph name="END_ERROR_LINK" /> അല്ലെങ്കിൽ, സുരക്ഷയെ ബാധിച്ചേക്കാവുന്ന അപകട സാധ്യതകളെക്കുറിച്ച് ബോധ്യമുണ്ടെങ്കിൽ <ph name="BEGIN_LINK" />സുരക്ഷിതമല്ലാത്ത ഈ സൈറ്റ്<ph name="END_LINK" />സന്ദർശിക്കുക.</translation>
 <translation id="8557066899867184262">കാർഡിന് പിന്നിലാണ് CVC രേഖപ്പെടുത്തിയിരിക്കുന്നത്.</translation>
+<translation id="8558485628462305855">അനുബന്ധ യാഥാർത്ഥ്യ ഉള്ളടക്കം കാണാൻ, ARCore അപ്‌ഡേറ്റ് ചെയ്യൂ</translation>
 <translation id="8559762987265718583">നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
 <translation id="8564182942834072828">വെവ്വേറെ ഡോക്യുമെന്റുകൾ/ക്രമത്തിലല്ലാത്ത പകർപ്പുകൾ</translation>
 <translation id="8564985650692024650">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർ‌ശ ചെയ്യുന്നു.</translation>

@@ -1175,7 +1175,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
 <translation id="2355314311311231464">Die Bereitstellung ist nicht möglich, weil die Kontodetails nicht abgerufen werden konnten. Bitte noch einmal versuchen. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355604387869345912">Instant Tethering einschalten</translation>
-<translation id="2356070529366658676">Fragen</translation>
+<translation id="2356070529366658676">Nachfragen</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> entfernen</translation>
 <translation id="2359345697448000899">Klicken Sie zum Verwalten Ihrer Erweiterungen im Menü "Tools" auf "Erweiterungen".</translation>
 <translation id="2359556993567737338">Bluetooth-Gerät verbinden</translation>
@@ -2547,7 +2547,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Diese App könnte schädlich sein}other{Diese Apps könnten schädlich sein}}</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3953834000574892725">Meine Konten</translation>
-<translation id="3954354850384043518">Wird heruntergeladen</translation>
+<translation id="3954354850384043518">In Arbeit</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Es sind keine kürzlich erfassten WebRTC-Ereignisprotokolle vorhanden.</translation>
 <translation id="3955163004258753966">Fehler beim Starten des Upgrades</translation>
@@ -2815,6 +2815,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4301671483919369635">Diese Website ist berechtigt, Dateien zu bearbeiten</translation>
 <translation id="4303079906735388947">Richten Sie eine neue PIN für Ihren Sicherheitsschlüssel ein</translation>
 <translation id="4305402730127028764">Auf <ph name="DEVICE_NAME" /> kopieren</translation>
+<translation id="4305817255990598646">Wechseln</translation>
 <translation id="4306119971288449206">Für Apps muss der Inhaltstyp "<ph name="CONTENT_TYPE" />" bereitgestellt werden</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
@@ -4791,7 +4792,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> und 1 weiterer Tab}other{<ph name="PAGE_TITLE" /> und # weitere Tabs}}</translation>
 <translation id="6709133671862442373">Nachrichten</translation>
 <translation id="6709357832553498500">Über <ph name="EXTENSIONNAME" /> verbinden</translation>
-<translation id="6710213216561001401">Vorherige Einreichung</translation>
+<translation id="6710213216561001401">Zurück</translation>
 <translation id="6715803357256707211">Bei der Installation Ihrer Linux-Anwendung ist ein Fehler aufgetreten. Klicken Sie auf die Benachrichtigung, um Details zu sehen.</translation>
 <translation id="671619610707606484">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites gespeicherten Daten gelöscht</translation>
 <translation id="671928215901716392">Sperren</translation>
@@ -4814,7 +4815,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6737663862851963468">Kerberos-Ticket entfernen</translation>
 <translation id="6739923123728562974">Desktopverknüpfung einblenden</translation>
-<translation id="6740234557573873150"><ph name="FILE_NAME" /> pausiert</translation>
+<translation id="6740234557573873150"><ph name="FILE_NAME" /> angehalten</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Ihr Administrator<ph name="END_LINK" /> hat Safe Browsing deaktiviert</translation>
 <translation id="6742339027238151589">Zugänglich für Skript</translation>
 <translation id="6745592621698551453">Jetzt aktualisieren</translation>
@@ -5885,7 +5886,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> spiegeln</translation>
 <translation id="7985283639530788531">Möchten Sie Touch ID mit <ph name="APP_NAME" /> im Inkognitomodus verwenden?</translation>
-<translation id="79859296434321399">ARCore installieren, um Augmented-Reality-Inhalte zu sehen</translation>
 <translation id="7986295104073916105">Einstellungen für gespeicherte Passwörter aufrufen und ändern</translation>
 <translation id="7987814697832569482">Immer über dieses VPN verbinden</translation>
 <translation id="7988355189918024273">Bedienungshilfen aktivieren</translation>
@@ -5899,7 +5899,7 @@ Erweiterung: <ph name="EXTENSION_FILE" />
 Schlüsseldatei: <ph name="KEY_FILE" />
 
 Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Datei, um neue Versionen Ihrer Erweiterung zu erstellen.</translation>
-<translation id="8000066093800657092">Nicht verbunden</translation>
+<translation id="8000066093800657092">Kein Netzwerk</translation>
 <translation id="8002274832045662704">Erweiterte Druckerkonfiguration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ist nicht mehr verfügbar</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -6050,7 +6050,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8176332201990304395">Rosa und Weiß</translation>
 <translation id="8177196903785554304">Netzwerkdetails</translation>
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
-<translation id="8179976553408161302">Enter</translation>
+<translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" kann Bilder, Video- und Sounddateien an den angegebenen Orten lesen und löschen.</translation>
 <translation id="8181215761849004992">Beitritt zur Domain nicht möglich. Prüfen Sie in Ihrem Konto, ob Sie Geräte hinzufügen dürfen.</translation>
 <translation id="8182105986296479640">App antwortet nicht.</translation>
@@ -6356,7 +6356,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8557022314818157177">Berühren Sie mehrmals den Fingerabdrucksensor auf Ihrem Sicherheitsschlüssel, bis der Fingerabdruck gespeichert ist</translation>
 <translation id="855773602626431402">Ein Plug-in ohne Sandbox wurde auf dieser Seite blockiert.</translation>
 <translation id="8557930019681227453">Manifest</translation>
-<translation id="8558485628462305855">ARCore aktualisieren, um Augmented-Reality-Inhalte zu sehen</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6401,7 +6400,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Deine Eltern haben die Berechtigung noch nicht erteilt</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
-<translation id="8620765578342452535">Netzwerkverbindungen konfigurieren</translation>
 <translation id="8621866727807194849">Schädliche Software wurde auf Ihrem Computer gefunden. Chrome ist gerade dabei, diese zu entfernen, Ihre Einstellungen wiederherzustellen und Erweiterungen zu deaktivieren. Danach wird Ihr Browser wieder wie gewohnt funktionieren.</translation>
 <translation id="8621979332865976405">Gesamten Bildschirm teilen</translation>
 <translation id="862542460444371744">&amp;Erweiterungen</translation>

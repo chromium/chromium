@@ -271,6 +271,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996809686854298943">URL required</translation>
+<translation id="3006881078666935414">No usage data</translation>
 <translation id="3016635187733453316">Make sure that this device is connected to the Internet</translation>
 <translation id="3029704984691124060">Passphrases do not match</translation>
 <translation id="3034163383943672781">Download will start on <ph name="DATE" />.</translation>
@@ -802,6 +803,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6783942555455976443">Save this page for later and get a reminder</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6824899148643461612"><ph name="TAB_TITLE" /> tab, selected</translation>
 <translation id="6845325883481699275">Help improve Chrome security</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>

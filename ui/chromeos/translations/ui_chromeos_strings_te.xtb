@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">సీక్ స్లయిడర్</translation>
 <translation id="1399648040768741453">తెలుగు కీబోర్డ్ (ఫొనెటిక్)</translation>
 <translation id="1430915738399379752">ముద్రించు</translation>
-<translation id="1433600251059882049">Linux ఇంకా Windowsలతో ఈ ఫోల్డర్ షేర్ చేయబడినది</translation>
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />లోకి తరలించబడింది.</translation>
 <translation id="1441841714100794440">వియత్నామీస్ కీబోర్డ్ (టెలెక్స్)</translation>
@@ -307,9 +306,7 @@
 <translation id="4470564870223067757">హాంగుల్ 2 సెట్</translation>
 <translation id="4477219268485577442">బల్గేరియన్ ఫోనెటిక్</translation>
 <translation id="4479812471636796472">US డ్వొరక్ కీబోర్డ్</translation>
-<translation id="4481711095103932593">ఈ ఫోల్డర్ Windowsతో షేర్ చేయబడింది</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
-<translation id="4542387084127299777">"<ph name="PATH" />"ను తెరవడం సాధ్యం కాలేదు</translation>
 <translation id="4552678318981539154">మరింత నిల్వను కొనుగోలు చేయండి</translation>
 <translation id="4559767610552730302">బొకే</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ఫైల్</translation>

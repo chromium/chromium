@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">créditos</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="1480676835519562650">vários selecionáveis, <ph name="SELECTED" /> de <ph name="COUNT" /> selecionados.</translation>
 <translation id="1589122976691792535">região</translation>
 <translation id="1591562245178063882">Este mês</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">grelha de árvore</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">rodapé da página</translation>
 <translation id="1832974991323546415">reproduzir no dispositivo remoto</translation>
 <translation id="190587075670221089">eliminação</translation>
 <translation id="1907737156431278478">exemplo</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, de <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Faixa <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">caixa de verificação</translation>
+<translation id="2307576640803031502">na lista, item <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">quebra de página</translation>
 <translation id="2335594187091864976">selecionador de data e hora</translation>
 <translation id="2393030564806080191">Valor de cor hexadecimal</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="421884353938374759">seletor de cores</translation>
 <translation id="4248100235867064564">barra de menu</translation>
+<translation id="4293574643247337246">cabeçalho da página</translation>
 <translation id="4360991593054037559">Introduza um valor válido. Os dois valores válidos mais próximos são <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Perg e Resp</translation>
 <translation id="4444765639179266822">Parece indicar: <ph name="OCR_TEXT" /></translation>

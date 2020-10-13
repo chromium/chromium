@@ -174,6 +174,7 @@
       Si habilitas esta opción, la función Búsqueda Segura estará siempre activa en la Búsqueda de Google y el modo restringido moderado lo estará en YouTube.
 
       Si inhabilitas esta opción o si no se le asigna ningún valor, la función Búsqueda Segura no se aplicará en la Búsqueda de Google ni se aplicará el modo en YouTube.</translation>
+<translation id="1353416417709895349">Inhabilitar las comprobaciones de interceptación de DNS y las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="1353985065430729216">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifiquen los sitios web que pueden acceder a los sensores, como los de luz o movimiento.
 
       Si no se establece esta política, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -441,6 +442,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se le asigna el valor "Falso", los usuarios no podrán añadir, quitar ni modificar marcadores. Sin embargo, podrán usar los marcadores existentes.</translation>
 <translation id="1715151459541210849">Habilita la función de accesibilidad de dictado</translation>
 <translation id="172374442286684480">Permitir que todos los sitios establezcan datos locales</translation>
+<translation id="1727914891824633693">Permitir el uso de Lacros</translation>
 <translation id="1736269219679256369">Permitir que se continúe desde la página de advertencia de SSL</translation>
 <translation id="1745973235372964482">No permitir archivos protegidos con contraseña</translation>
 <translation id="1749815929501097806">Permite establecer los Términos del Servicio que el usuario debe aceptar antes de empezar una sesión de cuenta de dispositivo local.
@@ -2330,6 +2332,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Aunque la política en sí es compatible con las plataformas anteriores, es posible que la función que habilita no esté disponible en todas ellas. No todas las funciones de Web Platform obsoletas se pueden volver a habilitar. Solo es posible hacerlo con las indicadas específicamente y durante un periodo de tiempo limitado diferente para cada función. El formato general de la etiqueta de cadena será:[NombreDeFunciónObsoleta]_EffectiveUntil[aaaammdd]. Como referencia, puedes consultar los intentos detrás de los cambios de la función Web Platform en la página https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Habilitar el bloqueo cuando el dispositivo esté inactivo o suspendido</translation>
+<translation id="4447668084338250480">Comportamiento de redirección de una intranet</translation>
 <translation id="4449469846627734399">Define la configuración diaria de Peak Shift</translation>
 <translation id="4449545651113180484">Girar la pantalla 270 grados hacia la derecha</translation>
 <translation id="445270821089253489">Controla el tipo de información del usuario y del dispositivo que se proporciona.</translation>
@@ -2722,6 +2725,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
           Si no se establece esta política, se utilizará la línea de comandos predeterminada.</translation>
 <translation id="5150323673529584553">No analizar archivos</translation>
+<translation id="5152393033264257734">Permitir las comprobaciones de interceptación de DNS y las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Esta política está obsoleta. Usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
@@ -2771,6 +2775,12 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       * Desactivado, o si no se define: Chrome no aplica el modo restringido en YouTube. Políticas externas, como las de YouTube, pueden seguir aplicando el modo restringido.</translation>
 <translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación segura</translation>
 <translation id="5196520640744454600">Habilitar las teclas persistentes en la pantalla de inicio de sesión</translation>
+<translation id="5208675398826212411">Esta política configura el comportamiento de la redirección de una intranet mediante comprobaciones de interceptación de DNS. Con las comprobaciones, se intenta averiguar si el navegador está detrás de un proxy que redirige nombres de host desconocidos.
+
+      Si no se define esta política, el navegador usará el comportamiento predeterminado de las comprobaciones de interceptación de DNS y las sugerencias de redirección de una intranet. Estas opciones están habilitadas por defecto en la versión M88, pero se inhabilitarán de forma predeterminada en la siguiente versión.
+
+      <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> es una política relacionada que también puede inhabilitar las comprobaciones de interceptación de DNS. Se trata de una versión más flexible que puede controlar las barras de información de redirección de una intranet de forma independiente, y es posible que se amplíe más adelante.
+      Las comprobaciones de interceptaciones se inhabilitarán si lo solicitan <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> o esta política.</translation>
 <translation id="5212118847531454979">Permite establecer el periodo (en milisegundos) durante el cual los usuarios reciben una notificación informándoles de que deben reiniciar <ph name="PRODUCT_NAME" /> o un dispositivo <ph name="PRODUCT_OS_NAME" /> para aplicar una actualización pendiente.
 
       Durante este periodo, se informa de forma reiterada al usuario de que la actualización es necesaria. En el caso de los dispositivos <ph name="PRODUCT_OS_NAME" />, se muestra una notificación de reinicio en la bandeja del sistema de acuerdo con la política <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. En el caso de los navegadores <ph name="PRODUCT_NAME" />, el menú de aplicaciones cambia para indicar que es necesario reiniciar cuando ha transcurrido un tercio del periodo de notificación. Esta notificación cambia de color cuando han transcurrido dos tercios del periodo de notificación y, de nuevo, cuando este periodo finaliza. Las notificaciones adicionales habilitadas por la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> siguen esta misma programación.
@@ -3367,6 +3377,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
           Nota: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> anula esta política si se especifica la anterior.</translation>
 <translation id="6011969832398368671">Permitir que los sitios web pidan al usuario que otorgue permiso de escritura a archivos y directorios</translation>
+<translation id="6012952794649558174">Usar el comportamiento predeterminado del navegador.</translation>
 <translation id="6015281292796053435">Esta política determina si se recoge información de Navegación segura, incluido el número de advertencias de esta función y el número de clics de destino después de las advertencias.
 
       Si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, esta se ignorará.
@@ -3843,6 +3854,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="6672630473862787247">Habilita la autenticación pasiva en sesiones normales, de incógnito y de invitado.</translation>
 <translation id="6685903773201985073">Habilita la autenticación pasiva en sesiones normales y de invitado.</translation>
 <translation id="6689792153960219308">Informar sobre el estado del hardware</translation>
+<translation id="6690425645391461516">Inhabilitar las comprobaciones de interceptación de DNS y permitir las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="6698632841807204978">Habilitar la impresión en monocromo</translation>
 <translation id="6699880231565102694">Habilitar la autenticación de dos factores para hosts de acceso remoto</translation>
 <translation id="6703251016607733593">Si se establece la política, se desactivará la implementación obligatoria de los requisitos de comunicación de la transparencia en los certificados para una lista de hashes <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Los hosts empresariales podrán seguir usando certificados que, de lo contrario, no serían de confianza (por no haberse comunicado públicamente de forma correcta). Para desactivar la implementación obligatoria, el hash debe cumplir una de estas condiciones:
@@ -5531,6 +5543,13 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8976248126101463034">Permitir la autenticación gnubby para los hosts de acceso remoto</translation>
 <translation id="8976531594979650914">Usar impresora predeterminada del sistema como opción predeterminada</translation>
 <translation id="8977192934280677167">Permitir el acceso a la búsqueda a través del menú contextual con el proveedor predeterminado</translation>
+<translation id="8990697325184394573">Esta opción permite que los usuarios usen el navegador Lacros.
+
+      Si se le asigna el valor "false" a esta política, el usuario no podrá usar Lacros.
+
+      Si se le asigna el valor "true" a esta política, el usuario podrá usar Lacros.
+
+      Si no se establece esta política, el usuario no podrá usar Lacros.</translation>
 <translation id="8992176907758534924">No permitir que todos los sitios muestren imágenes</translation>
 <translation id="9007632512838819703">Esta política está obsoleta. Usa la política <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> en su lugar.
 

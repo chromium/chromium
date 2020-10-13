@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">συντελεστές</translation>
 <translation id="1342835525016946179">άρθρο</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
 <translation id="1480676835519562650">πολλαπλής επιλογής, έγινε επιλογή <ph name="SELECTED" /> από <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">περιοχή</translation>
 <translation id="1591562245178063882">Αυτόν το μήνα</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">παράθυρο διαλόγου ειδοποιήσεων</translation>
 <translation id="1821985195704844674">πλέγμα δέντρου</translation>
 <translation id="1822429046913737220">Π.Μ./Μ.Μ.</translation>
+<translation id="1823704031293214298">υποσέλιδο σελίδας</translation>
 <translation id="1832974991323546415">αναπαραγωγή σε απομακρυσμένη συσκευή</translation>
 <translation id="190587075670221089">διαγραφή</translation>
 <translation id="1907737156431278478">παράδειγμα</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Εβδομάδα <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Κομμάτι <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">πλαίσιο ελέγχου</translation>
+<translation id="2307576640803031502">σε λίστα, στοιχείο <ph name="INDEX" /> από <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">αλλαγή σελίδας</translation>
 <translation id="2335594187091864976">εργαλείο επιλογής ημερομηνίας και ώρας</translation>
 <translation id="2393030564806080191">Δεκαεξαδική τιμή χρώματος</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Εμφάνιση προηγούμενου μήνα</translation>
 <translation id="421884353938374759">επιλογέας χρώματος</translation>
 <translation id="4248100235867064564">γραμμή μενού</translation>
+<translation id="4293574643247337246">κεφαλίδα σελίδας</translation>
 <translation id="4360991593054037559">Καταχωρίστε μια έγκυρη τιμή. Οι δύο πιο κοντινές έγκυρες τιμές είναι <ph name="VALID_VALUE_LOW" /> και <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Ερωτήσεις και απαντήσεις</translation>
 <translation id="4444765639179266822">Φαίνεται πως λέει: <ph name="OCR_TEXT" /></translation>

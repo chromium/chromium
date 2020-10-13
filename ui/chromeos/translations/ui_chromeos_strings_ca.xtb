@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Control lliscant de reproducció</translation>
 <translation id="1399648040768741453">Teclat telugu (fonètic)</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
-<translation id="1433600251059882049">Aquesta carpeta es comparteix amb Linux i Windows</translation>
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
 <translation id="1439494416798956626">S'ha mogut a <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Teclat vietnamita (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">S'estan obrint els fitxers de Linux...</translation>
 <translation id="1547964879613821194">Anglès canadenc</translation>
 <translation id="1556189134700913550">Aplica-ho a tot</translation>
+<translation id="1561842594491319104">dispositius Chrome</translation>
 <translation id="1572585716423026576">Defineix com a fons de pantalla</translation>
 <translation id="158809615184981282">Teclat feroès</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Transliteració (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Fitxers de Windows</translation>
 <translation id="3078461028045006476">Comparteix amb <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">dispositius Chromebit</translation>
 <translation id="3116361045094675131">Teclat anglès</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">FET</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Configuració 2 de hangul</translation>
 <translation id="4477219268485577442">Fonètic búlgar</translation>
 <translation id="4479812471636796472">Teclat Dvorak nord-americà</translation>
-<translation id="4481711095103932593">Aquesta carpeta es comparteix amb Windows</translation>
 <translation id="4522570452068850558">Detalls</translation>
-<translation id="4542387084127299777">No es pot obrir "<ph name="PATH" />"</translation>
 <translation id="4552678318981539154">Compra més emmagatzematge</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Fitxer <ph name="FILE_TYPE" /></translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Alvocat</translation>
 <translation id="4823651846660089135">El dispositiu és només de lectura</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elements seleccionats</translation>
+<translation id="4843566743023903107">dispositius Chromebase</translation>
 <translation id="4849981557599196363">Alemany (Bèlgica)</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="485316830061041779">Alemany</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Dona permís a les aplicacions de Linux per modificar fitxers a Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elements</translation>
+<translation id="5957366693331451795">dispositius Chromebox</translation>
 <translation id="5982621672636444458">Ordena les opcions</translation>
 <translation id="6005282720244019462">Teclat llatinoamericà</translation>
 <translation id="6007237601604674381">El trasllat ha fallat. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
     <ph name="MARKUP_4" />Suprimiu fitxers de la carpeta Baixades<ph name="MARKUP_5" />.</translation>
 <translation id="7794058097940213561">Formata el dispositiu</translation>
 <translation id="7799329977874311193">Document HTML</translation>
+<translation id="7801354353640549019">dispositius Chromebook</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7821462174190887129">S'han trobat <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

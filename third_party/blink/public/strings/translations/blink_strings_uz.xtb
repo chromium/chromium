@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">mualliflar</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> ta xatcho‘p</translation>
 <translation id="1480676835519562650">multitanlovli, <ph name="SELECTED" /> / <ph name="COUNT" /> tanlandi.</translation>
 <translation id="1589122976691792535">hudud</translation>
 <translation id="1591562245178063882">Bu oy</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-hafta , <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Musiqa <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">belgilash katakchasi</translation>
+<translation id="2307576640803031502">roʻyxatda, element: <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sahifa oxiri</translation>
 <translation id="2335594187091864976">sana va vaqt tanlash oynasi</translation>
 <translation id="2393030564806080191">Rangning 16 raqamli qiymati</translation>

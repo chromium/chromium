@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">благодарност</translation>
 <translation id="1342835525016946179">статија</translation>
 <translation id="1359897965706325498">банер</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> ставки</translation>
 <translation id="1480676835519562650">повеќе опции за избор, избрани се <ph name="SELECTED" /> од <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1591562245178063882">Овој месец</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> недела, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Песна <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">поле за избор</translation>
+<translation id="2307576640803031502">во список, ставка <ph name="INDEX" /> од <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">прелом на страница</translation>
 <translation id="2335594187091864976">избирач на датум и време</translation>
 <translation id="2393030564806080191">Хексадецимална вредност на бојата</translation>

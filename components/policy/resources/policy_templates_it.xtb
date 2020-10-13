@@ -173,6 +173,7 @@
       Se attivi questa impostazione, la funzione SafeSearch della Ricerca Google e il livello medio della Modalità con restrizioni su YouTube saranno sempre attivi.
 
       Se disattivi questa impostazione o non imposti un valore, la funzione SafeSearch della Ricerca Google e la Modalità con restrizioni di YouTube non verranno applicate.</translation>
+<translation id="1353416417709895349">Disattiva controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="1353985065430729216">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono accedere ai sensori, come i sensori di movimento e di luce.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -427,6 +428,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio è impostato su False, gli utenti non possono aggiungere, rimuovere o modificare i preferiti, ma possono comunque utilizzare quelli esistenti.</translation>
 <translation id="1715151459541210849">Attiva la funzione di accessibilità di dettatura</translation>
 <translation id="172374442286684480">Consenti a tutti i siti di impostare i dati locali</translation>
+<translation id="1727914891824633693">Consenti l'utilizzo di Lacros</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
 <translation id="1745973235372964482">Non consentire i file protetti da password</translation>
 <translation id="1749815929501097806">Consente di impostare i Termini di servizio che l'utente deve accettare per poter avviare una sessione con l'account locale del dispositivo.
@@ -2285,7 +2287,7 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
       Se questo criterio non viene impostato, Navigazione sicura sarà attiva in modalità di protezione standard, ma gli utenti potranno modificare questa impostazione.
 
       Visita il sito https://developers.google.com/safe-browsing per ulteriori informazioni sulla funzionalità Navigazione sicura.</translation>
-<translation id="4402887080007986374">La versione valida dei Termini di servizio di Edu Coexistence</translation>
+<translation id="4402887080007986374">La versione valida dei Termini di servizio dell'account della scuola</translation>
 <translation id="4408428864159735559">Elenco di condivisioni di file di rete preconfigurate.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>
 <translation id="441217499641439905">Disattiva Google Drive su reti cellulari nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2310,6 +2312,7 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
       La norma stessa è supportata sulle piattaforme precedenti, ma la funzione attivata dalla norma potrebbe essere disponibile su meno piattaforme. Non è possibile riattivare tutte le funzioni ritirate della piattaforma web, ma soltanto quelle elencate esplicitamente di seguito e soltanto per un periodo di tempo limitato, che è diverso per ogni funzione. Il formato generico del tag string sarà [NomeFunzioneRitirata]_EffectiveUntil[aaaammgg]. È possibile conoscere lo scopo delle modifiche alle funzioni della piattaforma web all'indirizzo https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Attiva il blocco quando lo stato del dispositivo diventa inattivo o sospeso</translation>
+<translation id="4447668084338250480">Comportamento di reindirizzamento Intranet</translation>
 <translation id="4449469846627734399">Consente di impostare la configurazione giornaliera della variazione dei picchi energetici</translation>
 <translation id="4449545651113180484">Ruota lo schermo in senso orario di 270°</translation>
 <translation id="445270821089253489">Consente di stabilire i tipi di informazioni su dispositivi e utenti da segnalare.</translation>
@@ -2700,6 +2703,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
 Se questa norma non viene impostata viene utilizzata la riga di comando predefinita.</translation>
 <translation id="5150323673529584553">Non analizzare i file</translation>
+<translation id="5152393033264257734">Consenti controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="5152787786897382519">Chromium e Google Chrome hanno alcuni gruppi di criteri che dipendono gli uni dagli altri per fornire il controllo di una funzionalità. Questi insiemi sono rappresentati dai seguenti gruppi di criteri. Dato che i criteri possono avere diverse origini, vengono applicati soltanto i valori provenienti dall'origine con la priorità massima. I valori dello stesso gruppo provenienti da un'origine con priorità inferiore vengono ignorati. L'ordine di priorità è definito in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Questo criterio è obsoleto. Usa il criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />".
 
@@ -2749,6 +2753,12 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
       * Off, o se il valore non viene configurato, la Modalità con restrizioni su YouTube non viene applicata da Chrome. I criteri esterni, come quelli di YouTube, potrebbero applicare comunque la Modalità con restrizioni.</translation>
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
 <translation id="5196520640744454600">Attiva i tasti permanenti nella schermata di accesso</translation>
+<translation id="5208675398826212411">Questo criterio consente di configurare il comportamento del reindirizzamento Intranet tramite controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.
+
+      Se questo criterio non viene impostato, il browser usa il comportamento predefinito dei controlli dell'intercettazione DNS e dei suggerimenti di reindirizzamento Intranet. In M88, queste funzionalità sono attive per impostazione predefinita, ma nella release futura saranno disattivate per impostazione predefinita.
+
+      <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> è un criterio correlato che potrebbe anche disattivare i controlli dell'intercettazione DNS; questo criterio è una versione più flessibile che potrebbe controllare separatamente le barre di informazioni di reindirizzamento Intranet e potrebbe essere ampliato in futuro.
+      Se <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> o questo criterio richiedono la disattivazione dei controlli dell'intercettazione, i controlli vengono disattivati.</translation>
 <translation id="5212118847531454979">Consente di stabilire per quanto tempo, in millisecondi, gli utenti riceveranno notifiche relative alla necessità di riavviare <ph name="PRODUCT_NAME" /> o un dispositivo <ph name="PRODUCT_OS_NAME" /> per applicare un aggiornamento in sospeso.
 
       Durante questo periodo di tempo l'utente verrà informato più volte della necessità di un aggiornamento. Per quanto riguarda i dispositivi <ph name="PRODUCT_OS_NAME" />, nella barra delle applicazioni viene mostrata una notifica relativa al riavvio in base al criterio <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Per quanto riguarda i browser <ph name="PRODUCT_NAME" />, il menu delle app cambia per indicare che è necessario il riavvio una volta trascorso un terzo del periodo di notifica. Questa notifica cambia colore una volta trascorsi due terzi del periodo di notifica e lo cambia di nuovo al termine dell'intero periodo di notifica. Le notifiche aggiuntive attivate in base al criterio <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> seguono questa stessa pianificazione.
@@ -3345,6 +3355,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="6011969832398368671">Consenti ai siti di richiedere all'utente l'accesso di scrittura di file e directory</translation>
+<translation id="6012952794649558174">Usa comportamento predefinito del browser</translation>
 <translation id="6015281292796053435">Questo criterio consente di stabilire se segnalare o meno le informazioni di Navigazione sicura, inclusi il numero dell'avviso di Navigazione sicura e il numero del relativo click-through.
 
       Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, viene ignorato.
@@ -3819,6 +3830,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6672630473862787247">Attiva l'autenticazione ambientale nelle sessioni standard, Ospite e in modalità in incognito.</translation>
 <translation id="6685903773201985073">Attiva l'autenticazione ambientale nelle sessioni standard e Ospite.</translation>
 <translation id="6689792153960219308">Segnala lo stato dell'hardware</translation>
+<translation id="6690425645391461516">Disattiva controlli dell'intercettazione DNS; consenti barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="6698632841807204978">Attiva la stampa monocromatica</translation>
 <translation id="6699880231565102694">Abilita autenticazione a due fattori per gli host di accesso remoto</translation>
 <translation id="6703251016607733593">La configurazione del criterio consente di disattivare l'applicazione dei requisiti di divulgazione di Certificate Transparency per un elenco di hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Gli host aziendali possono continuare a utilizzare i certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato. Per disattivare l'applicazione, l'hash deve rispettare una delle seguenti condizioni:
@@ -5458,11 +5470,11 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="8942616385591203339">Questa norma consente di controllare se il consenso alla sincronizzazione può essere mostrato all'utente durante il primo accesso. Dovrebbe essere impostata su false se tale consenso non è mai necessario per l'utente.
       Se impostata su false, il consenso alla sincronizzazione non verrà visualizzato.
       Se impostata su true o non viene impostata, il consenso alla sincronizzazione può essere visualizzato.</translation>
-<translation id="8943744188513019866">Questo criterio indica la versione corrente valida dei Termini di servizio di Edu Coexistence,
+<translation id="8943744188513019866">Questo criterio indica la versione corrente valida dei Termini di servizio dell'account della scuola,
       che viene confrontata con l'ultima versione accettata dal genitore e utilizzata per suggerire al genitore stesso il rinnovo dell'autorizzazione quando necessario.
 
       Se questo criterio viene configurato, la versione dei Termini di servizio può essere convalidata.
-      Se non viene configurato, non è possibile verificare la validità dei Termini di servizio di Edu Coexistence.
+      Se non viene configurato, non è possibile verificare la validità dei Termini di servizio dell'account della scuola.
 
       Questo criterio viene utilizzato unicamente per gli utenti di Family Link.</translation>
 <translation id="8943934315109955032">Non verificare eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>
@@ -5484,6 +5496,13 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="8976248126101463034">Consenti l'autenticazione Gnubby per gli host di accesso remoto</translation>
 <translation id="8976531594979650914">Usa stampante di sistema come predefinita</translation>
 <translation id="8977192934280677167">Consenti l'accesso al provider di ricerca predefinito dal menu contestuale di ricerca</translation>
+<translation id="8990697325184394573">Questa impostazione consente agli utenti di usare il browser Lacros.
+
+      Se questo criterio viene impostato su falso, l'utente non può usare Lacros.
+
+      Se questo criterio viene impostato su vero, l'utente può usare il browser Lacros.
+
+      Se questo criterio non viene impostato, l'utente non può usare il browser Lacros.</translation>
 <translation id="8992176907758534924">Non consentire la visualizzazione di immagini nei siti</translation>
 <translation id="9007632512838819703">Questo criterio è deprecato. Usa il criterio <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 

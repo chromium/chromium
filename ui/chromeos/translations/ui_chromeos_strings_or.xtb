@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">ସୀକ୍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="1399648040768741453">ତେଲୁଗୁ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
-<translation id="1433600251059882049">ଏହି ଫୋଲ୍ଡରକୁ Linux ଏବଂ Windows ସହ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />କୁ ନିଆଗଲା।</translation>
 <translation id="1441841714100794440">ଭିଏତ୍‌ନାମିସ୍ କୀ'ବୋର୍ଡ (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଖୋଲୁଛି...</translation>
 <translation id="1547964879613821194">କାନାଡିଆନ୍ ଇଂରାଜୀ</translation>
 <translation id="1556189134700913550">ସମସ୍ତ ପାଇଁ ଲାଗୁ ହେବ</translation>
+<translation id="1561842594491319104">Chrome ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="158809615184981282">ଫାରୋଇଜ୍‍ କୀବୋର୍ଡ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">ଆକ୍ଷରିକ ଅନୁବାଦକରଣ (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="3083975830683400843">Chromebits</translation>
 <translation id="3116361045094675131">UK କୀବୋର୍ଡ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ହୋଇଗଲା</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">ହଂଗୁଲ୍ 2 ସେଟ୍</translation>
 <translation id="4477219268485577442">ବୁଲ୍‍‍ଗେରିଆନ୍ ଫୋନେଟିକ୍</translation>
 <translation id="4479812471636796472">US ଡଭୋର୍କ୍ କୀବୋର୍ଡ୍</translation>
-<translation id="4481711095103932593">ଏହି ଫୋଲ୍ଡରକୁ Windows ସହ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
-<translation id="4542387084127299777">"<ph name="PATH" />" ଖୋଲିବାକୁ ଅସମର୍ଥ</translation>
 <translation id="4552678318981539154">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ</translation>
 <translation id="4559767610552730302">ବୋକେ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">ଆଭୋକାଡୋ</translation>
 <translation id="4823651846660089135">ଡିଭାଇସ୍‌ କେବଳ ପଢ଼ିବା ପାଇଁ ଅଟେ</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" />ଟି ଆଇଟମ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">ଜର୍ମାନ (ବେଲଜିୟମ୍)</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="485316830061041779">ଜର୍ମାନ୍</translation>
@@ -467,6 +467,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">ଆପଣଙ୍କର Google Driveରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସଂଶୋଧନ କରିବାକୁ Linux ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସେଭ୍‍ ହେବ।</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
+<translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="6005282720244019462">ଲାଟିନ୍ ଆମେରିକନ୍ କୀବୋର୍ଡ</translation>
 <translation id="6007237601604674381">ଘୁଞ୍ଚାଇବା ବିଫଳ ହେଲା। <ph name="ERROR_MESSAGE" /></translation>
@@ -626,6 +627,7 @@
     <ph name="MARKUP_4" />ଆପଣଙ୍କ ଡାଉନ୍‍‍ଲୋଡ୍ ଫୋଲ୍ଡର୍‍ରୁ ଫାଇଲ୍‍ଗୁଡ଼ିକ ଡିଲିଟ୍ କରନ୍ତୁ<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ଡିଭାଇସ୍ ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
 <translation id="7799329977874311193">HTML ଡକ୍ୟୁମେଣ୍ଟ</translation>
+<translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" />ଟି ମିଳିଛି।
     <ph name="LINE_BREAK1" />

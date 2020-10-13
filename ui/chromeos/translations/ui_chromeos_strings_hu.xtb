@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Keresőcsúszka</translation>
 <translation id="1399648040768741453">Telugu billentyűzet (fonetikus)</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
-<translation id="1433600251059882049">Ez a mappa meg van osztva a Linux és a Windows rendszerrel</translation>
 <translation id="1435838927755162558">Mappa megosztása a Parallels Desktoppal</translation>
 <translation id="1439494416798956626">Áthelyezve ide: <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Vietnami billentyűzet (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Linux-fájlok megnyitása…</translation>
 <translation id="1547964879613821194">kanadai angol</translation>
 <translation id="1556189134700913550">Alkalmazás az összesre</translation>
+<translation id="1561842594491319104">Chrome-eszközök</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
 <translation id="158809615184981282">Feröer-szigeteki billentyűzet</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Átírás (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows-fájlok</translation>
 <translation id="3078461028045006476">Megosztás a következővel: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebitek</translation>
 <translation id="3116361045094675131">Brit billentyűzet</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">KÉSZ</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Hangul 2 készlet</translation>
 <translation id="4477219268485577442">bolgár fonetikus</translation>
 <translation id="4479812471636796472">Amerikai Dvorak billentyűzet</translation>
-<translation id="4481711095103932593">Ez a mappa meg van osztva a Windows rendszerrel</translation>
 <translation id="4522570452068850558">Részletek</translation>
-<translation id="4542387084127299777">A(z) „<ph name="PATH" />” megnyitása nem sikerült</translation>
 <translation id="4552678318981539154">További tárhely vásárlása</translation>
 <translation id="4559767610552730302">Elmosódott</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fájl</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Avokádó</translation>
 <translation id="4823651846660089135">Az eszköz csak olvasható</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elem kiválasztva</translation>
+<translation id="4843566743023903107">Chromebase-ek</translation>
 <translation id="4849981557599196363">német (Belgium)</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="485316830061041779">német</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">A Linux-alkalmazások engedélyt kapnak arra, hogy módosítsák az Ön fájljait a Google Drive-fiókjában. A változtatások szinkronizálása a többi eszközön is megtörténik.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elem</translation>
+<translation id="5957366693331451795">Chromeboxok</translation>
 <translation id="5982621672636444458">Rendezési beállítások</translation>
 <translation id="6005282720244019462">Latin-amerikai billentyűzet</translation>
 <translation id="6007237601604674381">Az áthelyezés sikertelen. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
         <ph name="MARKUP_4" />töröljön fájlokat a Letöltések mappából<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Eszköz formázása</translation>
 <translation id="7799329977874311193">HTML-dokumentum</translation>
+<translation id="7801354353640549019">Chromebookok</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7821462174190887129">A következőket találtuk: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

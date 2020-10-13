@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">クレジット</translation>
 <translation id="1342835525016946179">記事</translation>
 <translation id="1359897965706325498">バナー</translation>
+<translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="1480676835519562650">複数の選択が可能です。<ph name="COUNT" /> 件中 <ph name="SELECTED" /> 件が選択されています。</translation>
 <translation id="1589122976691792535">地域</translation>
 <translation id="1591562245178063882">今月</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
 <translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">チェックボックス</translation>
+<translation id="2307576640803031502">リスト内の <ph name="COUNT" /> 件中 <ph name="INDEX" /> 件目のアイテム</translation>
 <translation id="2311842470354187719">改ページ</translation>
 <translation id="2335594187091864976">日時選択ツール</translation>
 <translation id="2393030564806080191">16 進数色コード</translation>

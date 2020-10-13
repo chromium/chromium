@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
 <translation id="1436784010935106834">Kendu egin da</translation>
+<translation id="1437986450143295708">Azaldu arazoa xehetasun osoz</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> hautatu dira</translation>
 <translation id="1442851588227551435">Ezarri Kerberos-eko zerbitzu-eskaera aktibo bat</translation>
 <translation id="1444628761356461360">Ezarpen hau gailuaren jabeak (<ph name="OWNER_EMAIL" />) kudeatzen du.</translation>
@@ -2819,6 +2820,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4301671483919369635">Orri honek fitxategiak editatzeko baimena du</translation>
 <translation id="4303079906735388947">Konfiguratu beste PIN bat segurtasun-giltzarako</translation>
 <translation id="4305402730127028764">Kopiatu <ph name="DEVICE_NAME" /> gailuan</translation>
+<translation id="4305817255990598646">Aldatu</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" eduki motarekin hornitu behar dira aplikazioak</translation>
 <translation id="4307992518367153382">Oinarrizko informazioa</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (zuzeneko <ph name="NUM_KILOBYTES_LIVE" /> K)</translation>
@@ -5889,7 +5891,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7984068253310542383">Islatu <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Touch ID erabili nahi duzu <ph name="APP_NAME" /> aplikazioarekin ezkutuko moduan zaudenean?</translation>
-<translation id="79859296434321399">Errealitate areagotuko edukia ikusteko, instalatu ARCore</translation>
 <translation id="7986295104073916105">Irakurri eta aldatu gordetako pasahitzen ezarpenak</translation>
 <translation id="7987814697832569482">Konektatu beti VPN honen bidez</translation>
 <translation id="7988355189918024273">Gaitu erabilerraztasun-eginbideak</translation>
@@ -6360,7 +6361,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8557022314818157177">Jarraitu segurtasun-giltza sakatzen, hatz-marka hauteman arte</translation>
 <translation id="855773602626431402">Proben eremuan sartu gabeko plugin bat orri honetan abiaraztea eragotzi da.</translation>
 <translation id="8557930019681227453">Manifestua</translation>
-<translation id="8558485628462305855">Errealitate areagotuko edukia ikusteko, eguneratu ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak ({COUNT}) &amp;beste leiho batean}}</translation>
 <translation id="8561206103590473338">Elefantea</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6405,7 +6405,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Gurasoek ez dute onartu eskaera oraindik</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
-<translation id="8620765578342452535">Konfiguratu sareko konexioak</translation>
 <translation id="8621866727807194849">Software kaltegarria duzu ordenagailuan. Hura kentzen, ezarpenak leheneratzen eta luzapenak desgaitzen ari da Chrome. Horrela, arakatzailea ohiko moduan ibiliko da berriro.</translation>
 <translation id="8621979332865976405">Partekatu pantaila osoa</translation>
 <translation id="862542460444371744">&amp;Luzapenak</translation>

@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">tiitrid</translation>
 <translation id="1342835525016946179">artikkel</translation>
 <translation id="1359897965706325498">bänner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> üksust</translation>
 <translation id="1480676835519562650">mitme valikuga, valitud on <ph name="SELECTED" /> <ph name="COUNT" />-st.</translation>
 <translation id="1589122976691792535">piirkond</translation>
 <translation id="1591562245178063882">See kuu</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">hoiatusdialoog</translation>
 <translation id="1821985195704844674">puuruudustik</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">lehe jalus</translation>
 <translation id="1832974991323546415">kaugseadmes esitamine</translation>
 <translation id="190587075670221089">kustutamine</translation>
 <translation id="1907737156431278478">näide</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Nädal <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. lugu</translation>
 <translation id="2291999235780842123">märkeruut</translation>
+<translation id="2307576640803031502">loendis, üksus <ph name="INDEX" />/<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">leheküljepiir</translation>
 <translation id="2335594187091864976">kuupäeva ja kellaaja valija</translation>
 <translation id="2393030564806080191">Värvi väärtus kuueteistkümnendsüsteemis</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
 <translation id="421884353938374759">värvivalija</translation>
 <translation id="4248100235867064564">menüüriba</translation>
+<translation id="4293574643247337246">lehe päis</translation>
 <translation id="4360991593054037559">Sisestage kehtiv väärtus. Kaks lähimat kehtivat väärtust on <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Küsimused ja vastused</translation>
 <translation id="4444765639179266822">Näib ütlevat: <ph name="OCR_TEXT" /></translation>

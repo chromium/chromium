@@ -2815,6 +2815,7 @@
 <translation id="4301671483919369635">यस पृष्ठलाई फाइलहरू सम्पादन गर्ने अनुमति छ</translation>
 <translation id="4303079906735388947">आफ्नो सुरक्षा साँचो प्रयोग गर्नका लागि नयाँ PIN सेटअप गर्नुहोस्</translation>
 <translation id="4305402730127028764">प्रतिलिपि गरेर <ph name="DEVICE_NAME" /> मा टाँस्नुहोस्</translation>
+<translation id="4305817255990598646">स्विच</translation>
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K प्रत्यक्ष)</translation>
@@ -5884,7 +5885,6 @@
 <translation id="7982789257301363584">सञ्जाल</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> प्रतिविम्ब</translation>
 <translation id="7985283639530788531">तपाईं <ph name="APP_NAME" /> मार्फत इन्कोग्निटो मोडमा Touch ID प्रयोग गर्न चाहनुहुन्छ?</translation>
-<translation id="79859296434321399">अग्मेन्टेड रियालिटी सामग्री हेर्न ARCore स्थापना गर्नुहोस्</translation>
 <translation id="7986295104073916105">पढ्नुहोस् र सुरक्षित पासवर्ड सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="7987814697832569482">सधैँ यो VPN मार्फत जडान गर्नुहोस्</translation>
 <translation id="7988355189918024273">पहुँच सम्बन्धी सुविधाहरूलाई सक्षम पार्नुहोस्</translation>
@@ -6355,7 +6355,6 @@
 <translation id="8557022314818157177">तपाईंको फिंगरप्रिन्ट नथपिँदासम्म आफ्नो सुरक्षा साँचोमा छोइरहनुहोस्</translation>
 <translation id="855773602626431402">एउटा स्यान्डबाक्स हटाइएको प्लगइनलाई यस पृष्ठमा सञ्चालन हुनबाट रोकियो।</translation>
 <translation id="8557930019681227453">म्यानिफेस्ट</translation>
-<translation id="8558485628462305855">अग्मेन्टेड रियालिटी सामग्री हेर्न ARCore अपडेट गर्नुहोस्</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सबै URL &amp;नयाँ विन्डोमा खोल्नुहोस्}=1{&amp;नयाँ विन्डोमा खोल्नुहोस्}other{सबै URL ({COUNT}) &amp;नयाँ विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="8561206103590473338">हात्ती</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6400,7 +6399,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" /> : <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">तपाईंका अभिभावहरूले अझै पनि यसलाई अनुमोदन गर्नुभएको छैन</translation>
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
-<translation id="8620765578342452535">सञ्जाल जडानहरू कन्फिगर गर्नुहोस्</translation>
 <translation id="8621866727807194849">तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर छ। Chrome ले उक्त हानिकारक सफ्टवेयरलाई हटाउँदै छ, तपाईंका सेटिङहरूलाई पुनर्स्थापना गर्दै छ र विस्तारहरू असक्षम पार्दै छ। यसो गरेपछि तपाईंको ब्राउजरले फेरि सामान्य रूपमा काम गर्न सक्ने छ।</translation>
 <translation id="8621979332865976405">आफ्नो पूरै स्क्रिन सेयर गर्नुहोस्</translation>
 <translation id="862542460444371744">&amp;विस्तारहरू</translation>

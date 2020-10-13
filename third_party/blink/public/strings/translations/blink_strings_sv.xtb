@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">medverkande</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> objekt</translation>
 <translation id="1480676835519562650">kan välja flera, <ph name="SELECTED" /> av <ph name="COUNT" /> har valts.</translation>
 <translation id="1589122976691792535">område</translation>
 <translation id="1591562245178063882">Den här månaden</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">varningsdialogruta</translation>
 <translation id="1821985195704844674">träddiagram</translation>
 <translation id="1822429046913737220">FM/EM</translation>
+<translation id="1823704031293214298">sidfot</translation>
 <translation id="1832974991323546415">spela på en fjärrenhet</translation>
 <translation id="190587075670221089">borttagning</translation>
 <translation id="1907737156431278478">exempel</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Vecka <ph name="WEEKNUMBER" /> <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spår <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">kryssruta</translation>
+<translation id="2307576640803031502">i listan, objekt <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sidbrytning</translation>
 <translation id="2335594187091864976">datum- och tidsväljare</translation>
 <translation id="2393030564806080191">Hexadecimalt färgvärde</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Visa föregående månad</translation>
 <translation id="421884353938374759">färgval</translation>
 <translation id="4248100235867064564">menyfält</translation>
+<translation id="4293574643247337246">sidhuvud</translation>
 <translation id="4360991593054037559">Ange ett giltigt värde. De två närmaste giltiga värdena är <ph name="VALID_VALUE_LOW" /> och <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Frågor och svar</translation>
 <translation id="4444765639179266822">Säger troligen: <ph name="OCR_TEXT" /></translation>

@@ -2819,6 +2819,7 @@
 <translation id="4301671483919369635">Гэта старонка мае дазвол на змяненне файлаў</translation>
 <translation id="4303079906735388947">Наладзьце новы PIN-код для ключа бяспекі</translation>
 <translation id="4305402730127028764">Скапіраваць на прыладу "<ph name="DEVICE_NAME" />"</translation>
+<translation id="4305817255990598646">Пераключыцца</translation>
 <translation id="4306119971288449206">Праграмы павінны ўключаць наступны тып змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="4307992518367153382">Асноўнае</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ актыўна)</translation>
@@ -5888,7 +5889,6 @@
 <translation id="7982789257301363584">Сетка</translation>
 <translation id="7984068253310542383">Адлюстраваць <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Выкарыстоўваць у рэжыме інкогніта Touch ID у праграме <ph name="APP_NAME" />?</translation>
-<translation id="79859296434321399">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, усталюйце ARCore</translation>
 <translation id="7986295104073916105">Прачытайце і змяніце захаваныя налады пароля</translation>
 <translation id="7987814697832569482">Заўсёды падключацца праз гэты VPN</translation>
 <translation id="7988355189918024273">Уключыць спецыяльныя магчымасці</translation>
@@ -6359,7 +6359,6 @@
 <translation id="8557022314818157177">Каб дадаць адбітак пальца, націскайце на ключ бяспекі</translation>
 <translation id="855773602626431402">Прадухілены запуск не змешчанай у пясочніцу ўбудовы на гэтай старонцы.</translation>
 <translation id="8557930019681227453">Маніфест</translation>
-<translation id="8558485628462305855">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, абнавіце ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6404,7 +6403,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Вашы бацькі пакуль што не ўхвалілі гэта</translation>
 <translation id="8620617069779373398">Стан роўмінгу</translation>
-<translation id="8620765578342452535">Наладка падключэнняў да сеткі</translation>
 <translation id="8621866727807194849">На камп'ютары знойдзена шкоднае ПЗ. Chrome выдаліць яго, адновіць налады і выключыць пашырэнні. Гэта дапаможа браўзеру зноў нармальна працаваць.</translation>
 <translation id="8621979332865976405">Абагульце ўвесь экран</translation>
 <translation id="862542460444371744">&amp;Пашырэнні</translation>

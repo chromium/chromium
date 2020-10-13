@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">подяки</translation>
 <translation id="1342835525016946179">стаття</translation>
 <translation id="1359897965706325498">банер</translation>
+<translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">можна вибрати кілька параметрів, вибрано <ph name="SELECTED" /> з <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">регіон</translation>
 <translation id="1591562245178063882">Цей місяць</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Тиждень <ph name="WEEKNUMBER" />, <ph name="YEAR" /> р.</translation>
 <translation id="2277199496770840904">Композиція <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">прапорець</translation>
+<translation id="2307576640803031502">у списку, пункт <ph name="INDEX" /> з <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">розрив сторінки</translation>
 <translation id="2335594187091864976">засіб вибору дати й часу</translation>
 <translation id="2393030564806080191">Шістнадцяткове значення кольору</translation>

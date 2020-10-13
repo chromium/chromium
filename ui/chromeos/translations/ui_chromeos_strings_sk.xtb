@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Posúvač hľadania</translation>
 <translation id="1399648040768741453">Telugská klávesnica (fonetický prepis)</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
-<translation id="1433600251059882049">Tento priečinok je zdieľaný systémami Linux a Windows</translation>
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
 <translation id="1439494416798956626">Presunuté do priečinka: <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Vietnamská klávesnica (Telex)</translation>
@@ -309,9 +308,7 @@
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">Bulharská fonetická klávesnica</translation>
 <translation id="4479812471636796472">americká klávesnica s rozložením klávesov Dvorak</translation>
-<translation id="4481711095103932593">Tento priečinok je zdieľaný systémom Windows</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
-<translation id="4542387084127299777">Cestu <ph name="PATH" /> sa nepodarilo otvoriť</translation>
 <translation id="4552678318981539154">Kúpiť väčší ukladací priestor</translation>
 <translation id="4559767610552730302">Rozostrenie</translation>
 <translation id="4572815280350369984">Súbor <ph name="FILE_TYPE" /></translation>

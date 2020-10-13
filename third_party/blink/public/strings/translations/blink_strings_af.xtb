@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">erkennings</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1359897965706325498">banier</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1480676835519562650">kan meer as een kies; <ph name="SELECTED" /> van <ph name="COUNT" /> is gekies.</translation>
 <translation id="1589122976691792535">streek</translation>
 <translation id="1591562245178063882">Vandeesmaand</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">waarskuwing_dialoog</translation>
 <translation id="1821985195704844674">boomrooster</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">bladsyvoetreël</translation>
 <translation id="1832974991323546415">speel op afgeleë toestel</translation>
 <translation id="190587075670221089">uitvee</translation>
 <translation id="1907737156431278478">voorbeeld</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Snit <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">merkblokkie</translation>
+<translation id="2307576640803031502">in lys, item <ph name="INDEX" /> van <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">bladsybreuk</translation>
 <translation id="2335594187091864976">datum- en tydkieser</translation>
 <translation id="2393030564806080191">Heksadesimale kleurwaarde</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Wys vorige maand</translation>
 <translation id="421884353938374759">kleurkieser</translation>
 <translation id="4248100235867064564">kieslysbalk</translation>
+<translation id="4293574643247337246">bladsykopreël</translation>
 <translation id="4360991593054037559">Voer asseblief 'n geldige waarde in. Die twee naaste geldige waardes is <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">V&amp;A</translation>
 <translation id="4444765639179266822">Lyk of dit sê: <ph name="OCR_TEXT" /></translation>

@@ -390,6 +390,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" />ৰ বাবে মান্য</translation>
 <translation id="1436671784520050284">ছেট আপ অব্যাহত ৰাখক</translation>
 <translation id="1436784010935106834">আঁতৰোৱা হ’ল</translation>
+<translation id="1437986450143295708">সমস্যাটোৰ সবিশেষ বৰ্ণনা কৰক</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> বাছনি কৰা হ’ল</translation>
 <translation id="1442851588227551435">সক্ৰিয় Kerberosৰ টিকেট ছেট কৰক</translation>
 <translation id="1444628761356461360">ডিভাইচৰ গৰাকী <ph name="OWNER_EMAIL" />এ এই ছেটিংটো পৰিচালনা কৰে।</translation>
@@ -2813,6 +2814,7 @@
 <translation id="4301671483919369635">ফাইলসমূহ সম্পাদনা কৰিবলৈ এই পৃষ্ঠাটোক অনুমতি দিয়া হৈছে</translation>
 <translation id="4303079906735388947">আপোনাৰ সুৰক্ষা চাবিৰ বাবে এটা নতুন পিন ছেট কৰক</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />লৈ প্ৰতিলিপি কৰক</translation>
+<translation id="4305817255990598646">সলনি কৰক</translation>
 <translation id="4306119971288449206">এপ্ "<ph name="CONTENT_TYPE" />" প্ৰকাৰৰ সমলৰ সৈতে দিবই লাগিব</translation>
 <translation id="4307992518367153382">মৌলিক</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />কে (<ph name="NUM_KILOBYTES_LIVE" />কে লাইভ)</translation>
@@ -5873,7 +5875,6 @@
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> প্ৰতিবিম্বিত কৰক</translation>
 <translation id="7985283639530788531">আপুনি ইনক'গনিট' ম'ডত <ph name="APP_NAME" />ৰ সৈতে স্পৰ্শ আইডিটো ব্যৱহাৰ কৰিবলৈ বিচাৰেনে?</translation>
-<translation id="79859296434321399">পৰিৱৰ্ধিত বাস্তৱিকতাৰ সমল চাবলৈ ARCore ইনষ্টল কৰক</translation>
 <translation id="7986295104073916105">ছেভ কৰি থোৱা পাছৱৰ্ডৰ ছেটিংসমূহ পঢ়ি সলনি কৰক</translation>
 <translation id="7987814697832569482">সদায় এই VPNৰ জৰিয়তে সংযোগ কৰিব</translation>
 <translation id="7988355189918024273">সাধ্য সুবিধাবোৰ সক্ষম কৰক</translation>
@@ -6343,7 +6344,6 @@
 <translation id="8557022314818157177">আপোনাৰ ফিংগাৰপ্ৰিণ্টটো কেপশ্বাৰ নকৰা পর্যন্ত আপোনাৰ সুৰক্ষা চাবিটো স্পৰ্শ কৰি থাকক</translation>
 <translation id="855773602626431402">এটা ছেণ্ডবক্স নকৰা প্লাগইন এই পৃষ্ঠাটোত চলাত বাধা দিয়া হৈছে।</translation>
 <translation id="8557930019681227453">মেনিফেষ্ট</translation>
-<translation id="8558485628462305855">পৰিৱৰ্ধিত বাস্তৱিকতাৰ সমল চাবলৈ ARCore আপডে’ট কৰক</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সকলো &amp;নতুন ৱিণ্ড’ত খোলক}=1{&amp;নতুন ৱিণ্ড’ত খোলক}one{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}other{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}}</translation>
 <translation id="8561206103590473338">হাতী</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6388,7 +6388,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">আপোনাৰ অভিভাৱকে এই পর্যন্ত এইটো অনুমোদন জনোৱা নাই</translation>
 <translation id="8620617069779373398">ৰ’মিঙৰ স্থিতি</translation>
-<translation id="8620765578342452535">নেটৱর্ক সংযোগসমূহ কনফিগাৰ কৰক</translation>
 <translation id="8621866727807194849">আপোনাৰ কম্পিউটাৰত ক্ষতিকাৰক ছফ্টৱেৰ আছে। Chromeএ এয়া আঁতৰাই আছে, আপোনাৰ ছেটিংসমূহ পুনৰুদ্ধাৰ কৰি আছে আৰু এক্সটেনশ্বনসমূহ অক্ষম কৰি আছে। এই কার্যৰ ফলত আপোনাৰ ব্ৰাউজাৰে পুনৰ স্বাভাৱিকভাৱে কাম কৰিব।</translation>
 <translation id="8621979332865976405">আপোনাৰ সম্পূর্ণ স্ক্ৰীণ শ্বেয়াৰ কৰক</translation>
 <translation id="862542460444371744">&amp;এক্সটেনশ্বন</translation>

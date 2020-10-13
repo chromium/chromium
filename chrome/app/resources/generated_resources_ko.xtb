@@ -2817,6 +2817,7 @@
 <translation id="4301671483919369635">이 페이지에서 파일을 수정할 수 있습니다.</translation>
 <translation id="4303079906735388947">보안 키의 새로운 PIN을 설정하세요.</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />(으)로 복사</translation>
+<translation id="4305817255990598646">전환</translation>
 <translation id="4306119971288449206">앱은 '<ph name="CONTENT_TYPE" />' 콘텐츠 유형으로 제공되어야 합니다</translation>
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K(<ph name="NUM_KILOBYTES_LIVE" />K 활성)</translation>
@@ -5887,7 +5888,6 @@
 <translation id="7982789257301363584">네트워크</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> 미러링</translation>
 <translation id="7985283639530788531">시크릿 모드에서 <ph name="APP_NAME" />에 Touch ID를 사용하시겠습니까?</translation>
-<translation id="79859296434321399">증강 현실 콘텐츠를 보려면 ARCore를 설치하세요.</translation>
 <translation id="7986295104073916105">저장된 비밀번호 설정 읽기 및 변경</translation>
 <translation id="7987814697832569482">항상 이 VPN을 통해 연결</translation>
 <translation id="7988355189918024273">접근성 기능 사용</translation>
@@ -6359,7 +6359,6 @@
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
 <translation id="855773602626431402">이 페이지에서 샌드박스 처리되지 않은 플러그인 실행을 차단하였습니다.</translation>
 <translation id="8557930019681227453">매니페스트</translation>
-<translation id="8558485628462305855">증강 현실 콘텐츠를 보려면 ARCore를 업데이트하세요.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
 <translation id="8561206103590473338">코끼리</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6404,7 +6403,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">부모님이 아직 승인하지 않았습니다.</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
-<translation id="8620765578342452535">네트워크 연결 구성</translation>
 <translation id="8621866727807194849">컴퓨터에 유해한 소프트웨어가 있습니다. Chrome이 유해한 소프트웨어를 삭제하고, 설정을 복원하고, 확장 프로그램을 사용 중지하는 중입니다. 이 작업이 끝나면 브라우저가 다시 정상적으로 작동합니다.</translation>
 <translation id="8621979332865976405">전체 화면 공유</translation>
 <translation id="862542460444371744">확장 프로그램(&amp;E)</translation>

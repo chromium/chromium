@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">کارڈز محفوظ کیے جا رہے ہیں...</translation>
 <translation id="10614374240317010">کبھی بھی محفوظ نہیں کیا ہوا</translation>
 <translation id="1062160989074299343">Prc10 ‎(Envelope‎)‎</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> کیش بیک</translation>
 <translation id="106701514854093668">ڈیسک ٹاپ بُک مارکس</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> کے صفحات کا کبھی ترجمہ نہ کریں</translation>
 <translation id="1070901266639972381">رات</translation>
@@ -499,6 +500,7 @@
 <translation id="2955913368246107853">تلاش بار بند کریں</translation>
 <translation id="2969319727213777354">‏ایک محفوظ کنکشن تشکیل دینے کیلئے، آپ کی گھڑی کو صحیح سے سیٹ کرنے کی ضرورت ہے۔ اس کی وجہ یہ ہے کہ ویب سائٹس خود کی شناخت کرنے کیلئے جو سرٹیفکیٹس استعمال کرتی ہیں وہ صرف مخصوص وقت کیلئے درست ہوتے ہیں۔ چونکہ آپ کے آلے کی گھڑی غلط ہے لہذا Chrome ان سرٹیفکیٹس کی توثیق نہیں کر سکتا ہے۔</translation>
 <translation id="2972581237482394796">&amp;واپس لائیں</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> کی چھوٹ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، فی الحال منتخب کردہ۔ <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chromium آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="2985398929374701810">ایک درست پتہ درج کریں</translation>
@@ -705,6 +707,7 @@
 <translation id="3784372983762739446">بلوٹوتھ آلات</translation>
 <translation id="3787705759683870569"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /> کو میعاد ختم ہو رہی ہے</translation>
 <translation id="3789155188480882154">سائز 16</translation>
+<translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3793574014653384240">حال ہی میں ہونے والے کریشز کی تعداد اور اسباب</translation>
 <translation id="3797522431967816232">Prc3 ‎(Envelope‎)‎</translation>
 <translation id="3799805948399000906">فونٹ کی درخواست کی گئی</translation>
@@ -1743,6 +1746,7 @@
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">‏افزودہ حقیقت کا مواد دیکھنے کیلئے، ARCore کو انسٹال کریں</translation>
 <translation id="799149739215780103">باندھیں</translation>
 <translation id="7995512525968007366">متعین نہیں ہے</translation>
 <translation id="800218591365569300">میموری خالی کرنے کیلئے دیگر ٹیبز یا پروگرامز کو بند کرنے کی کوشش کریں۔</translation>
@@ -1876,6 +1880,7 @@
 <translation id="8542014550340843547">نیچے تین سٹیپل</translation>
 <translation id="8543181531796978784">آپ <ph name="BEGIN_ERROR_LINK" />پتا لگانے کے مسئلہ کی اطلاع<ph name="END_ERROR_LINK" /> دے سکتے ہیں یا اگر آپ اپنی سیکیورٹی کے خطروں کو سمجھتے ہيں تو آپ <ph name="BEGIN_LINK" />یہ غیر محفوظ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="8557066899867184262">‏CVC آپ کے کارڈ کے پیچھے ہے۔</translation>
+<translation id="8558485628462305855">‏افزودہ حقیقت کا مواد دیکھنے کیلئے، ARCore کو اپ ڈیٹ کریں</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> سے ایک نجی کنکشن تشکیل نہیں دیا جا سکتا ہے کیونکہ آپ کے آلے کی تاریخ اور وقت (<ph name="DATE_AND_TIME" />) غلط ہیں۔</translation>
 <translation id="8564182942834072828">علیحدہ دستاویزات/بغیر ملائی ہوئی کاپیاں</translation>
 <translation id="8564985650692024650">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chromium آپ کو اپنا <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
@@ -1897,6 +1902,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="868922510921656628">صفحات فی سیٹ</translation>
+<translation id="8697373104056314601">‏Chrome کی اعلی ترین سیکیورٹی حاصل کرنے کے لئے، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />بہتر کردہ حفاظت<ph name="END_ENHANCED_PROTECTION_LINK" /> کو آن کریں۔</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699041776323235191">‏HID آلہ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> سے آپ کا کنکشن مرموز نہیں کیا گیا ہے۔</translation>

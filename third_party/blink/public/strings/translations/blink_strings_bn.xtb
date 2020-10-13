@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">ক্রেডিট</translation>
 <translation id="1342835525016946179">নিবন্ধ</translation>
 <translation id="1359897965706325498">ব্যানার</translation>
+<translation id="145015347812617860"><ph name="COUNT" />টি আইটেম</translation>
 <translation id="1480676835519562650">অনেক বিকল্প বেছে নেওয়ার সুবিধা, <ph name="COUNT" />টির মধ্যে <ph name="SELECTED" />টি বেছে নেওয়া হয়েছে।</translation>
 <translation id="1589122976691792535">অঞ্চল</translation>
 <translation id="1591562245178063882">এই মাস</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> সপ্তাহ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্র্যাক <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">চেকবাক্স</translation>
+<translation id="2307576640803031502">তালিকাতে, <ph name="COUNT" />টির মধ্যে <ph name="INDEX" /> নম্বর আইটেম</translation>
 <translation id="2311842470354187719">পৃষ্ঠা বিরতি</translation>
 <translation id="2335594187091864976">তারিখ এবং সময় চয়নকারি</translation>
 <translation id="2393030564806080191">রঙের হেক্সাডেসিমেল মান</translation>

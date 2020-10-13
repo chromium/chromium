@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">ክሬዲቶች</translation>
 <translation id="1342835525016946179">ጽሑፍ</translation>
 <translation id="1359897965706325498">ሰንደቅ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> ንጥሎች</translation>
 <translation id="1480676835519562650">በብዛት ሊመረጥ የሚችል፣ <ph name="SELECTED" /> ከ<ph name="COUNT" /> ተመርጠዋል።</translation>
 <translation id="1589122976691792535">ክልል</translation>
 <translation id="1591562245178063882">በዚህ ወር</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">የማንቂያ_መገናኛ</translation>
 <translation id="1821985195704844674">የዛፍ ፍርግርግ</translation>
 <translation id="1822429046913737220">ጥዋት/ከሰዓት</translation>
+<translation id="1823704031293214298">ገጽ ግርጌ</translation>
 <translation id="1832974991323546415">በርቀት መሳሪያ ላይ አጫውት</translation>
 <translation id="190587075670221089">ስረዛ</translation>
 <translation id="1907737156431278478">ምሳሌ</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">ሳምንት <ph name="WEEKNUMBER" />፣ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ትራክ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">አመልካች ሳጥን</translation>
+<translation id="2307576640803031502">በዝርዝር ውስጥ፣ ንጥል <ph name="INDEX" /> ከ<ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ገጽ ከፋይ</translation>
 <translation id="2335594187091864976">የቀን እና የሰዓት መራጭ</translation>
 <translation id="2393030564806080191">ባለአስራስድስትዮሽ የቀለም እሴት</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">ቀዳሚውን ወር አሳይ</translation>
 <translation id="421884353938374759">color picker</translation>
 <translation id="4248100235867064564">የምናሌ አሞሌ</translation>
+<translation id="4293574643247337246">የገጽ ራስጌ</translation>
 <translation id="4360991593054037559">እባክዎ የሚሰራ ዋጋ ያስገቡ። ሁለቱ የሚቀርቡ ዋጋዎች <ph name="VALID_VALUE_LOW" /> እና <ph name="VALID_VALUE_HIGHER" /> ናቸው።</translation>
 <translation id="4384583879834880242">ጥያቄ እና መልስ</translation>
 <translation id="4444765639179266822">እንዲህ የሚል ይመስላል፦ <ph name="OCR_TEXT" /></translation>

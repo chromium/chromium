@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">autorzy</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">baner</translation>
+<translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">wielokrotny wybór, wybrano <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">W tym miesiącu</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">siatka drzewa</translation>
 <translation id="1822429046913737220">rano/po południu</translation>
+<translation id="1823704031293214298">stopka strony</translation>
 <translation id="1832974991323546415">odtwarzanie na urządzeniu zdalnym</translation>
 <translation id="190587075670221089">usunięcie</translation>
 <translation id="1907737156431278478">przykład</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">pole wyboru</translation>
+<translation id="2307576640803031502">na liście, pozycja <ph name="INDEX" /> z <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">podział strony</translation>
 <translation id="2335594187091864976">selektor daty i godziny</translation>
 <translation id="2393030564806080191">Wartość szesnastkowego kodu koloru</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
 <translation id="421884353938374759">selektor kolorów</translation>
 <translation id="4248100235867064564">pasek menu</translation>
+<translation id="4293574643247337246">nagłówek strony</translation>
 <translation id="4360991593054037559">Podaj prawidłową wartość. Dwie najbliższe prawidłowe wartości to <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Pytania i odpowiedzi</translation>
 <translation id="4444765639179266822">Wygląda jak napis: <ph name="OCR_TEXT" /></translation>

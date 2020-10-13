@@ -165,6 +165,7 @@
 <translation id="2169830938017475061">עכשיו</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="218608176142494674">שיתוף</translation>
+<translation id="2195339740518523951">‏רוצה ליהנות מהאבטחה החזקה ביותר של Chrome?</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2239812875700136898">‏בעזרת הלחצן 'אפשרויות של Discover' ניתן לקבוע אילו מאמרים יוצגו</translation>
@@ -256,6 +257,7 @@
 <translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
 <translation id="2898264748040935573">עריכת הסיסמה השמורה</translation>
 <translation id="2900528713135656174">צור אירוע</translation>
+<translation id="2901411048554510387">מוצגות הצעות הקשורות לדף <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בגובה המלא של המסך.</translation>
 <translation id="2905036901251765993">‏כדי לשתף עם אנשים בקרבת מקום, יש לתת להם לסרוק את קוד ה-QR הזה</translation>
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
@@ -269,6 +271,7 @@
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2996291259634659425">יצירת ביטוי סיסמה</translation>
 <translation id="2996809686854298943">דרושה כתובת אתר</translation>
+<translation id="3006881078666935414">אין נתוני שימוש</translation>
 <translation id="3016635187733453316">יש לוודא שהמכשיר הזה מחובר לאינטרנט</translation>
 <translation id="3029704984691124060">ביטויי הסיסמה אינם תואמים</translation>
 <translation id="3034163383943672781">ההורדה תתחיל בתאריך <ph name="DATE" />.</translation>
@@ -441,6 +444,7 @@
 <translation id="4405224443901389797">העברה אל…</translation>
 <translation id="4411535500181276704">מצב טעינה מהירה</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
+<translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4440958355523780886">‏גרסת Lite של הדף נוצרה על ידי Google. אפשר להקיש כדי לטעון את הגרסה המקורית.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
@@ -506,7 +510,7 @@
 <translation id="4837753911714442426">פתח אפשרויות להדפסת דפים</translation>
 <translation id="4842092870884894799">מציג את החלון הקופץ של יצירת סיסמה</translation>
 <translation id="4860895144060829044">תרימו טלפון</translation>
-<translation id="4864369630010738180">נכנס...</translation>
+<translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4865987431642283918">ברירת המחדל לשפת המכשיר</translation>
 <translation id="4866368707455379617">‏לא ניתן להתקין את <ph name="MODULE" /> ל-Chrome</translation>
 <translation id="4875775213178255010">תוכן מוצע</translation>
@@ -1097,7 +1101,7 @@
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{סרטון אחד (#)}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
 <translation id="9050666287014529139">משפט-סיסמה</translation>
-<translation id="9063523880881406963">כבה את 'בקש אתר עבור מחשב שולחני'</translation>
+<translation id="9063523880881406963">כיבוי של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים ללא הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>
 <translation id="9069543557624799859">ההורדה תתחיל בשעה <ph name="TIME" />.</translation>

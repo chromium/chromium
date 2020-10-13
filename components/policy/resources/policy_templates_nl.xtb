@@ -174,6 +174,7 @@
       Als je deze instelling inschakelt, zijn SafeSearch in Google Zoeken en de gemiddelde Beperkte modus op YouTube altijd actief.
 
       Als je deze instelling uitschakelt of geen waarde instelt, worden SafeSearch in Google Zoeken en de Beperkte modus op YouTube niet afgedwongen.</translation>
+<translation id="1353416417709895349">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' uitzetten.</translation>
 <translation id="1353985065430729216">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van sites met toegang tot sensoren, zoals bewegingssensoren en lichtsensoren.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -432,6 +433,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als je het beleid instelt op 'False', kunnen gebruikers geen bookmarks toevoegen, verwijderen of wijzigen. Ze kunnen nog wel bestaande bookmarks gebruiken.</translation>
 <translation id="1715151459541210849">De toegankelijkheidsfunctie voor dicteren inschakelen</translation>
 <translation id="172374442286684480">Alle sites toestaan lokale gegevens in te stellen</translation>
+<translation id="1727914891824633693">Gebruik van Lacros toestaan</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
 <translation id="1745973235372964482">Bestanden met wachtwoordbeveiliging niet toestaan</translation>
 <translation id="1749815929501097806">De Servicevoorwaarden instellen die de gebruiker moet accepteren voordat een apparaat-lokale accountsessie kan worden gestart.
@@ -2301,6 +2303,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Hoewel het beleid zelf op de bovenstaande platforms wordt ondersteund, is de functie die ermee wordt ingeschakeld mogelijk op minder platforms beschikbaar. Niet alle verouderde webplatformfuncties kunnen opnieuw worden ingeschakeld. Alleen de webplatformfuncties die hieronder worden vermeld, kunnen tijdelijk opnieuw worden ingeschakeld, waarbij de periode per functie verschilt. De algemene indeling van de stringtag is [NaamVerouderdeFunctie]_EffectiveUntil[jjjjmmdd]. De reden voor de wijzigingen van webplatformfuncties vind je op https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Vergrendeling inschakelen wanneer het apparaat inactief wordt of overschakelt op de slaapstand</translation>
+<translation id="4447668084338250480">Gedrag voor intranetomleidingen</translation>
 <translation id="4449469846627734399">Dagelijkse configuratie voor stroompiekverschuiving instellen</translation>
 <translation id="4449545651113180484">Scherm 270 graden met de klok mee draaien</translation>
 <translation id="445270821089253489">Beheert welke gebruikers- en apparaatgegevens worden gerapporteerd.</translation>
@@ -2686,6 +2689,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
           Als dit beleid niet is ingesteld, wordt de standaardopdrachtregel gebruikt.</translation>
 <translation id="5150323673529584553">Bestanden niet scannen</translation>
+<translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
@@ -2735,6 +2739,12 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       * Uit of als je geen waarde instelt, wordt de beperkte modus op YouTube niet afgedwongen door Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
 <translation id="5196520640744454600">Plaktoetsen op het inlogscherm inschakelen</translation>
+<translation id="5208675398826212411">Met dit beleid configureer je het gedrag voor intranetomleiding via controles voor DNS-onderschepping. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.
+
+      Als je dit beleid niet instelt, gebruikt de browser het standaardgedrag voor controles voor DNS-onderschepping en suggesties voor intranetomleidingen. In M88 zijn ze standaard aangezet, maar ze worden standaard uitgezet in een toekomstige release.
+
+      <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> is een gerelateerd beleid waarmee controles voor DNS-onderschepping ook kunnen worden uitgezet. Dit beleid is een flexibelere versie waarmee infobalken voor intranetomleidingen afzonderlijk kunnen worden beheerd. Het beleid kan in de toekomst worden uitgebreid.
+      Als <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> of dit beleid vraagt om controles voor onderschepping uit te zetten, worden de controles uitgezet.</translation>
 <translation id="5212118847531454979">Hiermee kun je de periode in milliseconden instellen waarin gebruikers een melding ontvangen dat <ph name="PRODUCT_NAME" /> opnieuw moet worden gestart of dat een <ph name="PRODUCT_OS_NAME" />-apparaat opnieuw moet worden opgestart om een update in behandeling uit te voeren.
 
       Gedurende deze periode krijgt de gebruiker regelmatig de melding dat er een update moet worden uitgevoerd. Voor <ph name="PRODUCT_OS_NAME" />-apparaten wordt een melding over opnieuw opstarten weergegeven in het systeemvak, in overeenstemming met het <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />-beleid. Voor <ph name="PRODUCT_NAME" />-browsers wordt het app-menu gewijzigd om aan te geven dat er opnieuw moet worden opgestart zodra een derde van de meldingsperiode is verstreken. Deze melding krijgt een andere kleur zodra twee derde van de meldingsperiode is verstreken en dit gebeurt nogmaals als de volledige periode is verstreken. Hetzelfde schema wordt gehanteerd voor aanvullende meldingen die door het <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />-beleid zijn ingeschakeld.
@@ -3332,6 +3342,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
           Opmerking: <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> overschrijft dit beleid als het is opgegeven.</translation>
 <translation id="6011969832398368671">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's</translation>
+<translation id="6012952794649558174">Standaardgedrag van browser gebruiken.</translation>
 <translation id="6015281292796053435">Met dit beleid wordt bepaald of informatie over Safe Browsing moet worden gerapporteerd, waaronder het aantal Safe Browsing-waarschuwingen en het aantal doorklikken van Safe Browsing-waarschuwingen.
 
       Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of is uitgeschakeld, wordt dit beleid genegeerd.
@@ -3803,6 +3814,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6672630473862787247">Ambient-verificatie inschakelen in normale, incognito- en gastsessies.</translation>
 <translation id="6685903773201985073">Ambient-verificatie inschakelen in normale en gastsessies.</translation>
 <translation id="6689792153960219308">De hardwarestatus melden</translation>
+<translation id="6690425645391461516">Controles voor DNS-onderschepping uitzetten, infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="6698632841807204978">Monochroom afdrukken inschakelen</translation>
 <translation id="6699880231565102694">Authenticatie in twee stappen inschakelen voor hosts voor externe toegang</translation>
 <translation id="6703251016607733593">Als je dit beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgeschakeld voor een lijst van <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hashes. Enterprise-hosts kunnen certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt). Als je de handhaving wilt uitschakelen, moet de hash aan een van de volgende voorwaarden voldoen:
@@ -5485,6 +5497,13 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8976248126101463034">Gnubby-verificatie toestaan voor hosts voor externe toegang</translation>
 <translation id="8976531594979650914">Standaardprinter van systeem gebruiken als standaard</translation>
 <translation id="8977192934280677167">Toegang toestaan tot standaard zoekprovider in contextmenu</translation>
+<translation id="8990697325184394573">Met deze instelling kunnen gebruikers de Lacros-browser gebruiken.
+
+      Als je dit beleid instelt op False, kan de gebruiker Lacros niet gebruiken.
+
+      Als je dit beleid instelt op True, kan de gebruiker de Lacros-browser gebruiken.
+
+      Als je dit beleid niet instelt, kan de gebruiker de Lacros-browser niet gebruiken.</translation>
 <translation id="8992176907758534924">Niet toestaan dat sites afbeeldingen weergeven</translation>
 <translation id="9007632512838819703">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 

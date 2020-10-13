@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">mulțumiri</translation>
 <translation id="1342835525016946179">articol</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> elemente</translation>
 <translation id="1480676835519562650">Este posibilă selectarea multiplă, ai selectat <ph name="SELECTED" /> din <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">regiune</translation>
 <translation id="1591562245178063882">Luna aceasta</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">dialog de alertă</translation>
 <translation id="1821985195704844674">grilă arbore</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">subsolul paginii</translation>
 <translation id="1832974991323546415">redă pe dispozitiv la distanță</translation>
 <translation id="190587075670221089">ștergere</translation>
 <translation id="1907737156431278478">exemplu</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Melodia <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">casetă de selectare</translation>
+<translation id="2307576640803031502">în listă, elementul <ph name="INDEX" /> din <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sfârșit de pagină</translation>
 <translation id="2335594187091864976">selector pentru dată și oră</translation>
 <translation id="2393030564806080191">Valoarea hexazecimală a culorii</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Afișează luna anterioară</translation>
 <translation id="421884353938374759">selector de culoare</translation>
 <translation id="4248100235867064564">bară de meniu</translation>
+<translation id="4293574643247337246">antetul paginii</translation>
 <translation id="4360991593054037559">Introduceți o valoare validă. Cele mai apropiate valori valide sunt <ph name="VALID_VALUE_LOW" /> și <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Întrebări și răspunsuri</translation>
 <translation id="4444765639179266822">Se pare că spune: <ph name="OCR_TEXT" /></translation>

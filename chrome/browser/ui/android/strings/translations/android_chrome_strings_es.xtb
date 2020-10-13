@@ -269,6 +269,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2996291259634659425">Crea una frase de contraseña</translation>
 <translation id="2996809686854298943">URL necesaria</translation>
+<translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3016635187733453316">Comprueba que este dispositivo esté conectado a Internet.</translation>
 <translation id="3029704984691124060">Las frases de contraseña no coinciden</translation>
 <translation id="3034163383943672781">La descarga comenzará el <ph name="DATE" />.</translation>
@@ -799,6 +800,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6783942555455976443">Guardar esta página para después y recibir un recordatorio</translation>
 <translation id="6811034713472274749">Ya se puede ver la página</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6824899148643461612">Pestaña <ph name="TAB_TITLE" /> seleccionada</translation>
 <translation id="6845325883481699275">Ayudar a mejorar la seguridad de Chrome</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">Tu descarga sigue en curso</translation>

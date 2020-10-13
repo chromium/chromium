@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">titrai</translation>
 <translation id="1342835525016946179">artikelis</translation>
 <translation id="1359897965706325498">reklamjuostė</translation>
+<translation id="145015347812617860">Elementų: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">keli pasirenkami, pasirinkta: <ph name="SELECTED" /> iš <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">regionas</translation>
 <translation id="1591562245178063882">Šis mėnuo</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">medžio tinklelis</translation>
 <translation id="1822429046913737220">iki pietų / po pietų</translation>
+<translation id="1823704031293214298">puslapio poraštė</translation>
 <translation id="1832974991323546415">leisti naudojant nuotolinį įrenginį</translation>
 <translation id="190587075670221089">trynimas</translation>
 <translation id="1907737156431278478">pavyzdys</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033"><ph name="YEAR" /> m. <ph name="WEEKNUMBER" /> sav.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> takelis</translation>
 <translation id="2291999235780842123">žymimasis laukelis</translation>
+<translation id="2307576640803031502">sąraše, <ph name="INDEX" /> elementas iš <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">puslapio lūžis</translation>
 <translation id="2335594187091864976">datos ir laiko rinkiklis</translation>
 <translation id="2393030564806080191">Šešioliktainė spalvos vertė</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Rodyti ankstesnį mėnesį</translation>
 <translation id="421884353938374759">spalvos parinkiklis</translation>
 <translation id="4248100235867064564">meniu juosta</translation>
+<translation id="4293574643247337246">puslapio antraštė</translation>
 <translation id="4360991593054037559">Įveskite galiojančią vertę. Dvi artimiausios vertės yra <ph name="VALID_VALUE_LOW" /> ir <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Klausimai ir atsakymai</translation>
 <translation id="4444765639179266822">Tai tikriausiai reiškia: <ph name="OCR_TEXT" /></translation>

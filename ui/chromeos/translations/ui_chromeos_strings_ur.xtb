@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">تلاش کرنے کا سلائیڈر</translation>
 <translation id="1399648040768741453">تیلگو کی بورڈ (فونیٹک)</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
-<translation id="1433600251059882049">‏یہ فولڈر Linux اور Windows کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="1441841714100794440">ویتنامی کی بورڈ (ٹیلیکس)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">‏Linux فائلز کھل رہی ہیں…</translation>
 <translation id="1547964879613821194">کینیڈین انگریزی</translation>
 <translation id="1556189134700913550">سبھی پر لاگو کریں</translation>
+<translation id="1561842594491319104">‏Chrome آلات</translation>
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
 <translation id="158809615184981282">فیروئیز کی بورڈ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">‏نقل حرفی (zdravo → здраво)</translation>
 <translation id="3067790092342515856">ونڈوز کی فائلز</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> کے ساتھ اشتراک کریں</translation>
+<translation id="3083975830683400843">Chromebits</translation>
 <translation id="3116361045094675131">‏UK کی بورڈ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ہوگیا</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">‏Hangul 2 سیٹ</translation>
 <translation id="4477219268485577442">بلغاریائی فونیٹک</translation>
 <translation id="4479812471636796472">امریکی ڈوراک کی بورڈ</translation>
-<translation id="4481711095103932593">‏اس فولڈر کا اشتراک Windows کے ساتھ کیا گیا ہے</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
-<translation id="4542387084127299777">"<ph name="PATH" />" کھولنے سے قاصر</translation>
 <translation id="4552678318981539154">مزید اسٹوریج خریدیں</translation>
 <translation id="4559767610552730302">بوکیہ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> فائل</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">مَگَر ناشپاتی</translation>
 <translation id="4823651846660089135">آلہ صرف پڑھنے کیلئے ہے</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> آئٹمز منتخب کیے گئے</translation>
+<translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">جرمن (بیلجیئم)</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="485316830061041779">جرمن</translation>
@@ -472,6 +472,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">‏Linux ایپس کو اپنے Google Drive میں فائلز میں ترمیم کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> آئٹمز</translation>
+<translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ترتیب دینے کے اختیارات</translation>
 <translation id="6005282720244019462">لاطینی امریکی کی بورڈ</translation>
 <translation id="6007237601604674381">منتقل کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>
@@ -631,6 +632,7 @@
     <ph name="MARKUP_4" />فائلوں کو اپنے ڈاؤن لوڈز فولڈر سے ہٹائیں<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">آلہ فارمیٹ کریں</translation>
 <translation id="7799329977874311193">‏HTML دستاویز</translation>
+<translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7821462174190887129">‏<ph name="FILE_COUNT" /> ملیں۔
     <ph name="LINE_BREAK1" />

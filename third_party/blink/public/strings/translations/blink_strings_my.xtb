@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">မှတ်တမ်းတင်ထိုက်သူများ စာရင်း</translation>
 <translation id="1342835525016946179">ဆောင်းပါး</translation>
 <translation id="1359897965706325498">နဖူးစည်းစာတန်း</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> အကြောင်းအရာများ</translation>
 <translation id="1480676835519562650">အများအပြားရွေးချယ်၍ရသည်၊ <ph name="COUNT" /> မှ <ph name="SELECTED" /> ခု ရွေးချယ်ထားသည်။</translation>
 <translation id="1589122976691792535">ဒေသ</translation>
 <translation id="1591562245178063882">ဤလ</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">အပတ် <ph name="WEEKNUMBER" />၊ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">အပုဒ်ရေ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ခြစ်ရန် အကွက်</translation>
+<translation id="2307576640803031502">စာရင်းတွင်၊ <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /></translation>
 <translation id="2311842470354187719">စာမျက်နှာခြားခြင်း</translation>
 <translation id="2335594187091864976">ရက်စွဲနှင့် အချိန် ရွေးချယ်မှု</translation>
 <translation id="2393030564806080191">ဟက်စ်အရောင် အညွှန်းကိန်း</translation>
@@ -192,7 +194,7 @@
 <translation id="6709570249143506788">ဆိုးရွားသော ဗီဒီယို အရည်အသွေး</translation>
 <translation id="6755330956360078551">ကိရိယာ အသုံးပြုမှုနည်းလမ်း</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
-<translation id="6820355525329141109">ပလာဂင်ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
+<translation id="6820355525329141109">ပလတ်အင်ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="6820615603175220800">ကျမ်းကိုးစာရင်း အညွှန်း</translation>
 <translation id="6831465880655513317">စိုစွတ်ပြည့်ဝမှုနှင့် အလင်းကို ရွေးချယ်ရန် နှစ်ဘက်မြင်ဆလိုက်ဒါပါသော အရောင်စက်ဝိုင်း</translation>
 <translation id="6843725295806269523">တိတ်ရန်</translation>

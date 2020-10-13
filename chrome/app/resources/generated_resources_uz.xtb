@@ -391,6 +391,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1436390408194692385">Muddati: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Sozlashni davom ettirish</translation>
 <translation id="1436784010935106834">Olib tashlangan</translation>
+<translation id="1437986450143295708">Muammo haqida batafsil axborot bering</translation>
 <translation id="144283815522798837">Tanlandi: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Faol Kerberos chiptasini belgilash</translation>
 <translation id="1444628761356461360">Bu sozlama qurilma egasi (<ph name="OWNER_EMAIL" />) tomonidan boshqariladi.</translation>
@@ -2817,6 +2818,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4301671483919369635">Bu sahifa fayllarni tahrirlay oladi</translation>
 <translation id="4303079906735388947">Elektron kalitga yangi PIN kod belgilang</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> qurilmasiga nusxalash</translation>
+<translation id="4305817255990598646">Almashtirish</translation>
 <translation id="4306119971288449206">Ilovalar “<ph name="CONTENT_TYPE" />” kontent turi bilan ishga tushiriladi</translation>
 <translation id="4307992518367153382">Asosiy</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB faol)</translation>
@@ -5886,7 +5888,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7982789257301363584">Tarmoq</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> ekranidagi tasvirni boshqa ekranga uzatish</translation>
 <translation id="7985283639530788531">Inkognito rejimida <ph name="APP_NAME" /> saytiga Touch ID orqali kirmoqchimisiz?</translation>
-<translation id="79859296434321399">Virtual reallik kontentini ochish uchun ARCore ilovasini yuklab oling</translation>
 <translation id="7986295104073916105">Saqlangan parol sozlamalarini o‘qish va o‘zgartirish</translation>
 <translation id="7987814697832569482">Har doim VPN orqali ulanish</translation>
 <translation id="7988355189918024273">Maxsus imkoniyatlarni yoqish</translation>
@@ -6357,7 +6358,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8557022314818157177">Barmoq izi yozib olinguncha elektron kalitga teginib turing</translation>
 <translation id="855773602626431402">Bu sahifada sinov muhitida bo‘lmagan plagin ishga tushirilishi bloklandi.</translation>
 <translation id="8557930019681227453">Manifest</translation>
-<translation id="8558485628462305855">Virtual reallik kontentini ochish uchun ARCore ilovasini yangilang</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Barchasini &amp;yangi oynada ochish}=1{&amp;Yangi oynada ochish}other{Barchasini ({COUNT}) &amp;yangi oynada ochish}}</translation>
 <translation id="8561206103590473338">Fil</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6402,7 +6402,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Ota-onangiz tomonidan hali tasdiqlanmagan</translation>
 <translation id="8620617069779373398">Rouming holati</translation>
-<translation id="8620765578342452535">Tarmoq ulanishlarini sozlash</translation>
 <translation id="8621866727807194849">Kompyuteringizda zararli dasturlar topildi. Chrome uni tozalab, sozlamalarni qayta tiklaydi, kengaytmalarni oʻchirib qoʻyadi. Keyin brauzeringiz yana nuqsonsiz ishlay boshlaydi.</translation>
 <translation id="8621979332865976405">Butun ekranni namoyish qilish</translation>
 <translation id="862542460444371744">&amp;Kengaytmalar</translation>

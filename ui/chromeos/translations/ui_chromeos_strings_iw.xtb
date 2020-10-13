@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">מחוון חיפוש</translation>
 <translation id="1399648040768741453">מקלדת טלוגו (פונטית)</translation>
 <translation id="1430915738399379752">הדפסה</translation>
-<translation id="1433600251059882049">‏התיקייה הזו משותפת עם Linux ועם Windows</translation>
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
 <translation id="1439494416798956626">הועבר אל <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">‏מקלדת וייטנאמית (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">‏מתבצעת פתיחה של קובצי Linux...</translation>
 <translation id="1547964879613821194">אנגלית קנדית</translation>
 <translation id="1556189134700913550">החל על הכל</translation>
+<translation id="1561842594491319104">‏מכשירי Chrome</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="158809615184981282">מקלדת פארואזית</translation>
 <translation id="1589128298353575783">‎<ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">‏תעתוק (zdravo → здраво)</translation>
 <translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3078461028045006476">שיתוף באמצעות <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">‏מכשירי Chromebit</translation>
 <translation id="3116361045094675131">מקלדת אנגלית (בריטניה)</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">בוצע</translation>
@@ -228,7 +229,7 @@
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">תיקיה</translation>
-<translation id="3549797760399244642">‏עבור אל drive.google.com...</translation>
+<translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="357479282490346887">ליטאית</translation>
 <translation id="3583509704582854624">קלט אלפאנומרי (למקלדת יפנית)</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">בולגרית פונטית</translation>
 <translation id="4479812471636796472">‏מקלדת Dvorak אנגלית (ארה"ב)</translation>
-<translation id="4481711095103932593">‏התיקייה הזו משותפת עם Windows</translation>
 <translation id="4522570452068850558">פרטים</translation>
-<translation id="4542387084127299777">לא ניתן לפתוח את "<ph name="PATH" />"</translation>
 <translation id="4552678318981539154">קנה עוד שטח אחסון</translation>
 <translation id="4559767610552730302">טשטוש</translation>
 <translation id="4572815280350369984">קובץ <ph name="FILE_TYPE" /></translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">אבוקדו</translation>
 <translation id="4823651846660089135">המכשיר מוגדר לקריאה בלבד</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> פריטים נבחרו</translation>
+<translation id="4843566743023903107">‏מכשירי Chromebase</translation>
 <translation id="4849981557599196363">גרמנית (בלגיה)</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="485316830061041779">גרמנית</translation>
@@ -389,7 +389,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />אל תסיר עדיין את המכשיר!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
        הסרת המכשיר בעודו בשימוש תגרום לאובדן נתונים. המתן עד לסיום הפעולה, ולאחר מכן נתק את המכשיר דרך היישום 'קבצים'.</translation>
-<translation id="5163869187418756376">השיתוף נכשל. בדוק את החיבור ונסה שוב מאוחר יותר.</translation>
+<translation id="5163869187418756376">השיתוף נכשל. כדאי לבדוק את החיבור ולנסות שוב מאוחר יותר.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5167131699331641907">מקלדת להולנד</translation>
 <translation id="5170477580121653719">‏שטח אחסון שנותר ב-Google Drive‏: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -474,6 +474,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">‏הענקת הרשאה לאפליקציות Linux לשנות קבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> פריטים</translation>
+<translation id="5957366693331451795">‏מכשירי Chromebox</translation>
 <translation id="5982621672636444458">אפשרויות מיון</translation>
 <translation id="6005282720244019462">מקלדת של אמריקה הלטינית</translation>
 <translation id="6007237601604674381">ההעברה נכשלה. <ph name="ERROR_MESSAGE" /></translation>
@@ -633,6 +634,7 @@
         <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">פרמט את המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>
+<translation id="7801354353640549019">‏מכשירי Chromebook</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7821462174190887129">‏נמצאו <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

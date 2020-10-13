@@ -174,6 +174,7 @@
       Si vous activez ce paramètre, SafeSearch est toujours activé dans la recherche Google, et le mode restreint modéré est toujours appliqué sur YouTube.
 
       Si vous désactivez ce paramètre ou ne définissez pas de valeur, SafeSearch n'est pas activé dans la recherche, et le mode restreint modéré n'est pas appliqué sur YouTube.</translation>
+<translation id="1353416417709895349">Désactiver les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="1353985065430729216">Permet d'établir une liste de formats d'URL indiquant les sites autorisés à accéder aux capteurs (de mouvement et de lumière, par exemple).
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
@@ -443,6 +444,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est définie sur "False", les utilisateurs ne peuvent pas ajouter, supprimer ni modifier des favoris. En revanche, ils peuvent utiliser les favoris déjà disponibles.</translation>
 <translation id="1715151459541210849">Activer la fonctionnalité d'accessibilité de dictée</translation>
 <translation id="172374442286684480">Autoriser tous les sites à définir des données locales</translation>
+<translation id="1727914891824633693">Autoriser l'utilisation de Lacros</translation>
 <translation id="1736269219679256369">Autoriser la poursuite de la navigation depuis une page d'avertissement SSL</translation>
 <translation id="1745973235372964482">Ne pas autoriser les fichiers protégés par un mot de passe</translation>
 <translation id="1749815929501097806">Définir les conditions d'utilisation que l'utilisateur doit accepter avant d'ouvrir une session d'un compte local de l'appareil
@@ -2331,6 +2333,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Bien que la règle elle-même soit compatible avec les plates-formes citées, la fonctionnalité qu'elle active peut n'être disponible que sur un nombre plus restreint de plates-formes. Les fonctionnalités abandonnées de la plate-forme en ligne ne peuvent pas toutes être réactivées. Seules celles qui sont énumérées ci-dessous peuvent l'être pendant une durée limitée, qui varie selon la fonctionnalité. Le format général de la balise de chaîne est [FonctionnalitéAbandonnée]_EffectiveUntil[aaaammjj]. Pour information, vous pouvez découvrir les raisons pour lesquelles des motivations ont été apportées aux fonctionnalités des plates-formes en ligne en consultant la page https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Activer le verrouillage lorsque l'appareil est inactif ou en veille</translation>
+<translation id="4447668084338250480">Comportement de redirection vers un intranet</translation>
 <translation id="4449469846627734399">Définir la configuration quotidienne de l'alimentation alternée en heures pleines</translation>
 <translation id="4449545651113180484">Faire pivoter l'écran vers la droite de 270 degrés</translation>
 <translation id="445270821089253489">Contrôle le type d'informations figurant dans les rapports sur les utilisateurs et les appareils.</translation>
@@ -2714,6 +2717,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
           Si cette règle n'est pas configurée, la ligne de commande par défaut est utilisée.</translation>
 <translation id="5150323673529584553">Ne pas analyser les fichiers</translation>
+<translation id="5152393033264257734">Autoriser les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="5152787786897382519">Chromium et Google Chrome possèdent tous deux des groupes de règles interdépendantes pour contrôler une fonctionnalité. Ces ensembles sont représentés par les groupes de règles suivants. Les règles pouvant avoir plusieurs sources, seules les valeurs issues de la source ayant la priorité la plus haute sont appliquées. Les valeurs provenant d'une source ayant une priorité inférieure dans le même groupe sont ignorées. L'ordre de priorité est défini à la page <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> à la place).
 
@@ -2763,6 +2767,12 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
       * Si cette règle est désactivée ou qu'aucune valeur n'est définie, le mode restreint sur YouTube n'est pas appliqué d'office par Chrome. Toutefois, des règles externes comme les règles de YouTube peuvent quand même appliquer d'office le mode restreint.</translation>
 <translation id="519247340330463721">Configurez les règles associées à la navigation sécurisée.</translation>
 <translation id="5196520640744454600">Activer les touches persistantes sur l'écran de connexion</translation>
+<translation id="5208675398826212411">Cette règle configure le comportement des redirections vers un intranet via les contrôles d'interception des requêtes DNS. Ces contrôles ont pour but de déterminer si le navigateur est situé derrière un proxy qui redirige les noms d'hôte inconnus.
+
+      Si cette règle n'est pas configurée, le navigateur suit le comportement par défaut des contrôles d'interception des requêtes DNS et des suggestions de redirection vers un intranet. Dans la version M88, ces contrôles sont activés par défaut, mais ils seront désactivés par défaut dans la release à venir.
+
+      <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> est une règle associée pouvant également désactiver les contrôles d'interception des requêtes DNS. Elle est plus flexible, peut contrôler séparément les barres d'infos de redirection vers un intranet et pourrait être développée à l'avenir.
+      Si <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> ou cette règle l'exige, les contrôles d'interception seront désactivés.</translation>
 <translation id="5212118847531454979">Permet de définir la période, en millisecondes, pendant laquelle les utilisateurs sont avertis que <ph name="PRODUCT_NAME" /> doit être relancé ou qu'un appareil <ph name="PRODUCT_OS_NAME" /> doit être redémarré pour l'application d'une mise à jour en attente.
 
       Au cours de cette période, l'utilisateur est régulièrement informé de la nécessité d'appliquer la mise à jour. Pour les appareils <ph name="PRODUCT_OS_NAME" />, une notification de redémarrage s'affiche dans la barre d'état système conformément à la règle <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Pour les navigateurs <ph name="PRODUCT_NAME" />, lorsqu'un tiers de la période de notification s'est écoulé, le menu d'application change pour indiquer qu'il est nécessaire de redémarrer le navigateur. La notification change de couleur une première fois lorsque les deux tiers de la période de notification se sont écoulés, et une deuxième fois à l'issue de cette période. Les notifications supplémentaires activées par la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> pour les navigateurs suivent le même calendrier.
@@ -3363,6 +3373,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="6011969832398368671">Autoriser les sites à demander aux utilisateurs l'accès en écriture aux fichiers et répertoires</translation>
+<translation id="6012952794649558174">Utiliser le comportement par défaut du navigateur.</translation>
 <translation id="6015281292796053435">Cette règle détermine si les informations de navigation sécurisée, y compris le nombre d'avertissements de navigation sécurisée et le nombre de clics sur les avertissements de navigation sécurisée, doivent être enregistrées.
 
       Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -3833,6 +3844,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6672630473862787247">Activer l'authentification ambiante pour les sessions standards, Invité et de navigation privée.</translation>
 <translation id="6685903773201985073">Activer l'authentification ambiante pour les sessions Invité et standards.</translation>
 <translation id="6689792153960219308">Envoyer des rapports sur l'état du matériel</translation>
+<translation id="6690425645391461516">Désactiver les contrôles d'interception des requêtes DNS ; autoriser les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="6698632841807204978">Activer l'impression monochrome</translation>
 <translation id="6699880231565102694">Activer l'authentification forte pour les hôtes d'accès à distance</translation>
 <translation id="6703251016607733593">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour une liste de hachages <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Les hôtes Enterprise peuvent ainsi continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit). Pour procéder à cette désactivation, l'une des conditions suivantes doit être remplie :
@@ -5512,6 +5524,13 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8976248126101463034">Autoriser l'authentification gnubby pour les hôtes d'accès à distance</translation>
 <translation id="8976531594979650914">Utiliser l'imprimante système par défaut</translation>
 <translation id="8977192934280677167">Autoriser l'accès par défaut au menu contextuel du moteur de recherche</translation>
+<translation id="8990697325184394573">Ce paramètre permet aux utilisateurs d'avoir recours au navigateur Lacros.
+
+      Si cette règle est définie sur "false", l'utilisateur ne peut pas utiliser Lacros.
+
+      Si cette règle est définie sur "true", l'utilisateur peut utiliser Lacros.
+
+      Si cette règle n'est pas configurée, l'utilisateur ne peut pas utiliser Lacros.</translation>
 <translation id="8992176907758534924">Interdire à tous les sites d'afficher des images</translation>
 <translation id="9007632512838819703">Cette règle est obsolète (veuillez utiliser la règle <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> à la place).
 

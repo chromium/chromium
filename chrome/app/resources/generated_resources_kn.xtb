@@ -2819,6 +2819,7 @@
 <translation id="4301671483919369635">ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಈ ಪುಟಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಹೊಂದಿಸಿ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ನಕಲಿಸಿ</translation>
+<translation id="4305817255990598646">ಬದಲಿಸಿ</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" ಪ್ರಕಾರದ ವಿಷಯದೊಂದಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಒದಗಿಸಬೇಕು</translation>
 <translation id="4307992518367153382">ಬೇಸಿಕ್ಸ್</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ಲೈವ್)</translation>
@@ -5891,7 +5892,6 @@
 <translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> ಅನ್ನು ಪ್ರತಿಬಿಂಬಿಸಿ</translation>
 <translation id="7985283639530788531">ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ <ph name="APP_NAME" /> ಜೊತೆಗೆ ಸ್ಪರ್ಶ ಐಡಿ ಅನ್ನು ಬಳಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
-<translation id="79859296434321399">ವರ್ಧಿತ ನೈಜತೆಯ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಲು, ARCore ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="7986295104073916105">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7987814697832569482">ಯಾವಾಗಲೂ ಈ VPN ಮೂಲಕವೇ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="7988355189918024273">ಪ್ರವೇಶದ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -6360,7 +6360,6 @@
 <translation id="8557022314818157177">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವವರೆಗೆ ಸುರಕ್ಷತಾ ಕೀಯನ್ನು ಸ್ಪರ್ಶಿಸುತ್ತಾ ಇರಿ.</translation>
 <translation id="855773602626431402">ಈ ಪುಟದಲ್ಲಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ರದ್ದುಗೊಳಿಸಿರುವ ಪ್ಲಗ್-ಇನ್ ಅನ್ನು ಚಾಲನೆ ಮಾಡುವುದರಿಂದ ತಡೆಯಲಾಗಿದೆ.</translation>
 <translation id="8557930019681227453">ಮ್ಯಾನಿಫೆಸ್ಟ್</translation>
-<translation id="8558485628462305855">ವರ್ಧಿತ ನೈಜತೆಯ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಲು, ARCore ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="8561206103590473338">ಆನೆ</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6405,7 +6404,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">ನಿಮ್ಮ ಪೋಷಕರು ಇನ್ನೂ ಇದನ್ನು ಅಂಗೀಕರಿಸಿಲ್ಲ</translation>
 <translation id="8620617069779373398">ರೋಮಿಂಗ್ ಸ್ಥಿತಿ</translation>
-<translation id="8620765578342452535">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="8621866727807194849">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್ ಕಂಡುಬಂದಿದೆ. Chrome ಅದನ್ನು ತೆಗೆದುಹಾಕಿ, ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸುತ್ತಿದೆ ಹಾಗೆಯೇ ಅದರ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತಿದೆ. ಇದರಿಂದಾಗಿ ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ಪುನಃ ಸಾಮಾನ್ಯವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವಂತೆ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="8621979332865976405">ನಿಮ್ಮ ಸಂಪೂರ್ಣ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="862542460444371744">&amp;ವಿಸ್ತರಣೆಗಳು</translation>

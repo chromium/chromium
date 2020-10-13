@@ -2816,6 +2816,7 @@
 <translation id="4301671483919369635">يتم السماح لهذه الصفحة بتعديل الملفات.</translation>
 <translation id="4303079906735388947">إعداد رقم تعريف شخصي جديد لمفتاح الأمان</translation>
 <translation id="4305402730127028764">نسخ إلى <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">تبديل</translation>
 <translation id="4306119971288449206">يجب عرض التطبيقات باستخدام نوع المحتوى "<ph name="CONTENT_TYPE" />".</translation>
 <translation id="4307992518367153382">الإعدادات الأساسية</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />كيلوبايت (<ph name="NUM_KILOBYTES_LIVE" />كيلوبايت مباشرة)</translation>
@@ -5888,7 +5889,6 @@
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7984068253310542383">عرض <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">هل تريد استخدام رقم التعريف باللمس مع <ph name="APP_NAME" /> في "وضع التصفّح المتخفي"؟</translation>
-<translation id="79859296434321399">‏لعرض محتوى الواقع المُعزَّز، يُرجى تثبيت ARCore</translation>
 <translation id="7986295104073916105">قراءة وتغيير إعدادات كلمة المرور المحفوظة</translation>
 <translation id="7987814697832569482">‏الاتِّصال دائمًا من خلال الشبكة الظاهرية الخاصة (VPN) هذه</translation>
 <translation id="7988355189918024273">تفعيل ميزات إمكانية الدخول</translation>
@@ -6360,7 +6360,6 @@
 <translation id="8557022314818157177">يُرجى الاستمرار في لمس مفتاح الأمان إلى أن يتم حِفظ بصمة الإصبع.</translation>
 <translation id="855773602626431402">تم منع تشغيل مكون إضافي غير محمي على هذه الصفحة.</translation>
 <translation id="8557930019681227453">البيان</translation>
-<translation id="8558485628462305855">‏لعرض محتوى الواقع المُعزَّز، يُرجى تحديث ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="8561206103590473338">فيل</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6405,7 +6404,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">لم يوافق عليه والداك حتى الآن</translation>
 <translation id="8620617069779373398">حالة التجوال</translation>
-<translation id="8620765578342452535">إعداد اتصالات الشبكة</translation>
 <translation id="8621866727807194849">‏هناك برنامج ضار على جهاز الكمبيوتر. يعمل متصفِّح Chrome على إزالته وعلى استعادة إعداداتك وإيقاف الإضافات. سيؤدي هذا الإجراء إلى عمل متصفِّحك بشكلٍ طبيعي من جديد.</translation>
 <translation id="8621979332865976405">مشاركة الشاشة بالكامل</translation>
 <translation id="862542460444371744">&amp;الإضافات</translation>

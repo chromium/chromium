@@ -269,6 +269,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2996291259634659425">Vytvoření heslové fráze</translation>
 <translation id="2996809686854298943">Je požadována adresa URL</translation>
+<translation id="3006881078666935414">Žádné údaje o využití</translation>
 <translation id="3016635187733453316">Zkontrolujte, zda je toto zařízení připojeno k internetu</translation>
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
 <translation id="3034163383943672781">Stahování bude zahájeno <ph name="DATE" />.</translation>
@@ -799,6 +800,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6783942555455976443">Uložit stránku na později a odeslat připomenutí</translation>
 <translation id="6811034713472274749">Stránka je připravená k zobrazení</translation>
 <translation id="6820686453637990663">Bezpečnostní kód platební karty (CVC)</translation>
+<translation id="6824899148643461612"><ph name="TAB_TITLE" />, karta, vybráno</translation>
 <translation id="6845325883481699275">Pomoci zlepšovat zabezpečení Chromu</translation>
 <translation id="6846298663435243399">Načítání…</translation>
 <translation id="6850409657436465440">Stahování stále probíhá</translation>

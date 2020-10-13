@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Otsinguliugur</translation>
 <translation id="1399648040768741453">Telugu klaviatuur (foneetiline)</translation>
 <translation id="1430915738399379752">Printimine</translation>
-<translation id="1433600251059882049">Seda kausta jagatakse Linuxi ja Windowsiga</translation>
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1439494416798956626">Teisaldati kausta <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Vietnami klaviatuur (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Linuxi failide avamine …</translation>
 <translation id="1547964879613821194">Kanada inglise</translation>
 <translation id="1556189134700913550">Rakenda kõigil</translation>
+<translation id="1561842594491319104">Chrome'i seadmed</translation>
 <translation id="1572585716423026576">Taustapildiks määramine</translation>
 <translation id="158809615184981282">Fäärikeelne klaviatuur</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Transliteratsioon (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windowsi failid</translation>
 <translation id="3078461028045006476">Jaga laiendusega <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebitid</translation>
 <translation id="3116361045094675131">Ühendkuningriigi klaviatuur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">VALMIS</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Hanguli 2. seade</translation>
 <translation id="4477219268485577442">Bulgaaria foneetiline</translation>
 <translation id="4479812471636796472">USA Dvoraki klaviatuur</translation>
-<translation id="4481711095103932593">Seda kausta jagatakse Windowsiga</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
-<translation id="4542387084127299777">Teed „<ph name="PATH" />” ei õnnestu avada</translation>
 <translation id="4552678318981539154">Ostke rohkem salvestusruumi</translation>
 <translation id="4559767610552730302">Bokeh-efekt</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-file</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Avokaado</translation>
 <translation id="4823651846660089135">Seade on kirjutuskaitstud</translation>
 <translation id="4839847978919684242">Valitud on <ph name="SELCTED_FILES_COUNT" /> üksust</translation>
+<translation id="4843566743023903107">Chromebase'id</translation>
 <translation id="4849981557599196363">saksa (Belgia)</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="485316830061041779">saksa keel</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Andke Linuxi rakendustele luba muuta teie Google Drive'is olevaid faile. Muudatused sünkroonitakse muude seadmetega.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> üksust</translation>
+<translation id="5957366693331451795">Chromeboxid</translation>
 <translation id="5982621672636444458">Sortimisvalikud</translation>
 <translation id="6005282720244019462">Ladina-Ameerika klaviatuur</translation>
 <translation id="6007237601604674381">Teisaldamine ebaõnnestus. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
     <ph name="MARKUP_4" />kustutage kaustas Allalaadimised olevaid faile.<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Seadme vormindamine</translation>
 <translation id="7799329977874311193">HTML-dokument</translation>
+<translation id="7801354353640549019">Chromebookid</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7821462174190887129">Leiti <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

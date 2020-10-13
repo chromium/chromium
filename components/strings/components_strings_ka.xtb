@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">მიმდინარეობს ბარათების შენახვა...</translation>
 <translation id="10614374240317010">არასოდეს შენახული</translation>
 <translation id="1062160989074299343">Prc10 (კონვერტი)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" />-იანი ქეშბექი</translation>
 <translation id="106701514854093668">სამუშაო დაფის სანიშნები</translation>
 <translation id="1068672505746868501">არასოდეს ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>
 <translation id="1070901266639972381">ღამე</translation>
@@ -491,6 +492,7 @@
 <translation id="2955913368246107853">ძებნის ზოლის დახურვა</translation>
 <translation id="2969319727213777354">უსაფრთხო კავშირის დასამყარებლად, საჭიროა საათის გასწორება. ამის მიზეზია ის, რომ სერტიფიკატები, რომლებსაც ვებსაიტები იდენტიფიცირების მიზნით იყენებს, მხოლოდ გარკვეული პერიოდის განმავლობაში მოქმედებს. რადგან თქვენი მოწყობილობის საათი არასწორია, Google Chrome ვერ დაადასტურებს ამგვარ სერტიფიკატებს.</translation>
 <translation id="2972581237482394796">&amp;გამეორება</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" />-იანი ფასდაკლება</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">ჩართვის შემთხვევაში, Chromium ფორმების უფრო სწრაფად შევსების მიზნით, თქვენი ბარათის ასლს ამ მოწყობილობაში შეინახავს.</translation>
 <translation id="2985398929374701810">შეიყვანეთ სწორი მისამართი</translation>
@@ -696,6 +698,7 @@
 <translation id="3784372983762739446">Bluetooth მოწყობილობები</translation>
 <translation id="3787705759683870569">ვადის გასვლის თარიღი: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">ზომა 16</translation>
+<translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>
 <translation id="3797522431967816232">Prc3 (კონვერტი)</translation>
 <translation id="3799805948399000906">შრიფტი მოთხოვნილია</translation>
@@ -1728,6 +1731,7 @@
 <translation id="7976214039405368314">ზედმეტად ბევრი მოთხოვნაა</translation>
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">აუგმენტური რეალობის კონტენტის სანახავად დააინსტალირეთ ARCore</translation>
 <translation id="799149739215780103">აკინძვა</translation>
 <translation id="7995512525968007366">არ არის მითითებული</translation>
 <translation id="800218591365569300">მეხსიერების გამოსათავისუფლებლად ცადეთ სხვა ჩანართების ან პროგრამების დახურვა.</translation>
@@ -1861,6 +1865,7 @@
 <translation id="8542014550340843547">სამმაგად დასტეპლერება ქვემოთ</translation>
 <translation id="8543181531796978784">შეგიძლიათ <ph name="BEGIN_ERROR_LINK" />მოგვახსენოთ გამოვლენასთან დაკავშირებული პრობლემა<ph name="END_ERROR_LINK" /> ან თუ აცნობიერებთ უსაფრთხოებასთან დაკავშირებულ რისკებს, <ph name="BEGIN_LINK" />გადახვიდეთ ამ არასაიმედო საიტზე<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">CVC მითითებულია თქვენი ბარათის უკანა ნაწილზე.</translation>
+<translation id="8558485628462305855">აუგმენტური რეალობის კონტენტის სანახავად განაახლეთ ARCore</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-თან პირადი კავშირის დამყარება შეუძლებელია, რადგან თქვენი მოწყობილობის თარიღი და დრო (<ph name="DATE_AND_TIME" />) არასწორია.</translation>
 <translation id="8564182942834072828">სხვადასხვა დოკუმენტი/შეურჩეველი ასლები</translation>
 <translation id="8564985650692024650">Chromium გირჩევთ, გადააყენოთ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ის პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
@@ -1882,6 +1887,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">ხელმისაწვდომი</translation>
 <translation id="868922510921656628">გვერდების რაოდენობა ნაკრებში</translation>
+<translation id="8697373104056314601">Chrome-ის უსაფრთხოების ყველაზე ძლიერი ფუნქციებით სარგებლობისთვის <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ჩართეთ გაძლიერებული დაცვა<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699041776323235191">HID მოწყობილობა</translation>
 <translation id="8703575177326907206">თქვენი კავშირი <ph name="DOMAIN" />-თან არ არის დაშიფრული.</translation>

@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Хайх слайд</translation>
 <translation id="1399648040768741453">Телугу гар (дуудлагын)</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
-<translation id="1433600251059882049">Энэ фолдерыг Linux болон Windows-тай хуваалцсан байна</translation>
 <translation id="1435838927755162558">Фолдерыг Parallels Desktop-тай хуваалцах</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> руу зөөсөн.</translation>
 <translation id="1441841714100794440">Вьетнам хэлний гар (телекс)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Linux-н файлуудыг нээж байна...</translation>
 <translation id="1547964879613821194">Канадын Англи хэл</translation>
 <translation id="1556189134700913550">Бүгдэд хамааруулах</translation>
+<translation id="1561842594491319104">Chrome төхөөрөмжүүд</translation>
 <translation id="1572585716423026576">Ханын зураг болгох</translation>
 <translation id="158809615184981282">Фөриэс хэлний гар</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Хөрвүүлэлт (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows-н файлууд</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" />-тай хуваалцах</translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">Их Британийн гар</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ДУУССАН</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Хангыль 2 Багц</translation>
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
 <translation id="4479812471636796472">АНУ-ын Dvorak гар</translation>
-<translation id="4481711095103932593">Энэ фолдерыг Windows-тай хуваалцсан байна</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
-<translation id="4542387084127299777">"<ph name="PATH" />"-г нээх боломжгүй байна</translation>
 <translation id="4552678318981539154">Нэмэлт мэдээлэл хадгах зай худалдан авах</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> файл</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> сонгогдсон зүйлс</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">Герман (Бельги)</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485316830061041779">Герман</translation>
@@ -470,6 +470,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Linux-н аппуудад таны Google Драйвын файлуудыг өөрчлөх зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> зүйл</translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Эрэмбийн сонголт</translation>
 <translation id="6005282720244019462">Латин Америкийн гар</translation>
 <translation id="6007237601604674381">Зөөж чадсангүй. <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +630,7 @@
  <ph name="MARKUP_4" /> Татаж авсан файл хадгалах хавтаснаас файлуудыг устга <ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Төхөөрөмжийг форматлах</translation>
 <translation id="7799329977874311193">HTML баримт бичиг</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> олдсон.
     <ph name="LINE_BREAK1" />

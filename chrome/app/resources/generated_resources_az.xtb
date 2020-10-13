@@ -2812,6 +2812,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4301671483919369635">Bu səhifəyə faylları redaktə etmək üçün icazə verilib</translation>
 <translation id="4303079906735388947">Təhlükəsizlik açarı üçün yeni PIN quraşdırın</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> cihazına kopyalayın</translation>
+<translation id="4305817255990598646">Dəyişin</translation>
 <translation id="4306119971288449206">Tətbiqlər "<ph name="CONTENT_TYPE" />" ilə təmin edilməlidirlər</translation>
 <translation id="4307992518367153382">Əsaslar</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K canlı)</translation>
@@ -5880,7 +5881,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7984068253310542383">Əksetdirmə <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Anonim rejimdə <ph name="APP_NAME" /> ilə Toxunuş ID-si istifadə etmək istəyirsiniz?</translation>
-<translation id="79859296434321399">Təkmilləşdirilmiş virtual reallıq kontentinə baxmaq üçün ARCore'u quraşdırın</translation>
 <translation id="7986295104073916105">Yaddaşda olan parol ayarlarını oxuyun və dəyişin</translation>
 <translation id="7987814697832569482">Həmişə bu VPN ilə qoşulun</translation>
 <translation id="7988355189918024273">Əlçatımlılıq funksiyalarını aktiv edin</translation>
@@ -6350,7 +6350,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8557022314818157177">Barmaq iziniz oxunanadək təhlükəsizlik açarına toxunmağa davam edin</translation>
 <translation id="855773602626431402">Səndboksdan çıxarılmış plagin bu səhifədə işləməkdən məhrum oldu.</translation>
 <translation id="8557930019681227453">Manifest</translation>
-<translation id="8558485628462305855">Təkmilləşdirilmiş virtual reallıq kontentinə baxmaq üçün ARCore'u yeniləyin</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Hamısını &amp;Yeni Pəncərədə Açın}=1{&amp;Yeni Pəncərədə Açın}other{Hamısını ({COUNT}) &amp;Yeni Pəncərədə Açın}}</translation>
 <translation id="8561206103590473338">Fil</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6395,7 +6394,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Valideynləriniz hələ ki təsdiq etməyib</translation>
 <translation id="8620617069779373398">Rominq statusu</translation>
-<translation id="8620765578342452535">Şəbəkə əlaqələrini konfiqurasiya edin</translation>
 <translation id="8621866727807194849">Kompüterdə zərərli proqram təminatı var. Chrome onu silir, ayarları bərpa edir və artırmaları deaktiv edir. Bundan sonra brauzer normal şəkildə işləyəcək.</translation>
 <translation id="8621979332865976405">Tam ekranı paylaşın</translation>
 <translation id="862542460444371744">Artırmalar</translation>

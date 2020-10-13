@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">श्रेय</translation>
 <translation id="1342835525016946179">लेख</translation>
 <translation id="1359897965706325498">ब्यानर</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> वस्तुहरू</translation>
 <translation id="1480676835519562650">धेरै विकल्प चयन गर्ने सुविधा, <ph name="COUNT" /> मध्ये <ph name="SELECTED" /> चयन गरियो।</translation>
 <translation id="1589122976691792535">क्षेत्र</translation>
 <translation id="1591562245178063882">यो महिना</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्र्याक <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">जाँच बाकस</translation>
+<translation id="2307576640803031502">सूचीमा छ, <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ वस्तु</translation>
 <translation id="2311842470354187719">पृष्ठ विच्छेद</translation>
 <translation id="2335594187091864976">मिति र समय टिप्ने</translation>
 <translation id="2393030564806080191">रङको हेक्साडेसिमल मान</translation>

@@ -2819,6 +2819,7 @@
 <translation id="4301671483919369635">このページはファイルの編集が許可されています</translation>
 <translation id="4303079906735388947">セキュリティ キーの新しい PIN を設定します</translation>
 <translation id="4305402730127028764">「<ph name="DEVICE_NAME" />」にコピー</translation>
+<translation id="4305817255990598646">切り替え</translation>
 <translation id="4306119971288449206">アプリはコンテンツタイプ「<ph name="CONTENT_TYPE" />」で配信される必要があります</translation>
 <translation id="4307992518367153382">基本設定</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K（<ph name="NUM_KILOBYTES_LIVE" /> K ライブ）</translation>
@@ -5889,7 +5890,6 @@
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> をミラーリング</translation>
 <translation id="7985283639530788531">シークレット モードで <ph name="APP_NAME" /> に Touch ID を使用しますか？</translation>
-<translation id="79859296434321399">拡張現実（AR）コンテンツを表示するには ARCore をインストールしてください</translation>
 <translation id="7986295104073916105">保存されたパスワード設定の読み取りと変更</translation>
 <translation id="7987814697832569482">この VPN で常に接続する</translation>
 <translation id="7988355189918024273">ユーザー補助機能を有効にします</translation>
@@ -6361,7 +6361,6 @@
 <translation id="8557022314818157177">指紋の登録が完了するまで、セキュリティ キーをタッチし続けてください</translation>
 <translation id="855773602626431402">このページでのサンドボックスの無効化プラグインの実行がブロックされました。</translation>
 <translation id="8557930019681227453">マニフェスト</translation>
-<translation id="8558485628462305855">拡張現実（AR）コンテンツを表示するには ARCore を更新してください</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="8561206103590473338">ゾウ</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6406,7 +6405,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">保護者がまだサイトを開くことを許可していません</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
-<translation id="8620765578342452535">ネットワーク接続の設定</translation>
 <translation id="8621866727807194849">お使いのパソコンに有害なソフトウェアが見つかりました。現在 Chrome でこのソフトウェアの削除、設定の復元、拡張機能の無効化を行っています。処理が完了すると、ブラウザは正常に動作するようになります。</translation>
 <translation id="8621979332865976405">画面全体の共有</translation>
 <translation id="862542460444371744">拡張機能(&amp;E)</translation>

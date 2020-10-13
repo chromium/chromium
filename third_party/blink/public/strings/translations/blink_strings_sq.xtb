@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">kredite</translation>
 <translation id="1342835525016946179">artikull</translation>
 <translation id="1359897965706325498">banderolë</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> artikuj</translation>
 <translation id="1480676835519562650">me zgjedhje të shumëfishtë, <ph name="SELECTED" /> nga <ph name="COUNT" /> të zgjedhura.</translation>
 <translation id="1589122976691792535">rajoni</translation>
 <translation id="1591562245178063882">Këtë muaj</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Java <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Kënga <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">kutia e kontrollit</translation>
+<translation id="2307576640803031502">në listë, artikulli <ph name="INDEX" /> nga <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">thyerje faqeje</translation>
 <translation id="2335594187091864976">zgjedhësi i datës dhe orës</translation>
 <translation id="2393030564806080191">Vlera e ngjyrave heksadecimale</translation>

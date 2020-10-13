@@ -2819,6 +2819,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4301671483919369635">Trang này được phép chỉnh sửa tệp</translation>
 <translation id="4303079906735388947">Thiết lập mã PIN mới cho khóa bảo mật</translation>
 <translation id="4305402730127028764">Sao chép vào <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Chuyển</translation>
 <translation id="4306119971288449206">Ứng dụng phải được cung cấp loại nội dung "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Cơ bản</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K hiện có)</translation>
@@ -5889,7 +5890,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="7984068253310542383">Phản chiếu <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Bạn có muốn sử dụng Touch ID với <ph name="APP_NAME" /> trong chế độ Ẩn danh không?</translation>
-<translation id="79859296434321399">Để xem nội dung thực tế tăng cường, hãy cài đặt bộ công cụ ARCore</translation>
 <translation id="7986295104073916105">Đọc và thay đổi cài đặt mật khẩu đã lưu</translation>
 <translation id="7987814697832569482">Luôn kết nối qua VPN này</translation>
 <translation id="7988355189918024273">Bật các tính năng hỗ trợ tiếp cận</translation>
@@ -6361,7 +6361,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8557022314818157177">Chạm liên tục vào khóa bảo mật cho đến khi thiết bị ghi lại vân tay của bạn</translation>
 <translation id="855773602626431402">Plugin không có hộp cát bị ngăn không cho chạy trên trang này.</translation>
 <translation id="8557930019681227453">Tệp kê khai</translation>
-<translation id="8558485628462305855">Để xem nội dung thực tế tăng cường, hãy cập nhật bộ công cụ ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
 <translation id="8561206103590473338">Voi</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6406,7 +6405,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Cha mẹ của bạn chưa phê duyệt trang web</translation>
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
-<translation id="8620765578342452535">Định cấu hình kết nối mạng</translation>
 <translation id="8621866727807194849">Máy tính của bạn có phần mềm độc hại. Chrome đang xóa phần mềm này, khôi phục các tùy chọn cài đặt của bạn và tắt tiện ích. Việc này sẽ giúp trình duyệt của bạn hoạt động lại bình thường.</translation>
 <translation id="8621979332865976405">Chia sẻ toàn bộ màn hình</translation>
 <translation id="862542460444371744">&amp;Tiện ích mở rộng</translation>

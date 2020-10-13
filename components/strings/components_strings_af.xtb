@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Stoor tans kaarte …</translation>
 <translation id="10614374240317010">Nooit gestoor nie</translation>
 <translation id="1062160989074299343">Prc10 (Envelope)</translation>
+<translation id="1066573427009091463">Kontantterugbetaling van <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Werkskermboekmerke</translation>
 <translation id="1068672505746868501">Moet nooit bladsye in <ph name="SOURCE_LANGUAGE" /> vertaal nie</translation>
 <translation id="1070901266639972381">Nag</translation>
@@ -497,6 +498,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2955913368246107853">Maak vindbalk toe</translation>
 <translation id="2969319727213777354">Jou horlosie moet reg gestel wees om 'n veilige verbinding te maak. Die rede hiervoor is dat sertifikate wat deur webwerwe gebruik word om hulself te identifiseer, net vir spesifieke tydperke geldig is. Google Chrome kan nie hierdie sertifikate verifieer nie, omdat jou toestel se horlosie verkeerd is.</translation>
 <translation id="2972581237482394796">Herdoen</translation>
+<translation id="2975775789586780239">Afslag van <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tans gekies. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">As dit geaktiveer is, sal Chromium 'n kopie van jou kaart op hierdie toestel stoor om vorms vinniger in te vul.</translation>
 <translation id="2985398929374701810">Voer 'n geldige adres in</translation>
@@ -702,6 +704,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3784372983762739446">Bluetooth-toestelle</translation>
 <translation id="3787705759683870569">Verval <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Grootte 16</translation>
+<translation id="3789841737615482174">Installeer</translation>
 <translation id="3793574014653384240">Aantal en oorsake van die omvalle wat onlangs voorgekom het</translation>
 <translation id="3797522431967816232">Prc3 (Envelope)</translation>
 <translation id="3799805948399000906">Lettertipe versoek</translation>
@@ -1739,6 +1742,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7976214039405368314">Te veel versoeke</translation>
 <translation id="7977538094055660992">Uitvoertoestel</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">Installeer ARCore om verhoogderealiteitinhoud te bekyk</translation>
 <translation id="799149739215780103">Gebind</translation>
 <translation id="7995512525968007366">Nie gespesifiseer nie</translation>
 <translation id="800218591365569300">Probeer ander oortjies of programme toemaak om berging beskikbaar te maak.</translation>
@@ -1872,6 +1876,7 @@ Bykomende besonderhede:
 <translation id="8542014550340843547">Tripelkram onder</translation>
 <translation id="8543181531796978784">Jy kan <ph name="BEGIN_ERROR_LINK" />'n bespeuringsprobleem aangee<ph name="END_ERROR_LINK" /> of, as jy die risikos vir jou sekuriteit verstaan, kan jy <ph name="BEGIN_LINK" />hierdie onveilige werf besoek<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">Die CVC is agterop jou kaart.</translation>
+<translation id="8558485628462305855">Dateer ARCore op om verhoogderealiteitinhoud te bekyk</translation>
 <translation id="8559762987265718583">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou toestel se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
 <translation id="8564182942834072828">Afsonderlike dokumente/nie-ingesorteerde kopieë</translation>
 <translation id="8564985650692024650">Chromium beveel aan dat jy jou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
@@ -1893,6 +1898,7 @@ Bykomende besonderhede:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Beskikbaar</translation>
 <translation id="868922510921656628">Bladsye per stel</translation>
+<translation id="8697373104056314601"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Skakel gevorderde beskerming aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om Chrome se hoogste vlak van beskerming te kry.</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699041776323235191">HID-toestel</translation>
 <translation id="8703575177326907206">Jou verbinding aan <ph name="DOMAIN" /> is nie geënkripteer nie.</translation>

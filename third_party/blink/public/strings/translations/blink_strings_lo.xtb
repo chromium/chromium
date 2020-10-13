@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">ເຄຣດິດ</translation>
 <translation id="1342835525016946179">ບົດ​ຄວາມ</translation>
 <translation id="1359897965706325498">ປ້າຍ​ໂຄ​ສະ​ນາ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> ລາຍ​ການ</translation>
 <translation id="1480676835519562650">ເລືອກໄດ້ຫຼາຍລາຍການ, ເລືອກ <ph name="SELECTED" /> ຈາກທັງໝົດ <ph name="COUNT" /> ແລ້ວ.</translation>
 <translation id="1589122976691792535">ພາກພື້ນ</translation>
 <translation id="1591562245178063882">ເດືອນ​ນີ້</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">ກ່ອງໂຕ້ຕອບການເຕືອນ</translation>
 <translation id="1821985195704844674">ຕາໜ່າງຕົ້ນໄມ້</translation>
 <translation id="1822429046913737220">ໂມງເຊົ້າ/ໂມງແລງ</translation>
+<translation id="1823704031293214298">ສ່ວນທ້າຍຂອງໜ້າ</translation>
 <translation id="1832974991323546415">ຫຼິ້ນ​ຢູ່​ເທິງ​ອຸ​ປະ​ກອນ​ທາງໄກ</translation>
 <translation id="190587075670221089">ການລຶບ</translation>
 <translation id="1907737156431278478">ຕົວຢ່າງ</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">ອາ​ທິດ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ແທຣັກ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ກ່ອງໝາຍເອົາ</translation>
+<translation id="2307576640803031502">ຢູ່ໃນລາຍຊື່, ລາຍການ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ແບ່ງໜ້າ</translation>
 <translation id="2335594187091864976">ຕົວເລືອກວັນທີ ແລະ ເວລາ</translation>
 <translation id="2393030564806080191">ຄ່າສີແບບຖານສິບຫົກ</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">ສະແດງເດືອນກ່ອນນີ້</translation>
 <translation id="421884353938374759">ຕົວເລືອກສີ</translation>
 <translation id="4248100235867064564">ແຖບເມນູ</translation>
+<translation id="4293574643247337246">ສ່ວນຫົວຂອງໜ້າ</translation>
 <translation id="4360991593054037559">ກະ​ລຸ​ນາ​ປ້ອນຄ່າທີ່ໃຊ້ໄດ້ເຂົ້າໄປ​. ຄ່າທີ່ໃຊ້ໄດ້ຢູ່ໃກ້ທີ່ສຸດທັງສອງ​ແມ່ນ <ph name="VALID_VALUE_LOW" /> ແລະ <ph name="VALID_VALUE_HIGHER" /> .</translation>
 <translation id="4384583879834880242">ຖາມ-ຕອບ</translation>
 <translation id="4444765639179266822">ປາກົດວ່າຈະເວົ້າ: <ph name="OCR_TEXT" /></translation>

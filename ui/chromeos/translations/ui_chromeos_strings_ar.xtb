@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
 <translation id="1399648040768741453">لوحة المفاتيح التيلوغوية (صوتية)</translation>
 <translation id="1430915738399379752">طباعة</translation>
-<translation id="1433600251059882049">‏تمّت مشاركة هذا المجلد مع نظامَي التشغيل Linux وWindows.</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1439494416798956626">تم النقل إلى <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">‏لوحة المفاتيح الفيتنامية (Telex)</translation>
@@ -307,9 +306,7 @@
 <translation id="4470564870223067757">المجموعة رقم 2 الهانغولية</translation>
 <translation id="4477219268485577442">بلغارية صوتية</translation>
 <translation id="4479812471636796472">‏لوحة المفاتيح الأمريكية Dvorak</translation>
-<translation id="4481711095103932593">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Windows.</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
-<translation id="4542387084127299777">يتعذّر فتح "<ph name="PATH" />".</translation>
 <translation id="4552678318981539154">شراء المزيد من مساحة التخزين</translation>
 <translation id="4559767610552730302">‏تأثير Bokeh</translation>
 <translation id="4572815280350369984">ملف <ph name="FILE_TYPE" /></translation>

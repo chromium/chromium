@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">samstarfsaðilar</translation>
 <translation id="1342835525016946179">grein</translation>
 <translation id="1359897965706325498">borði</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> atriði</translation>
 <translation id="1480676835519562650">hægt að velja mörg atriði, <ph name="SELECTED" /> af <ph name="COUNT" /> valin.</translation>
 <translation id="1589122976691792535">svæði</translation>
 <translation id="1591562245178063882">Þessi mánuður</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Vika <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Hljóðrás <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">gátreitur</translation>
+<translation id="2307576640803031502">á lista, atriði <ph name="INDEX" /> af <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">síðuskil</translation>
 <translation id="2335594187091864976">val á dagsetningu og tíma</translation>
 <translation id="2393030564806080191">Sextándakerfisgildi litar</translation>

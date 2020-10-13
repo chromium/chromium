@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">երախտիքի խոսքեր</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">ազդերիզ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> տարր</translation>
 <translation id="1480676835519562650">հնարավոր է ընտրել մի քանի տարբերակ, ընտրվել է <ph name="SELECTED" />-ը՝ <ph name="COUNT" />-ից։</translation>
 <translation id="1589122976691792535">մարզ</translation>
 <translation id="1591562245178063882">Այս ամիս</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">նշավանդակ</translation>
+<translation id="2307576640803031502">ցուցակում, տարր <ph name="INDEX" />՝ <ph name="COUNT" />-ից</translation>
 <translation id="2311842470354187719">էջի ընդհատում</translation>
 <translation id="2335594187091864976">ամսաթվի և ժամի ընտրիչ</translation>
 <translation id="2393030564806080191">Գույնի տասնվեցական կոդը</translation>

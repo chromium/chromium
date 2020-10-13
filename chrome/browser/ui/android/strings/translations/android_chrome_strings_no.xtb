@@ -165,6 +165,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2169830938017475061">Nå</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="218608176142494674">Deling</translation>
+<translation id="2195339740518523951">Få den sterkeste sikkerheten Chrome tilbyr</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">Synkronisering/Google-tjenester</translation>
 <translation id="2239812875700136898">Styr nyhetssakene dine via Alternativer for Discover-knappen</translation>
@@ -256,6 +257,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2893180576842394309">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg</translation>
 <translation id="2898264748040935573">Endre det lagrede passordet</translation>
 <translation id="2900528713135656174">Opprett hendelse</translation>
+<translation id="2901411048554510387">Viser forslag for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Listen over enheter du kan dele faner med, er åpnet i full høyde.</translation>
 <translation id="2905036901251765993">For å dele med personer i nærheten, la dem skanne denne QR-koden</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -269,6 +271,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2989523299700148168">Nylig besøkte</translation>
 <translation id="2996291259634659425">Opprett en passordfrase</translation>
 <translation id="2996809686854298943">Nettadresse kreves</translation>
+<translation id="3006881078666935414">Ingen bruksdata</translation>
 <translation id="3016635187733453316">Kontrollér at enheten er koblet til internett</translation>
 <translation id="3029704984691124060">Passordfrasene stemmer ikke overens</translation>
 <translation id="3034163383943672781">Nedlastingen starter <ph name="DATE" />.</translation>
@@ -441,6 +444,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4405224443901389797">Flytt til …</translation>
 <translation id="4411535500181276704">Forenklet modus</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
+<translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4440958355523780886">Forenklet versjon av siden levert av Google. Trykk for å laste inn den opprinnelige siden.</translation>
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
@@ -799,6 +803,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6783942555455976443">Lagre denne siden til senere, og få en påminnelse</translation>
 <translation id="6811034713472274749">Siden er klar til å vises</translation>
 <translation id="6820686453637990663">CVC</translation>
+<translation id="6824899148643461612"><ph name="TAB_TITLE" />, fane, valgt</translation>
 <translation id="6845325883481699275">Bidra til å gjøre Chrome sikrere</translation>
 <translation id="6846298663435243399">Laster inn …</translation>
 <translation id="6850409657436465440">Nedlastingen din pågår fremdeles</translation>

@@ -702,6 +702,7 @@
 <translation id="3784372983762739446">Уреди со Bluetooth</translation>
 <translation id="3787705759683870569">Истекува на <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Големина 16</translation>
+<translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
 <translation id="3797522431967816232">Prc3 (плик)</translation>
 <translation id="3799805948399000906">Побаран е фонт</translation>
@@ -1739,6 +1740,7 @@
 <translation id="7976214039405368314">Премногу барања</translation>
 <translation id="7977538094055660992">Излезен уред</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">За да прегледувате содржини во проширена реалност, инсталирајте го ARCore</translation>
 <translation id="799149739215780103">Врзување</translation>
 <translation id="7995512525968007366">Не е наведено</translation>
 <translation id="800218591365569300">Обидете се да ги затворите другите картички или програми за да ослободите меморија.</translation>
@@ -1872,6 +1874,7 @@
 <translation id="8542014550340843547">Тројно спојување долу</translation>
 <translation id="8543181531796978784">Може да <ph name="BEGIN_ERROR_LINK" />пријавите проблем со откривањето<ph name="END_ERROR_LINK" /> или, доколку ги разбирате ризиците по безбедноста, <ph name="BEGIN_LINK" />посетете ја оваа небезбедна страница<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">CVC-бројот се наоѓа на задната страна на картичката.</translation>
+<translation id="8558485628462305855">За да прегледувате содржини во проширена реалност, ажурирајте го ARCore</translation>
 <translation id="8559762987265718583">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот уред (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
 <translation id="8564182942834072828">Одделни документи/неподредени примероци</translation>
 <translation id="8564985650692024650">Chromium препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>

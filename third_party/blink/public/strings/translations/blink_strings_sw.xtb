@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">walioshiriki</translation>
 <translation id="1342835525016946179">makala</translation>
 <translation id="1359897965706325498">bango</translation>
+<translation id="145015347812617860">Vipengee <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">unaweza kuchagua wengi, umechagua <ph name="SELECTED" /> kati ya <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">eneo</translation>
 <translation id="1591562245178063882">Mwezi huu</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">kidirisha cha arifa</translation>
 <translation id="1821985195704844674">gridi ya mti</translation>
 <translation id="1822429046913737220">AM / PM</translation>
+<translation id="1823704031293214298">kijachini cha ukurasa</translation>
 <translation id="1832974991323546415">cheza kwenye kifaa cha mbali</translation>
 <translation id="190587075670221089">ufutaji</translation>
 <translation id="1907737156431278478">mfano</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Wiki <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Wimbo wa <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">kisanduku cha kuteua</translation>
+<translation id="2307576640803031502">kwenye orodha, kipengee cha <ph name="INDEX" /> kati ya <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">nafasi ya kugawa kurasa</translation>
 <translation id="2335594187091864976">mchumaji tarehe na wakati</translation>
 <translation id="2393030564806080191">Nambari ya rangi ya heksadesimali</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Onyesha mwezi uliotangulia</translation>
 <translation id="421884353938374759">kiteua rangi</translation>
 <translation id="4248100235867064564">upau wa menyu</translation>
+<translation id="4293574643247337246">kijajuu cha ukurasa</translation>
 <translation id="4360991593054037559">Tafadhali ingiza thamani halali. Thamani mbili halali za karibu ni <ph name="VALID_VALUE_LOW" /> na <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Maswali na Majibu</translation>
 <translation id="4444765639179266822">Inaonekana kusema: <ph name="OCR_TEXT" /></translation>

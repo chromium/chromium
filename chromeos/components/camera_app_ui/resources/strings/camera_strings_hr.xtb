@@ -3,6 +3,7 @@
 <translationbundle lang="hr">
 <translation id="1276998909102132017">Slike iz galerije</translation>
 <translation id="1430915738399379752">Ispis</translation>
+<translation id="1473110567575736769">Odbrojavanje od 3 sekunde</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nije snimljeno ništa</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">Snimanje portretne fotografije nije uspjelo</translation>
 <translation id="3569311554794739032">Želite li doista ukloniti datoteku <ph name="FILE" />?</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="4000398125663085899">Nove fotografije i videozapisi sad će se spremati u mapu u aplikaciji Datoteke: Moje datoteke &gt; Kamera</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4329152592498422850">Prijeđi na snimanje kvadratne fotografije</translation>
@@ -62,6 +64,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="6965382102122355670">U redu</translation>
 <translation id="698156982839284926">Tri sekunde</translation>
 <translation id="712848772518857951">Želite li doista ukloniti stavke (njih <ph name="COUNT" />)?</translation>
+<translation id="7134221860976209830">Odbrojavanje od 10 sekundi</translation>
 <translation id="7243947652761655814">Razlučivost videozapisa</translation>
 <translation id="7337660886763914220">Pogreške datotečnog sustava.</translation>
 <translation id="7557677699350329807">Prijeđi na sljedeći fotoaparat</translation>

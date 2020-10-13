@@ -696,6 +696,7 @@
 <translation id="3784372983762739446">Bluetoothデバイス</translation>
 <translation id="3787705759683870569">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">サイズ 16</translation>
+<translation id="3789841737615482174">インストール</translation>
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
 <translation id="3797522431967816232">Prc3（封筒）</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
@@ -1728,6 +1729,7 @@
 <translation id="7976214039405368314">リクエストが多すぎます</translation>
 <translation id="7977538094055660992">出力デバイス</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">拡張現実（AR）コンテンツを表示するには ARCore をインストールしてください</translation>
 <translation id="799149739215780103">製本</translation>
 <translation id="7995512525968007366">指定なし</translation>
 <translation id="800218591365569300">メモリを解放するために、他のタブやプログラムを閉じてみてください。</translation>
@@ -1861,6 +1863,7 @@
 <translation id="8542014550340843547">3 か所のステープル（下）</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />検出の問題をご報告<ph name="END_ERROR_LINK" />ください。<ph name="BEGIN_LINK" />安全でないこのサイトにアクセス<ph name="END_LINK" />する場合は、セキュリティ上のリスクがあることをご承知おきください。</translation>
 <translation id="8557066899867184262">CVC はカードの裏面に記載されています。</translation>
+<translation id="8558485628462305855">拡張現実（AR）コンテンツを表示するには ARCore を更新してください</translation>
 <translation id="8559762987265718583">デバイスの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="8564182942834072828">個別のドキュメント（丁合いなし）</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>

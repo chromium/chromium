@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">anerkjennelser</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
 <translation id="1480676835519562650">node med flere mulige valg – <ph name="SELECTED" /> av <ph name="COUNT" /> er valgt.</translation>
 <translation id="1589122976691792535">område</translation>
 <translation id="1591562245178063882">Denne måneden</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">varseldialog</translation>
 <translation id="1821985195704844674">trerutenett</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">sidebunn</translation>
 <translation id="1832974991323546415">spill på ekstern enhet</translation>
 <translation id="190587075670221089">sletting</translation>
 <translation id="1907737156431278478">eksempel</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">Uke <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">avmerkingsboks</translation>
+<translation id="2307576640803031502">på listen, element <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">sideskift</translation>
 <translation id="2335594187091864976">dato- og klokkeslettvelger</translation>
 <translation id="2393030564806080191">Heksadesimal fargeverdi</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Se forrige måned</translation>
 <translation id="421884353938374759">fargevelger</translation>
 <translation id="4248100235867064564">menyrad</translation>
+<translation id="4293574643247337246">sideoverskrift</translation>
 <translation id="4360991593054037559">Skriv inn en gyldig verdi. De to nærmeste, gyldige verdiene er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Spørsmål og svar</translation>
 <translation id="4444765639179266822">Det ser ut til at det står <ph name="OCR_TEXT" /></translation>

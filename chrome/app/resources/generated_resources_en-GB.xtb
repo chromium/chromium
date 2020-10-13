@@ -393,6 +393,7 @@
 <translation id="1436390408194692385">Valid for <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Continue setup</translation>
 <translation id="1436784010935106834">Removed</translation>
+<translation id="1437986450143295708">Describe the issue in detail</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
@@ -2843,6 +2844,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4301671483919369635">This page is allowed to edit files</translation>
 <translation id="4303079906735388947">Set up a new PIN for your security key</translation>
 <translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Switch</translation>
 <translation id="4306119971288449206">Apps must be served with content-type '<ph name="CONTENT_TYPE" />'</translation>
 <translation id="4307992518367153382">Basics</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
@@ -5948,7 +5950,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7982789257301363584">Network</translation>
 <translation id="7984068253310542383">Mirror <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Do you want to use Touch ID with <ph name="APP_NAME" /> in Incognito mode?</translation>
-<translation id="79859296434321399">To view augmented reality content, install ARCore</translation>
 <translation id="7986295104073916105">Read and change saved password settings</translation>
 <translation id="7987814697832569482">Always connect through this VPN</translation>
 <translation id="7988355189918024273">Enable accessibility features</translation>
@@ -6424,7 +6425,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8557022314818157177">Keep touching your security key until your fingerprint is captured</translation>
 <translation id="855773602626431402">An unsandboxed plug-in was prevented from running on this page.</translation>
 <translation id="8557930019681227453">Manifest</translation>
-<translation id="8558485628462305855">To view augmented reality content, update ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Open all in &amp;new window}=1{Open in &amp;new window}other{Open all ({COUNT}) in &amp;new window}}</translation>
 <translation id="8561206103590473338">Elephant</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6469,7 +6469,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Your parents haven't approved it yet</translation>
 <translation id="8620617069779373398">Roaming status</translation>
-<translation id="8620765578342452535">Configure network connections</translation>
 <translation id="8621866727807194849">There's harmful software on your computer. Chrome is removing it, restoring your settings and disabling extensions. This will make your browser work normally again.</translation>
 <translation id="8621979332865976405">Share your entire screen</translation>
 <translation id="862542460444371744">&amp;Extensions</translation>

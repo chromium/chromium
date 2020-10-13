@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Tafuta Kitelezi</translation>
 <translation id="1399648040768741453">Kibodi ya Kitelugu (Fonetiki)</translation>
 <translation id="1430915738399379752">Chapisha</translation>
-<translation id="1433600251059882049">Folda hii imeshirikiwa na Linux na Windows</translation>
 <translation id="1435838927755162558">Shiriki folda na Parallels Desktop</translation>
 <translation id="1439494416798956626">Imehamishiwa kwenye <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Kibodi ya Kivietnamu (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Inafungua faili za Linux...</translation>
 <translation id="1547964879613821194">Kiingereza cha Kanada</translation>
 <translation id="1556189134700913550">Tumia kwa zote</translation>
+<translation id="1561842594491319104">Vifaa vya Chrome</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="158809615184981282">Kibodi ya Kifaroe</translation>
 <translation id="1589128298353575783">PB <ph name="NUMBER_OF_PB" /></translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Unukuzi wa mfumo wa kuandika (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Faili za Windows</translation>
 <translation id="3078461028045006476">Shiriki na <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">Kibodi ya Uingereza</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">IMEKAMILIKA</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Seti ya Hangul 2</translation>
 <translation id="4477219268485577442">Fonetiki ya Kibulgaria</translation>
 <translation id="4479812471636796472">Kibodi ya Dvorak ya Marekani</translation>
-<translation id="4481711095103932593">Umeshiriki folda hii na Windows</translation>
 <translation id="4522570452068850558">Maelezo</translation>
-<translation id="4542387084127299777">Imeshindwa kufungua "<ph name="PATH" />"</translation>
 <translation id="4552678318981539154">Nunua hifadhi zaidi</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Faili ya <ph name="FILE_TYPE" /></translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Parachichi</translation>
 <translation id="4823651846660089135">Kifaa ni cha kusoma tu</translation>
 <translation id="4839847978919684242">Vifaa <ph name="SELCTED_FILES_COUNT" /> vilivyochaguliwa</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">Kijerumani (Ubelgiji)</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
 <translation id="485316830061041779">Kijerumani</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Ruhusu programu za Linux zibadilishe faili kwenye Hifadhi yako ya Google. Mabadiliko utakayofanya yatasawazishwa kwenye vifaa vyako vingine.</translation>
 <translation id="5955954492236143329">Faili <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Chaguo za kupanga</translation>
 <translation id="6005282720244019462">Kibodi ya Amerika Kusini</translation>
 <translation id="6007237601604674381">Kusogezwa kumeshindika. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
         <ph name="MARKUP_4" />futa faili kutoka kwa folda yako ya Vipakuliwa<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Tayarisha kifaa ili kuweze kutumika</translation>
 <translation id="7799329977874311193">Hati ya HTML</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">Hali</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> zimepatikana.
     <ph name="LINE_BREAK1" />

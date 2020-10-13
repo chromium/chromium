@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Schieberegler für die Suche</translation>
 <translation id="1399648040768741453">Telugu-Tastatur (phonetisch)</translation>
 <translation id="1430915738399379752">Drucken</translation>
-<translation id="1433600251059882049">Dieser Ordner ist für Linux und Windows freigegeben</translation>
 <translation id="1435838927755162558">Ordner für Parallels Desktop freigeben</translation>
 <translation id="1439494416798956626">Verschoben nach <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Vietnamesische Tastatur (Telex)</translation>
@@ -307,9 +306,7 @@
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">Bulgarisch – phonetisch</translation>
 <translation id="4479812471636796472">US-amerikanische Dvorak-Tastatur</translation>
-<translation id="4481711095103932593">Dieser Ordner wird für Windows freigegeben</translation>
 <translation id="4522570452068850558">Details</translation>
-<translation id="4542387084127299777"><ph name="PATH" /> kann nicht geöffnet werden</translation>
 <translation id="4552678318981539154">Mehr Speicherplatz erwerben</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-Datei</translation>
@@ -530,7 +527,7 @@
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
 <translation id="6657585470893396449">Passwort</translation>
-<translation id="6710213216561001401">Vorherige Einreichung</translation>
+<translation id="6710213216561001401">Zurück</translation>
 <translation id="6718273304615422081">Wird gezippt...</translation>
 <translation id="6751256176799620176">1 Ordner ausgewählt</translation>
 <translation id="6760765581316020278">Vietnamesische Tastatur (VNI)</translation>
@@ -680,7 +677,7 @@
 <translation id="8157684860301034423">Fehler beim Abrufen der App-Informationen.</translation>
 <translation id="8157939133946352716">7 x 5</translation>
 <translation id="8160015581537295331">Spanische Tastatur</translation>
-<translation id="8179976553408161302">Enter</translation>
+<translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
 <translation id="8208580316430297579">Artwork</translation>
 <translation id="8223479393428528563">Wenn Sie diese Dateien zur Offline-Nutzung speichern möchten, gehen Sie online, klicken Sie mit der rechten Maustaste auf die Dateien und wählen Sie die Option "<ph name="OFFLINE_CHECKBOX_NAME" />" aus.</translation>

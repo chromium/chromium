@@ -170,6 +170,7 @@
       Se esta configuração for ativada, o SafeSearch na Pesquisa Google e o Modo restrito moderado no YouTube sempre ficarão ativos.
 
       Se você desativar esta configuração ou não definir um valor, o SafeSearch na Pesquisa Google e o Modo restrito no YouTube não serão impostos.</translation>
+<translation id="1353416417709895349">Desativar verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="1353985065430729216">Se a política for definida, será possível configurar uma lista de padrões de URL que especifique os sites que podem acessar sensores de luz e movimento.
 
       Se a política não tiver definição, <ph name="DEFAULT_SENSORS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -428,6 +429,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se ela for definida como falsa, os usuários não poderão adicionar, remover ou modificar favoritos. Eles ainda poderão usar os favoritos já existentes.</translation>
 <translation id="1715151459541210849">Ativar recurso de acessibilidade de ditado</translation>
 <translation id="172374442286684480">Permitir que todos os sites definam dados locais</translation>
+<translation id="1727914891824633693">Permitir uso do Lacros</translation>
 <translation id="1736269219679256369">Permitir a continuação na página de aviso SSL</translation>
 <translation id="1745973235372964482">Não permitir arquivos protegidos por senha</translation>
 <translation id="1749815929501097806">Define os Termos de Serviço que o usuário deve aceitar antes de iniciar uma sessão da conta local do dispositivo.
@@ -2306,6 +2308,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Embora a política seja compatível com as plataformas acima, o recurso que ela ativa pode estar disponível em menos plataformas, Nem todos os recursos de uso suspenso da plataforma Web podem ser reativados. Apenas aqueles explicitamente listados abaixo podem ser reativados por um período de tempo limitado, e isso difere de acordo com o recurso. O formato geral da tag de string será [NomeDoRecursoDeUsoSuspenso]_EffectiveUntil[aaaammdd]. Como referência, é possível verificar o objeto por trás das alterações do recurso da plataforma Web em https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Ativar o bloqueio quando o dispositivo entrar no modo ocioso ou suspenso</translation>
+<translation id="4447668084338250480">Comportamento de redirecionamento à intranet</translation>
 <translation id="4449469846627734399">Definir configuração do dia para a economia de energia no período de pico</translation>
 <translation id="4449545651113180484">Girar tela no sentido horário em 270 graus</translation>
 <translation id="445270821089253489">Controla quais tipos de informações do usuário e do dispositivo são enviadas.</translation>
@@ -2684,6 +2687,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="5148753489738115745">Permite especificar os parâmetros adicionais que são usados quando o <ph name="PRODUCT_FRAME_NAME" /> inicia o <ph name="PRODUCT_NAME" />. Se essa política não for configurada, será usada a linha de comando padrão.</translation>
 <translation id="5150323673529584553">Não verificar arquivos</translation>
+<translation id="5152393033264257734">Permitir verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Esta política está obsoleta. Use a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
@@ -2733,6 +2737,12 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       * desativada ou se nenhum valor for definido, o Modo restrito no YouTube não será aplicado pelo Chrome. Políticas externas, como as do YouTube, ainda poderão aplicar o Modo restrito.</translation>
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
 <translation id="5196520640744454600">Ativar as teclas de aderência na tela de login</translation>
+<translation id="5208675398826212411">Esta política configura o comportamento de redirecionamento à intranet por verificações de interceptação de DNS. As verificações tentam descobrir se o navegador está por trás de um proxy que redireciona nomes de host desconhecidos.
+
+      Se a política não for definida, o navegador usará o comportamento padrão de verificações de interceptação de DNS e sugestões de redirecionamento à intranet. Na versão M88, esses comportamentos estão ativados por padrão, mas serão desativados em uma versão futura.
+
+      A <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> é uma política relacionada que também pode desativar verificações de interceptação de DNS. Esta política é uma versão mais flexível, que pode controlar barras de informações de redirecionamento à intranet separadamente e ainda pode ser expandida no futuro.
+      Se <ph name="DNS_INTERCEPTION_CHECKS_ENABLED_POLICY_NAME" /> ou esta política solicitarem que as verificações de interceptação sejam desativadas, elas serão desativadas.</translation>
 <translation id="5212118847531454979">Permite definir o período, em milissegundos, em que os usuários são notificados de que o <ph name="PRODUCT_NAME" /> ou um dispositivo <ph name="PRODUCT_OS_NAME" /> precisa ser reiniciado para aplicar uma atualização pendente.
 
       Nesse período, o usuário será informado várias vezes sobre a necessidade de atualização. Para dispositivos <ph name="PRODUCT_OS_NAME" />, uma notificação de reinicialização é exibida na bandeja do sistema de acordo com a política <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME" />. Para navegadores <ph name="PRODUCT_NAME" />, o menu do app muda para indicar que uma reinicialização é necessária após o decorrer de um terço do período de notificação. Essa notificação muda de cor após dois terços do período de notificação e muda mais uma vez quando todo o período de notificação é concluído. As outras notificações ativadas pela política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> seguem essa mesma programação.
@@ -3323,6 +3333,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="6011969832398368671">Permitir que sites peçam ao usuário para conceder acesso de gravação de arquivos e diretórios</translation>
+<translation id="6012952794649558174">Usar comportamento do navegador padrão.</translation>
 <translation id="6015281292796053435">Esta política controla a permissão de fornecimento de informações do "Navegação segura", incluindo o número de avisos e de cliques no aviso.
 
       Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, esta política será ignorada.
@@ -3794,6 +3805,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6672630473862787247">Ativar a autenticação pelo SO em sessões normais, anônimas e de visitante.</translation>
 <translation id="6685903773201985073">Ativar a autenticação pelo SO em sessões normais e de visitante.</translation>
 <translation id="6689792153960219308">Informar status de hardware</translation>
+<translation id="6690425645391461516">Desativar verificações de interceptação de DNS. Permitir barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="6698632841807204978">Ativar impressão monocromática</translation>
 <translation id="6699880231565102694">Ativar autenticação de dois fatores para hosts de acesso remoto</translation>
 <translation id="6703251016607733593">A definição da política desativa a aplicação dos requisitos de divulgação da Transparência dos certificados para uma lista de hashes <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Os hosts comerciais podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que eles não foram divulgados publicamente de maneira adequada. Para desativar a aplicação, o hash precisa atender a uma destas condições:
@@ -5472,6 +5484,13 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8976248126101463034">Permitir autenticação gnubby para hosts de acesso remoto</translation>
 <translation id="8976531594979650914">Usar a impressora padrão do sistema como padrão</translation>
 <translation id="8977192934280677167">Permitir o acesso à pesquisa do menu de contexto pelo provedor de pesquisa padrão</translation>
+<translation id="8990697325184394573">Esta configuração permite que os usuários usem o navegador Lacros.
+
+      Se a política for definida como falsa, não será possível usar o Lacros.
+
+      Se a política for definida como verdadeira, será possível usar o navegador Lacros.
+
+      Se a política não for definida, não será possível usar o navegador Lacros.</translation>
 <translation id="8992176907758534924">Não permitir que nenhum site exiba imagens</translation>
 <translation id="9007632512838819703">Esta política está obsoleta. Use <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 

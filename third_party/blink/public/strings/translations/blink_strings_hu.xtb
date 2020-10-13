@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">készítők</translation>
 <translation id="1342835525016946179">cikk</translation>
 <translation id="1359897965706325498">szalaghirdetés</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="1480676835519562650">több is választható, <ph name="COUNT" />/<ph name="SELECTED" /> van kiválasztva.</translation>
 <translation id="1589122976691792535">régió</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">értesítő párbeszédpanel</translation>
 <translation id="1821985195704844674">farács</translation>
 <translation id="1822429046913737220">de./du.</translation>
+<translation id="1823704031293214298">oldallábléc</translation>
 <translation id="1832974991323546415">lejátszás távoli eszközön</translation>
 <translation id="190587075670221089">törlés</translation>
 <translation id="1907737156431278478">példa</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
 <translation id="2291999235780842123">jelölőnégyzet</translation>
+<translation id="2307576640803031502">a lista <ph name="INDEX" />/<ph name="COUNT" />. eleme</translation>
 <translation id="2311842470354187719">oldaltörés</translation>
 <translation id="2335594187091864976">dátum- és időválasztó</translation>
 <translation id="2393030564806080191">Szín hexadecimális értéke</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Az előző hónap megjelenítése</translation>
 <translation id="421884353938374759">színválasztó</translation>
 <translation id="4248100235867064564">menüsor</translation>
+<translation id="4293574643247337246">oldalfejléc</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Kérdések és válaszok</translation>
 <translation id="4444765639179266822">Úgy tűnik, hogy a következő látható rajta: <ph name="OCR_TEXT" /></translation>

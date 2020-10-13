@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">crédits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bannière</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> éléments</translation>
 <translation id="1480676835519562650">sélection multiple possible, <ph name="SELECTED" /> éléments sur <ph name="COUNT" /> sélectionnés.</translation>
 <translation id="1589122976691792535">région</translation>
 <translation id="1591562245178063882">Ce mois</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Semaine <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Piste <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">case à cocher</translation>
+<translation id="2307576640803031502">dans la liste, élément <ph name="INDEX" /> sur <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">saut de page</translation>
 <translation id="2335594187091864976">outil de sélection de la date et de l'heure</translation>
 <translation id="2393030564806080191">Valeur de couleur hexadécimale</translation>

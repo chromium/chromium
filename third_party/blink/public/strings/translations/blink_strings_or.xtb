@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">କ୍ରେଡିଟ୍</translation>
 <translation id="1342835525016946179">ଆର୍ଟିକଲ୍‍</translation>
 <translation id="1359897965706325498">ବ୍ୟାନର୍</translation>
+<translation id="145015347812617860"><ph name="COUNT" />ଟି ଆଇଟମ୍</translation>
 <translation id="1480676835519562650">ଏକାଧିକ ଚୟନ କରାଯାଇପାରୁଥିବା, <ph name="COUNT" />ଟିରୁ <ph name="SELECTED" />ଟି ଚୟନ କରାଯାଇଛି ।</translation>
 <translation id="1589122976691792535">ଅଞ୍ଚଳ</translation>
 <translation id="1591562245178063882">ଏହି ମାସ</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">ଆଲର୍ଟ ଡାୟଲଗ୍‌</translation>
 <translation id="1821985195704844674">ଟ୍ରୀ ଗ୍ରିଡ୍</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">ପୃଷ୍ଠାର ଫୁଟର୍</translation>
 <translation id="1832974991323546415">ରିମୋଟ୍‍ ଡିଭାଇସ୍‌ ଚଲାନ୍ତୁ</translation>
 <translation id="190587075670221089">ଡିଲିଟ୍ କରିବା ପ୍ରକ୍ରିୟା</translation>
 <translation id="1907737156431278478">ଉଦାହରଣ</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> ସପ୍ତାହ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ଟ୍ରାକ୍ <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ଚେକ୍‌ବକ୍ସ</translation>
+<translation id="2307576640803031502">ତାଲିକାରେ, <ph name="COUNT" />ଟିରୁ <ph name="INDEX" /> ଆଇଟମ୍</translation>
 <translation id="2311842470354187719">ପେଜ୍ ବ୍ରେକ୍</translation>
 <translation id="2335594187091864976">ତାରିଖ ଓ ସମୟ ପିକର୍</translation>
 <translation id="2393030564806080191">ହେକ୍ସାଡେସିମାଲ୍ ରଙ୍ଗର ମୂଲ୍ୟ</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">ପୂର୍ବ ମାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="421884353938374759">କଲର୍ ପିକର୍</translation>
 <translation id="4248100235867064564">ମେନୁ ବାର୍</translation>
+<translation id="4293574643247337246">ପୃଷ୍ଠାର ହେଡର୍</translation>
 <translation id="4360991593054037559">ଦୟାକରି, ଏକ ବୈଧ ମୂଲ୍ୟ ଲେଖନ୍ତୁ ଦୁଇଟି ନିକଟସ୍ଥ ବୈଧ ମାନ <ph name="VALID_VALUE_LOW" /> ଏବଂ <ph name="VALID_VALUE_HIGHER" />ଅଟେ।</translation>
 <translation id="4384583879834880242">ପ୍ରଶ୍ନ&amp;ଉତ୍ତର</translation>
 <translation id="4444765639179266822">ଏହି ସୂଚନା ଏହି ବିଷୟରେ ଲାଗୁଛି: <ph name="OCR_TEXT" /></translation>

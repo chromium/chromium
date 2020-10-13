@@ -48,7 +48,6 @@
 <translation id="1395262318152388157">Slider ng seek bar</translation>
 <translation id="1399648040768741453">Telugu keyboard (Phonetic)</translation>
 <translation id="1430915738399379752">I-print</translation>
-<translation id="1433600251059882049">Nakabahagi sa Linux at Windows ang folder na ito</translation>
 <translation id="1435838927755162558">Ibahagi ang folder sa Parallels Desktop</translation>
 <translation id="1439494416798956626">Inilipat sa <ph name="FOLDER_NAME" />.</translation>
 <translation id="1441841714100794440">Vietnamese keyboard (Telex)</translation>
@@ -61,6 +60,7 @@
 <translation id="1538729222189715449">Binubuksan ang mga Linux file...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
+<translation id="1561842594491319104">Mga Chrome device</translation>
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
 <translation id="158809615184981282">Faroese na keyboard</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -190,6 +190,7 @@
 <translation id="3064388234319122767">Transliteration (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Mga Windows file</translation>
 <translation id="3078461028045006476">Ibahagi sa <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Mga Chromebit</translation>
 <translation id="3116361045094675131">UK keyboard</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">TAPOS NA</translation>
@@ -307,9 +308,7 @@
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477219268485577442">Bulgarian phonetic</translation>
 <translation id="4479812471636796472">US Dvorak na keyboard</translation>
-<translation id="4481711095103932593">Nakabahagi ang folder na ito sa Windows</translation>
 <translation id="4522570452068850558">Mga Detalye</translation>
-<translation id="4542387084127299777">Hindi mabuksan ang "<ph name="PATH" />"</translation>
 <translation id="4552678318981539154">Bumili ng higit pang storage</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> na file</translation>
@@ -344,6 +343,7 @@
 <translation id="4804827417948292437">Abukado</translation>
 <translation id="4823651846660089135">Read-only ang device</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> (na) item ang pinili</translation>
+<translation id="4843566743023903107">Mga Chromebase</translation>
 <translation id="4849981557599196363">German (Belgium)</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
@@ -473,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Bigyan ang mga Linux app ng pahintulot na baguhin ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
+<translation id="5957366693331451795">Mga Chromebox</translation>
 <translation id="5982621672636444458">Mga opsyon sa pag-uuri</translation>
 <translation id="6005282720244019462">Latin American na keyboard</translation>
 <translation id="6007237601604674381">Nabigo ang paglipat. <ph name="ERROR_MESSAGE" /></translation>
@@ -632,6 +633,7 @@
     <ph name="MARKUP_4" />magtanggal ng mga file sa iyong folder na Mga Download<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">I-format ang device</translation>
 <translation id="7799329977874311193">HTML na dokumento</translation>
+<translation id="7801354353640549019">Mga Chromebook</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> ang nakita.
     <ph name="LINE_BREAK1" />

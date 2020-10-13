@@ -2816,6 +2816,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4301671483919369635">Kjo faqe lejohet të modifikojë skedarët</translation>
 <translation id="4303079906735388947">Konfiguro një kod të ri PIN për çelësin e sigurisë</translation>
 <translation id="4305402730127028764">Kopjo te <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Ndërro</translation>
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>
 <translation id="4307992518367153382">Bazat</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB të drejtpërdrejta)</translation>
@@ -5885,7 +5886,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7982789257301363584">Rrjeti</translation>
 <translation id="7984068253310542383">Pasqyro <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">Dëshiron të përdorësh Touch ID me <ph name="APP_NAME" /> në modalitetin "I fshehtë"?</translation>
-<translation id="79859296434321399">Për të parë përmbajtje realiteti të zgjeruar, instalo ARCore</translation>
 <translation id="7986295104073916105">Lexo dhe ndrysho cilësimet e fjalëkalimeve të ruajtura</translation>
 <translation id="7987814697832569482">Lidhu gjithmonë nëpërmjet këtij rrjeti VPN</translation>
 <translation id="7988355189918024273">Aktivizo veçoritë e qasshmërisë</translation>
@@ -6356,7 +6356,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
 <translation id="855773602626431402">Një përbërës shtesë i pakufizuar u pengua që të ekzekutohet në këtë faqe.</translation>
 <translation id="8557930019681227453">Manifesti</translation>
-<translation id="8558485628462305855">Për të parë përmbajtje realiteti të zgjeruar, përditëso ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Hapi të gjitha në &amp;dritare të re}=1{Hape në &amp;dritare të re}other{Hapi të gjitha ({COUNT}) në &amp;dritare të re}}</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6401,7 +6400,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Prindërit e tu nuk e kanë miratuar ende atë</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
-<translation id="8620765578342452535">Konfiguro lidhjet e rrjetit</translation>
 <translation id="8621866727807194849">Ka një softuer keqdashës në kompjuterin tënd. Chrome po e heqë atë, po restauron cilësimet e tua dhe po çaktivizon shtesat. Kjo do të bëjë që shfletuesi të punojë përsëri si normalisht.</translation>
 <translation id="8621979332865976405">Ndaj të gjithë ekranin tënd</translation>
 <translation id="862542460444371744">&amp;Shtesat</translation>

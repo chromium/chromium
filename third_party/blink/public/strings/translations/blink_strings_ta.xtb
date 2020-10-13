@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">பங்களித்தவர்கள்</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">பேனர்</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> உருப்படிகள்</translation>
 <translation id="1480676835519562650">பலவற்றைத் தேர்ந்தெடுக்கலாம், <ph name="SELECTED" />/<ph name="COUNT" /> தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
 <translation id="1589122976691792535">மண்டலம்</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">விழிப்பூட்டல்_உரையாடல்</translation>
 <translation id="1821985195704844674">ட்ரீ கிரிட்</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">பக்க அடிக்குறிப்பு</translation>
 <translation id="1832974991323546415">தொலைநிலைச் சாதனத்தில் இயக்கு</translation>
 <translation id="190587075670221089">நீக்கும்</translation>
 <translation id="1907737156431278478">உதாரணம்</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">டிராக் <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">செக்பாக்ஸ்</translation>
+<translation id="2307576640803031502">பட்டியலில் உள்ளது (<ph name="INDEX" />/<ph name="COUNT" />)</translation>
 <translation id="2311842470354187719">பக்க முறிப்பு</translation>
 <translation id="2335594187091864976">தேதி மற்றும் நேரம் தேர்வுக் கருவி</translation>
 <translation id="2393030564806080191">ஹெக்சாடெசிமல் வண்ண மதிப்பு</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">முந்தைய மாதத்தைக் காட்டு</translation>
 <translation id="421884353938374759">வண்ணத் தேர்வுக் கருவி</translation>
 <translation id="4248100235867064564">மெனுப் பட்டி</translation>
+<translation id="4293574643247337246">பக்க மேற்குறிப்பு</translation>
 <translation id="4360991593054037559">சரியான மதிப்பை உள்ளிடவும். <ph name="VALID_VALUE_LOW" /> மற்றும் <ph name="VALID_VALUE_HIGHER" /> ஆகியவை மிக நெருக்கமான சரியான இரண்டு மதிப்புகளாகும்.</translation>
 <translation id="4384583879834880242">கேள்வி-பதில்</translation>
 <translation id="4444765639179266822"><ph name="OCR_TEXT" /> என்று சொல்வதாகத் தோன்றுகிறது</translation>

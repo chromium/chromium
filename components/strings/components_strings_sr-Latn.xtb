@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Kartice se čuvaju...</translation>
 <translation id="10614374240317010">Nikada se ne čuva</translation>
 <translation id="1062160989074299343">Prc10 (koverat)</translation>
+<translation id="1066573427009091463">Povraćaj gotovine od <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Obeleživači na računaru</translation>
 <translation id="1068672505746868501">Nikad ne prevodi stranice na jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noć</translation>
@@ -497,6 +498,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2955913368246107853">Zatvorite traku za pronalaženje</translation>
 <translation id="2969319727213777354">Da biste uspostavili bezbednu vezu, sat na uređaju mora da bude tačan. To je zato što sertifikati koje veb-sajtovi koriste za identifikaciju važe samo za određene vremenske periode. Pošto sat na vašem uređaju nije tačan, Google Chrome ne može da verifikuje te sertifikate.</translation>
 <translation id="2972581237482394796">&amp;Ponovi radnju</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> popusta</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, trenutno izabrano. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Ako omogućite ovu opciju, Chromium će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="2985398929374701810">Unesite važeću adresu</translation>
@@ -702,6 +704,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3784372983762739446">Bluetooth uređaji</translation>
 <translation id="3787705759683870569">Ističe <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Veličina 16</translation>
+<translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3793574014653384240">Broj nedavnih otkazivanja i razlozi</translation>
 <translation id="3797522431967816232">Prc3 (koverat)</translation>
 <translation id="3799805948399000906">Font je zatražen</translation>
@@ -1738,6 +1741,7 @@ Dodatni detalji:
 <translation id="7976214039405368314">Previše je zahteva</translation>
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">Da biste videli sadržaj proširene realnosti, instalirajte ARCore</translation>
 <translation id="799149739215780103">Povezivanje</translation>
 <translation id="7995512525968007366">Nije navedeno</translation>
 <translation id="800218591365569300">Probajte da zatvorite druge kartice ili programe da biste oslobodili memoriju.</translation>
@@ -1871,6 +1875,7 @@ Dodatni detalji:
 <translation id="8542014550340843547">Trostruko spajanje na dnu</translation>
 <translation id="8543181531796978784">Možete da <ph name="BEGIN_ERROR_LINK" />prijavite problem sa otkrivanjem<ph name="END_ERROR_LINK" /> ili, ako shvatate bezbednosne rizike, <ph name="BEGIN_LINK" />posetite ovaj nebezbedan sajt<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">CVC je na poleđini kartice.</translation>
+<translation id="8558485628462305855">Da biste videli sadržaj proširene realnosti, ažurirajte ARCore</translation>
 <translation id="8559762987265718583">Nije moguće uspostaviti privatnu vezu sa domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer datum i vreme na uređaju (<ph name="DATE_AND_TIME" />) nisu tačni.</translation>
 <translation id="8564182942834072828">Odvojeni dokumenti/nesređene kopije</translation>
 <translation id="8564985650692024650">Chromium vam preporučuje da resetujete lozinku za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je koristili na drugim sajtovima.</translation>
@@ -1893,6 +1898,7 @@ Dodatni detalji:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Dostupno</translation>
 <translation id="868922510921656628">Stranice po skupu</translation>
+<translation id="8697373104056314601">Da biste dobili najviši nivo zaštite u Chrome-u, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />uključite poboljšanu zaštitu<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699041776323235191">Uređaj sa interfejsom</translation>
 <translation id="8703575177326907206">Vaša veza sa domenom <ph name="DOMAIN" /> nije šifrovana.</translation>

@@ -2816,6 +2816,7 @@
 <translation id="4301671483919369635">Бұл бетке файлдарды өңдеуге рұқсат етілген.</translation>
 <translation id="4303079906735388947">Қауіпсіздік кілтіңіз үшін жаңа PIN кодын орнатыңыз.</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> құрылғысына көшіру</translation>
+<translation id="4305817255990598646">Ауысу</translation>
 <translation id="4306119971288449206">Қолданбаларға "<ph name="CONTENT_TYPE" />" мазмұнымен қызмет көрсетілуі керек</translation>
 <translation id="4307992518367153382">Негізгілер</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KБ (<ph name="NUM_KILOBYTES_LIVE" /> KБ белсенді)</translation>
@@ -5886,7 +5887,6 @@
 <translation id="7982789257301363584">Желі</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> дисплейінің көшірмесін көрсету</translation>
 <translation id="7985283639530788531">Инкогнито режимінде <ph name="APP_NAME" /> қолданбасымен Touch ID мүмкіндігін пайдаланғыңыз келе ме?</translation>
-<translation id="79859296434321399">Толықтырылған шындық мазмұнын көру үшін ARCore платформасын орнатыңыз</translation>
 <translation id="7986295104073916105">Сақталған құпия сөз параметрлерін оқып, өзгерту</translation>
 <translation id="7987814697832569482">Үнемі осы VPN арқылы қосылу</translation>
 <translation id="7988355189918024273">Арнайы мүмкіндіктерді қосу</translation>
@@ -6357,7 +6357,6 @@
 <translation id="8557022314818157177">Саусақ ізі түскенше, қауіпсіздік кілтін басып тұрыңыз.</translation>
 <translation id="855773602626431402">Сынақ ортасынан тыс плагиндердің осы бетте іске қосылуына жол берілмеді.</translation>
 <translation id="8557930019681227453">Манифест</translation>
-<translation id="8558485628462305855">Толықтырылған шындық мазмұнын көру үшін ARCore платформасын жаңартыңыз</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Барлығын &amp;жаңа терезеден ашу}=1{&amp;Жаңа терезеден ашу}other{Барлығын ({COUNT}) &amp;жаңа терезеден ашу}}</translation>
 <translation id="8561206103590473338">Піл</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6402,7 +6401,6 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Ата-анаңыз әлі мақұлдаған жоқ</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>
-<translation id="8620765578342452535">Желі қосылыстарын конфигурациялау</translation>
 <translation id="8621866727807194849">Компьютеріңізде зиянды бағдарламалық құрал бар. Chrome браузері оны өшіріп, параметрлеріңізді қалпына келтіреді де, кеңейтімдерді ажыратады. Соның арқасында браузеріңіз қалыпты жұмысын жалғастырады.</translation>
 <translation id="8621979332865976405">Экранды толығымен бөлісу</translation>
 <translation id="862542460444371744">&amp;Кеңейтімдер</translation>

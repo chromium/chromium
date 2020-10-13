@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">zasluge</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">baner</translation>
+<translation id="145015347812617860">Stavki: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">više opcija za izbor, izabranih: <ph name="SELECTED" /> od <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1591562245178063882">Ovaj mesec</translation>
@@ -29,6 +30,7 @@
 <translation id="1806710327868736751">dijalog obaveštenja</translation>
 <translation id="1821985195704844674">mreža stabla</translation>
 <translation id="1822429046913737220">pre podne/po podne</translation>
+<translation id="1823704031293214298">podnožje stranice</translation>
 <translation id="1832974991323546415">puštajte na udaljenom uređaju</translation>
 <translation id="190587075670221089">brisanje</translation>
 <translation id="1907737156431278478">primer</translation>
@@ -46,6 +48,7 @@
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedelja, <ph name="YEAR" />.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pesma</translation>
 <translation id="2291999235780842123">polje za potvrdu</translation>
+<translation id="2307576640803031502">na listi, <ph name="INDEX" />. stavka od <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">prelom stranice</translation>
 <translation id="2335594187091864976">birač datuma i vremena</translation>
 <translation id="2393030564806080191">Heksadecimalna vrednost boje</translation>
@@ -103,6 +106,7 @@
 <translation id="4201051445878709314">Prikaži prethodni mesec</translation>
 <translation id="421884353938374759">birač boja</translation>
 <translation id="4248100235867064564">traka sa menijima</translation>
+<translation id="4293574643247337246">zaglavlje stranice</translation>
 <translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Pitanja i odgovori</translation>
 <translation id="4444765639179266822">Izgleda da piše: <ph name="OCR_TEXT" /></translation>

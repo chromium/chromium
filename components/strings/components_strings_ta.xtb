@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">கார்டுகளைச் சேமிக்கிறது...</translation>
 <translation id="10614374240317010">எப்போதும் சேமிக்காதவை</translation>
 <translation id="1062160989074299343">Prc10 (என்வலப்)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> கேஷ்பேக்</translation>
 <translation id="106701514854093668">டெஸ்க்டாப் புக்மார்க்குகள்</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> மொழியில் உள்ள பக்கங்களை ஒருபோதும் மொழிபெயர்க்காதே</translation>
 <translation id="1070901266639972381">இரவு</translation>
@@ -495,6 +496,7 @@
 <translation id="2955913368246107853">தேடல் பெட்டியை மூடுக</translation>
 <translation id="2969319727213777354">பாதுகாப்பான இணைப்பை ஏற்படுத்த, கடிகாரம் சரியாக அமைக்கப்பட வேண்டும். இணையதளங்கள் தங்களைத் தாமே அடையாளப்படுத்தப் பயன்படுத்தப்படும் சான்றிதழ்கள் குறிப்பிட்ட காலத்திற்கு மட்டும் செல்லுபடியாவதால், இது செய்யப்பட வேண்டும். உங்கள் சாதனத்தின் கடிகாரம் தவறாக இருப்பதால், இந்தச் சான்றிதழ்களை Google Chrome ஆல் சரிபார்க்க முடியவில்லை.</translation>
 <translation id="2972581237482394796">&amp;மீண்டும் செய்</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> தள்ளுபடி</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, தற்போது தேர்ந்தெடுக்கப்பட்டது. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">இது இயக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப, உங்கள் கார்டின் நகலை Chromium இந்தச் சாதனத்தில் சேமிக்கும்.</translation>
 <translation id="2985398929374701810">சரியான முகவரியை உள்ளிடவும்</translation>
@@ -696,6 +698,7 @@
 <translation id="3784372983762739446">புளூடூத் சாதனங்கள்</translation>
 <translation id="3787705759683870569">காலாவதி: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">அளவு: 16</translation>
+<translation id="3789841737615482174">நிறுவுக</translation>
 <translation id="3793574014653384240">சமீபத்தில் நிகழ்ந்த சிதைவுகளின் எண்ணிக்கைகளும் காரணங்களும்</translation>
 <translation id="3797522431967816232">Prc3 (என்வலப்)</translation>
 <translation id="3799805948399000906">கோரப்பட்ட எழுத்துரு</translation>
@@ -1732,6 +1735,7 @@
 <translation id="7976214039405368314">அளவுக்கு அதிகமான கோரிக்கைகள்</translation>
 <translation id="7977538094055660992">அவுட்புட் சாதனம்</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">ஆக்மென்ட்டட் ரியாலிட்டி உள்ளடக்கத்தைப் பார்க்க, ARCoreஐ நிறுவவும்</translation>
 <translation id="799149739215780103">பைண்டு</translation>
 <translation id="7995512525968007366">குறிப்பிடப்படவில்லை</translation>
 <translation id="800218591365569300">பிற தாவல்கள் அல்லது நிரல்களை மூடி, நினைவகத்தைக் காலியாக்கவும்.</translation>
@@ -1865,6 +1869,7 @@
 <translation id="8542014550340843547">டிரிப்பில் ஸ்டேப்பில் பாட்டம்</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />கண்டறிவதில் சிக்கல் இருப்பதைப் புகாரளிக்கலாம்<ph name="END_ERROR_LINK" /> அல்லது உங்கள் பாதுகாப்பிற்கு ஏற்படக்கூடிய ஆபத்துகளைப் புரிந்துகொண்டிருந்தால், <ph name="BEGIN_LINK" />இந்தப் பாதுகாப்பற்ற தளத்திற்குச் செல்லலாம்<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">உங்கள் கார்டின் பின்புறத்தில் CVC எண் இருக்கும்.</translation>
+<translation id="8558485628462305855">ஆக்மென்ட்டட் ரியாலிட்டி உள்ளடக்கத்தைப் பார்க்க, ARCoreஐப் புதுப்பிக்கவும்</translation>
 <translation id="8559762987265718583">உங்கள் சாதனத்தின் தேதி மற்றும் நேரம் (<ph name="DATE_AND_TIME" />) தவறாக உள்ளதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
 <translation id="8564182942834072828">தனித்தனி ஆவணங்கள்/தொகுக்கப்படாத நகல்கள்</translation>
 <translation id="8564985650692024650">பிற தளங்களில் உங்கள் <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chromium பரிந்துரைக்கிறது.</translation>
@@ -1886,6 +1891,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">மீதமுள்ளது:</translation>
 <translation id="868922510921656628">ஒரு செட்டிற்கான பக்கங்கள்</translation>
+<translation id="8697373104056314601">Chromeமின் அதிகபட்ச பாதுகாப்பைப் பெற <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />மேம்பட்ட பாதுகாப்பை இயக்கவும்<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8699041776323235191">HID சாதனம்</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> க்கான உங்கள் இணைப்பு என்க்ரிப்ட் செய்யப்படவில்லை.</translation>

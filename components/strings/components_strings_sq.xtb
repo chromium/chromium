@@ -699,6 +699,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3784372983762739446">Pajisjet me Bluetooth</translation>
 <translation id="3787705759683870569">Skadon më <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Madhësia 16</translation>
+<translation id="3789841737615482174">Instalo</translation>
 <translation id="3793574014653384240">Shifrat dhe shkaqet e përplasjeve që kanë ndodhur së fundi</translation>
 <translation id="3797522431967816232">Prc3 (Zarf)</translation>
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
@@ -1733,6 +1734,7 @@ Detaje shtesë:
 <translation id="7976214039405368314">Ka shumë kërkesa</translation>
 <translation id="7977538094055660992">Pajisja e daljes</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="79859296434321399">Për të parë përmbajtje realiteti të zgjeruar, instalo ARCore</translation>
 <translation id="799149739215780103">Lidhje</translation>
 <translation id="7995512525968007366">Nuk është specifikuar</translation>
 <translation id="800218591365569300">Provo të mbyllësh skedat ose programet e tjera për të liruar memorien.</translation>
@@ -1866,6 +1868,7 @@ Detaje shtesë:
 <translation id="8542014550340843547">Tri kapje me tel poshtë</translation>
 <translation id="8543181531796978784">Mund <ph name="BEGIN_ERROR_LINK" />të raportosh një problem të zbulimit<ph name="END_ERROR_LINK" /> ose, nëse i kupton rreziqet ndaj sigurisë tënde, <ph name="BEGIN_LINK" />vizito këtë sajt të pasigurt<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">Kodi CVC ndodhet në pjesën e pasme të kartës.</translation>
+<translation id="8558485628462305855">Për të parë përmbajtje realiteti të zgjeruar, përditëso ARCore</translation>
 <translation id="8559762987265718583">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />sepse data dhe ora (<ph name="DATE_AND_TIME" />) e pajisjes tënde nuk janë të sakta.</translation>
 <translation id="8564182942834072828">Dokumente të ndara/kopje të parenditura</translation>
 <translation id="8564985650692024650">Chromium rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>

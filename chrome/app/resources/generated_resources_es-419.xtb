@@ -2816,6 +2816,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4301671483919369635">Esta página puede editar archivos</translation>
 <translation id="4303079906735388947">Configura un nuevo PIN para tu llave de seguridad</translation>
 <translation id="4305402730127028764">Copiar a <ph name="DEVICE_NAME" /></translation>
+<translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">Las apps deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>
@@ -5886,7 +5887,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7982789257301363584">Red</translation>
 <translation id="7984068253310542383">Duplicar <ph name="DISPLAY_NAME" /></translation>
 <translation id="7985283639530788531">¿Quieres usar Touch ID con <ph name="APP_NAME" /> en el modo de navegación incógnito?</translation>
-<translation id="79859296434321399">Para ver contenido de realidad aumentada, instala ARCore</translation>
 <translation id="7986295104073916105">Leer y cambiar la configuración guardada de la contraseña</translation>
 <translation id="7987814697832569482">Conectarse siempre a través de esta VPN</translation>
 <translation id="7988355189918024273">Habilitar funciones de accesibilidad</translation>
@@ -6358,7 +6358,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella digital</translation>
 <translation id="855773602626431402">Se impidió que un complemento no incluido en la zona de pruebas se ejecutara en la página.</translation>
 <translation id="8557930019681227453">Manifiesto</translation>
-<translation id="8558485628462305855">Para ver contenido de realidad aumentada, actualiza ARCore</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
@@ -6403,7 +6402,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">Tus padres aún no lo aprobaron</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
-<translation id="8620765578342452535">Configurar las conexiones de red</translation>
 <translation id="8621866727807194849">Tu computadora tiene software dañino. Chrome lo está quitando, inhabilitando las extensiones y restableciendo la configuración. Estas acciones harán que tu navegador vuelva a funcionar normalmente.</translation>
 <translation id="8621979332865976405">Compartir la pantalla completa</translation>
 <translation id="862542460444371744">&amp;Extensiones</translation>

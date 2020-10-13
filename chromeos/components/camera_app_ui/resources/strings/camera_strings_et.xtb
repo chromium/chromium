@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1276998909102132017">Galerii pildid</translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1473110567575736769">3-sekundiline taimer</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Midagi pole salvestatud</translation>
@@ -30,6 +31,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="3517926952904427380">Vertikaalpaigutuses fotot ei saa jäädvustada</translation>
 <translation id="3569311554794739032">Kas soovite faili <ph name="FILE" /> kindlasti eemaldada?</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="4000398125663085899">Uued fotod ja videod salvestatakse nüüd rakenduse Failid kausta: Minu failid &gt; Kaamera</translation>
 <translation id="4118525110028899586">Peata salvestamine</translation>
 <translation id="4279490309300973883">Peegeldamine</translation>
 <translation id="4329152592498422850">Vaheta ruudukujulise foto jäädvustamiseks</translation>
@@ -62,6 +64,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 sekundit</translation>
 <translation id="712848772518857951">Kas soovite kindlasti eemaldada need <ph name="COUNT" /> üksust?</translation>
+<translation id="7134221860976209830">10-sekundiline taimer</translation>
 <translation id="7243947652761655814">Video eraldusvõime</translation>
 <translation id="7337660886763914220">Failisüsteemi vead.</translation>
 <translation id="7557677699350329807">Vaheta järgmisele kaamerale</translation>

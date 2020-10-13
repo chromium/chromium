@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">إسهامات</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">إعلان بانر</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
 <translation id="1480676835519562650">اختيار متعدد، تم اختيار <ph name="SELECTED" /> من أصل <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">منطقة</translation>
 <translation id="1591562245178063882">هذا الشهر</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">مربع اختيار</translation>
+<translation id="2307576640803031502">في القائمة، العنصر <ph name="INDEX" /> من أصل <ph name="COUNT" />.</translation>
 <translation id="2311842470354187719">فاصل صفحة</translation>
 <translation id="2335594187091864976">منتقي التاريخ والوقت</translation>
 <translation id="2393030564806080191">قيمة اللون السداسية العشرية</translation>

@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">выходные сведения</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">баннер</translation>
+<translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">можно выбрать несколько. Выбрано: <ph name="SELECTED" /> из <ph name="COUNT" /></translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1591562245178063882">В этом месяце</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">Неделя <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трек <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">флажок</translation>
+<translation id="2307576640803031502">в списке, пункт <ph name="INDEX" /> из <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">разрыв страницы</translation>
 <translation id="2335594187091864976">окно выбора даты и времени</translation>
 <translation id="2393030564806080191">Цвет в шестнадцатеричном формате</translation>

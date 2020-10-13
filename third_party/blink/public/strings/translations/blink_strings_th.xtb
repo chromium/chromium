@@ -17,6 +17,7 @@
 <translation id="1335095011850992622">เครดิต</translation>
 <translation id="1342835525016946179">บทความ</translation>
 <translation id="1359897965706325498">แบนเนอร์</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
 <translation id="1480676835519562650">เลือกได้หลายรายการ และมีการเลือกไว้ <ph name="SELECTED" /> จาก <ph name="COUNT" /> รายการ</translation>
 <translation id="1589122976691792535">ภูมิภาค</translation>
 <translation id="1591562245178063882">เดือนนี้</translation>
@@ -46,6 +47,7 @@
 <translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">แทร็ก <ph name="NUMBER" /></translation>
 <translation id="2291999235780842123">ช่องทำเครื่องหมาย</translation>
+<translation id="2307576640803031502">ในลิสต์ รายการที่ <ph name="INDEX" /> จาก <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">ตัวแบ่งหน้า</translation>
 <translation id="2335594187091864976">เครื่องมือเลือกวันที่และเวลา</translation>
 <translation id="2393030564806080191">ค่าสีแบบฐานสิบหก</translation>
