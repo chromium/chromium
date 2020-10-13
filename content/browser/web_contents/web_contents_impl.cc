@@ -2250,6 +2250,10 @@ void WebContentsImpl::AttachInnerWebContents(
     observer->InnerWebContentsAttached(inner_web_contents_impl,
                                        render_frame_host, is_full_page);
   });
+
+  // Make sure that the inner web contents and its outer delegate get properly
+  // linked via the embedding token now that inner web contents are attached.
+  inner_main_frame->PropagateEmbeddingTokenToParentFrame();
 }
 
 std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {

@@ -2394,6 +2394,44 @@ void RenderFrameHostImpl::Init() {
   }
 }
 
+void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
+  // Protect against calls from WebContentsImpl::AttachInnerWebContents() that
+  // happen before RFHI::SetEmbeddingToken() gets called, which is where the
+  // token gets set. It's safe to early return in those cases since this method
+  // will get called anyway by RFHI::SetEmbeddingToken(), at which time the
+  // outer delegate for the inner web contents will have been created already.
+  if (!embedding_token_)
+    return;
+
+  // We need to propagate the token to the parent frame if it's either remote or
+  // part of an outer web contents, therefore we need to figure out the right
+  // proxy to send the token to, if any.
+  // For local parents the propagation occurs within the renderer process. The
+  // token is also present on the main frame for generalization when the main
+  // frame in embedded in another context (e.g. browser UI). The main frame is
+  // not embedded in the context of the frame tree so it is not propagated here.
+  // See RenderFrameHost::GetEmbeddingToken for more details.
+  RenderFrameProxyHost* target_render_frame_proxy = nullptr;
+
+  if (IsCrossProcessSubframe()) {
+    // Cross-process subframes should have a remote parent frame.
+    target_render_frame_proxy =
+        frame_tree_node()->render_manager()->GetProxyToParent();
+    DCHECK(target_render_frame_proxy);
+  } else if (frame_tree_node()->IsMainFrame()) {
+    // The main frame in an inner web contents could have a delegate in the
+    // outer web contents, so we need to account for that as well.
+    target_render_frame_proxy =
+        frame_tree_node()->render_manager()->GetProxyToOuterDelegate();
+  }
+
+  // Propagate the token to the right process, if a proxy was found.
+  if (target_render_frame_proxy) {
+    target_render_frame_proxy->GetAssociatedRemoteFrame()->SetEmbeddingToken(
+        embedding_token_.value());
+  }
+}
+
 void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
   DCHECK_NE(is_audible_, is_audible);
   if (is_audible) {
@@ -9658,36 +9696,11 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   if (is_main_frame())
     delegate_->AXTreeIDForMainFrameHasChanged();
 
-  // We need to propagate the token to the parent frame if it's either remote or
-  // part of an outer web contents, therefore we need to figure out the right
-  // proxy to send the token to, if there's any.
-  // For local parents the propagation occurs within the renderer process. The
-  // token is also present on the main frame for generalization when the main
-  // frame in embedded in another context (e.g. browser UI). The main frame is
-  // not embedded in the context of the frame tree so it is not propagated here.
-  // See RenderFrameHost::GetEmbeddingToken for more details.
-  RenderFrameProxyHost* target_render_frame_proxy = nullptr;
-
-  // Cross-process subframes should have a remote parent frame.
-  if (IsCrossProcessSubframe()) {
-    // Only non-null tokens are propagated to the parent document. The token is
-    // automatically reset in the parent document when the child document is
-    // navigated cross-origin.
-    target_render_frame_proxy =
-        frame_tree_node()->render_manager()->GetProxyToParent();
-    DCHECK(target_render_frame_proxy);
-  } else if (frame_tree_node()->IsMainFrame()) {
-    // The main frame in an inner web contents could have a delegate in the
-    // outer web contents, so we need to account for that as well.
-    target_render_frame_proxy =
-        frame_tree_node()->render_manager()->GetProxyToOuterDelegate();
-  }
-
-  // Propagate the token to the right process, if a proxy was found.
-  if (target_render_frame_proxy) {
-    target_render_frame_proxy->GetAssociatedRemoteFrame()->SetEmbeddingToken(
-        embedding_token_.value());
-  }
+  // Propagate the embedding token to the RenderFrameProxyHost representing the
+  // parent frame if needed, that is, if either this is a cross-process subframe
+  // or the main frame of an inner web contents (i.e. would need to send it to
+  // the RenderFrameProxyHost for the outer web contents owning the inner one).
+  PropagateEmbeddingTokenToParentFrame();
 }
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {

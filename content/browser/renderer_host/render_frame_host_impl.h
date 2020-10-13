@@ -492,6 +492,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // after they are blocked in RenderWidgetHelper::CreateNewWindow.
   void Init();
 
+  // This needs to be called to make sure that the parent-child relationship
+  // between frames is properly established both for cross-process iframes as
+  // well as for inner web contents (i.e. right after having attached it to the
+  // outer web contents), so that navigating the whole tree is possible.
+  //
+  // It's safe to call this method multiple times, or even before the embedding
+  // token has been set for this frame, to account for the realistic possibility
+  // that inner web contents can became attached to the outer one both before
+  // and after the embedding token has been set.
+  void PropagateEmbeddingTokenToParentFrame();
+
   // Returns true if the frame recently plays an audio.
   bool is_audible() const { return is_audible_; }
 
