@@ -2350,37 +2350,4 @@ TEST(AXEventGeneratorTest, MultilineStateChanged) {
                          1)));
 }
 
-TEST(AXEventGeneratorTest, EditableTextChanged) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(3);
-  initial_state.nodes[0].id = 1;
-  initial_state.nodes[0].child_ids.push_back(2);
-  initial_state.nodes[1].id = 2;
-  initial_state.nodes[1].role = ax::mojom::Role::kTextField;
-  initial_state.nodes[1].AddState(ax::mojom::State::kEditable);
-  initial_state.nodes[1].AddBoolAttribute(
-      ax::mojom::BoolAttribute::kEditableRoot, true);
-  initial_state.nodes[1].child_ids.push_back(3);
-  initial_state.nodes[2].id = 3;
-  initial_state.nodes[2].role = ax::mojom::Role::kStaticText;
-  initial_state.nodes[2].AddState(ax::mojom::State::kEditable);
-  initial_state.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                            "Before");
-  AXTree tree(initial_state);
-
-  AXEventGenerator event_generator(&tree);
-  AXTreeUpdate update = initial_state;
-  update.nodes[2].string_attributes.clear();
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                     "After");
-
-  ASSERT_TRUE(tree.Unserialize(update));
-  EXPECT_THAT(
-      event_generator,
-      UnorderedElementsAre(
-          HasEventAtNode(AXEventGenerator::Event::EDITABLE_TEXT_CHANGED, 2),
-          HasEventAtNode(AXEventGenerator::Event::NAME_CHANGED, 3)));
-}
-
 }  // namespace ui

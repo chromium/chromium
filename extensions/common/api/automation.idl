@@ -33,7 +33,6 @@
     documentSelectionChanged,
     documentTitleChanged,
     dropeffectChanged,
-    editableTextChanged,
     enabledChanged,
     endOfTest,
     expanded,

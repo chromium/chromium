@@ -357,23 +357,9 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       if (node != tree->root())
         AddEvent(node, Event::NAME_CHANGED);
 
-      // If it's in a live region, fire live region events.
       if (node->data().HasStringAttribute(
               ax::mojom::StringAttribute::kContainerLiveStatus)) {
         FireLiveRegionEvents(node);
-      }
-
-      // If it's a change to static text, and it's in an editable text region,
-      // fire an event on the editable root.
-      if (ui::IsText(node->data().role) &&
-          node->data().HasState(ax::mojom::State::kEditable)) {
-        AXNode* container = node;
-        while (container && !container->data().GetBoolAttribute(
-                                ax::mojom::BoolAttribute::kEditableRoot)) {
-          container = container->parent();
-        }
-        if (container)
-          AddEvent(container, Event::EDITABLE_TEXT_CHANGED);
       }
       break;
     case ax::mojom::StringAttribute::kPlaceholder:
@@ -1055,8 +1041,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "documentTitleChanged";
     case AXEventGenerator::Event::DROPEFFECT_CHANGED:
       return "dropeffectChanged";
-    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-      return "editableTextChanged";
     case AXEventGenerator::Event::ENABLED_CHANGED:
       return "enabledChanged";
     case AXEventGenerator::Event::EXPANDED:

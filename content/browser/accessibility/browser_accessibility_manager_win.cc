@@ -135,10 +135,7 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(
       FireWinAccessibilityEvent(EVENT_SYSTEM_SCROLLINGSTART, node);
       break;
     case ax::mojom::Event::kTextChanged:
-      // TODO(crbug.com/1049261) Remove when Views are exposed in the AXTree
-      // which will fire generated text-changed events.
-      if (!node->IsWebContent())
-        HandleTextChangedEvent(*node);
+      HandleTextChangedEvent(*node);
       break;
     case ax::mojom::Event::kTextSelectionChanged:
       HandleTextSelectionChangedEvent(*node);
@@ -240,9 +237,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
       HandleAriaPropertiesChangedEvent(*node);
       break;
-    case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
-      HandleTextChangedEvent(*node);
-      break;
     case ui::AXEventGenerator::Event::ENABLED_CHANGED:
       FireUiaPropertyChangedEvent(UIA_IsEnabledPropertyId, node);
       HandleAriaPropertiesChangedEvent(*node);
@@ -329,10 +323,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleAriaPropertiesChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::NAME_CHANGED:
-      if (ui::IsText(node->GetRole()))
-        HandleTextChangedEvent(*node);
-      else
-        FireUiaPropertyChangedEvent(UIA_NamePropertyId, node);
+      FireUiaPropertyChangedEvent(UIA_NamePropertyId, node);
       // Only fire name changes when the name comes from an attribute, otherwise
       // name changes are redundant with text removed/inserted events.
       if (node->GetData().GetNameFrom() != ax::mojom::NameFrom::kContents)

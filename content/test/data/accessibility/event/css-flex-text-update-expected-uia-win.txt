@@ -1,1 +1,1 @@
-Text_TextChanged on role=description, name=new
+Name changed on role=description, name=new
