@@ -159,6 +159,7 @@
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/throughput_tracker_host.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -761,7 +762,7 @@ bool GetDisplayIdFromOptionalArg(const std::unique_ptr<std::string>& arg,
 
 struct SmoothnessTrackerInfo {
   base::Optional<ui::ThroughputTracker> tracker;
-  base::OnceCallback<void(int smoothness)> callback;
+  ui::ThroughputTrackerHost::ReportCallback callback;
 };
 using DisplaySmoothnessTrackerInfos = std::map<int64_t, SmoothnessTrackerInfo>;
 DisplaySmoothnessTrackerInfos* GetDisplaySmoothnessTrackerInfos() {
@@ -769,8 +770,10 @@ DisplaySmoothnessTrackerInfos* GetDisplaySmoothnessTrackerInfos() {
   return trackers.get();
 }
 
-// Forwards |smoothness| to the callback for |display_id| and resets.
-void ForwardSmoothessAndReset(int64_t display_id, int smoothness) {
+// Forwards frame rate data to the callback for |display_id| and resets.
+void ForwardFrameRateDataAndReset(
+    int64_t display_id,
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
   auto* infos = GetDisplaySmoothnessTrackerInfos();
   auto it = infos->find(display_id);
   DCHECK(it != infos->end());
@@ -781,7 +784,7 @@ void ForwardSmoothessAndReset(int64_t display_id, int smoothness) {
   // See https://crbug.com/1098886.
   auto callback = std::move(it->second.callback);
   infos->erase(it);
-  std::move(callback).Run(smoothness);
+  std::move(callback).Run(data);
 }
 
 std::string ResolutionToString(
@@ -4678,11 +4681,7 @@ AutotestPrivateStartSmoothnessTrackingFunction::Run() {
 
   auto tracker =
       root_window->layer()->GetCompositor()->RequestNewThroughputTracker();
-  // Exclude this tracker from data collection for animations since it is for
-  // the display as a whole rather than for an individual animation.
-  tracker.Start(ash::metrics_util::ForSmoothness(
-      base::BindRepeating(&ForwardSmoothessAndReset, display_id),
-      /*exclude_from_data_collection=*/true));
+  tracker.Start(base::BindOnce(&ForwardFrameRateDataAndReset, display_id));
   (*infos)[display_id].tracker = std::move(tracker);
   return RespondNow(NoArguments());
 }
@@ -4715,15 +4714,16 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
   }
 
   it->second.callback = base::BindOnce(
-      &AutotestPrivateStopSmoothnessTrackingFunction::OnReportSmoothness, this);
+      &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this);
   it->second.tracker->Stop();
 
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void AutotestPrivateStopSmoothnessTrackingFunction::OnReportSmoothness(
-    int smoothness) {
-  Respond(OneArgument(std::make_unique<base::Value>(smoothness)));
+void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
+  Respond(OneArgument(std::make_unique<base::Value>(
+      ash::metrics_util::CalculateSmoothness(data))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4844,6 +4844,7 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
     api::autotest_private::ThroughputTrackerAnimationData animation_data;
     animation_data.frames_expected = data.frames_expected;
     animation_data.frames_produced = data.frames_produced;
+    animation_data.jank_count = data.jank_count;
     result_data.emplace_back(std::move(animation_data));
   }
 

@@ -2024,8 +2024,8 @@ void LayerTreeHostImpl::LogAverageLagEvents(
 }
 
 void LayerTreeHostImpl::NotifyThroughputTrackerResults(
-    CustomTrackerResults results) {
-  client_->NotifyThroughputTrackerResults(std::move(results));
+    const CustomTrackerResults& results) {
+  client_->NotifyThroughputTrackerResults(results);
 }
 
 void LayerTreeHostImpl::DidNotNeedBeginFrame() {

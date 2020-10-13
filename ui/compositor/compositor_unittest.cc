@@ -177,7 +177,7 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
   {
     auto tracker = compositor()->RequestNewThroughputTracker();
     tracker.Start(base::BindLambdaForTesting(
-        [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
+        [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
           // This should not be called since the tracking is auto canceled.
           ADD_FAILURE();
         }));
@@ -188,7 +188,7 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
   {
     auto tracker = compositor()->RequestNewThroughputTracker();
     tracker.Start(base::BindLambdaForTesting(
-        [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
+        [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
           // May be called since Stop() is called.
         }));
     auto moved_tracker = std::move(tracker);
@@ -199,7 +199,7 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
   {
     auto tracker = compositor()->RequestNewThroughputTracker();
     tracker.Start(base::BindLambdaForTesting(
-        [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
+        [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
           // This should not be called since Cancel() is called.
           ADD_FAILURE();
         }));
@@ -211,7 +211,7 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
   {
     auto tracker = compositor()->RequestNewThroughputTracker();
     tracker.Start(base::BindLambdaForTesting(
-        [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
+        [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
           // May be called since Stop() is called.
         }));
     tracker.Stop();
@@ -222,7 +222,7 @@ TEST_F(CompositorTestWithMessageLoop, MoveThroughputTracker) {
   {
     auto tracker = compositor()->RequestNewThroughputTracker();
     tracker.Start(base::BindLambdaForTesting(
-        [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
+        [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
           // This should not be called since Cancel() is called.
           ADD_FAILURE();
         }));
@@ -245,9 +245,9 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTracker) {
 
   base::RunLoop run_loop;
   tracker.Start(base::BindLambdaForTesting(
-      [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
-        EXPECT_GT(throughput.frames_expected, 0u);
-        EXPECT_GT(throughput.frames_produced, 0u);
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+        EXPECT_GT(data.frames_expected, 0u);
+        EXPECT_GT(data.frames_produced, 0u);
         run_loop.Quit();
       }));
 
@@ -273,7 +273,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTracker) {
 TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerOutliveCompositor) {
   auto tracker = compositor()->RequestNewThroughputTracker();
   tracker.Start(base::BindLambdaForTesting(
-      [&](cc::FrameSequenceMetrics::ThroughputData throughput) {
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
         ADD_FAILURE() << "No report should happen";
       }));
 

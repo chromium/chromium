@@ -35,8 +35,8 @@ class LayerAnimator;
 // and none of the layer animation sequences is aborted.
 class COMPOSITOR_EXPORT AnimationThroughputReporter {
  public:
-  using ReportCallback =
-      base::RepeatingCallback<void(cc::FrameSequenceMetrics::ThroughputData)>;
+  using ReportCallback = base::RepeatingCallback<void(
+      const cc::FrameSequenceMetrics::CustomReportData&)>;
   AnimationThroughputReporter(LayerAnimator* animator,
                               ReportCallback report_callback);
   AnimationThroughputReporter(const AnimationThroughputReporter&) = delete;

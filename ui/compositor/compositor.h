@@ -406,10 +406,10 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
  private:
   friend class base::RefCounted<Compositor>;
 
-  // Called when throughput data for the tracker of |tracker_id| is ready.
-  void ReportThroughputForTracker(
+  // Called when collected metrics for the tracker of |tracker_id| is ready.
+  void ReportMetricsForTracker(
       int tracker_id,
-      cc::FrameSequenceMetrics::ThroughputData throughput);
+      const cc::FrameSequenceMetrics::CustomReportData& data);
 
   gfx::Size size_;
 

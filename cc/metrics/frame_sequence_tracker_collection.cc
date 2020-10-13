@@ -392,12 +392,12 @@ void FrameSequenceTrackerCollection::SetUkmManager(UkmManager* manager) {
 
 void FrameSequenceTrackerCollection::AddCustomTrackerResult(
     int custom_sequence_id,
-    FrameSequenceMetrics::ThroughputData throughput_data) {
+    const FrameSequenceMetrics::CustomReportData& data) {
   DCHECK(custom_tracker_results_added_callback_);
 
   CustomTrackerResults results;
-  results[custom_sequence_id] = std::move(throughput_data);
-  custom_tracker_results_added_callback_.Run(std::move(results));
+  results[custom_sequence_id] = data;
+  custom_tracker_results_added_callback_.Run(results);
 }
 
 }  // namespace cc

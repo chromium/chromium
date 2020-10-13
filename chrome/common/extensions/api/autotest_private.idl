@@ -569,6 +569,9 @@ namespace autotestPrivate {
     long framesExpected;
     // Number of frames actually shown for this animation.
     long framesProduced;
+    // Number of janks during this animation. A jank is counted when the current
+    // frame latency is larger than previous ones.
+    long jankCount;
   };
 
   // Callback invoked to report the collection ui::ThroughputTracker data

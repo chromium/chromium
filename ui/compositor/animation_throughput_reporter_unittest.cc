@@ -85,7 +85,7 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimation) {
     LayerAnimator* animator = layer.GetAnimator();
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         run_loop.Quit();
                       }));
 
@@ -107,7 +107,7 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimationLateAttach) {
     LayerAnimator* animator = layer.GetAnimator();
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         run_loop.Quit();
                       }));
 
@@ -134,7 +134,7 @@ TEST_F(AnimationThroughputReporterTest, ExplicitAnimation) {
     LayerAnimator* animator = layer.GetAnimator();
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         run_loop.Quit();
                       }));
 
@@ -159,9 +159,10 @@ TEST_F(AnimationThroughputReporterTest, PersistedAnimation) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   // |reporter| keeps reporting as long as it is alive.
   AnimationThroughputReporter reporter(
-      animator,
-      base::BindLambdaForTesting(
-          [&](cc::FrameSequenceMetrics::ThroughputData) { run_loop->Quit(); }));
+      animator, base::BindLambdaForTesting(
+                    [&](const cc::FrameSequenceMetrics::CustomReportData&) {
+                      run_loop->Quit();
+                    }));
 
   // Report data for animation of opacity goes to 1.
   layer->SetOpacity(1.0f);
@@ -183,7 +184,7 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
     LayerAnimator* animator = layer->GetAnimator();
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         ADD_FAILURE() << "No report for aborted animations.";
                       }));
 
@@ -213,7 +214,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
     LayerAnimator* animator = layer->GetAnimator();
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         ADD_FAILURE() << "No report for aborted animations.";
                       }));
 
@@ -246,7 +247,7 @@ TEST_F(AnimationThroughputReporterTest, EndDetachedNoReportNoLeak) {
   {
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         ADD_FAILURE() << "No report for aborted animations.";
                       }));
 
@@ -282,7 +283,7 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
   {
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         ADD_FAILURE() << "No report for aborted animations.";
                       }));
 
@@ -297,7 +298,7 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
   {
     AnimationThroughputReporter reporter(
         animator, base::BindLambdaForTesting(
-                      [&](cc::FrameSequenceMetrics::ThroughputData) {
+                      [&](const cc::FrameSequenceMetrics::CustomReportData&) {
                         run_loop.Quit();
                       }));
 

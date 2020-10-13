@@ -14,8 +14,8 @@
 namespace ash {
 namespace metrics_util {
 
-using ReportCallback =
-    base::RepeatingCallback<void(cc::FrameSequenceMetrics::ThroughputData)>;
+using ReportCallback = base::RepeatingCallback<void(
+    const cc::FrameSequenceMetrics::CustomReportData&)>;
 using SmoothnessCallback = base::RepeatingCallback<void(int smoothness)>;
 
 // Returns a ReportCallback that could be passed to ui::ThroughputTracker
@@ -31,8 +31,16 @@ ForSmoothness(SmoothnessCallback callback,
 ASH_PUBLIC_EXPORT void StartDataCollection();
 
 // Stops data collection and returns the data collected since starting.
-ASH_PUBLIC_EXPORT std::vector<cc::FrameSequenceMetrics::ThroughputData>
+ASH_PUBLIC_EXPORT std::vector<cc::FrameSequenceMetrics::CustomReportData>
 StopDataCollection();
+
+// Returns smoothness calculated from given data.
+ASH_PUBLIC_EXPORT int CalculateSmoothness(
+    const cc::FrameSequenceMetrics::CustomReportData& data);
+
+// Returns jank percentage calculated from given data.
+ASH_PUBLIC_EXPORT int CalculateJank(
+    const cc::FrameSequenceMetrics::CustomReportData& data);
 
 }  // namespace metrics_util
 }  // namespace ash

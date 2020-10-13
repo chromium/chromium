@@ -15,29 +15,27 @@ namespace {
 
 bool g_data_collection_enabled = false;
 
-std::vector<cc::FrameSequenceMetrics::ThroughputData>& GetDataCollector() {
+std::vector<cc::FrameSequenceMetrics::CustomReportData>& GetDataCollector() {
   static base::NoDestructor<
-      std::vector<cc::FrameSequenceMetrics::ThroughputData>>
+      std::vector<cc::FrameSequenceMetrics::CustomReportData>>
       data;
   return *data;
 }
 
 void CollectDataAndForwardReport(
     ReportCallback callback,
-    const cc::FrameSequenceMetrics::ThroughputData throughput) {
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
   // An arbitrary cap on the maximum number of animations being collected.
   DCHECK_LT(GetDataCollector().size(), 1000u);
 
-  GetDataCollector().push_back(throughput);
-  std::move(callback).Run(throughput);
+  GetDataCollector().push_back(data);
+  std::move(callback).Run(data);
 }
 
 // Calculates smoothness from |throughput| and sends to |callback|.
 void ForwardSmoothness(SmoothnessCallback callback,
-                       cc::FrameSequenceMetrics::ThroughputData throughput) {
-  const int smoothness = std::floor(100.0f * throughput.frames_produced /
-                                    throughput.frames_expected);
-  callback.Run(smoothness);
+                       const cc::FrameSequenceMetrics::CustomReportData& data) {
+  callback.Run(CalculateSmoothness(data));
 }
 
 }  // namespace
@@ -58,13 +56,22 @@ void StartDataCollection() {
   g_data_collection_enabled = true;
 }
 
-std::vector<cc::FrameSequenceMetrics::ThroughputData> StopDataCollection() {
+std::vector<cc::FrameSequenceMetrics::CustomReportData> StopDataCollection() {
   DCHECK(g_data_collection_enabled);
   g_data_collection_enabled = false;
 
-  std::vector<cc::FrameSequenceMetrics::ThroughputData> data;
+  std::vector<cc::FrameSequenceMetrics::CustomReportData> data;
   data.swap(GetDataCollector());
   return data;
+}
+
+int CalculateSmoothness(
+    const cc::FrameSequenceMetrics::CustomReportData& data) {
+  return std::floor(100.0f * data.frames_produced / data.frames_expected);
+}
+
+int CalculateJank(const cc::FrameSequenceMetrics::CustomReportData& data) {
+  return std::floor(100.0f * data.jank_count / data.frames_expected);
 }
 
 }  // namespace metrics_util

@@ -41,6 +41,8 @@ class CC_EXPORT JankMetrics {
     return effective_thread_;
   }
 
+  int jank_count() const { return jank_count_; }
+
  private:
   // The type of the tracker this JankMetrics object is attached to.
   const FrameSequenceTrackerType tracker_type_;

@@ -110,10 +110,10 @@ FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type,
   // Only construct |jank_reporter_| if it has a valid tracker and thread type.
   // For scrolling tracker types, |jank_reporter_| may be constructed later in
   // SetScrollingThread().
-  if ((thread_type == ThreadType::kCompositor ||
-       thread_type == ThreadType::kMain) &&
-      type != FrameSequenceTrackerType::kCustom)
+  if (thread_type == ThreadType::kCompositor ||
+      thread_type == ThreadType::kMain) {
     jank_reporter_ = std::make_unique<JankMetrics>(type, thread_type);
+  }
 }
 
 FrameSequenceMetrics::~FrameSequenceMetrics() = default;
@@ -219,7 +219,12 @@ void FrameSequenceMetrics::ReportMetrics() {
 
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
-    std::move(custom_reporter_).Run(std::move(main_throughput_));
+    std::move(custom_reporter_)
+        .Run({
+            main_throughput_.frames_expected,
+            main_throughput_.frames_produced,
+            jank_reporter_->jank_count(),
+        });
 
     main_throughput_ = {};
     impl_throughput_ = {};

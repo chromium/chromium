@@ -19,9 +19,9 @@ class COMPOSITOR_EXPORT ThroughputTrackerHost {
   virtual ~ThroughputTrackerHost() = default;
 
   // Starts the tracking for the given tracker id. |callback| is invoked after
-  // the tracker is stopped and the throughput data is collected.
+  // the tracker is stopped and the metrics data is collected.
   using ReportCallback = base::OnceCallback<void(
-      const cc::FrameSequenceMetrics::ThroughputData throughput)>;
+      const cc::FrameSequenceMetrics::CustomReportData& data)>;
   virtual void StartThroughputTracker(TrackerId tracker_id,
                                       ReportCallback callback) = 0;
 

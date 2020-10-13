@@ -1302,7 +1302,7 @@ class AutotestPrivateStopSmoothnessTrackingFunction : public ExtensionFunction {
   ~AutotestPrivateStopSmoothnessTrackingFunction() override;
   ResponseAction Run() override;
 
-  void OnReportSmoothness(int smoothness);
+  void OnReportData(const cc::FrameSequenceMetrics::CustomReportData& data);
 };
 
 class AutotestPrivateWaitForAmbientPhotoAnimationFunction

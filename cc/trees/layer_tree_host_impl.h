@@ -936,7 +936,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                            const viz::FrameTimingDetails& details);
 
   // Notifies client about the custom tracker results.
-  void NotifyThroughputTrackerResults(CustomTrackerResults results);
+  void NotifyThroughputTrackerResults(const CustomTrackerResults& results);
 
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.

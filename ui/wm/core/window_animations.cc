@@ -146,9 +146,9 @@ ui::AnimationThroughputReporter::ReportCallback ForSmoothness(
     SmoothnessCallback callback) {
   return base::BindRepeating(
       [](SmoothnessCallback callback,
-         cc::FrameSequenceMetrics::ThroughputData throughput) {
-        const int smoothness = std::floor(100.0f * throughput.frames_produced /
-                                          throughput.frames_expected);
+         const cc::FrameSequenceMetrics::CustomReportData& data) {
+        const int smoothness =
+            std::floor(100.0f * data.frames_produced / data.frames_expected);
         callback.Run(smoothness);
       },
       std::move(callback));

@@ -1614,7 +1614,7 @@ TEST_F(FrameSequenceTrackerTest, TrackerTypeEncoding) {
 TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   CustomTrackerResults results;
   collection_.set_custom_tracker_results_added_callback(
-      base::BindLambdaForTesting([&](CustomTrackerResults reported) {
+      base::BindLambdaForTesting([&](const CustomTrackerResults& reported) {
         for (const auto& pair : reported)
           results[pair.first] = pair.second;
       }));
