@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/caption_buttons/frame_back_button.h"
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
@@ -16,6 +14,8 @@
 #include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "base/test/icu_test_util.h"
+#include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -25,6 +25,8 @@
 #include "ui/views/window/non_client_view.h"
 #include "ui/wm/core/window_util.h"
 
+using chromeos::FrameBackButton;
+using chromeos::FrameCaptionButtonContainerView;
 using views::NonClientFrameView;
 using views::Widget;
 

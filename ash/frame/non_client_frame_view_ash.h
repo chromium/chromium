@@ -17,13 +17,16 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
+namespace chromeos {
+class FrameCaptionButtonContainerView;
+}
+
 namespace views {
 class Widget;
 }
 
 namespace ash {
 
-class FrameCaptionButtonContainerView;
 class ImmersiveFullscreenController;
 class NonClientFrameViewAshImmersiveHelper;
 
@@ -48,7 +51,8 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   static NonClientFrameViewAsh* Get(aura::Window* window);
 
   // Sets the caption button modeland updates the caption buttons.
-  void SetCaptionButtonModel(std::unique_ptr<CaptionButtonModel> model);
+  void SetCaptionButtonModel(
+      std::unique_ptr<chromeos::CaptionButtonModel> model);
 
   // Inits |immersive_fullscreen_controller| so that the controller reveals
   // and hides |header_view_| in immersive fullscreen.
@@ -118,7 +122,8 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
 
   // Returns the container for the minimize/maximize/close buttons that is
   // held by the HeaderView. Used in testing.
-  FrameCaptionButtonContainerView* GetFrameCaptionButtonContainerViewForTest();
+  chromeos::FrameCaptionButtonContainerView*
+  GetFrameCaptionButtonContainerViewForTest();
 
   // Called when |frame_|'s "paint as active" state has changed.
   void PaintAsActiveChanged();

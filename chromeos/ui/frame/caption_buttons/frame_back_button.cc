@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/caption_buttons/frame_back_button.h"
+#include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -15,7 +15,7 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 
-namespace ash {
+namespace chromeos {
 
 FrameBackButton::FrameBackButton()
     : FrameCaptionButton(this, views::CAPTION_BUTTON_ICON_BACK, HTMENU) {
@@ -38,4 +38,4 @@ void FrameBackButton::ButtonPressed(Button* sender, const ui::Event& event) {
   ignore_result(root_window->GetHost()->SendEventToSink(&release_key_event));
 }
 
-}  // namespace ash
+}  // namespace chromeos

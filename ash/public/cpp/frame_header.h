@@ -6,14 +6,18 @@
 #define ASH_PUBLIC_CPP_FRAME_HEADER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/window/frame_caption_button.h"
+
+namespace chromeos {
+class CaptionButtonModel;
+}  // namespace chromeos
 
 namespace gfx {
 class Canvas;
@@ -27,7 +31,6 @@ class Widget;
 }  // namespace views
 
 namespace ash {
-class CaptionButtonModel;
 
 // Helper class for managing the window header.
 class ASH_PUBLIC_EXPORT FrameHeader {
@@ -73,7 +76,7 @@ class ASH_PUBLIC_EXPORT FrameHeader {
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
   views::FrameCaptionButton* GetBackButton() const;
-  const CaptionButtonModel* GetCaptionButtonModel() const;
+  const chromeos::CaptionButtonModel* GetCaptionButtonModel() const;
 
   // Updates the frame header painting to reflect a change in frame colors.
   virtual void UpdateFrameColors() = 0;
@@ -86,7 +89,7 @@ class ASH_PUBLIC_EXPORT FrameHeader {
 
   views::View* view() { return view_; }
 
-  FrameCaptionButtonContainerView* caption_button_container() {
+  chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
 
@@ -106,7 +109,7 @@ class ASH_PUBLIC_EXPORT FrameHeader {
   void PaintTitleBar(gfx::Canvas* canvas);
 
   void SetCaptionButtonContainer(
-      FrameCaptionButtonContainerView* caption_button_container);
+      chromeos::FrameCaptionButtonContainerView* caption_button_container);
 
   Mode mode() const { return mode_; }
 
@@ -137,7 +140,8 @@ class ASH_PUBLIC_EXPORT FrameHeader {
   views::View* view_;
   views::FrameCaptionButton* back_button_ = nullptr;  // May remain nullptr.
   views::View* left_header_view_ = nullptr;    // May remain nullptr.
-  FrameCaptionButtonContainerView* caption_button_container_ = nullptr;
+  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
+      nullptr;
   FrameAnimatorView* frame_animator_ = nullptr;  // owned by view tree.
 
   // The height of the header to paint.

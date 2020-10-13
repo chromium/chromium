@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_H_
-#define ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_H_
+#ifndef CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_H_
+#define CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_H_
 
 #include <memory>
 
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/caption_buttons/frame_size_button_delegate.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "ui/views/window/frame_caption_button.h"
 
-namespace ash {
+namespace chromeos {
 
 // The maximize/restore button.
 // When the mouse is pressed over the size button or the size button is touched:
@@ -24,7 +24,8 @@ namespace ash {
 // When the drag terminates, the action for the button underneath the mouse
 // is executed. For the sake of simplicity, the size button is the event
 // handler for a click starting on the size button and the entire drag.
-class ASH_PUBLIC_EXPORT FrameSizeButton : public views::FrameCaptionButton {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
+    : public views::FrameCaptionButton {
  public:
   FrameSizeButton(views::ButtonListener* listener,
                   FrameSizeButtonDelegate* delegate);
@@ -103,6 +104,6 @@ class ASH_PUBLIC_EXPORT FrameSizeButton : public views::FrameCaptionButton {
   DISALLOW_COPY_AND_ASSIGN(FrameSizeButton);
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_H_
+#endif  // CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_H_

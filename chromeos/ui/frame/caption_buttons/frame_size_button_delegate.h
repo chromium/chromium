@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_
-#define ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_
+#ifndef CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_
+#define CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 #include "ui/views/window/caption_button_types.h"
 
 namespace gfx {
@@ -16,12 +16,12 @@ namespace views {
 class FrameCaptionButton;
 }
 
-namespace ash {
+namespace chromeos {
 
 enum class SnapDirection;
 
 // Delegate interface for FrameSizeButton.
-class ASH_PUBLIC_EXPORT FrameSizeButtonDelegate {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButtonDelegate {
  public:
   enum Animate { ANIMATE_YES, ANIMATE_NO };
 
@@ -58,6 +58,6 @@ class ASH_PUBLIC_EXPORT FrameSizeButtonDelegate {
   virtual ~FrameSizeButtonDelegate() {}
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_
+#endif  // CHROMEOS_UI_FRAME_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_

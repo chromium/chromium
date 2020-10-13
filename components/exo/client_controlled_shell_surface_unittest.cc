@@ -8,8 +8,6 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
-#include "ash/public/cpp/caption_buttons/caption_button_model.h"
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_pin_type.h"
 #include "ash/public/cpp/window_properties.h"
@@ -33,6 +31,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/display_item_list.h"
+#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/pointer.h"
@@ -1503,7 +1503,7 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
   ash::NonClientFrameViewAsh* frame_view =
       static_cast<ash::NonClientFrameViewAsh*>(
           shell_surface->GetWidget()->non_client_view()->frame_view());
-  ash::FrameCaptionButtonContainerView* container =
+  chromeos::FrameCaptionButtonContainerView* container =
       static_cast<ash::HeaderView*>(frame_view->GetHeaderView())
           ->caption_button_container();
 
@@ -1511,7 +1511,7 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
   for (auto visible : kAllButtons) {
     uint32_t visible_buttons = 1 << visible;
     shell_surface->SetFrameButtons(visible_buttons, 0);
-    const ash::CaptionButtonModel* model = container->model();
+    const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_visible : kAllButtons) {
       if (not_visible != visible)
         EXPECT_FALSE(model->IsVisible(not_visible));
@@ -1524,7 +1524,7 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
   for (auto enabled : kAllButtons) {
     uint32_t enabled_buttons = 1 << enabled;
     shell_surface->SetFrameButtons(kAllButtonMask, enabled_buttons);
-    const ash::CaptionButtonModel* model = container->model();
+    const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_enabled : kAllButtons) {
       if (not_enabled != enabled)
         EXPECT_FALSE(model->IsEnabled(not_enabled));

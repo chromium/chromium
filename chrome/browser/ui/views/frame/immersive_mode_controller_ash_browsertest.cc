@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/macros.h"
@@ -26,6 +25,7 @@
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -272,9 +272,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerAshWebAppBrowserTest,
   BrowserNonClientFrameViewAsh* frame_view =
       static_cast<BrowserNonClientFrameViewAsh*>(
           browser_view->GetWidget()->non_client_view()->frame_view());
-  ash::FrameCaptionButtonContainerView* caption_button_container =
+  chromeos::FrameCaptionButtonContainerView* caption_button_container =
       frame_view->caption_button_container_;
-  ash::FrameCaptionButtonContainerView::TestApi frame_test_api(
+  chromeos::FrameCaptionButtonContainerView::TestApi frame_test_api(
       caption_button_container);
 
   EXPECT_TRUE(frame_test_api.size_button()->GetVisible());

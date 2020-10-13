@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_CAPTION_BUTTONS_SNAP_CONTROLLER_H_
-#define ASH_PUBLIC_CPP_CAPTION_BUTTONS_SNAP_CONTROLLER_H_
+#ifndef CHROMEOS_UI_FRAME_CAPTION_BUTTONS_SNAP_CONTROLLER_H_
+#define CHROMEOS_UI_FRAME_CAPTION_BUTTONS_SNAP_CONTROLLER_H_
 
-#include "ash/public/cpp/ash_public_export.h"
+#include "base/component_export.h"
 
 namespace aura {
 class Window;
 }
 
-namespace ash {
+namespace chromeos {
 
 // The previewed snap state for a window, corresponding to the use of a
 // PhantomWindowController.
@@ -23,7 +23,7 @@ enum class SnapDirection {
 
 // This interface handles snap actions to be performed on a top level window.
 // The singleton that implements the interface is provided by Ash.
-class ASH_PUBLIC_EXPORT SnapController {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
  public:
   virtual ~SnapController();
 
@@ -43,6 +43,6 @@ class ASH_PUBLIC_EXPORT SnapController {
   SnapController();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_PUBLIC_CPP_CAPTION_BUTTONS_SNAP_CONTROLLER_H_
+#endif  // CHROMEOS_UI_FRAME_CAPTION_BUTTONS_SNAP_CONTROLLER_H_
