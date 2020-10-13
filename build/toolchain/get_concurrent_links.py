@@ -57,7 +57,7 @@ def _GetTotalMemoryInBytes():
   return 0
 
 
-def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, is_thin_lto,
+def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, thin_lto_type,
                                secondary_per_link_gb):
   explanation = []
   explanation.append(
@@ -72,10 +72,15 @@ def _GetDefaultConcurrentLinks(per_link_gb, reserve_gb, is_thin_lto,
   except:
     cpu_count = 1
 
-  # LTO links saturate all cores, but only for about a third of a link.
+  # A local LTO links saturate all cores, but only for some amount of the link.
+  # Goma LTO runs LTO codegen on goma, only run one of these tasks at once.
   cpu_cap = cpu_count
-  if is_thin_lto:
-    cpu_cap = min(cpu_count, 3)
+  if thin_lto_type is not None:
+    if thin_lto_type == 'goma':
+      cpu_cap = 1
+    else:
+      assert thin_lto_type == 'local'
+      cpu_cap = min(cpu_count, 6)
 
   explanation.append('cpu_count={} cpu_cap={} mem_total_gb={:.1f}GiB'.format(
       cpu_count, cpu_cap, mem_total_gb))
@@ -109,7 +114,7 @@ def main():
   parser.add_argument('--mem_per_link_gb', type=int, default=8)
   parser.add_argument('--reserve_mem_gb', type=int, default=0)
   parser.add_argument('--secondary_mem_per_link', type=int, default=0)
-  parser.add_argument('--thin-lto', action='store_true')
+  parser.add_argument('--thin-lto')
   options = parser.parse_args()
 
   primary_pool_size, secondary_pool_size, explanation = (
