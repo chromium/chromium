@@ -18,81 +18,46 @@ using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
 
 TEST(ArcAccessibilityUtilTest, FromContentChangeTypesToAXEvent) {
-  auto range_widget = AXNodeInfoData::New();
-  range_widget->range_info = AXRangeInfoData::New();
-  AccessibilityNodeInfoDataWrapper source_node_range(nullptr,
-                                                     range_widget.get());
-  auto not_range_widget = AXNodeInfoData::New();
-  AccessibilityNodeInfoDataWrapper source_node_not_range(
-      nullptr, not_range_widget.get());
+  auto node_info_data = AXNodeInfoData::New();
+  AccessibilityNodeInfoDataWrapper source_node_info_wrapper(
+      nullptr, node_info_data.get());
 
   std::vector<int32_t> empty_list = {};
-  EXPECT_EQ(base::nullopt,
-            FromContentChangeTypesToAXEvent(empty_list, source_node_range));
-  EXPECT_EQ(base::nullopt,
-            FromContentChangeTypesToAXEvent(empty_list, source_node_not_range));
+  EXPECT_EQ(base::nullopt, FromContentChangeTypesToAXEvent(empty_list));
 
   std::vector<int32_t> state_description = {
       static_cast<int32_t>(mojom::ContentChangeType::STATE_DESCRIPTION)};
-  EXPECT_EQ(
-      ax::mojom::Event::kValueChanged,
-      FromContentChangeTypesToAXEvent(state_description, source_node_range));
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            FromContentChangeTypesToAXEvent(state_description,
-                                            source_node_not_range));
+            FromContentChangeTypesToAXEvent(state_description));
 
-  EXPECT_EQ(ax::mojom::Event::kValueChanged,
-            ToAXEvent(AXEventType::WINDOW_STATE_CHANGED, state_description,
-                      &source_node_range, &source_node_range));
-  EXPECT_EQ(ax::mojom::Event::kValueChanged,
-            ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED, state_description,
-                      &source_node_range, &source_node_range));
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
             ToAXEvent(AXEventType::WINDOW_STATE_CHANGED, state_description,
-                      &source_node_not_range, &source_node_not_range));
+                      &source_node_info_wrapper, &source_node_info_wrapper));
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
             ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED, state_description,
-                      &source_node_not_range, &source_node_not_range));
+                      &source_node_info_wrapper, &source_node_info_wrapper));
 
   std::vector<int32_t> without_state_description = {
       static_cast<int32_t>(mojom::ContentChangeType::TEXT)};
-  EXPECT_EQ(base::nullopt, FromContentChangeTypesToAXEvent(
-                               without_state_description, source_node_range));
   EXPECT_EQ(base::nullopt,
-            FromContentChangeTypesToAXEvent(without_state_description,
-                                            source_node_not_range));
+            FromContentChangeTypesToAXEvent(without_state_description));
 
   std::vector<int32_t> include_state_description = {
       static_cast<int32_t>(mojom::ContentChangeType::TEXT),
       static_cast<int32_t>(mojom::ContentChangeType::STATE_DESCRIPTION)};
-  EXPECT_EQ(ax::mojom::Event::kValueChanged,
-            FromContentChangeTypesToAXEvent(include_state_description,
-                                            source_node_range));
   EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
-            FromContentChangeTypesToAXEvent(include_state_description,
-                                            source_node_not_range));
+            FromContentChangeTypesToAXEvent(include_state_description));
 
   EXPECT_EQ(
-      ax::mojom::Event::kValueChanged,
-      ToAXEvent(AXEventType::WINDOW_STATE_CHANGED, include_state_description,
-                &source_node_range, &source_node_range));
-  EXPECT_EQ(
-      ax::mojom::Event::kValueChanged,
-      ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED, include_state_description,
-                &source_node_range, &source_node_range));
-  EXPECT_EQ(
       ax::mojom::Event::kAriaAttributeChanged,
       ToAXEvent(AXEventType::WINDOW_STATE_CHANGED, include_state_description,
-                &source_node_not_range, &source_node_not_range));
+                &source_node_info_wrapper, &source_node_info_wrapper));
   EXPECT_EQ(
       ax::mojom::Event::kAriaAttributeChanged,
       ToAXEvent(AXEventType::WINDOW_CONTENT_CHANGED, include_state_description,
-                &source_node_not_range, &source_node_not_range));
+                &source_node_info_wrapper, &source_node_info_wrapper));
 
   std::vector<int32_t> not_enum_value = {111};
-  EXPECT_EQ(base::nullopt,
-            FromContentChangeTypesToAXEvent(not_enum_value, source_node_range));
-  EXPECT_EQ(base::nullopt, FromContentChangeTypesToAXEvent(
-                               not_enum_value, source_node_not_range));
+  EXPECT_EQ(base::nullopt, FromContentChangeTypesToAXEvent(not_enum_value));
 }
 }  // namespace arc

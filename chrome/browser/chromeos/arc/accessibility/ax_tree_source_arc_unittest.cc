@@ -669,10 +669,11 @@ TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
   SetProperty(item, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(item, AXBooleanProperty::VISIBLE_TO_USER, true);
 
-  // A selected event from Slider is kValueChanged.
+  // A selected event from Slider is kAriaAttributeChanged.
   event->source_id = slider->id;
   CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kValueChanged));
+  EXPECT_EQ(1,
+            GetDispatchedEventCount(ax::mojom::Event::kAriaAttributeChanged));
 
   // A selected event from a collection. In Android, these event properties are
   // populated by AdapterView.
@@ -1228,11 +1229,13 @@ TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {
   SetProperty(event.get(), AXEventIntListProperty::CONTENT_CHANGE_TYPES,
               content_change_types);
   CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(ax::mojom::Event::kValueChanged, last_dispatched_event_type());
+  EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
+            last_dispatched_event_type());
 
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
   CallNotifyAccessibilityEvent(event.get());
-  EXPECT_EQ(ax::mojom::Event::kValueChanged, last_dispatched_event_type());
+  EXPECT_EQ(ax::mojom::Event::kAriaAttributeChanged,
+            last_dispatched_event_type());
 
   // State description changed event from non range widget.
   event->node_data.push_back(AXNodeInfoData::New());

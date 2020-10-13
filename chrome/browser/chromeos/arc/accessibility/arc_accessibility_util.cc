@@ -18,19 +18,13 @@ using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 
 base::Optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
-    const std::vector<int32_t>& arc_content_change_types,
-    const AccessibilityInfoDataWrapper& source_node) {
-  if (!base::Contains(
+    const std::vector<int32_t>& arc_content_change_types) {
+  if (base::Contains(
           arc_content_change_types,
           static_cast<int32_t>(mojom::ContentChangeType::STATE_DESCRIPTION))) {
-    return base::nullopt;
-  }
-  const AXNodeInfoData* node_ptr = source_node.GetNode();
-  if (node_ptr && node_ptr->range_info) {
-    return ax::mojom::Event::kValueChanged;
-  } else {
     return ax::mojom::Event::kAriaAttributeChanged;
   }
+  return base::nullopt;
 }
 
 ax::mojom::Event ToAXEvent(
@@ -52,8 +46,7 @@ ax::mojom::Event ToAXEvent(
     case mojom::AccessibilityEventType::WINDOW_STATE_CHANGED: {
       if (source_node && arc_content_change_types.has_value()) {
         const base::Optional<ax::mojom::Event> event_or_null =
-            FromContentChangeTypesToAXEvent(arc_content_change_types.value(),
-                                            *source_node);
+            FromContentChangeTypesToAXEvent(arc_content_change_types.value());
         if (event_or_null.has_value()) {
           return event_or_null.value();
         }
@@ -68,8 +61,7 @@ ax::mojom::Event ToAXEvent(
     case mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED:
       if (source_node && arc_content_change_types.has_value()) {
         const base::Optional<ax::mojom::Event> event_or_null =
-            FromContentChangeTypesToAXEvent(arc_content_change_types.value(),
-                                            *source_node);
+            FromContentChangeTypesToAXEvent(arc_content_change_types.value());
         if (event_or_null.has_value()) {
           return event_or_null.value();
         }
@@ -92,7 +84,7 @@ ax::mojom::Event ToAXEvent(
       // See the comment on AXTreeSourceArc::NotifyAccessibilityEvent.
       if (source_node && source_node->IsNode() &&
           source_node->GetNode()->range_info) {
-        return ax::mojom::Event::kValueChanged;
+        return ax::mojom::Event::kAriaAttributeChanged;
       } else {
         return ax::mojom::Event::kFocus;
       }
