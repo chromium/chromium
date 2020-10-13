@@ -438,7 +438,7 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
                          cbor::Value(*response.android_client_data_ext()));
   }
   if (response.large_blob_key()) {
-    response_map.emplace(0x0b, cbor::Value(*response.large_blob_key()));
+    response_map.emplace(0x07, cbor::Value(*response.large_blob_key()));
   }
 
   return WriteCBOR(cbor::Value(std::move(response_map)), allow_invalid_utf8);

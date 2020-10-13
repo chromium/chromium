@@ -190,7 +190,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     }
   }
 
-  it = response_map.find(CBOR(0x0B));
+  it = response_map.find(CBOR(7));
   if (it != response_map.end()) {
     if (!it->second.is_bytestring() ||
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
