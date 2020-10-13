@@ -18,19 +18,11 @@ namespace {
 // Get the priority for a particular device type. The priority returned
 // will be between 0 to 3, the higher number meaning a higher priority.
 uint8_t GetDevicePriority(AudioDeviceType type, bool is_input) {
-  // Lower the priority of bluetooth wide band mic. Although the quality is
-  // better than narrow band(AUDIO_TYPE_BLUETOOTH_NB_MIC), we still want
-  // to avoid auto-selecting Bluetooth mic when there is another audio input
-  // option.
-  if (type == AUDIO_TYPE_BLUETOOTH && is_input)
-    return 0;
   switch (type) {
     case AUDIO_TYPE_HEADPHONE:
     case AUDIO_TYPE_LINEOUT:
     case AUDIO_TYPE_MIC:
     case AUDIO_TYPE_USB:
-    // This is for bluetooth output node. Bluetooth inputs(wide band and narrow
-    // band mic) are handled separately.
     case AUDIO_TYPE_BLUETOOTH:
       return 3;
     case AUDIO_TYPE_HDMI:
