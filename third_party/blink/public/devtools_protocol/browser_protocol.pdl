@@ -4664,6 +4664,20 @@ domain Network
       InvalidPrefix
       # An unknown error was encountered when trying to store this cookie.
       UnknownError
+      # The cookie had the "SameSite=Strict" attribute but came from a response
+      # with the same registrable domain but a different scheme.
+      # This includes navigation requests intitiated by other origins.
+      # This is the "Schemeful Same-Site" version of the blocked reason.
+      SchemefulSameSiteStrict
+      # The cookie had the "SameSite=Lax" attribute but came from a response
+      # with the same registrable domain but a different scheme.
+      # This is the "Schemeful Same-Site" version of the blocked reason.
+      SchemefulSameSiteLax
+      # The cookie didn't specify a "SameSite" attribute and was defaulted to
+      # "SameSite=Lax" and broke the same rules specified in the SchemefulSameSiteLax
+      # value.
+      # This is the "Schemeful Same-Site" version of the blocked reason.
+      SchemefulSameSiteUnspecifiedTreatedAsLax
 
   # Types of reasons why a cookie may not be sent with a request.
   experimental type CookieBlockedReason extends string
@@ -4692,6 +4706,20 @@ domain Network
       UserPreferences
       # An unknown error was encountered when trying to send this cookie.
       UnknownError
+      # The cookie had the "SameSite=Strict" attribute but came from a response
+      # with the same registrable domain but a different scheme.
+      # This includes navigation requests intitiated by other origins.
+      # This is the "Schemeful Same-Site" version of the blocked reason.
+      SchemefulSameSiteStrict
+      # The cookie had the "SameSite=Lax" attribute but came from a response
+      # with the same registrable domain but a different scheme.
+      # This is the "Schemeful Same-Site" version of the blocked reason.
+      SchemefulSameSiteLax
+      # The cookie didn't specify a "SameSite" attribute and was defaulted to
+      # "SameSite=Lax" and broke the same rules specified in the SchemefulSameSiteLax
+      # value.
+      # This is the "Schemeful Same-Site" version of the blocked reason.
+      SchemefulSameSiteUnspecifiedTreatedAsLax
 
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object
