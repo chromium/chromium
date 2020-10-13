@@ -667,6 +667,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             float previousWidth = getActiveLayout().getWidth();
             float previousHeight = getActiveLayout().getHeight();
 
+            float oldViewportTop = mCachedWindowViewport.top;
             mHost.getWindowViewport(mCachedWindowViewport);
             mHost.getVisibleViewport(mCachedVisibleViewport);
             getActiveLayout().sizeChanged(mCachedVisibleViewport, mCachedWindowViewport,
@@ -675,7 +676,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
             float width = mCachedWindowViewport.width() * mPxToDp;
             float height = mCachedWindowViewport.height() * mPxToDp;
-            if (width != previousWidth || height != previousHeight) {
+            if (width != previousWidth || height != previousHeight
+                    || oldViewportTop != mCachedVisibleViewport.top) {
                 for (int i = 0; i < mSceneOverlays.size(); i++) {
                     mSceneOverlays.get(i).onSizeChanged(
                             width, height, mCachedVisibleViewport.top, getOrientation());
