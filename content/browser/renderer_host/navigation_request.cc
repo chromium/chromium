@@ -2273,6 +2273,10 @@ void NavigationRequest::OnResponseStarted(
 
   // Select an appropriate renderer to commit the navigation.
   if (IsServedFromBackForwardCache()) {
+    // If the current navigation is being restarted, it should not try to make
+    // any further progress.
+    DCHECK(!restarting_back_forward_cached_navigation_);
+
     NavigationControllerImpl* controller = GetNavigationController();
     render_frame_host_ = controller->GetBackForwardCache()
                              .GetEntry(nav_entry_id_)
@@ -2281,8 +2285,9 @@ void NavigationRequest::OnResponseStarted(
     // evicted from the BackForwardCache since this navigation started.
     //
     // If the document was evicted, the navigation should have been re-issued
-    // (deleting this NavigationRequest), so we should never reach this point
-    // without the document still present in the BackForwardCache.
+    // (deleting the URL loader and eventually this NavigationRequest), so we
+    // should never reach this point without the document still present in the
+    // BackForwardCache.
     CHECK(render_frame_host_);
   } else if (response_should_be_rendered_) {
     render_frame_host_ =
@@ -4899,6 +4904,9 @@ void NavigationRequest::RestartBackForwardCachedNavigation() {
       FROM_HERE,
       base::BindOnce(&NavigationRequest::RestartBackForwardCachedNavigationImpl,
                      weak_factory_.GetWeakPtr()));
+  // Delete the loader to ensure that it does not try to commit current
+  // navigation before the task above deletes it.
+  loader_.reset();
 }
 
 void NavigationRequest::RestartBackForwardCachedNavigationImpl() {
