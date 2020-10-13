@@ -159,9 +159,6 @@ class ChromeIdentityService {
   // if no matching identity is found.
   virtual ChromeIdentity* GetIdentityWithGaiaID(const std::string& gaia_id);
 
-  // Returns the canonicalized emails for all identities.
-  virtual std::vector<std::string> GetCanonicalizeEmailsForAllIdentities();
-
   // Returns true if there is at least one identity.
   virtual bool HasIdentities();
 

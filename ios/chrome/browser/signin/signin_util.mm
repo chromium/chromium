@@ -22,14 +22,6 @@ NSArray* GetScopeArray(const std::set<std::string>& scopes) {
   return scopes_array;
 }
 
-std::string GetCanonicalizedEmailForIdentity(ChromeIdentity* identity) {
-  NSString* nsEmail = [identity userEmail];
-  if (!nsEmail)
-    return std::string();
-  std::string email = base::SysNSStringToUTF8(nsEmail);
-  return gaia::CanonicalizeEmail(gaia::SanitizeEmail(email));
-}
-
 bool ShouldHandleSigninError(NSError* error) {
   ios::SigninErrorProvider* provider =
       ios::GetChromeBrowserProvider()->GetSigninErrorProvider();

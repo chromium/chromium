@@ -22,8 +22,6 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
-#include "ios/chrome/browser/signin/constants.h"
-#include "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -310,7 +308,7 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
 
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
       base::SysNSStringToUTF8(identity.gaiaID),
-      GetCanonicalizedEmailForIdentity(identity));
+      base::SysNSStringToUTF8(identity.userEmail));
 
   // Load all credentials from SSO library. This must load the credentials
   // for the primary account too.

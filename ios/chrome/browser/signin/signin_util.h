@@ -15,10 +15,6 @@
 // Returns an NSArray of |scopes| as NSStrings.
 NSArray* GetScopeArray(const std::set<std::string>& scopes);
 
-// Returns the canonicalized and sanitized user email for the given identity.
-// Returns nil if the identity does not have any user email.
-std::string GetCanonicalizedEmailForIdentity(ChromeIdentity* identity);
-
 // Returns whether the given signin |error| should be handled.
 //
 // Note that cancel errors and errors handled internally by the signin component

@@ -70,11 +70,6 @@ ChromeIdentity* ChromeIdentityService::GetIdentityWithGaiaID(
   return nil;
 }
 
-std::vector<std::string>
-ChromeIdentityService::GetCanonicalizeEmailsForAllIdentities() {
-  return std::vector<std::string>();
-}
-
 bool ChromeIdentityService::HasIdentities() {
   return false;
 }
