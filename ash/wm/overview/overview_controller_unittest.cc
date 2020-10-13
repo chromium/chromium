@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -689,13 +690,14 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   std::unique_ptr<aura::Window> created_windows[window_count];
   std::vector<aura::Window*> windows(window_count, nullptr);
   for (int i = 0; i < window_count; ++i) {
-    created_windows[i] = CreateTestWindow();
+    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
     windows[i] = created_windows[i].get();
   }
 
   auto* controller = Shell::Get()->overview_controller();
-  EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows)));
+  EXPECT_CALL(observer, OnThrottlingStarted(
+                            testing::UnorderedElementsAreArray(windows),
+                            frame_throttling_controller->throttled_fps()));
   controller->StartOverview();
 
   EXPECT_CALL(observer, OnThrottlingEnded());

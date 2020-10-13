@@ -50,7 +50,7 @@ FrameThrottlingController::FrameThrottlingController(
     int value;
     if (base::StringToInt(cl->GetSwitchValueASCII(switches::kFrameThrottleFps),
                           &value)) {
-      fps_ = value;
+      throttled_fps_ = value;
     }
   }
 }
@@ -69,10 +69,10 @@ void FrameThrottlingController::StartThrottling(
   frame_sink_ids.reserve(windows.size());
   CollectBrowserFrameSinkIds(windows, &frame_sink_ids);
   if (!frame_sink_ids.empty())
-    StartThrottling(frame_sink_ids, fps_);
+    StartThrottling(frame_sink_ids, throttled_fps_);
 
   for (auto& observer : observers_) {
-    observer.OnThrottlingStarted(windows);
+    observer.OnThrottlingStarted(windows, throttled_fps_);
   }
 }
 
@@ -97,11 +97,12 @@ void FrameThrottlingController::EndThrottling() {
   windows_throttled_ = false;
 }
 
-void FrameThrottlingController::AddObserver(Observer* observer) {
+void FrameThrottlingController::AddObserver(FrameThrottlingObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void FrameThrottlingController::RemoveObserver(Observer* observer) {
+void FrameThrottlingController::RemoveObserver(
+    FrameThrottlingObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 

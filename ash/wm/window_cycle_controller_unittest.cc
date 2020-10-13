@@ -9,6 +9,7 @@
 
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/focus_cycler.h"
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
@@ -1217,28 +1218,32 @@ TEST_F(WindowCycleControllerTest, FrameThrottling) {
   MockFrameThrottlingObserver observer;
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
+  uint8_t throttled_fps = frame_throttling_controller->throttled_fps();
   frame_throttling_controller->AddObserver(&observer);
   const int window_count = 5;
   std::unique_ptr<aura::Window> created_windows[window_count];
   std::vector<aura::Window*> windows(window_count, nullptr);
   for (int i = 0; i < window_count; ++i) {
-    created_windows[i] = CreateTestWindow();
+    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
     windows[i] = created_windows[i].get();
   }
 
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
   EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows)));
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps));
   controller->HandleCycleWindow(WindowCycleController::FORWARD);
   EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows)))
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps))
       .Times(0);
   controller->HandleCycleWindow(WindowCycleController::FORWARD);
   EXPECT_CALL(observer, OnThrottlingEnded());
   controller->CompleteCycling();
 
   EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows)));
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps));
   controller->HandleCycleWindow(WindowCycleController::FORWARD);
   EXPECT_CALL(observer, OnThrottlingEnded());
   controller->CancelCycling();

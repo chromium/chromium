@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_grid.h"
 
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -295,23 +296,26 @@ TEST_F(OverviewGridTest, FrameThrottling) {
   testing::NiceMock<MockFrameThrottlingObserver> observer;
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
+  uint8_t throttled_fps = frame_throttling_controller->throttled_fps();
   frame_throttling_controller->AddObserver(&observer);
   const int window_count = 5;
   std::unique_ptr<aura::Window> created_windows[window_count];
   std::vector<aura::Window*> windows(window_count, nullptr);
   for (int i = 0; i < window_count; ++i) {
-    created_windows[i] = CreateTestWindow();
+    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
     windows[i] = created_windows[i].get();
   }
   InitializeGrid(windows);
   frame_throttling_controller->StartThrottling(windows);
 
   // Add a new window to overview.
-  std::unique_ptr<aura::Window> new_window(CreateTestWindow());
+  std::unique_ptr<aura::Window> new_window(
+      CreateAppWindow(gfx::Rect(), AppType::BROWSER));
   windows.push_back(new_window.get());
   EXPECT_CALL(observer, OnThrottlingEnded());
   EXPECT_CALL(observer,
-              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows)));
+              OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                  throttled_fps));
   grid()->AppendItem(new_window.get(), /*reposition=*/false, /*animate=*/false,
                      /*use_spawn_animation=*/false);
 
@@ -320,8 +324,9 @@ TEST_F(OverviewGridTest, FrameThrottling) {
     aura::Window* window = windows[0];
     windows.erase(windows.begin());
     EXPECT_CALL(observer, OnThrottlingEnded());
-    EXPECT_CALL(observer, OnThrottlingStarted(
-                              testing::UnorderedElementsAreArray(windows)));
+    EXPECT_CALL(observer,
+                OnThrottlingStarted(testing::UnorderedElementsAreArray(windows),
+                                    throttled_fps));
     OverviewItem* item = grid()->GetOverviewItemContaining(window);
     grid()->RemoveItem(item, /*item_destroying=*/false, /*reposition=*/false);
   }
