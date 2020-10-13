@@ -502,6 +502,35 @@ TEST_F(AmbientControllerTest,
 }
 
 TEST_F(AmbientControllerTest,
+       ShouldShowAmbientScreenWithLockscreenWithNoisyPowerEvents) {
+  GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
+  SetPowerStateCharging();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  // Should enter ambient mode when the screen is dimmed.
+  SetScreenIdleStateAndWait(/*dimmed=*/true, /*off=*/false);
+  EXPECT_FALSE(IsLocked());
+  EXPECT_FALSE(ambient_controller()->IsShown());
+
+  FastForwardTiny();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  FastForwardHalfLockScreenDelay();
+  SetPowerStateCharging();
+
+  FastForwardHalfLockScreenDelay();
+  SetPowerStateCharging();
+
+  EXPECT_TRUE(IsLocked());
+  // Should not disrupt ongoing ambient mode.
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  // Closes ambient for clean-up.
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest,
        ShouldShowAmbientScreenWithoutLockscreenWhenScreenIsDimmed) {
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(true);
   // When power is discharging, we do not lock the screen with ambient
