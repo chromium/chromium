@@ -34,9 +34,14 @@ struct FeaturePromoBubbleParams {
   base::Optional<int> screenreader_string_specifier;
 
   // A keyboard accelerator to access the feature. If
-  // |screenreader_string_specifier| is set and contains a
-  // placeholder, this is filled in.
+  // |screenreader_string_specifier| is set and contains a placeholder,
+  // this is filled in and announced to the user.
+  //
+  // One of |feature_accelerator| or |feature_command_id|, or neither,
+  // can be filled in. If |feature_command_id| is specified this ID is
+  // looked up on BrowserView and the associated accelerator is fetched.
   base::Optional<ui::Accelerator> feature_accelerator;
+  base::Optional<int> feature_command_id;
 
   // Positioning and sizing:
 

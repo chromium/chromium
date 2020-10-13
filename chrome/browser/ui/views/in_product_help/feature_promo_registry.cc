@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/optional.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
@@ -15,6 +16,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "ui/base/accelerators/accelerator.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -79,6 +81,20 @@ FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
 
   FeaturePromoBubbleParams params = data_it->second.params;
   params.anchor_view = anchor_view;
+
+  if (params.feature_command_id) {
+    // Only one of the two should be specified.
+    DCHECK(!params.feature_accelerator);
+
+    int command_id = params.feature_command_id.value();
+    params.feature_command_id.reset();
+
+    // Get the actual accelerator from |browser_view|.
+    ui::Accelerator accelerator;
+    if (browser_view->GetAccelerator(command_id, &accelerator))
+      params.feature_accelerator = accelerator;
+  }
+
   return params;
 }
 
@@ -136,16 +152,7 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     FeaturePromoBubbleParams params;
     params.body_string_specifier = IDS_REOPEN_TAB_PROMO;
     params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
-
-    // TODO(crbug.com/1133016): re-add screenreader string. This
-    // requires some refactoring, since most accelerators are fetched
-    // from BrowserView. This is not available here.
-    //
-    // A couple implementation options:
-    // * Add another callback to fetch accelerator
-    // * Replace FeaturePromoBubbleParams::feature_accelerator with command ID;
-    //   this ID can be looked up with BrowserView::GetAccelerator() on IPH
-    //   show to get the accelerator.
+    params.feature_command_id = IDC_RESTORE_TAB;
 
     RegisterFeature(feature_engagement::kIPHReopenTabFeature, params,
                     base::BindRepeating(GetAppMenuButton));
