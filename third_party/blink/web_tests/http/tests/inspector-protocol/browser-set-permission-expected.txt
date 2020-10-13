@@ -10,6 +10,7 @@ Test that permissions can be changed
 - Set: {"name":"midi","sysex":false} to denied
 - Set: {"name":"midi","sysex":false} to prompt
 - Set: {"name":"push","userVisibleOnly":true} to granted
+- Set: {"name":"camera","panTiltZoom":true} to granted
 - Set: {"name":"geolocation"} to granted
 - Set: {"name":"geolocation"} to denied
 [
@@ -26,6 +27,7 @@ Test that permissions can be changed
     [10] : {"name":"midi","sysex":false}: prompt
     [11] : {"name":"midi","sysex":true}: prompt
     [12] : {"name":"push","userVisibleOnly":true}: granted
-    [13] : {"name":"geolocation"}: granted
+    [13] : {"name":"camera","panTiltZoom":true}: granted
+    [14] : {"name":"geolocation"}: granted
 ]
 

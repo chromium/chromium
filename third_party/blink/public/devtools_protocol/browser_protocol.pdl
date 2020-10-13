@@ -826,6 +826,7 @@ domain Browser
       protectedMediaIdentifier
       sensors
       videoCapture
+      videoCapturePanTiltZoom
       idleDetection
       wakeLockScreen
       wakeLockSystem
@@ -850,6 +851,8 @@ domain Browser
       optional boolean userVisibleOnly
       # For "clipboard" permission, may specify allowWithoutSanitization.
       optional boolean allowWithoutSanitization
+      # For "camera" permission, may specify panTiltZoom.
+      optional boolean panTiltZoom
 
   # Set permission settings for given origin.
   experimental command setPermission

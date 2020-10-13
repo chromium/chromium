@@ -146,7 +146,10 @@ Response PermissionDescriptorToPermissionType(
   if (name == "geolocation") {
     *permission_type = PermissionType::GEOLOCATION;
   } else if (name == "camera") {
-    *permission_type = PermissionType::VIDEO_CAPTURE;
+    if (descriptor->GetPanTiltZoom(false))
+      *permission_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
+    else
+      *permission_type = PermissionType::VIDEO_CAPTURE;
   } else if (name == "microphone") {
     *permission_type = PermissionType::AUDIO_CAPTURE;
   } else if (name == "notifications") {
@@ -224,6 +227,9 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::AUDIO_CAPTURE;
   } else if (type == protocol::Browser::PermissionTypeEnum::VideoCapture) {
     *out_type = PermissionType::VIDEO_CAPTURE;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::VideoCapturePanTiltZoom) {
+    *out_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
   } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundSync) {
     *out_type = PermissionType::BACKGROUND_SYNC;
   } else if (type == protocol::Browser::PermissionTypeEnum::Flash) {

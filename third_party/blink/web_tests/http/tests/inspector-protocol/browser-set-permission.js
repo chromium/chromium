@@ -66,9 +66,14 @@
   await dp.Browser.resetPermissions();
 
   // Test "push" permissions userVisibleOnly=true is supported.
-  await set({name: 'push', userVisibleOnly: true}, 'granted'),
-  await waitPermission({name: 'push', userVisibleOnly: true}, 'granted'),
-  await dp.Browser.resetPermissions()
+  await set({name: 'push', userVisibleOnly: true}, 'granted');
+  await waitPermission({name: 'push', userVisibleOnly: true}, 'granted');
+  await dp.Browser.resetPermissions();
+
+  // Test "camera" permission panTiltZoom=true is supported.
+  await set({name: 'camera', panTiltZoom: true}, 'granted');
+  await waitPermission({name: 'camera', panTiltZoom: true}, 'granted');
+  await dp.Browser.resetPermissions();
 
   // Cross-origin test.
   await setWithName('geolocation', 'granted');
