@@ -64,7 +64,6 @@
 
 namespace blink {
 class WebFrameWidget;
-class WebInputMethodController;
 class WebLocalFrame;
 class WebMouseEvent;
 class WebPagePopup;
@@ -186,11 +185,6 @@ class CONTENT_EXPORT RenderWidget
   // This can return nullptr while the RenderWidget is closing. When for_frame()
   // is true, the widget returned is a blink::WebFrameWidget.
   blink::WebWidget* GetWebWidget() const { return webwidget_; }
-
-  // Returns the current instance of WebInputMethodController which is to be
-  // used for IME related tasks. This instance corresponds to the one from
-  // focused frame and can be nullptr.
-  blink::WebInputMethodController* GetInputMethodController() const;
 
   // A main frame RenderWidget is destroyed and recreated using the same routing
   // id. So messages en route to a destroyed RenderWidget may end up being

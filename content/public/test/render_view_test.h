@@ -31,10 +31,10 @@ namespace scheduler {
 class WebThreadScheduler;
 }
 struct VisualProperties;
+class WebFrameWidget;
 class WebGestureEvent;
 class WebInputElement;
 class WebMouseEvent;
-class WebWidget;
 }
 
 namespace gfx {
@@ -187,7 +187,7 @@ class RenderViewTest : public testing::Test {
   // Enables to use zoom for device scale.
   void SetUseZoomForDSFEnabled(bool zoom_for_dsf);
 
-  blink::WebWidget* GetWebWidget();
+  blink::WebFrameWidget* GetWebFrameWidget();
 
   // Allows a subclass to override the various content client implementations.
   virtual ContentClient* CreateContentClient();

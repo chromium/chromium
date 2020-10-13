@@ -717,14 +717,6 @@ void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {
   }
 }
 
-blink::WebInputMethodController* RenderWidget::GetInputMethodController()
-    const {
-  if (auto* frame_widget = GetFrameWidget())
-    return frame_widget->GetActiveWebInputMethodController();
-
-  return nullptr;
-}
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 PepperPluginInstanceImpl* RenderWidget::GetFocusedPepperPluginInsideWidget() {
   blink::WebFrameWidget* frame_widget = GetFrameWidget();

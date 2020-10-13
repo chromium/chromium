@@ -10,11 +10,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
-#include "third_party/blink/public/web/web_widget.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace autofill {
@@ -35,8 +35,8 @@ class FormControlClickDetectionTest : public ChromeRenderViewTest {
         "  <input type='button' id='button'></input><br>"
         "  <input type='button' id='button_2' disabled></input><br>"
         "</form>");
-    GetWebWidget()->Resize(blink::WebSize(500, 500));
-    GetWebWidget()->SetFocus(true);
+    GetWebFrameWidget()->Resize(blink::WebSize(500, 500));
+    GetWebFrameWidget()->SetFocus(true);
     blink::WebDocument document = GetMainFrame()->GetDocument();
     text_ = document.GetElementById("text_1");
     textarea_ = document.GetElementById("textarea_1");

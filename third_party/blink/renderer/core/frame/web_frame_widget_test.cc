@@ -502,4 +502,23 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
       testing::IsEmpty());
 }
 
+// Tests that the value of VisualProperties::is_pinch_gesture_active is
+// not propagated to the LayerTreeHost when properties are synced for main
+// frame.
+TEST_F(WebFrameWidgetSimTest, ActivePinchGestureUpdatesLayerTreeHost) {
+  auto* layer_tree_host = WebView().MainFrameViewWidget()->LayerTreeHost();
+  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+  blink::VisualProperties visual_properties;
+
+  // Sync visual properties on a mainframe RenderWidget.
+  visual_properties.is_pinch_gesture_active = true;
+  WebView().MainFrameViewWidget()->ApplyVisualProperties(visual_properties);
+  // We do not expect the |is_pinch_gesture_active| value to propagate to the
+  // LayerTreeHost for the main-frame. Since GesturePinch events are handled
+  // directly by the layer tree for the main frame, it already knows whether or
+  // not a pinch gesture is active, and so we shouldn't propagate this
+  // information to the layer tree for a main-frame's widget.
+  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+}
+
 }  // namespace blink

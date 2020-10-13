@@ -33,8 +33,8 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_widget.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using autofill::mojom::FocusedFieldType;
@@ -225,7 +225,7 @@ void PasswordGenerationAgentTest::SetUp() {
 
   // Necessary for focus changes to work correctly and dispatch blur events
   // when a field was previously focused.
-  GetWebWidget()->SetFocus(true);
+  GetWebFrameWidget()->SetFocus(true);
 }
 
 void PasswordGenerationAgentTest::TearDown() {

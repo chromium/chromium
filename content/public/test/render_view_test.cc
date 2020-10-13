@@ -605,9 +605,7 @@ void RenderViewTest::SendNativeKeyEvent(
 }
 
 void RenderViewTest::SendInputEvent(const blink::WebInputEvent& input_event) {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderWidget* widget = view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-  widget->GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
+  GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
       blink::WebCoalescedInputEvent(input_event, ui::LatencyInfo()),
       base::DoNothing());
 }
@@ -690,13 +688,11 @@ void RenderViewTest::SimulatePointClick(const gfx::Point& point) {
   mouse_event.button = WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(point.x(), point.y());
   mouse_event.click_count = 1;
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderWidget* widget = view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-  widget->GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
+  GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
       blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
       base::DoNothing());
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
-  widget->GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
+  GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
       blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
       base::DoNothing());
 }
@@ -716,13 +712,11 @@ void RenderViewTest::SimulatePointRightClick(const gfx::Point& point) {
   mouse_event.button = WebMouseEvent::Button::kRight;
   mouse_event.SetPositionInWidget(point.x(), point.y());
   mouse_event.click_count = 1;
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderWidget* widget = view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-  widget->GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
+  GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
       blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
       base::DoNothing());
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
-  widget->GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
+  GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
       blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
       base::DoNothing());
 }
@@ -735,9 +729,7 @@ void RenderViewTest::SimulateRectTap(const gfx::Rect& rect) {
   gesture_event.data.tap.tap_count = 1;
   gesture_event.data.tap.width = rect.width();
   gesture_event.data.tap.height = rect.height();
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderWidget* widget = view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-  widget->GetWebWidget()->ProcessInputEventSynchronouslyForTesting(
+  GetWebFrameWidget()->ProcessInputEventSynchronouslyForTesting(
       blink::WebCoalescedInputEvent(gesture_event, ui::LatencyInfo()),
       base::DoNothing());
 }
@@ -772,10 +764,6 @@ void RenderViewTest::Reload(const GURL& url) {
 
 void RenderViewTest::Resize(gfx::Size new_size,
                             bool is_fullscreen_granted) {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  RenderWidget* render_widget =
-      view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-
   blink::VisualProperties visual_properties;
   visual_properties.screen_info = blink::ScreenInfo();
   visual_properties.new_size = new_size;
@@ -783,7 +771,7 @@ void RenderViewTest::Resize(gfx::Size new_size,
   visual_properties.is_fullscreen_granted = is_fullscreen_granted;
   visual_properties.display_mode = blink::mojom::DisplayMode::kBrowser;
 
-  render_widget->GetWebWidget()->ApplyVisualProperties(visual_properties);
+  GetWebFrameWidget()->ApplyVisualProperties(visual_properties);
 }
 
 void RenderViewTest::SimulateUserTypingASCIICharacter(char ascii_character,
@@ -859,9 +847,8 @@ void RenderViewTest::SetUseZoomForDSFEnabled(bool enabled) {
   render_thread_->SetUseZoomForDSFEnabled(enabled);
 }
 
-blink::WebWidget* RenderViewTest::GetWebWidget() {
-  RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-  return view->GetMainRenderFrame()->GetLocalRootRenderWidget()->GetWebWidget();
+blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {
+  return view_->GetWebView()->MainFrameWidget();
 }
 
 ContentClient* RenderViewTest::CreateContentClient() {

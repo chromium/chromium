@@ -12,7 +12,6 @@
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
-#include "content/renderer/render_widget.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -26,11 +25,6 @@ namespace content {
 
 class RenderWidgetTest : public RenderViewTest {
  protected:
-  RenderWidget* widget() {
-    auto* view_impl = static_cast<RenderViewImpl*>(view_);
-    return view_impl->GetMainRenderFrame()->GetLocalRootRenderWidget();
-  }
-
   gfx::Range LastCompositionRange() {
     render_widget_host_->GetWidgetInputHandler()->RequestCompositionUpdates(
         true, false);
@@ -39,7 +33,7 @@ class RenderWidgetTest : public RenderViewTest {
   }
 
   blink::WebInputMethodController* GetInputMethodController() {
-    return widget()->GetInputMethodController();
+    return GetWebFrameWidget()->GetActiveWebInputMethodController();
   }
 
   void CommitText(std::string text) {
@@ -49,7 +43,7 @@ class RenderWidgetTest : public RenderViewTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetFocus(bool focused) { GetWebWidget()->SetFocus(focused); }
+  void SetFocus(bool focused) { GetWebFrameWidget()->SetFocus(focused); }
 
   gfx::PointF GetCenterPointOfElement(const blink::WebString& id) {
     auto rect =
@@ -123,43 +117,37 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPI) {
 
     // Hit the root
     EXPECT_EQ(GetCompositorElementId(),
-              widget()
-                  ->GetWebWidget()
+              GetWebFrameWidget()
                   ->HitTestResultAt(gfx::PointF(10, 10))
                   .GetScrollableContainerId());
 
     // Hit non-scrollable div
     EXPECT_EQ(GetCompositorElementId(),
-              widget()
-                  ->GetWebWidget()
+              GetWebFrameWidget()
                   ->HitTestResultAt(GetCenterPointOfElement("green"))
                   .GetScrollableContainerId());
 
     // Hit scrollable div
     EXPECT_EQ(GetCompositorElementId("red"),
-              widget()
-                  ->GetWebWidget()
+              GetWebFrameWidget()
                   ->HitTestResultAt(GetCenterPointOfElement("red"))
                   .GetScrollableContainerId());
 
     // Hit overflow:hidden div
     EXPECT_EQ(GetCompositorElementId(),
-              widget()
-                  ->GetWebWidget()
+              GetWebFrameWidget()
                   ->HitTestResultAt(GetCenterPointOfElement("blue"))
                   .GetScrollableContainerId());
 
     // Hit position fixed div
     EXPECT_EQ(GetCompositorElementId(),
-              widget()
-                  ->GetWebWidget()
+              GetWebFrameWidget()
                   ->HitTestResultAt(GetCenterPointOfElement("yellow"))
                   .GetScrollableContainerId());
 
     // Hit inner scroller inside another scroller
     EXPECT_EQ(GetCompositorElementId("cyan"),
-              widget()
-                  ->GetWebWidget()
+              GetWebFrameWidget()
                   ->HitTestResultAt(GetCenterPointOfElement("cyan-parent"))
                   .GetScrollableContainerId());
   }
@@ -194,8 +182,7 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPIWithImplicitRootScroller) {
   EXPECT_EQ(GetMainFrame()
                 ->GetDocument()
                 .GetVisualViewportScrollingElementIdForTesting(),
-            widget()
-                ->GetWebWidget()
+            GetWebFrameWidget()
                 ->HitTestResultAt(GetCenterPointOfElement("white"))
                 .GetScrollableContainerId());
 }
@@ -207,9 +194,9 @@ TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {
   gfx::Range range = LastCompositionRange();
   EXPECT_FALSE(range.IsValid());
   blink::WebVector<ui::ImeTextSpan> empty_ime_text_spans;
-  DCHECK(widget()->GetInputMethodController());
-  widget()->GetInputMethodController()->SetComposition(
-      "hello", empty_ime_text_spans, blink::WebRange(), 3, 3);
+  DCHECK(GetInputMethodController());
+  GetInputMethodController()->SetComposition("hello", empty_ime_text_spans,
+                                             blink::WebRange(), 3, 3);
   range = LastCompositionRange();
   EXPECT_TRUE(range.IsValid());
   EXPECT_EQ(0U, range.start());
@@ -281,25 +268,6 @@ TEST_F(RenderWidgetTest, PageFocusIme) {
   CommitText(text);
   EXPECT_EQ("hello world",
             GetInputMethodController()->TextInputInfo().value.Utf8());
-}
-
-// Tests that the value of VisualProperties::is_pinch_gesture_active is
-// not propagated to the LayerTreeHost when properties are synced for main
-// frame.
-TEST_F(RenderWidgetTest, ActivePinchGestureUpdatesLayerTreeHost) {
-  auto* layer_tree_host = widget()->layer_tree_host();
-  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
-  blink::VisualProperties visual_properties;
-
-  // Sync visual properties on a mainframe RenderWidget.
-  visual_properties.is_pinch_gesture_active = true;
-  widget()->GetWebWidget()->ApplyVisualProperties(visual_properties);
-  // We do not expect the |is_pinch_gesture_active| value to propagate to the
-  // LayerTreeHost for the main-frame. Since GesturePinch events are handled
-  // directly by the layer tree for the main frame, it already knows whether or
-  // not a pinch gesture is active, and so we shouldn't propagate this
-  // information to the layer tree for a main-frame's widget.
-  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
 }
 
 }  // namespace content
