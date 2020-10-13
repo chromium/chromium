@@ -669,7 +669,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     enterprise_connectors::ContentAnalysisResponse response;
 
     auto* malware_result = response.add_results();
-    malware_result->set_tag("malware");
+    malware_result->set_tag("dlp");
     malware_result->set_status(
         enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
@@ -685,7 +685,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*reason*/ "ANALYSIS_CONNECTOR_FAILED",
+        /*reason*/ "DLP_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/
@@ -722,7 +722,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-        /*reason*/ "ANALYSIS_CONNECTOR_FAILED",
+        /*reason*/ "MALWARE_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
         /*result*/

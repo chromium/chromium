@@ -83,10 +83,16 @@ void MaybeReportDeepScanningVerdict(
   for (const auto& result : response.results()) {
     if (result.status() !=
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
+      std::string unscanned_reason = "UNSCANNED_REASON_UNKNOWN";
+      if (result.tag() == "malware")
+        unscanned_reason = "MALWARE_SCAN_FAILED";
+      else if (result.tag() == "dlp")
+        unscanned_reason = "DLP_SCAN_FAILED";
+
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
           ->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
                                  mime_type, trigger, access_point,
-                                 "ANALYSIS_CONNECTOR_FAILED", content_size,
+                                 std::move(unscanned_reason), content_size,
                                  event_result);
     } else if (result.triggered_rules_size() > 0) {
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
