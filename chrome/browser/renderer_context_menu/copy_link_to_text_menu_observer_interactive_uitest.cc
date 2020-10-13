@@ -97,3 +97,19 @@ IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest,
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
   EXPECT_EQ(base::UTF8ToUTF16("\"hello world\"\nhttp://foo.com/"), text);
 }
+
+IN_PROC_BROWSER_TEST_F(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
+  params.selection_text = base::UTF8ToUTF16("hello world");
+  observer()->OverrideGeneratedSelectorForTesting("hello");
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  base::string16 text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(base::UTF8ToUTF16("\"hello world\"\nhttp://foo.com/#:~:text=hello"),
+            text);
+}
