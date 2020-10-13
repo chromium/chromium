@@ -3905,7 +3905,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.AttemptResult"
-    enum="VideoPersistenceAttemptResult" expires_after="M87">
+    enum="VideoPersistenceAttemptResult" expires_after="M93">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -3916,7 +3916,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.ControlsType"
-    enum="VideoPersistenceControlsType" expires_after="M87">
+    enum="VideoPersistenceControlsType" expires_after="M93">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3926,7 +3926,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.Duration" units="ms"
-    expires_after="M87">
+    expires_after="M93">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -3937,7 +3937,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.EndReason"
-    enum="VideoPersistenceEndReason" expires_after="M87">
+    enum="VideoPersistenceEndReason" expires_after="M93">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

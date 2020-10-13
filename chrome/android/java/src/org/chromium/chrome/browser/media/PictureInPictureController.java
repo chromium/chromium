@@ -62,7 +62,7 @@ public class PictureInPictureController {
     private static final int METRICS_ATTEMPT_RESULT_RESTARTING = 5;
     private static final int METRICS_ATTEMPT_RESULT_FINISHING = 6;
     private static final int METRICS_ATTEMPT_RESULT_NO_WEBCONTENTS = 7;
-    private static final int METRICS_ATTEMPT_RESULT_NO_VIDEO = 8;
+    // private static final int METRICS_ATTEMPT_RESULT_NO_VIDEO = 8;
     private static final int METRICS_ATTEMPT_RESULT_COUNT = 9;
 
     private static final String METRICS_END_REASON = "Media.VideoPersistence.EndReason";
@@ -109,7 +109,6 @@ public class PictureInPictureController {
         // Only auto-PiP if there is a playing fullscreen video that allows PiP.
         if (!webContents.hasActiveEffectivelyFullscreenVideo()
                 || !webContents.isPictureInPictureAllowedForFullscreenVideo()) {
-            recordAttemptResult(METRICS_ATTEMPT_RESULT_NO_VIDEO);
             return false;
         }
 
