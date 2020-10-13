@@ -84,6 +84,7 @@ class CreditCardSaveManager {
    public:
     virtual ~ObserverForTest() {}
     virtual void OnOfferLocalSave() {}
+    virtual void OnOfferUploadSave() {}
     virtual void OnDecideToRequestUploadSave() {}
     virtual void OnReceivedGetUploadDetailsResponse() {}
     virtual void OnSentUploadCardRequest() {}

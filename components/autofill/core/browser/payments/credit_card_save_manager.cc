@@ -486,6 +486,8 @@ void CreditCardSaveManager::OfferCardUploadSave() {
   // should not display the offer-to-save infobar at all.
   if (!is_mobile_build || show_save_prompt_.value_or(true)) {
     user_did_accept_upload_prompt_ = false;
+    if (observer_for_testing_)
+      observer_for_testing_->OnOfferUploadSave();
     client_->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
         AutofillClient::SaveCreditCardOptions()

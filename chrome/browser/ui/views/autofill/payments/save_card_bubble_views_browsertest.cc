@@ -150,6 +150,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   // Various events that can be waited on by the DialogEventWaiter.
   enum DialogEvent : int {
     OFFERED_LOCAL_SAVE,
+    OFFERED_UPLOAD_SAVE,
     REQUESTED_UPLOAD_SAVE,
     DYNAMIC_FORM_PARSED,
     RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
@@ -158,7 +159,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     SHOW_CARD_SAVED_FEEDBACK,
     STRIKE_CHANGE_COMPLETE,
     BUBBLE_SHOWN,
-    BUBBLE_CLOSED
+    ICON_SHOWN
   };
 
   // SyncTest::SetUpOnMainThread:
@@ -218,6 +219,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
                                     ->GetFormDataImporter()
                                     ->credit_card_save_manager_.get();
     credit_card_save_manager_->SetEventObserverForTesting(this);
+    AddEventObserverToController();
 
     // Set up this class as the ObserverForTest implementation.
     AutofillHandler* autofill_handler =
@@ -242,6 +244,12 @@ class SaveCardBubbleViewsFullFormBrowserTest
   void OnOfferLocalSave() override {
     if (event_waiter_)
       event_waiter_->OnEvent(DialogEvent::OFFERED_LOCAL_SAVE);
+  }
+
+  // CreditCardSaveManager::ObserverForTest:
+  void OnOfferUploadSave() override {
+    if (event_waiter_)
+      event_waiter_->OnEvent(DialogEvent::OFFERED_UPLOAD_SAVE);
   }
 
   // CreditCardSaveManager::ObserverForTest:
@@ -287,9 +295,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   // SaveCardBubbleControllerImpl::ObserverForTest:
-  void OnBubbleClosed() override {
+  void OnIconShown() override {
     if (event_waiter_)
-      event_waiter_->OnEvent(DialogEvent::BUBBLE_CLOSED);
+      event_waiter_->OnEvent(DialogEvent::ICON_SHOWN);
   }
 
   inline views::Combobox* month_input() {
@@ -349,7 +357,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   void SubmitFormAndWaitForCardLocalSaveBubble() {
-    ResetEventWaiterForSequence({DialogEvent::OFFERED_LOCAL_SAVE});
+    ResetEventWaiterForSequence(
+        {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
     WaitForObservedEvent();
     WaitForAnimationToEnd();
@@ -362,7 +371,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     SetUploadDetailsRpcPaymentsAccepts();
     ResetEventWaiterForSequence(
         {DialogEvent::REQUESTED_UPLOAD_SAVE,
-         DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE});
+         DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
+         DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
     WaitForObservedEvent();
     WaitForAnimationToEnd();
@@ -674,15 +684,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return specified_view;
   }
 
-  void ClickOnCancelButton(bool strike_expected = false) {
+  void ClickOnCancelButton() {
     SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
     DCHECK(save_card_bubble_views);
-    if (strike_expected) {
-      ResetEventWaiterForSequence(
-          {DialogEvent::STRIKE_CHANGE_COMPLETE, DialogEvent::BUBBLE_CLOSED});
-    } else {
-      ResetEventWaiterForSequence({DialogEvent::BUBBLE_CLOSED});
-    }
     ClickOnDialogViewWithIdAndWait(DialogViewId::CANCEL_BUTTON);
     DCHECK(!GetSaveCardBubbleViews());
   }
@@ -690,7 +694,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
   void ClickOnCloseButton() {
     SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
     DCHECK(save_card_bubble_views);
-    ResetEventWaiterForSequence({DialogEvent::BUBBLE_CLOSED});
     ClickOnDialogViewAndWait(save_card_bubble_views->GetBubbleFrameView()
                                  ->GetCloseButtonForTesting());
     DCHECK(!GetSaveCardBubbleViews());
@@ -698,7 +701,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   SaveCardBubbleViews* GetSaveCardBubbleViews() {
     SaveCardBubbleController* save_card_bubble_controller =
-        SaveCardBubbleController::GetOrCreate(GetActiveWebContents());
+        SaveCardBubbleController::Get(GetActiveWebContents());
     if (!save_card_bubble_controller)
       return nullptr;
     SaveCardBubbleView* save_card_bubble_view =
@@ -728,15 +731,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
   void OpenSettingsFromManageCardsPrompt() {
     FillForm();
     SubmitFormAndWaitForCardLocalSaveBubble();
-
-    // Adding an event observer to the controller so we can wait for the bubble
-    // to show.
-    AddEventObserverToController();
     ReduceAnimationTime();
 
 #if !defined(OS_CHROMEOS)
-    ResetEventWaiterForSequence(
-        {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 #endif
 
     // Click [Save] should close the offer-to-save bubble and show "Card saved"
@@ -764,7 +762,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void AddEventObserverToController() {
     SaveCardBubbleControllerImpl* save_card_bubble_controller_impl =
-        SaveCardBubbleControllerImpl::FromWebContents(GetActiveWebContents());
+        static_cast<SaveCardBubbleControllerImpl*>(
+            SaveCardBubbleController::GetOrCreate(GetActiveWebContents()));
     DCHECK(save_card_bubble_controller_impl);
     save_card_bubble_controller_impl->SetEventObserverForTesting(this);
   }
@@ -855,7 +854,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // Clicking [No thanks] should cancel and close it.
   base::HistogramTester histogram_tester;
-  ClickOnCancelButton(/*strike_expected=*/true);
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  ClickOnCancelButton();
+  WaitForObservedEvent();
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
@@ -871,17 +872,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
   base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // Sign-in promo should be showing and user actions should have recorded
@@ -920,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
@@ -947,17 +944,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
   base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // User actions should have recorded impression.
@@ -985,17 +978,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
   base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // Click on [Sign in] button.
@@ -1018,16 +1007,12 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
@@ -1217,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
   SubmitForm();
   WaitForObservedEvent();
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
@@ -1292,7 +1277,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Clicking [No thanks] should cancel and close it.
   base::HistogramTester histogram_tester;
-  ClickOnCancelButton(/*strike_expected=*/true);
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  ClickOnCancelButton();
+  WaitForObservedEvent();
 
   // UMA should have recorded bubble rejection.
   histogram_tester.ExpectUniqueSample(
@@ -1565,7 +1552,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
   NavigateTo(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
@@ -1591,7 +1578,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
   NavigateTo(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
@@ -1634,7 +1621,8 @@ IN_PROC_BROWSER_TEST_F(
   WaitForObservedEvent();
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
-       DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE});
+       DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
+       DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
   SubmitForm();
   WaitForObservedEvent();
   EXPECT_TRUE(GetSaveCardBubbleViews());
@@ -2011,9 +1999,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // Clicking the [X] close button should dismiss the bubble.
   ClickOnCloseButton();
 
-  // Add an event observer to the controller to detect strike changes.
-  AddEventObserverToController();
-
   base::HistogramTester histogram_tester;
 
   // Wait long enough to avoid bubble stickiness, then navigate away from the
@@ -2046,9 +2031,6 @@ IN_PROC_BROWSER_TEST_F(
   // Clicking the [X] close button should dismiss the bubble.
   ClickOnCloseButton();
 
-  // Add an event observer to the controller to detect strike changes.
-  AddEventObserverToController();
-
   base::HistogramTester histogram_tester;
 
   // Wait long enough to avoid bubble stickiness, then navigate away from the
@@ -2073,7 +2055,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // Clicking [No thanks] should cancel and close it.
   base::HistogramTester histogram_tester;
-  ClickOnCancelButton(/*strike_expected=*/true);
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  ClickOnCancelButton();
+  WaitForObservedEvent();
 
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
@@ -2094,7 +2078,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Clicking [No thanks] should cancel and close it.
   base::HistogramTester histogram_tester;
-  ClickOnCancelButton(/*strike_expected=*/true);
+  ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+  ClickOnCancelButton();
+  WaitForObservedEvent();
 
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
@@ -2108,8 +2094,6 @@ IN_PROC_BROWSER_TEST_F(
 // strikes are added if the card already has max strikes.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        StrikeDatabase_Local_FullFlowTest) {
-  bool controller_observer_set = false;
-
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
   for (int i = 0;
        i < credit_card_save_manager_->GetCreditCardSaveStrikeDatabase()
@@ -2117,17 +2101,11 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
        ++i) {
     FillForm();
     SubmitFormAndWaitForCardLocalSaveBubble();
-
-    if (!controller_observer_set) {
-      // Add an event observer to the controller.
-      AddEventObserverToController();
-      ReduceAnimationTime();
-      controller_observer_set = true;
-    }
+    ReduceAnimationTime();
 
     base::HistogramTester histogram_tester;
     ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
-    ClickOnCancelButton(/*strike_expected=*/true);
+    ClickOnCancelButton();
     WaitForObservedEvent();
 
     // Ensure that a strike was added due to the bubble being declined.
@@ -2141,7 +2119,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // Submit the form a fourth time. Since the card now has maximum strikes (3),
   // the icon should be shown but the bubble should not.
-  ResetEventWaiterForSequence({DialogEvent::OFFERED_LOCAL_SAVE});
+  ResetEventWaiterForSequence(
+      {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::ICON_SHOWN});
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
@@ -2180,8 +2159,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     StrikeDatabase_Upload_FullFlowTest) {
-  bool controller_observer_set = false;
-
   // Start sync.
   harness_->SetupSync();
 
@@ -2192,17 +2169,12 @@ IN_PROC_BROWSER_TEST_F(
        ++i) {
     FillForm();
     SubmitFormAndWaitForCardUploadSaveBubble();
-
-    if (!controller_observer_set) {
-      // Add an event observer to the controller.
-      AddEventObserverToController();
-      ReduceAnimationTime();
-      controller_observer_set = true;
-    }
+    ReduceAnimationTime();
 
     base::HistogramTester histogram_tester;
 
-    ClickOnCancelButton(/*strike_expected=*/true);
+    ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
+    ClickOnCancelButton();
     WaitForObservedEvent();
 
     // Ensure that a strike was added due to the bubble being declined.
@@ -2218,7 +2190,8 @@ IN_PROC_BROWSER_TEST_F(
   // the icon should be shown but the bubble should not.
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
-       DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE});
+       DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
+       DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::ICON_SHOWN});
   NavigateTo(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
@@ -2310,7 +2283,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
   ClickOnCloseButton();
-  AddEventObserverToController();
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   ClickOnView(GetSaveCardIconView());
   WaitForObservedEvent();
@@ -2460,6 +2432,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   SetUploadCardRpcPaymentsFails();
   ResetEventWaiterForSequence({DialogEvent::RECEIVED_UPLOAD_CARD_RESPONSE,
                                DialogEvent::STRIKE_CHANGE_COMPLETE,
+                               DialogEvent::ICON_SHOWN,
                                DialogEvent::SHOW_CARD_SAVED_FEEDBACK});
   WaitForObservedEvent();
 
@@ -2481,7 +2454,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
       AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN, 0);
 
   // Click on the icon.
-  AddEventObserverToController();
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   ClickOnView(GetSaveCardIconView());
   WaitForObservedEvent();
@@ -2507,15 +2479,11 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // Ensures the credit card icon is not visible.
@@ -2533,21 +2501,15 @@ IN_PROC_BROWSER_TEST_F(
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // Close the sign-in promo.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_CLOSED});
   ClickOnCloseButton();
-  WaitForObservedEvent();
 
   // Ensures the neither credit card icon nor the manage cards bubble is
   // showing.
@@ -2606,18 +2568,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
                        Local_Metrics_SigninImpressionManageCards) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
   base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // Close promo.
@@ -2640,15 +2597,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
                        Local_ClickingIconShowsManageCards) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
 
 #if !defined(OS_CHROMEOS)
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 #endif
 
   // Click [Save] should close the offer-to-save bubble and show "Card saved"
@@ -2680,15 +2632,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
                        Local_ManageCardsDoneButtonClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
 
 #if !defined(OS_CHROMEOS)
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 #endif
 
   // Click [Save] should close the offer-to-save bubble and show "Card saved"
@@ -2725,18 +2672,13 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
                        Local_Metrics_AcceptingFootnotePromoManageCards) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Adding an event observer to the controller so we can wait for the bubble to
-  // show.
-  AddEventObserverToController();
   ReduceAnimationTime();
-  ResetEventWaiterForSequence(
-      {DialogEvent::BUBBLE_CLOSED, DialogEvent::BUBBLE_SHOWN});
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
 
   // Click [Save] should close the offer-to-save bubble
   // and pop up the sign-in promo.
   base::UserActionTester user_action_tester;
-  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   WaitForObservedEvent();
 
   // Close promo.

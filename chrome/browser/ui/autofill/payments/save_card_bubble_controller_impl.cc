@@ -575,9 +575,6 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   }
 
   UpdateSaveCardIcon();
-
-  if (observer_for_testing_)
-    observer_for_testing_->OnBubbleClosed();
 }
 
 const LegalMessageLines& SaveCardBubbleControllerImpl::GetLegalMessageLines()
@@ -866,6 +863,9 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
+
+  if (observer_for_testing_)
+    observer_for_testing_->OnIconShown();
 }
 
 void SaveCardBubbleControllerImpl::UpdateSaveCardIcon() {

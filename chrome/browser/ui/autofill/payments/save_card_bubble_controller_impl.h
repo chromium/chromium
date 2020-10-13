@@ -39,7 +39,7 @@ class SaveCardBubbleControllerImpl
   class ObserverForTest {
    public:
     virtual void OnBubbleShown() = 0;
-    virtual void OnBubbleClosed() = 0;
+    virtual void OnIconShown() = 0;
   };
 
   ~SaveCardBubbleControllerImpl() override;
