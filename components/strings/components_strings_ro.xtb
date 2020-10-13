@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Se salvează cardurile…</translation>
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="1062160989074299343">Prc10 (Plic)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> returnare de numerar</translation>
 <translation id="106701514854093668">Marcaje desktop</translation>
 <translation id="1068672505746868501">Nu traduce niciodată paginile în <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noapte</translation>
@@ -207,7 +208,6 @@
 <translation id="1717494416764505390">Căsuța de e-mail 3</translation>
 <translation id="1718029547804390981">Documentul este prea mare pentru a face adnotări</translation>
 <translation id="1721424275792716183">* Câmp obligatoriu</translation>
-<translation id="1724638245199909652">Acces la fonturile locale</translation>
 <translation id="1727741090716970331">Adaugă un număr de card valid</translation>
 <translation id="1728677426644403582">Se afișează sursa unei pagini web</translation>
 <translation id="173080396488393970">Acest tip de card nu este acceptat</translation>
@@ -495,6 +495,7 @@
 <translation id="2955913368246107853">Închide Bara de căutare</translation>
 <translation id="2969319727213777354">Pentru a stabili o conexiune securizată, ceasul trebuie să fie setat corect, deoarece certificatele pe care site-urile le folosesc pentru a se identifica sunt valabile numai pentru anumite intervale de timp. Din moment ce ora de pe dispozitiv este incorectă, Google Chrome nu poate verifica aceste certificate.</translation>
 <translation id="2972581237482394796">&amp;Repetă</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> reducere</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Dacă opțiunea este activată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
@@ -1367,6 +1368,7 @@
 <translation id="6451458296329894277">Confirmă retrimiterea formularului</translation>
 <translation id="6457206614190510200">Broșare pe mijloc</translation>
 <translation id="6465306955648956876">Gestionează parolele...</translation>
+<translation id="6468485451923838994">Fonturi</translation>
 <translation id="647261751007945333">Politici privind dispozitivele</translation>
 <translation id="6476284679642588870">Gestionează metodele de plată</translation>
 <translation id="6489534406876378309">Începeți încărcarea rapoartelor de blocare</translation>
@@ -1889,6 +1891,7 @@ Detalii suplimentare:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Disponibilă</translation>
 <translation id="868922510921656628">Pagini per set</translation>
+<translation id="8697373104056314601">Pentru a beneficia de cel mai înalt nivel de securitate, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activează protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699041776323235191">Dispozitiv HID</translation>
 <translation id="8703575177326907206">Conexiunea la <ph name="DOMAIN" /> nu este criptată.</translation>

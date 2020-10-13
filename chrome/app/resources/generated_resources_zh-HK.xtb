@@ -3878,6 +3878,7 @@
 <ph name="BEGIN_PARAGRAPH2" />即使關閉此功能，您的裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />擁有者可前往「設定」&gt;「進階」&gt;「自動將診斷和使用情況資料傳送給 Google」，以控制此功能。<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />如果您已開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">付款卡</translation>
 <translation id="5585118885427931890">無法建立書籤資料夾。</translation>
 <translation id="558563010977877295">開啟特定網頁或一組網頁</translation>
 <translation id="5585898376467608182">裝置的儲存空間即將用盡。<ph name="APP_NAME" /> 需要至少 <ph name="MINIMUM_SPACE" /> 的可用空間。如要增加可用空間，請刪除裝置內的檔案。</translation>

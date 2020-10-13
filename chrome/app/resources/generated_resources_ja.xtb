@@ -3879,6 +3879,7 @@
     <ph name="BEGIN_PARAGRAPH2" />この機能をオフにした場合でも、システム アップデートやセキュリティなどの重要なサービスで必要となる情報は、デバイスからこれまでどおり送信されます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />デバイスの所有者は、[設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] でこの機能を管理できます。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />これに加えて [ウェブとアプリのアクティビティ] の設定もオンにしている場合、このデータは Google アカウントにも保存される可能性があります。account.google.com でアカウント設定を閲覧、削除、変更することができます。<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">カード</translation>
 <translation id="5585118885427931890">ブックマーク フォルダを作成できませんでした。</translation>
 <translation id="558563010977877295">特定のページまたはページセットを開く</translation>
 <translation id="5585898376467608182">デバイスの空き容量が残り少なくなっています。<ph name="APP_NAME" /> を使用するには、少なくとも <ph name="MINIMUM_SPACE" /> の空き容量が必要です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>

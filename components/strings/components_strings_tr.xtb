@@ -207,7 +207,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1717494416764505390">Posta kutusu 3</translation>
 <translation id="1718029547804390981">Doküman, ek açıklama ilave edilemeyecek kadar büyük</translation>
 <translation id="1721424275792716183">* Zorunlu alan</translation>
-<translation id="1724638245199909652">Yerel yazı tipi erişimi</translation>
 <translation id="1727741090716970331">Geçerli Kart Numarası Ekleyin</translation>
 <translation id="1728677426644403582">Bir web sayfasının kaynak kodunu görüntülüyorsunuz</translation>
 <translation id="173080396488393970">Bu kart türü desteklenmiyor</translation>
@@ -1360,6 +1359,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6451458296329894277">Yeniden Form Gönderme İşlemini Onayla</translation>
 <translation id="6457206614190510200">Ortada tel zımba</translation>
 <translation id="6465306955648956876">Şifreleri yönet...</translation>
+<translation id="6468485451923838994">Yazı tipleri</translation>
 <translation id="647261751007945333">Cihaz politikaları</translation>
 <translation id="6476284679642588870">Ödeme yöntemlerini yönetin</translation>
 <translation id="6489534406876378309">Kilitlenmeleri yüklemeye başla</translation>

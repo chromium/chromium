@@ -207,7 +207,6 @@
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1718029547804390981">文件過大，無法加入註釋</translation>
 <translation id="1721424275792716183">* 為必填欄位</translation>
-<translation id="1724638245199909652">本機字型存取權</translation>
 <translation id="1727741090716970331">新增有效的信用卡號碼</translation>
 <translation id="1728677426644403582">您正在查看網頁的原始碼</translation>
 <translation id="173080396488393970">不支援此信用卡類型</translation>
@@ -1357,6 +1356,7 @@
 <translation id="6451458296329894277">確認重新提交表格</translation>
 <translation id="6457206614190510200">騎馬釘</translation>
 <translation id="6465306955648956876">管理密碼…</translation>
+<translation id="6468485451923838994">字型</translation>
 <translation id="647261751007945333">裝置政策</translation>
 <translation id="6476284679642588870">管理付款方法</translation>
 <translation id="6489534406876378309">開始上載當機報告</translation>

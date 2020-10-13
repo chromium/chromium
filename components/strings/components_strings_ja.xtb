@@ -207,7 +207,6 @@
 <translation id="1717494416764505390">用紙受け 3</translation>
 <translation id="1718029547804390981">ドキュメントのサイズが大きすぎるため注釈を追加できません</translation>
 <translation id="1721424275792716183">* 必須欄です</translation>
-<translation id="1724638245199909652">ローカル フォントへのアクセス</translation>
 <translation id="1727741090716970331">有効なカード番号の追加</translation>
 <translation id="1728677426644403582">ウェブページのソースを表示しています</translation>
 <translation id="173080396488393970">この種類のカードはご利用いただけません</translation>
@@ -1358,6 +1357,7 @@
 <translation id="6451458296329894277">フォーム再送信の確認</translation>
 <translation id="6457206614190510200">中綴じ</translation>
 <translation id="6465306955648956876">パスワードを管理...</translation>
+<translation id="6468485451923838994">フォント</translation>
 <translation id="647261751007945333">デバイス ポリシー</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="6489534406876378309">クラッシュのアップロードを開始</translation>

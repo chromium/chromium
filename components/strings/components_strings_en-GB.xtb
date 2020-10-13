@@ -208,7 +208,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1718029547804390981">Document is too large to be annotated</translation>
 <translation id="1721424275792716183">* Field is required</translation>
-<translation id="1724638245199909652">Local font access</translation>
 <translation id="1727741090716970331">Add Valid Card Number</translation>
 <translation id="1728677426644403582">You're viewing the source of a web page</translation>
 <translation id="173080396488393970">This type of card isn’t supported</translation>
@@ -1370,6 +1369,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6451458296329894277">Confirm Form Resubmission</translation>
 <translation id="6457206614190510200">Saddle stitch</translation>
 <translation id="6465306955648956876">Manage passwords...</translation>
+<translation id="6468485451923838994">Fonts</translation>
 <translation id="647261751007945333">Device policies</translation>
 <translation id="6476284679642588870">Manage payment methods</translation>
 <translation id="6489534406876378309">Start uploading crashes</translation>

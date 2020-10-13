@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Картице се чувају...</translation>
 <translation id="10614374240317010">Никада се не чува</translation>
 <translation id="1062160989074299343">Prc10 (коверат)</translation>
+<translation id="1066573427009091463">Повраћај готовине од <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Обележивачи на рачунару</translation>
 <translation id="1068672505746868501">Никад не преводи странице на језику <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Ноћ</translation>
@@ -207,7 +208,6 @@
 <translation id="1717494416764505390">3. поштанско сандуче</translation>
 <translation id="1718029547804390981">Документ је исувише велики да бисте му додали напомене</translation>
 <translation id="1721424275792716183">* Поље је обавезно</translation>
-<translation id="1724638245199909652">Локални приступ фонту</translation>
 <translation id="1727741090716970331">Додајте важећи број картице</translation>
 <translation id="1728677426644403582">Прегледате извор веб-странице.</translation>
 <translation id="173080396488393970">Овај тип картице није подржан</translation>
@@ -497,6 +497,7 @@
 <translation id="2955913368246107853">Затворите траку за проналажење</translation>
 <translation id="2969319727213777354">Да бисте успоставили безбедну везу, сат на уређају мора да буде тачан. То је зато што сертификати које веб-сајтови користе за идентификацију важе само за одређене временске периоде. Пошто сат на вашем уређају није тачан, Google Chrome не може да верификује те сертификате.</translation>
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> попуста</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, тренутно изабрано. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Ако омогућите ову опцију, Chromium ће складиштити копију картице на овом уређају ради бржег попуњавања образаца.</translation>
 <translation id="2985398929374701810">Унесите важећу адресу</translation>
@@ -1368,6 +1369,7 @@
 <translation id="6451458296329894277">Потврђивање поновног слања обрасца</translation>
 <translation id="6457206614190510200">Спајање по средини</translation>
 <translation id="6465306955648956876">Управљајте лозинкама...</translation>
+<translation id="6468485451923838994">Фонтови</translation>
 <translation id="647261751007945333">Смернице за уређај</translation>
 <translation id="6476284679642588870">Управљајте начинима плаћања</translation>
 <translation id="6489534406876378309">Покрени отпремање отказивања</translation>
@@ -1890,6 +1892,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Странице по скупу</translation>
+<translation id="8697373104056314601">Да бисте добили највиши ниво заштите у Chrome-у, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />укључите побољшану заштиту<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Датум истека</translation>
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8703575177326907206">Ваша веза са доменом <ph name="DOMAIN" /> није шифрована.</translation>

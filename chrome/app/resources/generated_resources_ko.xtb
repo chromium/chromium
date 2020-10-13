@@ -3877,6 +3877,7 @@
     <ph name="BEGIN_PARAGRAPH2" />이 기능을 사용 중지해도 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />추가 웹 및 앱 활동 설정이 사용 설정된 경우 이 데이터가 Google 계정에 저장됩니다. account.google.com에서 이 데이터를 확인 및 삭제하고, 계정 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">카드</translation>
 <translation id="5585118885427931890">북마크 폴더를 만들지 못했습니다.</translation>
 <translation id="558563010977877295">특정 페이지 또는 페이지 모음 열기</translation>
 <translation id="5585898376467608182">기기의 저장용량이 부족합니다. <ph name="APP_NAME" />을 사용하려면 <ph name="MINIMUM_SPACE" /> 이상의 여유 공간이 필요합니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>

@@ -2338,7 +2338,7 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
       Se questo criterio non viene impostato, Navigazione sicura sarà attiva in modalità di protezione standard, ma gli utenti potranno modificare questa impostazione.
 
       Visita il sito https://developers.google.com/safe-browsing per ulteriori informazioni sulla funzionalità Navigazione sicura.</translation>
-<translation id="4402887080007986374">La versione valida dei Termini di servizio di Edu Coexistence</translation>
+<translation id="4402887080007986374">La versione valida dei Termini di servizio dell'account della scuola</translation>
 <translation id="4408428864159735559">Elenco di condivisioni di file di rete preconfigurate.</translation>
 <translation id="4410236409016356088">Attiva la limitazione della larghezza di banda della rete</translation>
 <translation id="441217499641439905">Disattiva Google Drive su reti cellulari nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -5620,11 +5620,11 @@ https://www.w3.org/TR/secure-contexts/
 <translation id="8942616385591203339">Questa norma consente di controllare se il consenso alla sincronizzazione può essere mostrato all'utente durante il primo accesso. Dovrebbe essere impostata su false se tale consenso non è mai necessario per l'utente.
       Se impostata su false, il consenso alla sincronizzazione non verrà visualizzato.
       Se impostata su true o non viene impostata, il consenso alla sincronizzazione può essere visualizzato.</translation>
-<translation id="8943744188513019866">Questo criterio indica la versione corrente valida dei Termini di servizio di Edu Coexistence,
+<translation id="8943744188513019866">Questo criterio indica la versione corrente valida dei Termini di servizio dell'account della scuola,
       che viene confrontata con l'ultima versione accettata dal genitore e utilizzata per suggerire al genitore stesso il rinnovo dell'autorizzazione quando necessario.
 
       Se questo criterio viene configurato, la versione dei Termini di servizio può essere convalidata.
-      Se non viene configurato, non è possibile verificare la validità dei Termini di servizio di Edu Coexistence.
+      Se non viene configurato, non è possibile verificare la validità dei Termini di servizio dell'account della scuola.
 
       Questo criterio viene utilizzato unicamente per gli utenti di Family Link.</translation>
 <translation id="8943934315109955032">Non verificare eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>

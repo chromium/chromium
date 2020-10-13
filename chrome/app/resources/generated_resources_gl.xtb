@@ -3878,6 +3878,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
     <ph name="BEGIN_PARAGRAPH2" />A desactivación desta función non afecta á capacidade do teu dispositivo de enviar a información necesaria para os servizos esenciais, como a seguranza e as actualizacións do sistema.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />O propietario pode controlar esta función desde Configuración &gt; Avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se está activada a opción Actividade web e das aplicacións, estes datos pódense gardar na túa Conta de Google. Podes ver os teus datos, eliminalos e cambiar a configuración da túa conta en account.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">Tarxetas</translation>
 <translation id="5585118885427931890">Erro ao crear o cartafol de marcadores.</translation>
 <translation id="558563010977877295">Abrir unha páxina específica ou un conxunto de páxinas</translation>
 <translation id="5585898376467608182">Queda pouco almacenamento no teu dispositivo. Necesítase un espazo libre de polo menos <ph name="MINIMUM_SPACE" /> para poder utilizar <ph name="APP_NAME" />. Se queres liberar espazo, elimina ficheiros do dispositivo.</translation>

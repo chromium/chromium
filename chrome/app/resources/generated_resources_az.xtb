@@ -3872,6 +3872,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     <ph name="BEGIN_PARAGRAPH2" />Bu funksiyanın deaktiv edilməsi cihazın sistem güncəlləmələri və güvənlik kimi vacib xidmətlər üçün tələb edilən məlumatları göndərməsinə təsir etməyəcək.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Sahibi bu funksiyanı Ayarlar &gt; Qabaqcıl  &gt; Diaqnostikanı və istifadə datasını avtomatik olaraq Google'a göndərin bölməsindən idarə edə bilər.<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />Əlavə Veb və Tətbiq Fəaliyyəti ayarını aktiv etsəniz, bu data Google Hesabında yadda saxlanılacaq. Account.google.com ünvanından dataya baxa, silə və hesab ayarlarını dəyişə bilərsiniz.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="5585019845078534178">Kartlar</translation>
 <translation id="5585118885427931890">Əlfəcin saxlayanı yaratmaq olmadı.</translation>
 <translation id="558563010977877295">Spesifik səhifə və ya səhifələr açın</translation>
 <translation id="5585898376467608182">Cihazınızın yaddaşında boş yer az qalıb. <ph name="APP_NAME" /> tətbiqindən istifadə etmək üçün ən azı <ph name="MINIMUM_SPACE" /> boş yer tələb edilir. Yer boşaltmaq üçün cihazdan faylları silin.</translation>

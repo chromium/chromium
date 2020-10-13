@@ -207,7 +207,6 @@
 <translation id="1717494416764505390">信箱 3</translation>
 <translation id="1718029547804390981">无法为该文档添加注释，因为它太大</translation>
 <translation id="1721424275792716183">标有“*”的字段均是必填字段</translation>
-<translation id="1724638245199909652">本地字体访问权限</translation>
 <translation id="1727741090716970331">添加有效卡号</translation>
 <translation id="1728677426644403582">您正在查看网页的源代码</translation>
 <translation id="173080396488393970">此信用卡类型不受支持</translation>
@@ -1353,6 +1352,7 @@
 <translation id="6451458296329894277">确认重新提交表单</translation>
 <translation id="6457206614190510200">鞍式装订</translation>
 <translation id="6465306955648956876">管理密码…</translation>
+<translation id="6468485451923838994">字体</translation>
 <translation id="647261751007945333">设备政策</translation>
 <translation id="6476284679642588870">管理付款方式</translation>
 <translation id="6489534406876378309">开始上传崩溃数据</translation>

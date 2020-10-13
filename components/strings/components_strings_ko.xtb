@@ -207,7 +207,6 @@
 <translation id="1717494416764505390">메일박스 3</translation>
 <translation id="1718029547804390981">문서가 너무 커서 주석을 달 수 없습니다.</translation>
 <translation id="1721424275792716183">* 필수 입력란</translation>
-<translation id="1724638245199909652">로컬 글꼴 액세스</translation>
 <translation id="1727741090716970331">유효한 카드 번호 추가</translation>
 <translation id="1728677426644403582">웹페이지 소스를 보는 중</translation>
 <translation id="173080396488393970">이 유형의 카드는 지원되지 않습니다.</translation>
@@ -1358,6 +1357,7 @@
 <translation id="6451458296329894277">양식 다시 제출 확인</translation>
 <translation id="6457206614190510200">새들 스티치</translation>
 <translation id="6465306955648956876">비밀번호 관리...</translation>
+<translation id="6468485451923838994">글꼴</translation>
 <translation id="647261751007945333">기기 정책</translation>
 <translation id="6476284679642588870">결제 수단 관리</translation>
 <translation id="6489534406876378309">비정상 종료 업로드 시작하기</translation>

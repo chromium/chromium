@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">მიმდინარეობს ბარათების შენახვა...</translation>
 <translation id="10614374240317010">არასოდეს შენახული</translation>
 <translation id="1062160989074299343">Prc10 (კონვერტი)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" />-იანი ქეშბექი</translation>
 <translation id="106701514854093668">სამუშაო დაფის სანიშნები</translation>
 <translation id="1068672505746868501">არასოდეს ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>
 <translation id="1070901266639972381">ღამე</translation>
@@ -207,7 +208,6 @@
 <translation id="1717494416764505390">საფოსტო ყუთი 3</translation>
 <translation id="1718029547804390981">დოკუმენტი ანოტირებისთვის მეტისმეტად დიდია</translation>
 <translation id="1721424275792716183">* ველი აუცილებელია</translation>
-<translation id="1724638245199909652">ადგილობრივ შრიფტებზე წვდომა</translation>
 <translation id="1727741090716970331">მიუთითეთ ბარათის სწორი ნომერი</translation>
 <translation id="1728677426644403582">თქვენ ათვალიერებთ ვებგვერდის წყაროს</translation>
 <translation id="173080396488393970">ამ ტიპის ბარათი მხარდაუჭერელია</translation>
@@ -491,6 +491,7 @@
 <translation id="2955913368246107853">ძებნის ზოლის დახურვა</translation>
 <translation id="2969319727213777354">უსაფრთხო კავშირის დასამყარებლად, საჭიროა საათის გასწორება. ამის მიზეზია ის, რომ სერტიფიკატები, რომლებსაც ვებსაიტები იდენტიფიცირების მიზნით იყენებს, მხოლოდ გარკვეული პერიოდის განმავლობაში მოქმედებს. რადგან თქვენი მოწყობილობის საათი არასწორია, Google Chrome ვერ დაადასტურებს ამგვარ სერტიფიკატებს.</translation>
 <translation id="2972581237482394796">&amp;გამეორება</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" />-იანი ფასდაკლება</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">ჩართვის შემთხვევაში, Chromium ფორმების უფრო სწრაფად შევსების მიზნით, თქვენი ბარათის ასლს ამ მოწყობილობაში შეინახავს.</translation>
 <translation id="2985398929374701810">შეიყვანეთ სწორი მისამართი</translation>
@@ -1358,6 +1359,7 @@
 <translation id="6451458296329894277">დაადასტურეთ ფორმოს ხელმეორედ ჩაბარება</translation>
 <translation id="6457206614190510200">მიკერება</translation>
 <translation id="6465306955648956876">პაროლების მართვა…</translation>
+<translation id="6468485451923838994">შრიფტები</translation>
 <translation id="647261751007945333">მოწყობილობის წესები</translation>
 <translation id="6476284679642588870">გადახდის მეთოდების მართვა</translation>
 <translation id="6489534406876378309">შეცდომების ატვირთვის დაწყება</translation>
@@ -1879,6 +1881,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">ხელმისაწვდომი</translation>
 <translation id="868922510921656628">გვერდების რაოდენობა ნაკრებში</translation>
+<translation id="8697373104056314601">Chrome-ის უსაფრთხოების ყველაზე ძლიერი ფუნქციებით სარგებლობისთვის <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ჩართეთ გაძლიერებული დაცვა<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699041776323235191">HID მოწყობილობა</translation>
 <translation id="8703575177326907206">თქვენი კავშირი <ph name="DOMAIN" />-თან არ არის დაშიფრული.</translation>

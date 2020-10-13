@@ -207,7 +207,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1717494416764505390">Caixa de e-mails 3</translation>
 <translation id="1718029547804390981">O documento é grande demais para receber anotações</translation>
 <translation id="1721424275792716183">* Campo obrigatório</translation>
-<translation id="1724638245199909652">Acesso à fonte local</translation>
 <translation id="1727741090716970331">Adicione um Número de Cartão Válido</translation>
 <translation id="1728677426644403582">Você está vendo o código-fonte de uma página da Web.</translation>
 <translation id="173080396488393970">Esse tipo de cartão não é aceito</translation>
@@ -1358,6 +1357,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6451458296329894277">Confirmar reenvio do formulário</translation>
 <translation id="6457206614190510200">Grampo canoa</translation>
 <translation id="6465306955648956876">Gerenciar senhas…</translation>
+<translation id="6468485451923838994">Fontes</translation>
 <translation id="647261751007945333">Políticas de dispositivos</translation>
 <translation id="6476284679642588870">Gerenciar formas de pagamento</translation>
 <translation id="6489534406876378309">Iniciar upload de falhas</translation>

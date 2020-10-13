@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Αποθήκευση καρτών…</translation>
 <translation id="10614374240317010">Δεν έχει αποθηκευθεί ποτέ</translation>
 <translation id="1062160989074299343">Prc10 (Φάκελος)</translation>
+<translation id="1066573427009091463">Επιστροφή μετρητών <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Σελιδοδείκτες επιτραπέζιου υπολογιστή</translation>
 <translation id="1068672505746868501">Να μην γίνεται μετάφραση σελίδων στα <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Νύχτα</translation>
@@ -207,7 +208,6 @@
 <translation id="1717494416764505390">Γραμματοκιβώτιο 3</translation>
 <translation id="1718029547804390981">Το έγγραφο είναι πάρα πολύ μεγάλο για σχολιασμό.</translation>
 <translation id="1721424275792716183">* Το πεδίο είναι υποχρεωτικό</translation>
-<translation id="1724638245199909652">Πρόσβαση στις τοπικές γραμματοσειρές</translation>
 <translation id="1727741090716970331">Προσθήκη έγκυρου αριθμού κάρτας</translation>
 <translation id="1728677426644403582">Βλέπετε την πηγή μιας ιστοσελίδας</translation>
 <translation id="173080396488393970">Αυτός ο τύπος κάρτας δεν υποστηρίζεται</translation>
@@ -497,6 +497,7 @@
 <translation id="2955913368246107853">Κλείσιμο γραμμής εύρεσης</translation>
 <translation id="2969319727213777354">Για την επίτευξη μιας ασφαλούς σύνδεσης, θα πρέπει να γίνει σωστή ρύθμιση του ρολογιού σας. Αυτό οφείλεται στο γεγονός ότι τα πιστοποιητικά που χρησιμοποιούν οι ιστότοποι για την ταυτοποίησή τους είναι έγκυρα μόνο για συγκεκριμένες χρονικές περιόδους. Εφόσον το ρολόι της συσκευής σας δεν είναι σωστά ρυθμισμένο, το Google Chrome δεν μπορεί να επαληθεύσει αυτά τα πιστοποιητικά.</translation>
 <translation id="2972581237482394796">&amp;Επανάληψη ενέργειας</translation>
+<translation id="2975775789586780239">Έκπτωση <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">Έχει επιλεγεί ο λογαριασμός <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Εάν ενεργοποιηθεί, το Chromium θα αποθηκεύσει ένα αντίγραφο της κάρτας σας σε αυτήν τη συσκευή για ταχύτερη συμπλήρωση φορμών.</translation>
 <translation id="2985398929374701810">Εισαγάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
@@ -1370,6 +1371,7 @@
 <translation id="6451458296329894277">Επιβεβαίωση νέας υποβολής φόρμας</translation>
 <translation id="6457206614190510200">Συρραφή στη ράχη</translation>
 <translation id="6465306955648956876">Διαχείριση κωδικών πρόσβασης…</translation>
+<translation id="6468485451923838994">Γραμματοσειρές</translation>
 <translation id="647261751007945333">Πολιτικές συσκευών </translation>
 <translation id="6476284679642588870">Διαχείριση τρόπων πληρωμής</translation>
 <translation id="6489534406876378309">Έναρξη μεταφόρτωσης σφαλμάτων</translation>
@@ -1892,6 +1894,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Διαθέσιμο</translation>
 <translation id="868922510921656628">Σελίδες ανά δευτερόλεπτο</translation>
+<translation id="8697373104056314601">Για να λάβετε το υψηλότερο επίπεδο ασφάλειας του Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />ενεργοποιήστε τη βελτιωμένη προστασία<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699041776323235191">Συσκευή HID</translation>
 <translation id="8703575177326907206">Η σύνδεσή σας με τον τομέα <ph name="DOMAIN" /> δεν είναι κρυπτογραφημένη.</translation>

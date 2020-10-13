@@ -164,7 +164,7 @@
 <translation id="2781331604911854368">사용</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2800683595868705743">탭 전환 종료</translation>
-<translation id="2815198996063984598">2. 기본 브라우저 앱을 탭합니다.</translation>
+<translation id="2815198996063984598">2. 기본 브라우저 앱 탭하기</translation>
 <translation id="2830972654601096923">주소 관리...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">초기 동기화 설정이 완료되지 않음</translation>
@@ -181,7 +181,7 @@
 <translation id="2921219216347069551">페이지를 공유할 수 없음</translation>
 <translation id="2923448633003185837">붙여넣어 바로가기</translation>
 <translation id="292639812446257861">읽지않음으로 표시</translation>
-<translation id="2952581218264071393">1. Chrome 설정을 엽니다.</translation>
+<translation id="2952581218264071393">1. Chrome 설정 열기</translation>
 <translation id="2958718410589002129">비밀번호</translation>
 <translation id="2964349545761222050">타사 쿠키 차단</translation>
 <translation id="2969979262385602596">로그인하지 못했습니다. 나중에 다시 시도하세요.</translation>
@@ -593,7 +593,7 @@
 <translation id="7456847797759667638">위치 열기...</translation>
 <translation id="7460314822154045102">카메라 사용</translation>
 <translation id="7464701184726199289">모든 기기에서 동기화된 데이터가 삭제됩니다. 저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="746684838091935575">3. Chrome을 선택합니다.</translation>
+<translation id="746684838091935575">3. Chrome 선택하기</translation>
 <translation id="7472734401283673885">회사명</translation>
 <translation id="7473891865547856676">건너뛰기</translation>
 <translation id="7481312909269577407">앞으로</translation>
