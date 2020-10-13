@@ -174,6 +174,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   // view.
   void SetHighlightedButton(Button* highlighted_button);
 
+  // Set a fixed width for the dialog. The client view will size itself to
+  // preferred height for this width, minus dialog margins.
+  void SetFixedWidth(int width);
+
   // The bubble's parent window - this can only be usefully set before creating
   // the bubble's widget. If there is one, the bubble will be stacked above it,
   // and it will become the Views parent window for the bubble.
@@ -334,6 +338,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   bool adjust_if_offscreen_ = true;
   bool focus_traversable_from_anchor_view_ = true;
   ViewTracker highlighted_button_tracker_;
+
+  // Use a fixed dialog width instead of the |client_view_| preferred size.
+  int fixed_width_ = 0;
 
   // Insets applied to the |anchor_view_| bounds.
   gfx::Insets anchor_view_insets_;

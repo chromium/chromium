@@ -30,6 +30,8 @@ class VIEWS_EXPORT ClientView : public View {
   ClientView(Widget* widget, View* contents_view);
   ~ClientView() override = default;
 
+  void set_fixed_width(int width) { fixed_width_ = width; }
+
   // Returned value signals whether the Widget can be closed. Specialized
   // ClientView subclasses can override this default behavior to allow the
   // close to be blocked until the user corrects mistakes, accepts a warning
@@ -71,6 +73,8 @@ class VIEWS_EXPORT ClientView : public View {
  private:
   // The View that this ClientView contains.
   View* contents_view_;
+
+  int fixed_width_ = 0;
 };
 
 }  // namespace views

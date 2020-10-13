@@ -140,6 +140,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   set_close_on_deactivate(model_->close_on_deactivate(GetPassKey()));
 
+  SetFixedWidth(LayoutProvider::Get()->GetDistanceMetric(
+      anchor_view ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
+                  : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   AddInitialFields();
 }
 
@@ -184,15 +188,6 @@ void BubbleDialogModelHost::OnDialogInitialized() {
     OnViewCreatedForField(GetCancelButton(),
                           model_->cancel_button(GetPassKey()));
   }
-}
-
-gfx::Size BubbleDialogModelHost::CalculatePreferredSize() const {
-  const int width = LayoutProvider::Get()->GetDistanceMetric(
-                        GetModalType() == ui::MODAL_TYPE_NONE
-                            ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
-                            : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void BubbleDialogModelHost::Close() {

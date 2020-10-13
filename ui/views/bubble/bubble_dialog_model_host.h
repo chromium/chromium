@@ -46,7 +46,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   // GetInitiallyFocusedView().
   View* GetInitiallyFocusedView() override;
   void OnDialogInitialized() override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // ui::DialogModelHost:
   void Close() override;

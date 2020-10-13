@@ -185,8 +185,6 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
                              const GURL& url);
   ~InternalPageInfoBubbleView() override;
 
-  gfx::Size CalculatePreferredSize() const override;
-
   DISALLOW_COPY_AND_ASSIGN(InternalPageInfoBubbleView);
 };
 
@@ -398,6 +396,9 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   set_margins(gfx::Insets());
 
+  SetFixedWidth(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
   SetTitle(text);
 
   views::BubbleDialogDelegateView::CreateBubble(this);
@@ -418,20 +419,6 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
 }
 
 InternalPageInfoBubbleView::~InternalPageInfoBubbleView() {}
-
-gfx::Size InternalPageInfoBubbleView::CalculatePreferredSize() const {
-  // Without a layout manager this will recurse infinitely
-  // (GetHeightForWidth() calls CalculatePreferredSize()).
-  // TODO(crbug.com/1128500): Fix infinite recursion or always
-  // install a layout manager.
-  if (!GetLayoutManager())
-    return gfx::Size();
-
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // PageInfoBubbleView
