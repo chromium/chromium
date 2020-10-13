@@ -1,0 +1,19 @@
+# Core Metrics Owners
+#
+# Note: Please send CLs to chromium-metrics-reviews@google.com rather than to
+# specific individuals from the list of core metrics owners. These CLs will be
+# automatically reassigned to a reviewer within about 5 minutes. This approach
+# helps our team to load-balance incoming reviews. Googlers can read more about
+# this at go/gwsq-gerrit.
+file://base/metrics/OWNERS
+
+# Prefer chromium-metrics-reviews@google.com instead.
+# Use the following owners only if:
+#  - You work in the same area as them.
+#  - They are already a good reviewer for the non-metrics part of the CL.
+cthomp@chromium.org  # For security-related metrics only.
+
+chrome-metrics-team+robot@google.com # For bot updates to expiry.
+
+# All metrics changes should be reviewed by metrics reviewers.
+set noparent
