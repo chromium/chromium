@@ -25,6 +25,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -391,7 +392,10 @@ void SearchBoxView::OnWallpaperColorsChanged() {
   search_box()->set_placeholder_text_color(
       app_list_color_provider->GetSearchBoxPlaceholderTextColor());
   search_box()->SetTextColor(app_list_color_provider->GetSearchBoxTextColor());
-  UpdateBackgroundColor(app_list_color_provider->GetSearchBoxBackgroundColor());
+  if (features::IsDarkLightModeEnabled()) {
+    UpdateBackgroundColor(
+        app_list_color_provider->GetSearchBoxBackgroundColor());
+  }
   SchedulePaint();
 }
 
