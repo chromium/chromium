@@ -78,6 +78,9 @@ class NTPUserDataLogger
   // Logs a navigation on one of the NTP tiles by a given impression.
   void LogMostVisitedNavigation(const ntp_tiles::NTPTileImpression& impression);
 
+  // Sets visibility of modules to be later logged.
+  void SetModulesVisible(bool visible);
+
  protected:
   explicit NTPUserDataLogger(content::WebContents* contents);
 
@@ -144,6 +147,8 @@ class NTPUserDataLogger
   bool has_emitted_;
 
   bool should_record_doodle_load_time_;
+
+  bool modules_visible_;
 
   // Are stats being logged during Chrome startup?
   bool during_startup_;

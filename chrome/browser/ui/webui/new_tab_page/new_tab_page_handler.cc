@@ -388,6 +388,8 @@ NewTabPageHandler::NewTabPageHandler(
   OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
   promo_service_observer_.Add(promo_service_);
   one_google_bar_service_observer_.Add(one_google_bar_service_);
+  logger_->SetModulesVisible(
+      profile_->GetPrefs()->GetBoolean(kModulesVisiblePrefName));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
