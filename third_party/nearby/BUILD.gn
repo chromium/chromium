@@ -387,11 +387,11 @@ source_set("core_v2_internal_test") {
 source_set("core_v2_internal_mediums") {
   public_configs = [ ":nearby_include_config" ]
   sources = [
-    "src/cpp/core_v2/internal/mediums/advertisement_read_result.cc",
     "src/cpp/core_v2/internal/mediums/ble.cc",
-    "src/cpp/core_v2/internal/mediums/ble_advertisement.cc",
-    "src/cpp/core_v2/internal/mediums/ble_advertisement_header.cc",
-    "src/cpp/core_v2/internal/mediums/ble_packet.cc",
+    "src/cpp/core_v2/internal/mediums/ble_v2/advertisement_read_result.cc",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_advertisement.cc",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_advertisement_header.cc",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_packet.cc",
     "src/cpp/core_v2/internal/mediums/bloom_filter.cc",
     "src/cpp/core_v2/internal/mediums/bluetooth_classic.cc",
     "src/cpp/core_v2/internal/mediums/bluetooth_radio.cc",
@@ -401,12 +401,12 @@ source_set("core_v2_internal_mediums") {
     "src/cpp/core_v2/internal/mediums/wifi_lan.cc",
   ]
   public = [
-    "src/cpp/core_v2/internal/mediums/advertisement_read_result.h",
     "src/cpp/core_v2/internal/mediums/ble.h",
-    "src/cpp/core_v2/internal/mediums/ble_advertisement.h",
-    "src/cpp/core_v2/internal/mediums/ble_advertisement_header.h",
-    "src/cpp/core_v2/internal/mediums/ble_packet.h",
-    "src/cpp/core_v2/internal/mediums/ble_peripheral.h",
+    "src/cpp/core_v2/internal/mediums/ble_v2/advertisement_read_result.h",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_advertisement.h",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_advertisement_header.h",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_packet.h",
+    "src/cpp/core_v2/internal/mediums/ble_v2/ble_peripheral.h",
     "src/cpp/core_v2/internal/mediums/bloom_filter.h",
     "src/cpp/core_v2/internal/mediums/bluetooth_classic.h",
     "src/cpp/core_v2/internal/mediums/bluetooth_radio.h",
