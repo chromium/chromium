@@ -16,6 +16,7 @@ buildflag_header("buildflags") {
 
   flags = [
     "USE_VAAPI=$use_vaapi",
+    "USE_VAAPI_IMAGE_CODECS=$use_vaapi_image_codecs",
     "USE_V4L2_CODEC=$use_v4l2_codec",
     "USE_LIBV4L2=$use_v4lplugin",
   ]

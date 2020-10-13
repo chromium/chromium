@@ -394,10 +394,10 @@ GpuServiceImpl::GpuServiceImpl(
   }
 #endif
 
-#if BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
   image_decode_accelerator_worker_ =
       media::VaapiImageDecodeAcceleratorWorker::Create();
-#endif
+#endif  // BUILDFLAG(USE_VAAPI_IMAGE_CODECS)
 
 #if defined(OS_APPLE)
   if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_METAL] ==
