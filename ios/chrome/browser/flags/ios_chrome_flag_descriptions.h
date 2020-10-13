@@ -183,6 +183,11 @@ extern const char kDragAndDropDescription[];
 extern const char kEditBookmarksIOSName[];
 extern const char kEditBookmarksIOSDescription[];
 
+// Title and description for the flag to enable kEditPasswordsInSettings flag on
+// iOS.
+extern const char kEditPasswordsInSettingsName[];
+extern const char kEditPasswordsInSettingsDescription[];
+
 // Title and description for the flag to block restore urls.
 extern const char kEmbedderBlockRestoreUrlName[];
 extern const char kEmbedderBlockRestoreUrlDescription[];

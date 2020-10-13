@@ -214,6 +214,10 @@ const char kEditBookmarksIOSName[] = "Edit Bookmarks IOS";
 const char kEditBookmarksIOSDescription[] =
     "Enables support for the EditBookmarksEnabled enterprise policy on iOS";
 
+const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
+const char kEditPasswordsInSettingsDescription[] =
+    "Enables password editing in settings.";
+
 const char kEmbedderBlockRestoreUrlName[] =
     "Allow embedders to prevent certain URLs from restoring.";
 const char kEmbedderBlockRestoreUrlDescription[] =
