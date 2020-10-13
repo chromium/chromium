@@ -3080,7 +3080,9 @@ void RenderFrameImpl::Clone(
 
 void RenderFrameImpl::GetInterfaceProvider(
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver) {
-  interface_provider_receivers_.Add(this, std::move(receiver));
+  auto task_runner = GetTaskRunner(blink::TaskType::kInternalDefault);
+  DCHECK(task_runner);
+  interface_provider_receivers_.Add(this, std::move(receiver), task_runner);
 }
 
 void RenderFrameImpl::GetCanonicalUrlForSharing(
