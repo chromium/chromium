@@ -222,13 +222,11 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   LayoutObjectChildList children_;
   LayoutSize container_size_;
   FloatRect object_bounding_box_;
-  bool object_bounding_box_valid_;
   FloatRect stroke_bounding_box_;
   AffineTransform local_to_border_box_transform_;
   bool is_layout_size_changed_ : 1;
   bool did_screen_scale_factor_change_ : 1;
   bool needs_boundaries_or_transform_update_ : 1;
-  bool has_box_decoration_background_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
   mutable bool has_descendant_with_compositing_reason_ : 1;

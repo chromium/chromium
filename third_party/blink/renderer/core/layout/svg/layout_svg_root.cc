@@ -52,11 +52,9 @@ namespace blink {
 
 LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
     : LayoutReplaced(node),
-      object_bounding_box_valid_(false),
       is_layout_size_changed_(false),
       did_screen_scale_factor_change_(false),
       needs_boundaries_or_transform_update_(true),
-      has_box_decoration_background_(false),
       has_non_isolated_blending_descendants_(false),
       has_non_isolated_blending_descendants_dirty_(false),
       has_descendant_with_compositing_reason_(false),
@@ -276,10 +274,6 @@ void LayoutSVGRoot::UpdateLayout() {
   }
 
   UpdateAfterLayout();
-  has_box_decoration_background_ = IsDocumentElement()
-                                       ? StyleRef().HasBoxDecorationBackground()
-                                       : HasBoxDecorationBackground();
-
   ClearNeedsLayout();
 }
 
@@ -374,10 +368,6 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   if (diff.NeedsFullLayout())
     SetNeedsBoundariesUpdate();
-  if (diff.NeedsPaintInvalidation()) {
-    // Box decorations may have appeared/disappeared - recompute status.
-    has_box_decoration_background_ = StyleRef().HasBoxDecorationBackground();
-  }
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();
@@ -534,9 +524,10 @@ const LayoutObject* LayoutSVGRoot::PushMappingToContainer(
 
 void LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
-  SVGLayoutSupport::ComputeContainerBoundingBoxes(this, object_bounding_box_,
-                                                  object_bounding_box_valid_,
-                                                  stroke_bounding_box_);
+  bool ignore;
+  SVGLayoutSupport::ComputeContainerBoundingBoxes(
+      this, object_bounding_box_,
+      /* object_bounding_box_valid */ ignore, stroke_bounding_box_);
 }
 
 bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
