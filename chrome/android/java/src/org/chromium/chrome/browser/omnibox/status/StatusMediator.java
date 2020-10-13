@@ -686,9 +686,9 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
 
     @Override
     public void onIncognitoStateChanged(boolean isIncognito) {
-        boolean previousIsIcognito = mIsIncognito;
+        boolean previousIsIncognito = mIsIncognito;
         mIsIncognito = isIncognito;
-        if (previousIsIcognito != isIncognito) reconcileVisualState();
+        if (previousIsIncognito != isIncognito) reconcileVisualState();
     }
 
     /**
