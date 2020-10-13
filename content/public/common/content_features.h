@@ -197,6 +197,14 @@ CONTENT_EXPORT extern const base::Feature kMacV2GPUSandbox;
 CONTENT_EXPORT extern const base::Feature kRetryGetVideoCaptureDeviceInfos;
 #endif  // defined(OS_MAC)
 
+#if !defined(OS_WIN) && !defined(OS_FUCHSIA) && !defined(OS_IOS)
+CONTENT_EXPORT extern const base::Feature kSendWebUIJavaScriptErrorReports;
+CONTENT_EXPORT extern const char
+    kSendWebUIJavaScriptErrorReportsSendToProductionVariation[];
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kWebUIJavaScriptErrorReportsSendToProductionParam;
+#endif
+
 #if defined(WEBRTC_USE_PIPEWIRE)
 CONTENT_EXPORT extern const base::Feature kWebRtcPipeWireCapturer;
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
