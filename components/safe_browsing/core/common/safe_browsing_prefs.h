@@ -92,10 +92,6 @@ extern const char kPasswordProtectionWarningTrigger[];
 // microseconds);
 extern const char kAdvancedProtectionLastRefreshInUs[];
 
-// Whether or not to send downloads to Safe Browsing for deep scanning. This
-// is configured by enterprise policy.
-extern const char kSafeBrowsingSendFilesForMalwareCheck[];
-
 // Boolean that indidicates if Chrome reports unsafe events to Google.
 extern const char kUnsafeEventsReportingEnabled[];
 
@@ -110,9 +106,6 @@ extern const char kDelayDeliveryUntilVerdict[];
 // Integer that specifies if password protected files can be either uploaded
 // or downloaded or both.
 extern const char kAllowPasswordProtectedFiles[];
-
-// Integer that indicates if Chrome checks data for content compliance.
-extern const char kCheckContentCompliance[];
 
 // Integer that indicates if Chrome blocks data that cannot be checked for
 // content compliance due to unsupported filetypes.
@@ -184,7 +177,7 @@ enum PasswordProtectionTrigger {
 };
 
 // Enum representing possible values of the SendFilesForMalwareCheck policy.
-// This must be kept in sync with policy_templates.json.
+// TODO(crbug/1109242): Remove this once tests use connector policies directly.
 enum SendFilesForMalwareCheckValues {
   DO_NOT_SCAN = 0,
   SEND_DOWNLOADS = 2,
@@ -194,8 +187,8 @@ enum SendFilesForMalwareCheckValues {
   SEND_FILES_FOR_MALWARE_CHECK_MAX = SEND_UPLOADS_AND_DOWNLOADS,
 };
 
-// Enum representing possible values of the CheckContentCompliance policy. This
-// must be kept in sync with policy_templates.json.
+// Enum representing possible values of the CheckContentCompliance policy.
+// TODO(crbug/1109242): Remove this once tests use connector policies directly.
 enum CheckContentComplianceValues {
   CHECK_NONE = 0,
   CHECK_DOWNLOADS = 1,
