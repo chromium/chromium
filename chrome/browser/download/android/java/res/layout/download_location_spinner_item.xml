@@ -6,6 +6,6 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/text"
+    android:id="@+id/title"
     android:singleLine="true"
     android:textAppearance="@style/TextAppearance.TextLarge.Primary" />

@@ -103,7 +103,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         DirectoryOption directoryOption = (DirectoryOption) getItem(position);
         if (directoryOption == null) return view;
 
-        TextView titleText = (TextView) view.findViewById(R.id.text);
+        TextView titleText = (TextView) view.findViewById(R.id.title);
         titleText.setText(directoryOption.name);
 
         // ModalDialogView may do a measure pass on the view hierarchy to limit the layout inside

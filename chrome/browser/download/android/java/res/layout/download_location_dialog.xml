@@ -26,47 +26,78 @@
             android:id="@+id/subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/download_dialog_subtitle_margin_bottom" 
+            android:layout_marginBottom="@dimen/download_dialog_subtitle_margin_bottom"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <org.chromium.ui.widget.ChromeImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_drive_file_24dp"
-                app:tint="@color/default_icon_color"
-                style="@style/ListItemStartIcon" />
-
-            <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
-                android:id="@+id/file_name"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-                android:singleLine="true" />
+                android:orientation="horizontal">
 
+                <org.chromium.ui.widget.ChromeImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_drive_file_24dp"
+                    app:tint="@color/default_icon_color"
+                    style="@style/ListItemStartIcon" />
+
+                <org.chromium.components.browser_ui.widget.text.AlertDialogEditText
+                    android:id="@+id/file_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/file_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/download_dialog_location_space_margin_start"
+                android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+                android:visibility="gone"/>
+          
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <org.chromium.ui.widget.ChromeImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_folder_blue_24dp"
-                app:tint="@color/default_icon_color"
-                style="@style/ListItemStartIcon" />
-
-            <Spinner
-                android:id="@+id/file_location"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@android:style/Widget.EditText"/>
+                android:orientation="horizontal">
+
+                <org.chromium.ui.widget.ChromeImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_folder_blue_24dp"
+                    app:tint="@color/default_icon_color"
+                    style="@style/ListItemStartIcon" />
+
+                <Spinner
+                    android:id="@+id/file_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@android:style/Widget.EditText"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/location_available_space"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/download_dialog_location_space_margin_start"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
