@@ -74,6 +74,8 @@ SearchResultTileItemView::SearchResultTileItemView(
       is_app_reinstall_recommendation_enabled_(
           app_list_features::IsAppReinstallZeroStateEnabled()),
       show_in_apps_page_(show_in_apps_page) {
+  set_callback(base::BindRepeating(&SearchResultTileItemView::OnButtonPressed,
+                                   base::Unretained(this)));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // When |result_| is null, the tile is invisible. Calling SetSearchResult with
@@ -83,50 +85,44 @@ SearchResultTileItemView::SearchResultTileItemView(
   GetViewAccessibility().OverrideIsLeaf(true);
 
   // Prevent the icon view from interfering with our mouse events.
-  icon_ = new views::ImageView;
+  icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetCanProcessEventsWithinSubtree(false);
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  AddChildView(icon_);
 
-  badge_ = new views::ImageView;
+  badge_ = AddChildView(std::make_unique<views::ImageView>());
   badge_->SetCanProcessEventsWithinSubtree(false);
   badge_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   badge_->SetVisible(false);
-  AddChildView(badge_);
 
-  title_ = new views::Label;
+  title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
   title_->SetLineHeight(kTileTextLineHeight);
   title_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_->SetHandlesTooltips(false);
   title_->SetAllowCharacterBreak(true);
-  AddChildView(title_);
 
-  rating_ = new views::Label;
+  rating_ = AddChildView(std::make_unique<views::Label>());
   rating_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
   rating_->SetLineHeight(kTileTextLineHeight);
   rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   rating_->SetVisible(false);
-  AddChildView(rating_);
 
-  rating_star_ = new views::ImageView;
+  rating_star_ = AddChildView(std::make_unique<views::ImageView>());
   rating_star_->SetCanProcessEventsWithinSubtree(false);
   rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor()));
   rating_star_->SetVisible(false);
-  AddChildView(rating_star_);
 
-  price_ = new views::Label;
+  price_ = AddChildView(std::make_unique<views::Label>());
   price_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
   price_->SetLineHeight(kTileTextLineHeight);
   price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   price_->SetVisible(false);
-  AddChildView(price_);
 
   set_context_menu_controller(this);
 }
@@ -247,11 +243,6 @@ base::string16 SearchResultTileItemView::ComputeAccessibleName() const {
 void SearchResultTileItemView::SetParentBackgroundColor(SkColor color) {
   parent_background_color_ = color;
   UpdateBackgroundColor();
-}
-
-void SearchResultTileItemView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  ActivateResult(event.flags(), true /* by_button_press */);
 }
 
 void SearchResultTileItemView::GetAccessibleNodeData(
@@ -387,6 +378,10 @@ void SearchResultTileItemView::OnMenuClosed() {
     selected_for_context_menu_ = false;
     SetSelected(false, base::nullopt);
   }
+}
+
+void SearchResultTileItemView::OnButtonPressed(const ui::Event& event) {
+  ActivateResult(event.flags(), true /* by_button_press */);
 }
 
 void SearchResultTileItemView::ActivateResult(int event_flags,

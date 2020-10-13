@@ -35,9 +35,6 @@ class PrivacyInfoView : public SearchResultBaseView {
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // SearchResultBaseView:
   void SelectInitialResultAction(bool reverse_tab_order) override;
   bool SelectNextResultAction(bool reverse_tab_order) override;
@@ -51,6 +48,9 @@ class PrivacyInfoView : public SearchResultBaseView {
 
  private:
   enum class Action { kNone, kTextLink, kCloseButton };
+
+  // Button pressed callback.
+  void OnButtonPressed();
 
   void InitLayout();
   void InitInfoIcon();

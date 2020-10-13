@@ -51,9 +51,6 @@ class APP_LIST_EXPORT SearchResultTileItemView
     return group_index_in_container_view_;
   }
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // Overridden from views::Button:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -82,6 +79,8 @@ class APP_LIST_EXPORT SearchResultTileItemView
 
   // The callback used when a menu closes.
   void OnMenuClosed();
+
+  void OnButtonPressed(const ui::Event& event);
 
   void SetIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const gfx::ImageSkia& badge_icon);

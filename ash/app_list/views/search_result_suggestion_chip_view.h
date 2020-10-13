@@ -28,6 +28,10 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
     : public SearchResultBaseView {
  public:
   explicit SearchResultSuggestionChipView(AppListViewDelegate* view_delegate);
+  SearchResultSuggestionChipView(const SearchResultSuggestionChipView&) =
+      delete;
+  SearchResultSuggestionChipView& operator=(
+      const SearchResultSuggestionChipView&) = delete;
   ~SearchResultSuggestionChipView() override;
 
   // Enables background blur for folder icon if |enabled| is true.
@@ -37,9 +41,6 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
 
   // SearchResultObserver:
   void OnMetadataChanged() override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::View:
   const char* GetClassName() const override;
@@ -67,19 +68,19 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
 
   void InitLayout();
 
+  void OnButtonPressed(const ui::Event& event);
+
   // Sets rounded corners for the layer with |corner_radius| to clip the chip.
   void SetRoundedCornersForLayer(int corner_radius);
 
   AppListViewDelegate* const view_delegate_;  // Owned by AppListView.
 
-  views::ImageView* icon_view_;  // Owned by view hierarchy.
-  views::Label* text_view_;      // Owned by view hierarchy.
+  views::ImageView* icon_view_ = nullptr;  // Owned by view hierarchy.
+  views::Label* text_view_ = nullptr;      // Owned by view hierarchy.
 
   views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
 
   base::WeakPtrFactory<SearchResultSuggestionChipView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultSuggestionChipView);
 };
 
 }  // namespace ash

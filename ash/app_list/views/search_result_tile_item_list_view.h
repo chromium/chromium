@@ -28,6 +28,9 @@ class APP_LIST_EXPORT SearchResultTileItemListView
  public:
   SearchResultTileItemListView(views::Textfield* search_box,
                                AppListViewDelegate* view_delegate);
+  SearchResultTileItemListView(const SearchResultTileItemListView&) = delete;
+  SearchResultTileItemListView& operator=(const SearchResultTileItemListView&) =
+      delete;
   ~SearchResultTileItemListView() override;
 
   // Overridden from SearchResultContainerView:
@@ -77,8 +80,6 @@ class APP_LIST_EXPORT SearchResultTileItemListView
   const bool is_app_reinstall_recommendation_enabled_;
 
   const size_t max_search_result_tiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultTileItemListView);
 };
 
 }  // namespace ash

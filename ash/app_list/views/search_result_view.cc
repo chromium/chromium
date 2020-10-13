@@ -62,6 +62,8 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
                                    AppListViewDelegate* view_delegate)
     : list_view_(list_view), view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_callback(base::BindRepeating(&SearchResultView::OnButtonPressed,
+                                   base::Unretained(this)));
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   display_icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -350,13 +352,6 @@ void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
-void SearchResultView::ButtonPressed(views::Button* sender,
-                                     const ui::Event& event) {
-  DCHECK(sender == this);
-  list_view_->SearchResultActivated(this, event.flags(),
-                                    true /* by_button_press */);
-}
-
 void SearchResultView::OnMetadataChanged() {
   // Updates |icon_|.
   // Note: this might leave the view with an old icon. But it is needed to avoid
@@ -383,6 +378,11 @@ void SearchResultView::OnMetadataChanged() {
   // Updates |actions_view()|.
   actions_view()->SetActions(result() ? result()->actions()
                                       : SearchResult::Actions());
+}
+
+void SearchResultView::OnButtonPressed(const ui::Event& event) {
+  list_view_->SearchResultActivated(this, event.flags(),
+                                    true /* by_button_press */);
 }
 
 void SearchResultView::SetIconImage(const gfx::ImageSkia& source,

@@ -54,10 +54,11 @@ void LogAppLaunch(int index_in_container) {
 
 SearchResultSuggestionChipView::SearchResultSuggestionChipView(
     AppListViewDelegate* view_delegate)
-    : view_delegate_(view_delegate),
-      icon_view_(new views::ImageView()),
-      text_view_(new views::Label()) {
+    : view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_callback(
+      base::BindRepeating(&SearchResultSuggestionChipView::OnButtonPressed,
+                          base::Unretained(this)));
 
   SetInstallFocusRingOnFocus(true);
   focus_ring()->SetColor(kFocusRingColor);
@@ -94,19 +95,6 @@ void SearchResultSuggestionChipView::OnResultChanged() {
 
 void SearchResultSuggestionChipView::OnMetadataChanged() {
   UpdateSuggestionChipView();
-}
-
-void SearchResultSuggestionChipView::ButtonPressed(views::Button* sender,
-                                                   const ui::Event& event) {
-  DCHECK(result());
-  LogAppLaunch(index_in_container());
-  RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
-                               view_delegate_->GetSearchModel());
-  view_delegate_->OpenSearchResult(
-      result()->id(), event.flags(),
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      AppListLaunchType::kAppSearchResult, index_in_container(),
-      false /* launch_as_default */);
 }
 
 const char* SearchResultSuggestionChipView::GetClassName() const {
@@ -232,20 +220,32 @@ void SearchResultSuggestionChipView::InitLayout() {
   // Icon.
   const int icon_size =
       AppListConfig::instance().suggestion_chip_icon_dimension();
+  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->SetPreferredSize(gfx::Size(icon_size, icon_size));
 
   icon_view_->SetVisible(false);
-  AddChildView(icon_view_);
 
   // Text.
+  text_view_ = AddChildView(std::make_unique<views::Label>());
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetSubpixelRenderingEnabled(false);
   text_view_->SetFontList(AppListConfig::instance().app_title_font());
   SetText(base::string16());
   text_view_->SetEnabledColor(
       AppListColorProvider::Get()->GetSuggestionChipTextColor());
-  AddChildView(text_view_);
+}
+
+void SearchResultSuggestionChipView::OnButtonPressed(const ui::Event& event) {
+  DCHECK(result());
+  LogAppLaunch(index_in_container());
+  RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
+                               view_delegate_->GetSearchModel());
+  view_delegate_->OpenSearchResult(
+      result()->id(), event.flags(),
+      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      AppListLaunchType::kAppSearchResult, index_in_container(),
+      false /* launch_as_default */);
 }
 
 void SearchResultSuggestionChipView::SetRoundedCornersForLayer(

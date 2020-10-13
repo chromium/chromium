@@ -12,7 +12,7 @@
 
 namespace ash {
 
-SearchResultBaseView::SearchResultBaseView() : Button(this) {
+SearchResultBaseView::SearchResultBaseView() {
   SetInstallFocusRingOnFocus(false);
 }
 

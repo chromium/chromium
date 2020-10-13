@@ -36,10 +36,6 @@ class TestResultView : public SearchResultBaseView {
     return nullptr;
   }
 
-  void ButtonPressed(Button* sender, const ui::Event& event) override {
-    // Do nothing for test.
-  }
-
  private:
   DISALLOW_COPY_AND_ASSIGN(TestResultView);
 };

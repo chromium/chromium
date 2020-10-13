@@ -17,7 +17,6 @@ class SearchResultActionsView;
 
 // Base class for views that observe and display a search result
 class APP_LIST_EXPORT SearchResultBaseView : public views::Button,
-                                             public views::ButtonListener,
                                              public SearchResultObserver {
  public:
   SearchResultBaseView();

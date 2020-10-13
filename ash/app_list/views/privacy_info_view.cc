@@ -210,10 +210,8 @@ void PrivacyInfoView::NotifyA11yResultSelected() {
   }
 }
 
-void PrivacyInfoView::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
-  if (sender == close_button_)
-    CloseButtonPressed();
+void PrivacyInfoView::OnButtonPressed() {
+  CloseButtonPressed();
 }
 
 void PrivacyInfoView::InitLayout() {
@@ -284,7 +282,9 @@ void PrivacyInfoView::InitText() {
 }
 
 void PrivacyInfoView::InitCloseButton() {
-  auto close_button = std::make_unique<views::ImageButton>(this);
+  auto close_button = std::make_unique<views::ImageButton>();
+  close_button->set_callback(base::BindRepeating(
+      &PrivacyInfoView::OnButtonPressed, base::Unretained(this)));
   close_button->SetImage(views::ImageButton::STATE_NORMAL,
                          gfx::CreateVectorIcon(views::kCloseIcon, kIconSizeDip,
                                                gfx::kGoogleGrey700));
