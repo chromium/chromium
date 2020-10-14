@@ -30,17 +30,17 @@
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # ANGLE Backend
-# tags: [ angle-no-backend
+# tags: [ angle-disabled
 #         angle-d3d9 angle-d3d11
 #         angle-metal
 #         angle-opengl angle-opengles
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ dawn-skia-renderer
-#         gl-skia-renderer
-#         no-skia-renderer
-#         vulkan-skia-renderer ]
+# tags: [ skia-renderer-dawn
+#         skia-renderer-disabled
+#         skia-renderer-gl
+#         skia-renderer-vulkan ]
 # SwiftShader
 # tags: [ swiftshader-gl no-swiftshader-gl ]
 # Driver
@@ -70,7 +70,7 @@ crbug.com/648369 [ linux debug intel ] * [ RetryOnFailure ]
 # Flakily getting a WebSocketException on Windows w/ Intel UHD 630
 crbug.com/986939 [ win intel-0x3e92 ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
 
-crbug.com/1006045 [ android android-nexus-5x gl-skia-renderer ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
-crbug.com/1006045 [ android android-nexus-5x gl-skia-renderer ] ScreenshotSync_GPURasterWithDivs [ Failure ]
-crbug.com/1006045 [ android android-nexus-5x gl-skia-renderer ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
-crbug.com/1006045 [ android android-nexus-5x gl-skia-renderer ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer-gl ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer-gl ] ScreenshotSync_GPURasterWithDivs [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer-gl ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer-gl ] ScreenshotSync_SWRasterWithDivs [ Failure ]

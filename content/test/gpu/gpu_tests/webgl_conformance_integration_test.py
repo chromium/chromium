@@ -226,7 +226,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Verify that Chrome's GL backend matches if a specific one was requested
     if self._gl_backend:
       if (self._gl_backend == 'angle'
-          and gpu_helper.GetANGLERenderer(gpu_info) == 'angle-no-backend'):
+          and gpu_helper.GetANGLERenderer(gpu_info) == 'angle-disabled'):
         self.fail('requested GL backend (' + self._gl_backend + ')' +
                   ' had no effect on the browser: ' +
                   _GetGPUInfoErrorString(gpu_info))

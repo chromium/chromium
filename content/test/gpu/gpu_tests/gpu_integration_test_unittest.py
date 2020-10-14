@@ -202,7 +202,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'win', 'win10', 'release', 'nvidia', 'nvidia-0x1cb3', 'angle-d3d9',
-            'no-passthrough', 'no-swiftshader-gl', 'no-skia-renderer'
+            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
         ]))
 
   def testGenerateVendorTagUsingVendorString(self):
@@ -218,7 +218,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         set([
             'mac', 'mojave', 'release', 'imagination',
             'imagination-PowerVR-SGX-554', 'angle-opengles', 'passthrough',
-            'no-swiftshader-gl', 'no-skia-renderer'
+            'no-swiftshader-gl', 'skia-renderer-disabled'
         ]))
 
   def testGenerateVendorTagUsingDeviceString(self):
@@ -231,8 +231,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         _GetTagsToTest(browser),
         set([
             'mac', 'mojave', 'release', 'imagination',
-            'imagination-Triangle-Monster-3000', 'angle-no-backend',
-            'no-passthrough', 'no-swiftshader-gl', 'no-skia-renderer'
+            'imagination-Triangle-Monster-3000', 'angle-disabled',
+            'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
         ]))
 
   def testSimpleIntegrationTest(self):

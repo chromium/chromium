@@ -30,17 +30,17 @@
 # Decoder
 # tags: [ passthrough no-passthrough ]
 # ANGLE Backend
-# tags: [ angle-no-backend
+# tags: [ angle-disabled
 #         angle-d3d9 angle-d3d11
 #         angle-metal
 #         angle-opengl angle-opengles
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ dawn-skia-renderer
-#         gl-skia-renderer
-#         no-skia-renderer
-#         vulkan-skia-renderer ]
+# tags: [ skia-renderer-dawn
+#         skia-renderer-disabled
+#         skia-renderer-gl
+#         skia-renderer-vulkan ]
 # SwiftShader
 # tags: [ swiftshader-gl no-swiftshader-gl ]
 # Driver
@@ -157,7 +157,7 @@ crbug.com/979444 [ chromeos ] conformance/textures/misc/texture-corner-case-vide
 crbug.com/979444 [ linux ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ mac no-asan no-passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/979444 [ win ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
-crbug.com/979444 [ android angle-no-backend ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/979444 [ android angle-disabled ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 
 # Nvidia bugs fixed in latest driver
 # TODO(http://crbug.com/887241): Upgrade the drivers on the bots.
@@ -377,7 +377,7 @@ crbug.com/angleproject/4242 [ mac ] conformance2/glsl3/matrix-row-major-dynamic-
 crbug.com/angleproject/4417 [ mac no-passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
 # Flakes heavily on many OpenGL configurations
-crbug.com/832238 [ mac angle-no-backend ] conformance2/transform_feedback/too-small-buffers.html [ Failure ]
+crbug.com/832238 [ mac angle-disabled ] conformance2/transform_feedback/too-small-buffers.html [ Failure ]
 
 # Regressions in 10.12.4.
 crbug.com/705865 [ sierra intel ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
@@ -426,7 +426,7 @@ crbug.com/483282 [ mac nvidia-0xfe9 ] conformance/programs/gl-bind-attrib-locati
 crbug.com/483282 [ mac nvidia-0xfe9 no-passthrough ] conformance2/glsl3/loops-with-side-effects.html [ Failure ]
 crbug.com/981122 [ mac nvidia-0xfe9 ] conformance2/rendering/framebuffer-completeness-draw-framebuffer.html [ RetryOnFailure ]
 crbug.com/996344 [ mac nvidia-0xfe9 ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
-crbug.com/483282 [ angle-no-backend mac nvidia-0xfe9 ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
+crbug.com/483282 [ angle-disabled mac nvidia-0xfe9 ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/996344 [ mac nvidia-0xfe9 no-passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/682834 [ mac nvidia-0xfe9 ] conformance2/textures/image_bitmap_from_video/tex-2d-rgba16f-rgba-half_float.html [ RetryOnFailure ]
 crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
@@ -860,8 +860,8 @@ crbug.com/483282 [ linux amd ] deqp/functional/gles3/fbomultisample* [ Failure ]
 crbug.com/483282 [ linux amd ] deqp/functional/gles3/framebufferblit/conversion_07.html [ Failure ]
 crbug.com/658832 [ linux amd ] deqp/functional/gles3/framebufferblit/default_framebuffer_00.html [ Failure ]
 crbug.com/483282 [ linux amd ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
-crbug.com/483282 [ angle-no-backend linux amd ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
-crbug.com/483282 [ angle-no-backend linux amd ] conformance2/textures/misc/tex-unpack-params.html [ Failure ]
+crbug.com/483282 [ angle-disabled linux amd ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
+crbug.com/483282 [ angle-disabled linux amd ] conformance2/textures/misc/tex-unpack-params.html [ Failure ]
 crbug.com/662644 [ linux amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
 # TODO(kbr): re-enable after next conformance roll. crbug.com/736499
@@ -873,10 +873,10 @@ crbug.com/705865 [ linux amd ] conformance2/textures/image/tex-2d-r11f_g11f_b10f
 # Uniform buffer related failures
 crbug.com/483282 [ linux amd ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 crbug.com/angleproject/5014 [ linux amd ] conformance2/uniforms/uniform-blocks-with-arrays.html [ Failure ]
-crbug.com/809595 [ angle-no-backend linux amd ] conformance2/uniforms/simple-buffer-change.html [ Failure ]
+crbug.com/809595 [ angle-disabled linux amd ] conformance2/uniforms/simple-buffer-change.html [ Failure ]
 
 # Linux AMD R7 240
-crbug.com/696345 [ angle-no-backend linux amd-0x6613 ] conformance2/transform_feedback/switching-objects.html [ Failure ]
+crbug.com/696345 [ angle-disabled linux amd-0x6613 ] conformance2/transform_feedback/switching-objects.html [ Failure ]
 crbug.com/913301 [ linux amd-0x6613 ] conformance2/textures/misc/generate-mipmap-with-large-base-level.html [ Failure ]
 crbug.com/809237 [ linux amd-0x6613 ] conformance2/uniforms/incompatible-texture-type-for-sampler.html [ Skip ]
 crbug.com/1018028 [ linux amd-0x6613 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
@@ -978,7 +978,7 @@ crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformanc
 
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.
-crbug.com/695742 [ android qualcomm angle-no-backend ] deqp/functional/gles3/multisample.html [ RetryOnFailure ]
+crbug.com/695742 [ android qualcomm angle-disabled ] deqp/functional/gles3/multisample.html [ RetryOnFailure ]
 
 # This test is flaky but can fail three times in a row so it must be
 # marked as Fail instead of Flaky.

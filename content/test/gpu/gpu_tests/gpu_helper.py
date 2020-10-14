@@ -98,7 +98,7 @@ def GetGpuDriverVersion(gpu_info):
 
 
 def GetANGLERenderer(gpu_info):
-  retval = 'angle-no-backend'
+  retval = 'angle-disabled'
   if gpu_info and gpu_info.aux_attributes:
     gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
     if gl_renderer and 'ANGLE' in gl_renderer:
@@ -139,17 +139,17 @@ def GetCommandDecoder(gpu_info):
 
 
 def GetSkiaRenderer(gpu_feature_status, extra_browser_args):
-  retval = 'no-skia-renderer'
+  retval = 'skia-renderer-disabled'
   skia_renderer_enabled = (
       gpu_feature_status
       and gpu_feature_status.get('skia_renderer') == 'enabled_on')
   if skia_renderer_enabled:
     if HasDawnSkiaRenderer(extra_browser_args):
-      retval = 'dawn-skia-renderer'
+      retval = 'skia-renderer-dawn'
     elif HasGlSkiaRenderer(extra_browser_args):
-      retval = 'gl-skia-renderer'
+      retval = 'skia-renderer-gl'
     elif HasVulkanSkiaRenderer(gpu_feature_status):
-      retval = 'vulkan-skia-renderer'
+      retval = 'skia-renderer-vulkan'
   return retval
 
 
