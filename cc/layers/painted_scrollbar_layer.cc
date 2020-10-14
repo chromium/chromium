@@ -4,6 +4,10 @@
 
 #include "cc/layers/painted_scrollbar_layer.h"
 
+#include <algorithm>
+#include <memory>
+#include <utility>
+
 #include "base/auto_reset.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -140,6 +144,10 @@ bool PaintedScrollbarLayer::UpdateInternalContentScale() {
   gfx::Vector2dF transform_scales = MathUtil::ComputeTransform2dScaleComponents(
       transform, layer_tree_host()->device_scale_factor());
   float scale = std::max(transform_scales.x(), transform_scales.y());
+  // Clamp minimum scale to 1 to avoid too low scale during scale animation.
+  // TODO(crbug.com/1009291): Move rasterization of scrollbars to the impl side
+  // to better handle scale changes.
+  scale = std::max(1.0f, scale);
 
   bool updated = false;
   updated |= UpdateProperty(scale, &internal_contents_scale_);

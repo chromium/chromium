@@ -40,6 +40,9 @@ crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrol
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Pass ]
 paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html [ Pass ]
 
+# M87 failure
+fast/sub-pixel/transformed-iframe-copy-on-scroll.html [ Failure ]
+
 # Raster invalidation doesn't work for huge layers.
 paint/invalidation/raster-under-invalidation-checking.html [ Failure ]
 
