@@ -519,6 +519,12 @@ class ProgressCenterPanel {
       return str('PENDING_LABEL');
     }
 
+    // Return empty string for not supported operation (didn't set
+    // remainingTime) or 0 sec remainingTime in non progressing state.
+    if (!seconds) {
+      return '';
+    }
+
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
 
@@ -633,6 +639,7 @@ class ProgressCenterPanel {
         case 'error':
           panelItem.panelType = panelItem.panelTypeError;
           panelItem.primaryText = item.message;
+          panelItem.secondaryText = '';
           // Make sure the panel is attached so it shows immediately.
           this.feedbackHost_.attachPanelItem(panelItem);
           break;

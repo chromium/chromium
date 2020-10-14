@@ -896,5 +896,32 @@ test.util.sync.staticFakeCounter = (contentWindow, fakedApi) => {
   return fake.callCounter_;
 };
 
+/**
+ * Send progress item to Foreground page to display.
+ * @param {string} id Progress item id.
+ * @param {ProgressItemType} type Type of progress item.
+ * @param {ProgressItemState} state State of the progress item.
+ * @param {string} message Message of the progress item.
+ * @param {number} remainingTime The remaining time of the progress in second.
+ * @param {number} progressMax Max value of the progress.
+ * @param {number} progressValue Current value of the progress.
+ * @param {number} count Number of items being processed.
+ */
+test.util.sync.sendProgressItem =
+    (id, type, state, message, remainingTime, progressMax = 1,
+     progressValue = 0, count = 1) => {
+      const item = new ProgressCenterItem();
+      item.id = id;
+      item.type = type;
+      item.state = state;
+      item.message = message;
+      item.remainingTime = remainingTime;
+      item.progressMax = progressMax;
+      item.progressValue = progressValue;
+      item.itemCount = count;
+
+      background.progressCenter.updateItem(item);
+    };
+
 // Register the test utils.
 test.util.registerRemoteTestUtils();

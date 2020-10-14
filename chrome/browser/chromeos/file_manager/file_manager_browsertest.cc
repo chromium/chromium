@@ -706,7 +706,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDeletedFile"),
         TestCase("transferInfoIsRemembered"),
         TestCase("transferToUsbHasDestinationText"),
-        TestCase("transferDismissedErrorIsRemembered")));
+        TestCase("transferDismissedErrorIsRemembered"),
+        TestCase("transferNotSupportedOperationHasNoRemainingTimeText"),
+        TestCase("transferUpdateSamePanelItem"),
+        TestCase("transferShowPendingMessageForZeroRemainingTime")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     RestorePrefs, /* restore_prefs.js */

@@ -1093,3 +1093,90 @@ testcase.transferDismissedErrorIsRemembered = async () => {
       appId, ['#progress-panel', 'xf-panel-item']);
   chrome.test.assertEq('progress', progressPanel.attributes['indicator']);
 };
+
+/**
+ * Tests no remaining time displayed for not supported operations like format.
+ */
+testcase.transferNotSupportedOperationHasNoRemainingTimeText = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Show a |format| progress panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id-1',
+    /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.PROGRESSING */ 'progressing', 'Formatting'
+  ]);
+
+  // Check the progress panel is open.
+  let panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Check no remaining time shown for 'format' panel type.
+  chrome.test.assertEq('', panel.attributes['secondary-text']);
+
+  // Show a |format| error panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id-2', /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error', 'Failed'
+  ]);
+
+  // Check the progress panel is open.
+  panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item#item-id-2']);
+
+  // Check no remaining time shown for 'format' error panel type.
+  chrome.test.assertEq('', panel.attributes['secondary-text']);
+};
+
+/**
+ * Tests updating same panel keeps same message.
+ * Use case: crbug/1137229
+ */
+testcase.transferUpdateSamePanelItem = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Show a |format| error in feedback panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id', /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error', 'Failed'
+  ]);
+
+  // Check the error panel is open.
+  let panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Dispatch another |format| feedback panel with the same id and panel type.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id', /* ProgressItemType.FORMAT */ 'format',
+    /* ProgressItemState.ERROR */ 'error', 'Failed new message'
+  ]);
+
+  // Check the progress panel is open.
+  panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Check secondary text is still empty for the error panel.
+  chrome.test.assertEq('', panel.attributes['secondary-text']);
+};
+
+/**
+ * Tests pending message shown when the remaining time is zero.
+ */
+testcase.transferShowPendingMessageForZeroRemainingTime = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Show a |copy| progress in feedback panel.
+  await remoteCall.callRemoteTestUtil('sendProgressItem', null, [
+    'item-id', /* ProgressItemType.COPY */ 'copy',
+    /* ProgressItemState.PROGRESSING */ 'progressing',
+    'Copying File1.txt to Downloads',
+    /* remainingTime*/ 0
+  ]);
+
+  // Check the error panel is open.
+  const panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Check secondary text is pending message.
+  chrome.test.assertEq('Pending', panel.attributes['secondary-text']);
+};
