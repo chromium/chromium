@@ -52,14 +52,17 @@ class TabStripRegionView final : public views::AccessiblePaneView,
 
   int CalculateTabStripAvailableWidth();
 
-  void ScrollLeft();
-  void ScrollRight();
+  // Scrolls the tabstrip towards the first tab in the tabstrip.
+  void ScrollTowardsLeadingTab();
+
+  // Scrolls the tabstrip towards the last tab in the tabstrip.
+  void ScrollTowardsTrailingTab();
 
   views::View* tab_strip_container_;
   TabStrip* tab_strip_;
   TabSearchButton* tab_search_button_ = nullptr;
-  views::ImageButton* left_scroll_;
-  views::ImageButton* right_scroll_;
+  views::ImageButton* leading_scroll_button_;
+  views::ImageButton* trailing_scroll_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_

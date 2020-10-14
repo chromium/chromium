@@ -67,13 +67,14 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
         views::FlexSpecification(base::BindRepeating(
             &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
 
-    auto left_scroll = std::make_unique<views::ImageButton>(base::BindRepeating(
-        &TabStripRegionView::ScrollLeft, base::Unretained(this)));
-    auto right_scroll =
-        std::make_unique<views::ImageButton>(base::BindRepeating(
-            &TabStripRegionView::ScrollRight, base::Unretained(this)));
-    left_scroll_ = AddChildView(std::move(left_scroll));
-    right_scroll_ = AddChildView(std::move(right_scroll));
+    auto leading_scroll_button = std::make_unique<views::ImageButton>(
+        base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
+                            base::Unretained(this)));
+    auto trailing_scroll_button = std::make_unique<views::ImageButton>(
+        base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
+                            base::Unretained(this)));
+    leading_scroll_button_ = AddChildView(std::move(leading_scroll_button));
+    trailing_scroll_button_ = AddChildView(std::move(trailing_scroll_button));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
 
@@ -157,10 +158,12 @@ void TabStripRegionView::FrameColorsChanged() {
         TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
     SkColor foreground_color = tab_strip_->GetTabForegroundColor(
         TabActive::kInactive, background_color);
-    views::SetImageFromVectorIconWithColor(
-        left_scroll_, kScrollingTabstripLeftIcon, foreground_color);
-    views::SetImageFromVectorIconWithColor(
-        right_scroll_, kScrollingTabstripRightIcon, foreground_color);
+    views::SetImageFromVectorIconWithColor(leading_scroll_button_,
+                                           kScrollingTabstripLeadingIcon,
+                                           foreground_color);
+    views::SetImageFromVectorIconWithColor(trailing_scroll_button_,
+                                           kScrollingTabstripTrailingIcon,
+                                           foreground_color);
   }
   tab_strip_->FrameColorsChanged();
   SchedulePaint();
@@ -222,7 +225,7 @@ int TabStripRegionView::CalculateTabStripAvailableWidth() {
   return size().width() - reserved_width;
 }
 
-void TabStripRegionView::ScrollLeft() {
+void TabStripRegionView::ScrollTowardsLeadingTab() {
   views::ScrollView* scroll_view_container =
       static_cast<views::ScrollView*>(tab_strip_container_);
   gfx::Rect visible_content = scroll_view_container->GetVisibleRect();
@@ -232,7 +235,7 @@ void TabStripRegionView::ScrollLeft() {
   scroll_view_container->contents()->ScrollRectToVisible(scroll);
 }
 
-void TabStripRegionView::ScrollRight() {
+void TabStripRegionView::ScrollTowardsTrailingTab() {
   views::ScrollView* scroll_view_container =
       static_cast<views::ScrollView*>(tab_strip_container_);
   gfx::Rect visible_content = scroll_view_container->GetVisibleRect();
