@@ -1004,9 +1004,9 @@ def ExtractHistogramsFromDom(tree):
   enums, enum_errors = ExtractEnumsFromXmlTree(enums_tree)
   histograms, histogram_errors = _ExtractHistogramsFromXmlTree(
       histograms_tree, enums)
+  histograms, update_token_errors = _UpdateHistogramsWithTokens(histograms)
   update_suffix_errors = _UpdateHistogramsWithSuffixes(histogram_suffixes_tree,
                                                        histograms)
-  histograms, update_token_errors = _UpdateHistogramsWithTokens(histograms)
 
   return histograms, (enum_errors or histogram_errors or update_suffix_errors
                       or update_token_errors)
