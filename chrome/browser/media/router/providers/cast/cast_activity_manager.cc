@@ -73,7 +73,7 @@ CastActivityManager::~CastActivityManager() {
   // browser shuts down.  This works when the browser is closed through its UI,
   // or when it is given an opportunity to shut down gracefully, e.g. with
   // SIGINT on Linux, but not SIGTERM.
-  TerminateAllMirroringActivities();
+  TerminateAllLocalMirroringActivities();
 
   message_handler_->RemoveObserver(this);
   session_tracker_->RemoveObserver(this);
@@ -910,14 +910,16 @@ std::string CastActivityManager::ChooseAppId(
   return source.app_infos()[0].app_id;
 }
 
-void CastActivityManager::TerminateAllMirroringActivities() {
+void CastActivityManager::TerminateAllLocalMirroringActivities() {
   // Save all route IDs so we aren't iterating over |activities_| when it's
   // modified.
   std::vector<MediaRoute::Id> route_ids;
   for (const auto& pair : activities_) {
-    // Anything that isn't an app activity is a mirroring activity.
-    if (app_activities_.find(pair.first) == app_activities_.end())
+    if (pair.second->route().is_local() &&
+        // Anything that isn't an app activity is a mirroring activity.
+        app_activities_.find(pair.first) == app_activities_.end()) {
       route_ids.push_back(pair.first);
+    }
   }
 
   // Terminate the activities.
