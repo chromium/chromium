@@ -46,10 +46,12 @@ android_library("java") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_preference_preference_java",
     "//third_party/android_deps:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":safe_browsing_enums" ]

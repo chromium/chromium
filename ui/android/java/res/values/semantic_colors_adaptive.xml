@@ -111,4 +111,5 @@
     <color name="omnibox_bg_color" tools:ignore="UnusedResources">@color/omnibox_bg_color_light</color>
     <color name="image_loading_color" tools:ignore="UnusedResources">@color/image_loading_color_dark</color>
     <color name="promo_illustration_bg_color" tools:ignore="UnusedResources">@color/promo_illustration_bg_color_light</color>
+    <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_dark</color>
 </resources>

@@ -50,13 +50,13 @@ public class EnhancedProtectionPromoController {
     private EnhancedProtectionPromoStateListener mStateListener;
     private PromoCardCoordinator mPromoCoordinator;
     private PropertyModel mModel;
-
     private boolean mIsPromoShowing;
 
     /**
      * Build the EnhancedProtectionPromoController that handles the set up / tear down for the
      * enhanced protection promo.
      * @param context Context from the activity.
+     * @param profile Current user profile.
      */
     public EnhancedProtectionPromoController(Context context, @Nullable Profile profile) {
         mContext = context;
