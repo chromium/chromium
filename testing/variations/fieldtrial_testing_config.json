@@ -6230,27 +6230,6 @@
             ]
         }
     ],
-    "SameSiteCookieMessages": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledLaunch",
-                    "enable_features": [
-                        "CookieDeprecationMessages"
-                    ]
-                }
-            ]
-        }
-    ],
     "SaveEditedPDFForm": [
         {
             "platforms": [
@@ -6263,6 +6242,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SaveEditedPDFForm"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SchemefulSameSiteAllOS": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SchemefulSameSite"
                     ]
                 }
             ]
