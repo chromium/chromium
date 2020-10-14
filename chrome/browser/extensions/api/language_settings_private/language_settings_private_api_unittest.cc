@@ -367,7 +367,7 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {
     util_.AppendInputMethods(state_->input_methods_);
     mock_delegate_ =
-        new chromeos::input_method::MockComponentExtIMEManagerDelegate();
+        new chromeos::input_method::MockComponentExtensionIMEManagerDelegate();
     component_ext_mgr_ =
         std::make_unique<chromeos::ComponentExtensionIMEManager>();
     component_ext_mgr_->Initialize(base::WrapUnique(mock_delegate_));
@@ -391,7 +391,8 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_;
   std::unique_ptr<chromeos::ComponentExtensionIMEManager> component_ext_mgr_;
-  chromeos::input_method::MockComponentExtIMEManagerDelegate* mock_delegate_;
+  chromeos::input_method::MockComponentExtensionIMEManagerDelegate*
+      mock_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };

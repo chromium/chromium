@@ -12,11 +12,12 @@
 namespace chromeos {
 namespace input_method {
 
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockComponentExtIMEManagerDelegate
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
+    MockComponentExtensionIMEManagerDelegate
     : public ComponentExtensionIMEManagerDelegate {
  public:
-  MockComponentExtIMEManagerDelegate();
-  ~MockComponentExtIMEManagerDelegate() override;
+  MockComponentExtensionIMEManagerDelegate();
+  ~MockComponentExtensionIMEManagerDelegate() override;
 
   std::vector<ComponentExtensionIME> ListIME() override;
   void Load(Profile*,
@@ -31,7 +32,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockComponentExtIMEManagerDelegate
  private:
   std::vector<ComponentExtensionIME> ime_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(MockComponentExtIMEManagerDelegate);
+  DISALLOW_COPY_AND_ASSIGN(MockComponentExtensionIMEManagerDelegate);
 };
 
 }  // namespace input_method

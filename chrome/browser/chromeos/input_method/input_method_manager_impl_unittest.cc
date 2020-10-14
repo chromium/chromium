@@ -188,7 +188,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  protected:
   // Helper function to initialize component extension stuff for testing.
   void InitComponentExtension() {
-    mock_delegate_ = new MockComponentExtIMEManagerDelegate();
+    mock_delegate_ = new MockComponentExtensionIMEManagerDelegate();
     mock_delegate_->set_ime_list(ime_list_);
     std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate(
         mock_delegate_);
@@ -368,7 +368,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
   MockCandidateWindowController* candidate_window_controller_;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
   FakeImeKeyboard* keyboard_;
-  MockComponentExtIMEManagerDelegate* mock_delegate_;
+  MockComponentExtensionIMEManagerDelegate* mock_delegate_;
   std::vector<ComponentExtensionIME> ime_list_;
   ui::ime::InputMethodMenuManager* menu_manager_;
 

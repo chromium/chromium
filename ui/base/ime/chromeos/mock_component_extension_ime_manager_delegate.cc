@@ -8,19 +8,21 @@
 namespace chromeos {
 namespace input_method {
 
-MockComponentExtIMEManagerDelegate::MockComponentExtIMEManagerDelegate() {}
+MockComponentExtensionIMEManagerDelegate::
+    MockComponentExtensionIMEManagerDelegate() {}
 
-MockComponentExtIMEManagerDelegate::~MockComponentExtIMEManagerDelegate() =
-    default;
+MockComponentExtensionIMEManagerDelegate::
+    ~MockComponentExtensionIMEManagerDelegate() = default;
 
 std::vector<ComponentExtensionIME>
-    MockComponentExtIMEManagerDelegate::ListIME() {
+MockComponentExtensionIMEManagerDelegate::ListIME() {
   return ime_list_;
 }
 
-void MockComponentExtIMEManagerDelegate::Load(Profile* profile,
-                                              const std::string& extension_id,
-                                              const std::string& manifest,
-                                              const base::FilePath& path) {}
+void MockComponentExtensionIMEManagerDelegate::Load(
+    Profile* profile,
+    const std::string& extension_id,
+    const std::string& manifest,
+    const base::FilePath& path) {}
 }  // namespace input_method
 }  // namespace chromeos

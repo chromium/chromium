@@ -253,8 +253,8 @@ class InputMethodPreferencesTest : public PreferencesTest {
 
   void InitComponentExtensionIMEManager() {
     // Set our custom IME list on the mock delegate.
-    input_method::MockComponentExtIMEManagerDelegate* mock_delegate =
-        new input_method::MockComponentExtIMEManagerDelegate();
+    input_method::MockComponentExtensionIMEManagerDelegate* mock_delegate =
+        new input_method::MockComponentExtensionIMEManagerDelegate();
     mock_delegate->set_ime_list(CreateImeList());
 
     // Pass the mock delegate to a new ComponentExtensionIMEManager.
