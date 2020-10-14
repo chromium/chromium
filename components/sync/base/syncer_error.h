@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace syncer {
 
 // This class describes all the possible results of a sync cycle. It should be
@@ -27,8 +26,7 @@ class SyncerError {
     SYNC_AUTH_ERROR = 5,                 // HTTP auth error.
 
     // Based on values returned by server.  Most are defined in sync.proto.
-    // TODO(crbug.com/951350): Unused, remove.
-    SERVER_RETURN_INVALID_CREDENTIAL = 6,
+    // Deprecated: SERVER_RETURN_INVALID_CREDENTIAL = 6,
     SERVER_RETURN_UNKNOWN_ERROR = 7,
     SERVER_RETURN_THROTTLED = 8,
     SERVER_RETURN_TRANSIENT_ERROR = 9,
@@ -38,8 +36,7 @@ class SyncerError {
     SERVER_RETURN_CONFLICT = 13,
     SERVER_RESPONSE_VALIDATION_FAILED = 14,
     SERVER_RETURN_DISABLED_BY_ADMIN = 15,
-    // TODO(crbug.com/951350): Unused, remove.
-    SERVER_RETURN_USER_ROLLBACK = 16,
+    // Deprecated: SERVER_RETURN_USER_ROLLBACK = 16,
     SERVER_RETURN_PARTIAL_FAILURE = 17,
     SERVER_RETURN_CLIENT_DATA_OBSOLETE = 18,
     SERVER_RETURN_ENCRYPTION_OBSOLETE = 19,
@@ -54,7 +51,7 @@ class SyncerError {
     kMaxValue = SYNCER_OK,
   };
 
-  constexpr SyncerError() {}
+  constexpr SyncerError() = default;
   // Note: NETWORK_CONNECTION_UNAVAILABLE, SYNC_SERVER_ERROR, and
   // SYNC_AUTH_ERROR are *not* valid inputs for this constructor. These types
   // of errors must be created via the factory functions below.

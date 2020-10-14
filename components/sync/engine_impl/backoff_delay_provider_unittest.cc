@@ -72,14 +72,6 @@ TEST_F(BackoffDelayProviderTest, GetInitialDelay) {
             delay->GetInitialDelay(state).InSeconds());
 
   state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
-  // Note that updating credentials triggers a canary job, trumping
-  // the initial delay, but in theory we still expect this function to treat
-  // it like any other error in the system (except migration).
-  state.commit_result =
-      SyncerError(SyncerError::SERVER_RETURN_INVALID_CREDENTIAL);
-  EXPECT_EQ(kInitialBackoffRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
-
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
             delay->GetInitialDelay(state).InSeconds());
@@ -125,14 +117,6 @@ TEST_F(BackoffDelayProviderTest, GetInitialDelayWithOverride) {
             delay->GetInitialDelay(state).InSeconds());
 
   state.last_download_updates_result = SyncerError(SyncerError::SYNCER_OK);
-  // Note that updating credentials triggers a canary job, trumping
-  // the initial delay, but in theory we still expect this function to treat
-  // it like any other error in the system (except migration).
-  state.commit_result =
-      SyncerError(SyncerError::SERVER_RETURN_INVALID_CREDENTIAL);
-  EXPECT_EQ(kInitialBackoffShortRetrySeconds,
-            delay->GetInitialDelay(state).InSeconds());
-
   state.commit_result = SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
   EXPECT_EQ(kInitialBackoffImmediateRetrySeconds,
             delay->GetInitialDelay(state).InSeconds());

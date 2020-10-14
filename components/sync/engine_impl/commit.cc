@@ -51,7 +51,6 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
     case SyncerError::NETWORK_IO_ERROR:
       return SyncCommitError::kNetworkError;
     case SyncerError::SYNC_AUTH_ERROR:
-    case SyncerError::SERVER_RETURN_INVALID_CREDENTIAL:
       return SyncCommitError::kAuthError;
     case SyncerError::SYNC_SERVER_ERROR:
     case SyncerError::SERVER_RETURN_UNKNOWN_ERROR:
@@ -61,7 +60,6 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
     case SyncerError::SERVER_RETURN_CLEAR_PENDING:
     case SyncerError::SERVER_RETURN_NOT_MY_BIRTHDAY:
     case SyncerError::SERVER_RETURN_CONFLICT:
-    case SyncerError::SERVER_RETURN_USER_ROLLBACK:
     case SyncerError::SERVER_RETURN_PARTIAL_FAILURE:
     case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
     case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
