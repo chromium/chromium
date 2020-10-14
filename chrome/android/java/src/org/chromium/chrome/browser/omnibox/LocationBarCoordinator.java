@@ -1,0 +1,297 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.omnibox;
+
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.List;
+
+/**
+ * The public API of the location bar component. Location bar responsibilities are:
+ * <ul>
+ *   <li>Display the current URL.
+ *   <li>Display Status.
+ *   <li>Handle omnibox input.
+ * </ul>
+ *
+ * <p>The coordinator creates and owns elements within this component.
+ */
+public final class LocationBarCoordinator implements LocationBar {
+    /** Identifies coordinators with methods specific to a device type. */
+    public interface SubCoordinator extends Destroyable {}
+
+    private LocationBarLayout mLocationBarLayout;
+    @Nullable
+    private SubCoordinator mSubCoordinator;
+
+    /**
+     * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
+     * LocationBarCoordinatorPhone} or {@link LocationBarCoordinatorTablet}, depending on the type
+     * of {@code locationBarLayout}.
+     * {@code LocationBarCoordinator} owns the subcoordinator. Destroying the former destroys the
+     * latter.
+     *
+     * @param locationBarLayout Inflated {@link LocationBarPhone} or {@link LocationBarTablet}.
+     *         {@code LocationBarCoordinator} takes ownership and will destroy this object.
+     * @throws IllegalArgumentException if the view is neither {@link LocationBarPhone} nor {@link
+     *         LocationBarTablet}.
+     */
+    public LocationBarCoordinator(View locationBarLayout) {
+        mLocationBarLayout = (LocationBarLayout) locationBarLayout;
+
+        if (locationBarLayout instanceof LocationBarPhone) {
+            mSubCoordinator = new LocationBarCoordinatorPhone((LocationBarPhone) locationBarLayout);
+        } else if (locationBarLayout instanceof LocationBarTablet) {
+            mSubCoordinator =
+                    new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
+        } else {
+            assert false : "Expected LocationBarPhone or LocationBarTablet, got "
+                           + locationBarLayout.getClass();
+            throw new IllegalArgumentException(locationBarLayout.getClass().toString());
+        }
+    }
+
+    /**
+     * Returns the {@link LocationBarCoordinatorPhone} for this coordinator.
+     *
+     * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
+     *         type.
+     */
+    @NonNull
+    public LocationBarCoordinatorPhone getPhoneCoordinator() {
+        assert mSubCoordinator != null;
+        return (LocationBarCoordinatorPhone) mSubCoordinator;
+    }
+
+    /**
+     * Returns the {@link LocationBarCoordinatorTablet} for this coordinator.
+     *
+     * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
+     *         type.
+     */
+    @NonNull
+    public LocationBarCoordinatorTablet getTabletCoordinator() {
+        assert mSubCoordinator != null;
+        return (LocationBarCoordinatorTablet) mSubCoordinator;
+    }
+
+    @Override
+    public void destroy() {
+        if (mSubCoordinator != null) {
+            mSubCoordinator.destroy();
+            mSubCoordinator = null;
+        }
+        if (mLocationBarLayout != null) {
+            mLocationBarLayout.destroy();
+            mLocationBarLayout = null;
+        }
+    }
+
+    @Override
+    public void onDeferredStartup() {
+        mLocationBarLayout.onDeferredStartup();
+    }
+
+    @Override
+    public void onNativeLibraryReady() {
+        mLocationBarLayout.onNativeLibraryReady();
+    }
+
+    @Override
+    public void onTabLoadingNTP(NewTabPage ntp) {
+        mLocationBarLayout.onTabLoadingNTP(ntp);
+    }
+
+    @Override
+    public void updateVisualsForState() {
+        mLocationBarLayout.updateVisualsForState();
+    }
+
+    @Override
+    public void setUrlFocusChangeFraction(float fraction) {
+        mLocationBarLayout.setUrlFocusChangeFraction(fraction);
+    }
+
+    @Override
+    public void setUrlToPageUrl() {
+        mLocationBarLayout.setUrlToPageUrl();
+    }
+
+    @Override
+    public void setTitleToPageTitle() {
+        mLocationBarLayout.setTitleToPageTitle();
+    }
+
+    @Override
+    public void setShowTitle(boolean showTitle) {
+        mLocationBarLayout.setShowTitle(showTitle);
+    }
+
+    @Override
+    public void updateLoadingState(boolean updateUrl) {
+        mLocationBarLayout.updateLoadingState(updateUrl);
+    }
+
+    @Override
+    public void setToolbarDataProvider(ToolbarDataProvider dataProvider) {
+        mLocationBarLayout.setToolbarDataProvider(dataProvider);
+    }
+
+    @Override
+    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
+        mLocationBarLayout.setOverviewModeBehavior(overviewModeBehavior);
+    }
+
+    @Override
+    public ToolbarDataProvider getToolbarDataProvider() {
+        return mLocationBarLayout.getToolbarDataProvider();
+    }
+
+    @Override
+    public void initializeControls(WindowDelegate windowDelegate, WindowAndroid windowAndroid,
+            ActivityTabProvider activityTabProvider,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            IncognitoStateProvider incognitoStateProvider) {
+        mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
+                modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider);
+    }
+
+    @Override
+    public void showUrlBarCursorWithoutFocusAnimations() {
+        mLocationBarLayout.showUrlBarCursorWithoutFocusAnimations();
+    }
+
+    @Override
+    public void selectAll() {
+        mLocationBarLayout.selectAll();
+    }
+
+    @Override
+    public void revertChanges() {
+        mLocationBarLayout.revertChanges();
+    }
+
+    @Override
+    public void updateStatusIcon() {
+        mLocationBarLayout.updateStatusIcon();
+    }
+
+    @Override
+    public View getContainerView() {
+        return mLocationBarLayout.getContainerView();
+    }
+
+    @Override
+    public View getSecurityIconView() {
+        return mLocationBarLayout.getSecurityIconView();
+    }
+
+    @Override
+    public void updateMicButtonState() {
+        mLocationBarLayout.updateMicButtonState();
+    }
+
+    @Override
+    public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback) {
+        mLocationBarLayout.setDefaultTextEditActionModeCallback(callback);
+    }
+
+    @Override
+    public void setUnfocusedWidth(int unfocusedWidth) {
+        mLocationBarLayout.setUnfocusedWidth(unfocusedWidth);
+    }
+
+    @Override
+    public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {
+        mLocationBarLayout.setProfileSupplier(profileSupplier);
+    }
+
+    @Nullable
+    @Override
+    public View getViewForUrlBackFocus() {
+        return mLocationBarLayout.getViewForUrlBackFocus();
+    }
+
+    @Override
+    public boolean allowKeyboardLearning() {
+        return mLocationBarLayout.allowKeyboardLearning();
+    }
+
+    @Override
+    public void backKeyPressed() {
+        mLocationBarLayout.backKeyPressed();
+    }
+
+    @Override
+    public boolean shouldForceLTR() {
+        return mLocationBarLayout.shouldForceLTR();
+    }
+
+    @Override
+    public boolean shouldCutCopyVerbatim() {
+        return mLocationBarLayout.shouldCutCopyVerbatim();
+    }
+
+    @Override
+    public void gestureDetected(boolean isLongPress) {
+        mLocationBarLayout.gestureDetected(isLongPress);
+    }
+
+    @Override
+    public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText, int reason) {
+        mLocationBarLayout.setUrlBarFocus(shouldBeFocused, pastedText, reason);
+    }
+
+    @Override
+    public void performSearchQuery(String query, List<String> searchParams) {
+        mLocationBarLayout.performSearchQuery(query, searchParams);
+    }
+
+    @Override
+    public boolean isUrlBarFocused() {
+        return mLocationBarLayout.isUrlBarFocused();
+    }
+
+    @Override
+    public boolean isCurrentPage(NativePage nativePage) {
+        return mLocationBarLayout.isCurrentPage(nativePage);
+    }
+
+    @Override
+    public VoiceRecognitionHandler getVoiceRecognitionHandler() {
+        return mLocationBarLayout.getVoiceRecognitionHandler();
+    }
+
+    @Override
+    public void addUrlFocusChangeListener(UrlFocusChangeListener listener) {
+        mLocationBarLayout.addUrlFocusChangeListener(listener);
+    }
+
+    @Override
+    public void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
+        mLocationBarLayout.removeUrlFocusChangeListener(listener);
+    }
+}

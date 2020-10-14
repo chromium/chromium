@@ -112,7 +112,8 @@ public class LocationBarLayout extends FrameLayout
     protected AutocompleteCoordinator mAutocompleteCoordinator;
 
     protected ToolbarDataProvider mToolbarDataProvider;
-    private ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners = new ObserverList<>();
+    private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
+            new ObserverList<>();
 
     private final List<Runnable> mDeferredNativeRunnables = new ArrayList<Runnable>();
 
@@ -244,6 +245,8 @@ public class LocationBarLayout extends FrameLayout
 
     @Override
     public void destroy() {
+        mUrlFocusChangeListeners.clear();
+
         if (mAutocompleteCoordinator != null) {
             removeUrlFocusChangeListener(mAutocompleteCoordinator);
             mAutocompleteCoordinator.destroy();

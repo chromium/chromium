@@ -153,8 +153,6 @@ public abstract class ToolbarLayout
             mThemeColorProvider.removeThemeColorObserver(this);
             mThemeColorProvider = null;
         }
-
-        getLocationBar().destroy();
     }
 
     /**
@@ -377,6 +375,7 @@ public abstract class ToolbarLayout
     /**
      * @return The {@link ProgressBar} this layout uses.
      */
+    @Nullable
     protected ToolbarProgressBar getProgressBar() {
         return mProgressBar;
     }
@@ -486,6 +485,7 @@ public abstract class ToolbarLayout
      * @return The name of the publisher of the content if it can be reliably extracted, or null
      *         otherwise.
      */
+    @Nullable
     protected String getContentPublisher() {
         return null;
     }

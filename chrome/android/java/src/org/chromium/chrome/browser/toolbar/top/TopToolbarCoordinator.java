@@ -302,6 +302,7 @@ public class TopToolbarCoordinator implements Toolbar {
         return mMenuButtonCoordinator.getMenuButton();
     }
 
+    @Nullable
     @Override
     public ToolbarProgressBar getProgressBar() {
         return mToolbarLayout.getProgressBar();

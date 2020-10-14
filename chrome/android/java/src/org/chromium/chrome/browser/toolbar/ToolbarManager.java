@@ -901,10 +901,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mBottomControlsCoordinator = null;
         }
 
-        if (mLocationBar != null) {
-            mLocationBar.removeUrlFocusChangeListener(this);
-        }
-
         mToolbar.removeUrlExpansionObserver(mActivity.getStatusBarColorController());
         mToolbar.destroy();
 
@@ -921,10 +917,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mHandler.removeCallbacksAndMessages(null); // Cancel delayed tasks.
         mBrowserControlsSizer.removeObserver(mBrowserControlsObserver);
         mFullscreenManager.removeObserver(mFullscreenObserver);
-        if (mLocationBar != null) {
-            mLocationBar.removeUrlFocusChangeListener(mLocationBarFocusHandler);
-            mLocationBarFocusHandler = null;
-        }
 
         if (mTabThemeColorProvider != null) mTabThemeColorProvider.removeThemeColorObserver(this);
         if (mAppThemeColorProvider != null) {
