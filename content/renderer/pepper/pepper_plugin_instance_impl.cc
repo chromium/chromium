@@ -3007,53 +3007,6 @@ bool PepperPluginInstanceImpl::IsRectTopmost(const gfx::Rect& rect) {
   return container_->IsRectTopmost(rect);
 }
 
-int32_t PepperPluginInstanceImpl::Navigate(
-    const ppapi::URLRequestInfoData& request,
-    const char* target,
-    bool from_user_action) {
-  if (!container_)
-    return PP_ERROR_FAILED;
-
-  WebDocument document = container_->GetDocument();
-  WebLocalFrame* frame = document.GetFrame();
-  if (!frame)
-    return PP_ERROR_FAILED;
-
-  ppapi::URLRequestInfoData completed_request = request;
-
-  WebURLRequest web_request;
-  if (!CreateWebURLRequest(
-          pp_instance_, &completed_request, frame, &web_request)) {
-    return PP_ERROR_FAILED;
-  }
-  web_request.SetSiteForCookies(document.SiteForCookies());
-  if (HasTransientUserActivation())
-    web_request.SetHasUserGesture(true);
-
-  GURL gurl(web_request.Url());
-  if (gurl.SchemeIs(url::kJavaScriptScheme)) {
-    // In imitation of the NPAPI implementation, only |target_frame == frame| is
-    // allowed for security reasons.
-    WebFrame* target_frame =
-        frame->FindFrameByName(WebString::FromUTF8(target));
-    if (target_frame != frame)
-      return PP_ERROR_NOACCESS;
-
-    // TODO(viettrungluu): NPAPI sends the result back to the plugin -- do we
-    // need that?
-    WebString result = container_->ExecuteScriptURL(gurl, false);
-    return result.IsNull() ? PP_ERROR_FAILED : PP_OK;
-  }
-
-  // Only GETs and POSTs are supported.
-  if (web_request.HttpMethod() != "GET" && web_request.HttpMethod() != "POST")
-    return PP_ERROR_BADARGUMENT;
-
-  WebString target_str = WebString::FromUTF8(target);
-  container_->LoadFrameRequest(web_request, target_str);
-  return PP_OK;
-}
-
 int PepperPluginInstanceImpl::MakePendingFileRefRendererHost(
     const base::FilePath& path) {
   RendererPpapiHostImpl* host_impl = module_->renderer_ppapi_host();

@@ -59,13 +59,6 @@ bool FakePepperPluginInstance::IsRectTopmost(const gfx::Rect& rect) {
   return false;
 }
 
-int32_t FakePepperPluginInstance::Navigate(
-    const ppapi::URLRequestInfoData& request,
-    const char* target,
-    bool from_user_action) {
-  return PP_ERROR_FAILED;
-}
-
 int FakePepperPluginInstance::MakePendingFileRefRendererHost(
     const base::FilePath& path) {
   return 0;

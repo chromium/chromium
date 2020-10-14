@@ -34,7 +34,6 @@ class Rect;
 namespace ppapi {
 class PpapiPermissions;
 class VarTracker;
-struct URLRequestInfoData;
 }
 
 namespace IPC {
@@ -94,10 +93,6 @@ class PepperPluginInstance {
   virtual bool IsFullPagePlugin() = 0;
 
   virtual bool IsRectTopmost(const gfx::Rect& rect) = 0;
-
-  virtual int32_t Navigate(const ppapi::URLRequestInfoData& request,
-                           const char* target,
-                           bool from_user_action) = 0;
 
   // Creates a pending PepperFileRefRendererHost. Returns 0 on failure.
   virtual int MakePendingFileRefRendererHost(const base::FilePath& path) = 0;

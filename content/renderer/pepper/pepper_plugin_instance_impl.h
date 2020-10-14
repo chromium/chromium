@@ -357,9 +357,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void SetAlwaysOnTop(bool on_top) override;
   bool IsFullPagePlugin() override;
   bool IsRectTopmost(const gfx::Rect& rect) override;
-  int32_t Navigate(const ppapi::URLRequestInfoData& request,
-                   const char* target,
-                   bool from_user_action) override;
   int MakePendingFileRefRendererHost(const base::FilePath& path) override;
   void SetEmbedProperty(PP_Var key, PP_Var value) override;
   void SetSelectedText(const base::string16& selected_text) override;
