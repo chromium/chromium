@@ -66,7 +66,8 @@ class PanelItem extends HTMLElement {
                   border-radius: 4px;
                   display: flex;
                   flex-direction: row;
-                  max-width: 400px;
+                  height: 68px;
+                  width: 400px;
               }
 
               .xf-button {
@@ -75,9 +76,9 @@ class PanelItem extends HTMLElement {
               }
 
               .xf-panel-text {
+                  flex: 1;
                   font: 13px Roboto;
                   line-height: 20px;
-                  max-width: 216px;
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
@@ -85,10 +86,6 @@ class PanelItem extends HTMLElement {
 
               .xf-panel-label-text {
                   outline: none;
-              }
-
-              :host([panel-type='3']) .xf-panel-text {
-                  width: 216px;
               }
 
               :host([panel-type='3']) .xf-panel-label-text {
@@ -105,7 +102,6 @@ class PanelItem extends HTMLElement {
 
               .xf-panel-label-text {
                   color: var(--google-grey-900);
-                  max-width: 216px;
                   text-overflow: ellipsis;
                   overflow: hidden;
                   white-space: nowrap;
@@ -124,7 +120,6 @@ class PanelItem extends HTMLElement {
               }
 
               :host(:not([detailed-panel])) .xf-grow-padder {
-                  flex-grow: 16;
                   width: 24px;
               }
 
@@ -153,15 +148,6 @@ class PanelItem extends HTMLElement {
                   padding-bottom: var(--progress-padding-bottom);
               }
 
-              :host(:not([panel-type='0'])) .xf-panel-item {
-                  height: 68px;
-              }
-
-              :host([detailed-panel]) .xf-panel-item {
-                  height: 68px;
-                  width: 400px;
-              }
-
               :host([detailed-panel]:not([detailed-summary])) .xf-panel-text {
                   margin-inline-end: 24px;
                   margin-inline-start: 24px;
@@ -173,7 +159,6 @@ class PanelItem extends HTMLElement {
 
               :host([detailed-panel]:not([detailed-summary])) xf-button {
                   margin-inline-end: 12px;
-                  margin-inline-start: auto;
               }
 
               :host([detailed-panel]:not([detailed-summary])) #indicator {
