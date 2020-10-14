@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -89,6 +90,12 @@ public class DataReductionProxyFirstRunFragment extends Fragment implements Firs
         enableDataSaverSwitch.setChecked(true);
         DataReductionProxySettings.getInstance().setDataReductionProxyEnabled(
                 view.getContext(), enableDataSaverSwitch.isChecked());
+    }
+
+    @Override
+    public void setInitialA11yFocus() {
+        final View title = getView().findViewById(R.id.title);
+        title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Override

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.fragment.app.Fragment;
 
@@ -82,5 +84,11 @@ public class SigninFirstRunFragment extends SigninFragmentBase implements FirstR
     @Override
     protected int getNegativeButtonTextId() {
         return R.string.no_thanks;
+    }
+
+    @Override
+    public void setInitialA11yFocus() {
+        final View title = getView().findViewById(R.id.signin_title);
+        title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 }

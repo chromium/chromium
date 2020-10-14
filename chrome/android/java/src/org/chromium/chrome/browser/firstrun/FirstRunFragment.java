@@ -28,6 +28,16 @@ public interface FirstRunFragment {
     FragmentActivity getActivity();
 
     /**
+     * Set the a11y focus when the fragment is shown on the screen.
+     *
+     * Android ViewPager cannot always assign the correct a11y focus automatically when switching
+     * between pages.
+     *
+     * See https://crbug.com/1094064 for more detail.
+     */
+    void setInitialA11yFocus();
+
+    /**
      * Convenience method to get {@link FirstRunPageDelegate}.
      */
     default FirstRunPageDelegate getPageDelegate() {

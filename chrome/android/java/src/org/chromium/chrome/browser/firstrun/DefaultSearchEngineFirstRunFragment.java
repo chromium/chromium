@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
@@ -66,6 +67,12 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         }
 
         return rootView;
+    }
+
+    @Override
+    public void setInitialA11yFocus() {
+        final View title = getView().findViewById(R.id.chooser_title);
+        title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Override

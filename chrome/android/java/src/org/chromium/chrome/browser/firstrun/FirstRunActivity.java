@@ -378,7 +378,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (mPager.getCurrentItem() == 0) {
             abortFirstRunExperience();
         } else {
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1, false);
+            setCurrentItemForPager(mPager.getCurrentItem() - 1);
         }
     }
 
@@ -545,12 +545,34 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (!didAcceptTermsOfService()) {
             return position == 0;
         }
+        if (!setCurrentItemForPager(position)) {
+            return false;
+        }
+        recordFreProgressHistogram(mFreProgressStates.get(position));
+        return true;
+    }
+
+    private boolean setCurrentItemForPager(int position) {
         if (position >= mPagerAdapter.getCount()) {
             completeFirstRunExperience();
             return false;
         }
+
         mPager.setCurrentItem(position, false);
-        recordFreProgressHistogram(mFreProgressStates.get(position));
+
+        // Set A11y focus if possible. See https://crbug.com/1094064 for more context.
+        // * Screen reader can lose focus when switching between pages with ViewPager;
+        // * FragmentPagerStateAdapter is trying to limit access for the real fragment that we are
+        // creating / created;
+        // * Note that despite the function name and javadoc,
+        // FragmentPagerStateAdapter#instantiateItem returns cached fragments when possible. This
+        // should always be the case here as ViewPager#setCurrentItem will trigger instantiation if
+        // needed. This function call to #instantiateItem is not creating new fragment here but
+        // rather reading the ones already created.
+        Object currentFragment = mPagerAdapter.instantiateItem(mPager, position);
+        if (currentFragment instanceof FirstRunFragment) {
+            ((FirstRunFragment) currentFragment).setInitialA11yFocus();
+        }
         return true;
     }
 

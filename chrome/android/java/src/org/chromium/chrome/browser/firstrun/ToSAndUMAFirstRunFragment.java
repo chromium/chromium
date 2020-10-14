@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -133,6 +134,11 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         if (!mNativeInitialized && FirstRunStatus.shouldSkipWelcomePage()) {
             setSpinnerVisible(true);
         }
+    }
+
+    @Override
+    public void setInitialA11yFocus() {
+        mTitle.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     @Override
