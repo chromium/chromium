@@ -89,6 +89,14 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   TimestampFooterItem,
 };
 
+// The minimum time each of the three checks should show a running state. This
+// is to prevent any check that finshes quicky from causing the UI to appear
+// jittery. The numbers are all different so that no 2 tests finish at the same
+// time if they all end up using their min delays.
+constexpr double kUpdateRowMinDelay = 2.0;
+constexpr double kPasswordRowMinDelay = 1.5;
+constexpr double kSafeBrowsingRowMinDelay = 1.75;
+
 }  // namespace
 
 @interface SafetyCheckMediator () <BooleanObserver, PasswordCheckObserver> {
@@ -161,6 +169,9 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
 
 // Whether or not a safety check just ran.
 @property(nonatomic, assign) BOOL checkDidRun;
+
+// When the check was started.
+@property(nonatomic, assign) base::Time checkStartTime;
 
 @end
 
@@ -647,6 +658,7 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   }
 
   // Otherwise start a check.
+  self.checkStartTime = base::Time::Now();
 
   // Record the current state of the checks.
   self.previousUpdateCheckRowState = self.updateCheckRowState;
@@ -699,16 +711,8 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
       }
       case version_info::Channel::CANARY:
       case version_info::Channel::UNKNOWN: {
-        // Want to show the loading wheel momentarily.
-        dispatch_after(
-            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.75 * NSEC_PER_SEC)),
-            dispatch_get_main_queue(), ^{
-              // Check if the check was cancelled while waiting.
-              if (self.checksRemaining) {
-                self.updateCheckRowState = UpdateCheckRowStateChannel;
-                [self reconfigureUpdateCheckItem];
-              }
-            });
+        [self possiblyDelayReconfigureUpdateCheckItemWithState:
+                  UpdateCheckRowStateChannel];
         break;
       }
     }
@@ -720,9 +724,11 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
     if (self.currentPasswordCheckState == PasswordCheckState::kNoPasswords) {
       // Want to show the loading wheel momentarily.
       dispatch_after(
-          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)),
+          dispatch_time(DISPATCH_TIME_NOW,
+                        (int64_t)(kPasswordRowMinDelay * NSEC_PER_SEC)),
           dispatch_get_main_queue(), ^{
-            // Check if the check was cancelled while waiting.
+            // Check if the check was cancelled while waiting, we do not want to
+            // push a completed state to the UI if the check was cancelled.
             if (self.checksRemaining) {
               self.passwordCheckRowState = PasswordCheckRowStateDisabled;
               [self reconfigurePasswordCheckItem];
@@ -737,9 +743,11 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
     }
     // Want to show the loading wheel momentarily.
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.75 * NSEC_PER_SEC)),
+        dispatch_time(DISPATCH_TIME_NOW,
+                      (int64_t)(kSafeBrowsingRowMinDelay * NSEC_PER_SEC)),
         dispatch_get_main_queue(), ^{
-          // Check if the check was cancelled while waiting.
+          // Check if the check was cancelled while waiting, we do not want to
+          // push a completed state to the UI if the check was cancelled.
           if (self.checksRemaining)
             [self checkAndReconfigureSafeBrowsingState];
         });
@@ -810,6 +818,33 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   return;
 }
 
+// If the update check would have completed too quickly, making the UI appear
+// jittery, delay the reconfigure call, using |newRowState|.
+- (void)possiblyDelayReconfigureUpdateCheckItemWithState:
+    (UpdateCheckRowStates)newRowState {
+  double secondsSinceStart =
+      base::Time::Now().ToDoubleT() - self.checkStartTime.ToDoubleT();
+  double minDelay = kUpdateRowMinDelay;
+  if (secondsSinceStart < minDelay) {
+    // Want to show the loading wheel for minimum time.
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW,
+                      (int64_t)((minDelay - secondsSinceStart) * NSEC_PER_SEC)),
+        dispatch_get_main_queue(), ^{
+          // Check if the check was cancelled while waiting, we do not want to
+          // push a completed state to the UI if the check was cancelled.
+          if (self.checksRemaining) {
+            self.updateCheckRowState = newRowState;
+            [self reconfigureUpdateCheckItem];
+          }
+        });
+  } else {
+    self.updateCheckRowState = newRowState;
+    [self reconfigureUpdateCheckItem];
+  }
+}
+
+// Processes the response from the Omaha service.
 - (void)handleOmahaResponse:(const UpgradeRecommendedDetails&)details {
   // If before the response the check was canceled, or Omaha assumed faulty,
   // do nothing.
@@ -820,7 +855,8 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   if (details.is_up_to_date) {
-    self.updateCheckRowState = UpdateCheckRowStateUpToDate;
+    [self possiblyDelayReconfigureUpdateCheckItemWithState:
+              UpdateCheckRowStateUpToDate];
     base::UmaHistogramEnumeration(
         kSafetyCheckMetricsUpdates,
         safety_check::SafetyCheck::UpdateStatus::kUpdated);
@@ -829,8 +865,8 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
     const GURL& upgradeUrl = details.upgrade_url;
 
     if (!upgradeUrl.is_valid()) {
-      self.updateCheckRowState = UpdateCheckRowStateOmahaError;
-      [self reconfigureUpdateCheckItem];
+      [self possiblyDelayReconfigureUpdateCheckItemWithState:
+                UpdateCheckRowStateOmahaError];
 
       base::UmaHistogramEnumeration(
           kSafetyCheckMetricsUpdates,
@@ -840,16 +876,16 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
 
     if (!details.next_version.size() ||
         !base::Version(details.next_version).IsValid()) {
-      self.updateCheckRowState = UpdateCheckRowStateOmahaError;
-      [self reconfigureUpdateCheckItem];
+      [self possiblyDelayReconfigureUpdateCheckItemWithState:
+                UpdateCheckRowStateOmahaError];
 
       base::UmaHistogramEnumeration(
           kSafetyCheckMetricsUpdates,
           safety_check::SafetyCheck::UpdateStatus::kFailed);
       return;
     }
-
-    self.updateCheckRowState = UpdateCheckRowStateOutOfDate;
+    [self possiblyDelayReconfigureUpdateCheckItemWithState:
+              UpdateCheckRowStateOutOfDate];
 
     base::UmaHistogramEnumeration(
         kSafetyCheckMetricsUpdates,
@@ -865,7 +901,6 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
     // infobar was just shown to not overshow the infobar to the user.
     [defaults setObject:[NSDate date] forKey:kLastInfobarDisplayTimeKey];
   }
-  [self reconfigureUpdateCheckItem];
   return;
 }
 
