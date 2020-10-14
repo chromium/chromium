@@ -180,7 +180,7 @@ void ResourceLoadingHintsAgent::StopThrottlingMediaRequests() {
       lite_video::LiteVideoHintAgent::Get(render_frame());
   if (lite_video_hint_agent) {
     LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.HintsAgent.StopThrottling", true);
-    lite_video_hint_agent->StopThrottling();
+    lite_video_hint_agent->StopThrottlingAndClearHints();
   }
 }
 
