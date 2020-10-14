@@ -254,7 +254,8 @@ bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
   if (!is_flush_supported_)
     VLOGF(2) << "V4L2_ENC_CMD_STOP is not supported.";
 
-  struct v4l2_capability caps {};
+  struct v4l2_capability caps;
+  memset(&caps, 0, sizeof(caps));
   const __u32 kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QUERYCAP, &caps);
   if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
@@ -1017,7 +1018,8 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
             FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
         return;
       }
-      struct v4l2_encoder_cmd cmd{};
+      struct v4l2_encoder_cmd cmd;
+      memset(&cmd, 0, sizeof(cmd));
       cmd.cmd = V4L2_ENC_CMD_STOP;
       if (device_->Ioctl(VIDIOC_ENCODER_CMD, &cmd) != 0) {
         VPLOGF(1) << "ioctl() failed: VIDIOC_ENCODER_CMD";
@@ -1193,7 +1195,8 @@ void V4L2VideoEncodeAccelerator::PumpBitstreamBuffers() {
       child_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
       // Start the encoder again.
-      struct v4l2_encoder_cmd cmd{};
+      struct v4l2_encoder_cmd cmd;
+      memset(&cmd, 0, sizeof(cmd));
       cmd.cmd = V4L2_ENC_CMD_START;
       IOCTL_OR_ERROR_RETURN(VIDIOC_ENCODER_CMD, &cmd);
     }
@@ -1475,7 +1478,8 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   }
 
   if (current_framerate_ != framerate) {
-    struct v4l2_streamparm parms {};
+    struct v4l2_streamparm parms;
+    memset(&parms, 0, sizeof(parms));
     parms.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     // Note that we are provided "frames per second" but V4L2 expects "time per
     // frame"; hence we provide the reciprocal of the framerate here.
@@ -1580,7 +1584,8 @@ bool V4L2VideoEncodeAccelerator::ApplyCrop() {
   visible_rect.width = encoder_input_visible_rect_.width();
   visible_rect.height = encoder_input_visible_rect_.height();
 
-  struct v4l2_selection selection_arg{};
+  struct v4l2_selection selection_arg;
+  memset(&selection_arg, 0, sizeof(selection_arg));
   selection_arg.type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
   selection_arg.target = V4L2_SEL_TGT_CROP;
   selection_arg.r = visible_rect;
@@ -1592,7 +1597,8 @@ bool V4L2VideoEncodeAccelerator::ApplyCrop() {
     visible_rect = selection_arg.r;
   } else {
     VLOGF(2) << "Fallback to VIDIOC_S/G_CROP";
-    struct v4l2_crop crop{};
+    struct v4l2_crop crop;
+    memset(&crop, 0, sizeof(crop));
     crop.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     crop.c = visible_rect;
     IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_S_CROP, &crop);
