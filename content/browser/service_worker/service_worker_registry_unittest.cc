@@ -67,16 +67,6 @@ storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
   return data;
 }
 
-void FindCallback(base::OnceClosure quit_closure,
-                  base::Optional<blink::ServiceWorkerStatusCode>* result,
-                  scoped_refptr<ServiceWorkerRegistration>* found,
-                  blink::ServiceWorkerStatusCode status,
-                  scoped_refptr<ServiceWorkerRegistration> registration) {
-  *result = status;
-  *found = std::move(registration);
-  std::move(quit_closure).Run();
-}
-
 int WriteResponse(
     mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     int64_t id,
@@ -326,52 +316,74 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode FindRegistrationForClientUrl(
       const GURL& document_url,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+      scoped_refptr<ServiceWorkerRegistration>& out_registration) {
+    blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->FindRegistrationForClientUrl(
-        document_url, base::BindOnce(&FindCallback, loop.QuitClosure(), &result,
-                                     registration));
+        document_url,
+        base::BindLambdaForTesting(
+            [&](blink::ServiceWorkerStatusCode status,
+                scoped_refptr<ServiceWorkerRegistration> registration) {
+              result = status;
+              out_registration = std::move(registration);
+              loop.Quit();
+            }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
   blink::ServiceWorkerStatusCode FindRegistrationForScope(
       const GURL& scope,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+      scoped_refptr<ServiceWorkerRegistration>& out_registration) {
+    blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->FindRegistrationForScope(
-        scope, base::BindOnce(&FindCallback, loop.QuitClosure(), &result,
-                              registration));
+        scope, base::BindLambdaForTesting(
+                   [&](blink::ServiceWorkerStatusCode status,
+                       scoped_refptr<ServiceWorkerRegistration> registration) {
+                     result = status;
+                     out_registration = std::move(registration);
+                     loop.Quit();
+                   }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
   blink::ServiceWorkerStatusCode FindRegistrationForId(
       int64_t registration_id,
       const url::Origin& origin,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+      scoped_refptr<ServiceWorkerRegistration>& out_registration) {
+    blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->FindRegistrationForId(
         registration_id, origin,
-        base::BindOnce(&FindCallback, loop.QuitClosure(), &result,
-                       registration));
+        base::BindLambdaForTesting(
+            [&](blink::ServiceWorkerStatusCode status,
+                scoped_refptr<ServiceWorkerRegistration> registration) {
+              result = status;
+              out_registration = std::move(registration);
+              loop.Quit();
+            }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
   blink::ServiceWorkerStatusCode FindRegistrationForIdOnly(
       int64_t registration_id,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+      scoped_refptr<ServiceWorkerRegistration>& out_registration) {
+    blink::ServiceWorkerStatusCode result;
     base::RunLoop loop;
     registry()->FindRegistrationForIdOnly(
-        registration_id, base::BindOnce(&FindCallback, loop.QuitClosure(),
-                                        &result, registration));
+        registration_id,
+        base::BindLambdaForTesting(
+            [&](blink::ServiceWorkerStatusCode status,
+                scoped_refptr<ServiceWorkerRegistration> registration) {
+              result = status;
+              out_registration = std::move(registration);
+              loop.Quit();
+            }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
   blink::ServiceWorkerStatusCode StoreRegistration(
@@ -583,19 +595,19 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   // Should not be findable, including by GetAllRegistrationsInfos.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
             FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
-                                  &found_registration));
+                                  found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForIdOnly(kRegistrationId, &found_registration));
+            FindRegistrationForIdOnly(kRegistrationId, found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForClientUrl(kDocumentUrl, &found_registration));
+            FindRegistrationForClientUrl(kDocumentUrl, found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForScope(kScope, &found_registration));
+            FindRegistrationForScope(kScope, found_registration));
   EXPECT_FALSE(found_registration.get());
 
   std::vector<ServiceWorkerRegistrationInfo> all_registrations;
@@ -622,22 +634,22 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   // Now should be findable.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
-                                  &found_registration));
+                                  found_registration));
   EXPECT_EQ(live_registration, found_registration);
   found_registration = nullptr;
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForIdOnly(kRegistrationId, &found_registration));
+            FindRegistrationForIdOnly(kRegistrationId, found_registration));
   EXPECT_EQ(live_registration, found_registration);
   found_registration = nullptr;
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kDocumentUrl, &found_registration));
+            FindRegistrationForClientUrl(kDocumentUrl, found_registration));
   EXPECT_EQ(live_registration, found_registration);
   found_registration = nullptr;
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForScope(kScope, &found_registration));
+            FindRegistrationForScope(kScope, found_registration));
   EXPECT_EQ(live_registration, found_registration);
   found_registration = nullptr;
 
@@ -666,19 +678,19 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
   // Once again, should not be findable.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
             FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
-                                  &found_registration));
+                                  found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForIdOnly(kRegistrationId, &found_registration));
+            FindRegistrationForIdOnly(kRegistrationId, found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForClientUrl(kDocumentUrl, &found_registration));
+            FindRegistrationForClientUrl(kDocumentUrl, found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForScope(kScope, &found_registration));
+            FindRegistrationForScope(kScope, found_registration));
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
@@ -729,7 +741,7 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
 
   // Find a registration among installing ones.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kDocumentUrl, &found_registration));
+            FindRegistrationForClientUrl(kDocumentUrl, found_registration));
   EXPECT_EQ(live_registration2, found_registration);
   found_registration = nullptr;
 
@@ -754,7 +766,7 @@ TEST_F(ServiceWorkerRegistryTest, FindRegistration_LongestScopeMatch) {
 
   // Find a registration among installed ones.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kDocumentUrl, &found_registration));
+            FindRegistrationForClientUrl(kDocumentUrl, found_registration));
   EXPECT_EQ(live_registration2, found_registration);
 }
 
@@ -825,13 +837,13 @@ TEST_F(ServiceWorkerRegistryTest, OriginTrialsAbsentEntryAndEmptyEntry) {
   scoped_refptr<ServiceWorkerRegistration> found_registration;
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(scope1, &found_registration));
+            FindRegistrationForClientUrl(scope1, found_registration));
   ASSERT_TRUE(found_registration->active_version());
   // origin_trial_tokens must be unset.
   EXPECT_FALSE(found_registration->active_version()->origin_trial_tokens());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(scope2, &found_registration));
+            FindRegistrationForClientUrl(scope2, found_registration));
   ASSERT_TRUE(found_registration->active_version());
   // Empty origin_trial_tokens must exist.
   ASSERT_TRUE(found_registration->active_version()->origin_trial_tokens());
@@ -857,7 +869,7 @@ TEST_F(ServiceWorkerRegistryTest, AbsentNavigationPreloadState) {
 
   scoped_refptr<ServiceWorkerRegistration> found_registration;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(scope1, &found_registration));
+            FindRegistrationForClientUrl(scope1, found_registration));
   const blink::mojom::NavigationPreloadState& registration_state =
       found_registration->navigation_preload_state();
   EXPECT_FALSE(registration_state.enabled);
@@ -894,7 +906,7 @@ TEST_F(ServiceWorkerRegistryTest, EnabledNavigationPreloadState) {
   SimulateRestart();
 
   scoped_refptr<ServiceWorkerRegistration> found_registration;
-  EXPECT_EQ(FindRegistrationForClientUrl(kScope, &found_registration),
+  EXPECT_EQ(FindRegistrationForClientUrl(kScope, found_registration),
             blink::ServiceWorkerStatusCode::kOk);
   const blink::mojom::NavigationPreloadState& registration_state =
       found_registration->navigation_preload_state();
@@ -943,7 +955,7 @@ TEST_F(ServiceWorkerRegistryTest, ScriptResponseTime) {
   // Read the registration. The main script's response time should be gettable.
   scoped_refptr<ServiceWorkerRegistration> found_registration;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kScope, &found_registration));
+            FindRegistrationForClientUrl(kScope, found_registration));
   ASSERT_TRUE(found_registration);
   auto* waiting_version = found_registration->waiting_version();
   ASSERT_TRUE(waiting_version);
@@ -977,7 +989,7 @@ TEST_F(ServiceWorkerRegistryTest, DisabledNavigationPreloadState) {
 
   scoped_refptr<ServiceWorkerRegistration> found_registration;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kScope, &found_registration));
+            FindRegistrationForClientUrl(kScope, found_registration));
   const blink::mojom::NavigationPreloadState& registration_state =
       found_registration->navigation_preload_state();
   EXPECT_FALSE(registration_state.enabled);
@@ -1169,7 +1181,7 @@ TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
 
   scoped_refptr<ServiceWorkerRegistration> found_registration;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForClientUrl(kScope, &found_registration));
+            FindRegistrationForClientUrl(kScope, found_registration));
   ASSERT_TRUE(found_registration->active_version());
   const blink::TrialTokenValidator::FeatureToTokensMap& found_tokens =
       *found_registration->active_version()->origin_trial_tokens();
