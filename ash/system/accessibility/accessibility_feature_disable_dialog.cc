@@ -23,28 +23,33 @@ namespace ash {
 
 AccessibilityFeatureDisableDialog::AccessibilityFeatureDisableDialog(
     int window_title_text_id,
-    int dialog_text_id,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback)
     : on_cancel_callback_(std::move(on_cancel_callback)) {
   SetModalType(ui::MODAL_TYPE_SYSTEM);
-  SetTitle(l10n_util::GetStringUTF16(window_title_text_id));
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_ASH_YES_BUTTON));
   SetAcceptCallback(std::move(on_accept_callback));
+  SetShowCloseButton(false);
 
   auto on_cancel = [](AccessibilityFeatureDisableDialog* dialog) {
     std::move(dialog->on_cancel_callback_).Run();
   };
   SetCancelCallback(base::BindOnce(on_cancel, base::Unretained(this)));
-  SetCloseCallback(base::BindOnce(on_cancel, base::Unretained(this)));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::TEXT, views::TEXT)));
-  AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(dialog_text_id)));
+
+  auto body_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(window_title_text_id),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
+  body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  AddChildView(body_label.release());
+
+  set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
+      views::TEXT, views::TEXT));
 
   // Parent the dialog widget to the LockSystemModalContainer, or
   // OverlayContainer to ensure that it will get displayed on respective

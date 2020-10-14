@@ -137,8 +137,7 @@ void AutoclickController::SetEnabled(bool enabled,
         return;
       // Show a confirmation dialog before disabling autoclick.
       auto* dialog = new AccessibilityFeatureDisableDialog(
-          IDS_ASH_AUTOCLICK_DISABLE_CONFIRMATION_TITLE,
-          IDS_ASH_AUTOCLICK_DISABLE_CONFIRMATION_BODY,
+          IDS_ASH_AUTOCLICK_DISABLE_CONFIRMATION_TEXT,
           // Callback for if the user accepts the dialog
           base::BindOnce([]() {
             // If they accept, actually disable autoclick.

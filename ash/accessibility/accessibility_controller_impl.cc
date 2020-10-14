@@ -1896,8 +1896,7 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
         } else {
           // Show a dialog before disabling Switch Access.
           new AccessibilityFeatureDisableDialog(
-              IDS_ASH_SWITCH_ACCESS_DISABLE_CONFIRMATION_TITLE,
-              IDS_ASH_SWITCH_ACCESS_DISABLE_CONFIRMATION_BODY,
+              IDS_ASH_SWITCH_ACCESS_DISABLE_CONFIRMATION_TEXT,
               base::BindOnce(
                   &AccessibilityControllerImpl::SwitchAccessDisableDialogClosed,
                   weak_ptr_factory_.GetWeakPtr(), true),

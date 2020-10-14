@@ -1084,16 +1084,6 @@ TEST_F(AutoclickTest, ConfirmationDialogShownWhenDisablingFeature) {
   EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick().enabled());
   EXPECT_TRUE(GetAutoclickController()->IsEnabled());
 
-  // Disable it again and close the dialog; the feature stays enabled.
-  Shell::Get()->accessibility_controller()->autoclick().SetEnabled(false);
-  dialog = GetAutoclickController()->GetDisableDialogForTesting();
-  ASSERT_TRUE(dialog);
-  dialog->GetWidget()->Close();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
-  EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick().enabled());
-  EXPECT_TRUE(GetAutoclickController()->IsEnabled());
-
   // Try to disable it again, and this time accept the dialog to actually
   // disable the feature.
   Shell::Get()->accessibility_controller()->autoclick().SetEnabled(false);

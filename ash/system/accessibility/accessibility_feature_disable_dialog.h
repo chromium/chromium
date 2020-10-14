@@ -20,7 +20,6 @@ namespace ash {
 class AccessibilityFeatureDisableDialog : public views::DialogDelegateView {
  public:
   AccessibilityFeatureDisableDialog(int window_title_text_id,
-                                    int dialog_text_id,
                                     base::OnceClosure on_accept_callback,
                                     base::OnceClosure on_cancel_callback);
   ~AccessibilityFeatureDisableDialog() override;
