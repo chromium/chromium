@@ -346,11 +346,12 @@ void QRCodeGeneratorBubble::Init() {
   tooltip_icon_ = layout->AddView(std::move(tooltip_icon));
 
   // Download button.
-  auto download_button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(
-                IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL));
-  download_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  download_button_ = layout->AddView(std::move(download_button));
+  download_button_ = layout->AddView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&QRCodeGeneratorBubble::DownloadButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL)));
+  download_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   // End controls row
 
   // Initialize Service
@@ -394,53 +395,49 @@ const base::string16 QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
   return base::ASCIIToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
 }
 
-void QRCodeGeneratorBubble::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  DCHECK_EQ(sender, download_button_);
-  if (sender == download_button_) {
-    const gfx::ImageSkia& image_ref = qr_code_image_->GetImage();
-    // Returns closest scaling to parameter (1.0).
-    // Should be exact since we generated the bitmap.
-    const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
-    const SkBitmap& bitmap = image_rep.GetBitmap();
-    const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
+void QRCodeGeneratorBubble::DownloadButtonPressed() {
+  const gfx::ImageSkia& image_ref = qr_code_image_->GetImage();
+  // Returns closest scaling to parameter (1.0).
+  // Should be exact since we generated the bitmap.
+  const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
+  const SkBitmap& bitmap = image_rep.GetBitmap();
+  const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-    content::DownloadManager* download_manager =
-        content::BrowserContext::GetDownloadManager(browser->profile());
-    net::NetworkTrafficAnnotationTag traffic_annotation =
-        net::DefineNetworkTrafficAnnotation("qr_code_save", R"(
-        semantics {
-          sender: "QR Code Generator"
-          description:
-            "The user may generate a QR code linking to the current page or "
-            "image. This bubble view has a download button to save the "
-            "generated image to disk. "
-            "The image is generated via a Mojo service, but locally, so "
-            "this request never contacts the network. "
-          trigger: "User clicks 'download' in a bubble view launched from the "
-            "omnibox, right-click menu, or share dialog."
-          data: "QR Code image based on the current page's URL."
-          destination: LOCAL
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "No user-visible setting for this feature. Experiment and rollout "
-            "to be coordinated via Finch. Access point to be combined with "
-            "other sharing features later in 2020."
-          policy_exception_justification:
-            "Not implemented, considered not required."
-        })");
-    std::unique_ptr<download::DownloadUrlParameters> params(
-        content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
-            web_contents_, data_url, traffic_annotation));
-    // Suggest a name incorporating the hostname. Protocol, TLD, etc are
-    // not taken into consideration. Duplicate names get automatic suffixes.
-    params->set_suggested_name(GetQRCodeFilenameForURL(url_));
-    download_manager->DownloadUrl(std::move(params));
-    base::RecordAction(base::UserMetricsAction("SharingQRCode.DownloadQRCode"));
-  }
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  content::DownloadManager* download_manager =
+      content::BrowserContext::GetDownloadManager(browser->profile());
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("qr_code_save", R"(
+      semantics {
+        sender: "QR Code Generator"
+        description:
+          "The user may generate a QR code linking to the current page or "
+          "image. This bubble view has a download button to save the generated "
+          "image to disk. "
+          "The image is generated via a Mojo service, but locally, so this "
+          "request never contacts the network. "
+        trigger: "User clicks 'download' in a bubble view launched from the "
+          "omnibox, right-click menu, or share dialog."
+        data: "QR Code image based on the current page's URL."
+        destination: LOCAL
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No user-visible setting for this feature. Experiment and rollout to "
+          "be coordinated via Finch. Access point to be combined with other "
+          "sharing features later in 2020."
+        policy_exception_justification:
+          "Not implemented, considered not required."
+      })");
+  std::unique_ptr<download::DownloadUrlParameters> params =
+      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          web_contents_, data_url, traffic_annotation);
+  // Suggest a name incorporating the hostname. Protocol, TLD, etc are
+  // not taken into consideration. Duplicate names get automatic suffixes.
+  params->set_suggested_name(GetQRCodeFilenameForURL(url_));
+  download_manager->DownloadUrl(std::move(params));
+  base::RecordAction(base::UserMetricsAction("SharingQRCode.DownloadQRCode"));
 }
 
 }  // namespace qrcode_generator
