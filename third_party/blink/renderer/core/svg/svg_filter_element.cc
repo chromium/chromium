@@ -120,8 +120,8 @@ void SVGFilterElement::PrimitiveAttributeChanged(
 
 void SVGFilterElement::InvalidateFilterChain() {
   if (LocalSVGResource* resource = AssociatedResource()) {
-    resource->NotifyContentChanged(SVGResourceClient::kLayoutInvalidation |
-                                   SVGResourceClient::kBoundariesInvalidation);
+    resource->NotifyContentChanged(SVGResourceClient::kPaintInvalidation |
+                                   SVGResourceClient::kFilterCacheInvalidation);
   }
 }
 

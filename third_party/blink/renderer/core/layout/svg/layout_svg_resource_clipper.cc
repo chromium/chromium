@@ -116,8 +116,8 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
   clip_content_path_.Clear();
   cached_paint_record_.reset();
   local_clip_bounds_ = FloatRect();
-  MarkAllClientsForInvalidation(SVGResourceClient::kLayoutInvalidation |
-                                SVGResourceClient::kBoundariesInvalidation);
+  MarkAllClientsForInvalidation(SVGResourceClient::kClipCacheInvalidation |
+                                SVGResourceClient::kPaintInvalidation);
 }
 
 base::Optional<Path> LayoutSVGResourceClipper::AsPath() {
@@ -283,14 +283,14 @@ void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutSVGResourceContainer::StyleDidChange(diff, old_style);
   if (diff.TransformChanged()) {
-    MarkAllClientsForInvalidation(SVGResourceClient::kBoundariesInvalidation |
+    MarkAllClientsForInvalidation(SVGResourceClient::kClipCacheInvalidation |
                                   SVGResourceClient::kPaintInvalidation);
   }
 }
 
 void LayoutSVGResourceClipper::WillBeDestroyed() {
   NOT_DESTROYED();
-  MarkAllClientsForInvalidation(SVGResourceClient::kBoundariesInvalidation |
+  MarkAllClientsForInvalidation(SVGResourceClient::kClipCacheInvalidation |
                                 SVGResourceClient::kPaintInvalidation);
   LayoutSVGResourceContainer::WillBeDestroyed();
 }

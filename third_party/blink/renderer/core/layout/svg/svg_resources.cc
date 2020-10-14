@@ -695,7 +695,8 @@ void SVGElementResourceClient::ResourceContentChanged(
     return;
   }
 
-  InvalidateFilterData();
+  if (invalidation_mask & SVGResourceClient::kFilterCacheInvalidation)
+    InvalidateFilterData();
 
   if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
     // Since LayoutSVGInlineTexts don't have SVGResources (they use their
@@ -705,10 +706,14 @@ void SVGElementResourceClient::ResourceContentChanged(
     // entire <text>/<tspan>/... subtree.
     layout_object->SetSubtreeShouldDoFullPaintInvalidation(
         PaintInvalidationReason::kSVGResource);
-    layout_object->InvalidateClipPathCache();
-    // Invalidate paint properties to update effects if any.
-    layout_object->SetNeedsPaintPropertyUpdate();
   }
+
+  if (invalidation_mask & SVGResourceClient::kClipCacheInvalidation)
+    layout_object->InvalidateClipPathCache();
+
+  // Invalidate paint properties to update effects if any.
+  if (invalidation_mask & SVGResourceClient::kPaintPropertiesInvalidation)
+    layout_object->SetNeedsPaintPropertyUpdate();
 
   if (invalidation_mask & SVGResourceClient::kBoundariesInvalidation)
     layout_object->SetNeedsBoundariesUpdate();
