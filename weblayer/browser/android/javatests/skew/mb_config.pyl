@@ -21,7 +21,7 @@
   'configs': {
     'android_release_bot_minimal_symbols_x86_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'webview_google',
+      'strip_debug_info', 'webview_google', 'improved_debugging',
     ],
   },
 
@@ -84,6 +84,10 @@
 
     'x86': {
       'gn_args': 'target_cpu="x86"',
+    },
+
+    'improved_debugging': {
+      'gn_args': 'is_java_debug=true dcheck_always_on=true',
     },
   },
 }
