@@ -14,7 +14,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
-#include "android_webview/browser/variations_seed_loader.h"
+#include "android_webview/browser/variations/variations_seed_loader.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/base_switches.h"
 #include "base/bind.h"

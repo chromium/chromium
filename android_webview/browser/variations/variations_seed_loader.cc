@@ -6,7 +6,7 @@
 #include <jni.h>
 #include <string>
 
-#include "android_webview/browser/variations_seed_loader.h"
+#include "android_webview/browser/variations/variations_seed_loader.h"
 
 #include "android_webview/browser_jni_headers/VariationsSeedLoader_jni.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"

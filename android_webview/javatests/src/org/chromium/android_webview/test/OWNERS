@@ -2,3 +2,7 @@ per-file AwMetricsIntegrationTest.java=ntfschr@chromium.org
 per-file CookieManagerStartupTest.java=ntfschr@chromium.org
 per-file CookieManagerTest.java=ntfschr@chromium.org
 per-file SafeBrowsingTest.java=ntfschr@chromium.org
+
+# Variations
+per-file AwVariationsSeedFetcherTest*=file://android_webview/browser/variations/OWNERS
+per-file Variations*=file://android_webview/browser/variations/OWNERS

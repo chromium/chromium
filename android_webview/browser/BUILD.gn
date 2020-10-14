@@ -92,8 +92,6 @@ source_set("browser") {
     "aw_speech_recognition_manager_delegate.h",
     "aw_ssl_host_state_delegate.cc",
     "aw_ssl_host_state_delegate.h",
-    "aw_variations_service_client.cc",
-    "aw_variations_service_client.h",
     "aw_web_contents_delegate.cc",
     "aw_web_contents_delegate.h",
     "aw_web_contents_view_delegate.cc",
@@ -174,8 +172,6 @@ source_set("browser") {
     "tracing/aw_tracing_controller.h",
     "tracing/aw_tracing_delegate.cc",
     "tracing/aw_tracing_delegate.h",
-    "variations_seed_loader.cc",
-    "variations_seed_loader.h",
   ]
 
   deps = [
@@ -184,6 +180,7 @@ source_set("browser") {
     "//android_webview/browser/gfx",
     "//android_webview/browser/lifecycle",
     "//android_webview/browser/metrics",
+    "//android_webview/browser/variations",
     "//android_webview/common",
     "//android_webview/proto:aw_variations_seed_proto",
     "//base",
@@ -239,7 +236,6 @@ source_set("browser") {
     "//components/url_formatter",
     "//components/user_prefs",
     "//components/variations",
-    "//components/variations/net",
     "//components/variations/service",
     "//components/version_info",
     "//components/version_info/android:channel_getter",

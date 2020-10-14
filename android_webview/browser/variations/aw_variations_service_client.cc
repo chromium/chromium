@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_variations_service_client.h"
+#include "android_webview/browser/variations/aw_variations_service_client.h"
 
 #include "base/bind.h"
 #include "base/threading/scoped_blocking_call.h"

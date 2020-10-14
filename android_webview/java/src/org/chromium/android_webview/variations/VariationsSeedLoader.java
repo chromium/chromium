@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview;
+package org.chromium.android_webview.variations;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
 import org.chromium.android_webview.common.services.IVariationsSeedServerCallback;
@@ -292,16 +293,17 @@ public class VariationsSeedLoader {
 
         public void start() {
             try {
-                if (!ContextUtils.getApplicationContext()
-                        .bindService(getServerIntent(), this, Context.BIND_AUTO_CREATE)) {
+                if (!ContextUtils.getApplicationContext().bindService(
+                            getServerIntent(), this, Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
                 // service.
                 AwBrowserProcess.collectNonembeddedMetrics();
             } catch (NameNotFoundException e) {
-                Log.e(TAG, "WebView provider \"" + AwBrowserProcess.getWebViewPackageName() +
-                        "\" not found!");
+                Log.e(TAG,
+                        "WebView provider \"" + AwBrowserProcess.getWebViewPackageName()
+                                + "\" not found!");
             }
         }
 
@@ -389,8 +391,8 @@ public class VariationsSeedLoader {
         }
         ParcelFileDescriptor newSeedFd = null;
         try {
-            newSeedFd = ParcelFileDescriptor.open(
-                    newSeedFile, ParcelFileDescriptor.MODE_WRITE_ONLY);
+            newSeedFd =
+                    ParcelFileDescriptor.open(newSeedFile, ParcelFileDescriptor.MODE_WRITE_ONLY);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Failed to open seed file " + newSeedFile);
             return;
