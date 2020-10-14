@@ -162,7 +162,7 @@ const base::Feature kConversionMeasurement{"ConversionMeasurement",
 // Show messages in DevTools about upcoming deprecations that would affect
 // sent/received cookies.
 const base::Feature kCookieDeprecationMessages{
-    "CookieDeprecationMessages", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CookieDeprecationMessages", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Blink cooperative scheduling.
 const base::Feature kCooperativeScheduling{"CooperativeScheduling",
