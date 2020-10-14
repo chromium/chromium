@@ -4761,7 +4761,7 @@
           'xctest',
         ],
         'test_suites': {
-          'isolated_scripts': 'ios_simulator_full_configs_test'
+          'isolated_scripts': 'ios_simulator_full_configs_tests'
         },
       },
       'ios-simulator-noncq': {
