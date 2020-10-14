@@ -27,19 +27,21 @@ ArcOptInPreferenceHandler::ArcOptInPreferenceHandler(
 void ArcOptInPreferenceHandler::Start() {
   reporting_consent_subscription_ =
       chromeos::StatsReportingController::Get()->AddObserver(
-          base::Bind(&ArcOptInPreferenceHandler::OnMetricsPreferenceChanged,
-                     base::Unretained(this)));
+          base::BindRepeating(
+              &ArcOptInPreferenceHandler::OnMetricsPreferenceChanged,
+              base::Unretained(this)));
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kArcBackupRestoreEnabled,
-      base::Bind(
+      base::BindRepeating(
           &ArcOptInPreferenceHandler::OnBackupAndRestorePreferenceChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kArcLocationServiceEnabled,
-      base::Bind(&ArcOptInPreferenceHandler::OnLocationServicePreferenceChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &ArcOptInPreferenceHandler::OnLocationServicePreferenceChanged,
+          base::Unretained(this)));
 
   // Send current state.
   SendMetricsMode();

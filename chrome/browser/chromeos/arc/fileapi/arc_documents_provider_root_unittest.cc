@@ -1168,7 +1168,7 @@ TEST_F(ArcDocumentsProviderRootTest, MoveFileOnReadOnlyRoot) {
 
 TEST_F(ArcDocumentsProviderRootTest, WatchChanged) {
   int num_called = 0;
-  auto watcher_callback = base::Bind(
+  auto watcher_callback = base::BindRepeating(
       [](int* num_called, ChangeType type) {
         EXPECT_EQ(ChangeType::CHANGED, type);
         ++(*num_called);
@@ -1218,7 +1218,7 @@ TEST_F(ArcDocumentsProviderRootTest, WatchChanged) {
 
 TEST_F(ArcDocumentsProviderRootTest, WatchDeleted) {
   int num_called = 0;
-  auto watcher_callback = base::Bind(
+  auto watcher_callback = base::BindRepeating(
       [](int* num_called, ChangeType type) {
         EXPECT_EQ(ChangeType::DELETED, type);
         ++(*num_called);

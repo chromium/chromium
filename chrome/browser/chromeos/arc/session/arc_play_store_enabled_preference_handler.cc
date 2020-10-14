@@ -51,8 +51,9 @@ void ArcPlayStoreEnabledPreferenceHandler::Start() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kArcEnabled,
-      base::Bind(&ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 
   const bool is_play_store_enabled = IsArcPlayStoreEnabledForProfile(profile_);
   VLOG(1) << "Start observing Google Play Store enabled preference. "

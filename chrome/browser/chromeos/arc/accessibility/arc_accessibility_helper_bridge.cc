@@ -261,9 +261,9 @@ ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
 
   for (const char* const pref_name : kCaptionStylePrefsToObserve) {
     pref_change_registrar_->Add(
-        pref_name,
-        base::Bind(&ArcAccessibilityHelperBridge::UpdateCaptionSettings,
-                   base::Unretained(this)));
+        pref_name, base::BindRepeating(
+                       &ArcAccessibilityHelperBridge::UpdateCaptionSettings,
+                       base::Unretained(this)));
   }
 
   arc_bridge_service_->accessibility_helper()->SetHost(this);
