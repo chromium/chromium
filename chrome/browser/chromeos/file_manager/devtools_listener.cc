@@ -225,7 +225,7 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
 
     base::FilePath path = store.AppendASCII(hash.append(".js.json"));
     CHECK(base::JSONWriter::Write(*script, &text));
-    if (!base::PathExists(path))  // Deduplication
+    if (!base::PathExists(path))  // script de-duplication
       base::WriteFile(path, text.data(), text.size());
   }
 }
@@ -251,10 +251,10 @@ void DevToolsListener::DispatchProtocolMessage(
 
   std::string* method = response->FindStringPath("method");
   if (method) {
-    if (*method == "Debugger.scriptParsed")
-      script_.push_back(std::move(response));
-    else if (*method == "Runtime.executionContextsCreated")
+    if (*method == "Runtime.executionContextsCreated")
       script_.clear();
+    else if (*method == "Debugger.scriptParsed")
+      script_.push_back(std::move(response));
     return;
   }
 
