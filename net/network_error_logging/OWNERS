@@ -1,7 +1,1 @@
 chlily@chromium.org
-
-# This is the component for the Network Error Logging API.
-# For chrome://net-export and NetLogs, see Internals>Network>Logging.
-# For network errors in general, see Internals>Network.
-
-# COMPONENT: Internals>Network>ReportingAndNEL

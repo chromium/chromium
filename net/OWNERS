@@ -17,6 +17,3 @@ file://net/quic/OWNERS # For QUICHE rolls only.
 
 per-file BUILD.gn=file://net/nqe/OWNERS
 per-file BUILD.gn=file://net/websockets/OWNERS
-
-# TEAM: net-dev@chromium.org
-# COMPONENT: Internals>Network
