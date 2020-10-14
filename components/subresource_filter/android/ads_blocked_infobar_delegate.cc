@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/content_settings/ads_blocked_infobar_delegate.h"
+#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
 
 #include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/android/infobars/ads_blocked_infobar.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/subresource_filter/android/ads_blocked_infobar.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace subresource_filter {
 
 // static
 void AdsBlockedInfobarDelegate::Create(
@@ -84,3 +86,5 @@ bool AdsBlockedInfobarDelegate::Cancel() {
 }
 
 AdsBlockedInfobarDelegate::AdsBlockedInfobarDelegate() = default;
+
+}  // namespace subresource_filter

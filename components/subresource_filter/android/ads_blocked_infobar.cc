@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/infobars/ads_blocked_infobar.h"
+#include "components/subresource_filter/android/ads_blocked_infobar.h"
 
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/AdsBlockedInfoBar_jni.h"
+#include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedInfoBar_jni.h"
 
 using base::android::JavaParamRef;
+
+namespace subresource_filter {
 
 AdsBlockedInfoBar::AdsBlockedInfoBar(
     std::unique_ptr<AdsBlockedInfobarDelegate> delegate,
@@ -40,3 +42,5 @@ AdsBlockedInfoBar::CreateRenderInfoBar(JNIEnv* env) {
                                      ok_button_text, reload_button_text,
                                      toggle_text, explanation_message);
 }
+
+}  // namespace subresource_filter

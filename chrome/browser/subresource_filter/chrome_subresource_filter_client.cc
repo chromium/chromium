@@ -33,8 +33,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/ui/android/content_settings/ads_blocked_infobar_delegate.h"
 #include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
 #endif
 
 ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
@@ -212,7 +212,7 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
 #if defined(OS_ANDROID)
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents());
-  AdsBlockedInfobarDelegate::Create(
+  subresource_filter::AdsBlockedInfobarDelegate::Create(
       infobar_service, ChromeConfirmInfoBar::GetResourceIdMapper());
 #endif
   // TODO(https://crbug.com/1103176): Plumb the actual frame reference here

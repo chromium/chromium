@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_INFOBARS_ADS_BLOCKED_INFOBAR_H_
-#define CHROME_BROWSER_UI_ANDROID_INFOBARS_ADS_BLOCKED_INFOBAR_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_H_
 
 #include "base/macros.h"
-#include "chrome/browser/ui/android/content_settings/ads_blocked_infobar_delegate.h"
 #include "components/infobars/android/confirm_infobar.h"
+#include "components/subresource_filter/android/ads_blocked_infobar_delegate.h"
+
+namespace subresource_filter {
 
 class AdsBlockedInfoBar : public infobars::ConfirmInfoBar {
  public:
@@ -24,4 +26,6 @@ class AdsBlockedInfoBar : public infobars::ConfirmInfoBar {
   DISALLOW_COPY_AND_ASSIGN(AdsBlockedInfoBar);
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_ADS_BLOCKED_INFOBAR_H_
+}  // namespace subresource_filter
+
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.infobar;
+package org.chromium.components.subresource_filter;
 
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -14,11 +14,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.browser.infobar.ActionType;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
-import org.chromium.components.subresource_filter.R;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -27,6 +28,7 @@ import org.chromium.ui.widget.ButtonCompat;
  * an interstitial warning that the site shows deceptive content, or when the site is known to show
  * intrusive ads.
  */
+@JNINamespace("subresource_filter")
 public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChangeListener {
     private final String mMessage;
     private final String mFollowUpMessage;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_CONTENT_SETTINGS_ADS_BLOCKED_INFOBAR_DELEGATE_H_
-#define CHROME_BROWSER_UI_ANDROID_CONTENT_SETTINGS_ADS_BLOCKED_INFOBAR_DELEGATE_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_DELEGATE_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_DELEGATE_H_
 
 #include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
@@ -12,6 +12,8 @@
 namespace infobars {
 class ContentInfoBarManager;
 }
+
+namespace subresource_filter {
 
 // This infobar appears when the user proceeds through Safe Browsing warning
 // interstitials to a site with deceptive embedded content. It tells the user
@@ -51,4 +53,6 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
   DISALLOW_COPY_AND_ASSIGN(AdsBlockedInfobarDelegate);
 };
 
-#endif  // CHROME_BROWSER_UI_ANDROID_CONTENT_SETTINGS_ADS_BLOCKED_INFOBAR_DELEGATE_H_
+}  // namespace subresource_filter
+
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_INFOBAR_DELEGATE_H_
