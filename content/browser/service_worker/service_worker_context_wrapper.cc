@@ -328,7 +328,7 @@ ResourceContext* ServiceWorkerContextWrapper::resource_context() {
 
 // static
 bool ServiceWorkerContext::IsServiceWorkerOnUIEnabled() {
-  return base::FeatureList::IsEnabled(features::kServiceWorkerOnUI);
+  return true;
 }
 
 // static

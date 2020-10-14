@@ -582,12 +582,6 @@ const base::Feature kSendBeaconThrowForBlobWithNonSimpleType{
     "SendBeaconThrowForBlobWithNonSimpleType",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, ServiceWorkerContextCore lives on the UI thread rather than the
-// IO thread.
-// https://crbug.com/824858
-const base::Feature kServiceWorkerOnUI{"ServiceWorkerOnUI",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Service worker based payment apps as defined by w3c here:
 // https://w3c.github.io/webpayments-payment-apps-api/
 // TODO(rouslan): Remove this.

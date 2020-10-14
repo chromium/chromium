@@ -1119,8 +1119,7 @@ class ServiceWorkerContainerHostTestWithBackForwardCache
  public:
   ServiceWorkerContainerHostTestWithBackForwardCache() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {GetFeatureParams()}},
-         {features::kServiceWorkerOnUI, {}}},
+        {{features::kBackForwardCache, {GetFeatureParams()}}},
         /*disabled_features=*/{});
   }
 

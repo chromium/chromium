@@ -135,15 +135,7 @@ class ServiceWorkerAccessContentBrowserClient
 
 }  // namespace
 
-class WebContentsObserverWithSWonUIBrowserTest
-    : public WebContentsObserverBrowserTest {
- public:
-  WebContentsObserverWithSWonUIBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kServiceWorkerOnUI);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebContentsObserverWithSWonUIBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        OnServiceWorkerAccessed_ContentClientBlocked) {
   GURL service_worker_scope =
       embedded_test_server()->GetURL("/service_worker/");
