@@ -1583,11 +1583,6 @@
     },
   },
   'maps_pixel_passthrough_test': {
-    'remove_from': [
-      # TODO(https://crbug.com/1113308): Enable this once the GPU Gold instance
-      # is merged into the general Chrome one.
-      'Mac FYI arm64 Release (Apple DTK)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -1618,9 +1613,6 @@
     # exception once there is enough capacity to run these tests.
     'remove_from': [
       'Android FYI Release (Pixel 2)',
-      # TODO(https://crbug.com/1113308): Enable this once the GPU Gold instance
-      # is merged into the general Chrome one.
-      'Mac FYI arm64 Release (Apple DTK)',
     ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -2348,11 +2340,6 @@
     },
   },
   'pixel_skia_gold_passthrough_test': {
-    'remove_from': [
-      # TODO(https://crbug.com/1113308): Enable this once the GPU Gold instance
-      # is merged into the general Chrome one.
-      'Mac FYI arm64 Release (Apple DTK)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
@@ -2379,11 +2366,6 @@
     },
   },
   'pixel_skia_gold_validating_test': {
-    'remove_from': [
-      # TODO(https://crbug.com/1113308): Enable this once the GPU Gold instance
-      # is merged into the general Chrome one.
-      'Mac FYI arm64 Release (Apple DTK)',
-    ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
