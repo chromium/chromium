@@ -243,7 +243,7 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
 }
 
 void HoldingSpaceItemViewDelegate::OnViewIsDeleting(views::View* view) {
-  base::Erase(views_, HoldingSpaceItemView::Cast(view));
+  base::Erase(views_, view);
   view_observer_.Remove(view);
 }
 
