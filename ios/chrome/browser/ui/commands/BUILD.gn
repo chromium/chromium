@@ -34,6 +34,8 @@ source_set("commands") {
     "reading_list_add_command.h",
     "reading_list_add_command.mm",
     "security_alert_commands.h",
+    "share_highlight_command.h",
+    "share_highlight_command.mm",
     "show_signin_command.h",
     "show_signin_command.mm",
     "snackbar_commands.h",

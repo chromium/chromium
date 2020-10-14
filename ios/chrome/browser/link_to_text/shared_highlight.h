@@ -5,16 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_SHARED_HIGHLIGHT_H_
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_SHARED_HIGHLIGHT_H_
 
-#include "url/gurl.h"
+#import <UIKit/UIKit.h>
 
-// This struct holds a quote and a URL with a text fragment linking to
-// the quote on the web page.
+#import "url/gurl.h"
+
+// This struct holds a |URL| with a text fragment linking to |selectedText| on a
+// Web page. It also holds that Web page's |title|.
 struct SharedHighlight {
-  SharedHighlight(const GURL& url, std::string quote)
-      : url(url), quote(quote) {}
+  SharedHighlight(const GURL& url, NSString* title, NSString* selectedText)
+      : url(url), title(title), selectedText(selectedText) {}
 
   GURL url;
-  std::string quote;
+  NSString* title;
+  NSString* selectedText;
 };
 
 #endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_SHARED_HIGHLIGHT_H_

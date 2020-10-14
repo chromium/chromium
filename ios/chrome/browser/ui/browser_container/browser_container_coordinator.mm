@@ -12,9 +12,11 @@
 #import "ios/chrome/browser/screen_time/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 #import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
@@ -65,8 +67,12 @@
   self.mediator = [[BrowserContainerMediator alloc]
                 initWithWebStateList:self.browser->GetWebStateList()
       webContentAreaOverlayPresenter:overlayPresenter];
+
+  id<ActivityServiceCommands> activityServiceHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ActivityServiceCommands);
   self.linkToTextMediator = [[LinkToTextMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
+      initWithWebStateList:self.browser->GetWebStateList()
+                   handler:activityServiceHandler];
   self.viewController.linkToTextDelegate = self.linkToTextMediator;
   self.mediator.consumer = self.viewController;
 

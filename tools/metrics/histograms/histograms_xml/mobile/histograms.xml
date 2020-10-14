@@ -341,6 +341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="QRCodeImage" summary="QR code image"/>
     <variant name="ReadingListEntry" summary="Reading List entry"/>
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
+    <variant name="SharedHighlight" summary="highlighted fragment"/>
     <variant name="TabShareButton" summary="current tab"/>
   </token>
 </histogram>

@@ -16,8 +16,9 @@ enum class ActivityScenario {
   BookmarkEntry = 4,
   MostVisitedEntry = 5,
   RecentTabsEntry = 6,
+  SharedHighlight = 7,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = RecentTabsEntry
+  kMaxValue = SharedHighlight
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_ACTIVITY_SERVICES_ACTIVITY_SCENARIO_H_

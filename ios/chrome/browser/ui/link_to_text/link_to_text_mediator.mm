@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/shared_highlight.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
+#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
@@ -19,14 +21,20 @@
 // The Browser's WebStateList.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
+// Instance in charge of handling Activity Service's related commands.
+@property(nonatomic, readonly, weak) id<ActivityServiceCommands> handler;
+
 @end
 
 @implementation LinkToTextMediator
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                             handler:(id<ActivityServiceCommands>)handler {
   if (self = [super init]) {
     DCHECK(webStateList);
+    DCHECK(handler);
     _webStateList = webStateList;
+    _handler = handler;
   }
   return self;
 }
@@ -44,12 +52,15 @@
 
 - (void)handleLinkToTextSelection {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  [self shareLinkToText:[self getLinkToTextTabHelper]
-                            ->GetLinkToSelectedTextAndQuote()];
+  [self shareLinkToText:[self getLinkToTextTabHelper]->GetSharedHighlight()];
 }
 
 - (void)shareLinkToText:(SharedHighlight)sharedHighlight {
-  // TODO(crbug.com/1134707): Trigger the share sheet.
+  ShareHighlightCommand* command =
+      [[ShareHighlightCommand alloc] initWithURL:sharedHighlight.url
+                                           title:sharedHighlight.title
+                                    selectedText:sharedHighlight.selectedText];
+  [self.handler shareHighlight:command];
 }
 
 - (LinkToTextTabHelper*)getLinkToTextTabHelper {
