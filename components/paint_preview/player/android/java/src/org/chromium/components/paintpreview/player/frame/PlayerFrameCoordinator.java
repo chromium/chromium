@@ -69,6 +69,13 @@ public class PlayerFrameCoordinator {
         PropertyModelChangeProcessor.create(model, mView, PlayerFrameViewBinder::bind);
     }
 
+    public void destroy() {
+        mMediator.destroy();
+        for (PlayerFrameCoordinator subframe : mSubFrames) {
+            subframe.destroy();
+        }
+    }
+
     public void setAcceptUserInput(boolean acceptUserInput) {
         if (mScrollController != null) mScrollController.setAcceptUserInput(acceptUserInput);
         if (mScaleController != null) mScaleController.setAcceptUserInput(acceptUserInput);

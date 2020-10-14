@@ -97,10 +97,17 @@ public class PlayerFrameBitmapState {
     /**
      * Clears state so in-flight requests abort upon return.
      */
-    void clear() {
-        mBitmapMatrix = null;
+    void destroy() {
         mRequiredBitmaps = null;
         mPendingBitmapRequests = null;
+        for (int i = 0; i < mBitmapMatrix.length; i++) {
+            for (int j = 0; j < mBitmapMatrix[i].length; j++) {
+                if (mBitmapMatrix[i][j] != null) {
+                    mBitmapMatrix[i][j].destroy();
+                }
+            }
+        }
+        mBitmapMatrix = null;
     }
 
     /**
@@ -118,26 +125,13 @@ public class PlayerFrameBitmapState {
     }
 
     /**
-     * Clears all the required bitmaps before they are re-set in {@link #requestBitmapForRect()}
-     */
-    void clearRequiredBitmaps() {
-        if (mRequiredBitmaps == null) return;
-
-        for (int row = 0; row < mRequiredBitmaps.length; row++) {
-            for (int col = 0; col < mRequiredBitmaps[row].length; col++) {
-                mRequiredBitmaps[row][col] = false;
-            }
-        }
-    }
-
-    /**
      * Requests bitmaps for tiles that overlap with the provided rect. Also requests bitmaps for
      * adjacent tiles.
      * @param viewportRect The rect of the viewport for which bitmaps are needed.
      */
     void requestBitmapForRect(Rect viewportRect) {
         if (mRequiredBitmaps == null || mBitmapMatrix == null) return;
-        clearVisibleBitmaps();
+        clearBeforeRequest();
 
         final int rowStart =
                 Math.max(0, (int) Math.floor((double) viewportRect.top / mTileSize.getHeight()));
@@ -248,12 +242,18 @@ public class PlayerFrameBitmapState {
         mStateController.stateUpdated(this);
     }
 
-    private void clearVisibleBitmaps() {
-        if (mVisibleBitmaps == null) return;
+    private void clearBeforeRequest() {
+        if (mVisibleBitmaps == null || mRequiredBitmaps == null) return;
+
+        assert mVisibleBitmaps.length == mRequiredBitmaps.length;
+        assert (mVisibleBitmaps.length > 0)
+                ? mVisibleBitmaps[0].length == mRequiredBitmaps[0].length
+                : true;
 
         for (int row = 0; row < mVisibleBitmaps.length; row++) {
             for (int col = 0; col < mVisibleBitmaps[row].length; col++) {
                 mVisibleBitmaps[row][col] = false;
+                mRequiredBitmaps[row][col] = false;
             }
         }
     }

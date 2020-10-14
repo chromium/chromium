@@ -231,6 +231,10 @@ public class PlayerManager {
             mDelegate.destroy();
             mDelegate = null;
         }
+        if (mRootFrameCoordinator != null) {
+            mRootFrameCoordinator.destroy();
+            mRootFrameCoordinator = null;
+        }
     }
 
     public View getView() {

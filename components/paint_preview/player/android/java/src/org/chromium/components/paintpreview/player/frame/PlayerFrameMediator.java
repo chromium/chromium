@@ -95,6 +95,10 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mViewport.setScale(0f);
     }
 
+    void destroy() {
+        mBitmapStateController.destroy();
+    }
+
     @VisibleForTesting
     PlayerFrameBitmapStateController getBitmapStateControllerForTest() {
         return mBitmapStateController;
@@ -250,9 +254,6 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
                     PlayerFrameProperties.TILE_DIMENSIONS, activeLoadingState.getTileDimensions());
             mModel.set(PlayerFrameProperties.VIEWPORT, viewportRect);
         }
-
-        // Clear the required bitmaps matrix. It will be updated in #requestBitmapForTile.
-        activeLoadingState.clearRequiredBitmaps();
 
         // Request bitmaps for tiles inside the view port that don't already have a bitmap.
         activeLoadingState.requestBitmapForRect(viewportRect);
