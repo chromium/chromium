@@ -7,18 +7,22 @@
 
 #include "base/compiler_specific.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class Browser;
 
 class HomeButton : public ToolbarButton {
  public:
-  HomeButton(PressedCallback callback, Browser* browser);
+  METADATA_HEADER(HomeButton);
+
+  explicit HomeButton(PressedCallback callback = PressedCallback(),
+                      Browser* browser = nullptr);
   HomeButton(const HomeButton&) = delete;
   HomeButton& operator=(const HomeButton&) = delete;
   ~HomeButton() override;
 
   // ToolbarButton:
-  const char* GetClassName() const override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const OSExchangeData& data) override;
@@ -29,5 +33,8 @@ class HomeButton : public ToolbarButton {
  private:
   Browser* const browser_;
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, HomeButton, ToolbarButton)
+END_VIEW_BUILDER(/* no export */, HomeButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_HOME_BUTTON_H_

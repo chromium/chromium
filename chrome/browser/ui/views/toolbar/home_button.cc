@@ -23,6 +23,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 // HomePageUndoBubble --------------------------------------------------------
@@ -88,6 +89,7 @@ HomePageUndoBubble::HomePageUndoBubble(
       browser_(browser),
       undo_value_is_ntp_(undo_value_is_ntp),
       undo_url_(undo_url) {
+  DCHECK(browser_);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
@@ -155,10 +157,6 @@ HomeButton::HomeButton(PressedCallback callback, Browser* browser)
 HomeButton::~HomeButton() {
 }
 
-const char* HomeButton::GetClassName() const {
-  return "HomeButton";
-}
-
 bool HomeButton::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
@@ -175,6 +173,9 @@ int HomeButton::OnDragUpdated(const ui::DropTargetEvent& event) {
 }
 
 int HomeButton::OnPerformDrop(const ui::DropTargetEvent& event) {
+  if (!browser_)
+    return ui::DragDropTypes::DRAG_NONE;
+
   GURL new_homepage_url;
   base::string16 title;
   if (event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
@@ -198,3 +199,6 @@ void HomeButton::UpdateIcon() {
                                           : kNavigateHomeIcon;
   UpdateIconsWithStandardColors(home_image);
 }
+
+BEGIN_METADATA(HomeButton, ToolbarButton)
+END_METADATA
