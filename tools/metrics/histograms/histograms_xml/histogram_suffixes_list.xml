@@ -667,7 +667,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="AnchorElementMetrics.RatioVisibleArea"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Android.WebView.DevUi.NavType" separator=".">
+<histogram_suffixes name="Android_WebView_DevUi_NavType" separator=".">
   <suffix name="AnyMethod" label="User navigation through any means"/>
   <suffix name="FromIntent"
       label="User navigation through the bottom navigation bar"/>
@@ -1635,7 +1635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.WalletCards2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Availability.Prober.Clients" separator=".">
+<histogram_suffixes name="Availability_Prober_Clients" separator=".">
   <suffix name="IsolatedPrerenderCanaryCheck"
       label="(M85 only) Canary check for Isolated Prerenders probing"/>
   <suffix name="IsolatedPrerenderDNSCanaryCheck"
@@ -2633,21 +2633,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Type"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeMLService.ModelType" separator=".">
+<histogram_suffixes name="ChromeMLService_ModelType" separator=".">
   <suffix name="DecisionTreeModel" label="Decision tree model"/>
   <affected-histogram name="ChromeMLService.EvaluationLatency"/>
   <affected-histogram name="ChromeMLService.LoadModelResult"/>
   <affected-histogram name="ChromeMLService.ValidationLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS.Camera.JpegProcessMethod" separator=".">
+<histogram_suffixes name="ChromeOS_Camera_JpegProcessMethod" separator=".">
   <suffix name="Hardware" label=""/>
   <suffix name="Software" label=""/>
   <affected-histogram name="ChromeOS.Camera.Jpeg.Latency"/>
   <affected-histogram name="ChromeOS.Camera.Jpeg.Resolution"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS.Camera.JpegProcessType" separator=".">
+<histogram_suffixes name="ChromeOS_Camera_JpegProcessType" separator=".">
   <suffix name="Decode" label=""/>
   <suffix name="Encode" label=""/>
   <affected-histogram name="ChromeOS.Camera.Jpeg.Latency.Hardware"/>
@@ -2656,7 +2656,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ChromeOS.Camera.Jpeg.Resolution.Software"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS.Camera.StreamFormat" separator=".">
+<histogram_suffixes name="ChromeOS_Camera_StreamFormat" separator=".">
   <suffix name="BGRA_8888" label="Format HAL_PIXEL_FORMAT_BGRA_8888"/>
   <suffix name="BLOB" label="Format HAL_PIXEL_FORMAT_BLOB"/>
   <suffix name="IMPLEMENTATION_DEFINED"
@@ -2671,14 +2671,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="ChromeOS.Camera.ConfigureStreams.Output.Resolution"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS.MachineIdRegen.AgeSeconds" separator="_">
+<histogram_suffixes name="ChromeOS_MachineIdRegen_AgeSeconds" separator="_">
   <suffix name="Network" label=""/>
   <suffix name="Periodic" label=""/>
   <suffix name="Unknown" label=""/>
   <affected-histogram name="ChromeOS.MachineIdRegen.AgeSeconds"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS.USBDeviceClass" separator=".">
+<histogram_suffixes name="ChromeOS_USBDeviceClass" separator=".">
   <suffix name="App"
       label="A device with only the application specific interface class."/>
   <suffix name="Audio" label="An audio device."/>
@@ -2703,7 +2703,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ChromeOS.USB.DeviceAttached.Unrecognized"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS.USBDeviceRecognized" separator=".">
+<histogram_suffixes name="ChromeOS_USBDeviceRecognized" separator=".">
   <suffix base="true" name="Recognized"
       label="A device that was already added to the list of trusted devices."/>
   <suffix base="true" name="Unrecognized"
@@ -2711,7 +2711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ChromeOS.USB.DeviceAttached"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Clients.StaleWhileRevalidateExperiment" separator="."
+<histogram_suffixes name="Clients_StaleWhileRevalidateExperiment" separator="."
     ordering="prefix">
   <suffix name="Clients.StaleWhileRevalidateExperiment"
       label="Timing was recorded on one of the domains of focus for
@@ -3709,7 +3709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="SiteIsolation.CORBProtection.CORSHeuristic.ProtectedMimeType"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Cras.ClientType" separator=".">
+<histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
   <suffix name="Chrome" label="A client created by Chrome."/>
   <suffix name="CrOSVM" label="A client created by ChromeOS VM."/>
@@ -3733,7 +3733,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamSamplingRate.Output"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Cras.DeviceType" separator=".">
+<histogram_suffixes name="Cras_DeviceType" separator=".">
   <suffix name="A2DP" label="Bluetooth A2DP."/>
   <suffix name="AbnormalFallback"
       label="Abnormal use case on the fallback device."/>
@@ -3765,7 +3765,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.DeviceVolume"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Cras.Direction" separator=".">
+<histogram_suffixes name="Cras_Direction" separator=".">
   <suffix name="Input" label="Capture"/>
   <suffix name="Output" label="Playback"/>
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
@@ -3775,7 +3775,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamSamplingRate"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Cras.TimePeriod" separator=".">
+<histogram_suffixes name="Cras_TimePeriod" separator=".">
   <suffix name="LongPeriod" label="Runtime is longer than 60 minutes"/>
   <suffix name="MediumPeriod" label="Runtime is between 10 and 60 minutes"/>
   <suffix name="ShortPeriod" label="Runtime is shorter than 10 minutes"/>
@@ -3966,7 +3966,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="CustomTab.SessionDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CustomTabs.DetachedResourceRequestFinalStatus"
+<histogram_suffixes name="CustomTabs_DetachedResourceRequestFinalStatus"
     separator=".">
   <suffix name="Failure" label="Failed detached request"/>
   <suffix name="Success" label="Successful detached request"/>
@@ -4015,8 +4015,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="PLT.PT_StartToFinish"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="DataReductionProxy_AutoLoFi" separator="_">
+  <obsolete>
+    Removed 09/2016.
+  </obsolete>
+  <suffix name="DataReductionProxy_AutoLoFiOff"
+      label="Only page loads through the data reduction proxy with auto LoFi
+             disabled are considered."/>
+  <suffix name="DataReductionProxy_AutoLoFiOn"
+      label="Only page loads through the data reduction proxy with auto LoFi
+             enabled are considered."/>
+  <suffix name="HTTPS_DataReductionProxy_AutoLoFiOff"
+      label="Only page loads through the data reduction proxy through an HTTP
+             tunnel for HTTPS origins with auto LoFi disabled are considered."/>
+  <suffix name="HTTPS_DataReductionProxy_AutoLoFiOn"
+      label="Only page loads through the data reduction proxy through an HTTP
+             tunnel for HTTPS origins with auto LoFi enabled are considered."/>
+  <affected-histogram name="PLT.BeginToFirstPaint"/>
+  <affected-histogram name="PLT.PT_BeginToFinish"/>
+  <affected-histogram name="PLT.PT_CommitToFinish"/>
+  <affected-histogram name="PLT.PT_RequestToDomContentLoaded"/>
+  <affected-histogram name="PLT.PT_RequestToFinish"/>
+  <affected-histogram name="PLT.PT_StartToFinish"/>
+</histogram_suffixes>
+
 <histogram_suffixes
-    name="DataReductionProxy.LoFi.Accuracy.DifferentRecordingIntervals"
+    name="DataReductionProxy_LoFi_Accuracy_DifferentRecordingIntervals"
     separator=".">
   <obsolete>
     Functionality removed in M77.
@@ -4030,7 +4054,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataReductionProxy.LoFi.Accuracy"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataReductionProxy.MimeType" separator="_">
+<histogram_suffixes name="DataReductionProxy_MimeType" separator="_">
   <obsolete>
     Removed; refer to Experimental.Bytes.Network
   </obsolete>
@@ -4049,7 +4073,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Net.DailyOriginalContentLength_ViaDataReductionProxy"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataReductionProxy.NetworkTypes" separator=".">
+<histogram_suffixes name="DataReductionProxy_NetworkTypes" separator=".">
   <suffix name="2G" label="On 2G network"/>
   <suffix name="3G" label="On 3G Network"/>
   <suffix name="4G" label="On 4G network"/>
@@ -4088,65 +4112,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Functionality removed in M77.
     </obsolete>
   </affected-histogram>
-</histogram_suffixes>
-
-<histogram_suffixes
-    name="DataReductionProxy.WarmupURL.FetchAttemptsBeforeSuccess"
-    separator=".">
-  <suffix name="Insecure.Core"
-      label="Records fetch attempts for the first core insecure data
-             reduction proxy"/>
-  <suffix name="Insecure.NonCore"
-      label="Records fetch attempts for the first non-core insecure data
-             reduction proxy"/>
-  <suffix name="Secure.Core"
-      label="Records fetch attempts for the first core secure data reduction
-             proxy"/>
-  <suffix name="Secure.NonCore"
-      label="Records fetch attempts for the first non-core secure data
-             reduction proxy"/>
-  <affected-histogram
-      name="DataReductionProxy.WarmupURL.FetchAttemptsBeforeSuccess">
-    <obsolete>
-      Obsoleted in March 2020.
-    </obsolete>
-  </affected-histogram>
-</histogram_suffixes>
-
-<histogram_suffixes name="DataReductionProxy.WithValidOCL.LoFiOn" separator=".">
-  <obsolete>
-    Removed 04/2018.
-  </obsolete>
-  <suffix name="LoFiOn"
-      label="Only page loads through the data reduction proxy with Lo-Fi On
-             are considered."/>
-  <affected-histogram name="Net.HttpContentLengthDifferenceWithValidOCL"/>
-  <affected-histogram name="Net.HttpContentLengthWithValidOCL"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthWithValidOCL"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DataReductionProxy_AutoLoFi" separator="_">
-  <obsolete>
-    Removed 09/2016.
-  </obsolete>
-  <suffix name="DataReductionProxy_AutoLoFiOff"
-      label="Only page loads through the data reduction proxy with auto LoFi
-             disabled are considered."/>
-  <suffix name="DataReductionProxy_AutoLoFiOn"
-      label="Only page loads through the data reduction proxy with auto LoFi
-             enabled are considered."/>
-  <suffix name="HTTPS_DataReductionProxy_AutoLoFiOff"
-      label="Only page loads through the data reduction proxy through an HTTP
-             tunnel for HTTPS origins with auto LoFi disabled are considered."/>
-  <suffix name="HTTPS_DataReductionProxy_AutoLoFiOn"
-      label="Only page loads through the data reduction proxy through an HTTP
-             tunnel for HTTPS origins with auto LoFi enabled are considered."/>
-  <affected-histogram name="PLT.BeginToFirstPaint"/>
-  <affected-histogram name="PLT.PT_BeginToFinish"/>
-  <affected-histogram name="PLT.PT_CommitToFinish"/>
-  <affected-histogram name="PLT.PT_RequestToDomContentLoaded"/>
-  <affected-histogram name="PLT.PT_RequestToFinish"/>
-  <affected-histogram name="PLT.PT_StartToFinish"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataReductionProxy_TamperingFingerprints"
@@ -4321,6 +4286,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataReductionProxy.HeaderTamperDetectionHTTPS"/>
 </histogram_suffixes>
 
+<histogram_suffixes
+    name="DataReductionProxy_WarmupURL_FetchAttemptsBeforeSuccess"
+    separator=".">
+  <suffix name="Insecure.Core"
+      label="Records fetch attempts for the first core insecure data
+             reduction proxy"/>
+  <suffix name="Insecure.NonCore"
+      label="Records fetch attempts for the first non-core insecure data
+             reduction proxy"/>
+  <suffix name="Secure.Core"
+      label="Records fetch attempts for the first core secure data reduction
+             proxy"/>
+  <suffix name="Secure.NonCore"
+      label="Records fetch attempts for the first non-core secure data
+             reduction proxy"/>
+  <affected-histogram
+      name="DataReductionProxy.WarmupURL.FetchAttemptsBeforeSuccess">
+    <obsolete>
+      Obsoleted in March 2020.
+    </obsolete>
+  </affected-histogram>
+</histogram_suffixes>
+
+<histogram_suffixes name="DataReductionProxy_WithValidOCL_LoFiOn" separator=".">
+  <obsolete>
+    Removed 04/2018.
+  </obsolete>
+  <suffix name="LoFiOn"
+      label="Only page loads through the data reduction proxy with Lo-Fi On
+             are considered."/>
+  <affected-histogram name="Net.HttpContentLengthDifferenceWithValidOCL"/>
+  <affected-histogram name="Net.HttpContentLengthWithValidOCL"/>
+  <affected-histogram name="Net.HttpOriginalContentLengthWithValidOCL"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="DataReductionProxyBypassedBytes" separator=".">
   <suffix name="Current" label="Bypass due to explicit instruction"/>
   <suffix name="CurrentApplicationOctetStream"
@@ -4478,7 +4478,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUsage.ReportSubmission.Bytes"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.AppTabState.Dimensions" separator=".">
+<histogram_suffixes name="DataUse_AppTabState_Dimensions" separator=".">
   <suffix name="Downstream.AppBackground" label=""/>
   <suffix name="Downstream.AppForeground.TabBackground" label=""/>
   <suffix name="Downstream.AppForeground.TabForeground" label=""/>
@@ -4488,7 +4488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.AppTabState"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.Bytes" separator=".">
+<histogram_suffixes name="DataUse_Bytes" separator=".">
   <suffix name="Delegate" label="As reported by the network delegate."/>
   <suffix name="OS"
       label="As reported by the operating system. Currently logged only on
@@ -4497,7 +4497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.BytesSent"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.Bytes.ApplicationState" separator=".">
+<histogram_suffixes name="DataUse_Bytes_ApplicationState" separator=".">
   <suffix name="Background"
       label="Data use was recorded with Chrome in background."/>
   <suffix name="Foreground"
@@ -4506,7 +4506,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.BytesSent.OS"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.Dimensions" separator=".">
+<histogram_suffixes name="DataUse_Dimensions" separator=".">
   <suffix name="Downstream.Background.Cellular" label=""/>
   <suffix name="Downstream.Background.NotCellular" label=""/>
   <suffix name="Downstream.Foreground.Cellular" label=""/>
@@ -4523,7 +4523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.TrafficSize.User"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.Dimensions.AllServices" separator=".">
+<histogram_suffixes name="DataUse_Dimensions_AllServices" separator=".">
   <obsolete>
     Replaced by version without network-type breakdown in June, 2018.
   </obsolete>
@@ -4602,7 +4602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.MessageSize.AllServices"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.Dimensions.AllServicesKB" separator=".">
+<histogram_suffixes name="DataUse_Dimensions_AllServicesKB" separator=".">
   <suffix name="Downstream.Background" label=""/>
   <suffix name="Downstream.Foreground" label=""/>
   <suffix name="Upstream.Background" label=""/>
@@ -4612,7 +4612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.AllServicesKB"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.Service.Types" separator=".">
+<histogram_suffixes name="DataUse_Service_Types" separator=".">
   <obsolete>
     Removed Oct 2018
   </obsolete>
@@ -4649,7 +4649,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DataUse.MessageSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse.TrafficSource" separator=".">
+<histogram_suffixes name="DataUse_TrafficSource" separator=".">
   <suffix name="System" label=""/>
   <suffix name="User" label=""/>
   <affected-histogram name="DataUse.BackgroundToDataRecievedPerByte"/>
@@ -5186,7 +5186,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="DisplayScheduler.ShouldNotDraw"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DNS.HostCache.UpdateStale.AddressListDeltaType"
+<histogram_suffixes name="DNS_HostCache_UpdateStale_AddressListDeltaType"
     separator="_">
   <suffix name="Disjoint" label="All different addresses."/>
   <suffix name="Identical" label="Same addresses, in the same order."/>
@@ -5406,12 +5406,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SessionStorageContext.CachePurgedInKB"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Parallelizable" separator=".">
+<histogram_suffixes name="Download_Parallelizable" separator=".">
   <suffix name="Parallelizable" label="Parallelizable download."/>
   <affected-histogram name="Download.DownloadSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Service.CleanUpReason" separator=".">
+<histogram_suffixes name="Download_Service_CleanUpReason" separator=".">
   <suffix name="HardRecovery" label="File is deleted in hard recovery."/>
   <suffix name="Orphaned" label="No client associated with the file."/>
   <suffix name="Timeout" label="File is deleted after timeout."/>
@@ -5421,7 +5421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.Service.Files.CleanUp.Success"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Service.Client" separator=".">
+<histogram_suffixes name="Download_Service_Client" separator=".">
   <suffix name="BackgroundFetch" label="Background fetch."/>
   <suffix name="Debugging" label="Debugging client."/>
   <suffix name="MountainInternal" label="Mountain internal client."/>
@@ -5434,7 +5434,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.Service.Upload.HasUploadData"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Service.CompletionType" separator=".">
+<histogram_suffixes name="Download_Service_CompletionType" separator=".">
   <obsolete>
     Removed as of 08/2019.
   </obsolete>
@@ -5447,7 +5447,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.Service.Finish.FileSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Service.EntryState" separator=".">
+<histogram_suffixes name="Download_Service_EntryState" separator=".">
   <suffix name="Active" label="The active state."/>
   <suffix name="Available" label="The available state."/>
   <suffix name="Complete" label="The complte state."/>
@@ -5456,13 +5456,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.Service.Db.Records"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Service.StartUpStep" separator=".">
+<histogram_suffixes name="Download_Service_StartUpStep" separator=".">
   <suffix name="Initialization" label="The initialization start up step."/>
   <suffix name="Recovery" label="The recovery start up step."/>
   <affected-histogram name="Download.Service.StartUpStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download.Service.TaskType" separator=".">
+<histogram_suffixes name="Download_Service_TaskType" separator=".">
   <suffix name="CleanUpTask" label="Clean up task."/>
   <suffix name="DownloadTask" label="Download task."/>
   <affected-histogram name="Download.Service.TaskScheduler.Status"/>
@@ -5746,7 +5746,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="Enterprise.RemoteCommandType" separator=".">
+<histogram_suffixes name="Enterprise_RemoteCommandType" separator=".">
   <suffix name="BrowserClearBrowsingData" label="Clear Browsing Data"/>
   <suffix name="CommandEchoTest" label="Command echo test"/>
   <suffix name="DeviceFetchStatus" label="Fetch status"/>
@@ -5770,7 +5770,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Enterprise.UserRemoteCommand.Executed.Unsigned"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Enterprise.ResourceCacheTiming" separator=".">
+<histogram_suffixes name="Enterprise_ResourceCacheTiming" separator=".">
   <obsolete>
     Removed 01/2020 since the histogram indicators were stable.
   </obsolete>
@@ -6220,7 +6220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Extensions.Messaging.SetPortIdTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Extensions.WebRequest.WS_RequestHeaders"
+<histogram_suffixes name="Extensions_WebRequest_WS_RequestHeaders"
     separator="_">
   <obsolete>
     Removed as of Jan 2019.
@@ -6791,7 +6791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GoogleSearch.AccessPoint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GoogleUpdate.Inline.InstallStatus" separator=".">
+<histogram_suffixes name="GoogleUpdate_Inline_InstallStatus" separator=".">
   <suffix name="Canceled" label="Canceled"/>
   <suffix name="Downloaded" label="Downloaded"/>
   <suffix name="Downloading" label="Downloading"/>
@@ -6805,7 +6805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GoogleUpdate.Inline.StateChange.Error"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GoogleUpdate.Result.UpdateType" separator=".">
+<histogram_suffixes name="GoogleUpdate_Result_UpdateType" separator=".">
   <suffix base="true" name="Inline" label="Intent Updates"/>
   <suffix base="true" name="Intent" label="Inline Updates"/>
   <suffix base="true" name="Unknown" label="Unknown Update Type"/>
@@ -6813,7 +6813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GoogleUpdate.Result.TimeWindow"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GoogleUpdate.Result.UpdateType.UpdateSource"
+<histogram_suffixes name="GoogleUpdate_Result_UpdateType_UpdateSource"
     separator=".">
   <suffix name="Infobar" label="Update initiated from the infobar"/>
   <suffix name="Menu" label="Update initiated from the menu"/>
@@ -6827,13 +6827,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GoogleUpdate.Result.TimeWindow.Unknown"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.ContextType" separator=".">
+<histogram_suffixes name="GPU_ContextType" separator=".">
   <suffix name="GLES" label="GLES Context."/>
   <suffix name="WebGL" label="WebGL Context."/>
   <affected-histogram name="GPU.ContextMemory"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.DirectComposition.OverlayFormat" separator=".">
+<histogram_suffixes name="GPU_DirectComposition_OverlayFormat" separator=".">
   <suffix name="BGRA" label="BGRA"/>
   <suffix name="NV12" label="NV12"/>
   <suffix name="YUY2" label="YUY2"/>
@@ -6842,7 +6842,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.MemorySamplingTime" separator=".">
+<histogram_suffixes name="GPU_MemorySamplingTime" separator=".">
   <suffix name="Periodic" label="Sampled periodically."/>
   <suffix name="Pressure" label="Sampled on CRITICAL memory pressure signal."/>
   <suffix name="Shutdown" label="Sampled at shutdown."/>
@@ -6850,7 +6850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GPU.ContextMemory.WebGL"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.PeakMemoryAllocationSources" separator=".">
+<histogram_suffixes name="GPU_PeakMemoryAllocationSources" separator=".">
   <suffix name="CommandBuffer" label="GPU Command Buffer."/>
   <suffix name="SharedContextState" label="Shared Context State."/>
   <suffix name="SharedImageStub" label="Shared Image Stub."/>
@@ -6861,21 +6861,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Memory.GPU.PeakMemoryAllocationSource.Scroll"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.PeakMemoryAllocationSourcesBase" separator=".">
+<histogram_suffixes name="GPU_PeakMemoryAllocationSourcesBase" separator=".">
   <suffix base="true" name="ChangeTab" label="Changing Tabs."/>
   <suffix base="true" name="PageLoad" label="Page Load."/>
   <suffix base="true" name="Scroll" label="Scroll."/>
   <affected-histogram name="Memory.GPU.PeakMemoryAllocationSource"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.PeakMemoryUsage" separator=".">
+<histogram_suffixes name="GPU_PeakMemoryUsage" separator=".">
   <suffix name="ChangeTab" label="Changing Tabs."/>
   <suffix name="PageLoad" label="Page Load."/>
   <suffix name="Scroll" label="Scroll."/>
   <affected-histogram name="Memory.GPU.PeakMemoryUsage"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.ProtectedVideoType" separator=".">
+<histogram_suffixes name="GPU_ProtectedVideoType" separator=".">
   <suffix name="Clear" label="Clear"/>
   <suffix name="HardwareProtected" label="HardwareProtected"/>
   <suffix name="SoftwareProtected" label="SoftwareProtected"/>
@@ -6884,14 +6884,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="GPU.DirectComposition.SwapChainCreationResult3"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.SoftwareProtectedType" separator=".">
+<histogram_suffixes name="GPU_SoftwareProtectedType" separator=".">
   <suffix name="HasOverlaySupport" label="HasOverlaySupport"/>
   <suffix name="NoOverlaySupport" label="NoOverlaySupport"/>
   <affected-histogram
       name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GPU.WatchdogStage" separator=".">
+<histogram_suffixes name="GPU_WatchdogStage" separator=".">
   <suffix name="Foregrounded" label="Foregrounded"/>
   <suffix name="Init" label="Init"/>
   <suffix name="Normal" label="Normal"/>
@@ -7947,7 +7947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.Android.SingleTabTitleAvailableTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="JSDialogs.DialogType" separator=".">
+<histogram_suffixes name="JSDialogs_DialogType" separator=".">
   <suffix name="Alert" label="window.alert() dialog"/>
   <suffix name="BeforeUnload" label="dialog caused by window.onbeforeunload"/>
   <suffix name="Confirm" label="window.confirm() dialog"/>
@@ -7959,7 +7959,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="JSDialogs.SiteEngagementOfDialogs"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="JSDialogs.EngagementList" separator=".">
+<histogram_suffixes name="JSDialogs_EngagementList" separator=".">
   <obsolete>
     Removed 2017-10.
   </obsolete>
@@ -7970,7 +7970,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="JSDialogs.CharacterCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="JSDialogs.FrameType" separator=".">
+<histogram_suffixes name="JSDialogs_FrameType" separator=".">
   <obsolete>
     Removed 2020-01.
   </obsolete>
@@ -7979,7 +7979,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="JSDialogs.CharacterCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="JSDialogs.LeaveStay" separator=".">
+<histogram_suffixes name="JSDialogs_LeaveStay" separator=".">
   <obsolete>
     Removed 2017-10.
   </obsolete>
@@ -7988,7 +7988,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="JSDialogs.SiteEngagementOfBeforeUnload"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="JSDialogs.UserGestureSinceLoad" separator=".">
+<histogram_suffixes name="JSDialogs_UserGestureSinceLoad" separator=".">
   <obsolete>
     Removed 2020-01.
   </obsolete>
@@ -8693,7 +8693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Media.Learning.BinaryThreshold" separator=".">
+<histogram_suffixes name="Media_Learning_BinaryThreshold" separator=".">
   <suffix name="BaseTable" label="Basic features, lookup table model"/>
   <suffix name="BaseTree" label="Basic features, ExtraTrees model">
     <obsolete>
@@ -9113,7 +9113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.WebMediaPlayerImpl.Memory"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Memory.Pressure.TransitionType" separator=".">
+<histogram_suffixes name="Memory_Pressure_TransitionType" separator=".">
   <suffix name="CriticalToModerate" label="Critical to Moderate transition."/>
   <suffix name="CriticalToNone" label="Critical to None transition."/>
   <suffix name="ModerateToCritical" label="Moderate to Critical transition."/>
@@ -9224,7 +9224,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.InsecureBlocking.Verification"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Mobile.DefaultBrowser.SystemDefaultBrowser.Type"
+<histogram_suffixes name="Mobile_DefaultBrowser_SystemDefaultBrowser_Type"
     separator=".">
   <suffix name="ChromeNotSystem"
       label="Chrome is not a system installed browser."/>
@@ -9232,14 +9232,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Mobile.DefaultBrowser.SystemBrowserCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Mobile.DefaultBrowser.Type" separator=".">
+<histogram_suffixes name="Mobile_DefaultBrowser_Type" separator=".">
   <suffix name="ChromeDefault" label="Chrome is the default browser."/>
   <suffix name="NoDefault" label="There is no default browser."/>
   <suffix name="OtherDefault" label="Another browser is the default browser."/>
   <affected-histogram name="Mobile.DefaultBrowser.BrowserCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Mobile.Messages.Confirm.Type" separator=".">
+<histogram_suffixes name="Mobile_Messages_Confirm_Type" separator=".">
   <suffix name="ConfirmInfobarTypeBlockPopups"
       label="Recorded for Block Popups Confirm Messages."/>
   <suffix name="ConfirmInfobarTypeRestore"
@@ -9248,7 +9248,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Mobile.Messages.Confirm.Event"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Mobile.Messages.Password.Type" separator=".">
+<histogram_suffixes name="Mobile_Messages_Password_Type" separator=".">
   <suffix name="InfobarTypePasswordSave" label=""/>
   <suffix name="InfobarTypePasswordUpdate" label=""/>
   <affected-histogram name="Mobile.Messages.Passwords.Modal.Dismiss"/>
@@ -9256,7 +9256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Mobile.Messages.Passwords.Modal.Present"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Mobile.Messages.Type" separator=".">
+<histogram_suffixes name="Mobile_Messages_Type" separator=".">
   <suffix name="InfobarTypeConfirm" label="Recorded for Confirm Messages."/>
   <suffix name="InfobarTypePasswordSave"
       label="Recorded for Save Password Messages."/>
@@ -9484,7 +9484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Session.WebStates.NavigationItem"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NavigationPredictor.DSEAffix" separator="."
+<histogram_suffixes name="NavigationPredictor_DSEAffix" separator="."
     ordering="prefix">
   <suffix name="OnDSE"
       label="Recorded only for pages whose URL matches the URL of the search
@@ -9496,7 +9496,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NavigationPredictor.ActionTaken"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NavigationPredictor.Origin" separator=".">
+<histogram_suffixes name="NavigationPredictor_Origin" separator=".">
   <suffix name="CrossOrigin" label="Links to a different origin"/>
   <suffix name="SameOrigin" label="Links to the same origin."/>
   <affected-histogram name="NavigationPredictor.CountOfURLsAboveThreshold"/>
@@ -9612,7 +9612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Ash.NavigationWidget.AnimationSmoothness"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.BidirectionalStreamExperiment" separator=".">
+<histogram_suffixes name="Net_BidirectionalStreamExperiment" separator=".">
   <obsolete>
     Removed 07/2020. Not used in active investigations.
   </obsolete>
@@ -9628,7 +9628,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.BidirectionalStream.TimeToSendStart"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.DNS.AddressFamily" separator=".">
+<histogram_suffixes name="Net_DNS_AddressFamily" separator=".">
   <obsolete>
     Removed 2020-06.
   </obsolete>
@@ -9639,7 +9639,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.DNS.ResolveSuccessTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.DNS.Priorities" separator=".">
+<histogram_suffixes name="Net_DNS_Priorities" separator=".">
   <suffix name="HIGHEST" label="Jobs with priority HIGHEST."/>
   <suffix name="IDLE" label="Jobs with priority IDLE."/>
   <suffix name="LOW" label="Jobs with priority LOW."/>
@@ -9650,7 +9650,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.DNS.JobQueueTimeAfterChange"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.DNS.Speculative" separator=".">
+<histogram_suffixes name="Net_DNS_Speculative" separator=".">
   <obsolete>
     Removed 02/2018.
   </obsolete>
@@ -9661,7 +9661,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.DNS.TotalTimeNotCached"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.HttpJob.TotalTimeSuccess.Priorities"
+<histogram_suffixes name="Net_HttpJob_TotalTimeSuccess_Priorities"
     separator=".">
   <suffix name="Priority0" label="THROTTLED or MINIMUM_PRIORITY"/>
   <suffix name="Priority1" label="IDLE"/>
@@ -9674,7 +9674,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ResourceScheduler.RequestQueuingDuration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.QuicClientHelloRejectReasons.QuicIsSecureOrNot"
+<histogram_suffixes name="Net_QuicClientHelloRejectReasons_QuicIsSecureOrNot"
     separator=".">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -9689,7 +9689,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.QuicClientHelloRejectReasons"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.QuicSession.21CumulativePackets" separator="_">
+<histogram_suffixes name="Net_QuicSession_21CumulativePackets" separator="_">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <suffix name="First21"
@@ -9700,7 +9700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.QuicSession.21CumulativePacketsReceived"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.QuicSession.6PacketPatterns" separator="_">
+<histogram_suffixes name="Net_QuicSession_6PacketPatterns" separator="_">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <suffix name="First6"
@@ -9711,7 +9711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.QuicSession.6PacketsPatternsReceived"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.QuicSession.PacketReceived" separator="_">
+<histogram_suffixes name="Net_QuicSession_PacketReceived" separator="_">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <suffix name="Ack"
@@ -9729,7 +9729,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.QuicSession.PacketReceived"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Net.QuicSession.PacketReceived_CONNECTION_TYPE"
+<histogram_suffixes name="Net_QuicSession_PacketReceived_CONNECTION_TYPE"
     separator="_">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -11082,7 +11082,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="OOBE.ErrorScreensTime.Update"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NewTabPage.BackgroundService.RequestLatency"
+<histogram_suffixes name="NewTabPage_BackgroundService_RequestLatency"
     separator=".">
   <suffix name="Failure" label="Failed to fetch data from background service"/>
   <suffix name="Success" label="Successfully fetched from background service"/>
@@ -11094,13 +11094,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="NewTabPage.BackgroundService.NextImage.RequestLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NewTabPage.OneGoogleBar.RequestLatency" separator=".">
+<histogram_suffixes name="NewTabPage_OneGoogleBar_RequestLatency" separator=".">
   <suffix name="Failure" label="Failed to fetch OneGoogleBar"/>
   <suffix name="Success" label="Successfully fetched OneGoogleBar"/>
   <affected-histogram name="NewTabPage.OneGoogleBar.RequestLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NewTabPage.Promos.RequestLatency2" separator=".">
+<histogram_suffixes name="NewTabPage_Promos_RequestLatency2" separator=".">
   <suffix name="Failure" label="Failed to fetch middle-slot Promo data"/>
   <suffix name="SuccessWithoutPromo"
       label="Successfully fetched middle-slot Promo data which did not
@@ -11111,7 +11111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NewTabPage.Promos.RequestLatency2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NewTabPage.SearchSuggestions.RequestLatency"
+<histogram_suffixes name="NewTabPage_SearchSuggestions_RequestLatency"
     separator=".">
   <obsolete>
     Removed April 2019, replaced by
@@ -11122,7 +11122,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NewTabPage.SearchSuggestions.RequestLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NewTabPage.SearchSuggestions.RequestLatencyV2"
+<histogram_suffixes name="NewTabPage_SearchSuggestions_RequestLatencyV2"
     separator=".">
   <suffix name="Failure" label="Failed to fetch search suggestion data"/>
   <suffix name="SuccessWithoutSuggestions"
@@ -11314,7 +11314,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Notifications.Scheduler.UserAction"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.Accuracy.Metric.Accuracy.DiffPositiveOrNegative"
+<histogram_suffixes name="NQE_Accuracy_Metric_Accuracy_DiffPositiveOrNegative"
     separator=".">
   <suffix name="Negative"
       label="Estimate of the metric was lower than observed metric"/>
@@ -11334,7 +11334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="NQE.WeightedAverage.Accuracy.HttpRTT.EstimatedObservedDiff"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.Accuracy.Metric.AccuracyRecordingIntervals"
+<histogram_suffixes name="NQE_Accuracy_Metric_AccuracyRecordingIntervals"
     separator=".">
   <suffix name="15"
       label="Recorded approximately 15 seconds after navigation start"/>
@@ -11381,7 +11381,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes
-    name="NQE.Accuracy.Metric.EffectiveConnectionType.ObservedIntervals"
+    name="NQE_Accuracy_Metric_EffectiveConnectionType_ObservedIntervals"
     separator=".">
   <suffix name="2G" label="Observed effective connection type was 2G"/>
   <suffix name="3G" label="Observed effective connection type was 3G"/>
@@ -11423,7 +11423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.Accuracy.RTT.ObservedIntervals" separator=".">
+<histogram_suffixes name="NQE_Accuracy_RTT_ObservedIntervals" separator=".">
   <suffix name="0_20"
       label="Observed metric was between 0 and 20 (inclusive) units"/>
   <suffix name="20_60"
@@ -11565,7 +11565,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes
-    name="NQE.CongestionAnalyzer.CountInflightRequestsForPeakQueueingDelay"
+    name="NQE_CongestionAnalyzer_CountInflightRequestsForPeakQueueingDelay"
     separator=".">
   <suffix name="Level1" label="0-30"/>
   <suffix name="Level2" label="30-60"/>
@@ -11585,7 +11585,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.DifferentPercentiles" separator=".">
+<histogram_suffixes name="NQE_DifferentPercentiles" separator=".">
   <obsolete>
     Removed 01/2018.
   </obsolete>
@@ -11598,7 +11598,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NQE.TransportRTT"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.DifferentPercentiles" separator=".">
+<histogram_suffixes name="NQE_DifferentPercentiles" separator=".">
   <obsolete>
     Obsoleted in M81.
   </obsolete>
@@ -11608,7 +11608,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NQE.MainFrame.TransportRTT"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.EstimateAvailable.MainFrame.Histograms"
+<histogram_suffixes name="NQE_EstimateAvailable_MainFrame_Histograms"
     separator=".">
   <obsolete>
     Obsoleted in M81.
@@ -11621,7 +11621,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NQE.EstimateAvailable.MainFrame"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.NetworkTypes" separator=".">
+<histogram_suffixes name="NQE_NetworkTypes" separator=".">
   <obsolete>
     Removed 01/2018.
   </obsolete>
@@ -11707,7 +11707,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.ObservationSources" separator=".">
+<histogram_suffixes name="NQE_ObservationSources" separator=".">
   <suffix name="Http" label="Observed from HTTP requests"/>
   <suffix name="HttpCachedEstimate" label="Cached HTTP layer observation"/>
   <suffix name="HttpExternalEstimate" label="From external estimate provider"/>
@@ -11722,7 +11722,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NQE.RTT.RawObservation"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE.SignalStrengthQueried" separator=".">
+<histogram_suffixes name="NQE_SignalStrengthQueried" separator=".">
   <suffix name="Cellular" label="On cellular network."/>
   <suffix name="WiFi" label="On WiFi network."/>
   <affected-histogram name="NQE.SignalStrengthQueried"/>
@@ -11854,7 +11854,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Tab.TabUnderAction"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Omnibox.BitmapFetchLatencyCacheSplit" separator=".">
+<histogram_suffixes name="Omnibox_BitmapFetchLatencyCacheSplit" separator=".">
   <suffix name="Cached" label="Bitmaps returned from cache"/>
   <suffix name="Uncached" label="Bitmaps not returned from cache"/>
   <affected-histogram name="Omnibox.BitmapFetchLatency"/>
@@ -11960,7 +11960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="OOBE.StepCompletionTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OobeScreenName.ExitReason" separator=".">
+<histogram_suffixes name="OobeScreenName_ExitReason" separator=".">
   <suffix name="Adb-sideloading.Next" label=""/>
   <suffix name="App-downloading.Next" label=""/>
   <suffix name="Arc-tos.Accepted" label=""/>
@@ -12019,7 +12019,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="OOBE.StepCompletionTimeByExitReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OptimizationGuide.OptimizationTargets" separator=".">
+<histogram_suffixes name="OptimizationGuide_OptimizationTargets" separator=".">
   <suffix name="PainfulPageLoad" label="Painful page load"/>
   <affected-histogram name="OptimizationGuide.IsPredictionModelValid"/>
   <affected-histogram
@@ -12039,7 +12039,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="OptimizationGuide.TargetDecision"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OptimizationGuide.OptimizationTypes" separator=".">
+<histogram_suffixes name="OptimizationGuide_OptimizationTypes" separator=".">
   <suffix name="CompressPublicImages" label="Compresses public images"/>
   <suffix name="DeferAllScript" label="Defers execution of script"/>
   <suffix name="DelayAsyncScriptExecution"
@@ -12076,7 +12076,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="OptimizationGuide.OptimizationFilterStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OptimizationGuide.RequestContexts" separator=".">
+<histogram_suffixes name="OptimizationGuide_RequestContexts" separator=".">
   <suffix name="BatchUpdate" label="Batch update"/>
   <suffix name="PageNavigation" label="Page navigation"/>
   <affected-histogram
@@ -12085,7 +12085,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OptimizationGuide.StoreEntryTypes" separator=".">
+<histogram_suffixes name="OptimizationGuide_StoreEntryTypes" separator=".">
   <suffix name="ComponentHint"
       label="Holds hint received from the Chrome Optimization Hints Component"/>
   <suffix name="Empty" label="Unknown entry type"/>
@@ -13926,7 +13926,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="PhysicalWeb.State.Preference"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Platform.FirmwareType" separator=".">
+<histogram_suffixes name="Platform_FirmwareType" separator=".">
   <suffix name="EC" label="Embedded Controller firmware"/>
   <suffix name="Main" label="Main processor firmware"/>
   <suffix name="PD" label="USB Power Delivery controller firmware"/>
@@ -14053,7 +14053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NewTabPage.Snippets.CardShownScoreNew"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Power.CpuTimeProcessAndCoreTypes" separator=".">
+<histogram_suffixes name="Power_CpuTimeProcessAndCoreTypes" separator=".">
   <suffix name="BigLittle.Big.Browser"
       label="Browser processes on big cores of a BIG.little CPU"/>
   <suffix name="BigLittle.Big.GPU"
@@ -14121,7 +14121,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Power.CpuTimeProcessTypes" separator=".">
+<histogram_suffixes name="Power_CpuTimeProcessTypes" separator=".">
   <suffix name="Browser" label=""/>
   <suffix name="GPU" label=""/>
   <suffix name="Other" label=""/>
@@ -14438,7 +14438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Prerender.TimeUntilUsed2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Previews.ServerLitePage.Penalty.Types" separator=".">
+<histogram_suffixes name="Previews_ServerLitePage_Penalty_Types" separator=".">
   <obsolete>
     Removed in M79.
   </obsolete>
@@ -14449,7 +14449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Previews.ServerLitePage.Penalty"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Previews.Types" separator=".">
+<histogram_suffixes name="Previews_Types" separator=".">
   <suffix name="AMPRedirection" label="AMP Redirection previews">
     <obsolete>
       Functionality removed in 2018.
@@ -15370,7 +15370,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Memory.Experimental.Renderer.V8MainThreadIsolate"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.AfterNthMinuteInBackgroundSplit"
+<histogram_suffixes name="RendererScheduler_AfterNthMinuteInBackgroundSplit"
     separator=".">
   <suffix name="Background.AfterFifthMinute"
       label="Time spent in tasks of a particular task type starting from the
@@ -15383,7 +15383,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="RendererScheduler.TaskDurationPerTaskType2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.ExpectedQueueingTime.FrameSplit"
+<histogram_suffixes name="RendererScheduler_ExpectedQueueingTime_FrameSplit"
     separator=".">
   <obsolete>
     Removed March 2019.
@@ -15416,7 +15416,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes
-    name="RendererScheduler.ExpectedQueueingTime.TaskQueueSplit" separator=".">
+    name="RendererScheduler_ExpectedQueueingTime_TaskQueueSplit" separator=".">
   <obsolete>
     Removed Febrary 2019.
   </obsolete>
@@ -15441,7 +15441,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="RendererScheduler.ExpectedQueueingTimeByTaskQueue2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.FrameQueueType" separator=".">
+<histogram_suffixes name="RendererScheduler_FrameQueueType" separator=".">
   <suffix name="default_tq" label="Default task queue"/>
   <suffix name="frame_deferrable_tq" label="Frame deferrable task queue"/>
   <suffix name="frame_loading_control_tq"
@@ -15460,7 +15460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="RendererScheduler.TimeRunningOtherFramesWhileTaskReady.Visible"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.FrameVisibility" separator=".">
+<histogram_suffixes name="RendererScheduler_FrameVisibility" separator=".">
   <suffix name="Hidden"
       label="The frame is hidden when the task starts running."/>
   <suffix name="Visible"
@@ -15471,7 +15471,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="RendererScheduler.TimeRunningOtherFramesWhileTaskReady"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.MainThreadLoadSplit" separator=".">
+<histogram_suffixes name="RendererScheduler_MainThreadLoadSplit" separator=".">
   <suffix name="Background"
       label="Main thread load when the renderer is backgrounded. This does
              not include extension renderers."/>
@@ -15502,7 +15502,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="RendererScheduler.RendererMainThreadLoad5"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.ProcessVisibilityStateSplit"
+<histogram_suffixes name="RendererScheduler_ProcessVisibilityStateSplit"
     separator=".">
   <suffix name="Background" label=""/>
   <suffix name="Foreground" label=""/>
@@ -15514,7 +15514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="RendererScheduler.TaskDurationPerThreadType2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.QueueType" separator=".">
+<histogram_suffixes name="RendererScheduler_QueueType" separator=".">
   <suffix name="Compositor" label=""/>
   <suffix name="Input" label=""/>
   <suffix name="Loading" label=""/>
@@ -15522,7 +15522,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="RendererScheduler.QueueingDurationPerQueueType"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.TaskCountPerTaskLength"
+<histogram_suffixes name="RendererScheduler_TaskCountPerTaskLength"
     separator=".">
   <suffix name="LongerThan1s" label=""/>
   <suffix name="LongerThan16ms" label=""/>
@@ -15536,13 +15536,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes
-    name="RendererScheduler.TaskDurationPerFrameOriginTypeSplit" separator=".">
+    name="RendererScheduler_TaskDurationPerFrameOriginTypeSplit" separator=".">
   <suffix name="DedicatedWorker" label=""/>
   <suffix name="DedicatedWorker.Background" label=""/>
   <affected-histogram name="RendererScheduler.TaskDurationPerFrameOriginType"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.TaskDurationPerQueueTypeSplit"
+<histogram_suffixes name="RendererScheduler_TaskDurationPerQueueTypeSplit"
     separator=".">
   <suffix name="Background"
       label="Time spent in tasks of a particular queue type when the renderer
@@ -15608,7 +15608,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="RendererScheduler.TaskDurationPerQueueType3"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RendererScheduler.TaskDurationPerTaskTypeSplit"
+<histogram_suffixes name="RendererScheduler_TaskDurationPerTaskTypeSplit"
     separator=".">
   <suffix name="UseCaseInputHandling" label=""/>
   <suffix name="UseCaseLoading" label=""/>
@@ -15668,7 +15668,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.ResourceLoader.ResponseStartToEnd"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ResourceLoadScheduler.FrameType" separator=".">
+<histogram_suffixes name="ResourceLoadScheduler_FrameType" separator=".">
   <suffix name="MainframeNotThrottled" label="Main frame, not throttled"/>
   <suffix name="MainframePartiallyThrottled"
       label="Main frame, partially throttled">
@@ -15914,7 +15914,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Network.Shill.WiFi.SessionLength"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing.RT.LookupMode" separator=".">
+<histogram_suffixes name="SafeBrowsing_RT_LookupMode" separator=".">
   <suffix name="Consumer"
       label="Records metrics for consumer real time URL lookup service."/>
   <suffix name="Enterprise"
@@ -15931,7 +15931,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.RT.ThreatInfoSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing.Settings.AccessPoint" separator=".">
+<histogram_suffixes name="SafeBrowsing_Settings_AccessPoint" separator=".">
   <suffix name="Default"
       label="The user enters the Safe Browsing settings page from a default
              access point."/>
@@ -15950,7 +15950,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.Settings.UserAction"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing.V4Store.Metrics" separator=".">
+<histogram_suffixes name="SafeBrowsing_V4Store_Metrics" separator=".">
   <suffix name="CertCsdDownloadWhitelist" label=""/>
   <suffix name="ChromeExtMalware" label=""/>
   <suffix name="ChromeUrlClientIncident" label=""/>
@@ -16005,7 +16005,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.V4Store.IsStoreValid"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing.V4Store.V3.Metrics" separator=".">
+<histogram_suffixes name="SafeBrowsing_V4Store_V3_Metrics" separator=".">
   <obsolete>
     Removed in M73. See https://crbug.com/916192
   </obsolete>
@@ -16025,7 +16025,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.V4UnusedStoreFileExists.V3"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing.V4UnusedStore.Metrics" separator=".">
+<histogram_suffixes name="SafeBrowsing_V4UnusedStore_Metrics" separator=".">
   <suffix name="AnyIpMalware" label=""/>
   <suffix name="ChromeFilenameClientIncident" label=""/>
   <suffix name="UrlSuspiciousSiteId" label=""/>
@@ -16241,7 +16241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SB2.MalwareInterstitialTimeTakeMeBack"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Scheduler.DOMScheduler.Priority" separator=".">
+<histogram_suffixes name="Scheduler_DOMScheduler_Priority" separator=".">
   <suffix name="Background" label=""/>
   <suffix name="UserBlocking" label=""/>
   <suffix name="UserVisible" label=""/>
@@ -16520,7 +16520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SendTabToSelf.DeviceCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.ContextRequestType" separator=".">
+<histogram_suffixes name="ServiceWorker_ContextRequestType" separator=".">
   <obsolete>
     The affected histogram is obsolete.
   </obsolete>
@@ -16535,7 +16535,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorker.ContextRequestHandlerStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.EventType" separator="_">
+<histogram_suffixes name="ServiceWorker_EventType" separator="_">
   <suffix name="ACTIVATE" label="ACTIVATE"/>
   <suffix name="BACKGROUND_FETCH_ABORT" label=""/>
   <suffix name="BACKGROUND_FETCH_CLICK" label=""/>
@@ -16589,14 +16589,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorker.StartWorker.Time_NewProcess"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.FailureStreak" separator="_">
+<histogram_suffixes name="ServiceWorker_FailureStreak" separator="_">
   <suffix name="1" label="Failed one time."/>
   <suffix name="2" label="Failed two times."/>
   <suffix name="3" label="Failed three times."/>
   <affected-histogram name="ServiceWorker.StartWorker.AfterFailureStreak"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.LookupRegistrationResult" separator=".">
+<histogram_suffixes name="ServiceWorker_LookupRegistrationResult" separator=".">
   <suffix name="DoesNotExist" label="The registration doesn't exist."/>
   <suffix name="Error" label="Failed to look up the registration."/>
   <suffix name="Exists" label="The registration exists."/>
@@ -16604,7 +16604,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="ServiceWorker.LookupRegistration.MainResource.Time"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.NavigationHint" separator=".">
+<histogram_suffixes name="ServiceWorker_NavigationHint" separator=".">
   <obsolete>
     This experiment was turned down, see https://crbug.com/616502.
   </obsolete>
@@ -16614,7 +16614,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorker.NavigationHintPrecision"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.NavigationHintLatency" separator="_">
+<histogram_suffixes name="ServiceWorker_NavigationHintLatency" separator="_">
   <suffix name="IsRunningNavigationHintTask"
       label="Starting a service worker for a navigation hint.">
     <obsolete>
@@ -16625,7 +16625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Event.Latency.TouchToScrollUpdateSwapBegin"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.ResponseSource" separator=".">
+<histogram_suffixes name="ServiceWorker_ResponseSource" separator=".">
   <suffix name="CacheStorage" label="The response came from CacheStorage."/>
   <suffix name="HttpCache" label="The response came from HttpCache."/>
   <suffix name="Network" label="The response directly came from network."/>
@@ -16636,13 +16636,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.ShutdownStatus" separator="_">
+<histogram_suffixes name="ServiceWorker_ShutdownStatus" separator="_">
   <suffix name="InShutdown" label="Browser shutdown started."/>
   <suffix name="NotInShutdown" label="Browser shutdown has not started."/>
   <affected-histogram name="ServiceWorker.ActivateEventStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.StartSituation2" separator=".">
+<histogram_suffixes name="ServiceWorker_StartSituation2" separator=".">
   <suffix name="DuringStartup"
       label="The worker started up during browser startup."/>
   <suffix name="ExistingReadyProcess"
@@ -16654,7 +16654,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorker.StartTiming.Duration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.StartSituationDoNotUse" separator="_">
+<histogram_suffixes name="ServiceWorker_StartSituationDoNotUse" separator="_">
 <!-- Use ServiceWorker.StartSituation instead, which uses standard "." separator. -->
 
   <suffix name="DuringStartup"
@@ -16683,7 +16683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorker.StartWorker.Time"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorker.WorkerPreparationMode" separator="_">
+<histogram_suffixes name="ServiceWorker_WorkerPreparationMode" separator="_">
   <suffix name="RunningWorker"
       label="The activated worker was already running."/>
   <suffix name="StartingWorker"
@@ -16707,7 +16707,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Time"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_Cache" separator=".">
   <suffix name="Batch" label="">
     <obsolete>
       Deprecated as of 08/2018. Replaced by ServiceWorkerCache.Cache.Put and
@@ -16773,7 +16773,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache.Delete" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_Cache_Delete" separator=".">
   <obsolete>
     Removed as of 02/2019. Not replaced with any new histogram.
   </obsolete>
@@ -16788,7 +16788,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache.Delete"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache.Keys2" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_Cache_Keys2" separator=".">
   <obsolete>
     Removed as of 02/2019. Not replaced with any new histogram.
   </obsolete>
@@ -16803,7 +16803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache.Keys2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache.Match2" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_Cache_Match2" separator=".">
   <obsolete>
     Removed as of 02/2019. Replaced by
     ServiceWorkerCache.Cache.Renderer.MatchIgnoreSearch.
@@ -16819,7 +16819,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache.Match2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache.MatchAll2" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_Cache_MatchAll2" separator=".">
   <obsolete>
     Removed as of 02/2019. Not replaced with any new histogram.
   </obsolete>
@@ -16834,7 +16834,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache.MatchAll2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache.MatchSuffixes" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_Cache_MatchSuffixes" separator=".">
   <owner>wanderview@chromium.org</owner>
   <suffix name="Hit"
       label="The time to perform a 'match' operation on a given Cache that
@@ -16850,7 +16850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache.Renderer.Match"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.Cache.ProcessOpSuffixes"
+<histogram_suffixes name="ServiceWorkerCache_Cache_ProcessOpSuffixes"
     separator=".">
   <owner>wanderview@chromium.org</owner>
   <suffix name="DeleteOne"
@@ -16885,7 +16885,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.Cache.Renderer"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.CacheStorage" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_CacheStorage" separator=".">
   <suffix name="Delete"
       label="The time to perform the 'delete' operation on a ServiceWorker
              CacheStorage, which deletes a cache.">
@@ -16936,7 +16936,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.CacheStorage"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.CacheStorage.Match2" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_CacheStorage_Match2" separator=".">
   <obsolete>
     Removed as of 02/2019. Not replaced with any new histogram.
   </obsolete>
@@ -16951,7 +16951,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.CacheStorage.Match2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.CacheStorage.ProcessOpSuffixes"
+<histogram_suffixes name="ServiceWorkerCache_CacheStorage_ProcessOpSuffixes"
     separator=".">
   <owner>wanderview@chromium.org</owner>
   <suffix name="Delete"
@@ -16982,7 +16982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorkerCache.CacheStorage.Renderer"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ServiceWorkerCache.ProcessSuffixes" separator=".">
+<histogram_suffixes name="ServiceWorkerCache_ProcessSuffixes" separator=".">
   <owner>wanderview@chromium.org</owner>
   <suffix base="true" name="Browser"
       label="Measurements taken in the browser process on the IO thread."/>
@@ -17413,7 +17413,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Extensions.UpdateSource"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin.Actions" separator=".">
+<histogram_suffixes name="Signin_Actions" separator=".">
   <suffix name="AllAccessPointActions" label=""/>
   <suffix name="AndroidAccountConsistencyFirstRunActions"
       label="Signin Flow shown on android after Account Consistency flag was
@@ -17421,7 +17421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Signin"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin.ForceSigninVerificationResult" separator=".">
+<histogram_suffixes name="Signin_ForceSigninVerificationResult" separator=".">
   <suffix name="Failure"
       label="The authenticaion token can not be verified due to persisten
              error"/>
@@ -17429,7 +17429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Signin.ForceSigninVerificationTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin.ObsoleteActions" separator=".">
+<histogram_suffixes name="Signin_ObsoleteActions" separator=".">
   <obsolete>
     Removed as of 12/2014.
   </obsolete>
@@ -17444,7 +17444,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Signin"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin.Reconciler" separator=".">
+<histogram_suffixes name="Signin_Reconciler" separator=".">
   <suffix name="FirstRun"
       label="First execution of the reconciler after the profile was loaded
              or the new_profile_management flag was toggled."/>
@@ -17457,7 +17457,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Signin.Reconciler.RemovedFromCookieJar"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin.Reconciler.Duration" separator=".">
+<histogram_suffixes name="Signin_Reconciler_Duration" separator=".">
   <obsolete>
     Removed in favor of Signin.Reconciler.Duration.UpTo3mins.
   </obsolete>
@@ -17466,7 +17466,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Signin.Reconciler.Duration"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Signin.Reconciler.Duration.UpTo3mins" separator=".">
+<histogram_suffixes name="Signin_Reconciler_Duration_UpTo3mins" separator=".">
   <suffix name="Failure" label="Failed execution of reconciler"/>
   <suffix name="Success" label="Successful execution of reconciler"/>
   <affected-histogram name="Signin.Reconciler.Duration.UpTo3mins"/>
@@ -17551,7 +17551,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SimpleCache.SyncOpenResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SiteIsolation.XSD.MIME" separator=".">
+<histogram_suffixes name="SiteIsolation_XSD_MIME" separator=".">
   <obsolete>
     Removed in June 2019 / M77. Some old data have been saved in a
     Google-internal doc at
@@ -17666,7 +17666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="SmoothnessSequenceTypes.Universal" separator=".">
+<histogram_suffixes name="SmoothnessSequenceTypes_Universal" separator=".">
   <obsolete>
     Removed in 9/2020, due to over penalize smoothness.
   </obsolete>
@@ -17711,7 +17711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SmoothnessThreadTypes.Jank" separator=".">
+<histogram_suffixes name="SmoothnessThreadTypes_Jank" separator=".">
   <suffix name="Compositor" label="Janks from the compositor thread"/>
   <suffix name="Main" label="Janks from the main thread"/>
   <affected-histogram name="Graphics.Smoothness.Jank"/>
@@ -17829,7 +17829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.SpdySettingsCwnd"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Spellcheck.Windows.LocaleSupportType" separator=".">
+<histogram_suffixes name="Spellcheck_Windows_LocaleSupportType" separator=".">
   <suffix name="Both"
       label="This variation counts the number of locales that are supported
              by both Hunspell and the OS spell checker."/>
@@ -17846,7 +17846,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Spellcheck.Windows.SpellcheckLocalesSupport"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Spellcheck.Windows.SpellcheckType" separator=".">
+<histogram_suffixes name="Spellcheck_Windows_SpellcheckType" separator=".">
   <suffix name="HunspellOnly"
       label="This variation measures the duration when only Hunspell is used."/>
   <suffix name="Hybrid"
@@ -18081,7 +18081,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="ServiceWorker.NavPreload.WorkerWaitTime_MainFrame"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Storage.BlobAppendableItems" separator=".">
+<histogram_suffixes name="Storage_BlobAppendableItems" separator=".">
   <obsolete>
     Removed on 12/18. Metric wasn't used for anything and wasn't useful.
   </obsolete>
@@ -18095,7 +18095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Storage.BlobItemSize.BlobSlice"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Storage.BlobEvictReason" separator=".">
+<histogram_suffixes name="Storage_BlobEvictReason" separator=".">
   <suffix name="OnMemoryPressure"
       label="Eviction was triggered because of memory pressure signal."/>
   <suffix name="SizeExceededInMemoryLimit"
@@ -18107,7 +18107,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Storage.Blob.SizeEvictedToDiskInKB"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Storage.Bytes" separator=".">
+<histogram_suffixes name="Storage_Bytes" separator=".">
   <suffix name="DiskCache.AppCache" label="AppCache usage."/>
   <suffix name="DiskCache.CacheStorage" label="CacheStorage usage."/>
   <suffix name="DiskCache.ServiceWorker"
@@ -18704,7 +18704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Tabs.TabOffsetOfSwitch"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Tabs.SwitchLatency" separator="_">
+<histogram_suffixes name="Tabs_SwitchLatency" separator="_">
   <suffix name="Actual"
       label="The time it takes to show a real live frame from the renderer on
              the screen after the user selects a tab. This doesn not include
@@ -18721,7 +18721,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Tabs.SwitchFromUserLatency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Tabs.TabUsageIntervalLength" separator="_">
+<histogram_suffixes name="Tabs_TabUsageIntervalLength" separator="_">
   <suffix name="30" label="30 seconds"/>
   <suffix name="60" label="1 minute"/>
   <suffix name="600" label="10 minutes"/>
@@ -19142,7 +19142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Thumbnails.CaptureOutcome"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ThumbnailProvider.ClientType" separator=".">
+<histogram_suffixes name="ThumbnailProvider_ClientType" separator=".">
   <suffix name="DownloadHome" label="Download home"/>
   <suffix name="NTPSnippets" label="NTP snippets"/>
   <affected-histogram name="Android.ThumbnailProvider.BitmapCache.Size"/>
@@ -19486,7 +19486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Tab.Visibility"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="VR.Mode" separator=".">
+<histogram_suffixes name="VR_Mode" separator=".">
   <obsolete>
     Removed 06/2020.
   </obsolete>
