@@ -16,8 +16,9 @@ without changes to the corresponding grd file. -->
       <if expr="chromeos">
         <include name="IDR_WEBUI_JS_I18N_TEMPLATE_PROCESS_JS" file="js/i18n_template_process.js" type="BINDATA" />
       </if>
-      <include name="IDR_WEBUI_JS_JSTEMPLATE_COMPILED_JS" file="js/jstemplate_compiled.js"
-               flattenhtml="true" type="BINDATA"/>
+      <include name="IDR_WEBUI_JS_JSTEMPLATE_COMPILED_JS"
+               file="../../../third_party/jstemplate/jstemplate_compiled.js"
+               resource_path="js/jstemplate_compiled.js" type="BINDATA"/>
       <!-- Roboto Font. Roboto-Regular and Roboto-Light is already available on
            Android, and Roboto-Medium is not used on Android. All 6 weights of
            Roboto are available on Chrome OS.-->

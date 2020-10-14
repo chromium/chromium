@@ -71,9 +71,7 @@ def _CheckWebDevStyle(input_api, output_api):
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
     from web_dev_style import presubmit_support
-    IGNORELIST = ['ui/webui/resources/js/jstemplate_compiled.js']
-    file_filter = lambda f: f.LocalPath() not in IGNORELIST
-    results += presubmit_support.CheckStyle(input_api, output_api, file_filter)
+    results += presubmit_support.CheckStyle(input_api, output_api)
   finally:
     sys.path = old_sys_path
   return results
