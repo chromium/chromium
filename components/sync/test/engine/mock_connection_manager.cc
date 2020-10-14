@@ -108,7 +108,7 @@ HttpResponse MockConnectionManager::PostBufferToPath(
 
   if (--countdown_to_postbuffer_fail_ == 0) {
     // Fail as countdown hits zero.
-    return HttpResponse::ForHttpError(net::HTTP_BAD_REQUEST);
+    return HttpResponse::ForHttpStatusCode(net::HTTP_BAD_REQUEST);
   }
 
   if (!server_reachable_) {

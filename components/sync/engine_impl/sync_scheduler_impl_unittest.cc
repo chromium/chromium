@@ -1664,7 +1664,7 @@ TEST_F(SyncSchedulerImplTest, PollFromCanaryAfterAuthError) {
                 RecordSyncShareMultiple(&times, kMinNumSamples, true)));
 
   connection()->SetServerResponse(
-      HttpResponse::ForHttpError(net::HTTP_UNAUTHORIZED));
+      HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED));
   StartSyncScheduler(base::Time());
 
   // Run to wait for polling.

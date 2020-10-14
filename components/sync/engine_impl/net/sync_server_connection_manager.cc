@@ -108,8 +108,7 @@ HttpResponse Connection::Init(const std::string& connection_url,
   // Issue the POST, blocking until it finishes.
   if (!cancelation_signal_->TryRegisterHandler(this)) {
     // Return early because cancelation signal was signaled.
-    // TODO(crbug.com/951350): Introduce an extra status code for canceled?
-    return HttpResponse::ForNetError(0);
+    return HttpResponse::ForUnspecifiedError();
   }
   base::ScopedClosureRunner auto_unregister(base::BindOnce(
       &CancelationSignal::UnregisterHandler,
@@ -125,7 +124,7 @@ HttpResponse Connection::Init(const std::string& connection_url,
   }
 
   // We got a server response, copy over response codes and content.
-  HttpResponse response = HttpResponse::ForHttpError(http_status_code);
+  HttpResponse response = HttpResponse::ForHttpStatusCode(http_status_code);
   response.content_length =
       static_cast<int64_t>(post_provider_->GetResponseContentLength());
   response.payload_length =
@@ -210,11 +209,11 @@ HttpResponse SyncServerConnectionManager::PostBufferToPath(
     // Print a log to distinguish this "known failure" from others.
     DVLOG(1) << "ServerConnectionManager forcing SYNC_AUTH_ERROR due to missing"
                 " access token";
-    return HttpResponse::ForHttpError(net::HTTP_UNAUTHORIZED);
+    return HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED);
   }
 
   if (cancelation_signal_->IsSignalled()) {
-    return HttpResponse::ForNetError(0);
+    return HttpResponse::ForUnspecifiedError();
   }
 
   auto connection = std::make_unique<Connection>(post_provider_factory_.get(),
@@ -228,13 +227,11 @@ HttpResponse SyncServerConnectionManager::PostBufferToPath(
 
   if (http_response.server_status == HttpResponse::SYNC_AUTH_ERROR) {
     ClearAccessToken();
+  } else if (http_response.server_status ==
+             HttpResponse::SERVER_CONNECTION_OK) {
+    connection->ReadBufferResponse(buffer_out, &http_response);
   }
 
-  if (http_response.server_status != HttpResponse::SERVER_CONNECTION_OK) {
-    return http_response;
-  }
-
-  connection->ReadBufferResponse(buffer_out, &http_response);
   return http_response;
 }
 

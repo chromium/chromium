@@ -38,8 +38,6 @@ struct HttpResponse {
 
     // SYNC_AUTH_ERROR is returned when the HTTP status code indicates that an
     // auth error has occurred (i.e. a 401).
-    // TODO(crbug.com/842096, crbug.com/951350): Remove this and instead use
-    // SYNC_SERVER_ERROR plus |http_status_code| == 401.
     SYNC_AUTH_ERROR,
 
     // SERVER_CONNECTION_OK is returned when request was handled correctly.
@@ -64,8 +62,8 @@ struct HttpResponse {
   static HttpResponse Uninitialized();
   static HttpResponse ForNetError(int net_error_code);
   static HttpResponse ForIoError();
-  // TODO(crbug.com/951350): Rename to ForHttpStatusCode.
-  static HttpResponse ForHttpError(int http_status_code);
+  static HttpResponse ForUnspecifiedError();
+  static HttpResponse ForHttpStatusCode(int http_status_code);
   static HttpResponse ForSuccess();
 
  private:
@@ -85,7 +83,7 @@ class ServerConnectionEventListener {
   virtual void OnServerConnectionEvent(const ServerConnectionEvent& event) = 0;
 
  protected:
-  virtual ~ServerConnectionEventListener() {}
+  virtual ~ServerConnectionEventListener() = default;
 };
 
 // Use this class to interact with the sync server.

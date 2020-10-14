@@ -73,7 +73,14 @@ HttpResponse HttpResponse::ForIoError() {
 }
 
 // static
-HttpResponse HttpResponse::ForHttpError(int http_status_code) {
+HttpResponse HttpResponse::ForUnspecifiedError() {
+  HttpResponse response;
+  response.server_status = CONNECTION_UNAVAILABLE;
+  return response;
+}
+
+// static
+HttpResponse HttpResponse::ForHttpStatusCode(int http_status_code) {
   HttpResponse response;
   if (http_status_code == net::HTTP_OK) {
     response.server_status = SERVER_CONNECTION_OK;
@@ -115,7 +122,7 @@ bool ServerConnectionManager::SetAccessToken(const std::string& access_token) {
   // second request. Need to notify sync frontend again to request new token,
   // otherwise backend will stay in SYNC_AUTH_ERROR state while frontend thinks
   // everything is fine and takes no actions.
-  SetServerResponse(HttpResponse::ForHttpError(net::HTTP_UNAUTHORIZED));
+  SetServerResponse(HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED));
   return false;
 }
 
