@@ -125326,6 +125326,19 @@
        {}
       ]
      ],
+     "translucent-outline.html": [
+      "38109a56a52d6b1fb0c9f9e0f2503206a610b2d1",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/translucent-outline-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "webkit-appearance-auto-001.html": [
       "fb0261b020f6fc2b1e3bfccb3da7d899f0337f79",
       [
@@ -203202,7 +203215,11 @@
        "010635dddc80817eb9ce06cd21b1c22de9171eeb",
        []
       ]
-     }
+     },
+     "translucent-outline-ref.html": [
+      "383e256533d3e9d716e3ec850d58a8c889aa2829",
+      []
+     ]
     },
     "css-values": {
      "META.yml": [
@@ -237272,7 +237289,7 @@
       []
      ],
      "webxr-test.js": [
-      "c661971285cd01b31ab57ede8e543293dfc56948",
+      "01d2ec23396a9fbe21d25fba90dc8dcd0f9bd0d3",
       []
      ],
      "webxr-test.js.headers": [
@@ -254818,7 +254835,7 @@
       []
      ],
      "webxr_test_constants.js": [
-      "139ab775684c427e39bc50719226c96fcbd3a5d5",
+      "40643d0c6abbd91a51a7940397eed90a9e91fa8f",
       []
      ],
      "webxr_test_constants_fake_world.js": [
@@ -416528,7 +416545,7 @@
        ]
       ],
       "audioworkletnode-constructor-options.https.html": [
-       "cee9ec82c20f42a5941698fc394e6babb639ace9",
+       "d3347d265e42365dcba1190c9a91a30a7e2a6589",
        [
         null,
         {}
@@ -425501,7 +425518,14 @@
       ]
      ],
      "xrSession_environmentBlendMode.https.html": [
-      "da2ddc28d8dc8c4903b985dbe08f9ad034ef0f1b",
+      "28f31da7827abbb197f5d37fe4b4fbf78158fdcc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "xrSession_interactionMode.https.html": [
+      "89cdc80132fb3dd4eb90fa477e280edc132912db",
       [
        null,
        {}
@@ -425510,7 +425534,7 @@
     },
     "dom-overlay": {
      "ar_dom_overlay.https.html": [
-      "78a8ba2080a76f2e2ad0b1023e73e0eaa68fa052",
+      "250adf9b246b259c4d13804e5e465e35ae98b46f",
       [
        null,
        {}
