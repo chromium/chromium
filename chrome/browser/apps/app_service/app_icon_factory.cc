@@ -953,7 +953,7 @@ void IconLoadingPipeline::OnReadWebAppIcon(
       ++it;
     }
 
-    if (it == icon_bitmaps.end()) {
+    if (it == icon_bitmaps.end() || it->second.empty()) {
       MaybeApplyEffectsAndComplete(gfx::ImageSkia());
       return;
     }
