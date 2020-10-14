@@ -2753,9 +2753,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSearchEngineLogo.Events"
-    enum="AndroidSearchEngineLogoEvents" expires_after="2020-10-14">
+    enum="AndroidSearchEngineLogoEvents" expires_after="2021-06-01">
   <owner>wylieb@chromium.org</owner>
-  <owner>lzbylut@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
   <summary>
     Counts occurences of various events related to the Search Engine Logo
     feature. When enabled, the feature will show the logo of the default search
