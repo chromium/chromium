@@ -89,8 +89,7 @@ void ExtractVersionNumbers(const std::string& version,
 
 // Returns if a micro-architecture supports the cycles:ppp event.
 bool MicroarchitectureHasCyclesPPPEvent(const std::string& uarch) {
-  return uarch == "Goldmont" || uarch == "GoldmontPlus" ||
-         uarch == "Broadwell" || uarch == "Kabylake" || uarch == "Tigerlake";
+  return false;
 }
 
 // Returns if a micro-architecture supports LBR callgraph profiling.
