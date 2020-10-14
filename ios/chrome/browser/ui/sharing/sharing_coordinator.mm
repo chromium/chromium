@@ -46,6 +46,8 @@ using bookmarks::BookmarkNode;
 
 @property(nonatomic, weak) UIView* originView;
 
+@property(nonatomic, assign) CGRect originRect;
+
 @end
 
 @implementation SharingCoordinator
@@ -55,10 +57,26 @@ using bookmarks::BookmarkNode;
                                     params:(ActivityParams*)params
                                 originView:(UIView*)originView {
   DCHECK(params);
+  DCHECK(originView);
+  self = [self initWithBaseViewController:viewController
+                                  browser:browser
+                                   params:params
+                               originView:originView
+                               originRect:originView.bounds];
+  return self;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(ActivityParams*)params
+                                originView:(UIView*)originView
+                                originRect:(CGRect)originRect {
+  DCHECK(params);
   if (self = [super initWithBaseViewController:viewController
                                        browser:browser]) {
     _params = params;
     _originView = originView;
+    _originRect = originRect;
   }
   return self;
 }
@@ -87,8 +105,12 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - ActivityServicePositioner
 
-- (UIView*)shareButtonView {
+- (UIView*)sourceView {
   return self.originView;
+}
+
+- (CGRect)sourceRect {
+  return self.originRect;
 }
 
 #pragma mark - ActivityServicePresentation

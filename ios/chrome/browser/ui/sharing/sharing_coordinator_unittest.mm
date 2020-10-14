@@ -183,7 +183,9 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   auto activityHandler =
       static_cast<id<ActivityServicePositioner, ActivityServicePresentation>>(
           coordinator);
-  EXPECT_EQ(fake_origin_view_, activityHandler.shareButtonView);
+  EXPECT_EQ(fake_origin_view_, activityHandler.sourceView);
+  EXPECT_TRUE(
+      CGRectEqualToRect(fake_origin_view_.bounds, activityHandler.sourceRect));
 
   // Verify that the presentation protocol works too.
   id activity_vc_partial_mock = OCMPartialMock(activityViewController);

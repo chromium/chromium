@@ -211,8 +211,12 @@
 
 #pragma mark - ActivityServicePositioner
 
-- (UIView*)shareButtonView {
+- (UIView*)sourceView {
   return self.view.shareButton;
+}
+
+- (CGRect)sourceRect {
+  return self.view.shareButton.bounds;
 }
 
 #pragma mark - FullscreenUIElement
