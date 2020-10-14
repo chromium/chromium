@@ -119,7 +119,7 @@ struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,
 };
 
 // If this assert fails, it means that size of ComputedStyle has changed. Please
-// check that you really *do* what to increase the size of ComputedStyle, then
+// check that you really *do* want to increase the size of ComputedStyle, then
 // update the SameSizeAsComputedStyle struct to match the updated storage of
 // ComputedStyle.
 ASSERT_SIZE(ComputedStyle, SameSizeAsComputedStyle);

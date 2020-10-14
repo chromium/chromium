@@ -275,6 +275,7 @@ outlineWidth
 overflow
 overflowAnchor
 overflowBlock
+overflowClipMargin
 overflowInline
 overflowWrap
 overflowX

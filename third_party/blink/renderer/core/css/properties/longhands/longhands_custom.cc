@@ -4658,6 +4658,22 @@ const CSSValue* OverflowAnchor::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.OverflowAnchor());
 }
 
+const CSSValue* OverflowClipMargin::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ZoomAdjustedPixelValue(style.OverflowClipMargin(), style);
+}
+
+const CSSValue* OverflowClipMargin::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeLength(range, context,
+                                          kValueRangeNonNegative);
+}
+
 const CSSValue* OverflowWrap::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const SVGComputedStyle&,

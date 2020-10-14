@@ -243,6 +243,7 @@ outline-width: 0px
 overflow: visible
 overflow-anchor: auto
 overflow-block: visible
+overflow-clip-margin: 0px
 overflow-inline: visible
 overflow-wrap: normal
 overflow-x: visible

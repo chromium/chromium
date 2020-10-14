@@ -2846,6 +2846,17 @@
       runtime_flag: "CSSLogicalOverflow",
     },
     {
+      name: "overflow-clip-margin",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "OverflowClip",
+      field_template: "external",
+      field_group: "*",
+      default_value: "LayoutUnit()",
+      type_name: "LayoutUnit",
+      include_paths: ["third_party/blink/renderer/platform/geometry/layout_unit.h"],
+      converter: "ConvertLayoutUnit",
+    },
+    {
       name: "overflow-x",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",

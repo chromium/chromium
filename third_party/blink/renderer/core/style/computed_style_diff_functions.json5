@@ -379,6 +379,7 @@
     },
     {
         name: "UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow",
+        fields_to_diff: ["overflow-clip-margin"],
         predicates_to_test: [
           {
             predicate: "a.BoxShadowDataEquivalent(b)",
