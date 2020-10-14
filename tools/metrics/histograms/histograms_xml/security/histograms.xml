@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.LegacyTLS.DownloadStarted" enum="Boolean"
-    expires_after="M88">
+    expires_after="M92">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -66,7 +66,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.LegacyTLS.FormSubmission" enum="Boolean"
-    expires_after="M88">
+    expires_after="M92">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -78,7 +78,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.LegacyTLS.OnCommit" enum="Boolean"
-    expires_after="M88">
+    expires_after="M92">
   <owner>cthomp@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
@@ -89,7 +89,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.LegacyTLS.PageInfo.Action"
-    enum="WebsiteSettingsAction" expires_after="M88">
+    enum="WebsiteSettingsAction" expires_after="M92">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
