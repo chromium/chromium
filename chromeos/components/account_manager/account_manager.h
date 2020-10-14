@@ -242,10 +242,13 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   bool IsTokenAvailable(const AccountKey& account_key) const;
 
   // Returns true if the token stored against |account_key| is a dummy Gaia
-  // token. This is meant to be used only by
-  // |ProfileOAuth2TokenServiceDelegateChromeOS| to pre-emptively reject access
-  // token requests for |account_key|.
-  bool HasDummyGaiaToken(const AccountKey& account_key) const;
+  // token.
+  bool HasDummyGaiaTokenSync(const AccountKey& account_key) const;
+
+  // Calls the |callback| with true if the token stored against |account_key| is
+  // a dummy Gaia token.
+  void HasDummyGaiaToken(const AccountKey& account_key,
+                         base::OnceCallback<void(bool)> callback) const;
 
  private:
   enum InitializationState {

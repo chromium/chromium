@@ -116,6 +116,23 @@ class AccountManagerTest : public testing::Test {
     return raw_email;
   }
 
+  bool HasDummyGaiaTokenBlocking(
+      const AccountManager::AccountKey& account_key) {
+    bool has_dummy_token_result = false;
+
+    base::RunLoop run_loop;
+    account_manager_->HasDummyGaiaToken(
+        account_key,
+        base::BindLambdaForTesting(
+            [&has_dummy_token_result, &run_loop](bool has_dummy_token) {
+              has_dummy_token_result = has_dummy_token;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    return has_dummy_token_result;
+  }
+
   // Helper method to reset and initialize |account_manager_| with default
   // parameters.
   void ResetAndInitializeAccountManager() {
@@ -615,6 +632,21 @@ TEST_F(AccountManagerTest, IsTokenAvailableReturnsTrueForInvalidTokens) {
   RunAllPendingTasks();
   EXPECT_TRUE(account_manager()->IsTokenAvailable(kGaiaAccountKey));
   EXPECT_TRUE(IsAccountKeyPresent(GetAccountsBlocking(), kGaiaAccountKey));
+}
+
+TEST_F(AccountManagerTest, HasDummyGaiaTokenReturnsTrueForInvalidTokens) {
+  EXPECT_FALSE(account_manager()->IsTokenAvailable(kGaiaAccountKey));
+  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail,
+                                   AccountManager::kInvalidToken);
+  RunAllPendingTasks();
+  EXPECT_TRUE(HasDummyGaiaTokenBlocking(kGaiaAccountKey));
+}
+
+TEST_F(AccountManagerTest, HasDummyGaiaTokenReturnsFalseForValidTokens) {
+  EXPECT_FALSE(account_manager()->IsTokenAvailable(kGaiaAccountKey));
+  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
+  RunAllPendingTasks();
+  EXPECT_FALSE(HasDummyGaiaTokenBlocking(kGaiaAccountKey));
 }
 
 }  // namespace chromeos

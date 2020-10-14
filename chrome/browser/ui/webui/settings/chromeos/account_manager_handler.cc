@@ -320,7 +320,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         // Secondary accounts in child user session cannot be unmigrated. If
         // such account has dummy gaia token, it was invalidated.
         .SetUnmigrated(!is_child_user &&
-                       account_manager_->HasDummyGaiaToken(account_key))
+                       account_manager_->HasDummyGaiaTokenSync(account_key))
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
                                 maybe_account_info->account_id));

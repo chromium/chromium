@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
         user_manager::UserType::USER_TYPE_CHILD) {
       EXPECT_FALSE(account.FindBoolKey("unmigrated").value());
     } else {
-      EXPECT_EQ(account_manager()->HasDummyGaiaToken(expected_account.key),
+      EXPECT_EQ(account_manager()->HasDummyGaiaTokenSync(expected_account.key),
                 account.FindBoolKey("unmigrated").value());
     }
     EXPECT_EQ(expected_account.key.account_type,

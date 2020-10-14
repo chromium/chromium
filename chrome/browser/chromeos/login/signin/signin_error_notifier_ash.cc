@@ -68,7 +68,7 @@ bool AreAllAccountsMigrated(
     const chromeos::AccountManager* const account_manager,
     const std::vector<chromeos::AccountManager::Account>& accounts) {
   for (const auto& account : accounts) {
-    if (account_manager->HasDummyGaiaToken(account.key)) {
+    if (account_manager->HasDummyGaiaTokenSync(account.key)) {
       return false;
     }
   }

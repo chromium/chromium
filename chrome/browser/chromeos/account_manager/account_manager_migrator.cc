@@ -100,7 +100,7 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
   bool IsAccountWithNonDummyTokenPresentInAccountManager(
       const AccountManager::AccountKey& account) const {
     return base::Contains(account_manager_accounts_, account) &&
-           !account_manager_->HasDummyGaiaToken(account);
+           !account_manager_->HasDummyGaiaTokenSync(account);
   }
 
   bool IsAccountManagerEmpty() const {

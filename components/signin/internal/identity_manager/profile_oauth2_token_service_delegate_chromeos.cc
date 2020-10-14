@@ -308,7 +308,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
   // However, if we know that |account_key| has a dummy token, store a
   // persistent error against it, so that we can pre-emptively reject access
   // token requests for it.
-  if (account_manager_->HasDummyGaiaToken(account.key)) {
+  if (account_manager_->HasDummyGaiaTokenSync(account.key)) {
     error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
             CREDENTIALS_REJECTED_BY_CLIENT);
