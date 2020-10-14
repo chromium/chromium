@@ -25,6 +25,12 @@
 
 namespace ash {
 namespace hud_display {
+namespace {
+
+ui::ScopedAnimationDurationScaleMode* scoped_animation_duration_scale_mode =
+    nullptr;
+
+}  // anonymous namespace
 
 class HUDCheckboxHandler {
  public:
@@ -207,9 +213,6 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
   // Map slider values to animation scale.
   using SliderValuesMap = base::flat_map<float, float>;
 
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
-      scoped_animation_duration_scale_mode_;
-
   views::View* hints_container_ = nullptr;  // not owned.
   AnimationSpeedSlider* slider_ = nullptr;  // not owned.
 
@@ -306,10 +309,11 @@ void AnimationSpeedControl::SliderValueChanged(
   // There could be only one instance of the scoped modifier at a time.
   // So we need to destroy the existing one before we can create a
   // new one.
-  scoped_animation_duration_scale_mode_.reset();
+  delete scoped_animation_duration_scale_mode;
+  scoped_animation_duration_scale_mode = nullptr;
   if (multiplier != 1) {
-    scoped_animation_duration_scale_mode_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(multiplier);
+    scoped_animation_duration_scale_mode =
+        new ui::ScopedAnimationDurationScaleMode(multiplier);
   }
 }
 
