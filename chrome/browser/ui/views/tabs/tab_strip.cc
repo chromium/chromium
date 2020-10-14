@@ -2403,27 +2403,9 @@ gfx::Size TabStrip::GetMinimumSize() const {
 }
 
 gfx::Size TabStrip::CalculatePreferredSize() const {
-  int preferred_tab_area_width = 0;
-  // The tabstrip needs to always exactly fit the bounds of the tabs so that
-  // NTB can be laid out just to the right of the rightmost tab. When the tabs
-  // aren't at their ideal bounds (i.e. during animation or a drag), we need to
-  // size ourselves to exactly fit wherever the tabs *currently* are.
-  if (IsAnimating() || drag_context_->IsDragSessionActive()) {
-    // The visual order of the tabs can be out of sync with the logical order,
-    // so we have to check all of them to find the visually trailing-most one.
-    int max_x = 0;
-    for (auto* tab : layout_helper_->GetTabs()) {
-      max_x = std::max(max_x, tab->bounds().right());
-    }
-    // The tabs span from 0 to |max_x|, so |max_x| is the current width of the
-    // tab area. We report the current width as our preferred width so that the
-    // tab strip is sized to exactly fit the current position of the tabs.
-    preferred_tab_area_width = max_x;
-  } else {
-    preferred_tab_area_width = CalculatePreferredWidthForTabs();
-  }
-  return gfx::Size(preferred_tab_area_width + GetRightSideReservedWidth(),
-                   GetLayoutConstant(TAB_HEIGHT));
+  return gfx::Size(
+      CalculatePreferredWidthForTabs() + GetRightSideReservedWidth(),
+      GetLayoutConstant(TAB_HEIGHT));
 }
 
 views::View* TabStrip::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -3503,9 +3485,26 @@ int TabStrip::CalculateAvailableWidthForTabs() {
 }
 
 int TabStrip::CalculatePreferredWidthForTabs() const {
-  return override_available_width_for_tabs_
-             ? override_available_width_for_tabs_.value()
-             : layout_helper_->CalculatePreferredWidth();
+  // The tabstrip needs to always exactly fit the bounds of the tabs so that
+  // NTB can be laid out just to the right of the rightmost tab. When the tabs
+  // aren't at their ideal bounds (i.e. during animation or a drag), we need to
+  // size ourselves to exactly fit wherever the tabs *currently* are.
+  if (IsAnimating() || drag_context_->IsDragSessionActive()) {
+    // The visual order of the tabs can be out of sync with the logical order,
+    // so we have to check all of them to find the visually trailing-most one.
+    int max_x = 0;
+    for (auto* tab : layout_helper_->GetTabs()) {
+      max_x = std::max(max_x, tab->bounds().right());
+    }
+    // The tabs span from 0 to |max_x|, so |max_x| is the current width of the
+    // tab area. We report the current width as our preferred width so that the
+    // tab strip is sized to exactly fit the current position of the tabs.
+    return max_x;
+  } else {
+    return override_available_width_for_tabs_
+               ? override_available_width_for_tabs_.value()
+               : layout_helper_->CalculatePreferredWidth();
+  }
 }
 
 int TabStrip::GetAvailableWidthForTabStrip() {
