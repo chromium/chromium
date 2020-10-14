@@ -351,7 +351,10 @@ void NativeThemeAura::PaintScrollbarCorner(cc::PaintCanvas* canvas,
   // Overlay Scrollbar should never paint a scrollbar corner.
   DCHECK(!use_overlay_scrollbars_);
   cc::PaintFlags flags;
-  flags.setColor(SkColorSetRGB(0xDC, 0xDC, 0xDC));
+  SkColor bg_color = color_scheme == ui::NativeTheme::ColorScheme::kDark
+                         ? SkColorSetRGB(0x12, 0x12, 0x12)
+                         : SkColorSetRGB(0xDC, 0xDC, 0xDC);
+  flags.setColor(bg_color);
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
 
