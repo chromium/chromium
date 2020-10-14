@@ -97,7 +97,8 @@ bool HoldingSpaceTray::PerformAction(const ui::Event& event) {
 
   // Activate the bubble for a11y or if it was shown via keypress. Otherwise
   // focus will remain on the tray when it should enter the bubble.
-  if (event.IsKeyEvent() || (event.flags() & ui::EF_TOUCH_ACCESSIBILITY)) {
+  if (event.IsKeyEvent() ||
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     DCHECK(bubble_ && bubble_->GetBubbleWidget());
     bubble_->GetBubbleWidget()->widget_delegate()->SetCanActivate(true);
     bubble_->GetBubbleWidget()->Activate();
