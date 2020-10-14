@@ -40,10 +40,8 @@ class IsolatedPrerenderOriginProber {
   // failure. Used for testing.
   bool IsTLSCanaryCheckCompleteForTesting() const;
 
-  // Tells whether a DNS canary check has completed, either in success or
-  // failure.
-  // Used for testing.
-  bool IsDNSCanaryCheckCompleteForTesting() const;
+  // Tells whether a DNS canary check is active. Used for testing.
+  bool IsDNSCanaryCheckActiveForTesting() const;
 
   // Starts a probe to |url| and calls |callback| with a bool to indicate
   // success (when true) or failure (when false).

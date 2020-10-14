@@ -22,20 +22,15 @@ class IsolatedPrerenderProxyConfigurator {
   IsolatedPrerenderProxyConfigurator();
   ~IsolatedPrerenderProxyConfigurator();
 
-  // Updates the headers needed to connect to the proxy.
-  void UpdateTunnelHeaders(
-      const net::HttpRequestHeaders& connect_tunnel_headers);
-
-  // Updates the hosts used to connect to the proxy.
-  void UpdateProxyHosts(const std::vector<GURL>& proxy_hosts);
+  // Gets the Google API ket, if configured. If not, returns an empty string.
+  static std::string GetGoogleAPIKey();
 
   // Adds a config client that can be used to update Data Reduction Proxy
   // settings.
   void AddCustomProxyConfigClient(
       mojo::Remote<network::mojom::CustomProxyConfigClient> config_client);
 
-  // Should be called whenever there is a possible change to the custom proxy
-  // config.
+  // Updates the custom proxy config to all clients.
   void UpdateCustomProxyConfig();
 
   // Creates a config that can be sent to the NetworkContext.
@@ -44,13 +39,6 @@ class IsolatedPrerenderProxyConfigurator {
  private:
   // The headers used to setup the connect tunnel.
   net::HttpRequestHeaders connect_tunnel_headers_;
-
-  // The configured proxy hosts.
-  std::vector<GURL> proxy_hosts_;
-
-  // Set to true when a custom proxy config with a non-empty set of proxies is
-  // sent to the Network Service.
-  bool sent_proxy_update_ = false;
 
   // The set of clients that will get updates about changes to the proxy config.
   mojo::RemoteSet<network::mojom::CustomProxyConfigClient>

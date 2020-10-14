@@ -54,11 +54,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config_service_client_test_utils.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
-#include "components/data_reduction_proxy/proto/client_config.pb.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -126,20 +124,6 @@ constexpr gfx::Size kSize(640, 480);
 
 const char kAllowedUAClientHint[] = "sec-ch-ua";
 const char kAllowedUAMobileClientHint[] = "sec-ch-ua-mobile";
-
-void SimulateNetworkChange(network::mojom::ConnectionType type) {
-  if (!content::IsInProcessNetworkService()) {
-    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-    content::GetNetworkService()->BindTestInterface(
-        network_service_test.BindNewPipeAndPassReceiver());
-    base::RunLoop run_loop;
-    network_service_test->SimulateNetworkChange(type, run_loop.QuitClosure());
-    run_loop.Run();
-    return;
-  }
-  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      net::NetworkChangeNotifier::ConnectionType(type));
-}
 
 class TestCustomProxyConfigClient
     : public network::mojom::CustomProxyConfigClient {
@@ -381,13 +365,6 @@ class IsolatedPrerenderBrowserTest
     proxy_server_->SetConnectionListener(this);
     EXPECT_TRUE(proxy_server_->Start());
 
-    config_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    config_server_->RegisterRequestHandler(
-        base::BindRepeating(&IsolatedPrerenderBrowserTest::GetConfigResponse,
-                            base::Unretained(this)));
-    EXPECT_TRUE(config_server_->Start());
-
     http_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTP);
     http_server_->ServeFilesFromSourceDirectory("chrome/test/data");
@@ -410,11 +387,9 @@ class IsolatedPrerenderBrowserTest
   // features since order is tricky when doing different feature lists between
   // base and derived classes.
   virtual void SetFeatures() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatePrerenders,
-         data_reduction_proxy::features::kDataReductionProxyHoldback,
-         data_reduction_proxy::features::kFetchClientConfig},
-        {});
+    // Important: Features with parameters can't be used here, because it will
+    // cause a failed DCHECK in the SSL reporting test.
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
   }
 
   void SetUpOnMainThread() override {
@@ -444,9 +419,8 @@ class IsolatedPrerenderBrowserTest
     // For the proxy.
     cmd->AppendSwitch("ignore-certificate-errors");
     cmd->AppendSwitch("force-enable-metrics-reporting");
-    cmd->AppendSwitchASCII(
-        data_reduction_proxy::switches::kDataReductionProxyConfigURL,
-        config_server_->base_url().spec());
+    cmd->AppendSwitchASCII("isolated-prerender-tunnel-proxy",
+                           GetProxyURL().spec());
   }
 
   void SetDataSaverEnabled(bool enabled) {
@@ -491,8 +465,6 @@ class IsolatedPrerenderBrowserTest
     isolated_prerender_service->proxy_configurator()
         ->AddCustomProxyConfigClient(std::move(client_remote));
 
-    // A network change forces the config to be fetched.
-    SimulateNetworkChange(network::mojom::ConnectionType::CONNECTION_3G);
     run_loop.Run();
 
     return std::move(config_client.config_);
@@ -509,7 +481,7 @@ class IsolatedPrerenderBrowserTest
   void WaitForDNSCanaryCheck() {
     IsolatedPrerenderService* service =
         IsolatedPrerenderServiceFactory::GetForProfile(browser()->profile());
-    while (!service->origin_prober()->IsDNSCanaryCheckCompleteForTesting()) {
+    while (service->origin_prober()->IsDNSCanaryCheckActiveForTesting()) {
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -709,14 +681,16 @@ class IsolatedPrerenderBrowserTest
     EXPECT_TRUE("a.test" == request_origin.host() ||
                 "b.test" == request_origin.host());
 
-    bool found_chrome_proxy_header = false;
+    bool found_chrome_tunnel_header = false;
     for (const std::string& header : request_lines) {
-      if (header.find("chrome-proxy") != std::string::npos &&
-          header.find("s=secretsessionkey") != std::string::npos) {
-        found_chrome_proxy_header = true;
+      if (header.find("chrome-tunnel") != std::string::npos &&
+          header.find("key=" +
+                      IsolatedPrerenderProxyConfigurator::GetGoogleAPIKey()) !=
+              std::string::npos) {
+        found_chrome_tunnel_header = true;
       }
     }
-    EXPECT_TRUE(found_chrome_proxy_header);
+    EXPECT_TRUE(found_chrome_tunnel_header);
 
     auto new_tunnel = std::make_unique<TestProxyTunnelConnection>();
     new_tunnel->SetOnDoneCallback(
@@ -773,27 +747,6 @@ class IsolatedPrerenderBrowserTest
                       language::prefs::kAcceptLanguages)));
   }
 
-  // Called when |config_server_| receives a request for config fetch.
-  std::unique_ptr<net::test_server::HttpResponse> GetConfigResponse(
-      const net::test_server::HttpRequest& request) {
-    data_reduction_proxy::ClientConfig config =
-        data_reduction_proxy::CreateClientConfig("secretsessionkey", 1000, 0);
-
-    data_reduction_proxy::PrefetchProxyConfig_Proxy* valid_secure_proxy =
-        config.mutable_prefetch_proxy_config()->add_proxy_list();
-    valid_secure_proxy->set_type(
-        data_reduction_proxy::PrefetchProxyConfig_Proxy_Type_CONNECT);
-    valid_secure_proxy->set_host(GetProxyURL().host());
-    valid_secure_proxy->set_port(GetProxyURL().EffectiveIntPort());
-    valid_secure_proxy->set_scheme(
-        data_reduction_proxy::PrefetchProxyConfig_Proxy_Scheme_HTTPS);
-
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_content(config.SerializeAsString());
-    response->set_content_type("text/plain");
-    return response;
-  }
-
   // prerender::PrerenderHandle::Observer:
   void OnPrerenderStart(prerender::PrerenderHandle* handle) override {}
   void OnPrerenderStopLoading(prerender::PrerenderHandle* handle) override {}
@@ -826,7 +779,6 @@ class IsolatedPrerenderBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> proxy_server_;
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
-  std::unique_ptr<net::EmbeddedTestServer> config_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   std::unique_ptr<net::EmbeddedTestServer> canary_server_;
 
@@ -2133,10 +2085,17 @@ IN_PROC_BROWSER_TEST_F(
 class IsolatedPrerenderBaseProbingBrowserTest
     : public IsolatedPrerenderBrowserTest {
  public:
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   void RunProbeTest(bool probe_success,
                     bool expect_successful_tls_probe,
                     int64_t expected_status,
                     bool expect_probe) {
+    WaitForTLSCanaryCheck();
+    WaitForDNSCanaryCheck();
+
     // Setup a local probing server so we can watch its accepted socket count.
     TestServerConnectionCounter probe_counter;
     net::EmbeddedTestServer probing_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -2219,6 +2178,9 @@ class IsolatedPrerenderBaseProbingBrowserTest
       EXPECT_EQ(base::nullopt, probe_latency_ms);
     }
   }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 class ProbingEnabled_CanaryOn_BothCanaryGood_IsolatedPrerenderBrowserTest
@@ -2335,16 +2297,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ProbingEnabled_CanaryOn_TLSCanaryGood_DNSCanaryBad_IsolatedPrerenderBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(DNSProbeOK)) {
-  base::HistogramTester histogram_tester;
-
   RunProbeTest(/*probe_success=*/true,
                /*expect_successful_tls_probe=*/false,
                /*expected_status=*/1,
                /*expect_probe=*/true);
 
-  histogram_tester.ExpectTotalCount(
+  histogram_tester().ExpectTotalCount(
       "Availability.Prober.FinalState.IsolatedPrerenderDNSCanaryCheck", 1);
-  histogram_tester.ExpectTotalCount(
+  histogram_tester().ExpectTotalCount(
       "Availability.Prober.FinalState.IsolatedPrerenderTLSCanaryCheck", 1);
 }
 
@@ -2360,17 +2320,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ProbingEnabled_CanaryOn_TLSCanaryBad_DNSCanaryBad_IsolatedPrerenderBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(TLSProbeOK)) {
-  base::HistogramTester histogram_tester;
-
   RunProbeTest(/*probe_success=*/true,
                /*expect_successful_tls_probe=*/true,
                /*expected_status=*/1,
                /*expect_probe=*/true);
-
-  histogram_tester.ExpectTotalCount(
-      "Availability.Prober.FinalState.IsolatedPrerenderDNSCanaryCheck", 1);
-  histogram_tester.ExpectTotalCount(
-      "Availability.Prober.FinalState.IsolatedPrerenderTLSCanaryCheck", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

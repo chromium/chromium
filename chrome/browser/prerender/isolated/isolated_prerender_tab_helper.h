@@ -401,6 +401,11 @@ class IsolatedPrerenderTabHelper
     scoped_refptr<network::SharedURLLoaderFactory> isolated_url_loader_factory_;
   };
 
+  // Returns true if the current profile is not incognito and meets any
+  // requirements for Lite Mode being enabled.
+  static bool IsProfileEligible(Profile* profile);
+  bool IsProfileEligible() const;
+
   // Computes the AfterSRPMetrics that would be returned for the next
   // navigation, when it commits. This method exists to allow the PLM Observer
   // to get the AfterSRPMetrics if the navigation fails to commit, so that

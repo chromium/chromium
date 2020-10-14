@@ -22,20 +22,9 @@ IsolatedPrerenderService::IsolatedPrerenderService(Profile* profile)
       proxy_configurator_(
           std::make_unique<IsolatedPrerenderProxyConfigurator>()),
       origin_prober_(std::make_unique<IsolatedPrerenderOriginProber>(profile)) {
-  DataReductionProxyChromeSettings* drp_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile_);
-  if (drp_settings)
-    drp_settings->AddDataReductionProxySettingsObserver(this);
 }
 
 IsolatedPrerenderService::~IsolatedPrerenderService() = default;
-
-void IsolatedPrerenderService::Shutdown() {
-  DataReductionProxyChromeSettings* drp_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile_);
-  if (drp_settings)
-    drp_settings->RemoveDataReductionProxySettingsObserver(this);
-}
 
 bool IsolatedPrerenderService::MaybeProxyURLLoaderFactory(
     content::RenderFrameHost* frame,
@@ -89,16 +78,3 @@ void IsolatedPrerenderService::DestroySubresourceManagerForURL(
     subresource_managers_.erase(iter);
   }
 }
-
-void IsolatedPrerenderService::OnProxyRequestHeadersChanged(
-    const net::HttpRequestHeaders& headers) {
-  proxy_configurator_->UpdateTunnelHeaders(headers);
-}
-
-void IsolatedPrerenderService::OnPrefetchProxyHostsChanged(
-    const std::vector<GURL>& prefetch_proxies) {
-  proxy_configurator_->UpdateProxyHosts(prefetch_proxies);
-}
-
-void IsolatedPrerenderService::OnSettingsInitialized() {}
-void IsolatedPrerenderService::OnDataSaverEnabledChanged(bool enabled) {}

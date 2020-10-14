@@ -350,13 +350,11 @@ void IsolatedPrerenderOriginProber::
 }
 
 bool IsolatedPrerenderOriginProber::IsTLSCanaryCheckCompleteForTesting() const {
-  return tls_canary_check_ &&
-         tls_canary_check_->LastProbeWasSuccessful().has_value();
+  return tls_canary_check_->LastProbeWasSuccessful().has_value();
 }
 
-bool IsolatedPrerenderOriginProber::IsDNSCanaryCheckCompleteForTesting() const {
-  return dns_canary_check_ &&
-         dns_canary_check_->LastProbeWasSuccessful().has_value();
+bool IsolatedPrerenderOriginProber::IsDNSCanaryCheckActiveForTesting() const {
+  return dns_canary_check_->is_active();
 }
 
 void IsolatedPrerenderOriginProber::Probe(const GURL& url,

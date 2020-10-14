@@ -13,7 +13,6 @@
 #include "chrome/browser/prerender/isolated/prefetched_mainframe_response_container.h"
 #include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/prerender/browser/prerender_handle.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -77,16 +76,6 @@ class IsolatedPrerenderURLLoaderInterceptorTest
  public:
   IsolatedPrerenderURLLoaderInterceptorTest() = default;
   ~IsolatedPrerenderURLLoaderInterceptorTest() override = default;
-
-  void SetDataSaverEnabled(bool enabled) {
-    data_reduction_proxy::DataReductionProxySettings::
-        SetDataSaverEnabledForTesting(profile()->GetPrefs(), enabled);
-  }
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    SetDataSaverEnabled(true);
-  }
 
   void TearDown() override {
     prerender::PrerenderManager* prerender_manager =

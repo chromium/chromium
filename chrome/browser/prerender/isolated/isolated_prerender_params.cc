@@ -24,6 +24,41 @@ bool IsolatedPrerenderIsEnabled() {
   return base::FeatureList::IsEnabled(features::kIsolatePrerenders);
 }
 
+GURL IsolatedPrerenderProxyHost() {
+  // Command line overrides take priority.
+  std::string cmd_line_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "isolated-prerender-tunnel-proxy");
+  if (!cmd_line_value.empty()) {
+    GURL cmd_line_url(cmd_line_value);
+    if (cmd_line_url.is_valid()) {
+      return cmd_line_url;
+    }
+    LOG(ERROR) << "--isolated-prerender-tunnel-proxy value is invalid";
+  }
+
+  GURL url(base::GetFieldTrialParamValueByFeature(features::kIsolatePrerenders,
+                                                  "proxy_host"));
+  if (url.is_valid() && url.SchemeIs(url::kHttpsScheme)) {
+    return url;
+  }
+  return GURL("https://tunnel.googlezip.net/");
+}
+
+std::string IsolatedPrerenderProxyHeaderKey() {
+  std::string header = base::GetFieldTrialParamValueByFeature(
+      features::kIsolatePrerenders, "proxy_header_key");
+  if (!header.empty()) {
+    return header;
+  }
+  return "chrome-tunnel";
+}
+
+bool IsolatedPrerenderOnlyForLiteMode() {
+  return base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
+                                                 "lite_mode_only", true);
+}
+
 bool IsolatedPrerenderNoStatePrefetchSubresources() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              kIsolatedPrerenderEnableNSPCmdLineFlag) ||

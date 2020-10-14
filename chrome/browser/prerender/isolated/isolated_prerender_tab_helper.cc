@@ -270,6 +270,24 @@ IsolatedPrerenderTabHelper::after_srp_metrics() const {
   return base::nullopt;
 }
 
+// static
+bool IsolatedPrerenderTabHelper::IsProfileEligible(Profile* profile) {
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  if (IsolatedPrerenderOnlyForLiteMode()) {
+    return data_reduction_proxy::DataReductionProxySettings::
+        IsDataSaverEnabledByUser(profile->IsOffTheRecord(),
+                                 profile->GetPrefs());
+  }
+  return true;
+}
+
+bool IsolatedPrerenderTabHelper::IsProfileEligible() const {
+  return IsProfileEligible(profile_);
+}
+
 void IsolatedPrerenderTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -992,10 +1010,7 @@ void IsolatedPrerenderTabHelper::OnPredictionUpdated(
     return;
   }
 
-  // DataSaver must be enabled by the user to use this feature.
-  if (!data_reduction_proxy::DataReductionProxySettings::
-          IsDataSaverEnabledByUser(profile_->IsOffTheRecord(),
-                                   profile_->GetPrefs())) {
+  if (!IsProfileEligible()) {
     return;
   }
 
@@ -1071,9 +1086,7 @@ void IsolatedPrerenderTabHelper::CheckEligibilityOfURL(
     Profile* profile,
     const GURL& url,
     OnEligibilityResultCallback result_callback) {
-  if (!data_reduction_proxy::DataReductionProxySettings::
-          IsDataSaverEnabledByUser(profile->IsOffTheRecord(),
-                                   profile->GetPrefs())) {
+  if (!IsProfileEligible(profile)) {
     std::move(result_callback).Run(url, false, base::nullopt);
     return;
   }

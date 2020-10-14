@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/content_browser_client.h"
 #include "url/gurl.h"
@@ -26,9 +25,7 @@ class RenderFrameHost;
 }
 
 // This service owns browser-level objects used in Isolated Prerenders.
-class IsolatedPrerenderService
-    : public KeyedService,
-      public data_reduction_proxy::DataReductionProxySettingsObserver {
+class IsolatedPrerenderService : public KeyedService {
  public:
   explicit IsolatedPrerenderService(Profile* profile);
   ~IsolatedPrerenderService() override;
@@ -73,17 +70,6 @@ class IsolatedPrerenderService
   IsolatedPrerenderService& operator=(const IsolatedPrerenderService&) = delete;
 
  private:
-  // data_reduction_proxy::DataReductionProxySettingsObserver:
-  void OnProxyRequestHeadersChanged(
-      const net::HttpRequestHeaders& headers) override;
-  void OnSettingsInitialized() override;
-  void OnDataSaverEnabledChanged(bool enabled) override;
-  void OnPrefetchProxyHostsChanged(
-      const std::vector<GURL>& prefetch_proxies) override;
-
-  // KeyedService:
-  void Shutdown() override;
-
   // Cleans up the NoStatePrerender response. Used in a delayed post task.
   void CleanupNoStatePrefetchResponse(const GURL& url);
 
