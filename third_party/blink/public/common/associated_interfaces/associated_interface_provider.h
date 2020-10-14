@@ -65,7 +65,7 @@ class BLINK_COMMON_EXPORT AssociatedInterfaceProvider {
 
   template <typename Interface>
   void GetInterface(mojo::AssociatedRemote<Interface>* remote) {
-    GetInterface(remote->BindNewEndpointAndPassReceiver());
+    GetInterface(remote->BindNewEndpointAndPassReceiver(task_runner_));
   }
 
   void OverrideBinderForTesting(
