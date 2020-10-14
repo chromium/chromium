@@ -151,6 +151,8 @@ void OnListVmDisks(
   VLOG(1) << "image_type: " << image->image_type();
   VLOG(1) << "size: " << image->size();
   VLOG(1) << "user_chosen_size: " << image->user_chosen_size();
+  VLOG(1) << "free_space: " << free_space;
+  VLOG(1) << "min_size: " << image->min_size();
 
   if (image->image_type() !=
       vm_tools::concierge::DiskImageType::DISK_IMAGE_RAW) {
@@ -207,17 +209,15 @@ std::vector<crostini::mojom::DiskSliderTickPtr> GetTicks(
     return {};
   }
   std::vector<int64_t> values = GetTicksForDiskSize(min, max);
+  DCHECK(!values.empty());
 
   // If the current size isn't on one of the ticks insert an extra tick for it.
+  // It's possible for the current size to be greater than the maximum tick,
+  // in which case we go up to whatever that size is.
   auto it = std::lower_bound(begin(values), end(values), current);
-  if (it != end(values)) {
-    if (*it != current) {
-      values.insert(it, current);
-    }
-    *out_default_index = std::distance(begin(values), it);
-  } else {
-    DCHECK(values.empty());
-    return {};
+  *out_default_index = std::distance(begin(values), it);
+  if (it == end(values) || *it != current) {
+    values.insert(it, current);
   }
 
   std::vector<crostini::mojom::DiskSliderTickPtr> ticks;
