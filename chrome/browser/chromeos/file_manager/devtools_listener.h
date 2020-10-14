@@ -66,7 +66,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
 
   // Receives CDP messages sent by host.
   void DispatchProtocolMessage(content::DevToolsAgentHost* host,
-                               base::span<const uint8_t> span_message) override;
+                               base::span<const uint8_t> message) override;
 
   // Returns true if URL should be attached to.
   bool MayAttachToURL(const GURL& url, bool is_webui) override;

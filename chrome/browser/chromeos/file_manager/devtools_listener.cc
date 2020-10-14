@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/json/json_reader.h"
@@ -17,16 +18,20 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_restrictions.h"
 #include "url/url_util.h"
 
 namespace file_manager {
 
 namespace {
 
-base::span<const uint8_t> StringToSpan(const std::string& str) {
-  return base::as_bytes(base::make_span(str));
+base::span<const uint8_t> StringToSpan(const std::string& s) {
+  return base::as_bytes(base::make_span(s));
+}
+
+base::StringPiece SpanToStringPiece(const base::span<const uint8_t>& s) {
+  return {reinterpret_cast<const char*>(s.data()), s.size()};
 }
 
 std::string EncodeURIComponent(const std::string& component) {
@@ -236,15 +241,12 @@ void DevToolsListener::AwaitMessageResponse(int id) {
 
 void DevToolsListener::DispatchProtocolMessage(
     content::DevToolsAgentHost* host,
-    base::span<const uint8_t> span_message) {
+    base::span<const uint8_t> message) {
   if (!navigated_)
     return;
 
-  std::string message(reinterpret_cast<const char*>(span_message.data()),
-                      span_message.size());
-
-  std::unique_ptr<base::DictionaryValue> response =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(message));
+  std::unique_ptr<base::DictionaryValue> response = base::DictionaryValue::From(
+      base::JSONReader::ReadDeprecated(SpanToStringPiece(message)));
   CHECK(response);
 
   std::string* method = response->FindStringPath("method");
