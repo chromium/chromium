@@ -26,7 +26,6 @@ namespace cc {
 
 RasterSource::RasterSource(const RecordingSource* other)
     : display_list_(other->display_list_),
-      painter_reported_memory_usage_(other->painter_reported_memory_usage_),
       background_color_(other->background_color_),
       requires_clear_(other->requires_clear_),
       is_solid_color_(other->is_solid_color_),
@@ -126,12 +125,6 @@ void RasterSource::PlaybackDisplayListToCanvas(
   int repeat_count = std::max(1, slow_down_raster_scale_factor_for_debug_);
   for (int i = 0; i < repeat_count; ++i)
     display_list_->Raster(raster_canvas, image_provider);
-}
-
-size_t RasterSource::GetMemoryUsage() const {
-  if (!display_list_)
-    return 0;
-  return display_list_->BytesUsed() + painter_reported_memory_usage_;
 }
 
 bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,

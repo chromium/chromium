@@ -31,7 +31,6 @@ class SolidColorContentLayerClient : public ContentLayerClient {
   // ContentLayerClient implementation.
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
-  size_t GetApproximateUnsharedMemoryUsage() const override;
 
  private:
   SkColor color_;

@@ -658,20 +658,6 @@ TEST(RasterSourceTest, RasterContentsTransparent) {
   }
 }
 
-TEST(RasterSourceTest, GetPictureMemoryUsageIncludesClientReportedMemory) {
-  const size_t kReportedMemoryUsageInBytes = 100 * 1024 * 1024;
-  gfx::Size layer_bounds(5, 3);
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
-  recording_source->set_reported_memory_usage(kReportedMemoryUsageInBytes);
-  recording_source->Rerecord();
-
-  scoped_refptr<RasterSource> raster = recording_source->CreateRasterSource();
-  size_t total_memory_usage = raster->GetMemoryUsage();
-  EXPECT_GE(total_memory_usage, kReportedMemoryUsageInBytes);
-  EXPECT_LT(total_memory_usage, 2 * kReportedMemoryUsageInBytes);
-}
-
 TEST(RasterSourceTest, RasterTransformWithoutRecordingScale) {
   gfx::Size size(100, 100);
   float recording_scale = 2.f;

@@ -1619,6 +1619,24 @@ void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
   }
 }
 
+size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {
+  size_t result = sizeof(*this) + content_layer_clients_.CapacityInBytes() +
+                  synthesized_clip_cache_.CapacityInBytes() +
+                  scroll_hit_test_layers_.CapacityInBytes() +
+                  scrollbar_layers_.CapacityInBytes() +
+                  pending_layers_.CapacityInBytes();
+
+  for (auto& client : content_layer_clients_)
+    result += client->ApproximateUnsharedMemoryUsage();
+
+  for (auto& layer : pending_layers_) {
+    size_t chunks_size = layer.chunks.ApproximateUnsharedMemoryUsage();
+    DCHECK_GE(chunks_size, sizeof(layer.chunks));
+    result += chunks_size - sizeof(layer.chunks);
+  }
+  return result;
+}
+
 void LayerListBuilder::Add(scoped_refptr<cc::Layer> layer) {
 #if DCHECK_IS_ON()
   DCHECK(list_valid_);

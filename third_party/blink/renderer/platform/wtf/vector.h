@@ -1155,6 +1155,7 @@ class Vector
   // without a reallocation. It can be zero.
   wtf_size_t size() const { return size_; }
   wtf_size_t capacity() const { return Base::capacity(); }
+  size_t CapacityInBytes() const { return Base::AllocationSize(capacity()); }
   bool IsEmpty() const { return !size(); }
 
   // at() and operator[]: Obtain the reference of the element that is located

@@ -15,10 +15,13 @@
 namespace blink {
 
 size_t PaintArtifact::ApproximateUnsharedMemoryUsage() const {
-  size_t total_size = sizeof(*this) + display_item_list_.MemoryUsageInBytes() +
-                      chunks_.capacity() * sizeof(chunks_[0]);
-  for (const auto& chunk : chunks_)
-    total_size += chunk.MemoryUsageInBytes();
+  size_t total_size = sizeof(*this) + display_item_list_.MemoryUsageInBytes() -
+                      sizeof(display_item_list_) + chunks_.CapacityInBytes();
+  for (const auto& chunk : chunks_) {
+    size_t chunk_size = chunk.MemoryUsageInBytes();
+    DCHECK_GE(chunk_size, sizeof(chunk));
+    total_size += chunk_size - sizeof(chunk);
+  }
   return total_size;
 }
 

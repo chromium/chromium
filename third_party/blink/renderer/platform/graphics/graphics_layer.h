@@ -236,6 +236,8 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   // Whether this GraphicsLayer is repainted in the last Paint().
   bool Repainted() const { return repainted_; }
 
+  size_t ApproximateUnsharedMemoryUsageRecursive() const;
+
  protected:
   String DebugName(const cc::Layer*) const;
 
@@ -247,7 +249,6 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   gfx::Rect PaintableRegion() final { return InterestRect(); }
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const final;
 
   // Returns true if PaintController::PaintArtifact() changed and needs commit.
   bool PaintWithoutCommit(const IntRect* interest_rect = nullptr);

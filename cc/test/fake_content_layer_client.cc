@@ -123,8 +123,4 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
 
 bool FakeContentLayerClient::FillsBoundsCompletely() const { return false; }
 
-size_t FakeContentLayerClient::GetApproximateUnsharedMemoryUsage() const {
-  return reported_memory_usage_;
-}
-
 }  // namespace cc

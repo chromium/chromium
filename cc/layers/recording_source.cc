@@ -86,11 +86,8 @@ bool RecordingSource::UpdateAndExpandInvalidation(
 
 void RecordingSource::UpdateDisplayItemList(
     const scoped_refptr<DisplayItemList>& display_list,
-    const size_t& painter_reported_memory_usage,
     float recording_scale_factor) {
   recording_scale_factor_ = recording_scale_factor;
-
-  painter_reported_memory_usage_ = painter_reported_memory_usage;
 
   if (display_list_ != display_list) {
     display_list_ = display_list;
@@ -111,7 +108,6 @@ void RecordingSource::SetEmptyBounds() {
 
   recorded_viewport_ = gfx::Rect();
   display_list_ = nullptr;
-  painter_reported_memory_usage_ = 0;
 }
 
 void RecordingSource::SetSlowdownRasterScaleFactor(int factor) {

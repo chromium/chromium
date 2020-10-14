@@ -443,7 +443,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   gfx::Rect PaintableRegion() override;
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
-  size_t GetApproximateUnsharedMemoryUsage() const override;
 
   cc::MirrorLayer* mirror_layer_for_testing() { return mirror_layer_.get(); }
   cc::Layer* cc_layer_for_testing() { return cc_layer_; }

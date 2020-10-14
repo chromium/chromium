@@ -34,12 +34,6 @@ class CC_EXPORT ContentLayerClient {
   // because it will cover any uncleared data with content.
   virtual bool FillsBoundsCompletely() const = 0;
 
-  // Returns an estimate of the current memory usage within this object,
-  // excluding memory shared with painting artifacts (i.e.,
-  // DisplayItemList). Should be invoked after PaintContentsToDisplayList,
-  // so that the result includes data cached internally during painting.
-  virtual size_t GetApproximateUnsharedMemoryUsage() const = 0;
-
  protected:
   virtual ~ContentLayerClient() {}
 };

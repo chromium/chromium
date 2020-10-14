@@ -52,8 +52,4 @@ bool SolidColorContentLayerClient::FillsBoundsCompletely() const {
   return false;
 }
 
-size_t SolidColorContentLayerClient::GetApproximateUnsharedMemoryUsage() const {
-  return 0;
-}
-
 }  // namespace cc

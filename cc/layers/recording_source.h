@@ -24,14 +24,6 @@ class Region;
 
 class CC_EXPORT RecordingSource {
  public:
-  enum RecordingMode {
-    RECORD_NORMALLY,
-    RECORD_WITH_CACHING_DISABLED,
-    RECORD_WITH_SUBSEQUENCE_CACHING_DISABLED,
-    RECORD_WITH_PARTIAL_INVALIDATION,
-    RECORDING_MODE_COUNT,  // Must be the last entry.
-  };
-
   RecordingSource();
   RecordingSource(const RecordingSource&) = delete;
   virtual ~RecordingSource();
@@ -42,7 +34,6 @@ class CC_EXPORT RecordingSource {
                                    const gfx::Size& layer_size,
                                    const gfx::Rect& new_recorded_viewport);
   void UpdateDisplayItemList(const scoped_refptr<DisplayItemList>& display_list,
-                             const size_t& painter_reported_memory_usage,
                              float recording_scale_factor);
   gfx::Size GetSize() const;
   void SetEmptyBounds();
@@ -66,7 +57,6 @@ class CC_EXPORT RecordingSource {
   SkColor solid_color_ = SK_ColorTRANSPARENT;
   SkColor background_color_ = SK_ColorTRANSPARENT;
   scoped_refptr<DisplayItemList> display_list_;
-  size_t painter_reported_memory_usage_ = 0;
   float recording_scale_factor_ = 1.0f;
 
  private:

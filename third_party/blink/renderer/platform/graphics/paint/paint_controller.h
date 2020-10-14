@@ -182,9 +182,7 @@ class PLATFORM_EXPORT PaintController {
   // there FinishCycle() at the same time to ensure consistent caching status.
   void FinishCycle();
 
-  // Returns the approximate memory usage, excluding memory likely to be
-  // shared with the embedder after copying to WebPaintController.
-  // Should only be called after a full document life cycle update.
+  // Returns the approximate memory usage owned by this PaintController.
   size_t ApproximateUnsharedMemoryUsage() const;
 
   // Get the artifact generated after the last commit.
@@ -396,9 +394,13 @@ class PLATFORM_EXPORT PaintController {
 
   // The last paint artifact after CommitNewDisplayItems().
   // It includes paint chunks as well as display items.
+  // It's initially empty and is never null if usage is kMultiplePaints.
+  // Otherwise it's null before CommitNewDisplayItems().
   scoped_refptr<PaintArtifact> current_paint_artifact_;
 
   // Data being used to build the next paint artifact.
+  // It's never null and if usage is kMultiplePaints. Otherwise it's null after
+  // CommitNewDisplayItems().
   scoped_refptr<PaintArtifact> new_paint_artifact_;
   PaintChunker paint_chunker_;
 

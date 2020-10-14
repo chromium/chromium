@@ -99,7 +99,6 @@ class BlueYellowClient : public ContentLayerClient {
   }
 
   bool FillsBoundsCompletely() const override { return true; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 
   void set_blue_top(bool b) { blue_top_ = b; }
 
@@ -180,7 +179,6 @@ class PrimaryColorClient : public ContentLayerClient {
   }
 
   bool FillsBoundsCompletely() const override { return true; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 
  private:
   gfx::Size size_;

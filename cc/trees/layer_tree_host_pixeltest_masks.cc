@@ -58,7 +58,6 @@ class MaskContentLayerClient : public ContentLayerClient {
   ~MaskContentLayerClient() override = default;
 
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 
   gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
 
@@ -192,7 +191,6 @@ class SolidColorEmptyMaskContentLayerClient : public ContentLayerClient {
   ~SolidColorEmptyMaskContentLayerClient() override = default;
 
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 
   gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
 
@@ -443,7 +441,6 @@ class CheckerContentLayerClient : public ContentLayerClient {
       : bounds_(bounds), color_(color), vertical_(vertical) {}
   ~CheckerContentLayerClient() override = default;
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
   gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
@@ -491,7 +488,6 @@ class CircleContentLayerClient : public ContentLayerClient {
       : bounds_(bounds) {}
   ~CircleContentLayerClient() override = default;
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
   gfx::Rect PaintableRegion() override { return gfx::Rect(bounds_); }
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
@@ -722,7 +718,6 @@ class StaticPictureLayer : private ContentLayerClient, public PictureLayer {
     return display_list_;
   }
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const override { return 0; }
 
  protected:
   explicit StaticPictureLayer(scoped_refptr<DisplayItemList> display_list)

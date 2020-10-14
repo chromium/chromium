@@ -99,8 +99,7 @@ wtf_size_t ContiguousContainerBase::UsedCapacityInBytes() const {
 }
 
 wtf_size_t ContiguousContainerBase::MemoryUsageInBytes() const {
-  return sizeof(*this) + CapacityInBytes() +
-         elements_.capacity() * sizeof(elements_[0]);
+  return sizeof(*this) + CapacityInBytes() + elements_.CapacityInBytes();
 }
 
 void* ContiguousContainerBase::Allocate(wtf_size_t object_size,

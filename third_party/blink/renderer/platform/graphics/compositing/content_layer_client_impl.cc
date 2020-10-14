@@ -139,4 +139,9 @@ void ContentLayerClientImpl::InvalidateRect(const IntRect& rect) {
   cc_picture_layer_->SetNeedsDisplayRect(rect);
 }
 
+size_t ContentLayerClientImpl::ApproximateUnsharedMemoryUsage() const {
+  return sizeof(*this) + raster_invalidator_.ApproximateUnsharedMemoryUsage() -
+         sizeof(raster_invalidator_);
+}
+
 }  // namespace blink

@@ -82,11 +82,8 @@ class FakeRecordingSource : public RecordingSource {
     gfx::Rect new_recorded_viewport = client_.PaintableRegion();
     scoped_refptr<DisplayItemList> display_list =
         client_.PaintContentsToDisplayList();
-    size_t painter_reported_memory_usage =
-        client_.GetApproximateUnsharedMemoryUsage();
     UpdateAndExpandInvalidation(&invalidation, size_, new_recorded_viewport);
-    UpdateDisplayItemList(display_list, painter_reported_memory_usage,
-                          recording_scale_factor_);
+    UpdateDisplayItemList(display_list, recording_scale_factor_);
   }
 
   void add_draw_rect(const gfx::Rect& rect) {
@@ -127,10 +124,6 @@ class FakeRecordingSource : public RecordingSource {
   }
 
   void set_default_flags(const PaintFlags& flags) { default_flags_ = flags; }
-
-  void set_reported_memory_usage(size_t reported_memory_usage) {
-    client_.set_reported_memory_usage(reported_memory_usage);
-  }
 
   void reset_draws() {
     client_ = FakeContentLayerClient();

@@ -135,8 +135,4 @@ bool ChildFrameCompositingHelper::FillsBoundsCompletely() const {
   return true;
 }
 
-size_t ChildFrameCompositingHelper::GetApproximateUnsharedMemoryUsage() const {
-  return sizeof(*this);
-}
-
 }  // namespace content

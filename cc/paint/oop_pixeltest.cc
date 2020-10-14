@@ -311,7 +311,7 @@ class OopPixelTest : public testing::Test,
     // that the preamble setup in RasterSource::PlaybackToCanvas matches
     // the same setup done in GLES2Implementation::RasterCHROMIUM.
     RecordingSource recording;
-    recording.UpdateDisplayItemList(display_item_list, 0u, 1.f);
+    recording.UpdateDisplayItemList(display_item_list, 1.f);
     recording.SetBackgroundColor(options.background_color);
     Region fake_invalidation;
     gfx::Rect layer_rect(gfx::Size(options.full_raster_rect.right(),

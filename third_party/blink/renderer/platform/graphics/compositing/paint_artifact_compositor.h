@@ -106,7 +106,6 @@ class SynthesizedClip : private cc::ContentLayerClient {
   // ContentLayerClient implementation.
   gfx::Rect PaintableRegion() final { return gfx::Rect(layer_->bounds()); }
   bool FillsBoundsCompletely() const final { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const final { return 0; }
 
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
 
@@ -207,6 +206,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   Vector<cc::Layer*> SynthesizedClipLayersForTesting() const;
 
   void ClearPropertyTreeChangedState();
+
+  size_t ApproximateUnsharedMemoryUsage() const;
 
  private:
   // A pending layer is a collection of paint chunks that will end up in

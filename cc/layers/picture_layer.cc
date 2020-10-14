@@ -166,11 +166,8 @@ bool PictureLayer::Update() {
       picture_layer_inputs_.nearest_neighbor = result->nearest_neighbor;
     }
 
-    picture_layer_inputs_.painter_reported_memory_usage =
-        picture_layer_inputs_.client->GetApproximateUnsharedMemoryUsage();
     recording_source_->UpdateDisplayItemList(
         picture_layer_inputs_.display_list,
-        picture_layer_inputs_.painter_reported_memory_usage,
         layer_tree_host()->recording_scale_factor());
 
     SetNeedsPushProperties();
@@ -289,7 +286,6 @@ void PictureLayer::DropRecordingSourceContentIfInvalid() {
     // longer valid. In this case just destroy the recording source.
     recording_source_->SetEmptyBounds();
     picture_layer_inputs_.display_list = nullptr;
-    picture_layer_inputs_.painter_reported_memory_usage = 0;
   }
 }
 

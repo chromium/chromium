@@ -37,10 +37,6 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
     return cc_display_item_list_;
   }
   bool FillsBoundsCompletely() const override { return false; }
-  size_t GetApproximateUnsharedMemoryUsage() const override {
-    // TODO(jbroman): Actually calculate memory usage.
-    return 0;
-  }
 
   // LayerAsJSONClient implementation
   void AppendAdditionalInfoAsJSON(LayerTreeFlags,
@@ -60,6 +56,8 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
       const PropertyTreeState&);
 
   RasterInvalidator& GetRasterInvalidator() { return raster_invalidator_; }
+
+  size_t ApproximateUnsharedMemoryUsage() const;
 
  private:
   // Callback from raster_invalidator_.

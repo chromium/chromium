@@ -732,11 +732,14 @@ scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList() {
   return cc_display_item_list_;
 }
 
-size_t GraphicsLayer::GetApproximateUnsharedMemoryUsage() const {
+size_t GraphicsLayer::ApproximateUnsharedMemoryUsageRecursive() const {
   size_t result = sizeof(*this);
-  result += GetPaintController().ApproximateUnsharedMemoryUsage();
+  if (paint_controller_)
+    result += paint_controller_->ApproximateUnsharedMemoryUsage();
   if (raster_invalidator_)
     result += raster_invalidator_->ApproximateUnsharedMemoryUsage();
+  for (auto* child : Children())
+    result += child->ApproximateUnsharedMemoryUsageRecursive();
   return result;
 }
 

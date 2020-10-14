@@ -1324,12 +1324,6 @@ scoped_refptr<cc::DisplayItemList> Layer::PaintContentsToDisplayList() {
 
 bool Layer::FillsBoundsCompletely() const { return fills_bounds_completely_; }
 
-size_t Layer::GetApproximateUnsharedMemoryUsage() const {
-  // Most of the "picture memory" is shared with the cc::DisplayItemList, so
-  // there's nothing significant to report here.
-  return 0;
-}
-
 bool Layer::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registar,
     viz::TransferableResource* resource,

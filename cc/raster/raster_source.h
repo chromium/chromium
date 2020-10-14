@@ -101,7 +101,6 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // Tracing functionality.
   void DidBeginTracing();
   void AsValueInto(base::trace_event::TracedValue* array) const;
-  size_t GetMemoryUsage() const;
 
   const scoped_refptr<DisplayItemList>& GetDisplayItemList() const {
     return display_list_;
@@ -148,7 +147,6 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // These members are const as this raster source may be in use on another
   // thread and so should not be touched after construction.
   const scoped_refptr<DisplayItemList> display_list_;
-  const size_t painter_reported_memory_usage_;
   const SkColor background_color_;
   const bool requires_clear_;
   const bool is_solid_color_;

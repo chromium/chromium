@@ -125,6 +125,10 @@ class PaintChunkSubset {
     subset_indices_.AppendVector(other.subset_indices_);
   }
 
+  size_t ApproximateUnsharedMemoryUsage() const {
+    return sizeof(*this) + subset_indices_.CapacityInBytes();
+  }
+
  private:
   bool UsesSubsetIndices() const { return begin_index_ == kNotFound; }
 

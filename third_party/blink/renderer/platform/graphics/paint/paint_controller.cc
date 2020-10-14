@@ -631,11 +631,15 @@ void PaintController::FinishCycle() {
 }
 
 size_t PaintController::ApproximateUnsharedMemoryUsage() const {
+  CheckNoNewPaint();
+
   size_t memory_usage = sizeof(*this);
 
   // Memory outside this class due to paint artifacts.
-  memory_usage += current_paint_artifact_->ApproximateUnsharedMemoryUsage();
-  memory_usage += new_paint_artifact_->ApproximateUnsharedMemoryUsage();
+  if (current_paint_artifact_)
+    memory_usage += current_paint_artifact_->ApproximateUnsharedMemoryUsage();
+  if (new_paint_artifact_)
+    memory_usage += new_paint_artifact_->ApproximateUnsharedMemoryUsage();
 
   // External objects, shared with the embedder, such as PaintRecord, should be
   // excluded to avoid double counting. It is the embedder's responsibility to
@@ -644,10 +648,10 @@ size_t PaintController::ApproximateUnsharedMemoryUsage() const {
   // Memory outside this class due to current_cached_subsequences_ and
   // new_cached_subsequences_.
   memory_usage += current_cached_subsequences_.Capacity() *
-                  sizeof(*current_cached_subsequences_.begin());
+                  sizeof(decltype(current_cached_subsequences_)::value_type);
   DCHECK(new_cached_subsequences_.IsEmpty());
   memory_usage += new_cached_subsequences_.Capacity() *
-                  sizeof(*new_cached_subsequences_.begin());
+                  sizeof(decltype(new_cached_subsequences_)::value_type);
 
   return memory_usage;
 }

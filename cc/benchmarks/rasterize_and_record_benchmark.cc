@@ -72,8 +72,6 @@ void RasterizeAndRecordBenchmark::DidUpdateLayers(
   DCHECK(!results_.get());
   results_ = base::WrapUnique(new base::DictionaryValue);
   results_->SetInteger("pixels_recorded", record_results_.pixels_recorded);
-  results_->SetInteger("painter_memory_usage",
-                       static_cast<int>(record_results_.painter_memory_usage));
   results_->SetInteger("paint_op_memory_usage",
                        static_cast<int>(record_results_.paint_op_memory_usage));
   results_->SetInteger("paint_op_count",
@@ -93,6 +91,9 @@ void RasterizeAndRecordBenchmark::DidUpdateLayers(
   results_->SetDouble(
       "paint_artifact_compositor_update_time_ms",
       paint_benchmark_result.paint_artifact_compositor_update_time_ms);
+  results_->SetInteger(
+      "painter_memory_usage",
+      static_cast<int>(paint_benchmark_result.painter_memory_usage));
   main_thread_benchmark_done_ = true;
 }
 
@@ -127,8 +128,6 @@ void RasterizeAndRecordBenchmark::RunOnLayer(PictureLayer* layer) {
   ContentLayerClient* painter = layer->client();
   scoped_refptr<DisplayItemList> display_list =
       painter->PaintContentsToDisplayList();
-  record_results_.painter_memory_usage +=
-      painter->GetApproximateUnsharedMemoryUsage();
   record_results_.paint_op_memory_usage += display_list->BytesUsed();
   record_results_.paint_op_count += display_list->TotalOpCount();
   record_results_.pixels_recorded +=

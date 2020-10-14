@@ -44,7 +44,6 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
 
   struct RecordResults {
     int pixels_recorded = 0;
-    size_t painter_memory_usage = 0;
     size_t paint_op_memory_usage = 0;
     size_t paint_op_count = 0;
   };
