@@ -497,39 +497,6 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
            LookalikeUrlMatchType::kTargetEmbedding);
 }
 
-// Same as TargetEmbedding_TopDomain_Match, but has a redirect where the first
-// and last URLs are both target embedding matches. Should only record
-// metrics for the first URL. Regression test for crbug.com/1136296.
-IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
-                       TargetEmbedding_TopDomain_Redirect_Match) {
-  const GURL kNavigatedUrl = GetLongRedirect("google.com-test.com", "site.com",
-                                             "youtube.com-test.com");
-  // UKM will record the final URL of the redirect:
-  const GURL kLastUrl = GetURL("youtube.com-test.com");
-  const GURL kExpectedSuggestedUrl = GetURLWithoutPath("google.com");
-  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
-
-  // |TestMetricsRecordedAndInterstitialShown| assumes everything should be
-  // recorded if target embedding is not disabled. But only for target embedding
-  // checks, if TargetEmbedding is not explicitly enabled, it should be treated
-  // just like it is disabled. So we make sure an interstitial is not shown if
-  // target embedding is not enabled. And defer to
-  // |TestMetricsRecordedAndInterstitialShown| otherwise.
-  if (!target_embedding_enabled()) {
-    base::HistogramTester histograms;
-    TestInterstitialNotShown(browser(), kNavigatedUrl);
-    histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
-    histograms.ExpectBucketCount(
-        lookalikes::kHistogramName,
-        NavigationSuggestionEvent::kMatchTargetEmbedding, 1);
-  } else {
-    TestMetricsRecordedAndInterstitialShown(
-        browser(), kNavigatedUrl, kExpectedSuggestedUrl,
-        NavigationSuggestionEvent::kMatchTargetEmbedding);
-  }
-  CheckUkm({kLastUrl}, "MatchType", LookalikeUrlMatchType::kTargetEmbedding);
-}
-
 // Target embedding should not trigger on allowlisted embedder domains.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        TargetEmbedding_EmbedderAllowlist) {

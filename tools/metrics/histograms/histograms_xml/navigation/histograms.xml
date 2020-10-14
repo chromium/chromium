@@ -665,33 +665,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NavigationSuggestion.Event" enum="NavigationSuggestionEvent"
     expires_after="M89">
-  <obsolete>
-    Replaced with NavigationSuggestion.Event2 on 2020/10 because of
-    crbug.com/1136296.
-  </obsolete>
   <owner>meacer@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
     Tracks events when the currently navigated domain name is a lookalike to one
     of the top 10K domains or a domain that the user interacted with, resulting
     in a navigation suggestion interstitial.
-  </summary>
-</histogram>
-
-<histogram name="NavigationSuggestion.Event2" enum="NavigationSuggestionEvent"
-    expires_after="M91">
-  <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Tracks events when the currently navigated domain name is a lookalike to one
-    of the top 10K domains or a domain that the user interacted with, resulting
-    in a navigation suggestion interstitial.
-
-    Before M88, NavigationSuggestion.Event recorded a separate entry for each
-    lookalike URL in a redirect chain. E.g. lookalike1.com -&gt; site.com -&gt;
-    lookalike2.com recorded two events. This updated histogram only records an
-    entry for the first or last URL in the redirect if any of those is a
-    lookalike.
   </summary>
 </histogram>
 
