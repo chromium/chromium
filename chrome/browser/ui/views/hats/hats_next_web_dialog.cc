@@ -248,8 +248,18 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
         HatsServiceFactory::GetForProfile(browser_->profile(), false);
     DCHECK(service);
     service->RecordSurveyAsShown(trigger_id_);
+    received_survey_loaded_ = true;
     ShowWidget();
   } else if (state == "close") {
+    if (!received_survey_loaded_) {
+      // Receiving a close state prior to a loaded state indicates that contact
+      // was made with the HaTS Next service, but the HaTS service declined the
+      // survey request. This is likely because of a survey misconfiguration,
+      // such as a survey still being in test mode, or an invalid survey ID.
+      base::UmaHistogramEnumeration(
+          kHatsShouldShowSurveyReasonHistogram,
+          HatsService::ShouldShowSurveyReasons::kNoRejectedByHatsService);
+    }
     CloseWidget();
   } else {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"

@@ -109,6 +109,9 @@ class HatsNextWebDialog : public ui::WebDialogDelegate,
   // The HaTS Next survey trigger ID that is provided to the HaTS webpage.
   const std::string trigger_id_;
 
+  // Whether the web contents has communicated a loaded state.
+  bool received_survey_loaded_ = false;
+
   // The size of the dialog. Desired dimensions are provided by the site loaded
   // in the web contents. Initialised to arbitrary non-zero value as creation
   // of 0 sized windows is disallowed on OSX.

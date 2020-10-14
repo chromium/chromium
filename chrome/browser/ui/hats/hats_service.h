@@ -124,7 +124,8 @@ class HatsService : public KeyedService {
     kNoSurveyOverCapacity = 13,
     kNoSurveyAlreadyInProgress = 14,
     kNoAnyLastSurveyTooRecent = 15,
-    kMaxValue = kNoAnyLastSurveyTooRecent,
+    kNoRejectedByHatsService = 16,
+    kMaxValue = kNoRejectedByHatsService,
   };
 
   ~HatsService() override;

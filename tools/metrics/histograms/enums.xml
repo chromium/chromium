@@ -35521,6 +35521,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
   <int value="14" label="A survey is already in progress"/>
   <int value="15" label="Last instance of any survey too recent"/>
+  <int value="16" label="HaTS Service rejected request to load survey"/>
 </enum>
 
 <enum name="HardwareVerifierQualificationStatus">

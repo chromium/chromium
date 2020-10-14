@@ -284,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
 // indicates the survey window should be closed.
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
@@ -294,6 +295,30 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey window should be closed.
   dialog->WaitForClose();
+
+  // Because no loaded state was provided, only a rejection should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsService::ShouldShowSurveyReasons::kNoRejectedByHatsService, 1);
+}
+
+// Test that a survey which first reports as loaded, then reports closure, only
+// logs that the survey was shown.
+IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
+  auto* dialog = new MockHatsNextWebDialog(
+      browser(), kHatsNextSurveyTriggerIDTesting,
+      embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
+      base::TimeDelta::FromSeconds(100));
+  dialog->WaitForClose();
+
+  // The only recorded sample should indicate that the survey was shown.
+  histogram_tester.ExpectUniqueSample(
+      kHatsShouldShowSurveyReasonHistogram,
+      HatsService::ShouldShowSurveyReasons::kYes, 1);
 }
 
 // Test that if the survey does not indicate it is ready for display before the
