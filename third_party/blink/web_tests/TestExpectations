@@ -2064,10 +2064,6 @@ crbug.com/932343 external/wpt/css/css-pseudo/selection-text-shadow-016.html [ Fa
 
 crbug.com/723741 virtual/threaded/http/tests/devtools/tracing/idle-callback.js [ Failure Crash Pass Timeout ]
 
-# Temporarily disabled to land a devtools-frontend change.
-crbug.com/1127827 http/tests/devtools/tracing/timeline-js/timeline-js-callstacks.js [ Pass Failure ]
-crbug.com/1127827 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Pass Failure ]
-
 # Untriaged failures after https://crrev.com/c/543695/.
 # These need to be updated but appear not to be related to that change.
 crbug.com/626703 http/tests/devtools/indexeddb/database-refresh-view.js [ Pass Failure ]

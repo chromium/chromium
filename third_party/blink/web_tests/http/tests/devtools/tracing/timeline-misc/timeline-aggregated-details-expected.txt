@@ -3,7 +3,10 @@ Test timeline aggregated details.
 
 
 CallTree  Group by: None
-  Other: 260.000  300.000
+  Other: 258.000  300.000
+    a: 0.000  2.000
+      b: 0.000  2.000
+        c: 2.000  2.000
     Function Call: 17.660  40.000
       a: 0.000  11.125
         b: 0.000  11.125
@@ -30,12 +33,19 @@ CallTree  Group by: None
             recursive_b: 0.008  0.008
 
 BottomUp  Group by: None
-  Other: 260.000  300.000
+  Other: 258.000  300.000
   Function Call: 17.660  40.000
     Other: 17.660  38.000
     Function Call: 0.000  1.000
       Other: 0.000  1.000
-  a: 9.900  21.125
+  c: 10.250  10.250
+    b: 10.250  10.250
+      a: 10.250  10.250
+        Other: 2.000  2.000
+        Function Call: 8.250  8.250
+          Other: 8.250  8.250
+  a: 9.900  23.125
+    Other: 0.000  2.000
     Function Call: 0.000  11.125
       Other: 0.000  11.125
     l: 9.900  10.000
@@ -45,11 +55,6 @@ BottomUp  Group by: None
         sin: 9.875  9.875
           Function Call: 9.875  9.875
             Other: 9.875  9.875
-  c: 8.250  8.250
-    b: 8.250  8.250
-      a: 8.250  8.250
-        Function Call: 8.250  8.250
-          Other: 8.250  8.250
   g: 2.875  2.875
     e: 2.875  2.875
       b: 2.875  2.875
@@ -96,8 +101,11 @@ BottomUp  Group by: None
             Other: 0.100  0.100
 
 CallTree  Group by: EventName
-  Other: 260.000  300.000
-    Other: 260.000  300.000
+  Other: 258.000  300.000
+    Other: 258.000  300.000
+      a: 0.000  2.000
+        b: 0.000  2.000
+          c: 2.000  2.000
       Function Call: 17.660  40.000
         a: 0.000  11.125
           b: 0.000  11.125
@@ -124,15 +132,17 @@ CallTree  Group by: EventName
               recursive_b: 0.008  0.008
 
 BottomUp  Group by: EventName
-  Other: 260.000  260.000
-    Other: 260.000  300.000
-  JavaScript: 22.240  22.240
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
+  Other: 258.000  258.000
+    Other: 258.000  300.000
+  JavaScript: 24.240  24.240
+    c: 10.250  10.250
+      b: 10.250  10.250
+        a: 10.250  10.250
+          Other: 2.000  2.000
           Function Call: 8.250  8.250
             Other: 8.250  8.250
-    a: 9.900  21.125
+    a: 9.900  23.125
+      Other: 0.000  2.000
       Function Call: 0.000  11.125
         Other: 0.000  11.125
       l: 9.900  10.000
@@ -194,8 +204,11 @@ BottomUp  Group by: EventName
               Other: 0.100  0.100
 
 CallTree  Group by: Category
-  System: 260.000  300.000
-    Other: 260.000  300.000
+  System: 258.000  300.000
+    Other: 258.000  300.000
+      a: 0.000  2.000
+        b: 0.000  2.000
+          c: 2.000  2.000
       Function Call: 17.660  40.000
         a: 0.000  11.125
           b: 0.000  11.125
@@ -222,15 +235,17 @@ CallTree  Group by: Category
               recursive_b: 0.008  0.008
 
 BottomUp  Group by: Category
-  System: 260.000  260.000
-    Other: 260.000  300.000
-  Scripting: 39.900  39.900
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
+  System: 258.000  258.000
+    Other: 258.000  300.000
+  Scripting: 41.900  41.900
+    c: 10.250  10.250
+      b: 10.250  10.250
+        a: 10.250  10.250
+          Other: 2.000  2.000
           Function Call: 8.250  8.250
             Other: 8.250  8.250
-    a: 9.900  21.125
+    a: 9.900  23.125
+      Other: 0.000  2.000
       Function Call: 0.000  11.125
         Other: 0.000  11.125
       l: 9.900  10.000
@@ -291,8 +306,11 @@ BottomUp  Group by: Category
               Other: 0.100  0.100
 
 CallTree  Group by: Domain
-  [unattributed]: 260.000  300.000
-    Other: 260.000  300.000
+  [unattributed]: 258.000  300.000
+    Other: 258.000  300.000
+      a: 0.000  2.000
+        b: 0.000  2.000
+          c: 2.000  2.000
       Function Call: 17.660  40.000
         a: 0.000  11.125
           b: 0.000  11.125
@@ -320,12 +338,14 @@ CallTree  Group by: Domain
 
 BottomUp  Group by: Domain
   [unattributed]: 299.785  299.785
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
+    c: 10.250  10.250
+      b: 10.250  10.250
+        a: 10.250  10.250
+          Other: 2.000  2.000
           Function Call: 8.250  8.250
             Other: 8.250  8.250
-    a: 9.900  21.125
+    a: 9.900  23.125
+      Other: 0.000  2.000
       Function Call: 0.000  11.125
         Other: 0.000  11.125
       l: 9.900  10.000
@@ -368,7 +388,7 @@ BottomUp  Group by: Domain
         Function Call: 0.600  1.000
           Function Call: 0.600  1.000
             Other: 0.600  1.000
-    Other: 260.000  300.000
+    Other: 258.000  300.000
   google.com: 0.215  0.215
     recursive_b: 0.110  0.114
       recursive_a: 0.110  0.114
@@ -387,8 +407,11 @@ BottomUp  Group by: Domain
         Other: 0.101  0.215
 
 CallTree  Group by: Subdomain
-  [unattributed]: 260.000  300.000
-    Other: 260.000  300.000
+  [unattributed]: 258.000  300.000
+    Other: 258.000  300.000
+      a: 0.000  2.000
+        b: 0.000  2.000
+          c: 2.000  2.000
       Function Call: 17.660  40.000
         a: 0.000  11.125
           b: 0.000  11.125
@@ -416,12 +439,14 @@ CallTree  Group by: Subdomain
 
 BottomUp  Group by: Subdomain
   [unattributed]: 299.785  299.785
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
+    c: 10.250  10.250
+      b: 10.250  10.250
+        a: 10.250  10.250
+          Other: 2.000  2.000
           Function Call: 8.250  8.250
             Other: 8.250  8.250
-    a: 9.900  21.125
+    a: 9.900  23.125
+      Other: 0.000  2.000
       Function Call: 0.000  11.125
         Other: 0.000  11.125
       l: 9.900  10.000
@@ -464,7 +489,7 @@ BottomUp  Group by: Subdomain
         Function Call: 0.600  1.000
           Function Call: 0.600  1.000
             Other: 0.600  1.000
-    Other: 260.000  300.000
+    Other: 258.000  300.000
   www.google.com: 0.215  0.215
     recursive_b: 0.110  0.114
       recursive_a: 0.110  0.114
@@ -483,8 +508,11 @@ BottomUp  Group by: Subdomain
         Other: 0.101  0.215
 
 CallTree  Group by: URL
-  [unattributed]: 260.000  300.000
-    Other: 260.000  300.000
+  [unattributed]: 258.000  300.000
+    Other: 258.000  300.000
+      a: 0.000  2.000
+        b: 0.000  2.000
+          c: 2.000  2.000
       Function Call: 17.660  40.000
         a: 0.000  11.125
           b: 0.000  11.125
@@ -512,12 +540,14 @@ CallTree  Group by: URL
 
 BottomUp  Group by: URL
   [unattributed]: 299.785  299.785
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
+    c: 10.250  10.250
+      b: 10.250  10.250
+        a: 10.250  10.250
+          Other: 2.000  2.000
           Function Call: 8.250  8.250
             Other: 8.250  8.250
-    a: 9.900  21.125
+    a: 9.900  23.125
+      Other: 0.000  2.000
       Function Call: 0.000  11.125
         Other: 0.000  11.125
       l: 9.900  10.000
@@ -560,7 +590,7 @@ BottomUp  Group by: URL
         Function Call: 0.600  1.000
           Function Call: 0.600  1.000
             Other: 0.600  1.000
-    Other: 260.000  300.000
+    Other: 258.000  300.000
   http://www.google.com/rec.js: 0.215  0.215
     recursive_b: 0.110  0.114
       recursive_a: 0.110  0.114
@@ -579,8 +609,11 @@ BottomUp  Group by: URL
         Other: 0.101  0.215
 
 CallTree  Group by: Frame
-  top-page-url: 260.000  300.000
-    Other: 260.000  300.000
+  top-page-url: 258.000  300.000
+    Other: 258.000  300.000
+      a: 0.000  2.000
+        b: 0.000  2.000
+          c: 2.000  2.000
       Function Call: 8.875  30.000
         a: 0.000  11.125
           b: 0.000  11.125
@@ -608,15 +641,15 @@ CallTree  Group by: Frame
               recursive_b: 0.008  0.008
 
 BottomUp  Group by: Frame
-  top-page-url: 260.000  260.000
-    Other: 260.000  300.000
-  subframe-url1: 38.685  38.685
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
+  top-page-url: 278.150  278.150
+    c: 10.250  10.250
+      b: 10.250  10.250
+        a: 10.250  10.250
+          Other: 2.000  2.000
           Function Call: 8.250  8.250
             Other: 8.250  8.250
-    a: 9.900  21.125
+    a: 9.900  23.125
+      Other: 0.000  2.000
       Function Call: 0.000  11.125
         Other: 0.000  11.125
       l: 9.900  10.000
@@ -626,6 +659,8 @@ BottomUp  Group by: Frame
           sin: 9.875  9.875
             Function Call: 9.875  9.875
               Other: 9.875  9.875
+    Other: 258.000  300.000
+  subframe-url1: 20.535  20.535
     g: 2.875  2.875
       e: 2.875  2.875
         b: 2.875  2.875
@@ -678,7 +713,10 @@ BottomUp  Group by: Frame
               Other: 0.100  0.100
 
 EventLog
-  Other: 260.000  300.000
+  Other: 258.000  300.000
+    a: 0.000  2.000
+      b: 0.000  2.000
+        c: 2.000  2.000
     Function Call: 8.875  30.000
       a: 0.000  1.000
         b: 0.000  1.000

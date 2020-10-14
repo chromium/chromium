@@ -1,6 +1,9 @@
 Test JS callstacks in timeline.
 
 Program: 200.000 / 300.000 
+JSFrame: 208.000 / 2.000 a
+JSFrame: 208.000 / 2.000 b
+JSFrame: 208.000 / 2.000 c
 FunctionCall: 210.000 / 30.000 
 JSFrame: 211.000 / 1.000 a
 JSFrame: 211.000 / 1.000 b
