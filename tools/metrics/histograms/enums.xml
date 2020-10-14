@@ -38522,6 +38522,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="IPV6_INTERFACE_ARRAY_TOO_SHORT"/>
 </enum>
 
+<enum name="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean">
+  <summary>
+    A boolean for whether a force installed extension which failed with error
+    CRX_HEADER_INVALID is from Chrome Web Store or not.
+  </summary>
+  <int value="0" label="Offstore"/>
+  <int value="1" label="Chrome Web Store"/>
+</enum>
+
 <enum name="IsFullyManagedBoolean">
   <summary>
     A boolean for whether a device is &quot;fully managed&quot;.

@@ -187,7 +187,8 @@ void ReportCurrentStage(
 // Reports detailed failure reason for the extensions which failed to install
 // after 5 minutes.
 void ReportDetailedFailureReasons(
-    const InstallStageTracker::InstallationData& installation) {
+    const InstallStageTracker::InstallationData& installation,
+    const bool is_from_store) {
   FailureReason failure_reason =
       installation.failure_reason.value_or(FailureReason::UNKNOWN);
 
@@ -232,6 +233,13 @@ void ReportDetailedFailureReasons(
           "Extensions.ForceInstalledFailureManifestInvalidAppStatusError",
           installation.app_status_error.value());
     }
+  }
+  if (installation.unpacker_failure_reason &&
+      installation.unpacker_failure_reason.value() ==
+          SandboxedUnpackerFailureReason::CRX_HEADER_INVALID) {
+    base::UmaHistogramBoolean(
+        "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS",
+        is_from_store);
   }
 }
 
@@ -359,7 +367,8 @@ void ForceInstalledMetrics::ReportMetrics() {
         installation.failure_reason.value_or(FailureReason::UNKNOWN);
     base::UmaHistogramEnumeration("Extensions.ForceInstalledFailureReason3",
                                   failure_reason);
-    if (tracker_->extensions().at(extension_id).is_from_store) {
+    bool is_from_store = tracker_->extensions().at(extension_id).is_from_store;
+    if (is_from_store) {
       base::UmaHistogramEnumeration(
           "Extensions.WebStore_ForceInstalledFailureReason3", failure_reason);
     } else {
@@ -383,7 +392,7 @@ void ForceInstalledMetrics::ReportMetrics() {
     VLOG(2) << "Forced extension " << extension_id
             << " failed to install with data="
             << InstallStageTracker::GetFormattedInstallationData(installation);
-    ReportDetailedFailureReasons(installation);
+    ReportDetailedFailureReasons(installation, is_from_store);
   }
   bool non_misconfigured_failure_occurred =
       misconfigured_extensions != missing_forced_extensions.size();
