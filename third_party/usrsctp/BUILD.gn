@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/toolchain.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
-config("usrsctp_config") {
+config("usrsctp_public_config") {
   include_dirs = [
     "usrsctplib/usrsctplib",
     "usrsctplib/usrsctplib/netinet",
@@ -14,6 +15,16 @@ config("usrsctp_config") {
   # the client (WebRTC), to determine if the length field needs populating.
   if (is_mac || is_ios || target_os == "freebsd") {
     defines = [ "HAVE_SCONN_LEN" ]
+  }
+}
+
+# Used by both usrsctp static library and fuzzers.
+config("usrsctp_internal_config") {
+  defines = []
+  if (is_linux || is_chromeos || is_android) {
+    defines += [ "_GNU_SOURCE" ]
+  } else if (is_apple) {
+    defines += [ "__APPLE_USE_RFC_2292" ]
   }
 }
 
@@ -118,9 +129,10 @@ static_library("usrsctp") {
     # correctly.
     "//build/config/compiler:no_incompatible_pointer_warnings",
     ":usrsctp_warnings",
+    ":usrsctp_internal_config",
   ]
 
-  public_configs = [ ":usrsctp_config" ]
+  public_configs = [ ":usrsctp_public_config" ]
 
   cflags = [
     "-UINET",
@@ -128,14 +140,10 @@ static_library("usrsctp") {
   ]
 
   if (is_linux || is_chromeos || is_android) {
-    defines += [
-      "__Userspace_os_Linux",
-      "_GNU_SOURCE",
-    ]
+    defines += [ "__Userspace_os_Linux" ]
   } else if (is_apple) {
     defines += [
       "HAVE_SA_LEN",
-      "__APPLE_USE_RFC_2292",
       "__Userspace_os_Darwin",
     ]
   }
@@ -149,5 +157,51 @@ static_library("usrsctp") {
   if (is_fuchsia) {
     defines += [ "__Userspace_os_Fuchsia" ]
   }
+
+  if (use_fuzzing_engine) {
+    defines += [ "INVARIANTS" ]
+  }
   deps = [ "//third_party/boringssl" ]
+}
+
+fuzzer_test("usrsctp_fuzzer_listen") {
+  sources = [
+    "usrsctplib/fuzzer/fuzzer_listen.c",
+    "usrsctplib/programs/programs_helper.c",
+  ]
+  additional_configs = [ ":usrsctp_internal_config" ]
+  deps = [ ":usrsctp" ]
+  seed_corpus = "usrsctplib/fuzzer/CORPUS_LISTEN"
+  libfuzzer_options = [ "max_len=4086" ]
+}
+
+fuzzer_test("usrsctp_fuzzer_fragment") {
+  sources = [
+    "usrsctplib/fuzzer/fuzzer_fragment.c",
+    "usrsctplib/programs/programs_helper.c",
+  ]
+  additional_configs = [ ":usrsctp_internal_config" ]
+  deps = [ ":usrsctp" ]
+  seed_corpus = "usrsctplib/fuzzer/CORPUS_FRAGMENT"
+  libfuzzer_options = [ "max_len=4086" ]
+}
+
+fuzzer_test("usrsctp_fuzzer_connect_multi") {
+  sources = [
+    "usrsctplib/fuzzer/fuzzer_connect.c",
+    "usrsctplib/programs/programs_helper.c",
+  ]
+
+  additional_configs = [ ":usrsctp_internal_config" ]
+
+  # See usrsctplib/fuzzer/CMakeLists.txt.
+  # Stage 0 is "multi", which can start fuzzing at different points during the
+  # handshake based on the first fuzzed byte. There were plans to have dedicated
+  # fuzzers for various stages, but this idea was abandoned what was found that
+  # the "multi" fuzzer performed just as well.
+  defines = [ "FUZZING_STAGE=0" ]
+
+  deps = [ ":usrsctp" ]
+  seed_corpus = "usrsctplib/fuzzer/CORPUS_CONNECT"
+  libfuzzer_options = [ "max_len=32000" ]
 }
