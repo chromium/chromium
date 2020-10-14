@@ -1695,6 +1695,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-kerberos-settings-section",
+    "owners": [ "fsandrade" ],
+    // Enables the Kerberos Section in ChromeOS settings. When disabled,
+    // Kerberos settings will stay under People Section.
+    "expiry_milestone": 91
+  },
+  {
     "name": "enable-launcher-app-paging",
     "owners": [ "//ash/app_list/OWNERS" ],
     "expiry_milestone": 90

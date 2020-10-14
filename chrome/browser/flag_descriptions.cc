@@ -1312,6 +1312,11 @@ const char kKaleidoscopeModuleDescription[] =
     "Enable the Kaleidoscope NTP module to display Kaleidoscope content on the "
     " New Tab Page.";
 
+const char kKerberosSettingsSectionName[] = "Kerberos Settings Section";
+const char kKerberosSettingsSectionDescription[] =
+    "Enables the Kerberos Section in ChromeOS settings. When disabled, "
+    "Kerberos settings will stay under People Section.";
+
 const char kLauncherSettingsSearchName[] = "Launcher settings search";
 const char kLauncherSettingsSearchDescription[] =
     "Enable search results for OS settings in the launcher.";

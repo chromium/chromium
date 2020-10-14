@@ -43183,6 +43183,7 @@ from previous Chrome versions.
   <int value="-397959190" label="ClipboardHistory:enabled"/>
   <int value="-397392156" label="FtpProtocol:disabled"/>
   <int value="-396994784" label="enable-vr-shell"/>
+  <int value="-396568607" label="KerberosSettingsSection:enabled"/>
   <int value="-396496344" label="ViewsTaskManager:enabled"/>
   <int value="-396046249" label="PhotoPickerVideoSupport:enabled"/>
   <int value="-395606844" label="enable-site-settings"/>
@@ -44809,6 +44810,7 @@ from previous Chrome versions.
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:disabled"/>
   <int value="1266886673" label="delay-reload-stop-button-change"/>
   <int value="1268470658" label="disable-android-password-link"/>
+  <int value="1268678442" label="KerberosSettingsSection:disabled"/>
   <int value="1269642282" label="ChromeShareQRCode:enabled"/>
   <int value="1269940659" label="EnumerateAudioDevices:enabled"/>
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>

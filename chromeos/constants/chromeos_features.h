@@ -177,6 +177,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kVirtualKeyboardFloatingDefault;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kInstantTethering;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kKerberosSettingsSection;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kLacrosSupport;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kLanguageSettingsUpdate;

@@ -387,6 +387,11 @@ const base::Feature kVirtualKeyboardFloatingDefault{
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the Kerberos Section in ChromeOS settings. When disabled, Kerberos
+// settings will stay under People Section. https:://crbug.com/983041
+const base::Feature kKerberosSettingsSection{"KerberosSettingsSection",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables "Linux and Chrome OS" support. Allows a Linux version of Chrome
 // ("lacros-chrome") to run as a Wayland client with this instance of Chrome
 // ("ash-chrome") acting as the Wayland server and window manager.
