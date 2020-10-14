@@ -392,6 +392,22 @@ bool IsPrintPreviewUrl(const GURL& document_url) {
          url::Origin::Create(GURL(kChromePrint));
 }
 
+WebElement FindPdfViewerScroller(const WebLocalFrame* frame,
+                                 const WebElement& plugin) {
+  if (!plugin.HasAttribute("pdf-viewer-update-enabled"))
+    return WebElement();
+
+  WebElement viewer = frame->GetDocument().GetElementById("viewer");
+  if (viewer.IsNull())
+    return WebElement();
+
+  blink::WebNode shadow_root = viewer.ShadowRoot();
+  if (shadow_root.IsNull())
+    return WebElement();
+
+  return shadow_root.QuerySelector("#scroller");
+}
+
 }  // namespace
 
 // static
@@ -2580,8 +2596,12 @@ void PepperPluginInstanceImpl::SetTickmarks(PP_Instance instance,
     tickmark.Scale(1 / viewport_to_dip_scale_);
     tickmarks_converted[i] = blink::WebRect(gfx::ToEnclosedRect(tickmark));
   }
+
   WebLocalFrame* frame = render_frame_->GetWebFrame();
-  frame->SetTickmarks(tickmarks_converted);
+  WebElement target;
+  if (LoadPdfInterface())
+    target = FindPdfViewerScroller(frame, container_->GetElement());
+  frame->SetTickmarks(target, tickmarks_converted);
 }
 
 PP_Bool PepperPluginInstanceImpl::IsFullscreen(PP_Instance instance) {

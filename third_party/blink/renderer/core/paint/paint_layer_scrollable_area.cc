@@ -44,6 +44,8 @@
 
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
+#include <utility>
+
 #include "base/numerics/checked_math.h"
 #include "base/single_thread_task_runner.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -257,6 +259,10 @@ void PaintLayerScrollableArea::ApplyPendingHistoryRestoreScrollOffset() {
   }
 
   pending_view_state_.reset();
+}
+
+void PaintLayerScrollableArea::SetTickmarksOverride(Vector<IntRect> tickmarks) {
+  EnsureRareData().tickmarks_override_ = std::move(tickmarks);
 }
 
 void PaintLayerScrollableArea::Trace(Visitor* visitor) const {
@@ -2655,11 +2661,15 @@ PaintLayerScrollableArea::GetCompositorAnimationTimeline() const {
 }
 
 bool PaintLayerScrollableArea::HasTickmarks() const {
+  if (RareData() && !RareData()->tickmarks_override_.IsEmpty())
+    return true;
   return layer_->IsRootLayer() &&
          To<LayoutView>(GetLayoutBox())->HasTickmarks();
 }
 
 Vector<IntRect> PaintLayerScrollableArea::GetTickmarks() const {
+  if (RareData() && !RareData()->tickmarks_override_.IsEmpty())
+    return RareData()->tickmarks_override_;
   if (layer_->IsRootLayer())
     return To<LayoutView>(GetLayoutBox())->GetTickmarks();
   return Vector<IntRect>();

@@ -298,17 +298,9 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   PhysicalRect DebugRect() const override;
 
   // Returns the coordinates of find-in-page scrollbar tickmarks.  These come
-  // from DocumentMarkerController, unless overridden by OverrideTickmarks().
+  // from DocumentMarkerController.
   Vector<IntRect> GetTickmarks() const;
   bool HasTickmarks() const;
-
-  // Sets the coordinates of find-in-page scrollbar tickmarks, bypassing
-  // DocumentMarkerController.  This is used by the PDF plugin.
-  void OverrideTickmarks(const Vector<IntRect>&);
-
-  // Issues a paint invalidation on the layout viewport's vertical scrollbar
-  // (which is responsible for painting the tickmarks).
-  void InvalidatePaintForTickmarks();
 
   RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
 
@@ -400,8 +392,6 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   // calculated from style. kScrollbarAuto disables the override.
   mojom::blink::ScrollbarMode autosize_h_scrollbar_mode_;
   mojom::blink::ScrollbarMode autosize_v_scrollbar_mode_;
-
-  Vector<IntRect> tickmarks_override_;
 
   mutable PhysicalRect previous_background_rect_;
 };

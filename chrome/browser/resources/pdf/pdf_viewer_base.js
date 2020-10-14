@@ -170,10 +170,11 @@ export class PDFViewerBaseElement extends PolymerElement {
   }
 
   /**
+   * @param {boolean} pdfViewerUpdateEnabled is the feature is enabled.
    * @return {!HTMLEmbedElement} The plugin
    * @private
    */
-  createPlugin_() {
+  createPlugin_(pdfViewerUpdateEnabled) {
     // Create the plugin object dynamically so we can set its src. The plugin
     // element is sized to fill the entire window and is set to be fixed
     // positioning, acting as a viewport. The plugin renders into this viewport
@@ -209,6 +210,10 @@ export class PDFViewerBaseElement extends PolymerElement {
           'top-level-url', this.browserApi.getStreamInfo().tabUrl);
     } else {
       plugin.toggleAttribute('full-frame', true);
+    }
+
+    if (pdfViewerUpdateEnabled) {
+      plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
     return plugin;
@@ -269,7 +274,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     }, false);
 
     // Create the plugin.
-    this.plugin_ = this.createPlugin_();
+    this.plugin_ = this.createPlugin_(pdfViewerUpdateEnabled);
     this.getContent().appendChild(this.plugin_);
     this.pluginController_ = new PluginController(
         this.plugin_, this.viewport_, () => this.isUserInitiatedEvent,
