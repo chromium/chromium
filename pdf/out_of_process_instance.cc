@@ -1852,8 +1852,8 @@ void OutOfProcessInstance::HandleSetTwoUpViewMessage(
 void OutOfProcessInstance::HandleUpdateScrollMessage(
     const pp::VarDictionary& dict) {
   if (!base::FeatureList::IsEnabled(features::kPDFViewerUpdate) ||
-      !dict.Get(pp::Var(kJSUpdateScrollX)).is_int() ||
-      !dict.Get(pp::Var(kJSUpdateScrollY)).is_int()) {
+      !dict.Get(pp::Var(kJSUpdateScrollX)).is_number() ||
+      !dict.Get(pp::Var(kJSUpdateScrollY)).is_number()) {
     NOTREACHED();
     return;
   }
