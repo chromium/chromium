@@ -905,7 +905,8 @@
                   'chrome/browser/android/customtabs/',
     },
     'dark_mode': {
-      'filepath': 'third_party/blink/renderer/platform/graphics/dark_mode*',
+      'filepath': 'cc/*/*dark_mode*|'\
+                  'third_party/blink/renderer/platform/graphics/*dark_mode*',
     },
     'data_decoder': {
       'filepath': 'services/data_decoder/',
