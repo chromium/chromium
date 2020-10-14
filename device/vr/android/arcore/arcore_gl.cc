@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -85,6 +86,7 @@ ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       ar_image_transport_(std::move(ar_image_transport)),
       webxr_(std::make_unique<vr::WebXrPresentationState>()),
+      average_camera_frametime_(kSampleWindowSize),
       average_animate_time_(kSampleWindowSize),
       average_process_time_(kSampleWindowSize),
       average_render_time_(kSampleWindowSize) {
@@ -396,6 +398,7 @@ void ArCoreGl::GetFrameData(
   base::TimeDelta frame_timestamp = arcore_->GetFrameTimestamp();
   if (!last_arcore_frame_timestamp_.is_zero()) {
     base::TimeDelta delta = frame_timestamp - last_arcore_frame_timestamp_;
+    average_camera_frametime_.AddSample(delta);
     TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("xr.debug"),
                    "ARCore camera frame interval (ms)", delta.InMilliseconds());
   }
@@ -542,14 +545,34 @@ void ArCoreGl::CopyCameraImageToFramebuffer() {
 }
 
 base::TimeDelta ArCoreGl::EstimatedArCoreFrameTime() {
-  // Currently, the frame time is used for scheduling heuristics where it's
-  // safest to use the shortest-expected frame time which corresponds to the max
-  // framerate from ARCore's configured range. At the moment we're requesting
-  // 30fps from ARCore and expecting a single-value range. Revisit this estimate
-  // (i.e. based on camera timestamp difference) when adding 60fps modes which
-  // may result in ranges such as 30-60fps.
-  return base::TimeDelta::FromSecondsD(1.0f /
-                                       arcore_->GetTargetFramerateRange().min);
+  // ARCore may be operating in a variable frame rate mode where it adjusts
+  // the frame rate during the session, for example to increase exposure time
+  // in low light conditions.
+  //
+  // We need an estimated frame time for scheduling purposes. We have an average
+  // camera frame time delta from ARCore updates, but this may be a multiple of
+  // the nominal frame time. For example, if ARCore has the camera configured to
+  // use 60fps, but the application is only submitting frames at 30fps and only
+  // using every second camera frame, we don't have a reliable way of detecting
+  // that. However, this still seems OK as long as the frame rate is stable.
+  ArCore::MinMaxRange range = arcore_->GetTargetFramerateRange();
+  DCHECK_GT(range.min, 0.f);
+  DCHECK_GT(range.max, 0.f);
+  DCHECK_GE(range.max, range.min);
+
+  // The min frame time corresponds to the max frame rate and vice versa.
+  base::TimeDelta min_frametime =
+      base::TimeDelta::FromSecondsD(1.0f / range.max);
+  base::TimeDelta max_frametime =
+      base::TimeDelta::FromSecondsD(1.0f / range.min);
+
+  base::TimeDelta frametime =
+      average_camera_frametime_.GetAverageOrDefault(min_frametime);
+
+  // Ensure that the returned value is within ARCore's nominal frame time range.
+  // This helps avoid underestimating the frame rate if the app is too slow
+  // to reach the minimum target FPS value.
+  return base::ClampToRange(frametime, min_frametime, max_frametime);
 }
 
 base::TimeDelta ArCoreGl::WaitTimeForArCoreUpdate() {

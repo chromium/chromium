@@ -260,6 +260,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   base::TimeTicks last_arcore_update_time_;
   base::TimeDelta last_arcore_frame_timestamp_;
 
+  device::SlidingTimeDeltaAverage average_camera_frametime_;
   device::SlidingTimeDeltaAverage average_animate_time_;
   device::SlidingTimeDeltaAverage average_process_time_;
   device::SlidingTimeDeltaAverage average_render_time_;
