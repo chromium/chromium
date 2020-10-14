@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,13 +24,13 @@ class BorealisFeaturesTest : public testing::Test {
 TEST_F(BorealisFeaturesTest, DisallowedWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kBorealis);
-  EXPECT_FALSE(BorealisFeaturesFactory::GetForProfile(&profile_)->IsAllowed());
+  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }
 
 TEST_F(BorealisFeaturesTest, AllowedWhenFeatureIsEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kBorealis);
-  EXPECT_TRUE(BorealisFeaturesFactory::GetForProfile(&profile_)->IsAllowed());
+  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
 }
 
 TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
@@ -39,11 +38,11 @@ TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
   features.InitAndEnableFeature(features::kBorealis);
 
   // The pref is false by default
-  EXPECT_FALSE(BorealisFeaturesFactory::GetForProfile(&profile_)->IsEnabled());
+  EXPECT_FALSE(BorealisFeatures(&profile_).IsEnabled());
 
   profile_.GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
 
-  EXPECT_TRUE(BorealisFeaturesFactory::GetForProfile(&profile_)->IsEnabled());
+  EXPECT_TRUE(BorealisFeatures(&profile_).IsEnabled());
 }
 
 }  // namespace

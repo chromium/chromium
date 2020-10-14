@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -28,7 +28,7 @@ bool BorealisInstallerImpl::IsProcessing() {
 }
 
 void BorealisInstallerImpl::Start() {
-  if (!BorealisFeaturesFactory::GetForProfile(profile_)->IsAllowed()) {
+  if (!BorealisService::GetForProfile(profile_)->Features().IsAllowed()) {
     LOG(ERROR) << "Installation of Borealis cannot be started because "
                << "Borealis is not allowed.";
     InstallationEnded(InstallationResult::kNotAllowed);

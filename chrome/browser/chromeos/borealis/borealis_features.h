@@ -5,18 +5,14 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_FEATURES_H_
 #define CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_FEATURES_H_
 
-#include "components/keyed_service/core/keyed_service.h"
-
 class Profile;
 
 namespace borealis {
 
-class BorealisFeatures : public KeyedService {
+class BorealisFeatures {
  public:
   // Creates a per-profile instance of the feature-checker for borealis.
   explicit BorealisFeatures(Profile* profile);
-
-  ~BorealisFeatures() override;
 
   // Returns true if borealis can be installed on the profile associated with
   // this feature check.
@@ -26,7 +22,7 @@ class BorealisFeatures : public KeyedService {
   bool IsEnabled();
 
  private:
-  Profile* profile_;
+  Profile* const profile_;
 };
 
 }  // namespace borealis

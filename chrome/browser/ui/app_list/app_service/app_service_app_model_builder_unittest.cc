@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -1014,9 +1014,9 @@ class BorealisAppTest : public AppServiceAppModelBuilderTest {
 };
 
 TEST_F(BorealisAppTest, BorealisDisabled) {
-  EXPECT_FALSE(
-      borealis::BorealisFeaturesFactory::GetForProfile(testing_profile_.get())
-          ->IsAllowed());
+  EXPECT_FALSE(borealis::BorealisService::GetForProfile(testing_profile_.get())
+                   ->Features()
+                   .IsAllowed());
   EXPECT_EQ(std::vector<std::string>{}, GetModelContent(model_updater_.get()));
 }
 
@@ -1027,9 +1027,9 @@ TEST_F(BorealisAppTest, BorealisEnabled) {
   // Borealis was enabled.
   CreateBuilder(/*guest_mode=*/false);
 
-  EXPECT_TRUE(
-      borealis::BorealisFeaturesFactory::GetForProfile(testing_profile_.get())
-          ->IsAllowed());
+  EXPECT_TRUE(borealis::BorealisService::GetForProfile(testing_profile_.get())
+                  ->Features()
+                  .IsAllowed());
   EXPECT_EQ(
       std::vector<std::string>{l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME)},
       GetModelContent(model_updater_.get()));

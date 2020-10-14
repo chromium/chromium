@@ -8,7 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_mime_types_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_mime_types_service_factory.h"
@@ -85,7 +86,9 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile) ||
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile) ||
-      borealis::BorealisFeaturesFactory::GetForProfile(profile)->IsEnabled()) {
+      borealis::BorealisService::GetForProfile(profile)
+          ->Features()
+          .IsEnabled()) {
     auto* registry_service =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
     registry_service->UpdateApplicationList(request);

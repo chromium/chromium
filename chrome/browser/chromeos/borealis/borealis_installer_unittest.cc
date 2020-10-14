@@ -8,9 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -58,7 +58,7 @@ class BorealisInstallerTest : public testing::Test {
     UpdateCurrentDlcs();
     ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
     ASSERT_FALSE(
-        BorealisFeaturesFactory::GetForProfile(profile_.get())->IsEnabled());
+        BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
   }
 
   void TearDown() override {
@@ -138,7 +138,7 @@ TEST_F(BorealisInstallerTest, BorealisNotAllowed) {
   UpdateCurrentDlcs();
   ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
   EXPECT_FALSE(
-      BorealisFeaturesFactory::GetForProfile(profile_.get())->IsEnabled());
+      BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, SucessfulInstallation) {
@@ -154,7 +154,7 @@ TEST_F(BorealisInstallerTest, SucessfulInstallation) {
   ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
   EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
   EXPECT_TRUE(
-      BorealisFeaturesFactory::GetForProfile(profile_.get())->IsEnabled());
+      BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, CancelledInstallation) {
@@ -173,7 +173,7 @@ TEST_F(BorealisInstallerTest, CancelledInstallation) {
   ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
   EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
   EXPECT_FALSE(
-      BorealisFeaturesFactory::GetForProfile(profile_.get())->IsEnabled());
+      BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, InstallationInProgess) {
@@ -193,7 +193,7 @@ TEST_F(BorealisInstallerTest, InstallationInProgess) {
   ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
   EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
   EXPECT_TRUE(
-      BorealisFeaturesFactory::GetForProfile(profile_.get())->IsEnabled());
+      BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
 }
 
 // Note that we don't check if the DLC has/hasn't been installed, since the

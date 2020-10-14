@@ -10,7 +10,7 @@
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
@@ -130,8 +130,9 @@ void BorealisApps::Connect(
     apps::mojom::ConnectOptionsPtr opts) {
   std::vector<apps::mojom::AppPtr> apps;
   apps.push_back(GetBorealisLauncher(
-      profile_,
-      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsAllowed()));
+      profile_, borealis::BorealisService::GetForProfile(profile_)
+                    ->Features()
+                    .IsAllowed()));
 
   for (const auto& pair :
        Registry()->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
@@ -164,9 +165,12 @@ void BorealisApps::Launch(const std::string& app_id,
                           apps::mojom::LaunchSource launch_source,
                           int64_t display_id) {
   DCHECK_EQ(borealis::kBorealisAppId, app_id);
-  DCHECK(
-      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsAllowed());
-  if (borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsEnabled()) {
+  DCHECK(borealis::BorealisService::GetForProfile(profile_)
+             ->Features()
+             .IsAllowed());
+  if (borealis::BorealisService::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled()) {
     borealis::BorealisContextManagerFactory::GetForProfile(profile_)
         ->StartBorealis(base::DoNothing());
     return;

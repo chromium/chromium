@@ -19,7 +19,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/dip_px_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/borealis/borealis_features_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_features.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
@@ -569,8 +570,9 @@ GuestOsRegistryService::GetEnabledApps() const {
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
   bool plugin_vm_enabled =
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  bool borealis_enabled =
-      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsEnabled();
+  bool borealis_enabled = borealis::BorealisService::GetForProfile(profile_)
+                              ->Features()
+                              .IsEnabled();
   if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled)
     return {};
 
@@ -638,8 +640,9 @@ void GuestOsRegistryService::RecordStartupMetrics() {
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
   bool plugin_vm_enabled =
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  bool borealis_enabled =
-      borealis::BorealisFeaturesFactory::GetForProfile(profile_)->IsEnabled();
+  bool borealis_enabled = borealis::BorealisService::GetForProfile(profile_)
+                              ->Features()
+                              .IsEnabled();
   if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled)
     return;
 
