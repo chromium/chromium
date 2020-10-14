@@ -22,7 +22,13 @@ namespace {
 
 using FilterList = std::vector<TreeBuilder::FilterFunc>;
 
-void MakeSymbol(SizeInfo* info,
+std::unique_ptr<SizeInfo> MakeSizeInfo() {
+  auto size_info = std::make_unique<SizeInfo>();
+  size_info->containers.emplace_back("");
+  return size_info;
+}
+
+void MakeSymbol(SizeInfo* size_info,
                 SectionId section_id,
                 int32_t size,
                 const char* path,
@@ -44,8 +50,9 @@ void MakeSymbol(SizeInfo* info,
   sym.size_ = size;
   sym.source_path_ = path;
   sym.component_ = component;
-  sym.size_info_ = info;
-  info->raw_symbols.push_back(sym);
+  sym.container_ = &size_info->containers[0];
+  sym.size_info_ = size_info;
+  size_info->raw_symbols.push_back(sym);
 }
 
 std::string ShortName(const Json::Value& node) {
@@ -56,10 +63,10 @@ std::string ShortName(const Json::Value& node) {
 }  // namespace
 
 std::unique_ptr<SizeInfo> CreateSizeInfo() {
-  std::unique_ptr<SizeInfo> info = std::make_unique<SizeInfo>();
-  MakeSymbol(info.get(), SectionId::kText, 20, "a/b/c", "A");
-  MakeSymbol(info.get(), SectionId::kText, 30, "a/b", "B");
-  return info;
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeSymbol(size_info.get(), SectionId::kText, 20, "a/b/c", "A");
+  MakeSymbol(size_info.get(), SectionId::kText, 30, "a/b", "B");
+  return size_info;
 }
 
 void CheckAllTreeNodesFindable(TreeBuilder& tree, const Json::Value& node) {
@@ -97,7 +104,7 @@ TEST(TreeBuilderTest, TestComponentLens) {
 }
 
 TEST(TreeBuilderTest, TestTemplateLens) {
-  std::unique_ptr<SizeInfo> size_info = std::make_unique<SizeInfo>();
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
   MakeSymbol(size_info.get(), SectionId::kText, 20, "a/b/c", "A",
              "base::internal::Invoker<base::internal::BindState<void "
              "(autofill_assistant::Controller::*)(), "
@@ -121,7 +128,7 @@ TEST(TreeBuilderTest, TestTemplateLens) {
 }
 
 TEST(TreeBuilderTest, TestNoNameUnderGroup) {
-  std::unique_ptr<SizeInfo> size_info = std::make_unique<SizeInfo>();
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
   MakeSymbol(size_info.get(), SectionId::kText, 20, "", "A>B>C", "SymbolName");
 
   TreeBuilder builder(size_info.get());
@@ -133,7 +140,7 @@ TEST(TreeBuilderTest, TestNoNameUnderGroup) {
 }
 
 TEST(TreeBuilderTest, TestJoinDexMethodClasses) {
-  std::unique_ptr<SizeInfo> size_info = std::make_unique<SizeInfo>();
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
   MakeSymbol(size_info.get(), SectionId::kDex, 30, "a/b/c", "",
              "zL2#foo(int,android.os.Parcel,android.os.Parcel,int): boolean");
 
