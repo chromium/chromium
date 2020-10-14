@@ -131,7 +131,7 @@ struct uint256_pod {
   absl::uint128 lo;
 };
 
-extern const uint256_pod kuint256max;
+constexpr uint256_pod kuint256max = {absl::Uint128Max(), absl::Uint128Max()};
 
 // allow uint256 to be logged
 extern std::ostream& operator<<(std::ostream& o, const uint256& b);

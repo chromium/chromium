@@ -1,6 +1,6 @@
 Name: Simple Homomorphic Encryption Library with Lattices
 URL: https://github.com/google/shell-encryption
-Version: 1c3aa80075974a241f2e0f9e7b3c7eccada6d8fd
+Version: f94f58852e9b3edaf2766e348a69a70f596bb9dd
 License: Apache Version 2.0
 License File: src/LICENSE
 Security Critical: no
