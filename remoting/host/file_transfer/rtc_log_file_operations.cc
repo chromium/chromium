@@ -66,6 +66,24 @@ class RtcLogFileReader : public FileOperations::Reader {
   base::WeakPtrFactory<RtcLogFileReader> weak_factory_{this};
 };
 
+// This class simply returns a protocol error if the client attempts to upload
+// a file to this FileOperations implementation. The RTC log is download-only,
+// and the upload code-path is never intended to be executed. This class is
+// intended to gracefully return an error instead of crashing the host process.
+class RtcLogFileWriter : public FileOperations::Writer {
+ public:
+  RtcLogFileWriter() = default;
+  ~RtcLogFileWriter() override = default;
+  RtcLogFileWriter(const RtcLogFileWriter&) = delete;
+  RtcLogFileWriter& operator=(const RtcLogFileWriter&) = delete;
+
+  // FileOperations::Writer interface.
+  void Open(const base::FilePath& filename, Callback callback) override;
+  void WriteChunk(std::vector<std::uint8_t> data, Callback callback) override;
+  void Close(Callback callback) override;
+  FileOperations::State state() const override;
+};
+
 RtcLogFileReader::RtcLogFileReader(protocol::ConnectionToClient* connection)
     : connection_(connection) {}
 RtcLogFileReader::~RtcLogFileReader() = default;
@@ -175,6 +193,28 @@ int RtcLogFileReader::ReadPartially(int maximum_to_read,
   return read_amount;
 }
 
+void RtcLogFileWriter::Open(const base::FilePath& filename, Callback callback) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          protocol::MakeFileTransferError(
+              FROM_HERE, protocol::FileTransfer_Error_Type_PROTOCOL_ERROR)));
+}
+
+void RtcLogFileWriter::WriteChunk(std::vector<std::uint8_t> data,
+                                  Callback callback) {
+  NOTREACHED();
+}
+
+void RtcLogFileWriter::Close(Callback callback) {
+  NOTREACHED();
+}
+
+FileOperations::State RtcLogFileWriter::state() const {
+  return FileOperations::State::kFailed;
+}
+
 }  // namespace
 
 RtcLogFileOperations::RtcLogFileOperations(
@@ -188,8 +228,7 @@ std::unique_ptr<FileOperations::Reader> RtcLogFileOperations::CreateReader() {
 }
 
 std::unique_ptr<FileOperations::Writer> RtcLogFileOperations::CreateWriter() {
-  NOTREACHED() << "RTC event log is read-only.";
-  return nullptr;
+  return std::make_unique<RtcLogFileWriter>();
 }
 
 }  // namespace remoting
