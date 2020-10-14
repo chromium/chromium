@@ -40,7 +40,7 @@ ax::mojom::Event ToAXEvent(
     case mojom::AccessibilityEventType::VIEW_LONG_CLICKED:
       return ax::mojom::Event::kClicked;
     case mojom::AccessibilityEventType::VIEW_TEXT_CHANGED:
-      return ax::mojom::Event::kTextChanged;
+      return ax::mojom::Event::kAriaAttributeChanged;
     case mojom::AccessibilityEventType::VIEW_TEXT_SELECTION_CHANGED:
       return ax::mojom::Event::kTextSelectionChanged;
     case mojom::AccessibilityEventType::WINDOW_STATE_CHANGED: {
