@@ -84,6 +84,10 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   void OnGetAccounts(
       const std::vector<chromeos::AccountManager::Account>& accounts);
 
+  // Callback handler for |chromeos::AccountManager::HasDummyGaiaToken|.
+  void ContinueTokenUpsertProcessing(const CoreAccountId& account_id,
+                                     bool has_dummy_token);
+
   // Non-owning pointers.
   AccountTrackerService* const account_tracker_service_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
