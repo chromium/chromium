@@ -204,6 +204,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_deps:androidx_test_uiautomator_uiautomator_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:com_google_guava_failureaccess_java",
     "//third_party/android_deps:espresso_java",
