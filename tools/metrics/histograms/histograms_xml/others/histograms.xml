@@ -1502,6 +1502,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bookmarks.CreateBookmarkIndexTime" units="ms"
     expires_after="M88">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -1511,6 +1514,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.DecodeTime" units="ms" expires_after="M88">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -1521,6 +1527,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bookmarks.DuplicateAndEmptyTitleDetectionTime" units="ms"
     expires_after="2019-09-24">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

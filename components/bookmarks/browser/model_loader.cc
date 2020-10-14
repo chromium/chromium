@@ -96,7 +96,6 @@ void LoadBookmarks(const base::FilePath& path,
       int64_t max_node_id = 0;
       std::string sync_metadata_str;
       BookmarkCodec codec;
-      base::TimeTicks start_time = base::TimeTicks::Now();
       codec.Decode(*root, details->bb_node(), details->other_folder_node(),
                    details->mobile_folder_node(), &max_node_id,
                    &sync_metadata_str);
@@ -107,8 +106,6 @@ void LoadBookmarks(const base::FilePath& path,
       details->set_ids_reassigned(codec.ids_reassigned());
       details->set_guids_reassigned(codec.guids_reassigned());
       details->set_model_meta_info_map(codec.model_meta_info_map());
-      base::UmaHistogramTimes("Bookmarks.DecodeTime",
-                              base::TimeTicks::Now() - start_time);
 
       load_index = true;
     }
@@ -120,10 +117,7 @@ void LoadBookmarks(const base::FilePath& path,
   // Load any extra root nodes now, after the IDs have been potentially
   // reassigned.
   if (load_index) {
-    base::TimeTicks start_time = base::TimeTicks::Now();
     AddBookmarksToIndex(details, details->root_node());
-    base::UmaHistogramTimes("Bookmarks.CreateBookmarkIndexTime",
-                            base::TimeTicks::Now() - start_time);
   }
 
   details->CreateUrlIndex();
@@ -133,16 +127,11 @@ void LoadBookmarks(const base::FilePath& path,
       base::saturated_cast<int>(details->url_index()->UrlCount()));
 
   if (emit_experimental_uma && details->root_node()) {
-    base::TimeTicks start_time = base::TimeTicks::Now();
-
-    int num_duplicate_urls = GetNumDuplicateUrls(details->root_node());
+    const int num_duplicate_urls = GetNumDuplicateUrls(details->root_node());
     if (num_duplicate_urls > 0) {
       base::UmaHistogramCounts10000(
           "Bookmarks.Count.OnProfileLoad.DuplicateUrl", num_duplicate_urls);
     }
-
-    base::UmaHistogramTimes("Bookmarks.DuplicateAndEmptyTitleDetectionTime",
-                            base::TimeTicks::Now() - start_time);
   }
 }
 
