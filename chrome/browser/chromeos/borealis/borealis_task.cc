@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace borealis {
@@ -105,6 +106,13 @@ void StartBorealisVm::Run(BorealisContext* context,
   disk_image->set_writable(true);
   disk_image->set_do_mount(false);
 
+  // TODO(b/161952658): Remove this logging when the exo-pointer-lock is fixed,
+  // this is only meant to be temporary.
+  LOG(WARNING) << "Starting Borealis with exo-pointer-lock: "
+               << (base::FeatureList::IsEnabled(
+                       chromeos::features::kExoPointerLock)
+                       ? "enabled"
+                       : "disabled");
   chromeos::DBusThreadManager::Get()->GetConciergeClient()->StartTerminaVm(
       std::move(request),
       base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
