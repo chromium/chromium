@@ -1,15 +1,44 @@
 <style include="diagnostics-shared diagnostics-fonts">
-  #chart-wrapper {
-    width: 300px;
-    border: #000 1px dotted;
+  .grid line {
+    shape-rendering: crispEdges;
+    stroke-opacity: 0.7;
+    stroke: lightgrey;
   }
 
-  #chart-wrapper > div {
-    font-size: 24px;
+  #chart-legend {
+    text-align: center;
+  }
+
+  #chart-legend > div {
+    display: inline;
+    padding: 5px;
+  }
+
+  #chart-legend > div > span {
+    padding: 2px;
   }
 </style>
 
-<div id="chart-wrapper">
-  <div>[[user]]</div>
-  <div>[[system]]</div>
+<svg id="chart" width$="[[width_]]" height$="[[height_]]">
+  <g id="chartGroup">
+    <!-- Define chart area and boundaries -->
+    <defs>
+      <clipPath id="defClip">
+        <rect width$="[[graphWidth_]]" height$="[[graphHeight_]]"></rect>
+      </clipPath>
+    </defs>
+
+    <g id="gridLines" class="grid"></g>
+  </g>
+</svg>
+<div id="chart-legend">
+  <!-- TODO(joonbug): Localize strings, including the % -->
+  <div id="legend-user">
+    <label>User</label>
+    <span>[[user]]</span>
+  </div>
+  <div id="legend-system">
+    <label>System</label>
+    <span>[[system]]</span>
+  </div>
 </div>

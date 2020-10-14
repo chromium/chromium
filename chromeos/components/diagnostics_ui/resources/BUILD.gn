@@ -135,6 +135,7 @@ js_library("realtime_cpu_chart") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = [ "../../../../third_party/d3/src/externs.js" ]
 }
 
 js_library("routine_list_executor") {

@@ -21,6 +21,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['FakeMojoInterface', 'diagnostics/mojo_interface_provider_test.js'],
  ['FakeSystemDataProvider', 'diagnostics/fake_system_data_provider_test.js'],
  ['FakeMethodProvider', 'diagnostics/fake_method_provider_test.js'],
+ ['RealtimeCpuChart', 'diagnostics/realtime_cpu_chart_test.js'],
  ['RoutineListExecutor', 'diagnostics/routine_list_executor_test.js'],
  ['RoutineResultEntry', 'diagnostics/routine_result_entry_test.js'],
  ['RoutineResultList', 'diagnostics/routine_result_list_test.js'],
