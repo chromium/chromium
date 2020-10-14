@@ -47,6 +47,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -103,8 +104,8 @@ public class AccountPickerBottomSheetTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final BlankCTATabInitialStateRule<ChromeTabbedActivity> mInitialStateRule =
+            new BlankCTATabInitialStateRule<>(sActivityTestRule, false);
 
     private final CustomFakeProfileDataSource mFakeProfileDataSource =
             new CustomFakeProfileDataSource();
