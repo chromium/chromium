@@ -227,70 +227,92 @@ _OFFICIAL_EXCEPT_DISPLAY_LOCKING_JETSTREAM2 = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove(
         ['blink_perf.display_locking', 'jetstream2'])
 
-_TRACING_PERFTESTS = ExecutableConfig('tracing_perftests', estimated_runtime=50)
-_COMPONENTS_PERFTESTS = ExecutableConfig(
-    'components_perftests', flags=[
-        '--xvfb',
-    ], estimated_runtime=110,)
-_GPU_PERFTESTS = ExecutableConfig('gpu_perftests', estimated_runtime=60)
-_LOAD_LIBRARY_PERF_TESTS = ExecutableConfig(
-    'load_library_perf_tests', estimated_runtime=3)
-_MEDIA_PERFTESTS = ExecutableConfig(
-    'media_perftests', flags=[
-        '--single-process-tests', '--test-launcher-retry-limit=0',
-        '--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::'
-        '*unoptimized_aligned',
-    ], estimated_runtime=16)
-_ANGLE_PERFTESTS = ExecutableConfig(
-    'angle_perftests', flags=[
-        '--test-launcher-retry-limit=0',
-        '--test-launcher-jobs=1',
-    ], estimated_runtime=1988)
-_PASSTHROUGH_COMMAND_BUFFER_PERFTESTS = ExecutableConfig(
-    'passthrough_command_buffer_perftests',
-    path='command_buffer_perftests',
-    flags=[
-        '--use-cmd-decoder=passthrough',
-        '--use-angle=gl-null',
-    ], estimated_runtime=30)
-_VALIDATING_COMMAND_BUFFER_PERFTESTS = ExecutableConfig(
-    'validating_command_buffer_perftests',
-    path='command_buffer_perftests',
-    flags=[
-        '--use-cmd-decoder=validating',
-        '--use-stub',
-    ], estimated_runtime=23)
-_VIEWS_PERFTESTS = ExecutableConfig(
-    'views_perftests', flags=[
-        '--xvfb'
-    ], estimated_runtime=7)
-_BASE_PERFTESTS = ExecutableConfig(
-    'base_perftests', flags=[
-        '--test-launcher-jobs=1',
-        '--test-launcher-retry-limit=0'
-    ], estimated_runtime=270)
-_NET_PERFTESTS = ExecutableConfig('net_perftests', estimated_runtime=60)
-_DAWN_PERF_TESTS = ExecutableConfig(
-    'dawn_perf_tests', flags=[
-        '--test-launcher-jobs=1',
-        '--test-launcher-retry-limit=0'
-    ], estimated_runtime=270)
-_PERFORMANCE_BROWSER_TESTS = ExecutableConfig(
-    'performance_browser_tests',
-    path='browser_tests',
-    flags=[
-        '--full-performance-run',
-        '--test-launcher-jobs=1',
-        '--test-launcher-retry-limit=0',
-        # Allow the full performance runs to take up to 60 seconds (rather than
-        # the default of 30 for normal CQ browser test runs).
-        '--ui-test-action-timeout=60000',
-        '--ui-test-action-max-timeout=60000',
-        '--test-launcher-timeout=60000',
-        '--gtest_filter=*/TabCapturePerformanceTest.*:'
-        '*/CastV2PerformanceTest.*',
-    ],
-    estimated_runtime=67)
+
+def _angle_perftests(estimated_runtime=1988):
+  return ExecutableConfig('angle_perftests',
+                          flags=[
+                              '--test-launcher-retry-limit=0',
+                              '--test-launcher-jobs=1',
+                          ],
+                          estimated_runtime=estimated_runtime)
+
+
+def _base_perftests(estimated_runtime=270):
+  return ExecutableConfig(
+      'base_perftests',
+      flags=['--test-launcher-jobs=1', '--test-launcher-retry-limit=0'],
+      estimated_runtime=estimated_runtime)
+
+
+def _components_perftests(estimated_runtime=110):
+  return ExecutableConfig('components_perftests',
+                          flags=[
+                              '--xvfb',
+                          ],
+                          estimated_runtime=estimated_runtime)
+
+
+def _dawn_perf_tests(estimated_runtime=270):
+  return ExecutableConfig(
+      'dawn_perf_tests',
+      flags=['--test-launcher-jobs=1', '--test-launcher-retry-limit=0'],
+      estimated_runtime=estimated_runtime)
+
+
+def _gpu_perftests(estimated_runtime=60):
+  return ExecutableConfig('gpu_perftests', estimated_runtime=estimated_runtime)
+
+
+def _load_library_perf_tests(estimated_runtime=3):
+  return ExecutableConfig('load_library_perf_tests',
+                          estimated_runtime=estimated_runtime)
+
+
+def _media_perftests(estimated_runtime=16):
+  return ExecutableConfig(
+      'media_perftests',
+      flags=[
+          '--single-process-tests',
+          '--test-launcher-retry-limit=0',
+          '--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::'
+          '*unoptimized_aligned',
+      ],
+      estimated_runtime=estimated_runtime)
+
+
+def _net_perftests(estimated_runtime=60):
+  return ExecutableConfig('net_perftests', estimated_runtime=estimated_runtime)
+
+
+def _performance_browser_tests(estimated_runtime=67):
+  return ExecutableConfig(
+      'performance_browser_tests',
+      path='browser_tests',
+      flags=[
+          '--full-performance-run',
+          '--test-launcher-jobs=1',
+          '--test-launcher-retry-limit=0',
+          # Allow the full performance runs to take up to 60 seconds (rather
+          # than the default of 30 for normal CQ browser test runs).
+          '--ui-test-action-timeout=60000',
+          '--ui-test-action-max-timeout=60000',
+          '--test-launcher-timeout=60000',
+          '--gtest_filter=*/TabCapturePerformanceTest.*:'
+          '*/CastV2PerformanceTest.*',
+      ],
+      estimated_runtime=estimated_runtime)
+
+
+def _tracing_perftests(estimated_runtime=50):
+  return ExecutableConfig('tracing_perftests',
+                          estimated_runtime=estimated_runtime)
+
+
+def _views_perftests(estimated_runtime=7):
+  return ExecutableConfig('views_perftests',
+                          flags=['--xvfb'],
+                          estimated_runtime=estimated_runtime)
+
 
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
@@ -298,40 +320,45 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
-    _PERFORMANCE_BROWSER_TESTS,
-    _LOAD_LIBRARY_PERF_TESTS,
-    _NET_PERFTESTS,
-    _TRACING_PERFTESTS,
-    _MEDIA_PERFTESTS,
-    _BASE_PERFTESTS,
+    _base_perftests(),
+    _load_library_perf_tests(),
+    _media_perftests(),
+    _net_perftests(),
+    _performance_browser_tests(),
+    _tracing_perftests(),
 ])
 _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
-    _DAWN_PERF_TESTS,
-    _PERFORMANCE_BROWSER_TESTS,
-    _NET_PERFTESTS,
-    _MEDIA_PERFTESTS,
-    _BASE_PERFTESTS,
-    _VIEWS_PERFTESTS,
+    _base_perftests(),
+    _dawn_perf_tests(),
+    _media_perftests(),
+    _net_perftests(),
+    _performance_browser_tests(),
+    _views_perftests(),
 ])
 _MAC_LOW_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'jetstream2',
     'v8.runtime_stats.top_25',
 ])
 _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
-    _PERFORMANCE_BROWSER_TESTS,
-    _LOAD_LIBRARY_PERF_TESTS,
+    _load_library_perf_tests(),
+    _performance_browser_tests(),
 ])
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
 _WIN_10_EXECUTABLE_CONFIGS = frozenset([
-    _ANGLE_PERFTESTS, _MEDIA_PERFTESTS, _COMPONENTS_PERFTESTS, _VIEWS_PERFTESTS,
-    _BASE_PERFTESTS, _DAWN_PERF_TESTS])
+    _angle_perftests(),
+    _base_perftests(),
+    _components_perftests(),
+    _dawn_perf_tests(),
+    _media_perftests(),
+    _views_perftests(),
+])
 _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
@@ -366,7 +393,10 @@ _ANDROID_NEXUS_5_BENCHMARK_CONFIGS = PerfSuite([
     'system_health.webview_startup',
 ]).Abridge(['loading.mobile', 'startup.mobile', 'system_health.common_mobile'])
 _ANDROID_NEXUS_5_EXECUTABLE_CONFIGS = frozenset([
-    _TRACING_PERFTESTS, _COMPONENTS_PERFTESTS, _GPU_PERFTESTS])
+    _components_perftests(),
+    _gpu_perftests(),
+    _tracing_perftests(),
+])
 _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
@@ -375,7 +405,9 @@ _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     ])
 _ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
-    _COMPONENTS_PERFTESTS, _MEDIA_PERFTESTS])
+    _components_perftests(),
+    _media_perftests(),
+])
 _ANDROID_PIXEL2_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
