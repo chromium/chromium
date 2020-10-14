@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/sandboxed_unpacker.h"
@@ -33,6 +32,7 @@ class TestingProfile;
 
 namespace content {
 class BrowserContext;
+class BrowserTaskEnvironment;
 }
 
 namespace sync_preferences {
@@ -74,6 +74,10 @@ class ExtensionServiceTestBase : public testing::Test {
 
  protected:
   ExtensionServiceTestBase();
+  // Alternatively, a subclass may pass a BrowserTaskEnvironment directly.
+  explicit ExtensionServiceTestBase(
+      std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
+
   ~ExtensionServiceTestBase() override;
 
   // testing::Test implementation.
@@ -134,6 +138,9 @@ class ExtensionServiceTestBase : public testing::Test {
   }
   const base::FilePath& data_dir() const { return data_dir_; }
   const base::ScopedTempDir& temp_dir() const { return temp_dir_; }
+  content::BrowserTaskEnvironment* task_environment() {
+    return task_environment_.get();
+  }
 
  private:
   // Must be declared before anything that may make use of the
@@ -146,7 +153,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // The MessageLoop is used by RenderViewHostTestEnabler, so this must be
   // created before it.
-  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
   // Enable creation of WebContents without initializing a renderer.
   content::RenderViewHostTestEnabler rvh_test_enabler_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
 
 #include "base/logging.h"
+#include "chrome/browser/chromeos/child_accounts/family_user_app_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_session_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -42,11 +43,15 @@ FamilyUserMetricsService::FamilyUserMetricsService(
   DCHECK(pref_service_);
   family_user_metrics_.push_back(
       std::make_unique<FamilyUserSessionMetrics>(pref_service_));
+  Profile* profile = Profile::FromBrowserContext(context);
+  family_user_metrics_.push_back(
+      std::make_unique<FamilyUserAppMetrics>(profile));
 
   for (auto& family_user_metric : family_user_metrics_)
     AddObserver(family_user_metric.get());
 
-  // Check for a new day every |kTimerInterval|.
+  CheckForNewDay();
+  // Check for a new day every |kTimerInterval| as well.
   timer_.Start(FROM_HERE, kTimerInterval, this,
                &FamilyUserMetricsService::CheckForNewDay);
 }

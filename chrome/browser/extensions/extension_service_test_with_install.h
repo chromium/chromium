@@ -21,6 +21,10 @@ namespace base {
 class FilePath;
 }
 
+namespace content {
+class BrowserTaskEnvironment;
+}
+
 namespace extensions {
 
 // An enhancement of ExtensionServiceTestBase that provides helpers to install,
@@ -29,6 +33,8 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
                                         public ExtensionRegistryObserver {
  public:
   ExtensionServiceTestWithInstall();
+  explicit ExtensionServiceTestWithInstall(
+      std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
   ~ExtensionServiceTestWithInstall() override;
 
  protected:

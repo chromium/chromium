@@ -4708,6 +4708,78 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="FamilyUser.ArcAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used arc apps in the
+    past 28 days.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.BorealisAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used borealis apps in
+    the past 28 days.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.CrostiniAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used crostini apps in
+    the past 28 days.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.EnabledExtensionsCount"
+    units="Number of Extensions" expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of non-component enabled regular browser extensions and
+    themes around once per day, regardless of when they were last used.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.ExtensionAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used extension apps in
+    the past 28 days. Compared to FamilyUser.InstalledExtensionsCount, this
+    metric only includes apps and excludes regular browser extensions.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.InstalledExtensionsCount"
+    units="Number of Extensions" expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of non-component installed regular browser extensions and
+    themes around once per day, regardless of when they were last used.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.OtherAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used apps in the past 28
+    days in a catch-all other category. Includes unknown, built-in, mac native,
+    plugin vm, lacros, and remote apps.
+  </summary>
+</histogram>
+
 <histogram name="FamilyUser.SessionEngagement.Duration" units="ms"
     expires_after="2021-07-14">
   <owner>agawronska@chromium.org</owner>
@@ -4758,6 +4830,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the Chrome OS user engagement hour of day (0-23) on weekend. Logged
     on UsageTimeStateNotifier::UsageTimeState changes to INACTIVE. Might report
     the same hour multiple times.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.TotalAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the total number of recently used apps in the
+    past 28 days.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.WebAppsCount" units="Number of Apps"
+    expires_after="2021-08-12">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Around once per day, records the number of recently used web apps in the
+    past 28 days.
   </summary>
 </histogram>
 

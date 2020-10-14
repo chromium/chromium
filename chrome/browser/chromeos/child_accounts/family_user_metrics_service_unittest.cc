@@ -51,12 +51,11 @@ class FamilyUserMetricsServiceTest : public testing::Test {
     EXPECT_TRUE(base::Time::FromString(kStartTime, &start_time));
     base::TimeDelta forward_by = start_time - base::Time::Now();
     EXPECT_LT(base::TimeDelta(), forward_by);
-    task_environment_.FastForwardBy(forward_by);
+    task_environment_.AdvanceClock(forward_by);
 
     PowerManagerClient::InitializeFake();
     family_user_metrics_service_ =
         std::make_unique<FamilyUserMetricsService>(&testing_profile_);
-    SetDayIdPref(FamilyUserMetricsService::GetDayIdForTesting(start_time));
 
     family_user_metrics_service_->AddObserver(&mock_observer_);
   }
@@ -74,10 +73,6 @@ class FamilyUserMetricsServiceTest : public testing::Test {
 
   int GetDayIdPref() {
     return GetPrefService()->GetInteger(prefs::kFamilyUserMetricsDayId);
-  }
-
-  void SetDayIdPref(int day_id) {
-    GetPrefService()->SetInteger(prefs::kFamilyUserMetricsDayId, day_id);
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -98,7 +93,8 @@ using DetectingNewDayTest = FamilyUserMetricsServiceTest;
 // Tests OnNewDay() is called after more than one day passes.
 TEST_F(DetectingNewDayTest, MoreThanOneDay) {
   EXPECT_CALL(mock_observer_, OnNewDay()).Times(1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1) +
+                                  base::TimeDelta::FromHours(1));
   EXPECT_EQ(FamilyUserMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }
@@ -119,8 +115,8 @@ TEST_F(DetectingNewDayTest, LessThanOneDay) {
             GetDayIdPref());
 }
 
-// Tests OnNewDay() is called after more than one day passes, even when the
-// device is idle.
+// Tests OnNewDay() is called after one day passes, even when the device is
+// idle.
 TEST_F(DetectingNewDayTest, MoreThanOneDayDeviceIdle) {
   EXPECT_CALL(mock_observer_, OnNewDay()).Times(1);
   SetScreenOff(true);
