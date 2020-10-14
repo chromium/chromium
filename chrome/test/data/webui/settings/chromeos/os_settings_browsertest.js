@@ -1723,12 +1723,18 @@ TEST_F('OSSettingsCupsPrinterPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// TODO(crbug/1109431): Remove this test once migration is complete.
 // eslint-disable-next-line no-var
 var OSSettingsLanguagesPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload +
         'chromeos/os_languages_page/os_languages_page.html';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kLanguageSettingsUpdate']};
   }
 
   /** @override */
@@ -1769,11 +1775,6 @@ var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
   get browsePreload() {
     return super.browsePreload +
         'chromeos/os_languages_page/os_languages_page_v2.html';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kLanguageSettingsUpdate']};
   }
 
   /** @override */
@@ -1845,11 +1846,6 @@ var OSSettingsInputPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return super.browsePreload + 'chromeos/os_language_page/input_page.html';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kLanguageSettingsUpdate']};
   }
 
   /** @override */
