@@ -4992,12 +4992,11 @@ class ColorTransformPixelTest
   }
 
   void Basic() {
-    // SkColorSpace doesn't support piecewise transfer functions so skip those
-    // with SkiaRenderer.
-    if (!is_gl_renderer() &&
-        (src_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR ||
+    // Skip piecewise transfer functions because SkColorSpace (needed for
+    // CopyOutputResult::AsSkBitmap) doesn't support them..
+    if ((src_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR ||
          dst_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR)) {
-      LOG(ERROR) << "Skipping piecewise HDR function with Skia";
+      LOG(ERROR) << "Skipping piecewise HDR function";
       return;
     }
 

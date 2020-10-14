@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -183,6 +185,38 @@ TEST_F(GLRendererCopierTest, FallsBackOnRGBAForReadbackFormat_BadFormat) {
 TEST_F(GLRendererCopierTest, FallsBackOnRGBAForReadbackFormat_BadType) {
   test_gl()->SetOptimalReadbackFormat(GL_BGRA_EXT, GL_UNSIGNED_SHORT);
   EXPECT_EQ(static_cast<GLenum>(GL_RGBA), GetOptimalReadbackFormat());
+}
+
+// Tests that copying from a source with a color space that can't be converted
+// to a SkColorSpace will fallback to a transform to sRGB.
+TEST_F(GLRendererCopierTest, FallsBackToSRGBForInvalidSkColorSpaces) {
+  std::unique_ptr<CopyOutputResult> result;
+  base::RunLoop loop;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      base::BindOnce(
+          [](std::unique_ptr<CopyOutputResult>* result_out,
+             base::OnceClosure quit_closure,
+             std::unique_ptr<CopyOutputResult> result_from_copier) {
+            *result_out = std::move(result_from_copier);
+            std::move(quit_closure).Run();
+          },
+          &result, loop.QuitClosure()));
+  gfx::Rect bounds(50, 50);
+  copy_output::RenderPassGeometry geometry;
+  geometry.result_bounds = bounds;
+  geometry.result_selection = bounds;
+  geometry.sampling_bounds = bounds;
+  gfx::ColorSpace hdr_color_space = gfx::ColorSpace::CreatePiecewiseHDR(
+      gfx::ColorSpace::PrimaryID::BT2020, 0.5, 1.5);
+
+  copier()->CopyFromTextureOrFramebuffer(std::move(request), geometry, GL_RGBA,
+      0, gfx::Size(50, 50), false, hdr_color_space);
+  loop.Run();
+
+  SkBitmap result_bitmap = result->AsSkBitmap();
+  ASSERT_NE(nullptr, result_bitmap.colorSpace());
+  EXPECT_TRUE(result_bitmap.colorSpace()->isSRGB());
 }
 
 }  // namespace viz

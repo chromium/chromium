@@ -191,6 +191,7 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
   void RenderResultTexture(const CopyOutputRequest& request,
                            bool flipped_source,
                            const gfx::ColorSpace& source_color_space,
+                           const gfx::ColorSpace& dest_color_space,
                            GLuint source_texture,
                            const gfx::Size& source_texture_size,
                            const gfx::Rect& sampling_rect,
@@ -284,7 +285,8 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
   // as the result to the CopyOutputRequest.
   void RenderAndSendTextureResult(std::unique_ptr<CopyOutputRequest> request,
                                   bool flipped_source,
-                                  const gfx::ColorSpace& color_space,
+                                  const gfx::ColorSpace& source_color_space,
+                                  const gfx::ColorSpace& dest_color_space,
                                   GLuint source_texture,
                                   const gfx::Size& source_texture_size,
                                   const gfx::Rect& sampling_rect,

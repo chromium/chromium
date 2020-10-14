@@ -122,16 +122,24 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
     GLuint framebuffer_texture,
     const gfx::Size& framebuffer_texture_size,
     bool flipped_source,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& framebuffer_color_space) {
   const gfx::Rect& result_rect = geometry.result_selection;
 
+  // If we can't convert |color_space| to a SkColorSpace for SkBitmap copy
+  // requests (e.g. PIECEWISE_HDR), fallback to a color transform to sRGB
+  // before returning the copy result.
+  gfx::ColorSpace dest_color_space = framebuffer_color_space;
+  if (!framebuffer_color_space.ToSkColorSpace() &&
+      request->result_format() == ResultFormat::RGBA_BITMAP) {
+    dest_color_space = gfx::ColorSpace::CreateSRGB();
+  }
   // Fast-Path: If no transformation is necessary and no new textures need to be
   // generated, read-back directly from the currently-bound framebuffer.
   if (request->result_format() == ResultFormat::RGBA_BITMAP &&
-      !request->is_scaled()) {
+      framebuffer_color_space == dest_color_space && !request->is_scaled()) {
     StartReadbackFromFramebuffer(std::move(request), geometry.readback_offset,
                                  flipped_source, false, result_rect,
-                                 color_space);
+                                 dest_color_space);
     return;
   }
 
@@ -195,17 +203,19 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
       EnsureTextureDefinedWithSize(context_provider_->ContextGL(),
                                    result_rect.size(), &things->result_texture,
                                    &things->result_texture_size);
-      RenderResultTexture(*request, flipped_source, color_space, source_texture,
-                          source_texture_size, sampling_rect, result_rect,
-                          things->result_texture, things.get());
-      StartReadbackFromTexture(std::move(request), result_rect, color_space,
-                               things.get());
+      RenderResultTexture(*request, flipped_source, framebuffer_color_space,
+                          dest_color_space, source_texture, source_texture_size,
+                          sampling_rect, result_rect, things->result_texture,
+                          things.get());
+      StartReadbackFromTexture(std::move(request), result_rect,
+                               dest_color_space, things.get());
       break;
 
     case ResultFormat::RGBA_TEXTURE:
-      RenderAndSendTextureResult(
-          std::move(request), flipped_source, color_space, source_texture,
-          source_texture_size, sampling_rect, result_rect, things.get());
+      RenderAndSendTextureResult(std::move(request), flipped_source,
+                                 framebuffer_color_space, dest_color_space,
+                                 source_texture, source_texture_size,
+                                 sampling_rect, result_rect, things.get());
       break;
 
     case ResultFormat::I420_PLANES:
@@ -218,7 +228,7 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
       }
 
       const gfx::Rect aligned_rect = RenderI420Textures(
-          *request, flipped_source, color_space, source_texture,
+          *request, flipped_source, framebuffer_color_space, source_texture,
           source_texture_size, sampling_rect, result_rect, things.get());
       StartI420ReadbackFromTextures(std::move(request), aligned_rect,
                                     result_rect, things.get());
@@ -249,6 +259,7 @@ void GLRendererCopier::RenderResultTexture(
     const CopyOutputRequest& request,
     bool flipped_source,
     const gfx::ColorSpace& source_color_space,
+    const gfx::ColorSpace& dest_color_space,
     GLuint source_texture,
     const gfx::Size& source_texture_size,
     const gfx::Rect& sampling_rect,
@@ -258,7 +269,7 @@ void GLRendererCopier::RenderResultTexture(
   DCHECK_NE(request.result_format(), ResultFormat::I420_PLANES);
 
   GLScaler::Parameters params;
-  PopulateScalerParameters(request, source_color_space, source_color_space,
+  PopulateScalerParameters(request, source_color_space, dest_color_space,
                            flipped_source, &params);
   if (request.result_format() == ResultFormat::RGBA_BITMAP) {
     // Render the result in top-down row order, and swizzle, within the GPU so
@@ -579,7 +590,8 @@ void GLRendererCopier::StartReadbackFromFramebuffer(
 void GLRendererCopier::RenderAndSendTextureResult(
     std::unique_ptr<CopyOutputRequest> request,
     bool flipped_source,
-    const gfx::ColorSpace& color_space,
+    const gfx::ColorSpace& source_color_space,
+    const gfx::ColorSpace& dest_color_space,
     GLuint source_texture,
     const gfx::Size& source_texture_size,
     const gfx::Rect& sampling_rect,
@@ -589,7 +601,7 @@ void GLRendererCopier::RenderAndSendTextureResult(
 
   auto* sii = context_provider_->SharedImageInterface();
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      ResourceFormat::RGBA_8888, result_rect.size(), color_space,
+      ResourceFormat::RGBA_8888, result_rect.size(), dest_color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
   auto* gl = context_provider_->ContextGL();
@@ -597,9 +609,9 @@ void GLRendererCopier::RenderAndSendTextureResult(
   GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
   gl->BeginSharedImageAccessDirectCHROMIUM(
       texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  RenderResultTexture(*request, flipped_source, color_space, source_texture,
-                      source_texture_size, sampling_rect, result_rect, texture,
-                      things);
+  RenderResultTexture(*request, flipped_source, source_color_space,
+                      dest_color_space, source_texture, source_texture_size,
+                      sampling_rect, result_rect, texture, things);
   gl->EndSharedImageAccessDirectCHROMIUM(texture);
   gl->DeleteTextures(1, &texture);
   gpu::SyncToken sync_token;
@@ -614,7 +626,7 @@ void GLRendererCopier::RenderAndSendTextureResult(
       texture_deleter_->GetReleaseCallback(context_provider_, mailbox);
 
   request->SendResult(std::make_unique<CopyOutputTextureResult>(
-      result_rect, mailbox, sync_token, color_space,
+      result_rect, mailbox, sync_token, dest_color_space,
       std::move(release_callback)));
 }
 
