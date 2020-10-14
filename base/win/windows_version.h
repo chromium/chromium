@@ -31,9 +31,6 @@ namespace win {
 // syntactic sugar reasons; see the declaration of GetVersion() below.
 // NOTE: Keep these in order so callers can do things like
 // "if (base::win::GetVersion() >= base::win::Version::VISTA) ...".
-//
-// This enum is used in metrics histograms, so they shouldn't be reordered or
-// removed. New values can be added before Version::WIN_LAST.
 enum class Version {
   PRE_XP = 0,  // Not supported.
   XP = 1,
@@ -50,10 +47,9 @@ enum class Version {
   WIN10_RS4 = 12,   // Redstone 4: Version 1803, Build 17134.
   WIN10_RS5 = 13,   // Redstone 5: Version 1809, Build 17763.
   WIN10_19H1 = 14,  // 19H1: Version 1903, Build 18362.
-  WIN10_20H1 = 15,  // 20H1: Version 2004, Build 19041.
-  // On edit, update tools\metrics\histograms\enums.xml "WindowsVersion" and
-  // "GpuBlacklistFeatureTestResultsWindows2".
-  WIN_LAST,  // Indicates error condition.
+  WIN10_19H2 = 15,  // 19H2: Version 1909, Build 18363.
+  WIN10_20H1 = 16,  // 20H1: Version 2004, Build 19041.
+  WIN_LAST,         // Indicates error condition.
 };
 
 // A rough bucketing of the available types of versions of Windows. This is used

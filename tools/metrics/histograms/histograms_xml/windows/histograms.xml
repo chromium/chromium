@@ -60,6 +60,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.GetVersionExVersion" enum="WindowsVersion"
     expires_after="never">
+  <obsolete>
+    Removed 10/2020 as this histogram has been replaced by the synthetic
+    histogram Windows.WindowsVersion generated from Windows.PatchLevel.
+  </obsolete>
 <!-- expires-never: Needed to measure Windows ecosystem. -->
 
   <owner>wfh@chromium.org</owner>
@@ -149,6 +153,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.Kernel32Version" enum="WindowsVersion"
     expires_after="never">
+  <obsolete>
+    Removed 10/2020 as this histogram has been replaced by the synthetic
+    histogram Windows.WindowsVersionKernel32 generated from
+    Windows.PatchLevelKernel32.
+  </obsolete>
 <!-- expires-never: Needed to measure Windows ecosystem. -->
 
   <owner>wfh@chromium.org</owner>

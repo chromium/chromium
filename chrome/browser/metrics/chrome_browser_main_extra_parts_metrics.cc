@@ -152,12 +152,6 @@ bool IsApplockerRunning();
 void RecordStartupMetrics() {
 #if defined(OS_WIN)
   const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
-  base::UmaHistogramEnumeration("Windows.GetVersionExVersion",
-                                os_info.version(),
-                                base::win::Version::WIN_LAST);
-  base::UmaHistogramEnumeration("Windows.Kernel32Version",
-                                os_info.Kernel32Version(),
-                                base::win::Version::WIN_LAST);
   int patch = os_info.version_number().patch;
   int build = os_info.version_number().build;
   int patch_level = 0;

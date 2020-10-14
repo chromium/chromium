@@ -78230,6 +78230,9 @@ Called by update_scheduler_enums.py.-->
 </enum>
 
 <enum name="WindowsVersion">
+  <obsolete>
+    Removed from code Oct 2020.
+  </obsolete>
   <int value="0" label="Pre-XP"/>
   <int value="1" label="XP"/>
   <int value="2" label="2003 Server"/>
@@ -78244,7 +78247,7 @@ Called by update_scheduler_enums.py.-->
   <int value="11" label="Windows 10 RS3"/>
   <int value="12" label="Windows 10 RS4"/>
   <int value="13" label="Windows 10 RS5"/>
-  <int value="14" label="Windows 10 19H1"/>
+  <int value="14" label="Windows 10 19H1 or 19H2"/>
   <int value="15" label="Windows 10 20H1"/>
 </enum>
 
