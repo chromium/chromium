@@ -122,7 +122,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   bool WillHandleGestureEvent(const WebGestureEvent& event) override;
-  bool WillHandleMouseEvent(const WebMouseEvent& event) override;
+  void WillHandleMouseEvent(const WebMouseEvent& event) override;
   void ObserveGestureEventAndResult(
       const WebGestureEvent& gesture_event,
       const gfx::Vector2dF& unused_delta,
@@ -176,13 +176,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void ShowVirtualKeyboard() override;
   void FlushInputProcessedCallback() override;
   void CancelCompositionForPepper() override;
-  void RequestMouseLock(
-      bool has_transient_user_activation,
-      bool request_unadjusted_movement,
-      base::OnceCallback<
-          void(mojom::blink::PointerLockResult,
-               CrossVariantMojoRemote<
-                   mojom::blink::PointerLockContextInterfaceBase>)>) override;
 
   // PageWidgetEventHandler functions
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;

@@ -1138,7 +1138,10 @@ void WidgetBase::UpdateSelectionBounds() {
 }
 
 void WidgetBase::MouseCaptureLost() {
-  client_->MouseCaptureLost();
+  FrameWidget* frame_widget = client_->FrameWidget();
+  if (!frame_widget)
+    return;
+  frame_widget->MouseCaptureLost();
 }
 
 void WidgetBase::SetEditCommandsForNextKeyEvent(
@@ -1311,31 +1314,6 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
   else
     UpdateTextInputState();
 #endif
-}
-
-void WidgetBase::RequestMouseLock(
-    bool has_transient_user_activation,
-    bool request_unadjusted_movement,
-    base::OnceCallback<void(
-        blink::mojom::PointerLockResult,
-        CrossVariantMojoRemote<mojom::blink::PointerLockContextInterfaceBase>)>
-        callback) {
-  if (mojom::blink::WidgetInputHandlerHost* host =
-          widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
-    host->RequestMouseLock(
-        has_transient_user_activation, request_unadjusted_movement,
-        base::BindOnce(
-            [](base::OnceCallback<void(
-                   blink::mojom::PointerLockResult,
-                   CrossVariantMojoRemote<
-                       mojom::blink::PointerLockContextInterfaceBase>)>
-                   callback,
-               blink::mojom::PointerLockResult result,
-               mojo::PendingRemote<mojom::blink::PointerLockContext> context) {
-              std::move(callback).Run(result, std::move(context));
-            },
-            std::move(callback)));
-  }
 }
 
 void WidgetBase::UpdateSurfaceAndScreenInfo(

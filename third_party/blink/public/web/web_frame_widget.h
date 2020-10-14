@@ -206,6 +206,10 @@ class WebFrameWidget : public WebWidget {
   // See https://github.com/webscreens/window-segments/blob/master/EXPLAINER.md
   virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
 
+  // Release any mouse lock or pointer capture held. This is used to reset
+  // state between WebTest runs.
+  virtual void ReleaseMouseLockAndPointerCaptureForTesting() = 0;
+
  private:
   // This private constructor and the class/friend declaration ensures that
   // WebFrameWidgetBase is the only concrete subclass that implements

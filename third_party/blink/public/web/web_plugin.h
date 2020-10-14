@@ -255,6 +255,13 @@ class WebPlugin {
   // it loading later.
   virtual bool IsErrorPlaceholder() { return false; }
 
+  // Indication that a current mouse lock has been lost.
+  virtual void DidLoseMouseLock() {}
+
+  // A response has been received from a previous WebPluginContainer::LockMouse
+  // call.
+  virtual void DidReceiveMouseLockResult(bool success) {}
+
  protected:
   virtual ~WebPlugin() = default;
 };

@@ -219,13 +219,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void set_handling_select_range(bool value) { handling_select_range_ = value; }
   bool handling_select_range() const { return handling_select_range_; }
 
-  void RequestMouseLock(
-      bool has_transient_user_activation,
-      bool request_unadjusted_movement,
-      base::OnceCallback<
-          void(blink::mojom::PointerLockResult,
-               CrossVariantMojoRemote<
-                   mojom::blink::PointerLockContextInterfaceBase>)> callback);
   bool ComputePreferCompositingToLCDText();
 
   const viz::LocalSurfaceId& local_surface_id_from_parent() {

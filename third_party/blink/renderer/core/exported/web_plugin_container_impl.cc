@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/events/drag_event.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -91,6 +92,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
@@ -121,6 +123,29 @@ const WebInputEvent::Modifiers kEditingModifier = WebInputEvent::kControlKey;
 #endif
 
 }  // namespace
+
+class WebPluginContainerImpl::MouseLockLostListener final
+    : public NativeEventListener {
+ public:
+  explicit MouseLockLostListener(WebPluginContainerImpl* plugin_container)
+      : plugin_container_(plugin_container) {}
+
+  void Disconnect() { plugin_container_ = nullptr; }
+
+  void Invoke(ExecutionContext*, Event*) override {
+    if (!plugin_container_)
+      return;
+    plugin_container_->MaybeLostMouseLock();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(plugin_container_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<WebPluginContainerImpl> plugin_container_;
+};
 
 // Public methods --------------------------------------------------------------
 
@@ -360,6 +385,50 @@ bool WebPluginContainerImpl::IsFullscreenElement() const {
 
 void WebPluginContainerImpl::CancelFullscreen() {
   Fullscreen::FullyExitFullscreen(element_->GetDocument());
+}
+
+bool WebPluginContainerImpl::IsMouseLocked() {
+  return element_->GetDocument().PointerLockElement() == element_;
+}
+
+bool WebPluginContainerImpl::LockMouse(bool request_unadjusted_movement) {
+  if (Page* page = element_->GetDocument().GetPage()) {
+    bool res = page->GetPointerLockController().RequestPointerLock(
+        element_, WTF::Bind(&WebPluginContainerImpl::HandleLockMouseResult,
+                            WrapWeakPersistent(this)));
+    if (res) {
+      mouse_lock_lost_listener_ =
+          MakeGarbageCollected<MouseLockLostListener>(this);
+      element_->GetDocument().addEventListener(
+          event_type_names::kPointerlockchange, mouse_lock_lost_listener_,
+          false);
+    }
+    return res;
+  }
+  return false;
+}
+
+void WebPluginContainerImpl::UnlockMouse() {
+  element_->GetDocument().exitPointerLock();
+}
+
+void WebPluginContainerImpl::HandleLockMouseResult(
+    mojom::blink::PointerLockResult result) {
+  web_plugin_->DidReceiveMouseLockResult(
+      result == mojom::blink::PointerLockResult::kSuccess);
+}
+
+void WebPluginContainerImpl::MaybeLostMouseLock() {
+  if (!IsMouseLocked()) {
+    if (mouse_lock_lost_listener_) {
+      mouse_lock_lost_listener_->Disconnect();
+      element_->GetDocument().removeEventListener(
+          event_type_names::kPointerlockchange, mouse_lock_lost_listener_,
+          false);
+      mouse_lock_lost_listener_ = nullptr;
+    }
+    web_plugin_->DidLoseMouseLock();
+  }
 }
 
 bool WebPluginContainerImpl::SupportsPaginatedPrint() const {
@@ -805,6 +874,7 @@ void WebPluginContainerImpl::SetFrameRect(const IntRect& rect) {
 
 void WebPluginContainerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
+  visitor->Trace(mouse_lock_lost_listener_);
   ExecutionContextClient::Trace(visitor);
 }
 

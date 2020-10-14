@@ -121,7 +121,7 @@ class WidgetBaseClient {
 
   virtual void DidHandleKeyEvent() {}
   virtual bool WillHandleGestureEvent(const WebGestureEvent& event) = 0;
-  virtual bool WillHandleMouseEvent(const WebMouseEvent& event) = 0;
+  virtual void WillHandleMouseEvent(const WebMouseEvent& event) = 0;
   virtual void ObserveGestureEventAndResult(
       const WebGestureEvent& gesture_event,
       const gfx::Vector2dF& unused_delta,
@@ -134,9 +134,6 @@ class WidgetBaseClient {
 
   // Called to inform the Widget of the mouse cursor's visibility.
   virtual void SetCursorVisibilityState(bool is_visible) {}
-
-  // Mouse capture has been lost.
-  virtual void MouseCaptureLost() {}
 
   // The FrameWidget interface if this is a FrameWidget.
   virtual blink::FrameWidget* FrameWidget() { return nullptr; }

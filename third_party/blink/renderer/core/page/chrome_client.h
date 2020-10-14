@@ -431,21 +431,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual bool IsSVGImageChromeClient() const { return false; }
 
-  virtual bool RequestPointerLock(LocalFrame*,
-                                  WebWidgetClient::PointerLockCallback callback,
-                                  bool request_unadjusted_movement) {
-    return false;
-  }
-
-  virtual bool RequestPointerLockChange(
-      LocalFrame*,
-      WebWidgetClient::PointerLockCallback callback,
-      bool request_unadjusted_movement) {
-    return false;
-  }
-
-  virtual void RequestPointerUnlock(LocalFrame*) {}
-
   virtual IntSize MinimumWindowSize() const { return IntSize(100, 100); }
 
   virtual bool IsChromeClientImpl() const { return false; }

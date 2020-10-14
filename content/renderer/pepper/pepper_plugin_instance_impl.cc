@@ -344,26 +344,6 @@ bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
   return false;
 }
 
-class PluginInstanceLockTarget : public MouseLockDispatcher::LockTarget {
- public:
-  explicit PluginInstanceLockTarget(PepperPluginInstanceImpl* plugin)
-      : plugin_(plugin) {}
-
-  void OnLockMouseACK(bool succeeded) override {
-    plugin_->OnLockMouseACK(succeeded);
-  }
-
-  void OnMouseLockLost() override { plugin_->OnMouseLockLost(); }
-
-  bool HandleMouseLockedInputEvent(const blink::WebMouseEvent& event) override {
-    plugin_->HandleMouseLockedInputEvent(event);
-    return true;
-  }
-
- private:
-  PepperPluginInstanceImpl* plugin_;
-};
-
 void PrintPDFOutput(PP_Resource print_output,
                     printing::MetafileSkia* metafile) {
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -617,7 +597,6 @@ PepperPluginInstanceImpl::~PepperPluginInstanceImpl() {
     browser_connection->DidDeleteInProcessInstance(pp_instance());
   }
 
-  UnSetAndDeleteLockTargetAdapter();
   module_->InstanceDeleted(this);
   // If we switched from the NaCl plugin module, notify it too.
   if (original_module_.get())
@@ -816,7 +795,6 @@ void PepperPluginInstanceImpl::InstanceCrashed() {
 
   if (render_frame_)
     render_frame_->PluginCrashed(module_->path(), module_->GetPeerProcessId());
-  UnSetAndDeleteLockTargetAdapter();
 }
 
 bool PepperPluginInstanceImpl::Initialize(
@@ -1138,10 +1116,9 @@ bool PepperPluginInstanceImpl::HandleInputEvent(
       std::unique_ptr<const WebInputEvent> event_in_dip(
           ui::ScaleWebInputEvent(event, viewport_to_dip_scale_));
       if (event_in_dip)
-        CreateInputEventData(*event_in_dip.get(), &last_mouse_position_,
-                             &events);
+        CreateInputEventData(*event_in_dip.get(), &events);
       else
-        CreateInputEventData(event, &last_mouse_position_, &events);
+        CreateInputEventData(event, &events);
 
       // Each input event may generate more than one PP_InputEvent.
       for (size_t i = 0; i < events.size(); i++) {
@@ -2692,7 +2669,7 @@ int32_t PepperPluginInstanceImpl::LockMouse(
 }
 
 void PepperPluginInstanceImpl::UnlockMouse(PP_Instance instance) {
-  GetMouseLockDispatcher()->UnlockMouse(GetOrCreateLockTargetAdapter());
+  container_->UnlockMouse();
 }
 
 void PepperPluginInstanceImpl::SetTextInputType(PP_Instance instance,
@@ -3092,36 +3069,11 @@ void PepperPluginInstanceImpl::ResetSizeAttributesAfterFullscreen() {
 }
 
 bool PepperPluginInstanceImpl::IsMouseLocked() {
-  return GetMouseLockDispatcher()->IsMouseLockedTo(
-      GetOrCreateLockTargetAdapter());
+  return container_->IsMouseLocked();
 }
 
 bool PepperPluginInstanceImpl::LockMouse(bool request_unadjusted_movement) {
-  WebLocalFrame* requester_frame = container_->GetDocument().GetFrame();
-  return GetMouseLockDispatcher()->LockMouse(
-      GetOrCreateLockTargetAdapter(), requester_frame,
-      base::OnceCallback<void(blink::mojom::PointerLockResult)>(),
-      request_unadjusted_movement);
-}
-
-MouseLockDispatcher::LockTarget*
-PepperPluginInstanceImpl::GetOrCreateLockTargetAdapter() {
-  if (!lock_target_)
-    lock_target_ = std::make_unique<PluginInstanceLockTarget>(this);
-  return lock_target_.get();
-}
-
-MouseLockDispatcher* PepperPluginInstanceImpl::GetMouseLockDispatcher() {
-  if (render_frame_)
-    return render_frame_->GetLocalRootRenderWidget()->mouse_lock_dispatcher();
-  return nullptr;
-}
-
-void PepperPluginInstanceImpl::UnSetAndDeleteLockTargetAdapter() {
-  if (lock_target_) {
-    GetMouseLockDispatcher()->OnLockTargetDestroyed(lock_target_.get());
-    lock_target_.reset();
-  }
+  return container_->LockMouse(request_unadjusted_movement);
 }
 
 void PepperPluginInstanceImpl::DidDataFromWebURLResponse(

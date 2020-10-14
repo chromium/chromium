@@ -157,6 +157,16 @@ class WebPluginContainer {
   // Returns true if this container was the target for the last mouse event.
   virtual bool WasTargetForLastMouseEvent() = 0;
 
+  // Whether this plugin current has the mouse lock or not.
+  virtual bool IsMouseLocked() = 0;
+
+  // Request to lock the mouse. A subsequent callback on
+  // WebPlugin::DidReceiveMouseLockResult will be called.
+  virtual bool LockMouse(bool request_unadjusted_movement) = 0;
+
+  // Request to unlock a current mouse lock.
+  virtual void UnlockMouse() = 0;
+
  protected:
   ~WebPluginContainer() = default;
 };

@@ -33,9 +33,7 @@
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
 #include "content/public/common/drop_data.h"
-#include "content/renderer/mouse_lock_dispatcher.h"
 #include "content/renderer/render_widget_delegate.h"
-#include "content/renderer/render_widget_mouse_lock_dispatcher.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_sender.h"
@@ -63,8 +61,6 @@
 
 namespace blink {
 class WebFrameWidget;
-class WebLocalFrame;
-class WebMouseEvent;
 class WebPagePopup;
 }  // namespace blink
 
@@ -205,19 +201,9 @@ class CONTENT_EXPORT RenderWidget
   void ClosePopupWidgetSoon() override;
   void Show(blink::WebNavigationPolicy) override;
   void SetWindowRect(const gfx::Rect&) override;
-  bool RequestPointerLock(blink::WebLocalFrame* requester_frame,
-                          blink::WebWidgetClient::PointerLockCallback callback,
-                          bool request_unadjusted_movement) override;
-  bool RequestPointerLockChange(
-      blink::WebLocalFrame* requester_frame,
-      blink::WebWidgetClient::PointerLockCallback callback,
-      bool request_unadjusted_movement) override;
-  void RequestPointerUnlock() override;
-  bool IsPointerLocked() override;
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
-  bool WillHandleMouseEvent(const blink::WebMouseEvent& event) override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPepper() override;
   blink::WebTextInputType GetPepperTextInputType() override;
@@ -244,10 +230,6 @@ class CONTENT_EXPORT RenderWidget
   // Checks if the selection bounds have been changed. If they are changed,
   // the new value will be sent to the browser process.
   void UpdateSelectionBounds();
-
-  MouseLockDispatcher* mouse_lock_dispatcher() const {
-    return mouse_lock_dispatcher_.get();
-  }
 
   void DidNavigate(ukm::SourceId source_id, const GURL& url);
 
@@ -372,12 +354,6 @@ class CONTENT_EXPORT RenderWidget
 
   // The time spent in input handlers this frame. Used to throttle input acks.
   base::TimeDelta total_input_handling_time_this_frame_;
-
-  // Mouse Lock dispatcher attached to this view.
-  std::unique_ptr<RenderWidgetMouseLockDispatcher> mouse_lock_dispatcher_;
-
-  // Wraps the |webwidget_| as a MouseLockDispatcher::LockTarget interface.
-  std::unique_ptr<MouseLockDispatcher::LockTarget> webwidget_mouse_lock_target_;
 
   // Whether this widget is for a child local root frame. This excludes widgets
   // that are not for a frame (eg popups) and excludes the widget for the main

@@ -2345,11 +2345,7 @@ WebInputEventResult WebViewImpl::HandleInputEvent(
       &CurrentInputEvent::current_input_event_, &input_event);
   UIEventWithKeyState::ClearNewTabModifierSetFromIsolatedWorld();
 
-  bool is_pointer_locked = false;
-  if (WebWidgetClient* client = widget->Client())
-    is_pointer_locked = client->IsPointerLocked();
-
-  if (is_pointer_locked &&
+  if (GetPage()->GetPointerLockController().IsPointerLocked() &&
       WebInputEvent::IsMouseEventType(input_event.GetType())) {
     widget->PointerLockMouseEvent(coalesced_event);
     return WebInputEventResult::kHandledSystem;

@@ -596,23 +596,6 @@ WebFrameWidgetBase::GetAssociatedFrameWidgetHost() const {
   return frame_widget_host_.get();
 }
 
-void WebFrameWidgetBase::DidAcquirePointerLock() {
-  GetPage()->GetPointerLockController().DidAcquirePointerLock();
-
-  LocalFrame* focusedFrame = FocusedLocalFrameInWidget();
-  if (focusedFrame) {
-    focusedFrame->GetEventHandler().ReleaseMousePointerCapture();
-  }
-}
-
-void WebFrameWidgetBase::DidNotAcquirePointerLock() {
-  GetPage()->GetPointerLockController().DidNotAcquirePointerLock();
-}
-
-void WebFrameWidgetBase::DidLosePointerLock() {
-  GetPage()->GetPointerLockController().DidLosePointerLock();
-}
-
 void WebFrameWidgetBase::RequestDecode(
     const PaintImage& image,
     base::OnceCallback<void(bool)> callback) {
@@ -972,6 +955,12 @@ void WebFrameWidgetBase::PointerLockMouseEvent(
         event_type);
   }
 }
+bool WebFrameWidgetBase::IsPointerLocked() {
+  if (GetPage()) {
+    return GetPage()->GetPointerLockController().IsPointerLocked();
+  }
+  return false;
+}
 
 void WebFrameWidgetBase::ShowContextMenu(
     ui::mojom::blink::MenuSourceType source_type,
@@ -1068,11 +1057,10 @@ bool WebFrameWidgetBase::WillHandleGestureEvent(const WebGestureEvent& event) {
   return false;
 }
 
-bool WebFrameWidgetBase::WillHandleMouseEvent(const WebMouseEvent& event) {
+void WebFrameWidgetBase::WillHandleMouseEvent(const WebMouseEvent& event) {
   possible_drag_event_info_.source = ui::mojom::blink::DragEventSource::kMouse;
   possible_drag_event_info_.location =
       gfx::Point(event.PositionInScreen().x(), event.PositionInScreen().y());
-  return Client()->WillHandleMouseEvent(event);
 }
 
 void WebFrameWidgetBase::ObserveGestureEventAndResult(
@@ -1179,13 +1167,20 @@ void WebFrameWidgetBase::CancelCompositionForPepper() {
 void WebFrameWidgetBase::RequestMouseLock(
     bool has_transient_user_activation,
     bool request_unadjusted_movement,
-    base::OnceCallback<void(
-        mojom::blink::PointerLockResult,
-        CrossVariantMojoRemote<mojom::blink::PointerLockContextInterfaceBase>)>
-        callback) {
-  widget_base_->RequestMouseLock(has_transient_user_activation,
-                                 request_unadjusted_movement,
-                                 std::move(callback));
+    mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback callback) {
+  mojom::blink::WidgetInputHandlerHost* host =
+      widget_base_->widget_input_handler_manager()->GetWidgetInputHandlerHost();
+
+  // If we don't have a host just leave the callback uncalled. This simulates
+  // the browser indefinitely postponing the mouse request which is valid.
+  // Note that |callback| is not a mojo bound callback (until it is passed
+  // into the mojo interface) and can be destructed without invoking the
+  // callback. It does share the same signature as the mojo definition
+  // for simplicity.
+  if (host) {
+    host->RequestMouseLock(has_transient_user_activation,
+                           request_unadjusted_movement, std::move(callback));
+  }
 }
 
 void WebFrameWidgetBase::ApplyVisualProperties(
@@ -2311,6 +2306,11 @@ KURL WebFrameWidgetBase::GetURLForDebugTrace() {
   if (main_frame->IsWebLocalFrame())
     return main_frame->ToWebLocalFrame()->GetDocument().Url();
   return {};
+}
+
+void WebFrameWidgetBase::ReleaseMouseLockAndPointerCaptureForTesting() {
+  GetPage()->GetPointerLockController().ExitPointerLock();
+  MouseCaptureLost();
 }
 
 }  // namespace blink

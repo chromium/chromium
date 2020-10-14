@@ -366,7 +366,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
                  mouse_event.PositionInWidget().x(), "y",
                  mouse_event.PositionInWidget().y());
 
-    prevent_default = widget_->client()->WillHandleMouseEvent(mouse_event);
+    widget_->client()->WillHandleMouseEvent(mouse_event);
 
     // Reset the last known cursor if mouse has left this widget. So next
     // time that the mouse enters we always set the cursor accordingly.

@@ -2308,6 +2308,7 @@ void TestRunner::ResetWebWidget(WebWidgetTestProxy* web_widget_test_proxy) {
       web_widget_test_proxy->GetWebFrameWidget();
 
   web_widget->SetDeviceScaleFactorForTesting(0);
+  web_widget->ReleaseMouseLockAndPointerCaptureForTesting();
 
   // These things are only modified/valid for the main frame's widget.
   if (web_widget_test_proxy->delegate()) {

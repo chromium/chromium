@@ -1266,9 +1266,6 @@ void EventSender::Reset() {
   current_drag_data_ = base::nullopt;
   current_drag_effect_ = blink::kDragOperationNone;
   current_drag_effects_allowed_ = blink::kDragOperationNone;
-  if (widget() && current_pointer_state_[kRawMousePointerId].pressed_button_ !=
-                      WebMouseEvent::Button::kNoButton)
-    widget()->MouseCaptureLost();
   current_pointer_state_.clear();
   is_drag_mode_ = true;
   force_layout_on_events_ = true;

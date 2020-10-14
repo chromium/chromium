@@ -235,14 +235,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
       const String& dialog_message,
       Document::PageDismissalType) const override;
 
-  bool RequestPointerLock(LocalFrame*,
-                          WebWidgetClient::PointerLockCallback,
-                          bool) override;
-  bool RequestPointerLockChange(LocalFrame*,
-                                WebWidgetClient::PointerLockCallback,
-                                bool) override;
-  void RequestPointerUnlock(LocalFrame*) override;
-
   // AutofillClient pass throughs:
   void DidAssociateFormControlsAfterLoad(LocalFrame*) override;
   void HandleKeyboardEventOnTextField(HTMLInputElement&,

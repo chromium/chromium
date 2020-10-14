@@ -33,7 +33,6 @@
 #include "content/public/renderer/plugin_instance_throttler.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/mouse_lock_dispatcher.h"
 #include "gin/handle.h"
 #include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
@@ -607,9 +606,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   bool IsMouseLocked();
   bool LockMouse(bool request_unadjusted_movement);
-  MouseLockDispatcher* GetMouseLockDispatcher();
-  MouseLockDispatcher::LockTarget* GetOrCreateLockTargetAdapter();
-  void UnSetAndDeleteLockTargetAdapter();
 
   void DidDataFromWebURLResponse(const blink::WebURLResponse& response,
                                  int pending_host_id,
@@ -808,11 +804,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   scoped_refptr<ppapi::TrackedCallback> lock_mouse_callback_;
 
-  // Last mouse position from mouse event, used for calculating movements. Null
-  // means no mouse event received yet. This value is updated by
-  // |CreateInputEventData|.
-  std::unique_ptr<gfx::PointF> last_mouse_position_;
-
   // We store the arguments so we can re-send them if we are reset to talk to
   // NaCl via the IPC NaCl proxy.
   std::vector<std::string> argn_;
@@ -831,8 +822,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // We store the isolate at construction so that we can be sure to use the
   // Isolate in which this Instance was created when interacting with v8.
   v8::Isolate* isolate_;
-
-  std::unique_ptr<MouseLockDispatcher::LockTarget> lock_target_;
 
   bool is_deleted_;
 

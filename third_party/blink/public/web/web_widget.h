@@ -148,9 +148,6 @@ class WebWidget {
     return WebInputEventResult::kNotHandled;
   }
 
-  // Called to inform the WebWidget that mouse capture was lost.
-  virtual void MouseCaptureLost() {}
-
   // Called to inform the WebWidget of the mouse cursor's visibility.
   virtual void SetCursorVisibilityState(bool is_visible) {}
 
@@ -159,16 +156,6 @@ class WebWidget {
 
   // Returns the state of focus for the WebWidget.
   virtual bool HasFocus() { return false; }
-
-  // Calling WebWidgetClient::requestPointerLock() will result in one
-  // return call to didAcquirePointerLock() or didNotAcquirePointerLock().
-  virtual void DidAcquirePointerLock() {}
-  virtual void DidNotAcquirePointerLock() {}
-
-  // Pointer lock was held, but has been lost. This may be due to a
-  // request via WebWidgetClient::requestPointerUnlock(), or for other
-  // reasons such as the user exiting lock, window focus changing, etc.
-  virtual void DidLosePointerLock() {}
 
   // Accessor to the WebWidget scheduing state.
   virtual scheduler::WebRenderWidgetSchedulingState*
@@ -206,16 +193,6 @@ class WebWidget {
   // Requests the text input state be updated. If anything has changed the
   // updated state will be sent to the browser.
   virtual void UpdateTextInputState() = 0;
-
-  // Request Mouse Lock. This can be removed eventually when the mouse lock
-  // dispatcher is moved into blink.
-  virtual void RequestMouseLock(
-      bool has_transient_user_activation,
-      bool request_unadjusted_movement,
-      base::OnceCallback<
-          void(mojom::PointerLockResult,
-               CrossVariantMojoRemote<mojom::PointerLockContextInterfaceBase>)>
-          callback) = 0;
 
   // Flush any pending input.
   virtual void FlushInputProcessedCallback() = 0;

@@ -29,7 +29,6 @@ namespace content {
 // events will ge generated and the vector will be empty.
 CONTENT_EXPORT void CreateInputEventData(
     const blink::WebInputEvent& event,
-    std::unique_ptr<gfx::PointF>* last_mouse_position,
     std::vector<ppapi::InputEventData>* pp_events);
 
 // Creates a WebInputEvent from the given PP_InputEvent.  If it fails, returns

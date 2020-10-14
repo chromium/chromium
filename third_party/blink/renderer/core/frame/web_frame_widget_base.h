@@ -236,6 +236,11 @@ class CORE_EXPORT WebFrameWidgetBase
   gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) override;
   gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) override;
   float DIPsToBlinkSpace(float scalar) override;
+  void RequestMouseLock(
+      bool has_transient_user_activation,
+      bool request_unadjusted_movement,
+      mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback callback)
+      override;
 
   // WebFrameWidget implementation.
   WebLocalFrame* LocalRoot() const override;
@@ -267,6 +272,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void ClearEditCommands() override;
   bool IsPasting() override;
   bool HandlingSelectRange() override;
+  void ReleaseMouseLockAndPointerCaptureForTesting() override;
 
   // Called when a drag-n-drop operation should begin.
   void StartDragging(const WebDragData&,
@@ -288,9 +294,6 @@ class CORE_EXPORT WebFrameWidgetBase
       const cc::LayerTreeSettings* settings) override;
   void Close(
       scoped_refptr<base::SingleThreadTaskRunner> cleanup_runner) override;
-  void DidAcquirePointerLock() override;
-  void DidNotAcquirePointerLock() override;
-  void DidLosePointerLock() override;
   void SetCompositorVisible(bool visible) override;
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
@@ -304,13 +307,6 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetFocus(bool focus) override;
   void FlushInputProcessedCallback() override;
   void CancelCompositionForPepper() override;
-  void RequestMouseLock(
-      bool has_transient_user_activation,
-      bool request_unadjusted_movement,
-      base::OnceCallback<
-          void(mojom::blink::PointerLockResult,
-               CrossVariantMojoRemote<
-                   mojom::blink::PointerLockContextInterfaceBase>)>) override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   bool IsFullscreenGranted() override;
@@ -340,7 +336,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void WillBeginMainFrame() override;
   void FocusChangeComplete() override;
   bool WillHandleGestureEvent(const WebGestureEvent& event) override;
-  bool WillHandleMouseEvent(const WebMouseEvent& event) override;
+  void WillHandleMouseEvent(const WebMouseEvent& event) override;
   void ObserveGestureEventAndResult(
       const WebGestureEvent& gesture_event,
       const gfx::Vector2dF& unused_delta,
@@ -602,6 +598,7 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Helper function to process events while pointer locked.
   void PointerLockMouseEvent(const WebCoalescedInputEvent&);
+  bool IsPointerLocked();
 
   virtual PageWidgetEventHandler* GetPageWidgetEventHandler() = 0;
 

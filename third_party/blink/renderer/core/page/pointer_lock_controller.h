@@ -28,6 +28,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -52,19 +54,23 @@ class CORE_EXPORT PointerLockController final
  public:
   explicit PointerLockController(Page*);
 
+  using ResultCallback =
+      base::OnceCallback<void(mojom::blink::PointerLockResult)>;
+  bool RequestPointerLock(Element* target, ResultCallback callback);
+
   ScriptPromise RequestPointerLock(ScriptPromiseResolver* resolver,
                                    Element* target,
                                    ExceptionState& exception_state,
                                    const PointerLockOptions* options = nullptr);
-  void RequestPointerUnlock();
+  void ExitPointerLock();
   void ElementRemoved(Element*);
   void DocumentDetached(Document*);
   bool LockPending() const;
+  bool IsPointerLocked() const;
   Element* GetElement() const;
 
   void DidAcquirePointerLock();
   void DidNotAcquirePointerLock();
-  void DidLosePointerLock();
   void DispatchLockedMouseEvent(const WebMouseEvent&,
                                 const Vector<WebMouseEvent>& coalesced_events,
                                 const Vector<WebMouseEvent>& predicted_events,
@@ -83,21 +89,33 @@ class CORE_EXPORT PointerLockController final
   void EnqueueEvent(const AtomicString& type, Element*);
   void EnqueueEvent(const AtomicString& type, Document*);
   void ChangeLockRequestCallback(Element* target,
-                                 ScriptPromiseResolver* resolver,
+                                 ResultCallback callback,
                                  bool unadjusted_movement_requested,
                                  mojom::blink::PointerLockResult result);
-  void LockRequestCallback(ScriptPromiseResolver* resolver,
-                           bool unadjusted_movement_requested,
-                           mojom::blink::PointerLockResult result);
-  DOMException* ConvertResultToException(
+  void LockRequestCallback(
+      ResultCallback callback,
+      bool unadjusted_movement_requested,
+      mojom::blink::PointerLockResult result,
+      mojo::PendingRemote<blink::mojom::blink::PointerLockContext> context);
+
+  void ProcessResult(ResultCallback callback,
+                     bool unadjusted_movement_requested,
+                     mojom::blink::PointerLockResult result);
+
+  static void ProcessResultScriptPromise(
+      ScriptPromiseResolver* resolver,
       mojom::blink::PointerLockResult result);
-  void RejectIfPromiseEnabled(ScriptPromiseResolver* resolver,
-                              DOMException* exception);
+  static DOMException* ConvertResultToException(
+      mojom::blink::PointerLockResult result);
+  static void RejectIfPromiseEnabled(ScriptPromiseResolver* resolver,
+                                     DOMException* exception);
 
   Member<Page> page_;
   bool lock_pending_;
   Member<Element> element_;
   Member<Document> document_of_removed_element_while_waiting_for_unlock_;
+
+  HeapMojoRemote<mojom::blink::PointerLockContext> mouse_lock_context_{nullptr};
 
   // Store the locked position so that the event position keeps unchanged when
   // in locked states. These values only get set when entering lock states.

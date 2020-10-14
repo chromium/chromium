@@ -456,18 +456,6 @@ void WebPagePopupImpl::CancelCompositionForPepper() {
   widget_base_->CancelCompositionForPepper();
 }
 
-void WebPagePopupImpl::RequestMouseLock(
-    bool has_transient_user_activation,
-    bool request_unadjusted_movement,
-    base::OnceCallback<void(
-        mojom::blink::PointerLockResult,
-        CrossVariantMojoRemote<mojom::blink::PointerLockContextInterfaceBase>)>
-        callback) {
-  widget_base_->RequestMouseLock(has_transient_user_activation,
-                                 request_unadjusted_movement,
-                                 std::move(callback));
-}
-
 void WebPagePopupImpl::ApplyVisualProperties(
     const VisualProperties& visual_properties) {
   widget_base_->UpdateVisualProperties(visual_properties);
@@ -649,9 +637,7 @@ bool WebPagePopupImpl::WillHandleGestureEvent(const WebGestureEvent& event) {
   return false;
 }
 
-bool WebPagePopupImpl::WillHandleMouseEvent(const WebMouseEvent& event) {
-  return WidgetClient()->WillHandleMouseEvent(event);
-}
+void WebPagePopupImpl::WillHandleMouseEvent(const WebMouseEvent& event) {}
 
 void WebPagePopupImpl::ObserveGestureEventAndResult(
     const WebGestureEvent& gesture_event,

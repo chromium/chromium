@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -134,27 +135,25 @@ class CORE_EXPORT WebPluginContainerImpl final
   gfx::Point RootFrameToLocalPoint(const gfx::Point&) override;
   gfx::Point LocalToRootFramePoint(const gfx::Point&) override;
   bool WasTargetForLastMouseEvent() override;
-
   // Non-Oilpan, this cannot be null. With Oilpan, it will be
   // null when in a disposed state, pending finalization during the next GC.
   WebPlugin* Plugin() override { return web_plugin_; }
   void SetPlugin(WebPlugin*) override;
-
   void UsePluginAsFindHandler() override;
   void ReportFindInPageMatchCount(int identifier,
                                   int total,
                                   bool final_update) override;
   void ReportFindInPageSelection(int identifier, int index) override;
-
   float DeviceScaleFactor() override;
   float PageScaleFactor() override;
   float PageZoomFactor() override;
-
   void SetCcLayer(cc::Layer*, bool prevent_contents_opaque_changes) override;
-
   void RequestFullscreen() override;
   bool IsFullscreenElement() const override;
   void CancelFullscreen() override;
+  bool IsMouseLocked() override;
+  bool LockMouse(bool request_unadjusted_movement) override;
+  void UnlockMouse() override;
 
   // Printing interface. The plugin can support custom printing
   // (which means it controls the layout, number of pages etc).
@@ -194,6 +193,8 @@ class CORE_EXPORT WebPluginContainerImpl final
   void SetFrameRect(const IntRect&) override;
   void PropagateFrameRects() override { ReportGeometry(); }
 
+  void MaybeLostMouseLock();
+
  protected:
   void ParentVisibleChanged() override;
 
@@ -221,6 +222,8 @@ class CORE_EXPORT WebPluginContainerImpl final
   void HandleTouchEvent(TouchEvent&);
   void HandleGestureEvent(GestureEvent&);
 
+  void HandleLockMouseResult(mojom::blink::PointerLockResult result);
+
   void SynthesizeMouseEventIfPossible(TouchEvent&);
 
   void FocusPlugin();
@@ -230,8 +233,10 @@ class CORE_EXPORT WebPluginContainerImpl final
                          IntRect& unobscured_rect);
 
   friend class WebPluginContainerTest;
+  class MouseLockLostListener;
 
   Member<HTMLPlugInElement> element_;
+  Member<MouseLockLostListener> mouse_lock_lost_listener_;
   WebPlugin* web_plugin_;
   cc::Layer* layer_;
   TouchEventRequestType touch_event_request_type_;

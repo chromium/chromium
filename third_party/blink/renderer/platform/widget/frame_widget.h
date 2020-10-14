@@ -202,6 +202,15 @@ class PLATFORM_EXPORT FrameWidget
   virtual gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) = 0;
   virtual gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) = 0;
   virtual float DIPsToBlinkSpace(float scalar) = 0;
+
+  virtual void RequestMouseLock(
+      bool has_transient_user_activation,
+      bool request_unadjusted_movement,
+      mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback
+          callback) = 0;
+
+  // Mouse capture has been lost.
+  virtual void MouseCaptureLost() = 0;
 };
 
 }  // namespace blink

@@ -68,9 +68,6 @@ struct ImeTextSpan;
 
 namespace blink {
 class WebDragData;
-class WebMouseEvent;
-class WebWidget;
-class WebLocalFrame;
 class WebString;
 
 class WebWidgetClient {
@@ -113,33 +110,6 @@ class WebWidgetClient {
     return nullptr;
   }
 
-  // Requests to lock the mouse cursor for the |requester_frame| in the
-  // widget. If true is returned, the success result will be asynchronously
-  // returned via a single call to WebWidget::didAcquirePointerLock() or
-  // WebWidget::didNotAcquirePointerLock() and a single call to the callback.
-  // If false, the request has been denied synchronously.
-  using PointerLockCallback =
-      base::OnceCallback<void(mojom::PointerLockResult)>;
-  virtual bool RequestPointerLock(WebLocalFrame* requester_frame,
-                                  PointerLockCallback callback,
-                                  bool request_unadjusted_movement) {
-    return false;
-  }
-
-  virtual bool RequestPointerLockChange(WebLocalFrame* requester_frame,
-                                        PointerLockCallback callback,
-                                        bool request_unadjusted_movement) {
-    return false;
-  }
-
-  // Cause the pointer lock to be released. This may be called at any time,
-  // including when a lock is pending but not yet acquired.
-  // WebWidget::didLosePointerLock() is called when unlock is complete.
-  virtual void RequestPointerUnlock() {}
-
-  // Returns true iff the pointer is locked to this widget.
-  virtual bool IsPointerLocked() { return false; }
-
   // Called when a drag-and-drop operation should begin. Returns whether the
   // call has been handled.
   virtual bool InterceptStartDragging(const WebDragData&,
@@ -174,13 +144,6 @@ class WebWidgetClient {
   // Record the time it took for the first paint after the widget transitioned
   // from background inactive to active.
   virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) {}
-
-  // Called before mouse events are processed and allows the
-  // client to handle the event itself. Return true if event was handled
-  // and further processing should stop.
-  virtual bool WillHandleMouseEvent(const WebMouseEvent& event) {
-    return false;
-  }
 
   // Determines whether composition can happen inline.
   virtual bool CanComposeInline() { return false; }

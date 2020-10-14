@@ -127,32 +127,6 @@ namespace {
 RenderWidget::CreateRenderWidgetFunction g_create_render_widget_for_frame =
     nullptr;
 
-class WebWidgetLockTarget : public content::MouseLockDispatcher::LockTarget {
- public:
-  explicit WebWidgetLockTarget(RenderWidget* render_widget)
-      : render_widget_(render_widget) {}
-
-  void OnLockMouseACK(bool succeeded) override {
-    if (succeeded)
-      render_widget_->GetWebWidget()->DidAcquirePointerLock();
-    else
-      render_widget_->GetWebWidget()->DidNotAcquirePointerLock();
-  }
-
-  void OnMouseLockLost() override {
-    render_widget_->GetWebWidget()->DidLosePointerLock();
-  }
-
-  bool HandleMouseLockedInputEvent(const blink::WebMouseEvent& event) override {
-    // The WebWidget handles mouse lock in Blink's handleInputEvent().
-    return false;
-  }
-
- private:
-  // The RenderWidget owns this instance and is guaranteed to outlive it.
-  RenderWidget* render_widget_;
-};
-
 WebDragData DropMetaDataToWebDragData(
     const std::vector<DropData::Metadata>& drop_meta_data) {
   std::vector<WebDragData::Item> item_list;
@@ -293,10 +267,6 @@ void RenderWidget::Initialize(ShowCallback show_callback,
   DCHECK(web_widget);
 
   show_callback_ = std::move(show_callback);
-
-  webwidget_mouse_lock_target_ = std::make_unique<WebWidgetLockTarget>(this);
-  mouse_lock_dispatcher_ =
-      std::make_unique<RenderWidgetMouseLockDispatcher>(this);
 
   agent_scheduling_group_.AddRoute(routing_id_, this);
 
@@ -442,10 +412,6 @@ gfx::Rect RenderWidget::GetPepperCaretBounds() {
 
 void RenderWidget::UpdateTextInputState() {
   GetWebWidget()->UpdateTextInputState();
-}
-
-bool RenderWidget::WillHandleMouseEvent(const blink::WebMouseEvent& event) {
-  return mouse_lock_dispatcher()->WillHandleMouseEvent(event);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -659,33 +625,6 @@ void RenderWidget::UpdateSelectionBounds() {
 
 viz::FrameSinkId RenderWidget::GetFrameSinkId() {
   return viz::FrameSinkId(RenderThread::Get()->GetClientId(), routing_id());
-}
-
-bool RenderWidget::RequestPointerLock(
-    WebLocalFrame* requester_frame,
-    blink::WebWidgetClient::PointerLockCallback callback,
-    bool request_unadjusted_movement) {
-  return mouse_lock_dispatcher_->LockMouse(webwidget_mouse_lock_target_.get(),
-                                           requester_frame, std::move(callback),
-                                           request_unadjusted_movement);
-}
-
-bool RenderWidget::RequestPointerLockChange(
-    blink::WebLocalFrame* requester_frame,
-    blink::WebWidgetClient::PointerLockCallback callback,
-    bool request_unadjusted_movement) {
-  return mouse_lock_dispatcher_->ChangeMouseLock(
-      webwidget_mouse_lock_target_.get(), requester_frame, std::move(callback),
-      request_unadjusted_movement);
-}
-
-void RenderWidget::RequestPointerUnlock() {
-  mouse_lock_dispatcher_->UnlockMouse(webwidget_mouse_lock_target_.get());
-}
-
-bool RenderWidget::IsPointerLocked() {
-  return mouse_lock_dispatcher_->IsMouseLockedTo(
-      webwidget_mouse_lock_target_.get());
 }
 
 void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {

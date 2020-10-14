@@ -491,4 +491,14 @@ bool PepperWebPluginImpl::IsPlaceholder() {
   return false;
 }
 
+void PepperWebPluginImpl::DidLoseMouseLock() {
+  if (instance_)
+    instance_->OnMouseLockLost();
+}
+
+void PepperWebPluginImpl::DidReceiveMouseLockResult(bool success) {
+  if (instance_)
+    instance_->OnLockMouseACK(success);
+}
+
 }  // namespace content

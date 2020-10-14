@@ -1031,36 +1031,6 @@ void ChromeClientImpl::SetTouchAction(LocalFrame* frame,
   widget->ProcessTouchAction(touch_action);
 }
 
-bool ChromeClientImpl::RequestPointerLock(
-    LocalFrame* frame,
-    WebWidgetClient::PointerLockCallback callback,
-    bool request_unadjusted_movement) {
-  return WebLocalFrameImpl::FromFrame(frame)
-      ->LocalRootFrameWidget()
-      ->Client()
-      ->RequestPointerLock(WebLocalFrameImpl::FromFrame(frame),
-                           std::move(callback), request_unadjusted_movement);
-}
-
-bool ChromeClientImpl::RequestPointerLockChange(
-    LocalFrame* frame,
-    WebWidgetClient::PointerLockCallback callback,
-    bool request_unadjusted_movement) {
-  return WebLocalFrameImpl::FromFrame(frame)
-      ->LocalRootFrameWidget()
-      ->Client()
-      ->RequestPointerLockChange(WebLocalFrameImpl::FromFrame(frame),
-                                 std::move(callback),
-                                 request_unadjusted_movement);
-}
-
-void ChromeClientImpl::RequestPointerUnlock(LocalFrame* frame) {
-  return WebLocalFrameImpl::FromFrame(frame)
-      ->LocalRootFrameWidget()
-      ->Client()
-      ->RequestPointerUnlock();
-}
-
 void ChromeClientImpl::DidAssociateFormControlsAfterLoad(LocalFrame* frame) {
   if (auto* fill_client = AutofillClientFromFrame(frame))
     fill_client->DidAssociateFormControlsDynamically();
