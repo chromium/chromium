@@ -80,50 +80,55 @@ void WebGPUCommandSerializer::RequestDeviceCreation(
   helper_->Flush();
 }
 
+size_t WebGPUCommandSerializer::GetMaximumAllocationSize() const {
+  return c2s_transfer_buffer_->GetMaxSize();
+}
+
 void* WebGPUCommandSerializer::GetCmdSpace(size_t size) {
+  // Note: Dawn will never call this function with |size| >
+  // GetMaximumAllocationSize().
+  DCHECK_LE(size, GetMaximumAllocationSize());
+
   // The buffer size must be initialized before any commands are serialized.
-  if (c2s_buffer_default_size_ == 0u) {
-    NOTREACHED();
+  DCHECK_NE(c2s_buffer_default_size_, 0u);
+
+  DCHECK_LE(c2s_put_offset_, c2s_buffer_.size());
+  const bool overflows_remaining_space =
+      size > static_cast<size_t>(c2s_buffer_.size() - c2s_put_offset_);
+
+  if (LIKELY(c2s_buffer_.valid() && !overflows_remaining_space)) {
+    // If the buffer is valid and has sufficient space, return the
+    // pointer and increment the offset.
+    uint8_t* ptr = static_cast<uint8_t*>(c2s_buffer_.address());
+    ptr += c2s_put_offset_;
+
+    c2s_put_offset_ += static_cast<uint32_t>(size);
+    return ptr;
+  }
+
+  if (!c2s_transfer_buffer_) {
+    // The serializer hit a fatal error and was disconnected.
     return nullptr;
   }
 
-  base::CheckedNumeric<uint32_t> checked_next_offset(c2s_put_offset_);
-  checked_next_offset += size;
+  // Otherwise, flush and reset the command stream.
+  Flush();
 
-  uint32_t next_offset;
-  bool next_offset_valid = checked_next_offset.AssignIfValid(&next_offset);
+  uint32_t allocation_size =
+      std::max(c2s_buffer_default_size_, static_cast<uint32_t>(size));
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
+               "WebGPUCommandSerializer::GetCmdSpace", "bytes",
+               allocation_size);
+  c2s_buffer_.Reset(allocation_size);
 
-  // If the buffer does not have enough space, or if the buffer is not
-  // initialized, flush and reset the command stream.
-  if (!next_offset_valid || next_offset > c2s_buffer_.size() ||
-      !c2s_buffer_.valid()) {
-    Flush();
-
-    uint32_t max_allocation = c2s_transfer_buffer_->GetMaxSize();
-    // TODO(crbug.com/951558): Handle command chunking or ensure commands aren't
-    // this large.
-    CHECK_LE(size, max_allocation);
-
-    uint32_t allocation_size =
-        std::max(c2s_buffer_default_size_, static_cast<uint32_t>(size));
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                 "WebGPUCommandSerializer::GetCmdSpace", "bytes",
-                 allocation_size);
-    c2s_buffer_.Reset(allocation_size);
-    c2s_put_offset_ = 0;
-    next_offset = size;
-
-    // TODO(crbug.com/951558): Handle OOM.
-    CHECK(c2s_buffer_.valid());
-    CHECK_LE(size, c2s_buffer_.size());
+  if (!c2s_buffer_.valid() || c2s_buffer_.size() < size) {
+    DLOG(ERROR) << "Dawn wire transfer buffer allocation failed";
+    HandleGpuControlLostContext();
+    return nullptr;
   }
 
-  DCHECK(c2s_buffer_.valid());
-  uint8_t* ptr = static_cast<uint8_t*>(c2s_buffer_.address());
-  ptr += c2s_put_offset_;
-
-  c2s_put_offset_ = next_offset;
-  return ptr;
+  c2s_put_offset_ = size;
+  return c2s_buffer_.address();
 }
 
 bool WebGPUCommandSerializer::Flush() {
@@ -160,11 +165,9 @@ void WebGPUCommandSerializer::HandleGpuControlLostContext() {
   c2s_buffer_.Discard();
   c2s_transfer_buffer_ = nullptr;
 
-  // Disconnect the wire client. WebGPU commands will be serialized into dummy
-  // space owned by the wire client, and the device will receive a Lost event.
-  // No commands will be sent after this point.
+  // Disconnect the wire client. WebGPU commands will become a noop, and the
+  // device will receive a Lost event.
   // NOTE: This assumes single-threaded operation.
-  // TODO(enga): Implement context reset/recovery.
   wire_client_->Disconnect();
 }
 

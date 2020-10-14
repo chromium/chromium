@@ -44,6 +44,7 @@ class WebGPUCommandSerializer final : public dawn_wire::CommandSerializer {
       const WGPUDeviceProperties& requested_device_properties);
 
   // dawn_wire::CommandSerializer implementation
+  size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
   bool Flush() final;
 

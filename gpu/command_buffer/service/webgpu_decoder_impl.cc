@@ -39,11 +39,17 @@ constexpr size_t kMaxWireBufferSize =
     std::min(IPC::Channel::kMaximumMessageSize,
              static_cast<size_t>(1024 * 1024));
 
+constexpr size_t kDawnReturnCmdsOffset =
+    offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer);
+
+static_assert(kDawnReturnCmdsOffset < kMaxWireBufferSize, "");
+
 class WireServerCommandSerializer : public dawn_wire::CommandSerializer {
  public:
   WireServerCommandSerializer(DecoderClient* client,
                               DawnDeviceClientID device_client_id);
   ~WireServerCommandSerializer() override = default;
+  size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
   bool Flush() final;
 
@@ -68,37 +74,29 @@ WireServerCommandSerializer::WireServerCommandSerializer(
   header->device_client_id = device_client_id;
 }
 
-void* WireServerCommandSerializer::GetCmdSpace(size_t size) {
-  // TODO(enga): Handle chunking commands if size +
-  // offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)>
-  // kMaxWireBufferSize.
-  size_t total_wire_buffer_size =
-      (base::CheckedNumeric<size_t>(size) +
-       base::CheckedNumeric<size_t>(
-           offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)))
-          .ValueOrDie();
-  if (total_wire_buffer_size > kMaxWireBufferSize) {
-    NOTREACHED();
-    return nullptr;
-  }
+size_t WireServerCommandSerializer::GetMaximumAllocationSize() const {
+  return kMaxWireBufferSize - kDawnReturnCmdsOffset;
+}
 
-  // |next_offset| should never be more than kMaxWireBufferSize +
-  // kMaxWireBufferSize.
+void* WireServerCommandSerializer::GetCmdSpace(size_t size) {
+  // Note: Dawn will never call this function with |size| >
+  // GetMaximumAllocationSize().
   DCHECK_LE(put_offset_, kMaxWireBufferSize);
-  DCHECK_LE(size, kMaxWireBufferSize);
+  DCHECK_LE(size, GetMaximumAllocationSize());
+
+  // Statically check that kMaxWireBufferSize + kMaxWireBufferSize is
+  // a valid uint32_t. We can add put_offset_ and size without overflow.
   static_assert(base::CheckAdd(kMaxWireBufferSize, kMaxWireBufferSize)
                     .IsValid<uint32_t>(),
                 "");
-  uint32_t next_offset = put_offset_ + size;
-
+  uint32_t next_offset = put_offset_ + static_cast<uint32_t>(size);
   if (next_offset > buffer_.size()) {
     Flush();
     // TODO(enga): Keep track of how much command space the application is using
     // and adjust the buffer size accordingly.
 
-    DCHECK_EQ(put_offset_,
-              offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer));
-    next_offset = put_offset_ + size;
+    DCHECK_EQ(put_offset_, kDawnReturnCmdsOffset);
+    next_offset = put_offset_ + static_cast<uint32_t>(size);
   }
 
   uint8_t* ptr = &buffer_[put_offset_];
@@ -107,8 +105,7 @@ void* WireServerCommandSerializer::GetCmdSpace(size_t size) {
 }
 
 bool WireServerCommandSerializer::Flush() {
-  if (put_offset_ >
-      offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)) {
+  if (put_offset_ > kDawnReturnCmdsOffset) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "WireServerCommandSerializer::Flush", "bytes", put_offset_);
 
@@ -117,7 +114,7 @@ bool WireServerCommandSerializer::Flush() {
                             "DawnReturnCommands", return_trace_id++);
 
     client_->HandleReturnData(base::make_span(buffer_.data(), put_offset_));
-    put_offset_ = offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer);
+    put_offset_ = kDawnReturnCmdsOffset;
   }
   return true;
 }
