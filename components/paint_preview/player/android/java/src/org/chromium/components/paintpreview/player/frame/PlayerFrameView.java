@@ -99,7 +99,7 @@ class PlayerFrameView extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
-        if (!mScaleMatrix.isIdentity()) canvas.setMatrix(mScaleMatrix);
+        canvas.concat(mScaleMatrix);
         mBitmapPainter.onDraw(canvas);
         canvas.restore();
     }
