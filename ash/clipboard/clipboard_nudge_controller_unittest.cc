@@ -75,10 +75,16 @@ TEST_F(ClipboardNudgeControllerTest, ShouldShowNudgeAfterCorrectSequence) {
   EXPECT_EQ(ClipboardState::kSecondCopy,
             nudge_controller_->GetClipboardStateForTesting());
 
-  // Checks that the second paste advances state as expected.
+  // Check that clipbaord nudge has not yet been created.
+  EXPECT_FALSE(nudge_controller_->GetClipboardNudgeForTesting());
+
+  // Checks that the second paste resets state as expected.
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kShouldShowNudge,
+  EXPECT_EQ(ClipboardState::kInit,
             nudge_controller_->GetClipboardStateForTesting());
+
+  // Check that clipbaord nudge has been created.
+  EXPECT_TRUE(nudge_controller_->GetClipboardNudgeForTesting());
 }
 
 // Checks that the clipboard state does not advace if too much time passes
@@ -121,6 +127,9 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
               nudge_controller_->GetClipboardStateForTesting());
   }
 
+  // Check that clipbaord nudge has not yet been created.
+  EXPECT_FALSE(nudge_controller_->GetClipboardNudgeForTesting());
+
   // Check that HandleClipboardChanged() will advance nudge_controller's
   // ClipboardState.
   nudge_controller_->OnClipboardHistoryItemAdded(
@@ -128,8 +137,11 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
   EXPECT_EQ(ClipboardState::kSecondCopy,
             nudge_controller_->GetClipboardStateForTesting());
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kShouldShowNudge,
+  EXPECT_EQ(ClipboardState::kInit,
             nudge_controller_->GetClipboardStateForTesting());
+
+  // Check that clipbaord nudge has been created.
+  EXPECT_TRUE(nudge_controller_->GetClipboardNudgeForTesting());
 }
 
 // Checks that consecutive copy events does not advance the clipboard state.

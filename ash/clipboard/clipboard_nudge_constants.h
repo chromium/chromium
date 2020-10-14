@@ -13,6 +13,8 @@ constexpr static int kNotificationLimit = 3;
 constexpr static base::TimeDelta kMinInterval = base::TimeDelta::FromDays(1);
 constexpr static base::TimeDelta kMaxTimeBetweenPaste =
     base::TimeDelta::FromMinutes(10);
+constexpr static base::TimeDelta kNudgeShowTime =
+    base::TimeDelta::FromSeconds(6);
 
 }  // namespace ash
 

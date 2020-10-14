@@ -38,6 +38,7 @@ aggregate_vector_icons2("ash_vector_icons") {
     "capture_mode_window.icon",
     "check_circle.icon",
     "chevron_right.icon",
+    "clipboard.icon",
     "close_button.icon",
     "copy.icon",
     "dark_theme_color_mode.icon",
