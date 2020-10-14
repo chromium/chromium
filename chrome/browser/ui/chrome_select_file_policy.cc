@@ -27,15 +27,18 @@ bool ChromeSelectFilePolicy::CanOpenSelectFileDialog() {
 }
 
 void ChromeSelectFilePolicy::SelectFileDenied() {
-  // Show the InfoBar saying that file-selection dialogs are disabled.
+  // If the WebContents is in a browser window, show an infobar saying that
+  // file selection dialogs are disabled.
   if (source_contents_) {
-    SimpleAlertInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(source_contents_),
-        infobars::InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE,
-        nullptr, l10n_util::GetStringUTF16(IDS_FILE_SELECTION_DIALOG_INFOBAR));
-  } else {
-    LOG(WARNING) << "File-selection dialogs are disabled but no WebContents "
-                 << "is given to display the InfoBar.";
+    InfoBarService* infobar_service =
+        InfoBarService::FromWebContents(source_contents_);
+    if (infobar_service) {
+      SimpleAlertInfoBarDelegate::Create(
+          infobar_service,
+          infobars::InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE,
+          nullptr,
+          l10n_util::GetStringUTF16(IDS_FILE_SELECTION_DIALOG_INFOBAR));
+    }
   }
 }
 
