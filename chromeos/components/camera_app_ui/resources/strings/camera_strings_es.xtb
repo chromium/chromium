@@ -3,6 +3,7 @@
 <translationbundle lang="es">
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1473110567575736769">Temporizador de 3 segundos</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">No se ha grabado nada</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">No se ha podido hacer una foto vertical</translation>
 <translation id="3569311554794739032">¿Seguro que quieres eliminar <ph name="FILE" />?</translation>
 <translation id="3810838688059735925">Vídeo</translation>
+<translation id="4000398125663085899">Las fotos y los vídeos nuevos se guardarán ahora en una carpeta en la aplicación Archivos: Mis archivos &gt; Cámara</translation>
 <translation id="4118525110028899586">Pausar grabación</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4329152592498422850">Cambiar para hacer una foto cuadrada</translation>
@@ -62,6 +64,7 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="698156982839284926">3 segundos</translation>
 <translation id="712848772518857951">¿Seguro que quieres eliminar estos <ph name="COUNT" /> elementos?</translation>
+<translation id="7134221860976209830">Temporizador de 10 segundos</translation>
 <translation id="7243947652761655814">Resolución de vídeo</translation>
 <translation id="7337660886763914220">Errores del sistema de archivos.</translation>
 <translation id="7557677699350329807">Cambiar a la siguiente cámara</translation>

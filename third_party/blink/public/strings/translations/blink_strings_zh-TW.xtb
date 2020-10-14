@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">警示對話方塊</translation>
 <translation id="1821985195704844674">樹狀目錄網格</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">頁尾</translation>
 <translation id="1832974991323546415">在遠端裝置上播放</translation>
 <translation id="190587075670221089">刪除</translation>
 <translation id="1907737156431278478">範例</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">顯示上一個月</translation>
 <translation id="421884353938374759">顏色選擇器</translation>
 <translation id="4248100235867064564">選單列</translation>
+<translation id="4293574643247337246">頁首</translation>
 <translation id="4360991593054037559">請輸入有效值。最接近的兩個有效值分別是 <ph name="VALID_VALUE_LOW" /> 和 <ph name="VALID_VALUE_HIGHER" />。</translation>
 <translation id="4384583879834880242">問與答</translation>
 <translation id="4444765639179266822">圖片上的文字似乎是：<ph name="OCR_TEXT" /></translation>

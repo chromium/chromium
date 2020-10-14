@@ -314,6 +314,7 @@
 <translation id="4072264167173457037">訊號中等</translation>
 <translation id="4112140312785995938">倒轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
+<translation id="4121728057981832179">有虛擬機器正在使用麥克風</translation>
 <translation id="4129129681837227511">如要在鎖定畫面上查看通知，請將裝置解鎖並修改相關設定</translation>
 <translation id="4146833061457621061">播放音樂</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" />，由 <ph name="DOMAIN" /> 管理</translation>
@@ -328,6 +329,7 @@
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4261870227682513959">顯示通知設定。已關閉所有通知</translation>
+<translation id="4267383818855338811">有虛擬機器正在使用攝影機</translation>
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4285498937028063278">取消固定</translation>
@@ -363,6 +365,7 @@
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 後充飽</translation>
+<translation id="4544483149666270818">選取要錄影的視窗</translation>
 <translation id="4560576029703263363">開啟</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
@@ -402,6 +405,15 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4924411785043111640">重新啟動並重設</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
+<translation id="4942878304446937978">狀態匣，時間 <ph name="TIME" />，
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />，
+        <ph name="MIC" />，
+        <ph name="CAMERA" />，
+        <ph name="NOTIFICATION" />，
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
+<translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小時 <ph name="MINUTES" /> 分鐘 <ph name="SECONDS" /> 秒</translation>
@@ -447,6 +459,7 @@
 <translation id="554893713779400387">切換語音輸入</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5571066253365925590">藍牙已啟用</translation>
+<translation id="558849140439112033">透過拖曳選取要擷圖的區域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用互動朗讀功能。</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -474,9 +487,11 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="589817443623831496">點掃描</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
 <translation id="5909862606227538307">非使用中的桌面。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5915278665499293471">點擊任一處即可擷取全螢幕畫面</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">麥克風已設為靜音。</translation>
 <translation id="594179686076170922">正在連線到你的手機...</translation>
@@ -534,6 +549,7 @@
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="649452524636452238">智慧型卡片 PIN 碼</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
+<translation id="6520517963145875092">選取要擷圖的視窗</translation>
 <translation id="652139407789908527">進行這項更新時，螢幕顯示空白畫面的時間可能會比平時更長 (最多一分鐘)。請勿在更新期間按下電源按鈕。</translation>
 <translation id="6528179044667508675">請勿打擾</translation>
 <translation id="65320610082834431">表情符號</translation>
@@ -562,6 +578,7 @@
 <translation id="6751052314767925245">由系統管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
+<translation id="6757237461819837179">目前未播放任何媒體</translation>
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
@@ -610,6 +627,7 @@
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7377169924702866686">大寫鍵已啟用。</translation>
+<translation id="7378203170292176219">透過拖曳選取要錄影的區域</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7398254312354928459">已切換網路連線</translation>
 <translation id="7405710164030118432">如要將這部裝置解鎖，請輸入你的 Family Link 家長存取碼</translation>
@@ -636,6 +654,7 @@
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7633755430369750696">顯示鄰近分享設定。</translation>
+<translation id="7641938616688887143">錄影</translation>
 <translation id="7642647758716480637">開啟「<ph name="NETWORK_NAME" />」設定，<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7647488630410863958">解鎖裝置即可查看通知</translation>
@@ -732,6 +751,7 @@
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">已將選單移至畫面右下角。</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="861041328460089089">輕按任一處即可擷取全螢幕畫面</translation>
 <translation id="8627191004499078455">已連線至<ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">無障礙設定</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>

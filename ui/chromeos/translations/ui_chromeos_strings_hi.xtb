@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Linux फ़ाइलें खुल रही हैं...</translation>
 <translation id="1547964879613821194">कनाडाई अंग्रेज़ी</translation>
 <translation id="1556189134700913550">सभी के लिए लागू करें</translation>
+<translation id="1561842594491319104">Chrome वाले डिवाइस</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="158809615184981282">फ़ारोईस कीबोर्ड</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> पीबी</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">लिप्यंतरण (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows की फ़ाइलें</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> से शेयर करें</translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">यूके कीबोर्ड</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">हो गया</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">एवोकैडो</translation>
 <translation id="4823651846660089135">डिवाइस केवल-पढ़ने के लिए है</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आइटम चयनित</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">जर्मन (बेल्जियम)</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Linux ऐप्लिकेशन को अपनी 'Google डिस्क' में रखी फ़ाइलों में बदलाव करने की अनुमति दें. बदलावों को आपके दूसरे डिवाइस में सिंक किया जाएगा.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आइटम</translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">क्रम से लगाने के विकल्प</translation>
 <translation id="6005282720244019462">लैटिन अमेरिकी कीबोर्ड</translation>
 <translation id="6007237601604674381">ले जाना विफल रहा. <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +633,7 @@
     <ph name="MARKUP_4" />अपने डाउनलोड फ़ोल्डर से फ़ाइलें मिटाएं<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">डिवाइस स्‍वरूपित करें</translation>
 <translation id="7799329977874311193">HTML दस्‍तावेज़</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> मिलीं.
     <ph name="LINE_BREAK1" />

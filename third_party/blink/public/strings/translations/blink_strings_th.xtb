@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">แผนผังต้นไม้</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">ส่วนท้ายของหน้า</translation>
 <translation id="1832974991323546415">เล่นในอุปกรณ์ระยะไกล</translation>
 <translation id="190587075670221089">การลบ</translation>
 <translation id="1907737156431278478">ตัวอย่าง</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
 <translation id="421884353938374759">ตัวเลือกสี</translation>
 <translation id="4248100235867064564">แถบเมนู</translation>
+<translation id="4293574643247337246">ส่วนหัวของหน้า</translation>
 <translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
 <translation id="4384583879834880242">ถามและตอบ</translation>
 <translation id="4444765639179266822">ดูเหมือนจะพูดว่า <ph name="OCR_TEXT" /></translation>

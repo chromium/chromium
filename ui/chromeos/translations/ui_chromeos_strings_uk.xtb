@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Відкриваються файли Linux…</translation>
 <translation id="1547964879613821194">Англійська (Канада)</translation>
 <translation id="1556189134700913550">Застосувати до всіх</translation>
+<translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="158809615184981282">Фарерська клавіатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">Транслітерація (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Файли Windows</translation>
 <translation id="3078461028045006476">Надіслати в <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">Британська розкладка</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Пристрій лише для перегляду</translation>
 <translation id="4839847978919684242">Вибрано елементів: <ph name="SELCTED_FILES_COUNT" /></translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">Німецька (Бельгія)</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="485316830061041779">Німецька</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Надайте додаткам Linux дозвіл змінювати файли на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
 <translation id="5955954492236143329">Елементів: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметри сортування</translation>
 <translation id="6005282720244019462">Латиноамериканська розкладка</translation>
 <translation id="6007237601604674381">Помилка переміщення. <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +633,7 @@
     <ph name="MARKUP_4" />видаліть файли з папки "Завантаження"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Форматувати пристрій</translation>
 <translation id="7799329977874311193">Документ HTML</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7821462174190887129">Знайдено: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">กำลังเปิดไฟล์ Linux...</translation>
 <translation id="1547964879613821194">อังกฤษแบบแคนาดา</translation>
 <translation id="1556189134700913550">ใช้กับทั้งหมด</translation>
+<translation id="1561842594491319104">อุปกรณ์ Chrome</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="158809615184981282">แป้นพิมพ์ภาษาแฟโร</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">การทับศัพท์ (zdravo → здраво)</translation>
 <translation id="3067790092342515856">ไฟล์ Windows</translation>
 <translation id="3078461028045006476">แชร์กับ <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebit</translation>
 <translation id="3116361045094675131">แป้นพิมพ์ภาษาอังกฤษสหราชอาณาจักร</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">เสร็จสิ้น</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">อะโวคาโด</translation>
 <translation id="4823651846660089135">อุปกรณ์เป็นแบบอ่านอย่างเดียว</translation>
 <translation id="4839847978919684242">เลือก <ph name="SELCTED_FILES_COUNT" /> รายการ</translation>
+<translation id="4843566743023903107">Chromebase</translation>
 <translation id="4849981557599196363">เยอรมัน (เบลเยียม)</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">ให้สิทธิ์แอป Linux แก้ไขไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
+<translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ตัวเลือกการจัดเรียง</translation>
 <translation id="6005282720244019462">แป้นพิมพ์ภาษาละตินอเมริกา</translation>
 <translation id="6007237601604674381">การย้ายล้มเหลว <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +633,7 @@
     <ph name="MARKUP_4" />ลบไฟล์จากโฟลเดอร์ "ดาวน์โหลด"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ฟอร์แมตอุปกรณ์</translation>
 <translation id="7799329977874311193">เอกสาร HTML</translation>
+<translation id="7801354353640549019">Chromebook</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7821462174190887129">พบ <ph name="FILE_COUNT" />
     <ph name="LINE_BREAK1" />
