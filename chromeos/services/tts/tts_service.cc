@@ -61,6 +61,11 @@ void TtsService::BindTtsStream(
     mojo::PendingReceiver<mojom::TtsStream> receiver,
     mojo::PendingRemote<audio::mojom::StreamFactory> factory) {
   stream_receiver_.Bind(std::move(receiver));
+  stream_receiver_.set_disconnect_handler(base::BindOnce([] {
+    // The remote which lives in component extension js has been disconnected
+    // due to destruction or error.
+    exit(0);
+  }));
 
   // TODO(accessibility): The sample rate below can change based on the audio
   // data retrieved. Plumb this data through and re-create the output device if
