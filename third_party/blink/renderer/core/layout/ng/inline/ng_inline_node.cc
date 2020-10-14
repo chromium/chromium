@@ -954,6 +954,9 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
   NGInlineItemsBuilder builder(block, &data->items);
   CollectInlinesInternal(&builder, previous_data);
   builder.DidFinishCollectInlines(data);
+
+  if (UNLIKELY(builder.HasUnicodeBidiPlainText()))
+    UseCounter::Count(GetDocument(), WebFeature::kUnicodeBidiPlainText);
 }
 
 void NGInlineNode::SegmentText(NGInlineNodeData* data) const {

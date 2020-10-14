@@ -1085,7 +1085,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
         has_bidi_controls_ = true;
         // It's not easy to compute which lines will change with `unicode-bidi:
         // plaintext`. Since it is quite uncommon that just disable line cache.
-        changes_may_affect_earlier_lines_ = true;
+        has_unicode_bidi_plain_text_ = true;
         break;
     }
   } else {
@@ -1129,7 +1129,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterInline(
                          kPopDirectionalIsolateCharacter);
         break;
       case UnicodeBidi::kPlaintext:
-        changes_may_affect_earlier_lines_ = true;
+        has_unicode_bidi_plain_text_ = true;
         EnterBidiContext(node, kFirstStrongIsolateCharacter,
                          kPopDirectionalIsolateCharacter);
         break;
@@ -1251,7 +1251,7 @@ void NGInlineItemsBuilderTemplate<
   data->has_ruby_ = has_ruby_;
   data->is_empty_inline_ = IsEmptyInline();
   data->is_block_level_ = IsBlockLevel();
-  data->changes_may_affect_earlier_lines_ = ChangesMayAffectEarlierLines();
+  data->changes_may_affect_earlier_lines_ = HasUnicodeBidiPlainText();
 }
 
 template <typename OffsetMappingBuilder>

@@ -62,12 +62,10 @@ class NGInlineItemsBuilderTemplate {
 
   bool IsBlockLevel() const { return is_block_level_; }
 
-  // True if changes to an item may affect different layout of earlier lines.
-  // May not be able to use line caches even when the line or earlier lines are
-  // not dirty.
-  bool ChangesMayAffectEarlierLines() const {
-    return changes_may_affect_earlier_lines_;
-  }
+  // True if there were any `unicode-bidi: plaintext`. In this case, changes to
+  // an item may affect different layout of earlier lines. May not be able to
+  // use line caches even when the line or earlier lines are not dirty.
+  bool HasUnicodeBidiPlainText() const { return has_unicode_bidi_plain_text_; }
 
   // Append a string from |LayoutText|.
   //
@@ -184,7 +182,7 @@ class NGInlineItemsBuilderTemplate {
   bool has_ruby_ = false;
   bool is_empty_inline_ = true;
   bool is_block_level_ = true;
-  bool changes_may_affect_earlier_lines_ = false;
+  bool has_unicode_bidi_plain_text_ = false;
 
   // Append a character.
   // Currently this function is for adding control characters such as

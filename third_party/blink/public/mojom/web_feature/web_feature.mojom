@@ -3034,6 +3034,7 @@ enum WebFeature {
   kNewLayoutOverflowDifferentFlex = 3703,
   kNewLayoutOverflowDifferentAndAlreadyScrollsBlock = 3704,
   kNewLayoutOverflowDifferentAndAlreadyScrollsFlex = 3705,
+  kUnicodeBidiPlainText = 3706,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
