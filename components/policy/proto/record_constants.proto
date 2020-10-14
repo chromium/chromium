@@ -15,13 +15,9 @@ enum Destination {
   // |UPLOAD_EVENTS| handler sends records to the Eventing pipeline.
   UPLOAD_EVENTS = 1;
 
-  // |APP_INSTALL_EVENT| for sending events to the DmServer for the
-  // APP_INSTALL_EVENT pipeline.
-  APP_INSTALL_EVENT = 2;
-
   // |MEET_DEVICE_TELEMETRY| handler is for telemetry data sent by Meet
   // Devices. For more information, see go/reliable-meet-device-telemetry.
-  MEET_DEVICE_TELEMETRY = 3;
+  MEET_DEVICE_TELEMETRY = 2;
 }
 
 // |Priority| is used to determine when items from the queue should be rate

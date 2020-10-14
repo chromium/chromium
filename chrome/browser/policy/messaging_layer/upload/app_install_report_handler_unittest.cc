@@ -85,7 +85,7 @@ class TestRecord : public Record {
     base::JSONWriter::Write(data_, &json_data);
 
     set_data(json_data);
-    set_destination(Destination::APP_INSTALL_EVENT);
+    set_destination(Destination::UPLOAD_EVENTS);
   }
 
   const base::Value* data() const { return &data_; }
@@ -116,7 +116,7 @@ TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
   AppInstallReportHandler handler(&client_);
 
   TestRecord test_record;
-  test_record.set_destination(Destination::UPLOAD_EVENTS);
+  test_record.set_destination(Destination::MEET_DEVICE_TELEMETRY);
 
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_FALSE(handle_status.ok());

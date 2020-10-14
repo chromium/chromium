@@ -162,7 +162,7 @@ Status AppInstallReportHandler::HandleRecord(Record record) {
 }
 
 Status AppInstallReportHandler::ValidateRecord(const Record& record) const {
-  return ValidateDestination(record, Destination::APP_INSTALL_EVENT);
+  return ValidateDestination(record, Destination::UPLOAD_EVENTS);
 }
 
 Status AppInstallReportHandler::ValidateDestination(

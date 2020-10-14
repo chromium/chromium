@@ -176,7 +176,7 @@ TEST_F(UploadClientTest, CreateUploadClient) {
   WrappedRecord wrapped_record;
   Record* record = wrapped_record.mutable_record();
   record->set_data(json_data);
-  record->set_destination(Destination::APP_INSTALL_EVENT);
+  record->set_destination(Destination::UPLOAD_EVENTS);
 
   std::string serialized_record;
   wrapped_record.SerializeToString(&serialized_record);
