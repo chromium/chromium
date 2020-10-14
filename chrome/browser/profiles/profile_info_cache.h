@@ -128,6 +128,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   void NotifyIfProfileNamesHaveChanged();
   void NotifyProfileSupervisedUserIdChanged(const base::FilePath& profile_path);
   void NotifyProfileIsOmittedChanged(const base::FilePath& profile_path);
+  void NotifyProfileThemeColorsChanged(const base::FilePath& profile_path);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,

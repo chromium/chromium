@@ -2,18 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProfileCustomizationBrowserProxy} from 'chrome://profile-customization/profile_customization_browser_proxy.js';
+import {ProfileCustomizationBrowserProxy, ProfileInfo} from 'chrome://profile-customization/profile_customization_browser_proxy.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @implements {ProfileCustomizationBrowserProxy} */
 export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy {
   constructor() {
-    super(['done']);
+    super(['done', 'initialized']);
+    /** @private {!ProfileInfo} */
+    this.profileInfo_ = {
+      textColor: '',
+      backgroundColor: '',
+      pictureUrl: '',
+    };
+  }
+
+  /** @param {!ProfileInfo} info */
+  setProfileInfo(info) {
+    this.profileInfo_ = info;
   }
 
   /** @override */
-  done() {
-    this.methodCalled('done');
+  initialized() {
+    this.methodCalled('initialized');
+    return Promise.resolve(this.profileInfo_);
+  }
+
+  /** @override */
+  done(profileName) {
+    this.methodCalled('done', profileName);
   }
 }

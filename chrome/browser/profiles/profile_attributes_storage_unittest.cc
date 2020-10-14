@@ -97,6 +97,8 @@ class ProfileAttributesTestObserver
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileIsOmittedChanged,
                void(const base::FilePath& profile_path));
+  MOCK_METHOD1(OnProfileThemeColorsChanged,
+               void(const base::FilePath& profile_path));
 };
 }  // namespace
 
@@ -947,6 +949,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   ProfileThemeColors colors = {SK_ColorTRANSPARENT, SK_ColorBLACK,
                                SK_ColorWHITE};
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  EXPECT_CALL(observer(), OnProfileThemeColorsChanged(profile_path)).Times(1);
   entry->SetProfileThemeColors(colors);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
   VerifyAndResetCallExpectations();
@@ -957,6 +960,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
 
   // base::nullopt resets the colors to default.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  EXPECT_CALL(observer(), OnProfileThemeColorsChanged(profile_path)).Times(1);
   entry->SetProfileThemeColors(base::nullopt);
   EXPECT_EQ(entry->GetProfileThemeColors(),
             ProfileAttributesEntry::GetDefaultProfileThemeColors(false));

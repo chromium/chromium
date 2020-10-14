@@ -6,10 +6,68 @@
   }
 
   #header {
-    background-color: pink;  /* TODO: use profile color */
+    background-color: var(--header-background-color);
     border-radius: 4px;
+    color: var(--header-text-color);
     height: 128px;
     margin: 8px 8px;
+  }
+
+  #headerText {
+    font-size: 15px;
+    font-weight: bold;
+    line-height: 18px;
+    margin: 16px auto 9px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #avatarContainer {
+    --avatar-image-width: 60px;
+    --avatar-border: 2px;
+    --avatar-size: calc(var(--avatar-image-width) + 2 * var(--avatar-border));
+    height: var(--avatar-size);
+    left: calc(50% - var(--avatar-size)/2);
+    position: absolute;
+    width: var(--avatar-size);
+  }
+
+  #avatar {
+    /** The user avatar may be transparent, add a background */
+    background-color: var(--md-background-color);
+    border: var(--avatar-border) solid var(--md-background-color);
+    border-radius: 50%;
+    height: var(--avatar-image-width);
+    top: 43px;
+    width: var(--avatar-image-width);
+  }
+
+  .work-badge {
+    --badge-width: 20px;
+    --badge-offset: -4px;
+    background-color: var(--signin-work-badge-background-color);
+    border: 2px solid var(--header-background-color);
+    border-radius: 50%;
+    bottom: var(--badge-offset);
+    height: var(--badge-width);
+    position: absolute;
+    right: var(--badge-offset);
+    width: var(--badge-width);
+  }
+
+  .work-badge > iron-icon {
+    --work-icon-size: 15px;
+    bottom: 0;
+    color: var(--signin-work-badge-foreground-color);
+    height: var(--work-icon-size);
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: var(--work-icon-size);
   }
 
   #nameInput {
@@ -55,10 +113,17 @@
 </style>
 
 <div id="header">
+  <div id="headerText">[[initialProfileName_]]</div>
+  <div id="avatarContainer">
+    <img id="avatar" src="[[pictureUrl_]]">
+    <div class="work-badge" id="badge" hidden="[[!isManaged_]]">
+      <iron-icon class="icon" icon="signin:business"></iron-icon>
+    </div>
+  </div>
 </div>
 
-<cr-input id="nameInput" placeholder="Placeholder" pattern=".*\\S.*"
-    auto-validate spellcheck="false" autofocus>
+<cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
+  auto-validate required spellcheck="false">
 </cr-input>
 
 <hr id="lineSeparator">
@@ -71,7 +136,8 @@
 
 <div class="action-container">
   <cr-button id="doneButton" class="action-button"
-      on-click="onDoneCustomizationClicked_">
+      disabled="[[isDoneButtonDisabled_(profileName_)]]"
+      on-click="onDoneCustomizationClicked_" autofocus>
     $i18n{profileCustomizationDoneLabel}
   </cr-button>
 <div>

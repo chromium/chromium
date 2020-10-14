@@ -8,13 +8,19 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/scoped_observer.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 
 namespace base {
 class ListValue;
 }
 
+class ProfileAttributesEntry;
+
 // WebUI message handler for the profile customization bubble.
-class ProfileCustomizationHandler : public content::WebUIMessageHandler {
+class ProfileCustomizationHandler : public content::WebUIMessageHandler,
+                                    public ProfileAttributesStorage::Observer {
  public:
   explicit ProfileCustomizationHandler(base::OnceClosure done_closure);
   ~ProfileCustomizationHandler() override;
@@ -25,9 +31,32 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler {
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
+
+  // ProfileAttributesStorage::Observer:
+  void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+  void OnProfileHighResAvatarLoaded(
+      const base::FilePath& profile_path) override;
+  void OnProfileThemeColorsChanged(const base::FilePath& profile_path) override;
 
  private:
+  // Handlers for messages from javascript.
+  void HandleInitialized(const base::ListValue* args);
   void HandleDone(const base::ListValue* args);
+
+  // Sends an updated profile info (avatar and colors) to the WebUI.
+  void UpdateProfileInfo();
+
+  // Computes the profile info (avatar and colors) to be sent to the WebUI.
+  base::Value GetProfileInfoValue();
+
+  // Returns the ProfilesAttributesEntry associated with the current profile.
+  ProfileAttributesEntry* GetProfileEntry() const;
+
+  base::FilePath profile_path_;
+  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
+      observed_profile_{this};
 
   // Called when the "Done" button has been pressed.
   base::OnceClosure done_closure_;

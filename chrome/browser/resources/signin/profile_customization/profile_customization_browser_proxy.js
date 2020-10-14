@@ -9,17 +9,41 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
+/**
+ * Profile info (colors and avatar) sent from C++.
+ * @typedef {{
+ *   textColor: string,
+ *   backgroundColor: string,
+ *   pictureUrl: string,
+ * }}
+ */
+export let ProfileInfo;
+
 /** @interface */
 export class ProfileCustomizationBrowserProxy {
-  /** Called when the user clicks the done button. */
-  done() {}
+  /**
+   * Called when the page is ready
+   * @return {!Promise<!ProfileInfo>}
+   */
+  initialized() {}
+
+  /**
+   * Called when the user clicks the done button.
+   * @param {string} profileName
+   */
+  done(profileName) {}
 }
 
 /** @implements {ProfileCustomizationBrowserProxy} */
 export class ProfileCustomizationBrowserProxyImpl {
   /** @override */
-  done() {
-    chrome.send('done');
+  initialized() {
+    return sendWithPromise('initialized');
+  }
+
+  /** @override */
+  done(profileName) {
+    chrome.send('done', [profileName]);
   }
 }
 

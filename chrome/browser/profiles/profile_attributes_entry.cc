@@ -633,8 +633,11 @@ void ProfileAttributesEntry::SetProfileThemeColors(
     changed |= ClearValue(kDefaultAvatarStrokeColorKey);
   }
 
-  if (changed && ShouldShowGenericColoredAvatar(GetAvatarIconIndex()))
-    profile_info_cache_->NotifyOnProfileAvatarChanged(GetPath());
+  if (changed) {
+    profile_info_cache_->NotifyProfileThemeColorsChanged(GetPath());
+    if (ShouldShowGenericColoredAvatar(GetAvatarIconIndex()))
+      profile_info_cache_->NotifyOnProfileAvatarChanged(GetPath());
+  }
 }
 
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {

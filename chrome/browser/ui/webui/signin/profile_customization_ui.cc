@@ -4,13 +4,19 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -27,7 +33,9 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
                           IDR_PROFILE_CUSTOMIZATION_APP_JS);
   source->AddResourcePath("profile_customization_browser_proxy.js",
                           IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS);
+  source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
 
   // Localized strings.
   source->UseStringsJs();
@@ -46,6 +54,18 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   };
   webui::AddLocalizedStringsBulk(source, kLocalizedStrings);
 
+  // loadTimeData.
+  Profile* profile = Profile::FromWebUI(web_ui);
+  ProfileAttributesEntry* entry = nullptr;
+  g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile->GetPath(), &entry);
+  source->AddString("profileName",
+                    base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  source->AddBoolean("isManaged",
+                     !entry->GetHostedDomain().empty() &&
+                         entry->GetHostedDomain() != kNoHostedDomainFound);
+
   // Resources for testing.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -54,7 +74,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
+  content::WebUIDataSource::Add(profile, source);
 }
 
 ProfileCustomizationUI::~ProfileCustomizationUI() = default;
