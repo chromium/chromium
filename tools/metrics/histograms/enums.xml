@@ -59549,15 +59549,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="Profile">
   <int value="0" label="Guest Profile"/>
-  <int value="1" label="Profile 1"/>
-  <int value="2" label="Profile 2"/>
-  <int value="3" label="Profile 3"/>
-  <int value="4" label="Profile 4"/>
-  <int value="5" label="Profile 5"/>
-  <int value="6" label="Profile 6"/>
-  <int value="7" label="Profile 7"/>
-  <int value="8" label="Profile 8"/>
-  <int value="9" label="Profile 9"/>
+  <int value="1" label="Profile 01"/>
+  <int value="2" label="Profile 02"/>
+  <int value="3" label="Profile 03"/>
+  <int value="4" label="Profile 04"/>
+  <int value="5" label="Profile 05"/>
+  <int value="6" label="Profile 06"/>
+  <int value="7" label="Profile 07"/>
+  <int value="8" label="Profile 08"/>
+  <int value="9" label="Profile 09"/>
   <int value="10" label="Profile 10"/>
   <int value="11" label="Profile 11"/>
   <int value="12" label="Profile 12"/>
@@ -59648,7 +59648,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="97" label="Profile 97"/>
   <int value="98" label="Profile 98"/>
   <int value="99" label="Profile 99"/>
-  <int value="100" label="Profile 100"/>
+  <int value="100" label="Profile 99+"/>
 </enum>
 
 <enum name="ProfileAddNewUser">
