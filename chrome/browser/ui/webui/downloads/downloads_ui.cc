@@ -53,24 +53,12 @@ using content::WebContents;
 
 namespace {
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/downloads/";
-#endif
-
 content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIDownloadsHost);
-
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(source, "downloads.js",
-                                     IDR_DOWNLOADS_DOWNLOADS_ROLLUP_JS,
-                                     IDR_DOWNLOADS_DOWNLOADS_HTML);
-#else
   webui::SetupWebUIDataSource(
-      source, base::make_span(kDownloadsResources, kDownloadsResourcesSize),
-      kGeneratedPath, IDR_DOWNLOADS_DOWNLOADS_HTML);
-#endif
+      source, base::make_span(kDownloadsResources, kDownloadsResourcesSize), "",
+      IDR_DOWNLOADS_DOWNLOADS_HTML);
 
   bool requests_ap_verdicts =
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
@@ -162,15 +150,6 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                          !profile->IsSupervised());
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
-
-  source->AddResourcePath("images/incognito_marker.svg",
-                          IDR_DOWNLOADS_IMAGES_INCOGNITO_MARKER_SVG);
-  source->AddResourcePath("images/no_downloads.svg",
-                          IDR_DOWNLOADS_IMAGES_NO_DOWNLOADS_SVG);
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-  source->AddResourcePath("downloads.mojom-lite.js",
-                          IDR_DOWNLOADS_MOJO_LITE_JS);
-#endif
 
   source->AddBoolean(
       "allowOpenNow",

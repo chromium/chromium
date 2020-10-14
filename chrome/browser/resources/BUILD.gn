@@ -299,23 +299,23 @@ if (!is_android) {
   }
 
   grit("downloads_resources") {
-    if (optimize_webui) {
-      source = "downloads/downloads_resources_vulcanized.grd"
-
-      deps = [ "//chrome/browser/resources/downloads:build" ]
-    } else {
-      source = "downloads/downloads_resources.grd"
-
-      deps = [ "//chrome/browser/resources/downloads:web_components" ]
-    }
-    deps += [ "//chrome/browser/ui/webui/downloads:mojo_bindings_js" ]
-
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
     ]
 
     defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    downloads_gen_dir = "$root_gen_dir/chrome/browser/resources/downloads"
+    source = "$downloads_gen_dir/downloads_resources.grd"
+    deps = [ "//chrome/browser/resources/downloads:build_grd" ]
+
     outputs = [
       "grit/downloads_resources.h",
       "grit/downloads_resources_map.cc",
