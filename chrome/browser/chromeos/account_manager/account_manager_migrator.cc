@@ -97,10 +97,9 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
   ~AccountMigrationBaseStep() override = default;
 
  protected:
-  bool IsAccountWithNonDummyTokenPresentInAccountManager(
+  bool IsAccountPresentInAccountManager(
       const AccountManager::AccountKey& account) const {
-    return base::Contains(account_manager_accounts_, account) &&
-           !account_manager_->HasDummyGaiaTokenSync(account);
+    return base::Contains(account_manager_accounts_, account);
   }
 
   bool IsAccountManagerEmpty() const {
@@ -186,11 +185,27 @@ class DeviceAccountMigration : public AccountMigrationBaseStep,
 
  private:
   void StartMigration() override {
-    if (IsAccountWithNonDummyTokenPresentInAccountManager(device_account_)) {
+    if (!IsAccountPresentInAccountManager(device_account_)) {
+      MigrateDeviceAccount();
+      return;
+    }
+
+    account_manager()->HasDummyGaiaToken(
+        device_account_,
+        base::BindOnce(&DeviceAccountMigration::OnHasDummyGaiaToken,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnHasDummyGaiaToken(bool has_dummy_token) {
+    if (!has_dummy_token) {
       FinishWithSuccess();
       return;
     }
 
+    MigrateDeviceAccount();
+  }
+
+  void MigrateDeviceAccount() {
     switch (device_account_.account_type) {
       case account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
         MigrateActiveDirectoryAccount();
@@ -270,6 +285,8 @@ class DeviceAccountMigration : public AccountMigrationBaseStep,
   const std::string device_account_raw_email_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<DeviceAccountMigration> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceAccountMigration);
 };
