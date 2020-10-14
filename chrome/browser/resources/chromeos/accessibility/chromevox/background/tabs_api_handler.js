@@ -54,18 +54,16 @@ TabsApiHandler = class {
    * @param {Object} tab
    */
   onCreated(tab) {
-    if (!tab.highlighted) {
-      return;
-    }
-
-    if (TabsApiHandler.shouldOutputSpeechAndBraille) {
-      ChromeVox.tts.speak(
-          this.msg_('chrome_tab_created'), QueueMode.FLUSH,
-          AbstractTts.PERSONALITY_ANNOUNCEMENT);
-      ChromeVox.braille.write(
-          NavBraille.fromText(this.msg_('chrome_tab_created')));
-    }
-    ChromeVox.earcons.playEarcon(Earcon.OBJECT_OPEN);
+    this.runOnlyIfTabIsActive_(tab.id, () => {
+      if (TabsApiHandler.shouldOutputSpeechAndBraille) {
+        ChromeVox.tts.speak(
+            this.msg_('chrome_tab_created'), QueueMode.FLUSH,
+            AbstractTts.PERSONALITY_ANNOUNCEMENT);
+        ChromeVox.braille.write(
+            NavBraille.fromText(this.msg_('chrome_tab_created')));
+      }
+      ChromeVox.earcons.playEarcon(Earcon.OBJECT_OPEN);
+    });
   }
 
   /**
@@ -73,14 +71,16 @@ TabsApiHandler = class {
    * @param {Object} tab
    */
   onRemoved(tab) {
-    ChromeVox.earcons.playEarcon(Earcon.OBJECT_CLOSE);
+    this.runOnlyIfTabIsActive_(tab.id, () => {
+      ChromeVox.earcons.playEarcon(Earcon.OBJECT_CLOSE);
 
-    chrome.tabs.query({active: true}, function(tabs) {
-      if (tabs.length == 0 && this.isPlayingPageLoadingSound_()) {
-        ChromeVox.earcons.cancelEarcon(Earcon.PAGE_START_LOADING);
-        this.cancelPageLoadTimer_();
-      }
-    }.bind(this));
+      chrome.tabs.query({active: true}, function(tabs) {
+        if (tabs.length == 0 && this.isPlayingPageLoadingSound_()) {
+          ChromeVox.earcons.cancelEarcon(Earcon.PAGE_START_LOADING);
+          this.cancelPageLoadTimer_();
+        }
+      }.bind(this));
+    });
   }
 
   /**
@@ -88,22 +88,24 @@ TabsApiHandler = class {
    * @param {Object} activeInfo
    */
   onActivated(activeInfo) {
-    this.updateLoadingSoundsWhenTabFocusChanges_(activeInfo.tabId);
-    chrome.tabs.get(activeInfo.tabId, function(tab) {
-      if (tab.status == 'loading') {
-        return;
-      }
+    this.runOnlyIfTabIsActive_(activeInfo.tabId, () => {
+      this.updateLoadingSoundsWhenTabFocusChanges_(activeInfo.tabId);
+      chrome.tabs.get(activeInfo.tabId, function(tab) {
+        if (tab.status == 'loading') {
+          return;
+        }
 
-      if (TabsApiHandler.shouldOutputSpeechAndBraille) {
-        const title = tab.title ? tab.title : tab.url;
-        ChromeVox.tts.speak(
-            this.msg_('chrome_tab_selected', [title]), QueueMode.FLUSH,
-            AbstractTts.PERSONALITY_ANNOUNCEMENT);
-        ChromeVox.braille.write(
-            NavBraille.fromText(this.msg_('chrome_tab_selected', [title])));
-      }
-      ChromeVox.earcons.playEarcon(Earcon.OBJECT_SELECT);
-    }.bind(this));
+        if (TabsApiHandler.shouldOutputSpeechAndBraille) {
+          const title = tab.title ? tab.title : tab.url;
+          ChromeVox.tts.speak(
+              this.msg_('chrome_tab_selected', [title]), QueueMode.FLUSH,
+              AbstractTts.PERSONALITY_ANNOUNCEMENT);
+          ChromeVox.braille.write(
+              NavBraille.fromText(this.msg_('chrome_tab_selected', [title])));
+        }
+        ChromeVox.earcons.playEarcon(Earcon.OBJECT_SELECT);
+      }.bind(this));
+    });
   }
 
   /**
@@ -188,6 +190,29 @@ TabsApiHandler = class {
    */
   isPlayingPageLoadingSound_() {
     return this.pageLoadIntervalID_ != null;
+  }
+
+  /**
+   * @param {number} tabId
+   * @private
+   */
+  runOnlyIfTabIsActive_(tabId, callback) {
+    try {
+      chrome.windows.getLastFocused({populate: true}, w => {
+        if (!w.focused) {
+          return;
+        }
+        for (let i = 0; i < w.tabs.length; i++) {
+          const tab = w.tabs[i];
+          if (tab.active && tab.id == tabId) {
+            callback();
+            return;
+          }
+        }
+      });
+    } catch (e) {
+      // Throws if there's no last focused window.
+    }
   }
 };
 
