@@ -123,13 +123,17 @@ Polymer({
       zippy.setAttribute('toggle-style', true);
       zippy.id = 'zippy-' + data['id'];
       var title = document.createElement('div');
+      title.id = 'title-' + data['id'];
       title.slot = 'title';
       title.textContent = data['title'];
+      title.setAttribute('aria-hidden', 'true');
       zippy.appendChild(title);
 
       var toggle = document.createElement('cr-toggle');
       toggle.slot = 'toggle';
       toggle.id = 'toggle-' + data['id'];
+      toggle.setAttribute('aria-labelledby', 'title-' + data['id']);
+      toggle.setAttribute('aria-describedby', 'description-' + data['id']);
       if (data['defaultEnabled']) {
         toggle.setAttribute('checked', '');
       }
@@ -139,8 +143,10 @@ Polymer({
       zippy.appendChild(toggle);
 
       var description = document.createElement('div');
+      description.id = 'description-' + data['id'];
       description.slot = 'content';
       description.textContent = data['description'];
+      description.setAttribute('aria-hidden', 'true');
       if (data['legalText']) {
         var legalText = document.createElement('p');
         legalText.textContent = data['legalText'];
