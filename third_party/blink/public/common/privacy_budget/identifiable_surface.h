@@ -201,10 +201,18 @@ class IdentifiableSurface {
     // The input should be an instance of CanvasRenderingContext::ContextType.
     kCanvasRenderingContext = 21,
 
+    // Represents a call to MediaDevices.getUserMedia. Input is the set of
+    // constraints.
+    kMediaDevices_GetUserMedia = 22,
+
     // NavigatorUAData.getHighEntropyValues() is, shockingly, a high entropy
     // API to provide more detailed User-Agent data. The output is keyed on
     // the hint parameter.
     kNavigatorUAData_GetHighEntropyValues = 24,
+
+    // Represents a call to Navigator.getUserMedia. Input is the set of
+    // constraints.
+    kNavigator_GetUserMedia = 27,
 
     // Represents loading a font locally. Input is the PostScript name.
     kLocalFontLoadPostScriptName = 29,

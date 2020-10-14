@@ -18,7 +18,7 @@
     enumerateDevices();
     MediaTrackSupportedConstraints getSupportedConstraints();
     [
-      CallWith = ScriptState, RaisesException, MeasureAs = GetUserMediaPromise
+      CallWith = ScriptState, RaisesException, HighEntropy, MeasureAs = GetUserMediaPromise
     ] Promise<MediaStream>
     getUserMedia(optional MediaStreamConstraints constraints = {});
 

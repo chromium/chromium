@@ -10,7 +10,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
@@ -122,9 +123,16 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   UserMediaController* user_media = UserMediaController::From(window);
+  constexpr IdentifiableSurface::Type surface_type =
+      IdentifiableSurface::Type::kMediaDevices_GetUserMedia;
+  IdentifiableSurface surface;
+  if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(surface_type)) {
+    surface = IdentifiableSurface::FromTypeAndToken(
+        surface_type, TokenFromConstraints(options));
+  }
   MediaErrorState error_state;
   UserMediaRequest* request = UserMediaRequest::Create(
-      window, user_media, media_type, options, callbacks, error_state);
+      window, user_media, media_type, options, callbacks, error_state, surface);
   if (!request) {
     DCHECK(error_state.HadException());
     if (error_state.CanGenerateException()) {
@@ -132,6 +140,9 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
       return ScriptPromise();
     }
     ScriptPromise rejected_promise = resolver->Promise();
+    RecordIdentifiabilityMetric(
+        surface, GetExecutionContext(),
+        IdentifiabilityBenignStringToken(error_state.GetErrorMessage()));
     resolver->Reject(error_state.CreateError());
     return rejected_promise;
   }

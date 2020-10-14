@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigator_user_media_success_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -94,13 +95,15 @@ class MODULES_EXPORT UserMediaRequest final
                                   MediaType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
-                                  MediaErrorState&);
+                                  MediaErrorState&,
+                                  IdentifiableSurface surface);
   static UserMediaRequest* Create(ExecutionContext*,
                                   UserMediaController*,
                                   const MediaStreamConstraints* options,
                                   V8NavigatorUserMediaSuccessCallback*,
                                   V8NavigatorUserMediaErrorCallback*,
-                                  MediaErrorState&);
+                                  MediaErrorState&,
+                                  IdentifiableSurface surface);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,
                                             const MediaConstraints& video);
 
@@ -109,7 +112,8 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaType media_type,
                    MediaConstraints audio,
                    MediaConstraints video,
-                   Callbacks*);
+                   Callbacks*,
+                   IdentifiableSurface surface);
   virtual ~UserMediaRequest();
 
   LocalDOMWindow* GetWindow();
@@ -161,6 +165,7 @@ class MODULES_EXPORT UserMediaRequest final
   Member<UserMediaController> controller_;
 
   Member<Callbacks> callbacks_;
+  IdentifiableSurface surface_;
   bool is_resolved_ = false;
 };
 

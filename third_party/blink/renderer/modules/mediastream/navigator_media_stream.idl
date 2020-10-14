@@ -21,7 +21,8 @@
 [
     ImplementedAs=NavigatorMediaStream
 ] partial interface Navigator {
-    [RaisesException,
+    [HighEntropy,
+     RaisesException,
      SecureContext,
      MeasureAs=GetUserMediaLegacy
     ] void getUserMedia(MediaStreamConstraints constraints,
@@ -29,7 +30,8 @@
                         NavigatorUserMediaErrorCallback errorCallback);
 
     // Non-standard
-    [RaisesException,
+    [HighEntropy,
+     RaisesException,
      SecureContext,
      ImplementedAs=getUserMedia,
      MeasureAs=GetUserMediaPrefixed
