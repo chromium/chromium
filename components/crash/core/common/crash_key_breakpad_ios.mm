@@ -8,6 +8,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key_base_support.h"
+#import "components/previous_session_info/previous_session_info.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
@@ -55,6 +56,9 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
   WithBreakpadRefAsync(^(BreakpadRef ref) {
     BreakpadAddUploadParameter(ref, key, value_ns);
   });
+
+  [[PreviousSessionInfo sharedInstance] setReportParameterValue:value_ns
+                                                         forKey:key];
 }
 
 void CrashKeyStringImpl::Clear() {
@@ -63,6 +67,7 @@ void CrashKeyStringImpl::Clear() {
   WithBreakpadRefAsync(^(BreakpadRef ref) {
     BreakpadRemoveUploadParameter(ref, key);
   });
+  [[PreviousSessionInfo sharedInstance] removeReportParameterForKey:key];
 }
 
 bool CrashKeyStringImpl::is_set() const {

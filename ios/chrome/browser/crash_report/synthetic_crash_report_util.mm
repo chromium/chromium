@@ -93,12 +93,12 @@ void CreateSyntheticCrashReportForUte(
   AppendConfig(config, "BreakpadServerParameterPrefix_platform",
                base::SysInfo::HardwareModelName());
 
-  for (NSString* key in previous_session.reportParameterURLs.allKeys) {
+  for (NSString* key in previous_session.reportParameters.allKeys) {
     AppendConfig(
         config,
         base::StringPrintf("BreakpadServerParameterPrefix_%s",
                            base::SysNSStringToUTF8(key).c_str()),
-        base::SysNSStringToUTF8(previous_session.reportParameterURLs[key]));
+        base::SysNSStringToUTF8(previous_session.reportParameters[key]));
   }
 
   if (previous_session.sessionStartTime && previous_session.sessionEndTime) {

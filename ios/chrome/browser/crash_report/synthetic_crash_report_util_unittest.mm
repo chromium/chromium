@@ -41,7 +41,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   previous_session.OSVersion = kOSVersion;
   previous_session.terminatedDuringSessionRestoration = YES;
   NSString* const kURL = @"URL";
-  previous_session.reportParameterURLs = @{@"url" : kURL};
+  previous_session.reportParameters = @{@"url" : kURL};
   previous_session.sessionStartTime = [NSDate date];
   const NSTimeInterval kUptimeMs = 5000;
   previous_session.sessionEndTime = [previous_session.sessionStartTime

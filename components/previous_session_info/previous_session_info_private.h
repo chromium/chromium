@@ -22,8 +22,7 @@
 @property(nonatomic, strong) NSDate* sessionEndTime;
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
-@property(nonatomic, copy)
-    NSDictionary<NSString*, NSString*>* reportParameterURLs;
+@property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
 
 + (void)resetSharedInstanceForTesting;
 

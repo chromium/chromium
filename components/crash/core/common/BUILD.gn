@@ -99,6 +99,7 @@ target(crash_key_target_type, "crash_key_lib") {
 
     if (is_ios) {
       sources += [ "crash_key_breakpad_ios.mm" ]
+      deps += [ "//components/previous_session_info" ]
 
       configs += [ "//build/config/compiler:enable_arc" ]
     } else {

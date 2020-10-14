@@ -24,8 +24,8 @@ extern NSString* const kPreviousSessionInfoRestoringSession;
 // Key in the UserDefaults for an array which contains the ids for the connected
 // scene sessions on the previous run.
 extern NSString* const kPreviousSessionInfoConnectedSceneSessionIDs;
-// Key in the UserDefaults for a dictionary with navigation URLs.
-extern NSString* const kPreviousSessionInfoURLs;
+// Key in the UserDefaults for a dictionary with session info params.
+extern NSString* const kPreviousSessionInfoParams;
 
 // The values of this enum are persisted (both to NSUserDefaults and logs) and
 // represent the state of the last session (which may have been running a
@@ -128,9 +128,9 @@ enum class DeviceBatteryState {
 @property(nonatomic, readonly)
     NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 
-// Pending and committed navigation URLs.
+// Crash report parameters as key-value pairs.
 @property(nonatomic, readonly)
-    NSDictionary<NSString*, NSString*>* reportParameterURLs;
+    NSDictionary<NSString*, NSString*>* reportParameters;
 
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
@@ -185,7 +185,8 @@ enum class DeviceBatteryState {
 // gets destructed.
 - (void)resetSessionRestorationFlag;
 
-// Records information about pending and committed navigation URLs.
+// Records information crash report parameters.
+- (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key;
 - (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key;
 - (void)removeReportParameterForKey:(NSString*)key;
 

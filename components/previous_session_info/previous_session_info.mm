@@ -105,7 +105,7 @@ NSString* const kPreviousSessionInfoRestoringSession =
     @"PreviousSessionInfoRestoringSession";
 NSString* const kPreviousSessionInfoConnectedSceneSessionIDs =
     @"PreviousSessionInfoConnectedSceneSessionIDs";
-NSString* const kPreviousSessionInfoURLs = @"PreviousSessionInfoURLs";
+NSString* const kPreviousSessionInfoParams = @"PreviousSessionInfoParams";
 }  // namespace previous_session_info_constants
 
 @interface PreviousSessionInfo ()
@@ -136,8 +136,7 @@ NSString* const kPreviousSessionInfoURLs = @"PreviousSessionInfoURLs";
 @property(nonatomic, strong) NSDate* sessionEndTime;
 @property(nonatomic, assign) BOOL terminatedDuringSessionRestoration;
 @property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
-@property(nonatomic, copy)
-    NSDictionary<NSString*, NSString*>* reportParameterURLs;
+@property(nonatomic, copy) NSDictionary<NSString*, NSString*>* reportParameters;
 
 @end
 
@@ -225,9 +224,9 @@ static PreviousSessionInfo* gSharedInstance = nil;
         [defaults boolForKey:previous_session_info_constants::
                                  kPreviousSessionInfoRestoringSession];
 
-    gSharedInstance.reportParameterURLs =
+    gSharedInstance.reportParameters =
         [defaults dictionaryForKey:previous_session_info_constants::
-                                       kPreviousSessionInfoURLs];
+                                       kPreviousSessionInfoParams];
   }
   return gSharedInstance;
 }
@@ -529,25 +528,31 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [NSUserDefaults.standardUserDefaults synchronize];
 }
 
-- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
-  NSMutableDictionary* URLs = [[NSUserDefaults.standardUserDefaults
+- (void)setReportParameterValue:(NSString*)value forKey:(NSString*)key {
+  NSMutableDictionary* params = [[NSUserDefaults.standardUserDefaults
       dictionaryForKey:previous_session_info_constants::
-                           kPreviousSessionInfoURLs] mutableCopy];
-  if (!URLs) {
-    URLs = [NSMutableDictionary dictionaryWithCapacity:1];
+                           kPreviousSessionInfoParams] mutableCopy];
+  if (!params) {
+    params = [NSMutableDictionary dictionaryWithCapacity:1];
   }
-  // Store only URL origin (not whole URL spec) as requested by Privacy Team.
-  URLs[key] = base::SysUTF8ToNSString(URL.GetOrigin().spec().c_str());
+  params[key] = value;
   [NSUserDefaults.standardUserDefaults
-      setObject:URLs
-         forKey:previous_session_info_constants::kPreviousSessionInfoURLs];
+      setObject:params
+         forKey:previous_session_info_constants::kPreviousSessionInfoParams];
   [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key {
+  // Store only URL origin (not whole URL spec) as requested by Privacy Team.
+  [self setReportParameterValue:base::SysUTF8ToNSString(
+                                    URL.GetOrigin().spec().c_str())
+                         forKey:key];
 }
 
 - (void)removeReportParameterForKey:(NSString*)key {
   NSMutableDictionary* URLs = [[NSUserDefaults.standardUserDefaults
       dictionaryForKey:previous_session_info_constants::
-                           kPreviousSessionInfoURLs] mutableCopy];
+                           kPreviousSessionInfoParams] mutableCopy];
   if (URLs) {
     URLs[key] = nil;
     if (URLs.count == 0) {
@@ -555,7 +560,7 @@ static PreviousSessionInfo* gSharedInstance = nil;
     }
     [NSUserDefaults.standardUserDefaults
         setObject:URLs
-           forKey:previous_session_info_constants::kPreviousSessionInfoURLs];
+           forKey:previous_session_info_constants::kPreviousSessionInfoParams];
     [NSUserDefaults.standardUserDefaults synchronize];
   }
 }
