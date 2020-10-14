@@ -219,10 +219,15 @@ public class TabPersistentStoreTest {
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
     private SharedPreferencesManager mPreferences;
+    private TabWindowManagerImpl mTabWindowManager;
 
     @Before
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                    mMockTabModelSelectorFactory);
+            mTabWindowManager = (TabWindowManagerImpl) TabWindowManagerSingleton.getInstance();
+
             mChromeActivity = new ChromeActivity() {
                 @Override
                 protected boolean handleBackPressed() {
@@ -266,8 +271,7 @@ public class TabPersistentStoreTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabWindowManagerSingleton.getInstance().onActivityStateChange(
-                    mChromeActivity, ActivityState.DESTROYED);
+            mTabWindowManager.onActivityStateChange(mChromeActivity, ActivityState.DESTROYED);
         });
         mMockDirectory.tearDown();
     }
@@ -697,13 +701,11 @@ public class TabPersistentStoreTest {
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<TestTabModelSelector>() {
                     @Override
                     public TestTabModelSelector call() {
-                        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
-                        tabWindowManager.setTabModelSelectorFactory(mMockTabModelSelectorFactory);
                         // Clear any existing TestTabModelSelector (required when
                         // createAndRestoreRealTabModelImpls is called multiple times in one test).
-                        tabWindowManager.onActivityStateChange(
+                        mTabWindowManager.onActivityStateChange(
                                 mChromeActivity, ActivityState.DESTROYED);
-                        return (TestTabModelSelector) tabWindowManager.requestSelector(
+                        return (TestTabModelSelector) mTabWindowManager.requestSelector(
                                 mChromeActivity, mChromeActivity, null, 0);
                     }
                 });

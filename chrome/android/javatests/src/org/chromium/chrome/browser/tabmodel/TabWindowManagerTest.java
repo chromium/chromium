@@ -10,6 +10,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,8 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test for {@link TabWindowManager} APIs.  Makes sure the class handles multiple {@link Activity}s
- * requesting {@link TabModelSelector}s, {@link Activity}s getting destroyed, etc..
+ * Test for {@link TabWindowManagerImpl} through {@link TabWindowManagerSingleton}.
+ *
+ * Makes sure the class handles multiple {@link Activity}s requesting {@link TabModelSelector}s,
+ * {@link Activity}s getting destroyed, etc.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TabWindowManagerTest {
@@ -47,6 +50,12 @@ public class TabWindowManagerTest {
                     return new MockTabModelSelector(0, 0, null);
                 }
             };
+
+    @Before
+    public void setUp() {
+        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                mMockTabModelSelectorFactory);
+    }
 
     private ChromeActivity buildActivity() {
         ChromeActivity activity = new CustomTabActivity();
@@ -62,7 +71,6 @@ public class TabWindowManagerTest {
 
     private MockTabModelSelector requestSelector(ChromeActivity activity, int requestedIndex) {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
-        manager.setTabModelSelectorFactory(mMockTabModelSelectorFactory);
         return (MockTabModelSelector) manager.requestSelector(
                 activity, activity, () -> NextTabPolicy.HIERARCHICAL, requestedIndex);
     }
@@ -186,7 +194,8 @@ public class TabWindowManagerTest {
     }
 
     /**
-     * Test that a destroyed {@link Activity} properly gets removed from {@link TabWindowManager}.
+     * Test that a destroyed {@link Activity} properly gets removed from {@link
+     * TabWindowManagerImpl}.
      */
     @Test
     @SmallTest
@@ -290,20 +299,20 @@ public class TabWindowManagerTest {
         Tab tab1 = selector0.addMockTab();
         Tab tab2 = selector1.addMockIncognitoTab();
 
-        Assert.assertFalse(manager.tabExistsInAnySelector(tab1.getId() - 1));
-        Assert.assertTrue(manager.tabExistsInAnySelector(tab1.getId()));
-        Assert.assertTrue(manager.tabExistsInAnySelector(tab2.getId()));
-        Assert.assertFalse(manager.tabExistsInAnySelector(tab2.getId() + 1));
+        Assert.assertNull(manager.getTabById(tab1.getId() - 1));
+        Assert.assertNotNull(manager.getTabById(tab1.getId()));
+        Assert.assertNotNull(manager.getTabById(tab2.getId()));
+        Assert.assertNull(manager.getTabById(tab2.getId() + 1));
 
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         asyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
                 new TabReparentingParams(new MockTab(0, false), null);
-        Assert.assertFalse(manager.tabExistsInAnySelector(asyncTabId));
+        Assert.assertNull(manager.getTabById(asyncTabId));
         asyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
-            Assert.assertTrue(manager.tabExistsInAnySelector(asyncTabId));
+            Assert.assertNotNull(manager.getTabById(asyncTabId));
         } finally {
             asyncTabParamsManager.getAsyncTabParams().clear();
         }

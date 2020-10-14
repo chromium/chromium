@@ -80,18 +80,16 @@ public class ContextMenuLoadUrlParamsTest {
         // Plant RecordingTabModelSelector as the TabModelSelector used in Main. The factory has to
         // be set before super.setUp(), as super.setUp() creates Main and consequently the
         // TabModelSelector.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabWindowManagerSingleton.getInstance().setTabModelSelectorFactory(
-                    new TabModelSelectorFactory() {
-                        @Override
-                        public TabModelSelector buildSelector(Activity activity,
-                                TabCreatorManager tabCreatorManager,
-                                NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
-                            return new RecordingTabModelSelector(activity, tabCreatorManager,
-                                    new ChromeTabModelFilterFactory(), selectorIndex);
-                        }
-                    });
-        });
+        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildSelector(Activity activity,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
+                        return new RecordingTabModelSelector(activity, tabCreatorManager,
+                                new ChromeTabModelFilterFactory(), selectorIndex);
+                    }
+                });
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { FirstRunStatus.setFirstRunFlowComplete(true); });

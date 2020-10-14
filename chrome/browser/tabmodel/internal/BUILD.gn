@@ -8,10 +8,13 @@ android_library("java") {
   visibility = [
     "//chrome/android:chrome_all_java",
     "//chrome/android:chrome_junit_tests__java_binary",
+    "//chrome/android:chrome_test_java",
   ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImpl.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java",
   ]
   deps = [
     "//base:base_java",

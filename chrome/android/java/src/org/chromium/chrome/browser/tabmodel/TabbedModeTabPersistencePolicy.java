@@ -398,7 +398,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         private boolean shouldDeleteTabFile(int tabId, TabWindowManager tabWindowManager) {
-            return !tabWindowManager.tabExistsInAnySelector(tabId) && !mOtherTabIds.get(tabId);
+            return tabWindowManager.getTabById(tabId) == null && !mOtherTabIds.get(tabId);
         }
 
         /**
