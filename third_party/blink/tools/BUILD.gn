@@ -38,8 +38,9 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/WPTOverrideExpectations",
   ]
+  data_deps = [ ":wpt_tests_mojo_bindings" ]
   if (is_win) {
-    data_deps = [ "//build/win:copy_cdb_to_output" ]
+    data_deps += [ "//build/win:copy_cdb_to_output" ]
   }
   if (!is_android) {
     data += [ "//testing/scripts/run_wpt_tests.py" ]
@@ -54,5 +55,18 @@ group("wpt_tests_android_isolate") {
     "//third_party/blink/web_tests/android/ChromiumWPTExpectations",
     "//third_party/blink/web_tests/android/WebviewWPTExpectations",
     "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
+  ]
+}
+
+group("wpt_tests_mojo_bindings") {
+  testonly = true
+  data_deps = [
+    "//:layout_test_data_mojo_bindings",
+    "//:layout_test_data_mojo_bindings_lite",
+    "//content/test:mojo_web_test_bindings_js_data_deps",
+    "//device/vr/public/mojom:mojom_js_data_deps",
+    "//mojo/public/interfaces/bindings/tests:test_data_deps",
+    "//mojo/public/js/ts/bindings/tests:test_interfaces_js_data_deps",
+    "//mojo/public/mojom/base:base_js_data_deps",
   ]
 }
