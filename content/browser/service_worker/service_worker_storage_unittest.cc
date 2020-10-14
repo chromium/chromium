@@ -890,19 +890,19 @@ TEST_F(ServiceWorkerStorageTest, StoreFindUpdateDeleteRegistration) {
 }
 
 TEST_F(ServiceWorkerStorageTest, StoreUserData) {
+  const int64_t kRegistrationId = 1;
   const GURL kScope("http://www.test.not/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
   const GURL kScript("http://www.test.not/script.js");
   LazyInitialize();
 
   // Store a registration.
-  scoped_refptr<ServiceWorkerRegistration> live_registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), kScope, kScript,
-                                                /*resource_id=*/1);
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreRegistration(live_registration,
-                              live_registration->waiting_version()));
-  const int64_t kRegistrationId = live_registration->id();
+  std::vector<ResourceRecord> resources;
+  resources.push_back(CreateResourceRecord(1, kScript, 100));
+  storage::mojom::ServiceWorkerRegistrationDataPtr registration_data =
+      CreateRegistrationData(kRegistrationId,
+                             /*version_id=*/1, kScope, kScript, resources);
+  StoreRegistrationData(std::move(registration_data), std::move(resources));
 
   // Store user data associated with the registration.
   std::vector<std::string> data_out;
@@ -998,8 +998,8 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   ASSERT_EQ(1u, data_out.size());
   ASSERT_EQ("data", data_out[0]);
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            DeleteRegistration(live_registration, kScope.GetOrigin()));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            DeleteRegistrationById(kRegistrationId, kScope.GetOrigin()));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
             GetUserData(kRegistrationId, {"key"}, &data_out));
   data_list_out.clear();
