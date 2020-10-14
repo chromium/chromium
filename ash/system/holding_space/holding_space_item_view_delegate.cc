@@ -15,6 +15,8 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/bind.h"
 #include "net/base/mime_util.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -67,6 +69,21 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
     HoldingSpaceItemView* view) {
   view_observer_.Add(view);
   views_.push_back(view);
+}
+
+bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
+    HoldingSpaceItemView* view,
+    const ui::AXActionData& action_data) {
+  // When performing the default accessible action (e.g. Search + Space), we
+  // open the selected holding space items. If `view` is not part of the current
+  // selection it will become the entire selection.
+  if (action_data.action == ax::mojom::Action::kDoDefault) {
+    if (!view->selected())
+      SetSelection(view);
+    OpenItems(GetSelection());
+    return true;
+  }
+  return false;
 }
 
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(

@@ -50,6 +50,12 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // Invoked when `view` has been created.
   void OnHoldingSpaceItemViewCreated(HoldingSpaceItemView* view);
 
+  // Invoked when `view` should perform an accessible action. Returns true if
+  // the action is handled, otherwise false.
+  bool OnHoldingSpaceItemViewAccessibleAction(
+      HoldingSpaceItemView* view,
+      const ui::AXActionData& action_data);
+
   // Invoked when `view` receives the specified gesture `event`.
   void OnHoldingSpaceItemViewGestureEvent(HoldingSpaceItemView* view,
                                           const ui::GestureEvent& event);

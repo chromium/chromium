@@ -39,6 +39,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
 
   // views::InkDropHostView:
   SkColor GetInkDropBaseColor() const override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnFocus() override;
   void OnBlur() override;

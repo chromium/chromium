@@ -137,6 +137,12 @@ SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
   return AshColorProvider::Get()->GetRippleAttributes().base_color;
 }
 
+bool HoldingSpaceItemView::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  return delegate_->OnHoldingSpaceItemViewAccessibleAction(this, action_data) ||
+         views::InkDropHostView::HandleAccessibleAction(action_data);
+}
+
 void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   gfx::Rect bounds = GetLocalBounds();
   selected_layer_owner_->layer()->SetBounds(bounds);
