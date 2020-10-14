@@ -58,8 +58,8 @@ void FirewallHole::Open(PortType type,
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }
-  base::ScopedFD lifeline_local(lifeline[0]);
-  base::ScopedFD lifeline_remote(lifeline[1]);
+  base::ScopedFD lifeline_local(lifeline[1]);
+  base::ScopedFD lifeline_remote(lifeline[0]);
 
   base::OnceCallback<void(bool)> access_granted_closure =
       base::BindOnce(&FirewallHole::PortAccessGranted, type, port, interface,
