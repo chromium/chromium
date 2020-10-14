@@ -82,6 +82,7 @@ class FrameNodeImpl
   void SetNetworkAlmostIdle() override;
   void SetLifecycleState(LifecycleState state) override;
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) override;
+  void SetViewportIntersection(const gfx::Rect& viewport_intersection) override;
   void SetOriginTrialFreezePolicy(mojom::InterventionPolicy policy) override;
   void SetIsAdFrame() override;
   void SetHadFormInteraction() override;
@@ -120,6 +121,7 @@ class FrameNodeImpl
   const PriorityAndReason& priority_and_reason() const;
   bool had_form_interaction() const;
   bool is_audible() const;
+  const gfx::Rect& viewport_intersection() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
@@ -190,6 +192,7 @@ class FrameNodeImpl
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool IsAudible() const override;
+  const gfx::Rect& GetViewportIntersection() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -335,6 +338,17 @@ class FrameNodeImpl
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAudibleChanged>
           is_audible_{false};
+
+  // Tracks the intersection of this frame with the viewport.
+  //
+  // Note that the viewport intersection for the main frame is always invalid.
+  // This is because the main frame always occupies the entirety of the viewport
+  // so there is no point in tracking it. To avoid programming mistakes, it is
+  // forbidden to query this property for the main frame.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      gfx::Rect,
+      &FrameNodeObserver::OnViewportIntersectionChanged>
+      viewport_intersection_;
 
   // Inline storage for ExecutionContext.
   std::unique_ptr<NodeAttachedData> execution_context_;

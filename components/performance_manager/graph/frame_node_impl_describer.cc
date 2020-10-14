@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "base/task/task_traits.h"
 #include "base/values.h"
@@ -97,6 +98,8 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.SetKey("priority",
              PriorityAndReasonToValue(impl->priority_and_reason_.value()));
   ret.SetBoolKey("is_audible", impl->is_audible_.value());
+  ret.SetStringKey("viewport_intersection",
+                   impl->viewport_intersection_.value().ToString());
 
   return ret;
 }
