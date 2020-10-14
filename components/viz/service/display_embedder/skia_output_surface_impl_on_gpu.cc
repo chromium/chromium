@@ -813,14 +813,22 @@ bool SkiaOutputSurfaceImplOnGpu::CopyOutput(
              CopyOutputRequest::ResultFormat::RGBA_BITMAP) {
     // Perform swizzle during readback.
     const bool skbitmap_is_bgra = (kN32_SkColorType == kBGRA_8888_SkColorType);
+    // If we can't convert |color_space| to a SkColorSpace
+    // (e.g. PIECEWISE_HDR), request a sRGB destination color space for the
+    // copy result instead.
+    gfx::ColorSpace dest_color_space = color_space;
+    sk_sp<SkColorSpace> sk_color_space = color_space.ToSkColorSpace();
+    if (!sk_color_space) {
+      dest_color_space = gfx::ColorSpace::CreateSRGB();
+    }
     SkImageInfo dst_info = SkImageInfo::Make(
         geometry.result_selection.width(), geometry.result_selection.height(),
         skbitmap_is_bgra ? kBGRA_8888_SkColorType : kRGBA_8888_SkColorType,
-        kPremul_SkAlphaType);
+        kPremul_SkAlphaType, sk_color_space);
     std::unique_ptr<ReadPixelsContext> context =
         std::make_unique<ReadPixelsContext>(std::move(request),
                                             geometry.result_selection,
-                                            color_space, weak_ptr_);
+                                            dest_color_space, weak_ptr_);
     // Skia readback could be synchronous. Incremement counter in case
     // ReadbackCompleted is called immediately.
     num_readbacks_pending_++;

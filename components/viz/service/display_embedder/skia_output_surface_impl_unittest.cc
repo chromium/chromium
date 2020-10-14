@@ -194,4 +194,80 @@ TEST_F(SkiaOutputSurfaceImplTest, SupportsColorSpaceChange) {
   }
 }
 
+// Tests that the destination color space is preserved across a CopyOutput for
+// ColorSpaces supported by SkColorSpace.
+TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
+  output_surface_->Reshape(kSurfaceRect.size(), 1, gfx::ColorSpace(),
+                           gfx::BufferFormat::RGBX_8888, /*use_stencil=*/false);
+
+  constexpr gfx::Rect output_rect(0, 0, 10, 10);
+  const gfx::ColorSpace color_space = gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::LINEAR);
+  base::RunLoop run_loop;
+  std::unique_ptr<CopyOutputResult> result;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      base::BindOnce(
+          [](std::unique_ptr<CopyOutputResult>* result_out,
+             base::OnceClosure quit_closure,
+             std::unique_ptr<CopyOutputResult> tmp_result) {
+            *result_out = std::move(tmp_result);
+            std::move(quit_closure).Run();
+          },
+          &result, run_loop.QuitClosure()));
+  request->set_result_task_runner(
+      TestGpuServiceHolder::GetInstance()->gpu_thread_task_runner());
+  copy_output::RenderPassGeometry geometry;
+  geometry.result_bounds = output_rect;
+  geometry.result_selection = output_rect;
+  geometry.sampling_bounds = output_rect;
+  geometry.readback_offset = gfx::Vector2d(0, 0);
+
+  PaintRootRenderPass(kSurfaceRect, base::DoNothing::Once());
+  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
+                              std::move(request));
+  output_surface_->SwapBuffersSkipped();
+  run_loop.Run();
+
+  EXPECT_EQ(color_space, result->GetRGBAColorSpace());
+}
+
+// Tests that copying from a source with a color space that can't be converted
+// to a SkColorSpace will fallback to a transform to sRGB.
+TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
+  output_surface_->Reshape(kSurfaceRect.size(), 1, gfx::ColorSpace(),
+                           gfx::BufferFormat::RGBX_8888, /*use_stencil=*/false);
+
+  constexpr gfx::Rect output_rect(0, 0, 10, 10);
+  const gfx::ColorSpace color_space = gfx::ColorSpace::CreatePiecewiseHDR(
+      gfx::ColorSpace::PrimaryID::BT2020, 0.5, 1.5);
+  base::RunLoop run_loop;
+  std::unique_ptr<CopyOutputResult> result;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      base::BindOnce(
+          [](std::unique_ptr<CopyOutputResult>* result_out,
+             base::OnceClosure quit_closure,
+             std::unique_ptr<CopyOutputResult> tmp_result) {
+            *result_out = std::move(tmp_result);
+            std::move(quit_closure).Run();
+          },
+          &result, run_loop.QuitClosure()));
+  request->set_result_task_runner(
+      TestGpuServiceHolder::GetInstance()->gpu_thread_task_runner());
+  copy_output::RenderPassGeometry geometry;
+  geometry.result_bounds = output_rect;
+  geometry.result_selection = output_rect;
+  geometry.sampling_bounds = output_rect;
+  geometry.readback_offset = gfx::Vector2d(0, 0);
+
+  PaintRootRenderPass(kSurfaceRect, base::DoNothing::Once());
+  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
+                              std::move(request));
+  output_surface_->SwapBuffersSkipped();
+  run_loop.Run();
+
+  EXPECT_EQ(gfx::ColorSpace::CreateSRGB(), result->GetRGBAColorSpace());
+}
+
 }  // namespace viz
