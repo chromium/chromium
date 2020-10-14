@@ -1794,6 +1794,8 @@ component("base") {
         "allocator/partition_allocator/pcscan.h",
         "allocator/partition_allocator/random.cc",
         "allocator/partition_allocator/random.h",
+        "allocator/partition_allocator/spinning_mutex.cc",
+        "allocator/partition_allocator/spinning_mutex.h",
         "allocator/partition_allocator/thread_cache.cc",
         "allocator/partition_allocator/thread_cache.h",
         "allocator/partition_allocator/yield_processor.h",
@@ -1809,13 +1811,6 @@ component("base") {
       } else if (is_fuchsia) {
         sources += [
           "allocator/partition_allocator/page_allocator_internals_fuchsia.h",
-        ]
-      }
-
-      if (is_linux || is_chromeos || is_android) {
-        sources += [
-          "allocator/partition_allocator/spinning_futex_linux.cc",
-          "allocator/partition_allocator/spinning_futex_linux.h",
         ]
       }
     }

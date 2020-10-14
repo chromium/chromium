@@ -7,19 +7,11 @@
 #include "base/allocator/partition_allocator/yield_processor.h"
 #include "base/threading/platform_thread.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-#include <sched.h>
-#endif
+#if !defined(PA_HAS_SPINNING_MUTEX)
 
-// The YIELD_THREAD macro tells the OS to relinquish our quantum. This is
-// basically a worst-case fallback, and if you're hitting it with any frequency
-// you really should be using a proper lock (such as |base::Lock|)rather than
-// these spinlocks.
-#if defined(OS_WIN)
-#define YIELD_THREAD SwitchToThread()
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <sched.h>
+
 #define YIELD_THREAD sched_yield()
 
 #else  // Other OS
@@ -27,7 +19,7 @@
 #warning "Thread yield not supported on this OS."
 #define YIELD_THREAD ((void)0)
 
-#endif  // OS_WIN
+#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 namespace base {
 namespace internal {
@@ -66,3 +58,5 @@ void SpinLock::AcquireSlow() {
 
 }  // namespace internal
 }  // namespace base
+
+#endif  // !defined(PA_HAS_SPINNING_MUTEX)

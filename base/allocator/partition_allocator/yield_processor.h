@@ -34,7 +34,6 @@
 #endif  // ARCH
 
 #ifndef YIELD_PROCESSOR
-#warning "Processor yield not supported on this architecture."
 #define YIELD_PROCESSOR ((void)0)
 #endif
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_FUTEX_LINUX_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_FUTEX_LINUX_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_MUTEX_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_MUTEX_H_
 
 #include <algorithm>
 #include <atomic>
@@ -11,17 +11,27 @@
 #include "base/allocator/partition_allocator/yield_processor.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
-#if !(defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
-#error "Not supported"
+#if defined(OS_WIN)
+#include <windows.h>
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#define PA_HAS_LINUX_KERNEL
+#endif
+
+#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN)
+#define PA_HAS_SPINNING_MUTEX
+#endif
+
+#if defined(PA_HAS_SPINNING_MUTEX)
 namespace base {
 namespace internal {
 
-// Simple spinning futex lock. It will spin in user space a set number of times
-// before going into the kernel to sleep.
+// Simple spinning lock. It will spin in user space a set number of times before
+// going into the kernel to sleep.
 //
 // This is intended to give "the best of both worlds" between a SpinLock and
 // base::Lock:
@@ -33,23 +43,30 @@ namespace internal {
 // We don't rely on base::Lock which we could make spin (by calling Try() in a
 // loop), as performance is below a custom spinlock as seen on high-level
 // benchmarks. Instead this implements a simple non-recursive mutex on top of
-// the futex() syscall. The main difference between this and a libc
-// implementation is that it only supports the simplest path: private (to a
-// process), non-recursive mutexes with no priority inheritance, no timed waits.
+// the futex() syscall on Linux, and SRWLock on Windows. The main difference
+// between this and a libc implementation is that it only supports the simplest
+// path: private (to a process), non-recursive mutexes with no priority
+// inheritance, no timed waits.
 //
 // As an interesting side-effect to be used in the allocator, this code does not
 // make any allocations, locks are small with a constexpr constructor and no
 // destructor.
-class BASE_EXPORT SpinningFutex {
+class LOCKABLE BASE_EXPORT SpinningMutex {
  public:
-  inline constexpr SpinningFutex();
-  ALWAYS_INLINE void Acquire();
-  ALWAYS_INLINE void Release();
-  ALWAYS_INLINE bool Try();
+  inline constexpr SpinningMutex();
+  ALWAYS_INLINE void Acquire() EXCLUSIVE_LOCK_FUNCTION();
+  ALWAYS_INLINE void Release() UNLOCK_FUNCTION();
+  ALWAYS_INLINE bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
   void AssertAcquired() const {}  // Not supported.
 
  private:
   void LockSlow();
+
+  // Same as SpinLock, not scientifically calibrated. Consider lowering later,
+  // as the slow path has better characteristics than SpinLocks's.
+  static constexpr int kSpinCount = 1000;
+
+#if defined(PA_HAS_LINUX_KERNEL)
   void FutexWait();
   void FutexWake();
 
@@ -57,14 +74,13 @@ class BASE_EXPORT SpinningFutex {
   static constexpr int kLockedUncontended = 1;
   static constexpr int kLockedContended = 2;
 
-  // Same as SpinLock, not scientifically calibrated. Consider lowering later,
-  // as the slow path has better characteristics than SpinLocks's.
-  static constexpr int kSpinCount = 1000;
-
   std::atomic<int32_t> state_{kUnlocked};
+#else
+  SRWLOCK lock_ = SRWLOCK_INIT;
+#endif
 };
 
-ALWAYS_INLINE void SpinningFutex::Acquire() {
+ALWAYS_INLINE void SpinningMutex::Acquire() {
   int tries = 0;
   int backoff = 1;
   // Busy-waiting is inlined, which is fine as long as we have few callers. This
@@ -93,7 +109,11 @@ ALWAYS_INLINE void SpinningFutex::Acquire() {
   LockSlow();
 }
 
-ALWAYS_INLINE bool SpinningFutex::Try() {
+inline constexpr SpinningMutex::SpinningMutex() = default;
+
+#if defined(PA_HAS_LINUX_KERNEL)
+
+ALWAYS_INLINE bool SpinningMutex::Try() {
   int expected = kUnlocked;
   return (state_.load(std::memory_order_relaxed) == expected) &&
          state_.compare_exchange_strong(expected, kLockedUncontended,
@@ -101,9 +121,7 @@ ALWAYS_INLINE bool SpinningFutex::Try() {
                                         std::memory_order_relaxed);
 }
 
-inline constexpr SpinningFutex::SpinningFutex() = default;
-
-ALWAYS_INLINE void SpinningFutex::Release() {
+ALWAYS_INLINE void SpinningMutex::Release() {
   if (UNLIKELY(state_.exchange(kUnlocked, std::memory_order_release) ==
                kLockedContended)) {
     // |kLockedContended|: there is a waiter to wake up.
@@ -123,6 +141,20 @@ ALWAYS_INLINE void SpinningFutex::Release() {
   }
 }
 
+#else
+
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  return !!::TryAcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  ::ReleaseSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+#endif
+
 }  // namespace internal
 }  // namespace base
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_FUTEX_LINUX_H_
+#endif  // defined(PA_HAS_SPINNING_MUTEX)
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_MUTEX_H_

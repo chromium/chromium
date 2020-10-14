@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/spinning_futex_linux.h"
+#include "base/allocator/partition_allocator/spinning_mutex.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if defined(PA_HAS_SPINNING_MUTEX)
 
+#if defined(PA_HAS_LINUX_KERNEL)
 #include <errno.h>
 #include <linux/futex.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#endif  // defined(PA_HAS_LINUX_KERNEL)
 
 namespace base {
 namespace internal {
+#if defined(PA_HAS_LINUX_KERNEL)
 
-void SpinningFutex::FutexWait() {
+void SpinningMutex::FutexWait() {
   // Save and restore errno.
   int saved_errno = errno;
   // Don't check the return value, as we will not be awaken by a timeout, since
@@ -50,7 +53,7 @@ void SpinningFutex::FutexWait() {
   errno = saved_errno;
 }
 
-void SpinningFutex::FutexWake() {
+void SpinningMutex::FutexWake() {
   int saved_errno = errno;
   long retval = syscall(SYS_futex, &state_, FUTEX_WAKE | FUTEX_PRIVATE_FLAG,
                         1 /* wake up a single waiter */, nullptr, nullptr, 0);
@@ -58,7 +61,7 @@ void SpinningFutex::FutexWake() {
   errno = saved_errno;
 }
 
-void SpinningFutex::LockSlow() {
+void SpinningMutex::LockSlow() {
   // If this thread gets awaken but another one got the lock first, then go back
   // to sleeping. See comments in |FutexWait()| to see why a loop is required.
   while (state_.exchange(kLockedContended, std::memory_order_acquire) !=
@@ -67,7 +70,14 @@ void SpinningFutex::LockSlow() {
   }
 }
 
+#else
+
+void SpinningMutex::LockSlow() {
+  ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+#endif
 }  // namespace internal
 }  // namespace base
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // defined(PA_HAS_SPINNING_MUTEX)
