@@ -1447,6 +1447,7 @@ std::vector<Rect> RenderTextHarfBuzz::GetSubstringBounds(const Range& range) {
     if (line.segments.size() > 1 && IsNewlineSegment(line.segments[0]))
       line_start_x += line.segments[0].width();
 
+    std::vector<Rect> current_line_rects;
     for (const internal::LineSegment& segment : line.segments) {
       const Range intersection = segment.char_range.Intersect(display_range);
       DCHECK(!intersection.is_reversed());
@@ -1459,9 +1460,12 @@ std::vector<Rect> RenderTextHarfBuzz::GetSubstringBounds(const Range& range) {
         int end_x = base::ClampCeil(selected_span.end() - line_start_x);
         Rect rect(start_x, 0, end_x - start_x,
                   base::ClampCeil(line.size.height()));
-        rects.push_back(rect + GetLineOffset(line_index));
+        current_line_rects.push_back(rect + GetLineOffset(line_index));
       }
     }
+    MergeIntersectingRects(current_line_rects);
+    rects.insert(rects.end(), current_line_rects.begin(),
+                 current_line_rects.end());
   }
   return rects;
 }
