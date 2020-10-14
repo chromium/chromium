@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
@@ -131,6 +132,9 @@ void OverlayProcessorOzone::CheckOverlaySupport(
     // For ozone-cast, there will not be a primary_plane.
     if (primary_plane) {
       ConvertToOzoneOverlaySurface(*primary_plane, &(*ozone_surface_iterator));
+      // TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
+      // plane as overlay, but does not provide a mailbox. Handle this case.
+#if !defined(OS_FUCHSIA)
       if (shared_image_interface_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   primary_plane->mailbox);
@@ -143,6 +147,7 @@ void OverlayProcessorOzone::CheckOverlaySupport(
           return;
         }
       }
+#endif
       ozone_surface_iterator++;
     }
 

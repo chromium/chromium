@@ -12,6 +12,8 @@ source_set("scenic") {
   sources = [
     "client_native_pixmap_factory_scenic.cc",
     "client_native_pixmap_factory_scenic.h",
+    "overlay_manager_scenic.cc",
+    "overlay_manager_scenic.h",
     "ozone_platform_scenic.cc",
     "ozone_platform_scenic.h",
     "scenic_gpu_host.cc",
@@ -36,6 +38,8 @@ source_set("scenic") {
     "sysmem_buffer_collection.h",
     "sysmem_buffer_manager.cc",
     "sysmem_buffer_manager.h",
+    "sysmem_native_pixmap.cc",
+    "sysmem_native_pixmap.h",
   ]
 
   defines = [

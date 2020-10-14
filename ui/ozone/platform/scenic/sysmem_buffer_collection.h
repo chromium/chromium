@@ -87,6 +87,10 @@ class SysmemBufferCollection
   size_t buffer_size() const {
     return buffers_info_.settings.buffer_settings.size_bytes;
   }
+  ScenicOverlayView* scenic_overlay_view() {
+    return scenic_overlay_view_.has_value() ? &scenic_overlay_view_.value()
+                                            : nullptr;
+  }
 
  private:
   friend class base::RefCountedThreadSafe<SysmemBufferCollection>;

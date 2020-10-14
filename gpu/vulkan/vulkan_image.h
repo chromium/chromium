@@ -15,6 +15,7 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/native_pixmap.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_handle.h"
@@ -113,6 +114,12 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkImage image() const { return image_; }
   VkDeviceMemory device_memory() const { return device_memory_; }
   VkExternalMemoryHandleTypeFlags handle_types() const { return handle_types_; }
+  void set_native_pixmap(scoped_refptr<gfx::NativePixmap> pixmap) {
+    native_pixmap_ = std::move(pixmap);
+  }
+  const scoped_refptr<gfx::NativePixmap>& native_pixmap() const {
+    return native_pixmap_;
+  }
 
  private:
   bool Initialize(VulkanDeviceQueue* device_queue,
@@ -153,6 +160,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkImage image_ = VK_NULL_HANDLE;
   VkDeviceMemory device_memory_ = VK_NULL_HANDLE;
   VkExternalMemoryHandleTypeFlags handle_types_ = 0;
+  scoped_refptr<gfx::NativePixmap> native_pixmap_;
 };
 
 }  // namespace gpu

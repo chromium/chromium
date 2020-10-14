@@ -278,6 +278,8 @@ VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
     return nullptr;
   }
 
+  image->set_native_pixmap(collection->CreateNativePixmap(
+      gmb_handle.native_pixmap_handle.buffer_index));
   return image;
 }
 

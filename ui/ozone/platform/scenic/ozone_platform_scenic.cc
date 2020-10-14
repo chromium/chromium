@@ -25,6 +25,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
+#include "ui/ozone/platform/scenic/overlay_manager_scenic.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_host.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_service.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
@@ -164,6 +165,8 @@ class OzonePlatformScenic : public OzonePlatform,
       // other end of the pipe will be attached through ScenicGpuService.
       surface_factory_->Initialize(std::move(scenic_gpu_host_remote));
     }
+
+    overlay_manager_ = std::make_unique<OverlayManagerScenic>();
   }
 
   void AddInterfaces(mojo::BinderMap* binders) override {

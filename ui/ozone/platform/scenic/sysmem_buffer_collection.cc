@@ -9,74 +9,12 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
+#include "ui/ozone/platform/scenic/sysmem_native_pixmap.h"
 
 namespace ui {
 
 namespace {
-
-class SysmemNativePixmap : public gfx::NativePixmap {
- public:
-  SysmemNativePixmap(scoped_refptr<SysmemBufferCollection> collection,
-                     gfx::NativePixmapHandle handle)
-      : collection_(collection), handle_(std::move(handle)) {}
-
-  bool AreDmaBufFdsValid() const override { return false; }
-  int GetDmaBufFd(size_t plane) const override {
-    NOTREACHED();
-    return -1;
-  }
-  uint32_t GetDmaBufPitch(size_t plane) const override {
-    NOTREACHED();
-    return 0u;
-  }
-  size_t GetDmaBufOffset(size_t plane) const override {
-    NOTREACHED();
-    return 0u;
-  }
-  size_t GetDmaBufPlaneSize(size_t plane) const override {
-    NOTREACHED();
-    return 0;
-  }
-  size_t GetNumberOfPlanes() const override {
-    NOTREACHED();
-    return 0;
-  }
-  uint64_t GetBufferFormatModifier() const override {
-    NOTREACHED();
-    return 0;
-  }
-
-  gfx::BufferFormat GetBufferFormat() const override {
-    return collection_->format();
-  }
-  gfx::Size GetBufferSize() const override { return collection_->size(); }
-  uint32_t GetUniqueId() const override { return 0; }
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override {
-    NOTIMPLEMENTED();
-
-    return false;
-  }
-  gfx::NativePixmapHandle ExportHandle() override {
-    return gfx::CloneHandleForIPC(handle_);
-  }
-
- private:
-  ~SysmemNativePixmap() override = default;
-
-  // Keep reference to the collection to make sure it outlives the pixmap.
-  scoped_refptr<SysmemBufferCollection> collection_;
-  gfx::NativePixmapHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemNativePixmap);
-};
 
 size_t RoundUp(size_t value, size_t alignment) {
   return ((value + alignment - 1) / alignment) * alignment;

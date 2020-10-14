@@ -25,6 +25,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/public/platform_window_surface.h"
 
 namespace viz {
@@ -181,6 +182,7 @@ void OutputPresenterFuchsia::InitializeCapabilities(
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities->supports_post_sub_buffer = false;
   capabilities->supports_commit_overlay_planes = false;
+  capabilities->supports_surfaceless = true;
 
   capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
       kRGBA_8888_SkColorType;
@@ -384,8 +386,19 @@ void OutputPresenterFuchsia::SchedulePrimaryPlane(
 void OutputPresenterFuchsia::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ScopedOverlayAccess*> accesses) {
-  // Overlays are not supported yet.
-  NOTREACHED();
+  for (auto& overlay : overlays) {
+    DCHECK(overlay.mailbox.IsSharedImage());
+    auto pixmap =
+        dependency_->GetSharedImageManager()->GetNativePixmap(overlay.mailbox);
+    if (!pixmap) {
+      LOG(ERROR) << "Cannot access SysmemNativePixmap";
+      continue;
+    }
+    pixmap->ScheduleOverlayPlane(
+        dependency_->GetSurfaceHandle(), overlay.plane_z_order,
+        overlay.transform, ToNearestRect(overlay.display_rect), overlay.uv_rect,
+        !overlay.is_opaque, nullptr /* gpu_fence */);
+  }
 }
 
 void OutputPresenterFuchsia::PresentNextFrame() {

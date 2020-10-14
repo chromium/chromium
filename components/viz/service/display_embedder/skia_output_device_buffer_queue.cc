@@ -198,6 +198,8 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   DCHECK(pending_overlay_mailboxes_.empty());
   std::vector<OutputPresenter::ScopedOverlayAccess*> accesses(overlays.size());
+  // Fuchsia does not provide a GLImage overlay.
+#if !defined(OS_FUCHSIA)
   for (size_t i = 0; i < overlays.size(); ++i) {
     const auto& overlay = overlays[i];
     if (!overlay.mailbox.IsSharedImage())
@@ -246,6 +248,7 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     accesses[i] = it->scoped_read_access();
     pending_overlay_mailboxes_.emplace_back(overlay.mailbox);
   }
+#endif  // defined(OS_FUCHSIA)
 
   presenter_->ScheduleOverlays(std::move(overlays), std::move(accesses));
 }

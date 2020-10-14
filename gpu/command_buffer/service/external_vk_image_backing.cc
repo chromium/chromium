@@ -584,6 +584,10 @@ void ExternalVkImageBacking::AddSemaphoresToPendingListOrRelease(
   }
 }
 
+scoped_refptr<gfx::NativePixmap> ExternalVkImageBacking::GetNativePixmap() {
+  return image_->native_pixmap();
+}
+
 void ExternalVkImageBacking::ReturnPendingSemaphoresWithFenceHelper(
     std::vector<ExternalSemaphore> semaphores) {
   std::move(semaphores.begin(), semaphores.end(),
