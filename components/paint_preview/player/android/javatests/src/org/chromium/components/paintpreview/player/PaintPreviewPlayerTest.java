@@ -365,6 +365,7 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
         mLinkClickHandler = new TestLinkClickHandler();
         mRefreshedCallback = new CallbackHelper();
         CallbackHelper viewReady = new CallbackHelper();
+        CallbackHelper firstPaint = new CallbackHelper();
         mInitializationFailed = false;
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -389,7 +390,9 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         }
 
                         @Override
-                        public void onFirstPaint() {}
+                        public void onFirstPaint() {
+                            firstPaint.notifyCalled();
+                        }
 
                         @Override
                         public void onUserInteraction() {}
@@ -440,6 +443,12 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
         }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         if (mInitializationFailed) {
             Assert.fail("Compositor may have crashed.");
+        }
+
+        try {
+            firstPaint.waitForFirst();
+        } catch (Exception e) {
+            Assert.fail("First paint not issued.");
         }
     }
 
