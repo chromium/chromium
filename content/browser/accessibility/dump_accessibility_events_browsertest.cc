@@ -393,8 +393,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-focus.html"));
 }
 
-// TODO(835455): Fails on Windows.
-#if defined(OS_WIN)
+// TODO(crbug.com/835455): Fails on Windows.
+// TODO(crbug.com/945193): Flaky on Mac.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_AccessibilityEventsAriaComboBoxDelayAddList \
   DISABLED_AccessibilityEventsAriaComboBoxDelayAddList
 #else
