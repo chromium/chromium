@@ -1606,7 +1606,8 @@ int SSLClientSocketImpl::VerifyCT() {
   }
 
   if (context_->sct_auditing_delegate() &&
-      context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {
+      context_->sct_auditing_delegate()->IsSCTAuditingEnabled() &&
+      server_cert_verify_result_.is_issued_by_known_root) {
     context_->sct_auditing_delegate()->MaybeEnqueueReport(
         host_and_port_, server_cert_verify_result_.verified_cert.get(),
         ct_verify_result_.scts);

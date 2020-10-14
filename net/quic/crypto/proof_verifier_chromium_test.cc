@@ -1312,5 +1312,41 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 }
 
+// Tests that the SCTAuditingDelegate is not called when a cert isn't issued
+// from a known root. Mirrors `SCTAuditingReportCollected` test above, but with
+// `is_issued_by_known_root` set to false. Note that QUIC fails for certs that
+// aren't issued from known roots.
+TEST_F(ProofVerifierChromiumTest, SCTAuditingNonPublicCertsNotReported) {
+  MockCertVerifier cert_verifier;
+  dummy_result_.is_issued_by_known_root = false;
+  cert_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
+  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
+      .WillRepeatedly(
+          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+  MockSCTAuditingDelegate sct_auditing_delegate;
+  EXPECT_CALL(sct_auditing_delegate, IsSCTAuditingEnabled())
+      .WillRepeatedly(Return(true));
+  HostPortPair host_port_pair(kTestHostname, kTestPort);
+  EXPECT_CALL(sct_auditing_delegate, MaybeEnqueueReport(host_port_pair, _, _))
+      .Times(0);
+
+  ProofVerifierChromium proof_verifier(
+      &cert_verifier, &ct_policy_enforcer_, &transport_security_state_,
+      ct_verifier_.get(), &sct_auditing_delegate, {}, NetworkIsolationKey());
+
+  auto callback = std::make_unique<DummyProofVerifierCallback>();
+  quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
+      kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
+      kTestChloHash, certs_, kTestEmptySCT, GetTestSignature(),
+      verify_context_.get(), &error_details_, &details_, std::move(callback));
+  ASSERT_EQ(quic::QUIC_FAILURE, status);
+
+  callback = std::make_unique<DummyProofVerifierCallback>();
+  status = proof_verifier.VerifyCertChain(
+      kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
+      verify_context_.get(), &error_details_, &details_, std::move(callback));
+  ASSERT_EQ(quic::QUIC_FAILURE, status);
+}
+
 }  // namespace test
 }  // namespace net

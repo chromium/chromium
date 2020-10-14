@@ -1080,6 +1080,44 @@ TEST_P(SignedExchangeHandlerTest, SCTAuditingReportEnqueued) {
   EXPECT_EQ(static_cast<int>(expected_payload.size()), rv);
 }
 
+// Test that SignedExchangeHandler does not enqueue SCT auditing reports if the
+// certificate is not issued by a known root. Mirrors the
+// `SCTAuditingReportEnqueued` test above, except that `is_issued_by_known_root`
+// is set to false.
+TEST_P(SignedExchangeHandlerTest, SCTAuditingReportNonPublicCertsNotReported) {
+  mock_cert_fetcher_factory_->ExpectFetch(
+      GURL("https://cert.example.org/cert.msg"),
+      GetTestFileContents("test.example.org.public.pem.cbor"));
+
+  net::CertVerifyResult cert_result = CreateCertVerifyResult();
+  cert_result.is_issued_by_known_root = false;
+  SetupMockCertVerifier("prime256v1-sha256.public.pem", cert_result);
+
+  // The mock CT policy enforcer will return CT_POLICY_COMPLIES_VIA_SCTS, as
+  // configured in SetUp().
+
+  // Add SCTAuditingDelegate mock results.
+  EXPECT_CALL(*mock_sct_auditing_delegate_, IsSCTAuditingEnabled())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_sct_auditing_delegate_, MaybeEnqueueReport(_, _, _))
+      .Times(0);
+
+  SetSourceStreamContents("test.example.org_test.sxg");
+
+  CreateSignedExchangeHandler(CreateTestURLRequestContext());
+  WaitForHeader();
+
+  ASSERT_TRUE(read_header());
+  EXPECT_EQ(SignedExchangeLoadResult::kSuccess, result());
+  EXPECT_EQ(net::OK, error());
+
+  std::string payload;
+  int rv = ReadPayloadStream(&payload);
+  std::string expected_payload = GetTestFileContents("test.html");
+  EXPECT_EQ(expected_payload, payload);
+  EXPECT_EQ(static_cast<int>(expected_payload.size()), rv);
+}
+
 INSTANTIATE_TEST_SUITE_P(SignedExchangeHandlerTests,
                          SignedExchangeHandlerTest,
                          ::testing::Values(net::MockSourceStream::SYNC,
