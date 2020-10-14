@@ -20,17 +20,6 @@ class Cryptographer;
 class KeystoreKeysHandler;
 enum class PassphraseType;
 
-// Reasons due to which Cryptographer might require a passphrase.
-enum PassphraseRequiredReason {
-  REASON_ENCRYPTION = 1,               // The cryptographer requires a
-                                       // passphrase for its first attempt at
-                                       // encryption. Happens only during
-                                       // migration or upgrade.
-  REASON_DECRYPTION = 2,               // The cryptographer requires a
-                                       // passphrase for its first attempt at
-                                       // decryption.
-};
-
 // Enum used to distinguish which bootstrap encryption token is being updated.
 enum BootstrapTokenType {
   PASSPHRASE_BOOTSTRAP_TOKEN,
@@ -55,20 +44,13 @@ class SyncEncryptionHandler {
     Observer() = default;
     virtual ~Observer() = default;
 
-    // Called when user interaction is required to obtain a valid passphrase.
-    // - If the passphrase is required for encryption, |reason| will be
-    //   REASON_ENCRYPTION.
-    // - If the passphrase is required for the decryption of data that has
-    //   already been encrypted, |reason| will be REASON_DECRYPTION.
-    // - If the passphrase is required because decryption failed, and a new
-    //   passphrase is required, |reason| will be REASON_SET_PASSPHRASE_FAILED.
-    //
+    // Called when user interaction is required to obtain a valid passphrase for
+    // decryption.
     // |key_derivation_params| are the parameters that should be used to obtain
     // the key from the passphrase.
     // |pending_keys| is a copy of the cryptographer's pending keys, that may be
     // cached by the frontend for subsequent use by the UI.
     virtual void OnPassphraseRequired(
-        PassphraseRequiredReason reason,
         const KeyDerivationParams& key_derivation_params,
         const sync_pb::EncryptedData& pending_keys) = 0;
 

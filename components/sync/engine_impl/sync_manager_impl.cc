@@ -227,7 +227,6 @@ void SyncManagerImpl::NotifyInitializationFailure() {
 }
 
 void SyncManagerImpl::OnPassphraseRequired(
-    PassphraseRequiredReason reason,
     const KeyDerivationParams& key_derivation_params,
     const sync_pb::EncryptedData& pending_keys) {
   // Does nothing.

@@ -89,13 +89,12 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
       : observer_(observer), task_runner_(std::move(task_runner)) {}
 
   void OnPassphraseRequired(
-      PassphraseRequiredReason reason,
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&SyncEncryptionHandler::Observer::OnPassphraseRequired,
-                       observer_, reason, key_derivation_params, pending_keys));
+                       observer_, key_derivation_params, pending_keys));
   }
 
   void OnPassphraseAccepted() override {
@@ -253,8 +252,7 @@ bool SyncServiceCrypto::IsPassphraseRequired() const {
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       return false;
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
+    case RequiredUserAction::kPassphraseRequired:
       return true;
   }
 
@@ -309,7 +307,7 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
     case RequiredUserAction::kNone:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       break;
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
+    case RequiredUserAction::kPassphraseRequired:
     case RequiredUserAction::kFetchingTrustedVaultKeys:
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
@@ -317,16 +315,6 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
       NOTREACHED()
           << "Can not set explicit passphrase when decryption is needed.";
       return;
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
-      // |kPassphraseRequiredForEncryption| implies that the cryptographer does
-      // not have pending keys. Hence, as long as we're not trying to do an
-      // invalid passphrase change (e.g. explicit -> explicit or explicit ->
-      // implicit), we know this will succeed. If for some reason a new
-      // encryption key arrives via sync later, the SyncEncryptionHandler will
-      // trigger another OnPassphraseRequired().
-      UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
-      notify_observers_.Run();
-      break;
   }
 
   DVLOG(1) << "Setting explicit passphrase for encryption.";
@@ -386,10 +374,9 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
     case RequiredUserAction::kFetchingTrustedVaultKeys:
       return false;
     case RequiredUserAction::kNone:
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
+    case RequiredUserAction::kPassphraseRequired:
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       return true;
   }
@@ -454,8 +441,7 @@ bool SyncServiceCrypto::HasCryptoError() const {
     case RequiredUserAction::kFetchingTrustedVaultKeys:
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
+    case RequiredUserAction::kPassphraseRequired:
       return true;
   }
 
@@ -464,7 +450,6 @@ bool SyncServiceCrypto::HasCryptoError() const {
 }
 
 void SyncServiceCrypto::OnPassphraseRequired(
-    PassphraseRequiredReason reason,
     const KeyDerivationParams& key_derivation_params,
     const sync_pb::EncryptedData& pending_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -475,19 +460,9 @@ void SyncServiceCrypto::OnPassphraseRequired(
   // Update the key derivation params to be used.
   state_.passphrase_key_derivation_params = key_derivation_params;
 
-  DVLOG(1) << "Passphrase required with reason: "
-           << PassphraseRequiredReasonToString(reason);
+  DVLOG(1) << "Passphrase required.";
 
-  switch (reason) {
-    case REASON_ENCRYPTION:
-      UpdateRequiredUserActionAndNotify(
-          RequiredUserAction::kPassphraseRequiredForEncryption);
-      break;
-    case REASON_DECRYPTION:
-      UpdateRequiredUserActionAndNotify(
-          RequiredUserAction::kPassphraseRequiredForDecryption);
-      break;
-  }
+  UpdateRequiredUserActionAndNotify(RequiredUserAction::kPassphraseRequired);
 
   // Reconfigure without the encrypted types (excluded implicitly via the
   // failed datatypes handler).
@@ -541,8 +516,7 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:
     case RequiredUserAction::kNone:
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
+    case RequiredUserAction::kPassphraseRequired:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       return;
     case RequiredUserAction::kFetchingTrustedVaultKeys:
@@ -626,8 +600,7 @@ void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:
     case RequiredUserAction::kNone:
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
+    case RequiredUserAction::kPassphraseRequired:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
       // If no trusted vault keys are required, there's nothing to do. If they
       // later are required, a fetch will be triggered in
@@ -792,8 +765,7 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
     case RequiredUserAction::kFetchingTrustedVaultKeys:
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
-    case RequiredUserAction::kPassphraseRequiredForDecryption:
-    case RequiredUserAction::kPassphraseRequiredForEncryption:
+    case RequiredUserAction::kPassphraseRequired:
       return;
     case RequiredUserAction::kNone:
     case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:

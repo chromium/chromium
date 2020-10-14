@@ -115,9 +115,8 @@ class SyncManagerObserverMock : public SyncManager::Observer {
 class SyncEncryptionHandlerObserverMock
     : public SyncEncryptionHandler::Observer {
  public:
-  MOCK_METHOD3(OnPassphraseRequired,
-               void(PassphraseRequiredReason,
-                    const KeyDerivationParams&,
+  MOCK_METHOD2(OnPassphraseRequired,
+               void(const KeyDerivationParams&,
                     const sync_pb::EncryptedData&));  // NOLINT
   MOCK_METHOD0(OnPassphraseAccepted, void());         // NOLINT
   MOCK_METHOD0(OnTrustedVaultKeyRequired, void());    // NOLINT

@@ -59,28 +59,11 @@ TEST_F(JsSyncEncryptionHandlerObserverTest, NoArgNotifiations) {
 TEST_F(JsSyncEncryptionHandlerObserverTest, OnPassphraseRequired) {
   InSequence dummy;
 
-  base::DictionaryValue reason_passphrase_not_required_details;
-  base::DictionaryValue reason_encryption_details;
-  base::DictionaryValue reason_decryption_details;
-
-  reason_encryption_details.SetString(
-      "reason", PassphraseRequiredReasonToString(REASON_ENCRYPTION));
-  reason_decryption_details.SetString(
-      "reason", PassphraseRequiredReasonToString(REASON_DECRYPTION));
-
-  EXPECT_CALL(mock_js_event_handler_,
-              HandleJsEvent("onPassphraseRequired",
-                            HasDetailsAsDictionary(reason_encryption_details)));
-  EXPECT_CALL(mock_js_event_handler_,
-              HandleJsEvent("onPassphraseRequired",
-                            HasDetailsAsDictionary(reason_decryption_details)));
-
+  EXPECT_CALL(
+      mock_js_event_handler_,
+      HandleJsEvent("onPassphraseRequired", HasDetails(JsEventDetails())));
   js_sync_encryption_handler_observer_.OnPassphraseRequired(
-      REASON_ENCRYPTION, KeyDerivationParams::CreateForPbkdf2(),
-      sync_pb::EncryptedData());
-  js_sync_encryption_handler_observer_.OnPassphraseRequired(
-      REASON_DECRYPTION, KeyDerivationParams::CreateForPbkdf2(),
-      sync_pb::EncryptedData());
+      KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData());
   PumpLoop();
 }
 

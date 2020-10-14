@@ -71,7 +71,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(
-      PassphraseRequiredReason reason,
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override;
   void OnPassphraseAccepted() override;
@@ -101,8 +100,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   enum class RequiredUserAction {
     kUnknownDuringInitialization,
     kNone,
-    kPassphraseRequiredForDecryption,
-    kPassphraseRequiredForEncryption,
+    kPassphraseRequired,
     // Trusted vault keys are required but a silent attempt to fetch keys is in
     // progress before prompting the user.
     kFetchingTrustedVaultKeys,

@@ -264,8 +264,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
 
   void TriggerPassphraseRequired() {
     service_->GetEncryptionObserverForTest()->OnPassphraseRequired(
-        REASON_DECRYPTION, KeyDerivationParams::CreateForPbkdf2(),
-        sync_pb::EncryptedData());
+        KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData());
   }
 
   void TriggerDataTypeStartRequest() {

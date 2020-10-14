@@ -357,12 +357,10 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(
-      PassphraseRequiredReason reason,
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override {
     for (auto& observer : observers_) {
-      observer.OnPassphraseRequired(reason, key_derivation_params,
-                                    pending_keys);
+      observer.OnPassphraseRequired(key_derivation_params, pending_keys);
     }
   }
 
@@ -1142,8 +1140,7 @@ void NigoriSyncBridgeImpl::MaybeNotifyOfPendingKeys() const {
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
       broadcasting_observer_->OnPassphraseRequired(
-          REASON_DECRYPTION, GetKeyDerivationParamsForPendingKeys(),
-          *state_.pending_keys);
+          GetKeyDerivationParamsForPendingKeys(), *state_.pending_keys);
       break;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
       broadcasting_observer_->OnTrustedVaultKeyRequired();

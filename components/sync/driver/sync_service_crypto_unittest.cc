@@ -371,7 +371,7 @@ TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {
   // Mimic the engine determining that a passphrase is required.
   EXPECT_CALL(reconfigure_cb_, Run(CONFIGURE_REASON_CRYPTO));
   crypto_.OnPassphraseRequired(
-      REASON_DECRYPTION, KeyDerivationParams::CreateForPbkdf2(),
+      KeyDerivationParams::CreateForPbkdf2(),
       MakeEncryptedData(kTestPassphrase,
                         KeyDerivationParams::CreateForPbkdf2()));
   EXPECT_TRUE(crypto_.IsPassphraseRequired());

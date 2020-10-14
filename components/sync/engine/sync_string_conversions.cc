@@ -24,17 +24,6 @@ const char* ConnectionStatusToString(ConnectionStatus status) {
   return "INVALID_CONNECTION_STATUS";
 }
 
-// Helper function that converts a PassphraseRequiredReason value to a string.
-const char* PassphraseRequiredReasonToString(PassphraseRequiredReason reason) {
-  switch (reason) {
-    ENUM_CASE(REASON_ENCRYPTION);
-    ENUM_CASE(REASON_DECRYPTION);
-  }
-
-  NOTREACHED();
-  return "INVALID_REASON";
-}
-
 const char* PassphraseTypeToString(PassphraseType type) {
   switch (type) {
     ENUM_CASE(PassphraseType::kImplicitPassphrase);
