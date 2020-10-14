@@ -150,7 +150,6 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
                void(const FrameNode*, const PriorityAndReason& previous_value));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const FrameNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnViewportIntersectionChanged, void(const FrameNode*));
   MOCK_METHOD1(OnNonPersistentNotificationCreated, void(const FrameNode*));
   MOCK_METHOD2(OnFirstContentfulPaint, void(const FrameNode*, base::TimeDelta));
 
@@ -368,27 +367,6 @@ TEST_F(FrameNodeImplTest, IsAudible) {
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
-TEST_F(FrameNodeImplTest, ViewportIntersection) {
-  auto process = CreateNode<ProcessNodeImpl>();
-  auto page = CreateNode<PageNodeImpl>();
-  // A child frame node is used because the main frame does not have a viewport
-  // intersection.
-  auto main_frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  auto child_frame_node =
-      CreateFrameNodeAutoId(process.get(), page.get(), main_frame_node.get());
-
-  MockObserver obs;
-  graph()->AddFrameNodeObserver(&obs);
-
-  EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
-
-  gfx::Rect kViewportIntersection(25, 25, 100, 100);
-  child_frame_node->SetViewportIntersection(kViewportIntersection);
-  EXPECT_EQ(child_frame_node->viewport_intersection(), kViewportIntersection);
-
-  graph()->RemoveFrameNodeObserver(&obs);
-}
-
 TEST_F(FrameNodeImplTest, FirstContentfulPaint) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -408,10 +386,7 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  auto child_frame_node =
-      CreateFrameNodeAutoId(process.get(), page.get(), frame_node.get());
   const FrameNode* public_frame_node = frame_node.get();
-  const FrameNode* public_child_frame_node = child_frame_node.get();
 
   // Simply test that the public interface impls yield the same result as their
   // private counterpart.
@@ -452,10 +427,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->IsHoldingIndexedDBLock());
   EXPECT_EQ(frame_node->had_form_interaction(),
             public_frame_node->HadFormInteraction());
-  // Use the child frame node to test the viewport intersection because the
-  // viewport intersection of the main frame is not tracked.
-  EXPECT_EQ(child_frame_node->viewport_intersection(),
-            public_child_frame_node->GetViewportIntersection());
 }
 
 TEST_F(FrameNodeImplTest, VisitChildFrameNodes) {
