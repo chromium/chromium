@@ -959,15 +959,6 @@ def main():
       logging.error('The default DUT hostname of %s is unreachable.',
                     LAB_DUT_HOSTNAME)
       return 1
-  if args.use_vm:
-    if not os.path.exists('/dev/kvm'):
-      logging.error('/dev/kvm is missing. Is KVM installed on this machine?')
-      return 1
-    elif not os.access('/dev/kvm', os.W_OK):
-      logging.error(
-          '/dev/kvm is not writable as current user. Perhaps you should be '
-          'root?')
-      return 1
 
   args.cros_cache = os.path.abspath(args.cros_cache)
   return args.func(args, unknown_args)
