@@ -114,13 +114,20 @@ TEST_F(StyleAdjusterTest, AdjustOverflow) {
   ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
-    <div id='clipauto' style='overflow-x: clip; overflow-y: auto;'>
-    <div id='autoclip' style='overflow-x: auto; overflow-y: clip;'>
-    <div id='clipclip' style='overflow-x: clip; overflow-y: clip;'>
-    <div id='visclip' style='overflow-x: visible; overflow-y: clip;'>
-    <div id='clipvis' style='overflow-x: clip; overflow-y: visible;'>
-    <div id='hiddenvis' style='overflow-x: hidden; overflow-y: visible;'>
-    <div id='vishidden' style='overflow-x: visible; overflow-y: hidden;'>
+    <div id='clipauto' style='overflow-x: clip; overflow-y: auto;
+         overflow-clip-margin: 1px;'>
+    <div id='autoclip' style='overflow-x: auto; overflow-y: clip;
+         overflow-clip-margin: 1px;'>
+    <div id='clipclip' style='overflow-x: clip; overflow-y: clip;
+         overflow-clip-margin: 1px;'>
+    <div id='visclip' style='overflow-x: visible; overflow-y: clip;
+         overflow-clip-margin: 1px;'>
+    <div id='clipvis' style='overflow-x: clip; overflow-y: visible;
+         overflow-clip-margin: 1px;'>
+    <div id='hiddenvis' style='overflow-x: hidden; overflow-y: visible;
+         overflow-clip-margin: 1px;'>
+    <div id='vishidden' style='overflow-x: visible; overflow-y: hidden;
+         overflow-clip-margin: 1px;'>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -129,36 +136,43 @@ TEST_F(StyleAdjusterTest, AdjustOverflow) {
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 
   target = GetDocument().getElementById("autoclip");
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 
   target = GetDocument().getElementById("clipclip");
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(1), target->GetComputedStyle()->OverflowClipMargin());
 
   target = GetDocument().getElementById("visclip");
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kVisible, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 
   target = GetDocument().getElementById("clipvis");
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kVisible, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 
   target = GetDocument().getElementById("vishidden");
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 
   target = GetDocument().getElementById("hiddenvis");
   ASSERT_TRUE(target);
   EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
   EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
+  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
 }
 
 TEST_F(StyleAdjusterTest, SetListenerForContentEditableArea) {
