@@ -234,7 +234,7 @@ void ImmersiveModeControllerAsh::OnWindowPropertyChanged(aura::Window* window,
                                                          intptr_t old) {
   // Track locked fullscreen changes.
   if (key == ash::kWindowPinTypeKey) {
-    browser_view_->FullscreenStateChanged();
+    browser_view_->FullscreenStateChanging();
     return;
   }
 
@@ -251,7 +251,7 @@ void ImmersiveModeControllerAsh::OnWindowPropertyChanged(aura::Window* window,
         old_state == ui::SHOW_STATE_FULLSCREEN) {
       // If the browser view initiated this state change,
       // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
-      browser_view_->FullscreenStateChanged();
+      browser_view_->FullscreenStateChanging();
     }
   }
 }

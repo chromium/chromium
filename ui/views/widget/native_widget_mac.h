@@ -67,8 +67,14 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   virtual void GetWindowFrameTitlebarHeight(bool* override_titlebar_height,
                                             float* titlebar_height);
 
-  // Notifies that the widget starts to enter or exit fullscreen mode.
-  virtual void OnWindowFullscreenStateChange() {}
+  // Called when the window begins transitioning to or from being fullscreen.
+  virtual void OnWindowFullscreenTransitionStart() {}
+
+  // Called when the window has completed its transition to or from being
+  // fullscreen. Note that if there are multiple consecutive transitions
+  // (because a new transition was initiated before the previous one completed)
+  // then this will only be called when all transitions have competed.
+  virtual void OnWindowFullscreenTransitionComplete() {}
 
   // Handle "Move focus to the window toolbar" shortcut.
   virtual void OnFocusWindowToolbar() {}
