@@ -89,6 +89,9 @@ interface PaintPreviewCompositor {
     // that the associated |BeginSeparatedFrameComposite| or
     // |BeginMainFrameComposite| method has not been called yet.
     kMissingFrame = 1,
+
+    // Indicates that memory allocation for the bitmap failed.
+    kAllocFailed = 2,
   };
 
   // Starts the compositing process for |BitmapForSeparatedFrame| calls using
