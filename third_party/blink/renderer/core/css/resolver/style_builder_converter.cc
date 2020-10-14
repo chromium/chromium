@@ -1389,8 +1389,8 @@ ShadowData StyleBuilderConverter::ConvertShadow(
       shadow.spread ? shadow.spread->ComputeLength<float>(conversion_data) : 0;
   ShadowStyle shadow_style =
       shadow.style && shadow.style->GetValueID() == CSSValueID::kInset
-          ? kInset
-          : kNormal;
+          ? ShadowStyle::kInset
+          : ShadowStyle::kNormal;
   StyleColor color = StyleColor::CurrentColor();
   if (shadow.color) {
     if (state) {

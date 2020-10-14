@@ -2278,7 +2278,7 @@ CSSValue* ComputedStyleUtils::ValueForShadowData(const ShadowData& shadow,
   CSSPrimitiveValue* spread =
       use_spread ? ZoomAdjustedPixelValue(shadow.Spread(), style) : nullptr;
   CSSIdentifierValue* shadow_style =
-      shadow.Style() == kNormal
+      shadow.Style() == ShadowStyle::kNormal
           ? nullptr
           : CSSIdentifierValue::Create(CSSValueID::kInset);
   CSSValue* color =

@@ -75,11 +75,11 @@ std::unique_ptr<InterpolableShadow> InterpolableShadow::MaybeConvertCSSValue(
   if (!shadow)
     return nullptr;
 
-  ShadowStyle shadow_style = kNormal;
+  ShadowStyle shadow_style = ShadowStyle::kNormal;
   if (shadow->style) {
     if (shadow->style->GetValueID() != CSSValueID::kInset)
       return nullptr;
-    shadow_style = kInset;
+    shadow_style = ShadowStyle::kInset;
   }
 
   std::unique_ptr<InterpolableLength> x = MaybeConvertLength(shadow->x.Get());

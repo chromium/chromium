@@ -38,7 +38,7 @@ namespace blink {
 FloatRectOutsets ShadowList::RectOutsetsIncludingOriginal() const {
   FloatRectOutsets outsets;
   for (const ShadowData& shadow : Shadows()) {
-    if (shadow.Style() == kInset)
+    if (shadow.Style() == ShadowStyle::kInset)
       continue;
     outsets.Unite(shadow.RectOutsets());
   }

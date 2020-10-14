@@ -33,7 +33,7 @@
 
 namespace blink {
 
-enum ShadowStyle { kNormal, kInset };
+enum class ShadowStyle { kNormal, kInset };
 
 // This class holds information about shadows for the text-shadow and box-shadow
 // properties, as well as the drop-shadow(...) filter operation.

@@ -34,7 +34,7 @@ bool ShadowData::operator==(const ShadowData& o) const {
 }
 
 ShadowData ShadowData::NeutralValue() {
-  return ShadowData(FloatPoint(0, 0), 0, 0, kNormal,
+  return ShadowData(FloatPoint(0, 0), 0, 0, ShadowStyle::kNormal,
                     StyleColor(Color::kTransparent));
 }
 

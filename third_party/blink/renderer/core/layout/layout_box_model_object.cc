@@ -107,7 +107,7 @@ static bool HasInsetBoxShadow(const ComputedStyle& style) {
   if (!style.BoxShadow())
     return false;
   for (const ShadowData& shadow : style.BoxShadow()->Shadows()) {
-    if (shadow.Style() == kInset)
+    if (shadow.Style() == ShadowStyle::kInset)
       return true;
   }
   return false;

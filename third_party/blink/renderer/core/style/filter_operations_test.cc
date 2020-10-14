@@ -47,9 +47,9 @@ TEST(FilterOperationsTest, mapRectBlur) {
 
 TEST(FilterOperationsTest, mapRectDropShadow) {
   FilterOperations ops;
-  ops.Operations().push_back(
-      MakeGarbageCollected<DropShadowFilterOperation>(ShadowData(
-          FloatPoint(3, 8), 20, 0, kNormal, StyleColor(Color(1, 2, 3)))));
+  ops.Operations().push_back(MakeGarbageCollected<DropShadowFilterOperation>(
+      ShadowData(FloatPoint(3, 8), 20, 0, ShadowStyle::kNormal,
+                 StyleColor(Color(1, 2, 3)))));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
   EXPECT_EQ(IntRect(-54, -49, 124, 124),
             EnclosingIntRect(ops.MapRect(FloatRect(0, 0, 10, 10))));
@@ -69,9 +69,9 @@ TEST(FilterOperationsTest, mapRectDropShadowAndBoxReflect) {
   // This is a case where the order of filter operations matters, and it's
   // important that the bounds be filtered in the correct order.
   FilterOperations ops;
-  ops.Operations().push_back(
-      MakeGarbageCollected<DropShadowFilterOperation>(ShadowData(
-          FloatPoint(100, 200), 0, 0, kNormal, StyleColor(Color::kBlack))));
+  ops.Operations().push_back(MakeGarbageCollected<DropShadowFilterOperation>(
+      ShadowData(FloatPoint(100, 200), 0, 0, ShadowStyle::kNormal,
+                 StyleColor(Color::kBlack))));
   ops.Operations().push_back(MakeGarbageCollected<BoxReflectFilterOperation>(
       BoxReflection(BoxReflection::kVerticalReflection, 50)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
