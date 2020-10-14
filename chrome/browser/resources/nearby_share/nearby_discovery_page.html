@@ -28,13 +28,31 @@
   }
 
   #help {
+    align-items: flex-start;
     color: rgb(95, 99, 104);
+    display: flex;
+    flex-direction: row;
     font-size: 9px;
     line-height: 12px;
-    margin-block-end: 12px;
-    margin-block-start: 12px;
     margin-inline-end:  var(--nearby-page-space-inline);
     margin-inline-start: var(--nearby-page-space-inline);
+    padding: 8px;
+  }
+
+  #helpText {
+    margin: auto;
+  }
+
+  #helpText a {
+    color: rgb(26, 115, 232);
+    text-decoration: none;
+  }
+
+  #infoIcon {
+    flex-shrink: 0;
+    height: 20px;
+    margin-inline-end: 12px;
+    width: 20px;
   }
 
   #process-row {
@@ -69,6 +87,13 @@
         </template>
       </iron-list>
     </div>
-    <div id="help">[[i18n('nearbyShareDiscoveryPageInfo')]]</div>
+    <div id="help">
+      <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
+      <!-- TODO(vecore): add correct url for learn more link -->
+      <!-- TODO(crbug.com/1138445) link doesn't work -->
+      <div id="helpText"
+          inner-h-t-m-l="[[getAriaLabelledHelpText_('https://google.com')]]">
+      </div>
+    </div>
   </div>
 </nearby-page-template>

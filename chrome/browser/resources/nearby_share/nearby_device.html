@@ -1,9 +1,10 @@
 <style>
-  :host {
+  #wrapper {
     align-items: center;
     border: 1px solid rgba(216, 216, 216, 0.76);
     border-radius: 8px;
     box-sizing: border-box;
+    cursor: pointer;
     display: flex;
     height: 40px;
     margin-block-end: 6px;
@@ -14,19 +15,22 @@
   }
 
   :host(:focus) {
-    border-color: rgb(95, 99, 104);
     outline: none;
   }
 
-  :host([is-selected]) {
+  :host(:focus) #wrapper {
+    border-color: rgb(95, 99, 104);
+  }
+
+  :host([is-selected]) #wrapper {
     border-color: rgb(66, 133, 244);
   }
 
-  :host([is-selected]) > #done {
+  :host([is-selected]) #done {
     display: flex;
   }
 
-  :host([is-selected]) > #name {
+  :host([is-selected]) #name {
     color: rgb(26, 115, 232);
   }
 
@@ -58,7 +62,9 @@
   }
 </style>
 
-<nearby-device-icon id="icon" share-target="[[shareTarget]]">
-</nearby-device-icon>
-<div id="name">[[shareTarget.name]]</div>
-<iron-icon id="done" icon="nearby-share:done"></iron-icon>
+<div id="wrapper">
+  <nearby-device-icon id="icon" share-target="[[shareTarget]]">
+  </nearby-device-icon>
+  <div id="name">[[shareTarget.name]]</div>
+  <iron-icon id="done" icon="nearby-share:done"></iron-icon>
+</div>
