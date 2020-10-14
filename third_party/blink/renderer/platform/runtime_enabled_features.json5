@@ -827,7 +827,7 @@
     },
     {
       name: "FlexAspectRatio",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "FocuslessSpatialNavigation",

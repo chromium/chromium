@@ -560,7 +560,7 @@ const base::FeatureParam<int> kFontPreloadingDelaysRenderingParam{
     &kFontPreloadingDelaysRendering, "delay-in-ms", 50};
 
 const base::Feature kFlexAspectRatio{"FlexAspectRatio",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kKeepScriptResourceAlive{"KeepScriptResourceAlive",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
