@@ -34,6 +34,15 @@ var HelpAppUIBrowserTest = class extends testing.Test {
   }
 
   /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kHelpAppSearchServiceIntegration',
+      ]
+    };
+  }
+
+  /** @override */
   get typedefCppFixture() {
     return 'HelpAppUiBrowserTest';
   }
@@ -46,7 +55,8 @@ var HelpAppUIBrowserTest = class extends testing.Test {
 
 // Tests that chrome://help-app goes somewhere instead of 404ing or crashing.
 TEST_F('HelpAppUIBrowserTest', 'HasChromeSchemeURL', () => {
-  const guest = document.querySelector('iframe');
+  const guest = /** @type {!HTMLIFrameElement} */ (
+      document.querySelector('iframe'));
 
   assertEquals(document.location.origin, HOST_ORIGIN);
   assertEquals(guest.src, GUEST_ORIGIN + '/');
@@ -77,5 +87,10 @@ TEST_F('HelpAppUIBrowserTest', 'CanSearchViaLSSIndex', async () => {
 
 TEST_F('HelpAppUIBrowserTest', 'GuestHasLang', async () => {
   await runTestInGuest('GuestHasLang');
+  testDone();
+});
+
+TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithSubheadings', async () => {
+  await runTestInGuest('GuestCanSearchWithHeadings');
   testDone();
 });

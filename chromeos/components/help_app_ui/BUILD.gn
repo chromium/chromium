@@ -50,7 +50,8 @@ mojom("mojo_bindings") {
 group("closure_compile") {
   testonly = true
   deps = [
-    ":closure_compile_tests",
+    ":closure_compile_browsertests",
+    ":closure_compile_test_lib",
     "resources:closure_compile",
     "resources/mock:closure_compile",
   ]
@@ -92,13 +93,24 @@ source_set("browser_test_support") {
   ]
 }
 
-js_type_check("closure_compile_tests") {
+js_type_check("closure_compile_test_lib") {
   testonly = true
   closure_flags = system_app_closure_flags_strict
   deps = [
     ":test_driver_api_js",
     ":test_driver_js",
     ":test_guest_query_receiver_js",
+  ]
+}
+
+# Use relaxed flags for the browsertest files themselves. This removes null
+# checks and "could not determine type" errors which don't add a lot of value.
+js_type_check("closure_compile_browsertests") {
+  testonly = true
+  closure_flags = system_app_closure_flags
+  deps = [
+    ":test_help_app_guest_ui_browsertest_js",
+    ":test_help_app_ui_browsertest_js",
   ]
 }
 
@@ -123,6 +135,30 @@ js_library("test_driver_js") {
   deps = [
     ":test_driver_api_js",
     "//chromeos/components/help_app_ui/resources:browser_proxy",
+    "//chromeos/components/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_help_app_ui_browsertest_js") {
+  testonly = true
+  sources = [ "test/help_app_ui_browsertest.js" ]
+  externs_list =
+      [ "//chromeos/components/web_applications/js2gtest_support.externs.js" ]
+  deps = [
+    ":test_driver_js",
+    "//chromeos/components/help_app_ui/resources:browser_proxy",
+    "//chromeos/components/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_help_app_guest_ui_browsertest_js") {
+  testonly = true
+  sources = [ "test/help_app_guest_ui_browsertest.js" ]
+  externs_list =
+      [ "//chromeos/components/web_applications/js2gtest_support.externs.js" ]
+  deps = [
+    ":test_driver_js",
+    "//chromeos/components/help_app_ui/resources:receiver",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }

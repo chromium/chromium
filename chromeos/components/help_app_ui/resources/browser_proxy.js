@@ -36,6 +36,7 @@ function toString16(s) {
 const TITLE_ID = 'title';
 const BODY_ID = 'body';
 const CATEGORY_ID = 'main-category';
+const SUBHEADING_ID = 'subheading';
 
 /**
  * A pipe through which we can send messages to the guest frame.
@@ -64,6 +65,7 @@ guestMessagePipe.registerHandler(
       const data_from_app =
           /** @type {!Array<!helpApp.SearchableItem>} */ (message);
       const data_to_send = data_from_app.map(searchable_item => {
+        /** @type {!Array<!chromeos.localSearchService.mojom.Content>} */
         const contents = [
           {
             id: TITLE_ID,
@@ -71,16 +73,28 @@ guestMessagePipe.registerHandler(
             weight: 1.0,
           },
           {
-            id: BODY_ID,
-            content: toString16(searchable_item.body),
-            weight: 0.2,
-          },
-          {
             id: CATEGORY_ID,
             content: toString16(searchable_item.mainCategoryName),
             weight: 0.1,
           },
         ];
+        // If there are subheadings, use those instead of the body.
+        if (searchable_item.subheadings
+            && searchable_item.subheadings.length > 0) {
+          for (let i = 0; i < searchable_item.subheadings.length; ++i) {
+            contents.push({
+              id: SUBHEADING_ID + i,
+              content: toString16(searchable_item.subheadings[i]),
+              weight: 0.4,
+            });
+          }
+        } else if (searchable_item.body) {
+          contents.push({
+            id: BODY_ID,
+            content: toString16(searchable_item.body),
+            weight: 0.2,
+          });
+        }
         return {
           id: searchable_item.id,
           contents,
@@ -121,6 +135,16 @@ guestMessagePipe.registerHandler(
         const titlePositions = [];
         /** @type {!Array<!helpApp.Position>} */
         const bodyPositions = [];
+        // Id of the best subheading that appears in positions. We consider
+        // the subheading containing the most match positions to be the best.
+        // "" means no subheading positions found.
+        let bestSubheadingId = "";
+        /**
+         * Counts how many positions there are for each subheading id.
+         * @type {!Object<string, number>}
+         */
+        const subheadingPosCounts = {};
+        // Note: result.positions is not sorted.
         for (const position of result.positions) {
           if (position.contentId === TITLE_ID) {
             titlePositions.push(
@@ -128,16 +152,56 @@ guestMessagePipe.registerHandler(
           } else if (position.contentId === BODY_ID) {
             bodyPositions.push(
                 {length: position.length, start: position.start});
+          } else if (position.contentId.startsWith(SUBHEADING_ID)) {
+            // Update the subheadings's position count and check if it's the new
+            // best subheading.
+            const newCount = (subheadingPosCounts[position.contentId] || 0) + 1;
+            subheadingPosCounts[position.contentId] = newCount;
+            if (!bestSubheadingId
+                || newCount > subheadingPosCounts[bestSubheadingId]) {
+              bestSubheadingId = position.contentId;
+            }
           }
         }
+        // Use only the positions of the best subheading.
+        /** @type {!Array<!helpApp.Position>} */
+        const subheadingPositions = [];
+        if (bestSubheadingId) {
+          for (const position of result.positions) {
+            if (position.contentId === bestSubheadingId) {
+              subheadingPositions.push({
+                start: position.start,
+                length: position.length,
+              });
+            }
+          }
+          subheadingPositions.sort(compareByStart);
+        }
+
         // Sort positions by start index.
-        titlePositions.sort((a, b) => a.start - b.start);
-        bodyPositions.sort((a, b) => a.start - b.start);
+        titlePositions.sort(compareByStart);
+        bodyPositions.sort(compareByStart);
         return {
           id: result.id,
           titlePositions,
           bodyPositions,
+          subheadingIndex: bestSubheadingId
+              ? Number(bestSubheadingId.substring(SUBHEADING_ID.length))
+              : null,
+          subheadingPositions: bestSubheadingId
+              ? subheadingPositions
+              : null,
         };
       });
       return {results};
     });
+
+/**
+ * Compare two positions by their start index. Use for sorting.
+ *
+ * @param {!helpApp.Position} a
+ * @param {!helpApp.Position} b
+ */
+function compareByStart(a, b) {
+  return a.start - b.start;
+}
