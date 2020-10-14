@@ -177,8 +177,8 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kDisableDeJelly,
     ::features::kDynamicColorGamut,
 #else
-    // TODO(crbug.com/1131021): Support SMS Receiver on WebLayer.
-    ::features::kSmsReceiver,
+    // TODO(crbug.com/1131021): Support WebOTP Service on WebLayer.
+    ::features::kWebOTP,
 #endif
   };
 

@@ -216,7 +216,7 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
         switches::kJavaScriptFlags, "--expose_gc");
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "SmsReceiver");
+        switches::kEnableBlinkFeatures, "WebOTP");
   }
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 

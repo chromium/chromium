@@ -15,7 +15,7 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window),
       authenticator_(window.GetExecutionContext()),
       credential_manager_(window.GetExecutionContext()),
-      sms_receiver_(window.GetExecutionContext()),
+      webotp_service_(window.GetExecutionContext()),
       payment_credential_(window.GetExecutionContext()) {
   LocalFrame* frame = window.GetFrame();
   DCHECK(frame);
@@ -29,15 +29,15 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
 
 CredentialManagerProxy::~CredentialManagerProxy() = default;
 
-mojom::blink::SmsReceiver* CredentialManagerProxy::SmsReceiver() {
-  if (!sms_receiver_.is_bound()) {
+mojom::blink::WebOTPService* CredentialManagerProxy::WebOTPService() {
+  if (!webotp_service_.is_bound()) {
     LocalFrame* frame = GetSupplementable()->GetFrame();
     DCHECK(frame);
     frame->GetBrowserInterfaceBroker().GetInterface(
-        sms_receiver_.BindNewPipeAndPassReceiver(
+        webotp_service_.BindNewPipeAndPassReceiver(
             frame->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
-  return sms_receiver_.get();
+  return webotp_service_.get();
 }
 
 payments::mojom::blink::PaymentCredential*
@@ -69,7 +69,7 @@ CredentialManagerProxy* CredentialManagerProxy::From(
 void CredentialManagerProxy::Trace(Visitor* visitor) const {
   visitor->Trace(authenticator_);
   visitor->Trace(credential_manager_);
-  visitor->Trace(sms_receiver_);
+  visitor->Trace(webotp_service_);
   visitor->Trace(payment_credential_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }

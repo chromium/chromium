@@ -4,7 +4,7 @@
 
 #include "content/browser/sms/user_consent_handler.h"
 #include "base/callback.h"
-#include "content/browser/sms/sms_service.h"
+#include "content/browser/sms/webotp_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 

@@ -35,13 +35,13 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     private final long mSmsProviderAndroid;
     private boolean mDestroyed;
     private Wrappers.SmsRetrieverClientWrapper mClient;
-    private Wrappers.SmsReceiverContext mContext;
+    private Wrappers.WebOTPServiceContext mContext;
 
     private SmsVerificationReceiver(long smsProviderAndroid) {
         mDestroyed = false;
         mSmsProviderAndroid = smsProviderAndroid;
 
-        mContext = new Wrappers.SmsReceiverContext(ContextUtils.getApplicationContext());
+        mContext = new Wrappers.WebOTPServiceContext(ContextUtils.getApplicationContext());
 
         // A broadcast receiver is registered upon the creation of this class
         // which happens when the SMS Retriever API is used for the first time

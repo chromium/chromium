@@ -157,7 +157,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_state.mojom",
     "service_worker/service_worker_stream_handle.mojom",
     "site_engagement/site_engagement.mojom",
-    "sms/sms_receiver.mojom",
+    "sms/webotp_service.mojom",
     "speech/speech_recognition_error.mojom",
     "speech/speech_recognition_error_code.mojom",
     "speech/speech_recognition_grammar.mojom",

@@ -111,7 +111,7 @@
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognizer.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
@@ -592,9 +592,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::BindRepeating(&RenderFrameHostImpl::BindScreenEnumerationReceiver,
                           base::Unretained(host)));
 
-  if (base::FeatureList::IsEnabled(features::kSmsReceiver)) {
-    map->Add<blink::mojom::SmsReceiver>(base::BindRepeating(
-        &RenderFrameHostImpl::BindSmsReceiverReceiver, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(features::kWebOTP)) {
+    map->Add<blink::mojom::WebOTPService>(
+        base::BindRepeating(&RenderFrameHostImpl::BindWebOTPServiceReceiver,
+                            base::Unretained(host)));
   }
 
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
@@ -875,9 +876,10 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<blink::mojom::DedicatedWorkerHostFactory>(
       base::BindRepeating(&DedicatedWorkerHost::CreateNestedDedicatedWorker,
                           base::Unretained(host)));
-  if (base::FeatureList::IsEnabled(features::kSmsReceiver)) {
-    map->Add<blink::mojom::SmsReceiver>(base::BindRepeating(
-        &DedicatedWorkerHost::BindSmsReceiverReceiver, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(features::kWebOTP)) {
+    map->Add<blink::mojom::WebOTPService>(
+        base::BindRepeating(&DedicatedWorkerHost::BindWebOTPServiceReceiver,
+                            base::Unretained(host)));
   }
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &DedicatedWorkerHost::CreateWebUsbService, base::Unretained(host)));

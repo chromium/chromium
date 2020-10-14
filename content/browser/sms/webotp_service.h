@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SMS_SMS_SERVICE_H_
-#define CONTENT_BROWSER_SMS_SMS_SERVICE_H_
+#ifndef CONTENT_BROWSER_SMS_WEBOTP_SERVICE_H_
+#define CONTENT_BROWSER_SMS_WEBOTP_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -17,7 +17,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -26,35 +26,34 @@ class RenderFrameHost;
 class SmsFetcher;
 struct LoadCommittedDetails;
 
-// SmsService handles mojo connections from the renderer, observing the incoming
-// SMS messages from an SmsFetcher.
-// In practice, it is owned and managed by a RenderFrameHost. It accomplishes
-// that via subclassing FrameServiceBase, which observes the lifecycle of a
-// RenderFrameHost and manages it own memory.
-// Create() creates a self-managed instance of SmsService and binds it to the
-// request.
-class CONTENT_EXPORT SmsService
-    : public FrameServiceBase<blink::mojom::SmsReceiver>,
+// WebOTPService handles mojo connections from the renderer, observing the
+// incoming SMS messages from an SmsFetcher. In practice, it is owned and
+// managed by a RenderFrameHost. It accomplishes that via subclassing
+// FrameServiceBase, which observes the lifecycle of a RenderFrameHost and
+// manages it own memory. Create() creates a self-managed instance of
+// WebOTPService and binds it to the request.
+class CONTENT_EXPORT WebOTPService
+    : public FrameServiceBase<blink::mojom::WebOTPService>,
       public SmsFetcher::Subscriber {
  public:
   static void Create(SmsFetcher*,
                      RenderFrameHost*,
-                     mojo::PendingReceiver<blink::mojom::SmsReceiver>);
+                     mojo::PendingReceiver<blink::mojom::WebOTPService>);
 
-  SmsService(SmsFetcher*,
-             RenderFrameHost*,
-             mojo::PendingReceiver<blink::mojom::SmsReceiver>);
-  SmsService(SmsFetcher*,
-             std::unique_ptr<UserConsentHandler> consent_handler,
-             const url::Origin&,
-             RenderFrameHost*,
-             mojo::PendingReceiver<blink::mojom::SmsReceiver>);
-  ~SmsService() override;
+  WebOTPService(SmsFetcher*,
+                RenderFrameHost*,
+                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+  WebOTPService(SmsFetcher*,
+                std::unique_ptr<UserConsentHandler> consent_handler,
+                const url::Origin&,
+                RenderFrameHost*,
+                mojo::PendingReceiver<blink::mojom::WebOTPService>);
+  ~WebOTPService() override;
 
   using FailureType = SmsFetcher::FailureType;
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
 
-  // blink::mojom::SmsReceiver:
+  // blink::mojom::WebOTPService:
   void Receive(ReceiveCallback) override;
   void Abort() override;
 
@@ -75,7 +74,6 @@ class CONTENT_EXPORT SmsService
  private:
   void CleanUp();
 
-
   // |fetcher_| is safe because all instances of SmsFetcher are owned
   // by the browser context, which transitively (through RenderFrameHost) owns
   // and outlives this class.
@@ -90,11 +88,11 @@ class CONTENT_EXPORT SmsService
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SmsService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebOTPService> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(SmsService);
+  DISALLOW_COPY_AND_ASSIGN(WebOTPService);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_SMS_SMS_SERVICE_H_
+#endif  // CONTENT_BROWSER_SMS_WEBOTP_SERVICE_H_

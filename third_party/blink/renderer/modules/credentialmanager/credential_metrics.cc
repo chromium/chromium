@@ -10,7 +10,7 @@
 
 namespace blink {
 
-void RecordSmsOutcome(SMSReceiverOutcome outcome,
+void RecordSmsOutcome(WebOTPServiceOutcome outcome,
                       ukm::SourceId source_id,
                       ukm::UkmRecorder* ukm_recorder) {
   DCHECK_NE(source_id, ukm::kInvalidSourceId);

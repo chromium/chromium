@@ -224,9 +224,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // SurfaceControl is not supported on webview.
     features.DisableIfNotSet(::features::kAndroidSurfaceControl);
 
-    // TODO(https://crbug.com/963653): SmsReceiver is not yet supported on
+    // TODO(https://crbug.com/963653): WebOTP is not yet supported on
     // WebView.
-    features.DisableIfNotSet(::features::kSmsReceiver);
+    features.DisableIfNotSet(::features::kWebOTP);
 
     // TODO(https://crbug.com/1012899): WebXR is not yet supported on WebView.
     features.DisableIfNotSet(::features::kWebXr);

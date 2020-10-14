@@ -133,7 +133,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-forward.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-forward.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom-forward.h"
@@ -1405,8 +1405,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindInputInjectorReceiver(
       mojo::PendingReceiver<mojom::InputInjector> receiver);
 
-  void BindSmsReceiverReceiver(
-      mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver);
+  void BindWebOTPServiceReceiver(
+      mojo::PendingReceiver<blink::mojom::WebOTPService> receiver);
 
   void BindRestrictedCookieManager(
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);

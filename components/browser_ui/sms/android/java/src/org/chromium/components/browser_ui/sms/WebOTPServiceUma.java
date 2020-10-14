@@ -12,10 +12,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Helper Class for Sms Receiver UMA Collection.
+ * Helper Class for WebOTP Service UMA Collection.
  */
-public final class SmsReceiverUma {
-    // Note: these values must match the SMSReceiverInfobar enum in enums.xml.
+public final class WebOTPServiceUma {
+    // Note: these values must match the WebOTPServiceInfobar enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES.
     @IntDef({InfobarAction.SHOWN, InfobarAction.KEYBOARD_DISMISSED})
     @Retention(RetentionPolicy.SOURCE)

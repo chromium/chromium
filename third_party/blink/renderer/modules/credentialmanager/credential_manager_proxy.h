@@ -7,7 +7,7 @@
 
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-blink.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -46,7 +46,7 @@ class MODULES_EXPORT CredentialManagerProxy
 
   mojom::blink::Authenticator* Authenticator() { return authenticator_.get(); }
 
-  mojom::blink::SmsReceiver* SmsReceiver();
+  mojom::blink::WebOTPService* WebOTPService();
 
   payments::mojom::blink::PaymentCredential* PaymentCredential();
 
@@ -59,7 +59,7 @@ class MODULES_EXPORT CredentialManagerProxy
  private:
   HeapMojoRemote<mojom::blink::Authenticator> authenticator_;
   HeapMojoRemote<mojom::blink::CredentialManager> credential_manager_;
-  HeapMojoRemote<mojom::blink::SmsReceiver> sms_receiver_;
+  HeapMojoRemote<mojom::blink::WebOTPService> webotp_service_;
   HeapMojoRemote<payments::mojom::blink::PaymentCredential> payment_credential_;
 };
 

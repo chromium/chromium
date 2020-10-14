@@ -2285,7 +2285,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheSMSService) {
   // all not restored reasons. As a result, we only check for the blocklist
   // reason.
   ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature::kSmsService, FROM_HERE);
+      blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService, FROM_HERE);
 }
 
 // crbug.com/1090223

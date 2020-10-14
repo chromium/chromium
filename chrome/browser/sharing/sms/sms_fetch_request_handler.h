@@ -29,7 +29,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
                  SharingMessageHandler::DoneCallback done_callback) override;
 
  private:
-  // Request represents an incoming request from a remote SmsService.
+  // Request represents an incoming request from a remote WebOTPService.
   // It manages subscribing and unsubscribing for SMSes in SmsFetcher and
   // responding to the callback.
   // It also lets SmsFetchRequestHandler know when the request is fulfilled

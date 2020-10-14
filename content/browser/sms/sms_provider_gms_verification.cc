@@ -46,7 +46,7 @@ void SmsProviderGmsVerification::OnReceive(JNIEnv* env, jstring message) {
 void SmsProviderGmsVerification::OnTimeout(JNIEnv* env) {}
 
 base::android::ScopedJavaGlobalRef<jobject>
-SmsProviderGmsVerification::GetSmsReceiverForTesting() const {
+SmsProviderGmsVerification::GetWebOTPServiceForTesting() const {
   return j_sms_receiver_;
 }
 

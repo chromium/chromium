@@ -41955,6 +41955,7 @@ from previous Chrome versions.
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
   <int value="-1594964830" label="FilesCameraFolder:disabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
+  <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
   <int value="-1584944853" label="TrilinearFiltering:enabled"/>
@@ -44675,6 +44676,7 @@ from previous Chrome versions.
   <int value="1138690502" label="PreconnectToSearch:enabled"/>
   <int value="1139226452" label="enable-nacl-debug"/>
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
+  <int value="1139756271" label="WebOTPCrossDevice:enabled"/>
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
   <int value="1142515376" label="enable-nacl"/>
   <int value="1142788238" label="FontCacheScaling:disabled"/>
@@ -67713,25 +67715,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="GURL not valid"/>
 </enum>
 
-<enum name="SmsReceiverDestroyedReason">
-  <int value="0" label="Navigated to new page"/>
-  <int value="1" label="Navigated to existing page"/>
-  <int value="2" label="Nagivated to same page"/>
-</enum>
-
-<enum name="SMSReceiverInfobarAction">
-  <int value="0" label="Baseline: InfobarShown"/>
-  <int value="1" label="KeyboardDismissed"/>
-</enum>
-
-<enum name="SMSReceiverOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unhandled Request"/>
-  <int value="2" label="Connection Error"/>
-  <int value="3" label="Cancelled"/>
-  <int value="4" label="Aborted"/>
-</enum>
-
 <enum name="SnackbarIdentifier">
   <int value="-2" label="TEST_SNACKBAR"/>
   <int value="-1" label="UNKNOWN"/>
@@ -75721,6 +75704,25 @@ Full version information for the fingerprint enum values:
   <int value="4" label="FlingingRendererClientFactory"/>
 </enum>
 
+<enum name="WebOTPServiceDestroyedReason">
+  <int value="0" label="Navigated to new page"/>
+  <int value="1" label="Navigated to existing page"/>
+  <int value="2" label="Nagivated to same page"/>
+</enum>
+
+<enum name="WebOTPServiceInfobarAction">
+  <int value="0" label="Baseline: InfobarShown"/>
+  <int value="1" label="KeyboardDismissed"/>
+</enum>
+
+<enum name="WebOTPServiceOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unhandled Request"/>
+  <int value="2" label="Connection Error"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="Aborted"/>
+</enum>
+
 <enum name="WebpDecodedFormat">
   <int value="1" label="JPEG"/>
   <int value="2" label="PNG"/>
@@ -76127,7 +76129,7 @@ Called by update_scheduler_enums.py.-->
   <int value="49" label="PaymentManager"/>
   <int value="50" label="SpeechSynthesis"/>
   <int value="51" label="KeyboardLock"/>
-  <int value="52" label="SmsService"/>
+  <int value="52" label="WebOTPService"/>
   <int value="53" label="OutstandingNetworkRequestDirectSocket"/>
 </enum>
 

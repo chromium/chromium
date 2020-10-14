@@ -659,8 +659,8 @@ void WebRuntimeFeatures::EnableSkipTouchEventFilter(bool enable) {
   RuntimeEnabledFeatures::SetSkipTouchEventFilterEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableSmsReceiver(bool enable) {
-  RuntimeEnabledFeatures::SetSmsReceiverEnabled(enable);
+void WebRuntimeFeatures::EnableWebOTP(bool enable) {
+  RuntimeEnabledFeatures::SetWebOTPEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableConsolidatedMovementXY(bool enable) {

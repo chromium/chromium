@@ -31,7 +31,7 @@ SmsInfoBarDelegate::~SmsInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier SmsInfoBarDelegate::GetIdentifier()
     const {
-  return SMS_RECEIVER_INFOBAR_DELEGATE;
+  return WEBOTP_SERVICE_INFOBAR_DELEGATE;
 }
 
 int SmsInfoBarDelegate::GetIconId() const {

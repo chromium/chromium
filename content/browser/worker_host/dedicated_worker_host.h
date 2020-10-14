@@ -22,7 +22,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-forward.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
@@ -73,8 +73,8 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
       mojo::PendingReceiver<blink::mojom::IdleManager> receiver);
   void CreateNestedDedicatedWorker(
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver);
-  void BindSmsReceiverReceiver(
-      mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver);
+  void BindWebOTPServiceReceiver(
+      mojo::PendingReceiver<blink::mojom::WebOTPService> receiver);
   void CreateWebUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
   void CreateWebSocketConnector(

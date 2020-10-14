@@ -28,7 +28,7 @@ void RecordContinueOnSuccessTime(base::TimeDelta duration) {
                              duration);
 }
 
-void RecordDestroyedReason(blink::SmsReceiverDestroyedReason reason) {
+void RecordDestroyedReason(blink::WebOTPServiceDestroyedReason reason) {
   UMA_HISTOGRAM_ENUMERATION("Blink.Sms.Receive.DestroyedReason", reason);
 }
 

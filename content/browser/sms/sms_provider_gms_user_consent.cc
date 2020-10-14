@@ -55,7 +55,7 @@ void SmsProviderGmsUserConsent::OnReceive(JNIEnv* env, jstring message) {
 void SmsProviderGmsUserConsent::OnTimeout(JNIEnv* env) {}
 
 base::android::ScopedJavaGlobalRef<jobject>
-SmsProviderGmsUserConsent::GetSmsReceiverForTesting() const {
+SmsProviderGmsUserConsent::GetWebOTPServiceForTesting() const {
   return j_sms_receiver_;
 }
 

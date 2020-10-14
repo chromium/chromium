@@ -232,7 +232,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableSubresourceWebBundles(bool);
   BLINK_PLATFORM_EXPORT static void EnableIdleDetection(bool);
   BLINK_PLATFORM_EXPORT static void EnableSkipTouchEventFilter(bool);
-  BLINK_PLATFORM_EXPORT static void EnableSmsReceiver(bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebOTP(bool);
   BLINK_PLATFORM_EXPORT static void EnableConsolidatedMovementXY(bool);
   BLINK_PLATFORM_EXPORT static void EnableMouseSubframeNoImplicitCapture(bool);
   BLINK_PLATFORM_EXPORT static void EnableBackForwardCache(bool);

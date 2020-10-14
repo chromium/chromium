@@ -140,7 +140,7 @@ CONTENT_EXPORT extern const base::Feature
     kSiteIsolationEnforcementForFileSystemApi;
 CONTENT_EXPORT extern const base::Feature
     kSkipEarlyCommitPendingForCrashedFrame;
-CONTENT_EXPORT extern const base::Feature kSmsReceiver;
+CONTENT_EXPORT extern const base::Feature kWebOTP;
 CONTENT_EXPORT extern const base::Feature kSpareRendererForSitePerProcess;
 CONTENT_EXPORT extern const base::Feature kStoragePressureUI;
 CONTENT_EXPORT extern const base::Feature kStorageServiceOutOfProcess;

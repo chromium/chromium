@@ -22,7 +22,7 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("content")
 @JNIAdditionalImport(Wrappers.class)
 class SmsVerificationFakes {
-    private static final String TAG = "SmsReceiver";
+    private static final String TAG = "WebOTPService";
 
     /**
      * Fakes com.google.android.gms.auth.api.phone.SmsRetrieverClient.
@@ -40,7 +40,7 @@ class SmsVerificationFakes {
 
         @CalledByNative("FakeSmsRetrieverClient")
         private Task<Void> triggerSmsVerificationSms(String sms) {
-            Wrappers.SmsReceiverContext context = super.getContext();
+            Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
                 Log.v(TAG,
                         "FakeSmsRetrieverClient.triggerSmsVerificationSms failed: "
@@ -61,7 +61,7 @@ class SmsVerificationFakes {
 
         @CalledByNative("FakeSmsRetrieverClient")
         private Task<Void> triggerTimeout() {
-            Wrappers.SmsReceiverContext context = super.getContext();
+            Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
                 Log.v(TAG, "FakeSmsRetrieverClient.triggerTimeout failed: no context was set");
                 return Tasks.forResult(null);
@@ -87,7 +87,7 @@ class SmsVerificationFakes {
     }
 
     /**
-     * Sets SmsRetrieverClient to SmsReceiver to allow faking SMSes from android
+     * Sets SmsRetrieverClient to WebOTPService to allow faking SMSes from android
      * client.
      **/
     @CalledByNative

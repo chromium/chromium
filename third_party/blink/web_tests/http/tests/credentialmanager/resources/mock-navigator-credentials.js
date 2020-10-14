@@ -206,13 +206,13 @@ class MockAuthenticator {
   }
 }
 
-// Mocks the SmsReceiver interface defined in sms_receiver.mojom.
-class MockSmsReceiver {
+// Mocks the WebOTPService interface defined in webotp_service.mojom.
+class MockWebOTPService {
   constructor() {
     this.reset();
 
     this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.SmsReceiver.$interfaceName, 'context', true);
+        blink.mojom.WebOTPService.$interfaceName, 'context', true);
     this.interceptor_.oninterfacerequest = (e) => {
       this.bindHandleToReceiver(e.handle);
     };
@@ -220,7 +220,7 @@ class MockSmsReceiver {
   }
 
   bindHandleToReceiver(handle) {
-    this.receiver_ = new blink.mojom.SmsReceiverReceiver(this);
+    this.receiver_ = new blink.mojom.WebOTPServiceReceiver(this);
     this.receiver_.$.bindHandle(handle);
   }
 
@@ -231,7 +231,7 @@ class MockSmsReceiver {
 
   async abort() {}
 
-  // Resets state of mock SmsReceiver.
+  // Resets state of mock WebOTPService.
   reset() {
     this.otp_ = '';
     this.status_ = blink.mojom.SmsStatus.kTimeout;
@@ -248,4 +248,4 @@ class MockSmsReceiver {
 
 var mockAuthenticator = new MockAuthenticator();
 var mockCredentialManager = new MockCredentialManager();
-var mockSmsReceiver = new MockSmsReceiver();
+var mockWebOTPService = new MockWebOTPService();

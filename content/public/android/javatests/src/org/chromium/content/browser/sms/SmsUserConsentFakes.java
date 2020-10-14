@@ -24,7 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("content")
 @JNIAdditionalImport(Wrappers.class)
 class SmsUserConsentFakes {
-    private static final String TAG = "SmsReceiver";
+    private static final String TAG = "WebOTPService";
 
     /**
      * Fakes com.google.android.gms.auth.api.phone.SmsRetrieverClient.
@@ -42,7 +42,7 @@ class SmsUserConsentFakes {
 
         @CalledByNative("FakeSmsUserConsentRetrieverClient")
         private Task<Void> triggerUserConsentSms(String sms) {
-            Wrappers.SmsReceiverContext context = super.getContext();
+            Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
                 Log.v(TAG,
                         "FakeSmsUserConsentRetrieverClient.triggerUserConsentSms failed: "
@@ -69,7 +69,7 @@ class SmsUserConsentFakes {
 
         @CalledByNative("FakeSmsUserConsentRetrieverClient")
         private Task<Void> triggerTimeout() {
-            Wrappers.SmsReceiverContext context = super.getContext();
+            Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
                 Log.v(TAG,
                         "FakeSmsUserConsentRetrieverClient.triggerTimeout failed: "

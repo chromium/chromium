@@ -1774,10 +1774,6 @@
       settable_from_internals: true,
     },
     {
-      name: "SmsReceiver",
-      status: {"default": "experimental", "Android": "stable"},
-    },
-    {
       name: "SrcsetMaxDensity",
     },
     // Used as argument in attribute of stable-release functions/interfaces
@@ -2075,6 +2071,10 @@
       origin_trial_feature_name: "WebNFC",
       origin_trial_os: ["android"],
       status: "experimental",
+    },
+    {
+      name: "WebOTP",
+      status: {"default": "experimental", "Android": "stable"},
     },
     {
       name: "WebScheduler",

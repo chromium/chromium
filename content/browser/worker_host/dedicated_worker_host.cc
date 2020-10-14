@@ -436,8 +436,8 @@ void DedicatedWorkerHost::CreateIdleManager(
   ancestor_render_frame_host->BindIdleManager(std::move(receiver));
 }
 
-void DedicatedWorkerHost::BindSmsReceiverReceiver(
-    mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver) {
+void DedicatedWorkerHost::BindWebOTPServiceReceiver(
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
@@ -446,7 +446,7 @@ void DedicatedWorkerHost::BindSmsReceiverReceiver(
     return;
   }
 
-  ancestor_render_frame_host->BindSmsReceiverReceiver(std::move(receiver));
+  ancestor_render_frame_host->BindWebOTPServiceReceiver(std::move(receiver));
 }
 
 #if !defined(OS_ANDROID)

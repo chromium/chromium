@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
-// Implementation of the proposed "Sms Detection API".
+// Implementation of the proposed "Web OTP API".
 //
 // Proposal: https://github.com/WICG/web-otp
 enum SmsStatus {
@@ -19,11 +19,11 @@ enum SmsStatus {
 // This interface is created per storage partition but its execution is context
 // associated: there is an origin associated with a request that is multiplexed
 // through one instance on a storage partition.
-interface SmsReceiver {
+interface WebOTPService {
   // Retrieves the next SMS message that arrives on the phone that is addressed
   // to the caller's origin.
-  // Returns the raw content of the received SMS.
-  // |otp|, |message| is only set if status == kSuccess.
+  // Returns the otp that was part of the received SMS.
+  // |otp| is only set if status == kSuccess.
   Receive() => (SmsStatus status, string? otp);
   // Aborts the current retrieval process and resolves it with an
   // kAborted SmsStatus.

@@ -9,7 +9,7 @@
 <script src="/gen/url/mojom/origin.mojom-lite.js"></script>
 <script src="/gen/url/mojom/url.mojom-lite.js"></script>
 <script src="/gen/third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-lite.js"></script>
-<script src="/gen/third_party/blink/public/mojom/sms/sms_receiver.mojom-lite.js"></script>
+<script src="/gen/third_party/blink/public/mojom/sms/webotp_service.mojom-lite.js"></script>
 <script src="/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom-lite.js"></script>
 <script src="resources/test-inputs.js"></script>
 <script src="resources/mock-navigator-credentials.js"></script>
@@ -20,6 +20,6 @@
 test(function(t) {
   assert_true(mockAuthenticator instanceof Object);
   assert_true(mockCredentialManager instanceof Object);
-  assert_true(mockSmsReceiver instanceof Object);
+  assert_true(mockWebOTPService instanceof Object);
 }, "Authenticator Mojo bindings and mock interfaces are available to tests.")
 </script>

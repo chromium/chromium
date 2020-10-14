@@ -272,7 +272,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kSignedExchangeSubresourcePrefetch},
     {wf::EnableIdleDetection, features::kIdleDetection, kSetOnlyIfOverridden},
     {wf::EnableSkipTouchEventFilter, blink::features::kSkipTouchEventFilter},
-    {wf::EnableSmsReceiver, features::kSmsReceiver, kSetOnlyIfOverridden},
+    {wf::EnableWebOTP, features::kWebOTP, kSetOnlyIfOverridden},
     {wf::EnableClickPointerEvent, features::kClickPointerEvent},
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},

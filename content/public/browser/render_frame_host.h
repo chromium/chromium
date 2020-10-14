@@ -637,7 +637,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       blink::mojom::HeavyAdResolutionStatus resolution,
       blink::mojom::HeavyAdReason reason) = 0;
 
-  // Returns whether a document uses WebOTP. Returns true if an SmsService is
+  // Returns whether a document uses WebOTP. Returns true if a WebOTPService is
   // created on the document.
   virtual bool DocumentUsedWebOTP() = 0;
 

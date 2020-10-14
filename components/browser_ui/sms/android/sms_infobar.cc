@@ -5,7 +5,7 @@
 #include "components/browser_ui/sms/android/sms_infobar.h"
 
 #include "base/android/jni_string.h"
-#include "components/browser_ui/sms/android/jni_headers/SmsReceiverInfoBar_jni.h"
+#include "components/browser_ui/sms/android/jni_headers/WebOTPServiceInfoBar_jni.h"
 #include "components/browser_ui/sms/android/sms_infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -52,8 +52,8 @@ ScopedJavaLocalRef<jobject> SmsInfoBar::CreateRenderInfoBar(JNIEnv* env) {
   base::android::ScopedJavaLocalRef<jobject> window_android =
       web_contents_->GetNativeView()->GetWindowAndroid()->GetJavaObject();
 
-  return Java_SmsReceiverInfoBar_create(env, window_android, GetJavaIconId(),
-                                        title, message, button);
+  return Java_WebOTPServiceInfoBar_create(env, window_android, GetJavaIconId(),
+                                          title, message, button);
 }
 
 }  // namespace sms

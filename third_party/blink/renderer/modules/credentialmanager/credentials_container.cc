@@ -9,11 +9,11 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/sms/sms_receiver_outcome.h"
+#include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-blink.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
@@ -356,9 +356,9 @@ void AbortOtpRequest(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
     return;
 
-  auto* sms_receiver =
-      CredentialManagerProxy::From(script_state)->SmsReceiver();
-  sms_receiver->Abort();
+  auto* webotp_service =
+      CredentialManagerProxy::From(script_state)->WebOTPService();
+  webotp_service->Abort();
 }
 
 void OnStoreComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
@@ -560,19 +560,19 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
   ukm::UkmRecorder* recorder = window.UkmRecorder();
 
   if (status == mojom::blink::SmsStatus::kUnhandledRequest) {
-    RecordSmsOutcome(SMSReceiverOutcome::kUnhandledRequest, source_id,
+    RecordSmsOutcome(WebOTPServiceOutcome::kUnhandledRequest, source_id,
                      recorder);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "OTP retrieval request not handled."));
     return;
   } else if (status == mojom::blink::SmsStatus::kAborted) {
-    RecordSmsOutcome(SMSReceiverOutcome::kAborted, source_id, recorder);
+    RecordSmsOutcome(WebOTPServiceOutcome::kAborted, source_id, recorder);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "OTP retrieval was aborted."));
     return;
   } else if (status == mojom::blink::SmsStatus::kCancelled) {
-    RecordSmsOutcome(SMSReceiverOutcome::kCancelled, source_id, recorder);
+    RecordSmsOutcome(WebOTPServiceOutcome::kCancelled, source_id, recorder);
     RecordSmsCancelTime(base::TimeTicks::Now() - start_time);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "OTP retrieval was cancelled."));
@@ -580,7 +580,7 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
   }
   RecordSmsSuccessTime(base::TimeTicks::Now() - start_time, source_id,
                        recorder);
-  RecordSmsOutcome(SMSReceiverOutcome::kSuccess, source_id, recorder);
+  RecordSmsOutcome(WebOTPServiceOutcome::kSuccess, source_id, recorder);
   resolver->Resolve(MakeGarbageCollected<OTPCredential>(otp));
 }
 
@@ -940,10 +940,10 @@ ScriptPromise CredentialsContainer::get(
       return promise;
     }
 
-    auto* sms_receiver =
-        CredentialManagerProxy::From(script_state)->SmsReceiver();
-    sms_receiver->Receive(WTF::Bind(&OnSmsReceive, WrapPersistent(resolver),
-                                    base::TimeTicks::Now()));
+    auto* webotp_service =
+        CredentialManagerProxy::From(script_state)->WebOTPService();
+    webotp_service->Receive(WTF::Bind(&OnSmsReceive, WrapPersistent(resolver),
+                                      base::TimeTicks::Now()));
     UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.Features", WebFeature::kWebOTP);
     return promise;
   }

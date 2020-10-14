@@ -107,7 +107,7 @@ const char* FeatureToString(WebSchedulerTrackedFeature feature) {
       return "SpeechSynthesis";
     case WebSchedulerTrackedFeature::kKeyboardLock:
       return "KeyboardLock";
-    case WebSchedulerTrackedFeature::kSmsService:
+    case WebSchedulerTrackedFeature::kWebOTPService:
       return "SMSService";
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return "outstanding network request (direct socket)";
@@ -159,7 +159,7 @@ uint64_t StickyFeaturesBitmask() {
          FeatureToBit(WebSchedulerTrackedFeature::kIdleManager) |
          FeatureToBit(WebSchedulerTrackedFeature::kPaymentManager) |
          FeatureToBit(WebSchedulerTrackedFeature::kKeyboardLock) |
-         FeatureToBit(WebSchedulerTrackedFeature::kSmsService);
+         FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService);
 }
 
 }  // namespace scheduler

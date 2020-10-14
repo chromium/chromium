@@ -24,18 +24,18 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
-import org.chromium.components.browser_ui.sms.SmsReceiverInfoBar;
-import org.chromium.components.browser_ui.sms.SmsReceiverUma;
+import org.chromium.components.browser_ui.sms.WebOTPServiceInfoBar;
+import org.chromium.components.browser_ui.sms.WebOTPServiceUma;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /**
- * Tests for the SmsReceiverInfoBar class.
+ * Tests for the WebOTPServiceInfoBar class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class SmsReceiverInfoBarTest {
+public class WebOTPServiceInfoBarTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -50,10 +50,10 @@ public class SmsReceiverInfoBarTest {
         mActivity = mActivityTestRule.getActivity();
     }
 
-    private SmsReceiverInfoBar createInfoBar() {
+    private WebOTPServiceInfoBar createInfoBar() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             Tab tab = mActivity.getActivityTab();
-            SmsReceiverInfoBar infoBar = SmsReceiverInfoBar.create(
+            WebOTPServiceInfoBar infoBar = WebOTPServiceInfoBar.create(
                     mActivity.getWindowAndroid(), /*enumeratedIconId=*/0, "title", "message", "ok");
             InfoBarContainer.get(tab).addInfoBarForTesting(infoBar);
             return infoBar;
@@ -73,32 +73,32 @@ public class SmsReceiverInfoBarTest {
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testSmsInfoBarOk() {
-        SmsReceiverInfoBar infoBar = createInfoBar();
+        WebOTPServiceInfoBar infoBar = createInfoBar();
 
         Assert.assertFalse(InfoBarUtil.hasSecondaryButton(infoBar));
 
         // Click primary button.
         Assert.assertTrue(InfoBarUtil.clickPrimaryButton(infoBar));
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.SHOWN, 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.KEYBOARD_DISMISSED, 0);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 0);
     }
 
     @Test
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testSmsInfoBarClose() {
-        SmsReceiverInfoBar infoBar = createInfoBar();
+        WebOTPServiceInfoBar infoBar = createInfoBar();
 
         Assert.assertFalse(InfoBarUtil.hasSecondaryButton(infoBar));
 
         // Close infobar.
         Assert.assertTrue(InfoBarUtil.clickCloseButton(infoBar));
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.SHOWN, 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.KEYBOARD_DISMISSED, 0);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 0);
     }
 
     @Test
@@ -119,15 +119,15 @@ public class SmsReceiverInfoBarTest {
         CriteriaHelper.pollUiThread(
                 () -> keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
 
-        SmsReceiverInfoBar infoBar = createInfoBar();
+        WebOTPServiceInfoBar infoBar = createInfoBar();
 
         // Keyboard is hidden after info bar is created and shown.
         CriteriaHelper.pollUiThread(
                 () -> !keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.SHOWN, 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.KEYBOARD_DISMISSED, 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 1);
         assertHistogramRecordedCount(TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 0);
     }
 
@@ -149,7 +149,7 @@ public class SmsReceiverInfoBarTest {
         CriteriaHelper.pollUiThread(
                 () -> keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
 
-        SmsReceiverInfoBar infoBar = createInfoBar();
+        WebOTPServiceInfoBar infoBar = createInfoBar();
 
         // Keyboard is hidden after info bar is created and shown.
         CriteriaHelper.pollUiThread(
@@ -158,9 +158,9 @@ public class SmsReceiverInfoBarTest {
         // Close info bar.
         InfoBarUtil.clickCloseButton(infoBar);
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.SHOWN, 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, SmsReceiverUma.InfobarAction.KEYBOARD_DISMISSED, 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 1);
         assertHistogramRecordedCount(TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 1);
     }
 }

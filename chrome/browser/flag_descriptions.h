@@ -1241,8 +1241,8 @@ extern const char kSiteIsolationOptOutChoiceOptOut[];
 extern const char kSmoothScrollingName[];
 extern const char kSmoothScrollingDescription[];
 
-extern const char kSmsReceiverCrossDeviceName[];
-extern const char kSmsReceiverCrossDeviceDescription[];
+extern const char kWebOTPCrossDeviceName[];
+extern const char kWebOTPCrossDeviceDescription[];
 
 extern const char kSpeculativeServiceWorkerStartOnQueryInputName[];
 extern const char kSpeculativeServiceWorkerStartOnQueryInputDescription[];

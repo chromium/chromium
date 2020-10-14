@@ -4,5 +4,5 @@
 
 #include "chrome/browser/sharing/sms/sms_flags.h"
 
-const base::Feature kSmsReceiverCrossDevice{"SmsReceiverCrossDevice",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebOTPCrossDevice{"WebOTPCrossDevice",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};

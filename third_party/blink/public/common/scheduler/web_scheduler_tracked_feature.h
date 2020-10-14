@@ -95,7 +95,7 @@ enum class WebSchedulerTrackedFeature {
   kPaymentManager = 49,
   kSpeechSynthesis = 50,
   kKeyboardLock = 51,
-  kSmsService = 52,
+  kWebOTPService = 52,
   kOutstandingNetworkRequestDirectSocket = 53,
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.

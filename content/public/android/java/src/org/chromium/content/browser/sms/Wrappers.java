@@ -22,17 +22,17 @@ class Wrappers {
      */
     static class SmsRetrieverClientWrapper {
         private final SmsRetrieverClient mSmsRetrieverClient;
-        private SmsReceiverContext mContext;
+        private WebOTPServiceContext mContext;
 
         public SmsRetrieverClientWrapper(SmsRetrieverClient smsRetrieverClient) {
             mSmsRetrieverClient = smsRetrieverClient;
         }
 
-        public void setContext(SmsReceiverContext context) {
+        public void setContext(WebOTPServiceContext context) {
             mContext = context;
         }
 
-        public SmsReceiverContext getContext() {
+        public WebOTPServiceContext getContext() {
             return mContext;
         }
 
@@ -49,10 +49,10 @@ class Wrappers {
      * Extends android.content.ContextWrapper to store and retrieve the
      * registered BroadcastReceiver.
      */
-    static class SmsReceiverContext extends ContextWrapper {
+    static class WebOTPServiceContext extends ContextWrapper {
         private BroadcastReceiver mReceiver;
 
-        public SmsReceiverContext(Context context) {
+        public WebOTPServiceContext(Context context) {
             super(context);
         }
 

@@ -7,7 +7,7 @@
 
 #include "content/browser/sms/sms_parser.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/sms/sms_receiver_destroyed_reason.h"
+#include "third_party/blink/public/common/sms/webotp_service_destroyed_reason.h"
 
 namespace base {
 class TimeDelta;
@@ -29,7 +29,7 @@ void RecordCancelOnSuccessTime(base::TimeDelta duration);
 // presses the Continue button.
 void RecordContinueOnSuccessTime(base::TimeDelta duration);
 
-void RecordDestroyedReason(blink::SmsReceiverDestroyedReason reason);
+void RecordDestroyedReason(blink::WebOTPServiceDestroyedReason reason);
 
 // Records the status of parsing an incoming SMS when using the WebOTP API.
 void RecordSmsParsingStatus(SmsParsingStatus status, ukm::SourceId source_id);

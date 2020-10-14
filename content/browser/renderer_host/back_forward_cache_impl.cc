@@ -142,7 +142,7 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
       FeatureToBit(
           WebSchedulerTrackedFeature::kRequestedVideoCapturePermission) |
       FeatureToBit(WebSchedulerTrackedFeature::kSharedWorker) |
-      FeatureToBit(WebSchedulerTrackedFeature::kSmsService) |
+      FeatureToBit(WebSchedulerTrackedFeature::kWebOTPService) |
       FeatureToBit(WebSchedulerTrackedFeature::kSpeechRecognizer) |
       FeatureToBit(WebSchedulerTrackedFeature::kSpeechSynthesis) |
       FeatureToBit(WebSchedulerTrackedFeature::kWakeLock) |

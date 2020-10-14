@@ -113,7 +113,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
-#include "content/browser/sms/sms_service.h"
+#include "content/browser/sms/webotp_service.h"
 #include "content/browser/speech/speech_synthesis_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
@@ -235,7 +235,7 @@
 #include "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
@@ -7858,15 +7858,15 @@ void RenderFrameHostImpl::BindInputInjectorReceiver(
                             std::move(receiver));
 }
 
-void RenderFrameHostImpl::BindSmsReceiverReceiver(
-    mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver) {
+void RenderFrameHostImpl::BindWebOTPServiceReceiver(
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
   if (GetParent() && !GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
                          GetLastCommittedOrigin())) {
     mojo::ReportBadMessage("Must have the same origin as the top-level frame.");
     return;
   }
   auto* fetcher = SmsFetcher::Get(GetProcess()->GetBrowserContext());
-  SmsService::Create(fetcher, this, std::move(receiver));
+  WebOTPService::Create(fetcher, this, std::move(receiver));
   document_used_web_otp_ = true;
 }
 

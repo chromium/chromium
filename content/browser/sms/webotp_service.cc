@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/sms/sms_service.h"
+#include "content/browser/sms/webotp_service.h"
 
 #include <iterator>
 #include <memory>
@@ -27,19 +27,19 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-shared.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 
-using blink::SmsReceiverDestroyedReason;
+using blink::WebOTPServiceDestroyedReason;
 using blink::mojom::SmsStatus;
 
 namespace content {
 
-SmsService::SmsService(
+WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
     std::unique_ptr<UserConsentHandler> consent_handler,
     const url::Origin& origin,
     RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver)
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
     : FrameServiceBase(host, std::move(receiver)),
       fetcher_(fetcher),
       consent_handler_(std::move(consent_handler)),
@@ -47,15 +47,15 @@ SmsService::SmsService(
   DCHECK(fetcher_);
 }
 
-SmsService::SmsService(
+WebOTPService::WebOTPService(
     SmsFetcher* fetcher,
     RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver)
-    : SmsService(fetcher,
-                 nullptr,
-                 host->GetLastCommittedOrigin(),
-                 host,
-                 std::move(receiver)) {
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver)
+    : WebOTPService(fetcher,
+                    nullptr,
+                    host->GetLastCommittedOrigin(),
+                    host,
+                    std::move(receiver)) {
   bool needs_user_prompt =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kWebOtpBackend) == switches::kWebOtpBackendSmsVerification;
@@ -68,28 +68,28 @@ SmsService::SmsService(
   }
 }
 
-SmsService::~SmsService() {
+WebOTPService::~WebOTPService() {
   if (callback_)
     CompleteRequest(SmsStatus::kUnhandledRequest);
   DCHECK(!callback_);
 }
 
 // static
-void SmsService::Create(
+void WebOTPService::Create(
     SmsFetcher* fetcher,
     RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::SmsReceiver> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
   DCHECK(host);
 
-  // SmsService owns itself. It will self-destruct when a mojo interface
+  // WebOTPService owns itself. It will self-destruct when a mojo interface
   // error occurs, the render frame host is deleted, or the render frame host
   // navigates to a new document.
-  new SmsService(fetcher, host, std::move(receiver));
+  new WebOTPService(fetcher, host, std::move(receiver));
   static_cast<RenderFrameHostImpl*>(host)->OnSchedulerTrackedFeatureUsed(
-      blink::scheduler::WebSchedulerTrackedFeature::kSmsService);
+      blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService);
 }
 
-void SmsService::Receive(ReceiveCallback callback) {
+void WebOTPService::Receive(ReceiveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(majidvp): The comment below seems incorrect. This flow is used for
@@ -127,7 +127,7 @@ void SmsService::Receive(ReceiveCallback callback) {
   fetcher_->Subscribe(origin_, this, render_frame_host());
 }
 
-void SmsService::OnReceive(const std::string& one_time_code) {
+void WebOTPService::OnReceive(const std::string& one_time_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!one_time_code_);
   DCHECK(!start_time_.is_null());
@@ -141,11 +141,11 @@ void SmsService::OnReceive(const std::string& one_time_code) {
   one_time_code_ = one_time_code;
 
   consent_handler_->RequestUserConsent(
-      one_time_code, base::BindOnce(&SmsService::CompleteRequest,
+      one_time_code, base::BindOnce(&WebOTPService::CompleteRequest,
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SmsService::OnFailure(FailureType failure_type) {
+void WebOTPService::OnFailure(FailureType failure_type) {
   SmsParser::SmsParsingStatus status = SmsParsingStatus::kParsed;
   switch (failure_type) {
     case FailureType::kSmsNotParsed_OTPFormatRegexNotMatch:
@@ -167,22 +167,23 @@ void SmsService::OnFailure(FailureType failure_type) {
   RecordSmsParsingStatus(status, render_frame_host()->GetPageUkmSourceId());
 }
 
-void SmsService::Abort() {
+void WebOTPService::Abort() {
   DCHECK(callback_);
   CompleteRequest(SmsStatus::kAborted);
 }
 
-void SmsService::NavigationEntryCommitted(
+void WebOTPService::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   switch (load_details.type) {
     case NavigationType::NAVIGATION_TYPE_NEW_PAGE:
-      RecordDestroyedReason(SmsReceiverDestroyedReason::kNavigateNewPage);
+      RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateNewPage);
       break;
     case NavigationType::NAVIGATION_TYPE_EXISTING_PAGE:
-      RecordDestroyedReason(SmsReceiverDestroyedReason::kNavigateExistingPage);
+      RecordDestroyedReason(
+          WebOTPServiceDestroyedReason::kNavigateExistingPage);
       break;
     case NavigationType::NAVIGATION_TYPE_SAME_PAGE:
-      RecordDestroyedReason(SmsReceiverDestroyedReason::kNavigateSamePage);
+      RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateSamePage);
       break;
     default:
       // Ignore cases we don't care about.
@@ -190,7 +191,7 @@ void SmsService::NavigationEntryCommitted(
   }
 }
 
-void SmsService::CompleteRequest(blink::mojom::SmsStatus status) {
+void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::Optional<std::string> code = base::nullopt;
@@ -218,7 +219,7 @@ void SmsService::CompleteRequest(blink::mojom::SmsStatus status) {
   CleanUp();
 }
 
-void SmsService::CleanUp() {
+void WebOTPService::CleanUp() {
   // Skip resetting |one_time_code_|, |sms| and |receive_time_| while prompt is
   // still open in case it needs to be returned to the next incoming request
   // upon prompt confirmation.

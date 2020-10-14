@@ -65,7 +65,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 
-  flags.InitAndEnableFeature(kSmsReceiverCrossDevice);
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 
@@ -90,7 +90,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 
-  flags.InitAndEnableFeature(kSmsReceiverCrossDevice);
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 
@@ -129,7 +129,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 
-  flags.InitAndEnableFeature(kSmsReceiverCrossDevice);
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 

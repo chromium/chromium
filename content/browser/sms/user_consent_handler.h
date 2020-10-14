@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-shared.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {

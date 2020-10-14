@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/sms/sms_service.h"
+#include "content/browser/sms/webotp_service.h"
 
 #include <memory>
 #include <string>
@@ -34,15 +34,15 @@
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/sms/sms_receiver_destroyed_reason.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom-shared.h"
-#include "third_party/blink/public/mojom/sms/sms_receiver.mojom.h"
+#include "third_party/blink/public/common/sms/webotp_service_destroyed_reason.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
+#include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 
 using base::BindLambdaForTesting;
 using base::Optional;
-using blink::SmsReceiverDestroyedReason;
-using blink::mojom::SmsReceiver;
+using blink::WebOTPServiceDestroyedReason;
 using blink::mojom::SmsStatus;
+using blink::mojom::WebOTPService;
 using std::string;
 using ::testing::_;
 using ::testing::ByMove;
@@ -62,9 +62,9 @@ const char kTestUrl[] = "https://www.google.com";
 
 class StubWebContentsDelegate : public WebContentsDelegate {};
 
-// Service encapsulates a SmsService endpoint, with all of its dependencies
+// Service encapsulates a WebOTPService endpoint, with all of its dependencies
 // mocked out (and the common plumbing needed to inject them), and a
-// mojo::Remote<SmsReceiver> endpoint that tests can use to make requests.
+// mojo::Remote<WebOTPService> endpoint that tests can use to make requests.
 // It exposes some common methods, like MakeRequest and NotifyReceive, but it
 // also exposes the low level mocks that enables tests to set expectations and
 // control the testing environment.
@@ -79,7 +79,7 @@ class Service {
     // cancels requests early if one does not exist.
     web_contents->SetDelegate(&contents_delegate_);
 
-    service_ = std::make_unique<SmsService>(
+    service_ = std::make_unique<WebOTPService>(
         &fetcher_, std::move(user_consent_handler), origin,
         web_contents->GetMainFrame(),
         service_remote_.BindNewPipeAndPassReceiver());
@@ -96,7 +96,7 @@ class Service {
   SmsFetcher* fetcher() { return &fetcher_; }
   UserConsentHandler* consent_handler() { return consent_handler_; }
 
-  void MakeRequest(SmsReceiver::ReceiveCallback callback) {
+  void MakeRequest(WebOTPService::ReceiveCallback callback) {
     service_remote_->Receive(std::move(callback));
   }
 
@@ -111,16 +111,16 @@ class Service {
   NiceMock<MockSmsProvider> provider_;
   SmsFetcherImpl fetcher_;
   UserConsentHandler* consent_handler_;
-  mojo::Remote<blink::mojom::SmsReceiver> service_remote_;
-  std::unique_ptr<SmsService> service_;
+  mojo::Remote<blink::mojom::WebOTPService> service_remote_;
+  std::unique_ptr<WebOTPService> service_;
 };
 
-class SmsServiceTest : public RenderViewHostTestHarness {
+class WebOTPServiceTest : public RenderViewHostTestHarness {
  protected:
-  SmsServiceTest() = default;
-  ~SmsServiceTest() override = default;
+  WebOTPServiceTest() = default;
+  ~WebOTPServiceTest() override = default;
 
-  void ExpectDestroyedReasonCount(SmsReceiverDestroyedReason bucket,
+  void ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason bucket,
                                   int32_t count) {
     histogram_tester_.ExpectBucketCount("Blink.Sms.Receive.DestroyedReason",
                                         bucket, count);
@@ -133,18 +133,17 @@ class SmsServiceTest : public RenderViewHostTestHarness {
  private:
   base::HistogramTester histogram_tester_;
 
-  DISALLOW_COPY_AND_ASSIGN(SmsServiceTest);
+  DISALLOW_COPY_AND_ASSIGN(WebOTPServiceTest);
 };
 
 }  // namespace
 
-TEST_F(SmsServiceTest, Basic) {
+TEST_F(WebOTPServiceTest, Basic) {
   NavigateAndCommit(GURL(kTestUrl));
 
   Service service(web_contents());
 
   base::RunLoop loop;
-
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
     service.NotifyReceive(GURL(kTestUrl), "hi");
@@ -162,7 +161,7 @@ TEST_F(SmsServiceTest, Basic) {
   ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
-TEST_F(SmsServiceTest, HandlesMultipleCalls) {
+TEST_F(WebOTPServiceTest, HandlesMultipleCalls) {
   NavigateAndCommit(GURL(kTestUrl));
 
   Service service(web_contents());
@@ -202,7 +201,7 @@ TEST_F(SmsServiceTest, HandlesMultipleCalls) {
   }
 }
 
-TEST_F(SmsServiceTest, IgnoreFromOtherOrigins) {
+TEST_F(WebOTPServiceTest, IgnoreFromOtherOrigins) {
   NavigateAndCommit(GURL(kTestUrl));
 
   Service service(web_contents());
@@ -233,7 +232,7 @@ TEST_F(SmsServiceTest, IgnoreFromOtherOrigins) {
   EXPECT_EQ(SmsStatus::kSuccess, sms_status);
 }
 
-TEST_F(SmsServiceTest, ExpectOneReceiveTwo) {
+TEST_F(WebOTPServiceTest, ExpectOneReceiveTwo) {
   NavigateAndCommit(GURL(kTestUrl));
 
   Service service(web_contents());
@@ -242,7 +241,6 @@ TEST_F(SmsServiceTest, ExpectOneReceiveTwo) {
   Optional<string> response;
 
   base::RunLoop sms_loop;
-
 
   EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
     // Delivers two SMSes for the same origin, even if only one was being
@@ -267,7 +265,7 @@ TEST_F(SmsServiceTest, ExpectOneReceiveTwo) {
   EXPECT_EQ(SmsStatus::kSuccess, sms_status);
 }
 
-TEST_F(SmsServiceTest, AtMostOneSmsRequestPerOrigin) {
+TEST_F(WebOTPServiceTest, AtMostOneSmsRequestPerOrigin) {
   NavigateAndCommit(GURL(kTestUrl));
 
   Service service(web_contents());
@@ -281,9 +279,8 @@ TEST_F(SmsServiceTest, AtMostOneSmsRequestPerOrigin) {
 
   EXPECT_CALL(*service.provider(), Retrieve(_))
       .WillOnce(Return())
-      .WillOnce(Invoke([&service]() {
-        service.NotifyReceive(GURL(kTestUrl), "second");
-      }));
+      .WillOnce(Invoke(
+          [&service]() { service.NotifyReceive(GURL(kTestUrl), "second"); }));
 
   service.MakeRequest(
       BindLambdaForTesting([&sms_status1, &response1, &sms1_loop](
@@ -313,7 +310,7 @@ TEST_F(SmsServiceTest, AtMostOneSmsRequestPerOrigin) {
   EXPECT_EQ(SmsStatus::kSuccess, sms_status2);
 }
 
-TEST_F(SmsServiceTest, CleansUp) {
+TEST_F(WebOTPServiceTest, CleansUp) {
   NavigateAndCommit(GURL(kTestUrl));
 
   NiceMock<MockSmsWebContentsDelegate> delegate;
@@ -323,9 +320,9 @@ TEST_F(SmsServiceTest, CleansUp) {
 
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
-  mojo::Remote<blink::mojom::SmsReceiver> service;
-  SmsService::Create(&fetcher, main_rfh(),
-                     service.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  WebOTPService::Create(&fetcher, main_rfh(),
+                        service.BindNewPipeAndPassReceiver());
 
   base::RunLoop navigate;
 
@@ -353,14 +350,14 @@ TEST_F(SmsServiceTest, CleansUp) {
   ASSERT_FALSE(fetcher.HasSubscribers());
 }
 
-TEST_F(SmsServiceTest, CancelForNoDelegate) {
+TEST_F(WebOTPServiceTest, CancelForNoDelegate) {
   NavigateAndCommit(GURL(kTestUrl));
 
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
-  mojo::Remote<blink::mojom::SmsReceiver> service;
-  SmsService::Create(&fetcher, main_rfh(),
-                     service.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  WebOTPService::Create(&fetcher, main_rfh(),
+                        service.BindNewPipeAndPassReceiver());
 
   base::RunLoop loop;
 
@@ -376,7 +373,7 @@ TEST_F(SmsServiceTest, CancelForNoDelegate) {
   ASSERT_FALSE(fetcher.HasSubscribers());
 }
 
-TEST_F(SmsServiceTest, Abort) {
+TEST_F(WebOTPServiceTest, Abort) {
   NavigateAndCommit(GURL(kTestUrl));
 
   Service service(web_contents());
@@ -397,7 +394,7 @@ TEST_F(SmsServiceTest, Abort) {
   ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
-TEST_F(SmsServiceTest, RecordMetricsForNewPage) {
+TEST_F(WebOTPServiceTest, RecordMetricsForNewPage) {
   // This test depends on the page being destroyed on navigation.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
       content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
@@ -409,9 +406,9 @@ TEST_F(SmsServiceTest, RecordMetricsForNewPage) {
 
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
-  mojo::Remote<blink::mojom::SmsReceiver> service;
-  SmsService::Create(&fetcher, main_rfh(),
-                     service.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  WebOTPService::Create(&fetcher, main_rfh(),
+                        service.BindNewPipeAndPassReceiver());
 
   base::RunLoop navigate;
 
@@ -435,10 +432,10 @@ TEST_F(SmsServiceTest, RecordMetricsForNewPage) {
 
   reload.Run();
 
-  ExpectDestroyedReasonCount(SmsReceiverDestroyedReason::kNavigateNewPage, 1);
+  ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason::kNavigateNewPage, 1);
 }
 
-TEST_F(SmsServiceTest, RecordMetricsForSamePage) {
+TEST_F(WebOTPServiceTest, RecordMetricsForSamePage) {
   NavigateAndCommit(GURL(kTestUrl));
   NiceMock<MockSmsWebContentsDelegate> delegate;
   WebContentsImpl* web_contents_impl =
@@ -447,9 +444,9 @@ TEST_F(SmsServiceTest, RecordMetricsForSamePage) {
 
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
-  mojo::Remote<blink::mojom::SmsReceiver> service;
-  SmsService::Create(&fetcher, main_rfh(),
-                     service.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  WebOTPService::Create(&fetcher, main_rfh(),
+                        service.BindNewPipeAndPassReceiver());
 
   base::RunLoop navigate;
 
@@ -473,7 +470,8 @@ TEST_F(SmsServiceTest, RecordMetricsForSamePage) {
 
   reload.Run();
 
-  ExpectDestroyedReasonCount(SmsReceiverDestroyedReason::kNavigateSamePage, 1);
+  ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason::kNavigateSamePage,
+                             1);
 }
 
 // Following tests exercise parts of sms service logic that depend on user
@@ -524,14 +522,14 @@ class ServiceWithPrompt : public Service {
   bool IsPromptOpen() const { return !on_complete_callback_.is_null(); }
 
  private:
-  // The actual consent handler is owned by SmsService but we keep a ptr to
+  // The actual consent handler is owned by WebOTPService but we keep a ptr to
   // it so it can be used to set expectations for it. It is safe since the
   // sms service lifetime is the same as this object.
   NiceMock<MockUserConsentHandler>* mock_handler_;
   CompletionCallback on_complete_callback_;
 };
 
-TEST_F(SmsServiceTest, SecondRequestDuringPrompt) {
+TEST_F(WebOTPServiceTest, SecondRequestDuringPrompt) {
   NavigateAndCommit(GURL(kTestUrl));
 
   ServiceWithPrompt service(web_contents());
@@ -577,7 +575,7 @@ TEST_F(SmsServiceTest, SecondRequestDuringPrompt) {
   EXPECT_EQ(SmsStatus::kSuccess, sms_status2);
 }
 
-TEST_F(SmsServiceTest, AbortWhilePrompt) {
+TEST_F(WebOTPServiceTest, AbortWhilePrompt) {
   NavigateAndCommit(GURL(kTestUrl));
 
   ServiceWithPrompt service(web_contents());
@@ -606,7 +604,7 @@ TEST_F(SmsServiceTest, AbortWhilePrompt) {
   service.ConfirmPrompt();
 }
 
-TEST_F(SmsServiceTest, RequestAfterAbortWhilePrompt) {
+TEST_F(WebOTPServiceTest, RequestAfterAbortWhilePrompt) {
   NavigateAndCommit(GURL(kTestUrl));
 
   ServiceWithPrompt service(web_contents());
@@ -660,7 +658,7 @@ TEST_F(SmsServiceTest, RequestAfterAbortWhilePrompt) {
   }
 }
 
-TEST_F(SmsServiceTest, SecondRequestWhilePrompt) {
+TEST_F(WebOTPServiceTest, SecondRequestWhilePrompt) {
   NavigateAndCommit(GURL(kTestUrl));
 
   ServiceWithPrompt service(web_contents());
@@ -704,7 +702,7 @@ TEST_F(SmsServiceTest, SecondRequestWhilePrompt) {
   ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
-TEST_F(SmsServiceTest, RecordTimeMetricsForContinueOnSuccess) {
+TEST_F(WebOTPServiceTest, RecordTimeMetricsForContinueOnSuccess) {
   NavigateAndCommit(GURL(kTestUrl));
 
   ServiceWithPrompt service(web_contents());
@@ -728,7 +726,7 @@ TEST_F(SmsServiceTest, RecordTimeMetricsForContinueOnSuccess) {
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeSmsReceive", 1);
 }
 
-TEST_F(SmsServiceTest, RecordMetricsForCancelOnSuccess) {
+TEST_F(WebOTPServiceTest, RecordMetricsForCancelOnSuccess) {
   NavigateAndCommit(GURL(kTestUrl));
 
   ServiceWithPrompt service(web_contents());
@@ -753,7 +751,7 @@ TEST_F(SmsServiceTest, RecordMetricsForCancelOnSuccess) {
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeSmsReceive", 1);
 }
 
-TEST_F(SmsServiceTest, RecordMetricsForExistingPage) {
+TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
   // This test depends on the page being destroyed on navigation.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
       content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
@@ -767,9 +765,9 @@ TEST_F(SmsServiceTest, RecordMetricsForExistingPage) {
 
   NiceMock<MockSmsProvider> provider;
   SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
-  mojo::Remote<blink::mojom::SmsReceiver> service;
-  SmsService::Create(&fetcher, main_rfh(),
-                     service.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  WebOTPService::Create(&fetcher, main_rfh(),
+                        service.BindNewPipeAndPassReceiver());
 
   base::RunLoop navigate;
 
@@ -793,8 +791,8 @@ TEST_F(SmsServiceTest, RecordMetricsForExistingPage) {
 
   reload.Run();
 
-  ExpectDestroyedReasonCount(SmsReceiverDestroyedReason::kNavigateExistingPage,
-                             1);
+  ExpectDestroyedReasonCount(
+      WebOTPServiceDestroyedReason::kNavigateExistingPage, 1);
 }
 
 }  // namespace content

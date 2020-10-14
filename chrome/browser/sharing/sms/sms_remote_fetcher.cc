@@ -21,7 +21,7 @@ void FetchRemoteSms(
     content::BrowserContext* context,
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::string>)> callback) {
-  if (!base::FeatureList::IsEnabled(kSmsReceiverCrossDevice)) {
+  if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
     std::move(callback).Run(base::nullopt);
     return;
   }

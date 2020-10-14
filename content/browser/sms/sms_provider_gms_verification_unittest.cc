@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/sms/sms_service.h"
+#include "content/browser/sms/webotp_service.h"
 
 #include <string>
 
@@ -51,7 +51,7 @@ class SmsProviderGmsVerificationTest : public RenderViewHostTestHarness {
     j_fake_sms_retriever_client_.Reset(
         Java_FakeSmsRetrieverClient_create(AttachCurrentThread()));
     Java_SmsVerificationFakes_setClientForTesting(
-        AttachCurrentThread(), provider_->GetSmsReceiverForTesting(),
+        AttachCurrentThread(), provider_->GetWebOTPServiceForTesting(),
         j_fake_sms_retriever_client_);
     provider_->AddObserver(&observer_);
   }

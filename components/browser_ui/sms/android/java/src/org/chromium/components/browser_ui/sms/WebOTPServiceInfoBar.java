@@ -22,8 +22,8 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * An InfoBar that asks for the user's permission to share the SMS with the page.
  */
-public class SmsReceiverInfoBar extends ConfirmInfoBar {
-    private static final String TAG = "SmsReceiverInfoBar";
+public class WebOTPServiceInfoBar extends ConfirmInfoBar {
+    private static final String TAG = "WebOTPServiceInfoBar";
     private static final boolean DEBUG = false;
     private String mMessage;
     private WindowAndroid mWindowAndroid;
@@ -31,13 +31,13 @@ public class SmsReceiverInfoBar extends ConfirmInfoBar {
 
     @VisibleForTesting
     @CalledByNative
-    public static SmsReceiverInfoBar create(WindowAndroid windowAndroid, int iconId, String title,
+    public static WebOTPServiceInfoBar create(WindowAndroid windowAndroid, int iconId, String title,
             String message, String okButtonLabel) {
-        if (DEBUG) Log.d(TAG, "SmsReceiverInfoBar.create()");
-        return new SmsReceiverInfoBar(windowAndroid, iconId, title, message, okButtonLabel);
+        if (DEBUG) Log.d(TAG, "WebOTPServiceInfoBar.create()");
+        return new WebOTPServiceInfoBar(windowAndroid, iconId, title, message, okButtonLabel);
     }
 
-    private SmsReceiverInfoBar(WindowAndroid windowAndroid, int iconId, String title,
+    private WebOTPServiceInfoBar(WindowAndroid windowAndroid, int iconId, String title,
             String message, String okButtonLabel) {
         super(iconId, R.color.infobar_icon_drawable_color,
                 /*iconBitmap=*/null, /*message=*/title, /*linkText=*/null, okButtonLabel,
@@ -54,7 +54,7 @@ public class SmsReceiverInfoBar extends ConfirmInfoBar {
     @Override
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
-        SmsReceiverUma.recordInfobarAction(SmsReceiverUma.InfobarAction.SHOWN);
+        WebOTPServiceUma.recordInfobarAction(WebOTPServiceUma.InfobarAction.SHOWN);
 
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity != null) {
@@ -64,7 +64,8 @@ public class SmsReceiverInfoBar extends ConfirmInfoBar {
             if (focusedView != null
                     && keyboardVisibilityDelegate.isKeyboardShowing(activity, focusedView)) {
                 keyboardVisibilityDelegate.hideKeyboard(focusedView);
-                SmsReceiverUma.recordInfobarAction(SmsReceiverUma.InfobarAction.KEYBOARD_DISMISSED);
+                WebOTPServiceUma.recordInfobarAction(
+                        WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
                 mKeyboardDismissedTime = SystemClock.uptimeMillis();
             }
         }
@@ -79,7 +80,7 @@ public class SmsReceiverInfoBar extends ConfirmInfoBar {
         super.onCloseButtonClicked();
 
         if (mKeyboardDismissedTime != null) {
-            SmsReceiverUma.recordCancelTimeAfterKeyboardDismissal(
+            WebOTPServiceUma.recordCancelTimeAfterKeyboardDismissal(
                     SystemClock.uptimeMillis() - mKeyboardDismissedTime);
         }
     }

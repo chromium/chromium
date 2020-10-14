@@ -1,6 +1,6 @@
 # Web OTP API
 
-Android has [automatic and one-tap SMS verification](https://developers.google.com/identity/sms-retriever). We would like to cover the gap on web platform and implement the SMS Receiver API for web developers.
+Android has [automatic and one-tap SMS verification](https://developers.google.com/identity/sms-retriever). We would like to cover the gap on web platform and implement the WebOTP Service API for web developers.
 
 ## Web-exposed Interfaces
 
@@ -12,7 +12,7 @@ This is implemented in [third_party/blink/renderer/modules/credentialmanager](ht
 
 ## Testing
 
-* Unit tests are located in [content/browser/sms/sms_service_unittest.cc](https://cs.chromium.org/chromium/src/content/browser/sms/sms_service_unittest.cc).
+* Unit tests are located in [content/browser/sms/webotp_service_unittest.cc](https://cs.chromium.org/chromium/src/content/browser/sms/webotp_service_unittest.cc).
 * Browser tests are located in [content/browser/sms/sms_browsertest.cc](https://cs.chromium.org/chromium/src/content/browser/sms/sms_browsertest.cc).
 * The Android related tests are located in [chrome/android/javatests/src/org/chromium/chrome/browser/sms/](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/sms/).
 * Web platform tests are located in [third_party/blink/web_tests/http/tests/credentialmanager/](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/http/tests/credentialmanager/)

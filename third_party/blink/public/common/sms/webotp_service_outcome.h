@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_SMS_RECEIVER_OUTCOME_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_SMS_RECEIVER_OUTCOME_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_WEBOTP_SERVICE_OUTCOME_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_WEBOTP_SERVICE_OUTCOME_H_
 
 namespace blink {
 
-// This enum describes the outcome of the call made to the SMSReceiver API.
-enum class SMSReceiverOutcome {
+// This enum describes the outcome of the call made to the WebOTPService API.
+enum class WebOTPServiceOutcome {
   // Don't change the meaning of these values because they are being recorded
   // in a metric.
   kSuccess = 0,
@@ -21,4 +21,4 @@ enum class SMSReceiverOutcome {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_SMS_RECEIVER_OUTCOME_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_WEBOTP_SERVICE_OUTCOME_H_

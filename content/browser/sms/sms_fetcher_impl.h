@@ -35,8 +35,8 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   // Called by devices that do not have telephony capabilities and exclusively
   // listen for SMSes received on other devices.
   void Subscribe(const url::Origin& origin, Subscriber* subscriber) override;
-  // Called by |SmsService| to fetch SMSes retrieved by the SmsProvider from the
-  // requested device.
+  // Called by |WebOTPService| to fetch SMSes retrieved by the SmsProvider from
+  // the requested device.
   void Subscribe(const url::Origin& origin,
                  Subscriber* subscriber,
                  RenderFrameHost* rfh) override;

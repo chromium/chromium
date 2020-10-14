@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_SMS_RECEIVER_DESTROYED_REASON_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_SMS_RECEIVER_DESTROYED_REASON_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_WEBOTP_SERVICE_DESTROYED_REASON_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_WEBOTP_SERVICE_DESTROYED_REASON_H_
 
 namespace blink {
 
-// This enum describes the reason for desruction of the SmsService.
-enum class SmsReceiverDestroyedReason {
+// This enum describes the reason for desruction of the WebOTPService.
+enum class WebOTPServiceDestroyedReason {
   // Don't change the meaning of these values because they are being recorded
   // in a metric.
   kNavigateNewPage = 0,
@@ -19,4 +19,4 @@ enum class SmsReceiverDestroyedReason {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_SMS_RECEIVER_DESTROYED_REASON_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SMS_WEBOTP_SERVICE_DESTROYED_REASON_H_

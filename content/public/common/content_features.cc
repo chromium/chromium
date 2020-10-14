@@ -642,11 +642,10 @@ const base::Feature kSignedHTTPExchange{"SignedHTTPExchange",
 const base::Feature kSignedHTTPExchangePingValidity{
     "SignedHTTPExchangePingValidity", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This is intended as a kill switch for the SMS Receiver feature. To enable
+// This is intended as a kill switch for the WebOTP Service feature. To enable
 // this feature, the experimental web platform features flag should be set,
 // or the site should obtain an Origin Trial token.
-const base::Feature kSmsReceiver{"SmsReceiver",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether Site Isolation protects against spoofing of origin in
 // mojom::FileSystemManager::Open IPC from compromised renderer processes.  See
