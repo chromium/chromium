@@ -428,13 +428,13 @@ class ConciergeClientImpl : public ConciergeClient {
   dbus::ObjectProxy* concierge_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_{
-      base::ObserverListPolicy::EXISTING_ONLY};
+      ConciergeClient::kObserverListPolicy};
   base::ObserverList<VmObserver>::Unchecked vm_observer_list_{
-      base::ObserverListPolicy::EXISTING_ONLY};
+      ConciergeClient::kObserverListPolicy};
   base::ObserverList<ContainerObserver>::Unchecked container_observer_list_{
-      base::ObserverListPolicy::EXISTING_ONLY};
+      ConciergeClient::kObserverListPolicy};
   base::ObserverList<DiskImageObserver>::Unchecked disk_image_observer_list_{
-      base::ObserverListPolicy::EXISTING_ONLY};
+      ConciergeClient::kObserverListPolicy};
 
   bool is_vm_started_signal_connected_ = false;
   bool is_vm_stopped_signal_connected_ = false;

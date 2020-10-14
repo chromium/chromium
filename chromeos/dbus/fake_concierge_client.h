@@ -332,13 +332,17 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   std::vector<vm_tools::concierge::DiskImageStatusResponse>
       disk_image_status_signals_;
 
-  base::ObserverList<Observer> observer_list_;
+  base::ObserverList<Observer> observer_list_{
+      ConciergeClient::kObserverListPolicy};
 
-  base::ObserverList<VmObserver>::Unchecked vm_observer_list_;
+  base::ObserverList<VmObserver>::Unchecked vm_observer_list_{
+      ConciergeClient::kObserverListPolicy};
 
-  base::ObserverList<ContainerObserver>::Unchecked container_observer_list_;
+  base::ObserverList<ContainerObserver>::Unchecked container_observer_list_{
+      ConciergeClient::kObserverListPolicy};
 
-  base::ObserverList<DiskImageObserver>::Unchecked disk_image_observer_list_;
+  base::ObserverList<DiskImageObserver>::Unchecked disk_image_observer_list_{
+      ConciergeClient::kObserverListPolicy};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
