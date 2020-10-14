@@ -382,7 +382,6 @@
       "is_component_build": false,
       "is_official_build": true,
       "llvm_force_head_revision": true,
-      "max_jobs_per_link": 32,
       "symbol_level": 2,
       "target_cpu": "x86",
       "use_thin_lto": true,
@@ -396,7 +395,6 @@
       "is_component_build": false,
       "is_official_build": true,
       "llvm_force_head_revision": true,
-      "max_jobs_per_link": 32,
       "symbol_level": 2,
       "use_thin_lto": true,
       "win_linker_timing": true

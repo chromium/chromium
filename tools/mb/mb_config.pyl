@@ -1690,11 +1690,11 @@
     ],
 
     'clang_tot_win_official_full_symbols_thin_lto_static_x86': [
-      'clang_tot', 'official', 'full_symbols', 'link_jobs_32', 'thin_lto', 'static', 'x86', 'win_linker_timing',
+      'clang_tot', 'official', 'full_symbols', 'thin_lto', 'static', 'x86', 'win_linker_timing',
     ],
 
     'clang_tot_win_official_full_symbols_thin_lto_static': [
-      'clang_tot', 'official', 'full_symbols', 'link_jobs_32', 'thin_lto', 'static', 'win_linker_timing',
+      'clang_tot', 'official', 'full_symbols', 'thin_lto', 'static', 'win_linker_timing',
     ],
 
     'clang_tot_official_minimal_symbols_static_release': [
@@ -2843,10 +2843,6 @@
     },
 
     'libfuzzer': { 'gn_args': 'use_libfuzzer=true' },
-
-    'link_jobs_32': {
-      'gn_args': 'max_jobs_per_link=32',
-    },
 
     'lsan': {
       'gn_args': 'is_lsan=true',
