@@ -258,7 +258,6 @@ void LayoutSVGRoot::UpdateLayout() {
     needs_boundaries_or_transform_update_ = false;
   }
 
-  const auto& old_overflow_rect = VisualOverflowRect();
   ClearSelfNeedsLayoutOverflowRecalc();
   ClearLayoutOverflow();
 
@@ -266,7 +265,7 @@ void LayoutSVGRoot::UpdateLayout() {
   // (the entire SVG) could have moved or new content may have been exposed, so
   // mark the entire subtree as needing paint invalidation checking.
   if (transform_change != SVGTransformChange::kNone ||
-      viewport_may_have_changed || old_overflow_rect != VisualOverflowRect()) {
+      viewport_may_have_changed) {
     SetSubtreeShouldCheckForPaintInvalidation();
     SetNeedsPaintPropertyUpdate();
     if (Layer())
