@@ -42,7 +42,7 @@ namespace {
 
 base::string16 GetInfoBarMessage(const PluginMetadata& metadata) {
   return l10n_util::GetStringFUTF16(metadata.plugin_is_deprecated()
-                                        ? IDS_PLUGIN_DEPRECATED_PROMPT
+                                        ? IDS_PLUGIN_DEPRECATED
                                         : IDS_PLUGIN_OUTDATED_PROMPT,
                                     metadata.name());
 }
