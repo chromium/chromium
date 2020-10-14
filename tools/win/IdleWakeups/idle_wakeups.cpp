@@ -289,17 +289,21 @@ int wmain(int argc, wchar_t* argv[]) {
   PowerSampler power_sampler;
   IdleWakeups the_app;
 
-  // Parse command line for target process name and optional --cpu-seconds flag.
+  // Parse command line for target process name and optional --cpu-seconds and
+  // --stop-on-exit flags.
   wchar_t* target_process_name = nullptr;
   bool cpu_usage_in_seconds = false;
+  bool stop_on_exit = false;
   for (int i = 1; i < argc; i++) {
     if (wcscmp(argv[i], L"--cpu-seconds") == 0)
       cpu_usage_in_seconds = true;
+    else if (wcscmp(argv[i], L"--stop-on-exit") == 0)
+      stop_on_exit = true;
     else if (!target_process_name)
       target_process_name = argv[i];
 
     // Stop parsing if all possible args have been found.
-    if (cpu_usage_in_seconds && target_process_name)
+    if (cpu_usage_in_seconds && stop_on_exit && target_process_name)
       break;
   }
   const char cpu_usage_unit = cpu_usage_in_seconds ? 's' : '%';
@@ -330,6 +334,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
   PrintHeader();
 
+  bool target_process_seen = false;
   for (;;) {
     if (WaitForSingleObject(ctrl_c_pressed, sleep_time_sec * 1000) ==
         WAIT_OBJECT_0)
@@ -362,8 +367,11 @@ int wmain(int argc, wchar_t* argv[]) {
       cumulative_working_set += result.working_set;
       cumulative_energy += result.power;
       results.push_back(result);
+      target_process_seen = true;
     } else {
       num_idle_snapshots++;
+      if (stop_on_exit && target_process_seen)
+        break;
     }
   }
 
