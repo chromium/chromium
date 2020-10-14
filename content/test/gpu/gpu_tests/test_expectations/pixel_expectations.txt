@@ -140,6 +140,8 @@ crbug.com/744658 [ mac amd-0x6821 ] Pixel_CSS3DBlueBox_NoGpuProcess [ Failure ]
 
 # TODO(fserb): temporarily suppress this test.
 crbug.com/840394 [ linux no-skia-renderer ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
+crbug.com/840394 [ linux gl-skia-renderer ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
+crbug.com/840394 [ linux vulkan-skia-renderer ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
 crbug.com/840394 [ mac ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
 
 # TODO(kbr): temporary suppression for new test.
@@ -211,11 +213,17 @@ crbug.com/1008450 [ android vulkan-skia-renderer ] Pixel_Video_MP4_Rounded_Corne
 
 # Produces blank images on Intel HD 630 w/ Mesa 19.0.2
 crbug.com/976861 [ linux intel-0x5912 no-skia-renderer ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
+crbug.com/976861 [ linux intel-0x5912 gl-skia-renderer ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
+crbug.com/976861 [ linux intel-0x5912 vulkan-skia-renderer ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
 
 # Producing incorrect image on Win10 Intel HD 630 and UHD 630 w/ 26.20.100.6912
 # or later drivers.
 crbug.com/997313 [ win intel-0x5912 no-skia-renderer ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/997313 [ win intel-0x5912 gl-skia-renderer ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/997313 [ win intel-0x5912 vulkan-skia-renderer ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/997313 [ win intel-0x3e92 no-skia-renderer ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/997313 [ win intel-0x3e92 gl-skia-renderer ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
+crbug.com/997313 [ win intel-0x3e92 vulkan-skia-renderer ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 # Flakes on Nexus 9 or NVIDIA Shield TV
 crbug.com/1019462 [ android nvidia no-skia-renderer ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
@@ -243,6 +251,8 @@ crbug.com/1069339 [ mac intel-0xd26 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWork
 
 # VP9 appears to not recover correctly after GPU process crashes on Windows.
 crbug.com/1033982 [ win nvidia no-skia-renderer ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/1033982 [ win nvidia gl-skia-renderer ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/1033982 [ win nvidia vulkan-skia-renderer ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 # HDR rendering with PQ color space appears to be broken on Windows RS2.
 # TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
