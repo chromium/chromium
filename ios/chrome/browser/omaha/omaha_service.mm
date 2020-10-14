@@ -248,8 +248,12 @@ class XmlWrapper : public OmahaXmlWriter {
         _urlIsParsed = YES;
         _manifestIsParsed = YES;
         _updateInformation->is_up_to_date = true;
+        [[NSUserDefaults standardUserDefaults] setBool:true
+                                                forKey:kIOSChromeUpToDateKey];
       } else if ([status isEqualToString:@"ok"]) {
         _updateInformation->is_up_to_date = false;
+        [[NSUserDefaults standardUserDefaults] setBool:false
+                                                forKey:kIOSChromeUpToDateKey];
       } else {
         _updateInformation = nullptr;
         _hasError = YES;
@@ -843,4 +847,5 @@ void OmahaService::ClearPersistentStateForTests() {
   [defaults removeObjectForKey:kLastSentTimeKey];
   [defaults removeObjectForKey:kRetryRequestIdKey];
   [defaults removeObjectForKey:kLastServerDateKey];
+  [defaults removeObjectForKey:kIOSChromeUpToDateKey];
 }

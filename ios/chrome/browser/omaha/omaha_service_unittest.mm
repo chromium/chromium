@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #include "ios/chrome/browser/install_time_util.h"
+#import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
@@ -266,6 +267,67 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
   EXPECT_EQ(4088, service.last_server_date_);
   EXPECT_FALSE(NeedUpdate());
   EXPECT_FALSE(ScheduledCallbackUsed());
+}
+
+TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), GetResponseSuccess());
+
+  EXPECT_TRUE(
+      [[NSUserDefaults standardUserDefaults] boolForKey:kIOSChromeUpToDateKey]);
+  EXPECT_FALSE(NeedUpdate());
+  EXPECT_FALSE(ScheduledCallbackUsed());
+}
+
+TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
+  OmahaService service(false);
+  service.StartInternal();
+
+  service.set_upgrade_recommended_callback(
+      base::Bind(&OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
+  service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);
+  CleanService(&service, version_info::GetVersionNumber());
+
+  service.SendPing();
+
+  std::string response =
+      std::string(
+          "<?xml version=\"1.0\"?><response protocol=\"3.0\" server=\"prod\">"
+          "<daystart elapsed_seconds=\"56754\"/><app appid=\"") +
+      test_application_id() +
+      "\" status=\"ok\">"
+      "<updatecheck status=\"ok\"><urls>"
+      "<url codebase=\"http://www.goo.fr/foo/\"/></urls>"
+      "<manifest version=\"0.0.1075.1441\">"
+      "<packages>"
+      "<package hash=\"0\" name=\"Chrome\" required=\"true\" size=\"0\"/>"
+      "</packages>"
+      "<actions>"
+      "<action event=\"update\" run=\"Chrome\"/>"
+      "<action event=\"postinstall\" osminversion=\"6.0\"/>"
+      "</actions>"
+      "</manifest>"
+      "</updatecheck><ping status=\"ok\"/>"
+      "</app></response>";
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), response);
+
+  EXPECT_FALSE(
+      [[NSUserDefaults standardUserDefaults] boolForKey:kIOSChromeUpToDateKey]);
+  EXPECT_TRUE(NeedUpdate());
+  EXPECT_TRUE(ScheduledCallbackUsed());
 }
 
 TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {

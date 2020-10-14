@@ -82,6 +82,8 @@ class OmahaService {
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, NonSpammingTest);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ActivePingAfterInstallEventTest);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, InstallRetryTest);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingUpToDateUpdatesUserDefaults);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceInternalTest,
                            PingMessageTestWithProfileData);
 
