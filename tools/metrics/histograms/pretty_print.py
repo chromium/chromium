@@ -15,13 +15,10 @@ and wrapping text nodes, so we implement our own full custom XML pretty-printer.
 from __future__ import with_statement
 
 import argparse
-import logging
 import os
-import shutil
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import diff_util
 import etree_util
 import presubmit_util
 
