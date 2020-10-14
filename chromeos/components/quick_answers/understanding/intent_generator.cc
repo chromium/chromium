@@ -29,6 +29,11 @@ constexpr int kUnitConversionIntentAndSelectionLengthDiffThreshold = 5;
 constexpr int kTranslationTextLengthThreshold = 50;
 constexpr int kDefinitionIntentAndSelectionLengthDiffThreshold = 2;
 
+// TODO(b/169370175): Remove the temporary invalid set after we ramp up to v2
+// model.
+// Set of invalid characters for definition annonations.
+constexpr char kInvalidCharactersSet[] = "()[]{}<>_&|!";
+
 const std::map<std::string, IntentType>& GetIntentTypeMap() {
   static base::NoDestructor<std::map<std::string, IntentType>> kIntentTypeMap(
       {{"unit", IntentType::kUnit}, {"dictionary", IntentType::kDictionary}});
@@ -79,6 +84,28 @@ IntentType RewriteIntent(const std::string& selected_text,
   }
 
   return intent;
+}
+
+// TODO(b/169370175): There is an issue with text classifier that
+// concatenated words are annotated as definitions. Before we switch to v2
+// model, skip such kind of queries for definition annotation for now.
+bool ShouldSkipDefinition(const std::string& text) {
+  DCHECK(text.length());
+  // Skip the query for definition annotation if the selected text contains
+  // capitalized characters in the middle and not all capitalized.
+  const auto& text_utf16 = base::UTF8ToUTF16(text);
+  bool has_capitalized_middle_characters =
+      text_utf16.substr(1) != base::i18n::ToLower(text_utf16.substr(1));
+  bool are_all_characters_capitalized =
+      text_utf16 == base::i18n::ToUpper(text_utf16);
+  if (has_capitalized_middle_characters && !are_all_characters_capitalized)
+    return true;
+  // Skip the query for definition annotation if the selected text contains
+  // invalid characters.
+  if (text.find_first_of(kInvalidCharactersSet) != std::string::npos)
+    return true;
+
+  return false;
 }
 
 }  // namespace
@@ -145,6 +172,13 @@ void IntentGenerator::AnnotationCallback(
     auto intent_type_map = GetIntentTypeMap();
     auto it = intent_type_map.find(type);
     if (it != intent_type_map.end()) {
+      // Skip the entity for definition annonation.
+      if (it->second == IntentType::kDictionary &&
+          ShouldSkipDefinition(request.selected_text)) {
+        // Fallback to language detection for generating translation intent.
+        MaybeGenerateTranslationIntent(request);
+        return;
+      }
       std::move(complete_callback_)
           .Run(IntentInfo(entity_str, RewriteIntent(request.selected_text,
                                                     entity_str, it->second)));
