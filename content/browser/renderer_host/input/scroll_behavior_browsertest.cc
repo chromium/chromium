@@ -234,7 +234,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     // for 10 frames.
     MainThreadFrameObserver frame_observer(
         shell()->web_contents()->GetRenderViewHost()->GetWidget());
-    int frame_count = 10;
+    int frame_count = 5;
     while (frame_count > 0) {
       ASSERT_EQ(ExecuteScriptAndExtractDouble(scroll_top_script), scroll_top);
       frame_observer.Wait();
@@ -263,10 +263,8 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   // TODO(crbug.com/1133492): the last animation is committed after we set the
   // scrollTop even when we cancel the animation, so the final scrollTop value
   // is not 0, we need to fix it.
-#if defined(OS_CHROMEOS)
   if (!disable_threaded_scrolling_)
     return;
-#endif
 
   LoadURL(kOverflowScrollDataURL);
 
@@ -372,7 +370,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   // Smooth scrolling is disabled for wheel scroll on Mac.
   // https://crbug.com/574283.
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_ANDROID)
   ValueHoldsAt(scroll_top_script, 0);
 #else
   WaitUntilLessThan(scroll_top_script, scroll_top);
