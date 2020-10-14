@@ -113,9 +113,8 @@ Follow the instructions below for adding instrumentation for an API.
    ***
 
    *** promo
-   Avoid using `IsUserInIdentifiabilityStudy()`. Use one of the more granular
-   conditions instead. As a last resort use
-   `IdentifiabilityStudySettings::Get()->IsActive()`.
+   Avoid using `IdentifiabilityStudySettings::Get()->IsActive()` except as a
+   last resort. Use one of the more granular conditions instead.
 
    The decision on whether to activate the study is made on a per client (i.e.
    a browser instance) basis. It's not based on user profile nor any property

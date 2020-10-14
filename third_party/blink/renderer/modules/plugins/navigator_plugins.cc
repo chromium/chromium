@@ -56,8 +56,11 @@ bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
 namespace {
 
 void RecordPlugins(LocalFrame* frame, DOMPluginArray* plugins) {
-  if (!IdentifiabilityStudySettings::Get()->IsActive() || !frame)
+  if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+          WebFeature::kNavigatorPlugins) ||
+      !frame) {
     return;
+  }
   if (Document* document = frame->GetDocument()) {
     IdentifiableTokenBuilder builder;
     for (unsigned i = 0; i < plugins->length(); i++) {

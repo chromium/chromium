@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -486,8 +486,10 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
 }
 
 void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
-  if (!IsUserInIdentifiabilityStudy())
+  if (!IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          blink::IdentifiableSurface::Type::kCanvasReadback)) {
     return;
+  }
   // Creating this ImageDataBuffer has some overhead, namely getting the SkImage
   // and computing the pixmap.
   // We need the StaticBitmapImage to be deleted on the same thread on which it

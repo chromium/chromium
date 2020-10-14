@@ -272,8 +272,10 @@ namespace {
 
 void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
                              const MediaDeviceInfoVector& media_devices) {
-  if (!IdentifiabilityStudySettings::Get()->IsActive())
+  if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+          WebFeature::kMediaDevicesEnumerateDevices)) {
     return;
+  }
   Document* document = LocalDOMWindow::From(resolver->GetScriptState())
                            ->GetFrame()
                            ->GetDocument();

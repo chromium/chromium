@@ -136,4 +136,16 @@ bool IdentifiabilityStudySettings::IsTypeAllowed(
   return provider_->IsTypeAllowed(type);
 }
 
+bool IdentifiabilityStudySettings::IsWebFeatureAllowed(
+    mojom::WebFeature feature) const {
+  if (LIKELY(!is_enabled_))
+    return false;
+
+  if (LIKELY(!is_any_surface_or_type_blocked_))
+    return true;
+
+  return provider_->IsSurfaceAllowed(IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature, feature));
+}
+
 }  // namespace blink

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -76,6 +77,11 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
   // sufficient to call this function directly instead of calling IsActive()
   // before it.
   bool IsTypeAllowed(IdentifiableSurface::Type type) const;
+
+  // Convenience method for determining whether the surface constructable from
+  // the type (|kWebFeature|) and the |feature| is allowed. See IsSurfaceAllowed
+  // for more detail.
+  bool IsWebFeatureAllowed(mojom::WebFeature feature) const;
 
   // Only used for testing. Resets internal state and violates API contracts
   // made above about the lifetime of IdentifiabilityStudySettings*.
