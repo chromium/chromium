@@ -60,6 +60,9 @@ class PreferredAppsList {
 
   const PreferredApps& GetReference() const;
 
+  // Get the entry size of the preferred app list.
+  size_t GetEntrySize();
+
  private:
   PreferredApps preferred_apps_;
   bool initialized_ = false;
