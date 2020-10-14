@@ -113,6 +113,8 @@ constexpr char kFinalizingTimeStats[] =
     "Extensions.ForceInstalledTime.FinalizingStartTo.CRXInstallComplete";
 constexpr char kCrxHeaderInvalidFailureIsCWS[] =
     "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS";
+constexpr char kCrxHeaderInvalidFailureFromCache[] =
+    "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache";
 
 }  // namespace
 
@@ -533,10 +535,12 @@ TEST_F(ForceInstalledMetricsTest,
       1);
 }
 
-// Reporting whether the extension is from CWS or not when the force installed
-// extension fails to install with error CRX_HEADER_INVALID.
-TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalid) {
+// Reporting when the extension is downloaded from cache and it fails to install
+// with error CRX_HEADER_INVALID.
+TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidFromCache) {
   SetupForceList();
+  install_stage_tracker()->ReportDownloadingCacheStatus(
+      kExtensionId1, ExtensionDownloaderDelegate::CacheStatus::CACHE_HIT);
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
       kExtensionId1, SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
   auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
@@ -550,6 +554,31 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalid) {
       kSandboxUnpackFailureReason,
       SandboxedUnpackerFailureReason::CRX_HEADER_INVALID, 1);
   histogram_tester_.ExpectBucketCount(kCrxHeaderInvalidFailureIsCWS, true, 1);
+  histogram_tester_.ExpectBucketCount(kCrxHeaderInvalidFailureFromCache, true,
+                                      1);
+}
+
+// Reporting when the extension is not downloaded from cache and it fails to
+// install with error CRX_HEADER_INVALID.
+TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidNotFromCache) {
+  SetupForceList();
+  install_stage_tracker()->ReportDownloadingCacheStatus(
+      kExtensionId1, ExtensionDownloaderDelegate::CacheStatus::CACHE_MISS);
+  install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
+      kExtensionId1, SandboxedUnpackerFailureReason::CRX_HEADER_INVALID);
+  auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
+  registry()->AddEnabled(ext2.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  histogram_tester_.ExpectTotalCount(kSandboxUnpackFailureReason, 1);
+  histogram_tester_.ExpectBucketCount(
+      kSandboxUnpackFailureReason,
+      SandboxedUnpackerFailureReason::CRX_HEADER_INVALID, 1);
+  histogram_tester_.ExpectBucketCount(kCrxHeaderInvalidFailureIsCWS, true, 1);
+  histogram_tester_.ExpectBucketCount(kCrxHeaderInvalidFailureFromCache, false,
+                                      1);
 }
 
 // Reporting info when the force installed extension fails to install with error
