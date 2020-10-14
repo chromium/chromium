@@ -17,6 +17,7 @@
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/install_bounce_metric.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
@@ -71,11 +72,13 @@ WebAppInstallTask::WebAppInstallTask(
     Profile* profile,
     OsIntegrationManager* os_integration_manager,
     InstallFinalizer* install_finalizer,
-    std::unique_ptr<WebAppDataRetriever> data_retriever)
+    std::unique_ptr<WebAppDataRetriever> data_retriever,
+    AppRegistrar* registrar)
     : data_retriever_(std::move(data_retriever)),
       os_integration_manager_(os_integration_manager),
       install_finalizer_(install_finalizer),
-      profile_(profile) {}
+      profile_(profile),
+      registrar_(registrar) {}
 
 WebAppInstallTask::~WebAppInstallTask() = default;
 
@@ -817,6 +820,8 @@ void WebAppInstallTask::OnOsHooksCreated(
   if (ShouldStopInstall())
     return;
 
+  DCHECK(registrar_);
+  registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
   if (!background_installation_) {
     const bool can_reparent_tab = install_finalizer_->CanReparentTab(
         app_id, os_hooks_results[OsHookType::kShortcuts]);

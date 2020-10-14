@@ -20,7 +20,6 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/common/web_application_info.h"
@@ -280,11 +279,18 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
 
   os_integration_manager_->InstallOsHooks(
       app_id,
-      base::BindOnce(
-          [](base::ScopedClosureRunner scoped_closure,
-             OsHooksResults os_hooks_results) { scoped_closure.RunAndReset(); },
-          std::move(scoped_closure)),
+      base::BindOnce(&PendingAppInstallTask::OnOsHooksCreated,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(scoped_closure)),
       nullptr, options);
+}
+
+void PendingAppInstallTask::OnOsHooksCreated(
+    const AppId& app_id,
+    base::ScopedClosureRunner scoped_closure,
+    const OsHooksResults os_hooks_results) {
+  registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
+  scoped_closure.RunAndReset();
 }
 
 void PendingAppInstallTask::TryAppInfoFactoryOnFailure(

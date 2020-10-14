@@ -128,7 +128,8 @@ std::unique_ptr<WebAppInstallTask> CreateDummyTask() {
       /*profile=*/nullptr,
       /*os_integration_manager=*/nullptr,
       /*install_finalizer=*/nullptr,
-      /*data_retriever=*/nullptr);
+      /*data_retriever=*/nullptr,
+      /*registrar=*/nullptr);
 }
 
 }  // namespace

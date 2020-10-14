@@ -1275,6 +1275,8 @@ void AppLauncherHandler::OnOsHooksInstalled(
   // successful, instead of just shortcuts.
   base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
                             os_hooks_results[web_app::OsHookType::kShortcuts]);
+
+  web_app_provider_->registrar().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
 void AppLauncherHandler::OnExtensionUninstallDialogClosed(

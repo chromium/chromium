@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
@@ -101,6 +102,9 @@ class PendingAppInstallTask {
                          InstallResultCode code);
   void TryAppInfoFactoryOnFailure(ResultCallback result_callback,
                                   Result result);
+  void OnOsHooksCreated(const AppId& app_id,
+                        base::ScopedClosureRunner scoped_closure,
+                        const OsHooksResults os_hooks_results);
 
   Profile* const profile_;
   AppRegistrar* const registrar_;

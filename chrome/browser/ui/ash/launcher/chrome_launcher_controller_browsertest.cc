@@ -1235,9 +1235,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
 
   // Install PWA.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-  web_app::WebAppInstallObserver observer(profile());
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
-  const web_app::AppId app_id = observer.AwaitNextInstall();
+  const web_app::AppId app_id = web_app::AwaitNextInstallWithOsHooks(profile());
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   // Find the native window for the app.
@@ -2404,9 +2403,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
       ui::PAGE_TRANSITION_LINK);
   // Install PWA.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-  web_app::WebAppInstallObserver observer(profile());
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
-  web_app::AppId app_id = observer.AwaitNextInstall();
+  web_app::AppId app_id = web_app::AwaitNextInstallWithOsHooks(profile());
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   ash::ShelfID shelf_id(app_id);
@@ -2428,9 +2426,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
       ui::PAGE_TRANSITION_LINK);
   // Install shortcut app.
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
-  web_app::WebAppInstallObserver observer(profile());
   chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
-  web_app::AppId app_id = observer.AwaitNextInstall();
+  web_app::AppId app_id = web_app::AwaitNextInstallWithOsHooks(profile());
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
   ash::ShelfID shelf_id(app_id);

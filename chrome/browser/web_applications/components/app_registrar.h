@@ -206,6 +206,9 @@ class AppRegistrar {
   void NotifyWebAppInstallTimeChanged(const AppId& app_id,
                                       const base::Time& time);
 
+  // Notify when OS hooks installation is finished during Web App installation.
+  void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
+
  protected:
   Profile* profile() const { return profile_; }
 

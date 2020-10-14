@@ -98,7 +98,8 @@ void OsIntegrationManager::InstallOsHooks(
 
   if (suppress_os_hooks_for_testing_) {
     OsHooksResults os_hooks_results{true};
-    std::move(callback).Run(os_hooks_results);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_results));
     return;
   }
 
@@ -149,8 +150,12 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             UninstallOsHooksCallback callback) {
   DCHECK(shortcut_manager_);
 
-  if (suppress_os_hooks_for_testing_)
+  if (suppress_os_hooks_for_testing_) {
+    OsHooksResults os_hooks_results{true};
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_results));
     return;
+  }
 
   base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>
       barrier = base::BindRepeating(

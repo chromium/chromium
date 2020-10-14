@@ -96,6 +96,11 @@ void AppRegistrar::NotifyWebAppProfileWillBeDeleted(const AppId& app_id) {
     observer.OnWebAppProfileWillBeDeleted(app_id);
 }
 
+void AppRegistrar::NotifyWebAppInstalledWithOsHooks(const AppId& app_id) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppInstalledWithOsHooks(app_id);
+}
+
 void AppRegistrar::NotifyAppRegistrarShutdown() {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnAppRegistrarShutdown();
