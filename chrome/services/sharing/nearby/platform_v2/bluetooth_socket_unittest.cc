@@ -219,7 +219,7 @@ TEST_F(BluetoothSocketTest, TestInputStream_MultipleChunks) {
   uint32_t message_size = 1024 * 1024;
   std::string message(message_size, 'A');
 
-  // Post to a thead pool because both InputStream::Read() and
+  // Post to a thread pool because both InputStream::Read() and
   // WriteDataBlocking() below are blocking on each other.
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
@@ -235,6 +235,46 @@ TEST_F(BluetoothSocketTest, TestInputStream_MultipleChunks) {
 
   // Make sure writer thread is done after we read all the data from it.
   run_loop.Run();
+}
+
+TEST_F(BluetoothSocketTest, TestInputStream_CloseBeforeRead) {
+  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+  EXPECT_EQ(Exception::kSuccess, input_stream.Close().value);
+  EXPECT_EQ(Exception::kIo, input_stream.Read(1u).exception());
+}
+
+TEST_F(BluetoothSocketTest, TestInputStream_CloseWhileReading) {
+  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+
+  base::RunLoop run_loop;
+
+  // Start waiting for 1 byte to be read from the |receive_stream_|. Note: We
+  // run on a separate thread because Read() is blocking.
+  ExceptionOr<ByteArray> read_exception_or_byte_array;
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindLambdaForTesting(
+          [&input_stream, &read_exception_or_byte_array] {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+            read_exception_or_byte_array = input_stream.Read(1u);
+          }),
+      run_loop.QuitClosure());
+
+  // While Read() is waiting, close the stream. Note: We delay closing the
+  // stream by 100 ms to ensure that Read() is in fact waiting when Close() is
+  // posted. Because Read() is blocking, I think this is the best we can do.
+  // Even if Close() somehow completes before Read(), an IO exception should
+  // still be thrown.
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostDelayedTask(
+      FROM_HERE, base::BindLambdaForTesting([&input_stream] {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_EQ(Exception::kSuccess, input_stream.Close().value);
+      }),
+      base::TimeDelta::FromMilliseconds(100));
+
+  run_loop.Run();
+
+  EXPECT_EQ(Exception::kIo, read_exception_or_byte_array.exception());
 }
 
 TEST_F(BluetoothSocketTest, TestOutputStream) {
@@ -266,7 +306,7 @@ TEST_F(BluetoothSocketTest, TestOutputStream_MultipleChunks) {
   uint32_t message_size = 1024 * 1024;
   std::string message(message_size, 'A');
 
-  // Post to a thead pool because both InputStream::Write() and
+  // Post to a thread pool because both InputStream::Write() and
   // ReadDataBlocking() below are blocking on each other.
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
@@ -280,6 +320,50 @@ TEST_F(BluetoothSocketTest, TestOutputStream_MultipleChunks) {
 
   // Make sure reader thread is done after we wrote all the data to it.
   run_loop.Run();
+}
+
+TEST_F(BluetoothSocketTest, TestOutputStream_CloseBeforeWrite) {
+  OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
+  EXPECT_EQ(Exception::kSuccess, output_stream.Close().value);
+  EXPECT_EQ(Exception::kIo, output_stream.Write(ByteArray("message")).value);
+}
+
+TEST_F(BluetoothSocketTest, TestOutputStream_CloseWhileWriting) {
+  OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
+
+  base::RunLoop run_loop;
+
+  // Start waiting for the bytes to be written from the |send_stream_|. Note: We
+  // run on a separate thread because Write() is blocking.
+  Exception write_exception;
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
+      FROM_HERE, base::BindLambdaForTesting([&output_stream, &write_exception] {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        // Expect a total message size of 1MB delivered in chunks because a mojo
+        // pipe has a maximum buffer size and only accepts a certain amount of
+        // data per call. The default is 64KB defined in //mojo/core/core.cc. We
+        // want a large message so the Write() will be forced to wait.
+        uint32_t message_size = 1024 * 1024;
+        std::string message(message_size, 'A');
+        write_exception = output_stream.Write(ByteArray(message));
+      }),
+      run_loop.QuitClosure());
+
+  // While Write() is waiting, close the stream. Note: We delay closing the
+  // stream by 100 ms to ensure that Write() is in fact waiting when Close() is
+  // posted. Because Write() is blocking, I think this is the best we can do.
+  // Even if Close() somehow completes before Write(), an IO exception should
+  // still be thrown.
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostDelayedTask(
+      FROM_HERE, base::BindLambdaForTesting([&output_stream] {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_EQ(Exception::kSuccess, output_stream.Close().value);
+      }),
+      base::TimeDelta::FromMilliseconds(100));
+
+  run_loop.Run();
+
+  EXPECT_EQ(Exception::kIo, write_exception.value);
 }
 
 TEST_F(BluetoothSocketTest, TestInputStreamResetHandler) {

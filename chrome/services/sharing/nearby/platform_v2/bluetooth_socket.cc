@@ -53,15 +53,20 @@ class InputStreamImpl : public InputStream {
     pending_read_buffer_ = std::make_unique<ByteArray>(size);
     pending_read_buffer_pos_ = 0;
 
-    task_run_.emplace();
+    read_waitable_event_.emplace();
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&mojo::SimpleWatcher::ArmOrNotify,
                                   base::Unretained(&receive_stream_watcher_)));
-    task_run_->Wait();
-    task_run_.reset();
+    read_waitable_event_->Wait();
+    read_waitable_event_.reset();
 
     pending_read_buffer_.reset();
     pending_read_buffer_pos_ = 0;
+
+    // |receive_stream_| might have been reset in Close() while
+    // |read_waitable_event_| was waiting.
+    if (!receive_stream_)
+      return {Exception::kIo};
 
     return exception_or_received_byte_array_;
   }
@@ -84,6 +89,15 @@ class InputStreamImpl : public InputStream {
 
     receive_stream_.reset();
 
+    // It is possible that a Read() call could still be blocking a different
+    // sequence via |read_waitable_event_| when Close() is called. Notably, this
+    // happens on the receiving device when a Nearby Share transfer finishes. If
+    // we only cancel the stream watcher, the Read() call will block forever. We
+    // trigger the event manually here, which will cause an IO exception to be
+    // returned from Read().
+    if (read_waitable_event_)
+      read_waitable_event_->Signal();
+
     return {Exception::kSuccess};
   }
 
@@ -94,12 +108,12 @@ class InputStreamImpl : public InputStream {
     DCHECK(receive_stream_.is_valid());
     DCHECK(pending_read_buffer_);
     DCHECK_LT(pending_read_buffer_pos_, pending_read_buffer_->size());
-    DCHECK(task_run_);
+    DCHECK(read_waitable_event_);
 
     if (state.peer_closed()) {
       exception_or_received_byte_array_ =
           ExceptionOr<ByteArray>(Exception::kIo);
-      task_run_->Signal();
+      read_waitable_event_->Signal();
       return;
     }
 
@@ -126,7 +140,7 @@ class InputStreamImpl : public InputStream {
       exception_or_received_byte_array_ =
           ExceptionOr<ByteArray>(Exception::kIo);
     }
-    task_run_->Signal();
+    read_waitable_event_->Signal();
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -136,7 +150,7 @@ class InputStreamImpl : public InputStream {
   std::unique_ptr<ByteArray> pending_read_buffer_;
   uint32_t pending_read_buffer_pos_ = 0;
   ExceptionOr<ByteArray> exception_or_received_byte_array_;
-  base::Optional<base::WaitableEvent> task_run_;
+  base::Optional<base::WaitableEvent> read_waitable_event_;
 };
 
 // Concrete OutputStream implementation, tightly coupled to BluetoothSocket.
@@ -172,18 +186,23 @@ class OutputStreamImpl : public OutputStream {
     pending_write_buffer_ = std::make_unique<ByteArray>(data);
     pending_write_buffer_pos_ = 0;
 
-    task_run_.emplace();
+    write_waitable_event_.emplace();
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&mojo::SimpleWatcher::ArmOrNotify,
                                   base::Unretained(&send_stream_watcher_)));
-    task_run_->Wait();
+    write_waitable_event_->Wait();
 
     Exception result = {write_success_ ? Exception::kSuccess : Exception::kIo};
 
     write_success_ = false;
     pending_write_buffer_.reset();
     pending_write_buffer_pos_ = 0;
-    task_run_.reset();
+    write_waitable_event_.reset();
+
+    // |send_stream_| might have been reset in Close() while
+    // |write_waitable_event_| was waiting.
+    if (!send_stream_)
+      return {Exception::kIo};
 
     return result;
   }
@@ -211,6 +230,14 @@ class OutputStreamImpl : public OutputStream {
 
     send_stream_.reset();
 
+    // It is possible that a Write() call could still be blocking a different
+    // sequence via |write_waitable_event_| when Close() is called. If we only
+    // cancel the stream watcher, the Write() call will block forever. We
+    // trigger the event manually here, which will cause an IO exception to be
+    // returned from Write().
+    if (write_waitable_event_)
+      write_waitable_event_->Signal();
+
     return {Exception::kSuccess};
   }
 
@@ -221,11 +248,11 @@ class OutputStreamImpl : public OutputStream {
     DCHECK(send_stream_.is_valid());
     DCHECK(pending_write_buffer_);
     DCHECK_LT(pending_write_buffer_pos_, pending_write_buffer_->size());
-    DCHECK(task_run_);
+    DCHECK(write_waitable_event_);
 
     if (state.peer_closed()) {
       write_success_ = false;
-      task_run_->Signal();
+      write_waitable_event_->Signal();
       return;
     }
 
@@ -246,7 +273,7 @@ class OutputStreamImpl : public OutputStream {
     }
 
     write_success_ = result == MOJO_RESULT_OK;
-    task_run_->Signal();
+    write_waitable_event_->Signal();
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -256,7 +283,7 @@ class OutputStreamImpl : public OutputStream {
   std::unique_ptr<ByteArray> pending_write_buffer_;
   uint32_t pending_write_buffer_pos_ = 0;
   bool write_success_ = false;
-  base::Optional<base::WaitableEvent> task_run_;
+  base::Optional<base::WaitableEvent> write_waitable_event_;
 };
 
 }  // namespace
