@@ -32,7 +32,6 @@ class FakeGraphicsLayerClient : public GraphicsLayerClient {
     if (painter_)
       painter_(layer, context, phase, rect);
   }
-  bool IsSVGRoot() const override { return is_svg_root_; }
 
   void SetIsTrackingRasterInvalidations(bool is_tracking_raster_invalidations) {
     is_tracking_raster_invalidations_ = is_tracking_raster_invalidations;
@@ -46,13 +45,10 @@ class FakeGraphicsLayerClient : public GraphicsLayerClient {
                                      const IntRect&)>;
   void SetPainter(const Painter& painter) { painter_ = painter; }
 
-  void SetIsSVGRoot(bool is_svg_root) { is_svg_root_ = is_svg_root; }
-
  private:
   Painter painter_ = nullptr;
   bool is_tracking_raster_invalidations_ = false;
   bool needs_repaint_ = false;
-  bool is_svg_root_ = false;
 };
 
 }  // namespace blink
