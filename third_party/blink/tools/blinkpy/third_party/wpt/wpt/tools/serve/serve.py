@@ -73,7 +73,9 @@ class WrapperHandler(object):
         self.handler(request, response)
 
     def handle_request(self, request, response):
-        for header_name, header_value in self.headers:
+        headers = self.headers + handlers.load_headers(
+            request, self._get_filesystem_path(request))
+        for header_name, header_value in headers:
             response.headers.set(header_name, header_value)
 
         self.check_exposure(request)
@@ -111,13 +113,17 @@ class WrapperHandler(object):
                 path = replace_end(path, src, dest)
         return path
 
+    def _get_filesystem_path(self, request):
+        """Get the path of the underlying resource file on disk."""
+        return self._get_path(filesystem_path(self.base_path, request, self.url_base), False)
+
     def _get_metadata(self, request):
         """Get an iterator over script metadata based on // META comments in the
         associated js file.
 
         :param request: The Request being processed.
         """
-        path = self._get_path(filesystem_path(self.base_path, request, self.url_base), False)
+        path = self._get_filesystem_path(request)
         try:
             with open(path, "rb") as f:
                 for key, value in read_script_metadata(f, js_meta_re):
@@ -532,7 +538,7 @@ def start_servers(host, ports, paths, routes, bind_address, config, **kwargs):
         # If trying to start HTTP/2.0 server, check compatibility
         if scheme == 'h2' and not http2_compatible():
             logger.error('Cannot start HTTP/2.0 server as the environment is not compatible. ' +
-                         'Requires Python 2.7.10+ (< 3.0) and OpenSSL 1.0.2+')
+                         'Requires Python 2.7.10+ or 3.6+ and OpenSSL 1.0.2+')
             continue
 
         for port in ports:

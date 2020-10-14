@@ -9,7 +9,7 @@ cd $DIR
 
 TARGET_DIR=$DIR/wpt
 REMOTE_REPO="https://github.com/web-platform-tests/wpt.git"
-WPT_HEAD=4b8a64638b4c06fb38eb562b754eae389b381ec0
+WPT_HEAD=c808aa3d15a42648d8b25a838024813990959e37
 
 function clone {
   # Remove existing repo if already exists.
