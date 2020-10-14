@@ -76,10 +76,6 @@ const char kAdUserActivationHistogramId[] =
     "PageLoad.Clients.Ads.FrameCounts.AdFrames.PerFrame."
     "UserActivation";
 
-const char kSqrtNumberOfPixelsHistogramId[] =
-    "PageLoad.Clients.Ads.FrameCounts.AdFrames.PerFrame."
-    "SqrtNumberOfPixels";
-
 const char kPeakWindowdPercentHistogramId[] =
     "PageLoad.Clients.Ads.Cpu.FullPage.PeakWindowedPercent2";
 
@@ -1118,8 +1114,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest, FramePixelSize) {
 
   // Navigate away to force the histogram recording.
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
-  histogram_tester.ExpectBucketCount(kSqrtNumberOfPixelsHistogramId, 100, 2);
-  histogram_tester.ExpectBucketCount(kSqrtNumberOfPixelsHistogramId, 0, 1);
 
   // Verify each UKM entry has a corresponding, unique size.
   auto entries =

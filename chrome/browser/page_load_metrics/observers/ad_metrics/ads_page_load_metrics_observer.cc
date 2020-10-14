@@ -1149,12 +1149,6 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
     aggregate_ad_info_by_visibility_[static_cast<int>(visibility)].num_frames +=
         1;
 
-    int frame_area = ad_frame_data.frame_size().GetCheckedArea().ValueOrDefault(
-        std::numeric_limits<int>::max());
-    ADS_HISTOGRAM("FrameCounts.AdFrames.PerFrame.SqrtNumberOfPixels",
-                  UMA_HISTOGRAM_COUNTS_10000, visibility,
-                  std::sqrt(frame_area));
-
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Total2", PAGE_BYTES_HISTOGRAM,
                   visibility, ad_frame_data.bytes());
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,

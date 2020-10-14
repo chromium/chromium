@@ -53281,6 +53281,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="PageLoad.FrameCounts.AdFrames.PerFrame.SqrtNumberOfPixels"
+    units="pixels" expires_after="2021-01-30">
+  <obsolete>
+    Removed 10/20.
+  </obsolete>
+  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The square root of the area of a root adframe in pixels. Only recorded for
+    ad frames with non-zero total bytes. Recorded when the page is destroyed or
+    navigated. Display none iframes will not always update their size because
+    they lack a content view. This uses the last size of frame before it was set
+    to display: none.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.FrameCounts.AnyParentFrame.AdFrames"
     units="Ad frames" expires_after="M80">
   <obsolete>
