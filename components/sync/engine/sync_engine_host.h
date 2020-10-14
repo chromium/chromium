@@ -31,8 +31,8 @@ class SyncEngineHost {
   // process changes. If success is false, initialization wasn't able to be
   // completed and should be retried.
   //
-  // |js_backend| is what about:sync interacts with. It is initialized only if
-  // |success| is true.
+  // |js_backend| is what chrome://sync-internals interacts with. It is
+  // initialized only if |success| is true.
 
   virtual void OnEngineInitialized(
       ModelTypeSet initial_types,

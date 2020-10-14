@@ -26,12 +26,12 @@ struct SyncCycleEvent;
 // state upon change. It can send to observers a snapshot of this state as a
 // SyncStatus object, aggregating all this data into one place.
 //
-// Most of this data ends up on the about:sync page.  But the page is only
-// 'pinged' to update itself at the end of a sync cycle.  A user could refresh
-// manually, but unless their timing is excellent it's unlikely that a user will
-// see any state in mid-sync cycle.  We have no plans to change this.  However,
-// we will continue to collect data and update state mid-sync-cycle in case we
-// need to debug slow or stuck sync cycles.
+// Most of this data ends up on the chrome://sync-internals page.  But the page
+// is only 'pinged' to update itself at the end of a sync cycle.  A user could
+// refresh manually, but unless their timing is excellent it's unlikely that a
+// user will see any state in mid-sync cycle.  We have no plans to change this.
+// However, we will continue to collect data and update state mid-sync-cycle in
+// case we need to debug slow or stuck sync cycles.
 class AllStatus : public SyncEngineEventListener {
  public:
   AllStatus();

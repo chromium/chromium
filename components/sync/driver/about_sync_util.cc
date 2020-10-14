@@ -80,8 +80,9 @@ namespace {
 
 const char kUninitialized[] = "Uninitialized";
 
-// This class represents one field in about:sync. It gets serialized into a
-// dictionary with entries for 'stat_name', 'stat_value' and 'is_valid'.
+// This class represents one field in chrome://sync-internals. It gets
+// serialized into a dictionary with entries for 'stat_name', 'stat_value' and
+// 'is_valid'.
 class StatBase {
  public:
   base::Value ToValue() const {
@@ -116,8 +117,8 @@ class Stat : public StatBase {
   void Set(const T& value) { SetFromValue(base::Value(value)); }
 };
 
-// A section for display on about:sync, consisting of a title and a list of
-// fields.
+// A section for display on chrome://sync-internals, consisting of a title and a
+// list of fields.
 class Section {
  public:
   Section(const std::string& title, bool is_sensitive)
@@ -301,9 +302,9 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
 }  // namespace
 
 // This function both defines the structure of the message to be returned and
-// its contents.  Most of the message consists of simple fields in about:sync
-// which are grouped into sections and populated with the help of the SyncStat
-// classes defined above.
+// its contents.  Most of the message consists of simple fields in
+// chrome://sync-internals which are grouped into sections and populated with
+// the help of the SyncStat classes defined above.
 std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     IncludeSensitiveData include_sensitive_data,
     SyncService* service,

@@ -70,7 +70,7 @@ extern const char kTypes[];
 using IncludeSensitiveData =
     util::StrongAlias<class IncludeSensitiveDataTag, bool>;
 // This function returns a DictionaryValue which contains all the information
-// required to populate the 'About' tab of about:sync.
+// required to populate the 'About' tab of chrome://sync-internals.
 // Note that |service| may be null.
 // If |include_sensitive_data| is false, Personally Identifiable Information
 // won't be included in the return value.

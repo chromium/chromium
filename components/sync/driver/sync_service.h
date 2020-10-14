@@ -419,9 +419,10 @@ class SyncService : public KeyedService {
   // the type's status, and <status> is one of "error", "warning" or "ok"
   // depending on the type's current status.
   //
-  // This function is used by about_sync_util.cc to help populate the about:sync
-  // page.  It returns a ListValue rather than a DictionaryValue in part to make
-  // it easier to iterate over its elements when constructing that page.
+  // This function is used by about_sync_util.cc to help populate the
+  // chrome://sync-internals page.  It returns a ListValue rather than a
+  // DictionaryValue in part to make it easier to iterate over its elements when
+  // constructing that page.
   virtual std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() = 0;
 
   virtual const GURL& GetSyncServiceUrlForDebugging() const = 0;

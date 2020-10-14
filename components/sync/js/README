@@ -8,7 +8,7 @@ Much of it has been removed in favor of an ad-hoc system that allows us to
 offer better safety guarantees, and to dispatch requests to different threads.
 
 All that remains are some WeakHandles that allow us to send JsEvents from the
-sync backend to about:sync.  The SyncInternalsUI implements JsEventHandler in
+sync backend to chrome://sync-internals.  The SyncInternalsUI implements JsEventHandler in
 order to receive these events.  The SyncManager implements JsBackend in order
 to send them.  The SyncJsController acts as an intermediary between them.
 

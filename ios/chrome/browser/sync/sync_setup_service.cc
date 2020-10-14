@@ -134,7 +134,7 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
     case GoogleServiceAuthError::NONE:
     // Connection failed is not shown to the user, as this will happen if the
     // service retuned a 500 error. A more detail error can always be checked
-    // on about:sync.
+    // on chrome://sync-internals.
     case GoogleServiceAuthError::CONNECTION_FAILED:
     case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
