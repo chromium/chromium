@@ -3426,6 +3426,7 @@
         },
       },
       'lacros_chrome_browsertests': {},
+      'ui_base_unittests': {},
       'unit_tests': {},
     },
 
