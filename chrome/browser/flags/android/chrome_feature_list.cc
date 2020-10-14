@@ -189,7 +189,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kSharedClipboardUI,
     &kSharingQrCodeAndroid,
     &kShoppingAssist,
-    &kSigninPromoMaxImpressionsAndroid,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -553,9 +552,6 @@ const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
 
 const base::Feature kShoppingAssist{"ShoppingAssist",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kSigninPromoMaxImpressionsAndroid{
-    "SigninPromoMaxImpressionsAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSpannableInlineAutocomplete{
     "SpannableInlineAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};

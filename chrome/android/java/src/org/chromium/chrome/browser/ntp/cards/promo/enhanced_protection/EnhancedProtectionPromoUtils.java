@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -45,7 +46,7 @@ final class EnhancedProtectionPromoUtils {
     // Suffix for PROMO_IS_DISMISSED and PROMO_TIMES_SEEN Chrome preference keys.
     public static final String ENHANCED_PROTECTION_PROMO_CARD_FEATURE =
             "EnhancedProtectionPromoCard";
-    private static final int MAX_IMPRESSION_SEEN = 10;
+    private static final int DEFAULT_MAX_IMPRESSION_SEEN = 22;
 
     // Do not instantiate.
     private EnhancedProtectionPromoUtils() {}
@@ -58,10 +59,13 @@ final class EnhancedProtectionPromoUtils {
     static boolean shouldCreatePromo(@Nullable Profile profile) {
         String timesSeenKey = getTimesSeenKey();
         int timesSeen = SharedPreferencesManager.getInstance().readInt(timesSeenKey, 0);
+        int maxImpressions = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
+                "MaxEnhancedProtectionPromoImpressions", DEFAULT_MAX_IMPRESSION_SEEN);
         // TODO(bdea): If the user has pressed "Continue" and not selected Enhanced Protection,
         // should we still show the promo.
         return (profile != null) && !UserPrefs.get(profile).getBoolean(Pref.SAFE_BROWSING_ENHANCED)
-                && !isPromoDismissedInSharedPreference() && (timesSeen <= MAX_IMPRESSION_SEEN)
+                && !isPromoDismissedInSharedPreference() && (timesSeen <= maxImpressions)
                 && !SafeBrowsingBridge.isSafeBrowsingManaged();
     }
 
@@ -88,7 +92,9 @@ final class EnhancedProtectionPromoUtils {
                 action, EnhancedProtectionPromoAction.TOTAL);
 
         if (action == EnhancedProtectionPromoAction.CREATED) return;
-
+        int maxImpressions = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
+                "MaxEnhancedProtectionPromoImpressions", DEFAULT_MAX_IMPRESSION_SEEN);
         String timesSeenKey = getTimesSeenKey();
         int timesSeen = SharedPreferencesManager.getInstance().readInt(timesSeenKey, 0);
         if (action == EnhancedProtectionPromoAction.SEEN) {
@@ -97,12 +103,12 @@ final class EnhancedProtectionPromoUtils {
             RecordUserAction.record("NewTabPage.Promo.EnhancedProtectionPromo.Accepted");
             RecordHistogram.recordLinearCountHistogram(
                     "NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilAction", timesSeen, 1,
-                    MAX_IMPRESSION_SEEN, MAX_IMPRESSION_SEEN + 1);
+                    maxImpressions, maxImpressions + 1);
         } else if (action == EnhancedProtectionPromoAction.DISMISSED) {
             RecordUserAction.record("NewTabPage.Promo.EnhancedProtectionPromo.Dismissed");
             RecordHistogram.recordLinearCountHistogram(
                     "NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilDismissal", timesSeen,
-                    1, MAX_IMPRESSION_SEEN, MAX_IMPRESSION_SEEN + 1);
+                    1, maxImpressions, maxImpressions + 1);
         }
     }
 }
