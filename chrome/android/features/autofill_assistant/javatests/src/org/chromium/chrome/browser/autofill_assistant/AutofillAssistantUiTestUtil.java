@@ -559,11 +559,17 @@ class AutofillAssistantUiTestUtil {
 
         // Sanity check, can only click on coordinates on screen.
         DisplayMetrics displayMetrics = testRule.getActivity().getResources().getDisplayMetrics();
-        if (x < 0 || x > displayMetrics.widthPixels || y < 0 || y > displayMetrics.heightPixels) {
+        BottomSheetController bottomSheetController =
+                testRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
+        int totalBottomSheetHeight = bottomSheetController.getCurrentOffset()
+                + bottomSheetController.getTopShadowHeight();
+        if (x < 0 || x > displayMetrics.widthPixels || y < 0
+                || y > displayMetrics.heightPixels - totalBottomSheetHeight) {
             throw new IllegalArgumentException(Arrays.toString(elementIds)
                     + " not on screen: tried to tap x=" + x + ", y=" + y
                     + ", which is outside of display with w=" + displayMetrics.widthPixels
-                    + ", h=" + displayMetrics.heightPixels);
+                    + ", h=" + displayMetrics.heightPixels
+                    + ", or obstructed by the BottomSheet with height=" + totalBottomSheetHeight);
         }
         TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(), x, y);
     }

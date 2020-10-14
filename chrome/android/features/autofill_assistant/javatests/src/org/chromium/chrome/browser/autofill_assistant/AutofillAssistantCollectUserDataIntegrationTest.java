@@ -139,7 +139,6 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1136166")
     public void testEnterPayment() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
@@ -224,6 +223,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
         onView(withId(R.id.card_unmask_input)).perform(typeText("123"));
+        waitUntilViewMatchesCondition(
+                withId(R.id.positive_button), allOf(isDisplayed(), isEnabled()));
         onView(withId(R.id.positive_button)).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed(), 6000L);
         assertThat(getElementValue(getWebContents(), "name"), is("John Doe"));

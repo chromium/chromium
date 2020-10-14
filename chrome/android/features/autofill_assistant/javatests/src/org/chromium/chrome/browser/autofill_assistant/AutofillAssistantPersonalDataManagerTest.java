@@ -54,7 +54,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -491,7 +490,6 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1136166")
     public void testCreateAndEnterCard() throws Exception {
         // Add a profile for easier address selection.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
@@ -564,6 +562,8 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
         onView(withId(R.id.card_unmask_input)).perform(typeText("123"));
+        waitUntilViewMatchesCondition(
+                withId(R.id.positive_button), allOf(isDisplayed(), isEnabled()));
         onView(withId(R.id.positive_button)).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "name"), is("John Doe"));
