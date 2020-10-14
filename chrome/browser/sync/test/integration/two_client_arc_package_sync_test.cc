@@ -22,12 +22,8 @@ bool AllProfilesHaveSameArcPackageDetails() {
 
 class TwoClientArcPackageSyncTest : public SyncTest {
  public:
-  TwoClientArcPackageSyncTest() : SyncTest(TWO_CLIENT) { DisableVerifier(); }
-
-  ~TwoClientArcPackageSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientArcPackageSyncTest);
+  TwoClientArcPackageSyncTest() : SyncTest(TWO_CLIENT) {}
+  ~TwoClientArcPackageSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientArcPackageSyncTest, StartWithNoPackages) {

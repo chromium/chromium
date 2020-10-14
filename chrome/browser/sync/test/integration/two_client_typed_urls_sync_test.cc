@@ -554,9 +554,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
   ASSERT_TRUE(SetupClients());
   GURL new_url("http://history.com");
   base::Time timestamp = base::Time::Now();
-  // Setup both clients with the identical typed URL visit. This means we can't
-  // use the verifier in this test, because this will show up as two distinct
-  // visits in the verifier.
+
   AddUrlToHistoryWithTimestamp(0, new_url, ui::PAGE_TRANSITION_LINK,
                                history::SOURCE_BROWSED, timestamp);
   AddUrlToHistoryWithTimestamp(1, new_url, ui::PAGE_TRANSITION_LINK,

@@ -33,8 +33,7 @@ bool AddWord(int index, const std::string& word);
 // value is true iff all words are not duplicates and valid.
 bool AddWords(int index, int n, const std::string& prefix);
 
-// Removes |word| from the dictionary for profile with index |index|. Also
-// removes |word| from the verifier if DisableVerifier() hasn't been called.
+// Removes |word| from the dictionary for profile with index |index|.
 // Returns true if |word| was found. Otherwise returns false.
 bool RemoveWord(int index, const std::string& word);
 

@@ -214,12 +214,12 @@ class SyncTest : public PlatformBrowserTest {
   Profile* verifier();
 
   // Used to determine whether the verifier profile should be updated or not.
-  bool use_verifier() { return use_verifier_; }
-
-  // After calling this method, changes made to a profile will no longer be
-  // reflected in the verifier profile. Note: Not all datatypes use this.
-  // TODO(rsimha): Hook up all datatypes to this mechanism.
-  void DisableVerifier();
+  // Default is to return false. Test should override this if they require
+  // different behavior.
+  // Warning: do not use verifier in new tests.
+  // TODO(crbug.com/1137705): remove verifier profile logic completely, once all
+  // tests are rewritten in a way to not use verifier.
+  virtual bool UseVerifier();
 
   // Initializes sync clients and profiles but does not sync any of them.
   virtual bool SetupClients() WARN_UNUSED_RESULT;
@@ -500,10 +500,6 @@ class SyncTest : public PlatformBrowserTest {
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
   Profile* verifier_;
-
-  // Indicates whether changes to a profile should also change the verifier
-  // profile or not.
-  bool use_verifier_;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.

@@ -267,8 +267,7 @@ SyncTest::SyncTest(TestType test_type)
       test_construction_time_(base::Time::Now()),
       server_type_(SERVER_TYPE_UNDECIDED),
       previous_profile_(nullptr),
-      num_clients_(-1),
-      use_verifier_(true) {
+      num_clients_(-1) {
   sync_datatype_helper::AssociateWithTest(this);
   switch (test_type_) {
     case SINGLE_CLIENT: {
@@ -490,7 +489,7 @@ Profile* SyncTest::GetProfile(int index) {
 
 std::vector<Profile*> SyncTest::GetAllProfiles() {
   std::vector<Profile*> profiles;
-  if (use_verifier()) {
+  if (UseVerifier()) {
     profiles.push_back(verifier());
   }
   for (int i = 0; i < num_clients(); ++i) {
@@ -556,15 +555,15 @@ std::vector<ProfileSyncService*> SyncTest::GetSyncServices() {
 }
 
 Profile* SyncTest::verifier() {
-  if (!use_verifier_)
+  if (!UseVerifier())
     LOG(FATAL) << "Verifier account is disabled.";
   if (verifier_ == nullptr)
     LOG(FATAL) << "SetupClients() has not yet been called.";
   return verifier_;
 }
 
-void SyncTest::DisableVerifier() {
-  use_verifier_ = false;
+bool SyncTest::UseVerifier() {
+  return false;
 }
 
 bool SyncTest::SetupClients() {
@@ -619,17 +618,16 @@ bool SyncTest::SetupClients() {
   }
 
   // Verifier account is not useful when running against external servers.
-  if (UsingExternalServers())
-    DisableVerifier();
+  DCHECK(!UsingExternalServers() || !UseVerifier());
 
 // Verifier needs to create a test profile. But Clank doesn't support multiple
 // profiles.
 #if defined(OS_ANDROID)
-  DisableVerifier();
+  DCHECK(!UseVerifier());
 #endif
 
   // Create the verifier profile.
-  if (use_verifier_) {
+  if (UseVerifier()) {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     profile_delegates_[num_clients_] =

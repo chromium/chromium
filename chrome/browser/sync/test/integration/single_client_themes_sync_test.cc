@@ -27,11 +27,12 @@ namespace {
 class SingleClientThemesSyncTest : public SyncTest {
  public:
   SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientThemesSyncTest() override = default;
 
-  ~SingleClientThemesSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientThemesSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137777): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 // TODO(akalin): Add tests for model association (i.e., tests that

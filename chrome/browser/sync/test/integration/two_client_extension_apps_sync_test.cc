@@ -56,9 +56,7 @@ extensions::ExtensionRegistry* GetExtensionRegistry(Profile* profile) {
 
 class TwoClientExtensionAppsSyncTest : public SyncTest {
  public:
-  TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {
-    DisableVerifier();
-  }
+  TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {}
 
   ~TwoClientExtensionAppsSyncTest() override = default;
 

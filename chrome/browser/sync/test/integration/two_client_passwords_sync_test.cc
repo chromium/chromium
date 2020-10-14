@@ -44,11 +44,19 @@ static const char* kValidPassphrase = "passphrase!";
 class TwoClientPasswordsSyncTest : public SyncTest {
  public:
   TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {}
+  ~TwoClientPasswordsSyncTest() override = default;
+};
 
-  ~TwoClientPasswordsSyncTest() override {}
+class TwoClientPasswordsSyncTestWithVerifier
+    : public TwoClientPasswordsSyncTest {
+ public:
+  TwoClientPasswordsSyncTestWithVerifier() = default;
+  ~TwoClientPasswordsSyncTestWithVerifier() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPasswordsSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137740): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
@@ -144,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, Update) {
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, Update) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -189,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, AddTwice) {
   ASSERT_EQ(1, GetPasswordCount(1));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, Delete) {
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, Delete) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -276,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(DeleteTwo)) {
   ASSERT_EQ(init_password_count - 2, GetPasswordCount(0));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, DeleteAll) {
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier, DeleteAll) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
 
@@ -337,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, AddImmediatelyAfterDelete) {
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
+                       AddImmediatelyAfterDelete) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordFormsAsVerifier());
   base::HistogramTester histogram_tester;

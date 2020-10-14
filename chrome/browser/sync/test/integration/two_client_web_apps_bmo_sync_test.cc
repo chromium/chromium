@@ -36,10 +36,7 @@ namespace {
 
 class TwoClientWebAppsBMOSyncTest : public SyncTest {
  public:
-  TwoClientWebAppsBMOSyncTest() : SyncTest(TWO_CLIENT) {
-    DisableVerifier();
-  }
-
+  TwoClientWebAppsBMOSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientWebAppsBMOSyncTest() override = default;
 
   bool SetupClients() override {

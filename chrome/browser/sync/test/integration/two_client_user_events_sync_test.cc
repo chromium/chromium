@@ -26,7 +26,13 @@ const int kDecryptingClientId = 1;
 class TwoClientUserEventsSyncTest : public SyncTest {
  public:
   TwoClientUserEventsSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientUserEventsSyncTest() override {}
+  ~TwoClientUserEventsSyncTest() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137720): rewrite test to not use verifier (currently
+    // needed because of WaitForBookmarksToMatchVerifier()).
+    return true;
+  }
 
   bool ExpectNoUserEvent(int index) {
     return UserEventEqualityChecker(GetSyncService(index), GetFakeServer(),
@@ -48,9 +54,6 @@ class TwoClientUserEventsSyncTest : public SyncTest {
         bookmarks_helper::AddURL(index, 0, "What are you syncing about?",
                                  GURL("https://google.com/synced-bookmark-1")));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientUserEventsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientUserEventsSyncTest,

@@ -24,12 +24,10 @@ using extensions_helper::UninstallExtension;
 
 class TwoClientExtensionsSyncTest : public SyncTest {
  public:
-  TwoClientExtensionsSyncTest() : SyncTest(TWO_CLIENT) { DisableVerifier(); }
+  TwoClientExtensionsSyncTest() : SyncTest(TWO_CLIENT) {}
+  ~TwoClientExtensionsSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionsSyncTest,

@@ -36,18 +36,14 @@ CommitResponse::ResponseType BounceType(
 
 class SingleClientUserEventsSyncTest : public SyncTest {
  public:
-  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    DisableVerifier();
-  }
+  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientUserEventsSyncTest() override = default;
 
   bool ExpectUserEvents(std::vector<UserEventSpecifics> expected_specifics) {
     return UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
                                     expected_specifics)
         .Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientUserEventsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {

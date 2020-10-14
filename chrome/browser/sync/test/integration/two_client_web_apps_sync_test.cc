@@ -28,8 +28,7 @@ namespace web_app {
 
 class TwoClientWebAppsSyncTest : public SyncTest {
  public:
-  TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) { DisableVerifier(); }
-
+  TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientWebAppsSyncTest() override = default;
 
   void SetUpOnMainThread() override {

@@ -537,7 +537,7 @@ const BookmarkNode* AddURL(int profile,
                << profile;
     return nullptr;
   }
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_parent = nullptr;
     FindNodeInVerifier(model, parent, &v_parent);
     const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddURL(
@@ -581,7 +581,7 @@ const BookmarkNode* AddFolder(int profile,
                << profile;
     return nullptr;
   }
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_parent = nullptr;
     FindNodeInVerifier(model, parent, &v_parent);
     const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddFolder(
@@ -603,7 +603,7 @@ void SetTitle(int profile,
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_node = nullptr;
     FindNodeInVerifier(model, node, &v_node);
     GetVerifierBookmarkModel()->SetTitle(v_node, base::UTF8ToUTF16(new_title));
@@ -622,7 +622,7 @@ void SetFavicon(int profile,
       << "Profile " << profile;
   ASSERT_EQ(BookmarkNode::URL, node->type()) << "Node " << node->GetTitle()
                                              << " must be a url.";
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_node = nullptr;
     FindNodeInVerifier(model, node, &v_node);
     SetFaviconImpl(sync_datatype_helper::test()->verifier(),
@@ -646,7 +646,7 @@ void ExpireFavicon(int profile, const BookmarkNode* node) {
   ASSERT_EQ(BookmarkNode::URL, node->type()) << "Node " << node->GetTitle()
                                              << " must be a url.";
 
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_node = nullptr;
     FindNodeInVerifier(model, node, &v_node);
     ExpireFaviconImpl(sync_datatype_helper::test()->verifier(), node);
@@ -702,7 +702,7 @@ void DeleteFaviconMappings(int profile,
   ASSERT_EQ(BookmarkNode::URL, node->type())
       << "Node " << node->GetTitle() << " must be a url.";
 
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_node = nullptr;
     FindNodeInVerifier(model, node, &v_node);
     DeleteFaviconMappingsImpl(sync_datatype_helper::test()->verifier(), v_node,
@@ -721,7 +721,7 @@ const BookmarkNode* SetURL(int profile,
                << "Profile " << profile;
     return nullptr;
   }
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_node = nullptr;
     FindNodeInVerifier(model, node, &v_node);
     if (v_node->is_url())
@@ -740,7 +740,7 @@ void Move(int profile,
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_new_parent = nullptr;
     const BookmarkNode* v_node = nullptr;
     FindNodeInVerifier(model, new_parent, &v_new_parent);
@@ -755,7 +755,7 @@ void Remove(int profile, const BookmarkNode* parent, size_t index) {
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, parent->id()), parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_parent = nullptr;
     FindNodeInVerifier(model, parent, &v_parent);
     ASSERT_TRUE(NodesMatch(parent->children()[index].get(),
@@ -766,7 +766,7 @@ void Remove(int profile, const BookmarkNode* parent, size_t index) {
 }
 
 void RemoveAll(int profile) {
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* root_node = GetVerifierBookmarkModel()->root_node();
     for (const auto& permanent_node : root_node->children()) {
       while (!permanent_node->children().empty()) {
@@ -783,7 +783,7 @@ void SortChildren(int profile, const BookmarkNode* parent) {
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, parent->id()), parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->use_verifier()) {
+  if (sync_datatype_helper::test()->UseVerifier()) {
     const BookmarkNode* v_parent = nullptr;
     FindNodeInVerifier(model, parent, &v_parent);
     GetVerifierBookmarkModel()->SortChildren(v_parent);
@@ -806,9 +806,9 @@ void ReverseChildOrder(int profile, const BookmarkNode* parent) {
 }
 
 bool ModelMatchesVerifier(int profile) {
-  if (!sync_datatype_helper::test()->use_verifier()) {
-    LOG(ERROR) << "Illegal to call ModelMatchesVerifier() after "
-               << "DisableVerifier(). Use ModelsMatch() instead.";
+  if (!sync_datatype_helper::test()->UseVerifier()) {
+    LOG(ERROR) << "Illegal to call ModelMatchesVerifier() when verifier isn't "
+               << "enabled. Use ModelsMatch() instead.";
     return false;
   }
   return BookmarkModelsMatch(GetVerifierBookmarkModel(),

@@ -45,7 +45,6 @@ class TwoClientPreferencesSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
-  DisableVerifier();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
   const std::string new_home_page = base::StringPrintf(
@@ -109,7 +108,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(UnsyncableBooleanPref)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync());
-  DisableVerifier();
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
   ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kDisableScreenshots).Wait());
 
@@ -169,19 +167,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
 class TwoClientPreferencesSyncTestWithSelfNotifications : public SyncTest {
  public:
   TwoClientPreferencesSyncTestWithSelfNotifications() : SyncTest(TWO_CLIENT) {}
-
-  ~TwoClientPreferencesSyncTestWithSelfNotifications() override {}
-
-  void SetUp() override {
-    // If verifiers are enabled, ChangeBooleanPref() and similar methods will
-    // apply changes to both the specified client and the verifier profile.
-    // These tests should only apply changes in one client.
-    DisableVerifier();
-    SyncTest::SetUp();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPreferencesSyncTestWithSelfNotifications);
+  ~TwoClientPreferencesSyncTestWithSelfNotifications() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,

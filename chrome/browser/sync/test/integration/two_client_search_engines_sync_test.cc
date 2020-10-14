@@ -20,21 +20,13 @@ using base::ASCIIToUTF16;
 class TwoClientSearchEnginesSyncTest : public SyncTest {
  public:
   TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {}
-
-  ~TwoClientSearchEnginesSyncTest() override {}
+  ~TwoClientSearchEnginesSyncTest() override = default;
 
   bool SetupClients() override {
     if (!SyncTest::SetupClients()) {
       return false;
     }
 
-    // Wait for models to load.
-    if (use_verifier()) {
-      // Note: The verifier profile isn't used when running against external
-      // servers.
-      search_test_utils::WaitForTemplateURLServiceToLoad(
-          TemplateURLServiceFactory::GetForProfile(verifier()));
-    }
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(GetProfile(0)));
     search_test_utils::WaitForTemplateURLServiceToLoad(
@@ -42,9 +34,27 @@ class TwoClientSearchEnginesSyncTest : public SyncTest {
 
     return true;
   }
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientSearchEnginesSyncTest);
+class TwoClientSearchEnginesSyncTestWithVerifier
+    : public TwoClientSearchEnginesSyncTest {
+ public:
+  TwoClientSearchEnginesSyncTestWithVerifier() = default;
+  ~TwoClientSearchEnginesSyncTestWithVerifier() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137771): rewrite test to not use verifier.
+    return true;
+  }
+
+  bool SetupClients() override {
+    if (!TwoClientSearchEnginesSyncTest::SetupClients()) {
+      return false;
+    }
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(verifier()));
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(Add)) {
@@ -104,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, Duplicates) {
+IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   // TODO(crbug.com/953711): Ideally we could immediately assert
   // search_engines_helper::AllServicesMatch(), but that's not possible today
@@ -187,7 +197,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  DisableVerifier();
   // TODO(crbug.com/953711): Ideally we could immediately assert
   // search_engines_helper::AllServicesMatch(), but that's not possible today
   // without introducing flakiness due to random GUIDs in prepopulated engines.
@@ -210,7 +219,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  DisableVerifier();
   // TODO(crbug.com/953711): Ideally we could immediately assert
   // search_engines_helper::AllServicesMatch(), but that's not possible today
   // without introducing flakiness due to random GUIDs in prepopulated engines.
@@ -236,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   ASSERT_TRUE(search_engines_helper::AllServicesMatch());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, DisableSync) {
+IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier,
+                       DisableSync) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/953711): Ideally we could immediately assert
   // search_engines_helper::AllServicesMatch(), but that's not possible today

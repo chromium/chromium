@@ -36,6 +36,18 @@ class SyncExponentialBackoffTest : public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(SyncExponentialBackoffTest);
 };
 
+class SyncExponentialBackoffTestWithVerifier
+    : public SyncExponentialBackoffTest {
+ public:
+  SyncExponentialBackoffTestWithVerifier() = default;
+  ~SyncExponentialBackoffTestWithVerifier() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137787): rewrite test to not use verifier.
+    return true;
+  }
+};
+
 // Helper class that checks if a sync client has successfully gone through
 // exponential backoff after it encounters an error.
 class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
@@ -67,7 +79,8 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
   DISALLOW_COPY_AND_ASSIGN(ExponentialBackoffChecker);
 };
 
-IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
+IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTestWithVerifier,
+                       OfflineToOnline) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Add an item and ensure that sync is successful.

@@ -91,9 +91,8 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
 
 class SingleClientUserConsentsSyncTest : public SyncTest {
  public:
-  SingleClientUserConsentsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    DisableVerifier();
-  }
+  SingleClientUserConsentsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientUserConsentsSyncTest() override = default;
 
   bool ExpectUserConsents(
       std::vector<UserConsentSpecifics> expected_specifics) {
@@ -101,9 +100,6 @@ class SingleClientUserConsentsSyncTest : public SyncTest {
                                       expected_specifics)
         .Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientUserConsentsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {

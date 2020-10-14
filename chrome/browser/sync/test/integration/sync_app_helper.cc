@@ -153,7 +153,7 @@ void SyncAppHelper::SetupIfNecessary(SyncTest* test) {
     extensions::ExtensionSystem::Get(test->GetProfile(i))
         ->InitForRegularProfile(true /* extensions_enabled */);
   }
-  if (test->use_verifier()) {
+  if (test->UseVerifier()) {
     extensions::ExtensionSystem::Get(test->verifier())
         ->InitForRegularProfile(true /* extensions_enabled */);
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -21,10 +22,17 @@ const char kSanityHistoryUrl[] = "http://www.sanity-history.google.com";
 class SingleClientTypedUrlsSyncTest : public SyncTest {
  public:
   SingleClientTypedUrlsSyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SingleClientTypedUrlsSyncTest() override {}
+  ~SingleClientTypedUrlsSyncTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientTypedUrlsSyncTest);
+  bool UseVerifier() override {
+// These tests are running on Android, but it has no multiple profile support,
+// so verifier needs to be disabled.
+#if defined(OS_ANDROID)
+    return false;
+#endif
+    // TODO(crbug.com/1137779): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientTypedUrlsSyncTest, Sanity) {

@@ -72,14 +72,8 @@ class SyncDisabledByUserChecker : public SingleClientStatusChangeChecker {
 
 class SingleClientStandaloneTransportSyncTest : public SyncTest {
  public:
-  SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
-    DisableVerifier();
-  }
-
-  ~SingleClientStandaloneTransportSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientStandaloneTransportSyncTest);
+  SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientStandaloneTransportSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,

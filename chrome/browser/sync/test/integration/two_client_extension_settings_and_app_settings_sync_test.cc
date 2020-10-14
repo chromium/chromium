@@ -67,11 +67,12 @@ void MutateSomeSettings(
 class TwoClientExtensionSettingsAndAppSettingsSyncTest : public SyncTest {
  public:
   TwoClientExtensionSettingsAndAppSettingsSyncTest() : SyncTest(TWO_CLIENT) {}
+  ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override = default;
 
-  ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionSettingsAndAppSettingsSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137735): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 // For three independent extensions:
@@ -225,6 +226,11 @@ class TwoClientAppSettingsOsSyncTest : public OsSyncTest {
  public:
   TwoClientAppSettingsOsSyncTest() : OsSyncTest(TWO_CLIENT) {}
   ~TwoClientAppSettingsOsSyncTest() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137735): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,

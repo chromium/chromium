@@ -34,7 +34,13 @@ using bookmarks_helper::BookmarksMatchVerifierChecker;
 class TwoClientCustomPassphraseSyncTest : public SyncTest {
  public:
   TwoClientCustomPassphraseSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientCustomPassphraseSyncTest() override {}
+  ~TwoClientCustomPassphraseSyncTest() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137720): rewrite test to not use verifier (currently
+    // needed because of WaitForBookmarksToMatchVerifier()).
+    return true;
+  }
 
   bool WaitForBookmarksToMatchVerifier() {
     return BookmarksMatchVerifierChecker().Wait();
@@ -51,9 +57,6 @@ class TwoClientCustomPassphraseSyncTest : public SyncTest {
     ASSERT_TRUE(AddURL(index, 1, "Test bookmark",
                        GURL("https://google.com/synced-bookmark-2")));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientCustomPassphraseSyncTest);
 };
 
 class TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest

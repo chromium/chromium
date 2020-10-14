@@ -32,7 +32,6 @@ class TwoClientOsPreferencesSyncTest : public OsSyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ResetSyncForPrimaryAccount();
-  DisableVerifier();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   // Wait until sync settles before we override the prefs below.
   ASSERT_TRUE(AwaitQuiescence());

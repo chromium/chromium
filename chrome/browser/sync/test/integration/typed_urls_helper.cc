@@ -341,7 +341,7 @@ void AddUrlToHistoryWithTimestamp(int index,
                                   const base::Time& timestamp) {
   AddToHistory(GetHistoryServiceFromClient(index), url, transition, source,
                timestamp);
-  if (test()->use_verifier())
+  if (test()->UseVerifier())
     AddToHistory(HistoryServiceFactory::GetForProfile(
                      test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS),
                  url, transition, source, timestamp);
@@ -356,7 +356,7 @@ void ExpireHistoryBefore(int index, base::Time end_time) {
   base::CancelableTaskTracker task_tracker;
   GetHistoryServiceFromClient(index)->ExpireHistoryBeforeForTesting(
       end_time, base::DoNothing(), &task_tracker);
-  if (test()->use_verifier()) {
+  if (test()->UseVerifier()) {
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->ExpireHistoryBeforeForTesting(end_time, base::DoNothing(),
@@ -372,7 +372,7 @@ void ExpireHistoryBetween(int index,
   GetHistoryServiceFromClient(index)->ExpireHistoryBetween(
       {}, begin_time, end_time, /*user_initiated*/ true, base::DoNothing(),
       &task_tracker);
-  if (test()->use_verifier()) {
+  if (test()->UseVerifier()) {
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->ExpireHistoryBetween({}, begin_time, end_time,
@@ -385,7 +385,7 @@ void ExpireHistoryBetween(int index,
 void DeleteUrlFromHistory(int index, const GURL& url) {
   GetHistoryServiceFromClient(index)->DeleteURLs({url});
 
-  if (test()->use_verifier())
+  if (test()->UseVerifier())
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->DeleteURLs({url});
@@ -395,7 +395,7 @@ void DeleteUrlFromHistory(int index, const GURL& url) {
 
 void DeleteUrlsFromHistory(int index, const std::vector<GURL>& urls) {
   GetHistoryServiceFromClient(index)->DeleteURLs(urls);
-  if (test()->use_verifier())
+  if (test()->UseVerifier())
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->DeleteURLs(urls);
@@ -405,7 +405,7 @@ void DeleteUrlsFromHistory(int index, const std::vector<GURL>& urls) {
 void SetPageTitle(int index, const GURL& url, const std::string& title) {
   HistoryServiceFactory::GetForProfileWithoutCreating(test()->GetProfile(index))
       ->SetPageTitle(url, base::UTF8ToUTF16(title));
-  if (test()->use_verifier())
+  if (test()->UseVerifier())
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->SetPageTitle(url, base::UTF8ToUTF16(title));
@@ -490,7 +490,7 @@ bool CheckURLRowsAreEqualForTypedURLs(const history::URLRow& left,
 
 bool CheckAllProfilesHaveSameTypedURLs() {
   history::URLRows golden_urls;
-  if (test()->use_verifier()) {
+  if (test()->UseVerifier()) {
     history::HistoryService* verifier_service =
         HistoryServiceFactory::GetForProfile(
             test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS);
@@ -502,8 +502,8 @@ bool CheckAllProfilesHaveSameTypedURLs() {
     history::URLRows urls = GetTypedUrlsFromClient(i);
     if (!CheckURLRowVectorsAreEqualForTypedURLs(golden_urls, urls)) {
       DVLOG(1) << "Found no match in typed URLs between two profiles";
-      DVLOG(1) << PrintUrlRows(
-          golden_urls, test()->use_verifier() ? "verifier" : "client 0");
+      DVLOG(1) << PrintUrlRows(golden_urls,
+                               test()->UseVerifier() ? "verifier" : "client 0");
       DVLOG(1) << PrintUrlRows(urls, base::StringPrintf("client %i", i));
       return false;
     }

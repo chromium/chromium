@@ -146,7 +146,7 @@ bool ServiceMatchesVerifier(int profile_index) {
 
 bool AllServicesMatch() {
   // Use 0 as the baseline.
-  if (test()->use_verifier() && !ServiceMatchesVerifier(0)) {
+  if (test()->UseVerifier() && !ServiceMatchesVerifier(0)) {
     DVLOG(1) << "TemplateURLService 0 does not match verifier.";
     return false;
   }
@@ -198,7 +198,7 @@ void AddSearchEngine(int profile_index, int seed) {
   Profile* profile = test()->GetProfile(profile_index);
   TemplateURLServiceFactory::GetForProfile(profile)->Add(
       CreateTestTemplateURL(profile, seed));
-  if (test()->use_verifier())
+  if (test()->UseVerifier())
     GetVerifierService()->Add(CreateTestTemplateURL(profile, seed));
 }
 
@@ -214,7 +214,7 @@ void EditSearchEngine(int profile_index,
   ASSERT_FALSE(new_keyword.empty());
   service->ResetTemplateURL(turl, short_name, new_keyword, url);
   // Make sure we do the same on the verifier.
-  if (test()->use_verifier()) {
+  if (test()->UseVerifier()) {
     TemplateURL* verifier_turl =
         GetVerifierService()->GetTemplateURLForKeyword(keyword);
     EXPECT_TRUE(verifier_turl);
@@ -230,7 +230,7 @@ void DeleteSearchEngineBySeed(int profile_index, int seed) {
   EXPECT_TRUE(turl);
   service->Remove(turl);
   // Make sure we do the same on the verifier.
-  if (test()->use_verifier()) {
+  if (test()->UseVerifier()) {
     TemplateURL* verifier_turl =
         GetVerifierService()->GetTemplateURLForKeyword(keyword);
     EXPECT_TRUE(verifier_turl);
@@ -243,7 +243,7 @@ void ChangeDefaultSearchProvider(int profile_index, int seed) {
   TemplateURL* turl = service->GetTemplateURLForKeyword(CreateKeyword(seed));
   ASSERT_TRUE(turl);
   service->SetUserSelectedDefaultSearchProvider(turl);
-  if (test()->use_verifier()) {
+  if (test()->UseVerifier()) {
     TemplateURL* verifier_turl =
         GetVerifierService()->GetTemplateURLForKeyword(CreateKeyword(seed));
     ASSERT_TRUE(verifier_turl);

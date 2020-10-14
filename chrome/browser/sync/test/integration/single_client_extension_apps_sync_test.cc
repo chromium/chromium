@@ -20,13 +20,13 @@ using apps_helper::InstallPlatformApp;
 
 class SingleClientExtensionAppsSyncTest : public SyncTest {
  public:
-  SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {
-  }
-
+  SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionAppsSyncTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientExtensionAppsSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137717): rewrite tests to not use verifier profile.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, StartWithNoApps) {

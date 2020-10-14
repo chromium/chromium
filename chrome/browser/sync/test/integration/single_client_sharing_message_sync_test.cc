@@ -136,7 +136,6 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
 class SingleClientSharingMessageSyncTest : public SyncTest {
  public:
   SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {
-    DisableVerifier();
     // Replace the default value (5 seconds) with 1 minute to reduce possibility
     // of test flakiness.
     feature_list_.InitAndEnableFeatureWithParameters(

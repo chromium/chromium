@@ -23,11 +23,12 @@ using extensions_helper::InstallExtensionForAllProfiles;
 class SingleClientExtensionsSyncTest : public SyncTest {
  public:
   SingleClientExtensionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientExtensionsSyncTest() override = default;
 
-  ~SingleClientExtensionsSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientExtensionsSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137717): rewrite tests to not use verifier profile.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, StartWithNoExtensions) {

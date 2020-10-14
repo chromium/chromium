@@ -15,8 +15,7 @@
 class SingleClientSearchEnginesSyncTest : public SyncTest {
  public:
   SingleClientSearchEnginesSyncTest() : SyncTest(SINGLE_CLIENT) {}
-
-  ~SingleClientSearchEnginesSyncTest() override {}
+  ~SingleClientSearchEnginesSyncTest() override = default;
 
   bool SetupClients() override {
     if (!SyncTest::SetupClients()) {
@@ -32,8 +31,10 @@ class SingleClientSearchEnginesSyncTest : public SyncTest {
     return true;
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientSearchEnginesSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137771): rewrite test to not use verifier.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest, Sanity) {

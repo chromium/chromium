@@ -124,8 +124,6 @@ class PasswordManagerSyncTest : public SyncTest {
         {password_manager::features::kEnablePasswordsAccountStorage,
          password_manager::features::kFillOnAccountSelect},
         {});
-
-    DisableVerifier();
   }
 
   ~PasswordManagerSyncTest() override = default;

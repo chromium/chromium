@@ -106,8 +106,7 @@ class AppListSyncUpdateWaiter
 class SingleClientAppListSyncTest : public SyncTest {
  public:
   SingleClientAppListSyncTest() : SyncTest(SINGLE_CLIENT) {}
-
-  ~SingleClientAppListSyncTest() override {}
+  ~SingleClientAppListSyncTest() override = default;
 
   // SyncTest
   bool SetupClients() override {
@@ -119,18 +118,28 @@ class SingleClientAppListSyncTest : public SyncTest {
     SyncAppListHelper::GetInstance();
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientAppListSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, AppListEmpty) {
+class SingleClientAppListSyncTestWithVerifier
+    : public SingleClientAppListSyncTest {
+ public:
+  SingleClientAppListSyncTestWithVerifier() = default;
+  ~SingleClientAppListSyncTestWithVerifier() override = default;
+
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137772): rewrite tests to not use verifier.
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier, AppListEmpty) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(AllProfilesHaveSameAppList());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, AppListSomeApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier,
+                       AppListSomeApps) {
   ASSERT_TRUE(SetupSync());
 
   const size_t kNumApps = 5;
