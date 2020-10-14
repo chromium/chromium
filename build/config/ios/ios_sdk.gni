@@ -22,9 +22,6 @@ declare_args() {
   machine_os_build = ""
 
   # Set DEVELOPER_DIR while running sdk_info.py.
-  # Due to https://crbug.com/1018739, the path must not contains filtered
-  # out patterns or the build will fail. In particular src/build/mac does
-  # not work (see build/BUILDCONFIG.gn for pattern that would cause issue).
   ios_sdk_developer_dir = ""
 
   # Control whether codesiging is enabled (ignored for simulator builds).
