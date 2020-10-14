@@ -32,6 +32,7 @@ import unittest
 import mock
 
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
+from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.common.system.output_capture import OutputCapture
@@ -51,7 +52,7 @@ class PortTest(LoggingTestCase):
                   with_tests=False,
                   port_name=None,
                   **kwargs):
-        host = MockSystemHost()
+        host = MockHost()
         if executive:
             host.executive = executive
         if with_tests:

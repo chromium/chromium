@@ -18,7 +18,8 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 
 from blinkpy.w3c.wpt_expectations_updater import (
     WPTExpectationsUpdater, SimpleTestResult, DesktopConfig)
-from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
+from blinkpy.w3c.wpt_manifest import (
+    WPTManifest, BASE_MANIFEST_NAME, MANIFEST_NAME)
 
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
@@ -84,6 +85,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     'testharness': {
                         'test/path.html': ['abcdef123', [None, {}]],
                         'test/zzzz.html': ['ghijkl456', [None, {}]],
+                        'fake/some_test.html': [
+                            'ghijkl456', ['fake/some_test.html?HelloWorld', {}]],
+                        'fake/file/deleted_path.html': [
+                            'ghijkl456', [None, {}]],
+                        'test/task.js': [
+                            'mnpqrs789',
+                            ['test/task.html', {}],
+                            ['test/task2.html', {}]],
                     },
                     'manual': {
                         'x-manual.html': ['abcdef123', [None, {}]],
@@ -801,6 +810,63 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                     WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
                     '[ linux ] external/wpt/fake/new.html?HelloWorld [ Failure ]\n'))
 
+    def test_clean_expectations_for_deleted_test_harness(self):
+        host = self.mock_host()
+        port = host.port_factory.get()
+        expectations_path = \
+            port.path_to_generic_test_expectations_file()
+        host.filesystem.write_text_file(
+            expectations_path,
+            '# tags: [ Win Linux ]\n' +
+            '# results: [ Pass Failure ]\n' +
+            WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
+            '[ linux ] wpt_internal/test/task.html [ Failure ]\n' +
+            '[ win ] wpt_internal/test/task2.html [ Failure ]\n' +
+            '[ linux ] external/wpt/test/task.html [ Failure ]\n' +
+            'external/wpt/test/task2.html [ Pass ]\n')
+
+        def _git_command_return_val(cmd):
+            if '--diff-filter=D' in cmd:
+                return '\n'.join(['external/wpt/test/task.js',
+                                  'wpt_internal/test/task.js'])
+            return ''
+
+        wpt_manifest = port.wpt_manifest('external/wpt')
+        host.filesystem.maybe_make_directory(
+            port.web_tests_dir(), 'wpt_internal')
+        host.filesystem.copyfile(
+            host.filesystem.join(port.web_tests_dir(),
+                                 'external', 'wpt', MANIFEST_NAME),
+            host.filesystem.join(port.web_tests_dir(), 'wpt_internal',
+                                 MANIFEST_NAME))
+        wpt_internal_manifest = WPTManifest(host, host.filesystem.join(
+            port.web_tests_dir(), 'wpt_internal', MANIFEST_NAME))
+
+        updater = WPTExpectationsUpdater(
+            host,
+            ['--clean-up-affected-tests-only',
+             '--clean-up-test-expectations-only'],
+            [wpt_manifest, wpt_internal_manifest])
+        updater.git.run = _git_command_return_val
+        updater._relative_to_web_test_dir = lambda test_path: test_path
+        updater.cleanup_test_expectations_files()
+
+        test_expectations = {'external/wpt/fake/file/path.html': {
+            tuple([DesktopConfig(port_name='test-linux-trusty')]):
+            SimpleTestResult(actual='PASS', expected='', bug='crbug.com/123')}}
+        skip_path = host.port_factory.get().path_to_never_fix_tests_file()
+        skip_value_origin = host.filesystem.read_text_file(skip_path)
+
+        updater.write_to_test_expectations(test_expectations)
+        value = host.filesystem.read_text_file(expectations_path)
+        self.assertMultiLineEqual(
+            value, ('# tags: [ Win Linux ]\n' +
+                    '# results: [ Pass Failure ]\n\n' +
+                    WPTExpectationsUpdater.MARKER_COMMENT + '\n' +
+                    'crbug.com/123 [ Trusty ] external/wpt/fake/file/path.html [ Pass ]'))
+        skip_value = host.filesystem.read_text_file(skip_path)
+        self.assertMultiLineEqual(skip_value, skip_value_origin)
+
     def test_write_to_test_expectations_and_cleanup_expectations(self):
         host = self.mock_host()
         expectations_path = \
@@ -1225,16 +1291,21 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_cleanup_all_deleted_tests_in_expectations_files(self):
         host = MockHost()
-
+        port = host.port_factory.get()
         host.filesystem.files[MOCK_WEB_TESTS + 'TestExpectations'] = (
             '# results: [ Failure ]\n'
-            'some/test/a.html?hello%20world [ Failure ]\n'
+            'external/wpt/some/test/a.html?hello%20world [ Failure ]\n'
             'some/test/b.html [ Failure ]\n'
+            '# This line should be deleted\n'
+            'some/test/c.html [ Failure ]\n'
             '# line below should exist in new file\n'
             'some/test/d.html [ Failure ]\n')
         host.filesystem.files[MOCK_WEB_TESTS + 'VirtualTestSuites'] = '[]'
         host.filesystem.files[MOCK_WEB_TESTS + 'new/a.html'] = ''
         host.filesystem.files[MOCK_WEB_TESTS + 'new/b.html'] = ''
+        host.filesystem.files[
+            host.filesystem.join(
+                port.web_tests_dir(), 'some', 'test', 'd.html')] = ''
         # TODO(rmhasan): Remove creation of Android files within
         # tests.
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
@@ -1248,7 +1319,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             return ''
 
         updater.git.run = _git_command_return_val
-        updater.port.tests = lambda: ['some/test/d.html']
         updater._relative_to_web_test_dir = lambda test_path: test_path
         updater.cleanup_test_expectations_files()
         self.assertMultiLineEqual(
@@ -1297,8 +1367,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'external/wpt/webdriver/some/test/a*.html': 'old/a*.html',
             'external/wpt/webdriver/some/test/c.html': 'old/c.html',
         }
-        updater._list_deleted_test_files = lambda: deleted_files
-        updater._list_renamed_test_files = lambda: renamed_file_pairs
+        updater._list_deleted_files = lambda: deleted_files
+        updater._list_renamed_files = lambda: renamed_file_pairs
         updater.cleanup_test_expectations_files()
         self.assertMultiLineEqual(
             host.filesystem.read_text_file(MOCK_WEB_TESTS +

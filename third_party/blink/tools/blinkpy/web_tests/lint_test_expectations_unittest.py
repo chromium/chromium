@@ -144,7 +144,7 @@ class LintTest(LoggingTestCase):
         port = host.port_factory.get(options.platform, options=options)
         port.expectations_dict = lambda: {'foo': '-- syntax error1', 'bar': '-- syntax error2'}
 
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)
@@ -166,7 +166,7 @@ class LintTest(LoggingTestCase):
         port = host.port_factory.get(options.platform, options=options)
         port.expectations_dict = lambda: {}
 
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
         host.filesystem.write_text_file(WEB_TEST_DIR + '/LeakExpectations',
                                         '-- syntax error')
@@ -189,7 +189,7 @@ class LintTest(LoggingTestCase):
         port = host.port_factory.get(options.platform, options=options)
         port.expectations_dict = lambda: {'flag-specific': 'does/not/exist', 'noproblem': ''}
 
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)
@@ -218,7 +218,7 @@ class LintTest(LoggingTestCase):
         port.expectations_dict = lambda: {
             'testexpectations': test_expectations}
 
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)
@@ -267,7 +267,7 @@ class LintTest(LoggingTestCase):
             host.filesystem.join(port.web_tests_dir(), 'virtual', 'foo',
                                  'README.md'), 'foo')
 
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)
@@ -300,7 +300,7 @@ class LintTest(LoggingTestCase):
                             'non-wpt/test.html [ Failure ]\n')
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
             host.filesystem.write_text_file(path, raw_expectations)
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
         port.test_exists = lambda _: True
         port.tests = lambda _: {'external/wpt/test.html', 'non-wpt/test.html'}
@@ -325,7 +325,7 @@ class LintTest(LoggingTestCase):
         host.filesystem.maybe_make_directory(
             host.filesystem.join(port.web_tests_dir(), 'test2'))
 
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)
@@ -364,7 +364,7 @@ class LintTest(LoggingTestCase):
             'testexpectations': test_expectations
         }
         port.test_exists = lambda test: True
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)
@@ -399,7 +399,7 @@ class LintTest(LoggingTestCase):
                              'virtual/foo/test1/* [ Pass ]\n')
         port.expectations_dict = lambda: {'NeverFixTests': test_expectations}
         port.test_exists = lambda test: True
-        host.port_factory.get = lambda platform, options=None: port
+        host.port_factory.get = lambda platform=None, options=None: port
         host.port_factory.all_port_names = lambda platform=None: [port.name()]
 
         failures, warnings = lint_test_expectations.lint(host, options)

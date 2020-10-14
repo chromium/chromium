@@ -84,8 +84,11 @@ class WPTManifest(object):
         [[reference_url1, "=="], [reference_url2, "!="], ...]
     """
 
-    def __init__(self, json_content):
-        self.raw_dict = json.loads(json_content)
+    def __init__(self, host, manifest_path):
+        self.host = host
+        self.port = self.host.port_factory.get()
+        self.raw_dict = json.loads(
+            self.host.filesystem.read_text_file(manifest_path))
         # As a workaround to handle the change from a flat-list to a trie
         # structure in the v8 manifest, flatten the items back to the v7 format.
         #
@@ -93,8 +96,15 @@ class WPTManifest(object):
         self.raw_dict['items'] = self._flatten_items(
             self.raw_dict.get('items', {}))
 
+        self.wpt_manifest_path = manifest_path
         self.test_types = ('manual', 'reftest', 'testharness', 'crashtest')
         self.test_name_to_file = {}
+
+    @property
+    def wpt_dir(self):
+        return self.host.filesystem.dirname(
+            self.host.filesystem.relpath(
+                self.wpt_manifest_path, self.port.web_tests_dir()))
 
     def _items_for_file_path(self, path_in_wpt):
         """Finds manifest items for the given WPT path.
@@ -275,9 +285,8 @@ class WPTManifest(object):
     @staticmethod
     def generate_manifest(host, dest_path):
         """Generates MANIFEST.json on the specified directory."""
-        finder = PathFinder(host.filesystem)
-        wpt_exec_path = finder.path_from_blink_tools('blinkpy', 'third_party',
-                                                     'wpt', 'wpt', 'wpt')
+        wpt_exec_path = PathFinder(host.filesystem).path_from_blink_tools(
+            'blinkpy', 'third_party', 'wpt', 'wpt', 'wpt')
         cmd = [
             'python', wpt_exec_path, 'manifest', '--no-download',
             '--tests-root', dest_path

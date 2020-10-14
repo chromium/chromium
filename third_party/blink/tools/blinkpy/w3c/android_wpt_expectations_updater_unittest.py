@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import logging
 
 from blinkpy.common.host_mock import MockHost
@@ -10,6 +11,7 @@ from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.web_tests.port.android import (
@@ -76,6 +78,18 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
                 'is_try_builder': True,
             },
         })
+        host.filesystem.write_text_file(
+            host.port_factory.get().web_tests_dir() + '/external/' +
+            BASE_MANIFEST_NAME,
+            json.dumps({
+                'items': {
+                    'testharness': {
+                        'ghi.html': ['abcdef123', [None, {}]],
+                        'van.html': ['abcdef123', [None, {}]],
+                    },
+                },
+            }))
+
         # Write dummy expectations
         for path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
             host.filesystem.write_text_file(

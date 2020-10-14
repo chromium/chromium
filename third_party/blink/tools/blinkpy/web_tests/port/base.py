@@ -959,7 +959,7 @@ class Port(object):
                 'manifest_update', True):
             _log.debug('Generating MANIFEST.json for %s...', path)
             WPTManifest.ensure_manifest(self, path)
-        return WPTManifest(self._filesystem.read_text_file(manifest_path))
+        return WPTManifest(self.host, manifest_path)
 
     def is_wpt_crash_test(self, test_file):
         """Returns whether a WPT test is a crashtest.

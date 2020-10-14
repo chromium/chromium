@@ -11,6 +11,7 @@ Specifically, this class fetches results from try bots for the current CL, then
 import argparse
 import copy
 import logging
+import re
 from collections import defaultdict, namedtuple
 
 from blinkpy.common.memoized import memoized
@@ -37,7 +38,7 @@ class WPTExpectationsUpdater(object):
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
     UMBRELLA_BUG = 'crbug.com/626703'
 
-    def __init__(self, host, args=None):
+    def __init__(self, host, args=None, wpt_manifests=None):
         self.host = host
         self.port = self.host.port_factory.get()
         self.finder = PathFinder(self.host.filesystem)
@@ -45,6 +46,9 @@ class WPTExpectationsUpdater(object):
         self.git = self.host.git(self.finder.chromium_base())
         self.configs_with_no_results = []
         self.patchset = None
+        self.wpt_manifests = (
+            wpt_manifests or
+            [self.port.wpt_manifest(d) for d in self.port.WPT_DIRS])
 
         # Get options from command line arguments.
         parser = argparse.ArgumentParser(description=__doc__)
@@ -718,106 +722,31 @@ class WPTExpectationsUpdater(object):
         through this script. If that command line argument is not used then
         expectations for test files that no longer exist will be deleted.
         """
-        deleted_test_files = self._list_deleted_test_files()
-        renamed_test_files = self._list_renamed_test_files()
+        deleted_files = self._list_deleted_files()
+        renamed_files = self._list_renamed_files()
 
         for path in self._test_expectations.expectations_dict:
             _log.info(
                 'Updating %s for any removed or renamed tests.' %
                 self.host.filesystem.basename(path))
             self._clean_single_test_expectations_file(
-                path, deleted_test_files, renamed_test_files)
+                path, deleted_files, renamed_files)
         self._test_expectations.commit_changes()
 
-    def _clean_single_test_expectations_file(
-            self, path, deleted_files, renamed_files):
-        """Cleans up a single test expectations file.
+    def _list_deleted_files(self):
+        # TODO(robertma): Improve Git.changed_files so that we can use
+        # it here.
+        paths = self.git.run(
+            ['diff', 'origin/master', '-M100%', '--diff-filter=D',
+             '--name-only']).splitlines()
+        deleted_files = []
+        for p in paths:
+            rel_path = self._relative_to_web_test_dir(p)
+            if rel_path:
+                deleted_files.append(rel_path)
+        return deleted_files
 
-        Args:
-            path: Path of expectations file that is being cleaned up.
-            deleted_files: List of test file paths relative to the web tests
-                directory which were deleted.
-            renamed_files: Dictionary mapping test file paths to their new file
-                name after renaming.
-        """
-        for line in self._test_expectations.get_updated_lines(path):
-            # if a test is a glob type expectation or empty line or comment then
-            # add it to the updated expectations file without modifications
-            if not line.test or line.is_glob:
-                continue
-            root_test_file = self._get_root_file(line.test)
-
-            if root_test_file in renamed_files:
-                self._test_expectations.remove_expectations(path, [line])
-                new_file_name = renamed_files[root_test_file]
-                if self.finder.is_webdriver_test_path(root_test_file):
-                    _, subtest_suffix = self.port.split_webdriver_test_name(
-                        line.test)
-                    line.test = self.port.add_webdriver_subtest_suffix(
-                        new_file_name, subtest_suffix)
-                elif '?' in line.test:
-                    line.test = (
-                        new_file_name + line.test[line.test.find('?'):])
-                else:
-                    line.test = new_file_name
-                self._test_expectations.add_expectations(
-                    path, [line], lineno=line.lineno)
-            elif root_test_file in deleted_files:
-                self._test_expectations.remove_expectations(
-                    path, [line])
-
-    @memoized
-    def _get_root_file(self, test_name):
-        """Strips arguments from a web test name in order to get the file name.
-
-        It also removes the arguments for web driver tests. For instances for
-        the test test1/example.html?Hello this function will return
-        test1/example.html. For a webdriver test it would include arguments and
-        would have the following format, {test file}>>{argument}.
-
-        Args:
-            test_name: Test name which may include test arguments.
-
-        Returns:
-            Returns the test file which is the root of a test.
-        """
-        if self.finder.is_webdriver_test_path(test_name):
-            root_test_file, _ = (
-                self.port.split_webdriver_test_name(test_name))
-        elif '?' in test_name:
-            root_test_file = test_name[:test_name.find('?')]
-        else:
-            root_test_file = test_name
-        return root_test_file
-
-    def _list_deleted_test_files(self):
-        """Returns a list of web tests that have been deleted.
-
-        If --clean-up-affected-tests-only is true then only test files deleted
-        in the current CL may be removed from expectations. Otherwise, any test
-        file may be removed from expectations if it has been deleted.
-
-        Returns: A list of web test files that have been deleted.
-        """
-        if self.options.clean_up_affected_tests_only:
-            # TODO(robertma): Improve Git.changed_files so that we can use
-            # it here.
-            paths = set(self.git.run(
-                ['diff', 'origin/master', '-M100%', '--diff-filter=D',
-                 '--name-only']).splitlines())
-            deleted_tests = set()
-            for path in paths:
-                test = self._relative_to_web_test_dir(path)
-                if test:
-                    deleted_tests.add(test)
-        else:
-            # Remove expectations for all test which have files that
-            # were deleted. Paths are already relative to the web_tests
-            # directory
-            deleted_tests = self._deleted_test_files_in_expectations()
-        return deleted_tests
-
-    def _list_renamed_test_files(self):
+    def _list_renamed_files(self):
         """Returns a dictionary mapping tests to their new name.
 
         Regardless of the command line arguments used this test will only
@@ -837,6 +766,83 @@ class WPTExpectationsUpdater(object):
                 renamed_tests[source_test] = dest_test
         return renamed_tests
 
+    def _clean_single_test_expectations_file(
+            self, path, deleted_files, renamed_files):
+        """Cleans up a single test expectations file.
+
+        Args:
+            path: Path of expectations file that is being cleaned up.
+            deleted_files: List of file paths relative to the web tests
+                directory which were deleted.
+            renamed_files: Dictionary mapping file paths to their new file
+                name after renaming.
+        """
+        deleted_files = set(deleted_files)
+        for line in self._test_expectations.get_updated_lines(path):
+            # if a test is a glob type expectation or empty line or comment then
+            # add it to the updated expectations file without modifications
+            if not line.test or line.is_glob:
+                continue
+            root_file = self._get_root_file(line.test)
+            if root_file in deleted_files:
+                self._test_expectations.remove_expectations(path, [line])
+            elif root_file in renamed_files:
+                self._test_expectations.remove_expectations(path, [line])
+                new_file_name = renamed_files[root_file]
+                if self.finder.is_webdriver_test_path(line.test):
+                    _, subtest_suffix = self.port.split_webdriver_test_name(line.test)
+                    line.test = self.port.add_webdriver_subtest_suffix(
+                        new_file_name, subtest_suffix)
+                elif self.port.is_wpt_test(line.test):
+                    # Based on logic in Base._wpt_test_urls_matching_paths
+                    line.test = line.test.replace(
+                        re.sub(r'\.js$', '.', root_file),
+                        re.sub(r'\.js$', '.', new_file_name))
+                else:
+                    line.test = new_file_name
+                self._test_expectations.add_expectations(
+                    path, [line], lineno=line.lineno)
+            elif not root_file or not self.port.test_isfile(root_file):
+                if not self.options.clean_up_affected_tests_only:
+                    self._test_expectations.remove_expectations(path, [line])
+
+    @memoized
+    def _get_root_file(self, test_name):
+        """Finds the physical file in web tests directory for a test
+
+        If a test is a WPT test then it will look in each of the WPT manifests
+        for the physical file. If test name cannot be found in any of the manifests
+        then the test no longer exists and the function will return None. If a file
+        is webdriver test then it will strip all subtest arguments and return the
+        file path. If a test is a legacy web test then it will return the test name.
+
+        Args:
+            test_name: Test name which may include test arguments.
+
+        Returns:
+            Returns the path of the physical file that backs
+            up a test. The path is relative to the web_tests directory.
+        """
+        if self.finder.is_webdriver_test_path(test_name):
+            root_test_file, _ = (
+                self.port.split_webdriver_test_name(test_name))
+            return root_test_file
+        elif self.port.is_wpt_test(test_name):
+            for wpt_manifest in self.wpt_manifests:
+                if test_name.startswith(wpt_manifest.wpt_dir):
+                    wpt_test = test_name[len(wpt_manifest.wpt_dir) + 1:]
+                    if wpt_manifest.is_test_url(wpt_test):
+                        return self.host.filesystem.join(
+                            wpt_manifest.wpt_dir,
+                            wpt_manifest.file_path_for_test_url(wpt_test))
+            # The test was not found in any of the wpt manifests, therefore
+            # the test does not exist. So we will return None in this case.
+            return None
+        else:
+            # Non WPT and non webdriver tests have no file parameters, and
+            # the physical file path is the actual name of the test.
+            return test_name
+
     def _relative_to_web_test_dir(self, path_relative_to_repo_root):
         """Returns a path that's relative to the web tests directory."""
         abs_path = self.finder.path_from_chromium_base(
@@ -845,25 +851,6 @@ class WPTExpectationsUpdater(object):
             return None
         return self.host.filesystem.relpath(
             abs_path, self.finder.web_tests_dir())
-
-    def _deleted_test_files_in_expectations(self):
-        """Returns a list of test files that were deleted.
-
-        Returns a list of test file names that are still in the expectations
-        files but no longer exists in the web tests directory.
-        """
-        deleted_files = set()
-        existing_files = {
-            self._get_root_file(p)
-            for p in self.port.tests()}
-        for path in self._test_expectations.expectations_dict:
-            for line in self._test_expectations.get_updated_lines(path):
-                if not line.test or line.is_glob:
-                    continue
-                root_test_file = self._get_root_file(line.test)
-                if root_test_file not in existing_files:
-                    deleted_files.add(root_test_file)
-        return deleted_files
 
     # TODO(robertma): Unit test this method.
     def download_text_baselines(self, test_results):

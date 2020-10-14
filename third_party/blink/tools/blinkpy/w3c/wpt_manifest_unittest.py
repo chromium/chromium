@@ -89,7 +89,11 @@ class WPTManifestUnitTest(unittest.TestCase):
     }
 }
         '''
-        manifest = WPTManifest(manifest_json)
+        host = MockHost()
+        host.filesystem.write_text_file(
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(
+            host, WEB_TEST_DIR + '/external/wpt/MANIFEST.json')
         self.assertTrue(manifest.is_test_file('test.any.js'))
         self.assertEqual(manifest.all_url_items(),
                          {u'test.any.html': [u'test.any.html', {}]})
@@ -111,7 +115,11 @@ class WPTManifestUnitTest(unittest.TestCase):
     }
 }
         '''
-        manifest = WPTManifest(manifest_json)
+        host = MockHost()
+        host.filesystem.write_text_file(
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(
+            host, WEB_TEST_DIR + '/external/wpt/MANIFEST.json')
         self.assertEqual(manifest.all_url_items(),
                          {u'test.any.html': [u'test.any.html', {}]})
 
@@ -132,7 +140,11 @@ class WPTManifestUnitTest(unittest.TestCase):
         }
     }
 }       '''
-        manifest = WPTManifest(manifest_json)
+        host = MockHost()
+        host.filesystem.write_text_file(
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(
+            host, WEB_TEST_DIR + '/external/wpt/MANIFEST.json')
         self.assertEqual(
             manifest.all_url_items(), {
                 u'test.any.html': [u'test.any.html', {}],
@@ -168,7 +180,11 @@ class WPTManifestUnitTest(unittest.TestCase):
     }
 }
         '''
-        manifest = WPTManifest(manifest_json)
+        host = MockHost()
+        host.filesystem.write_text_file(
+            WEB_TEST_DIR + '/external/wpt/MANIFEST.json', manifest_json)
+        manifest = WPTManifest(
+            host, WEB_TEST_DIR + '/external/wpt/MANIFEST.json')
         self.assertEqual(
             manifest.all_url_items(), {
                 u'test.html': [u'test.html', {}],

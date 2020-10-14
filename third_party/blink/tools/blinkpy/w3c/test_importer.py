@@ -45,9 +45,10 @@ _log = logging.getLogger(__file__)
 
 
 class TestImporter(object):
-    def __init__(self, host, wpt_github=None):
+    def __init__(self, host, wpt_github=None, wpt_manifests=None):
         self.host = host
         self.wpt_github = wpt_github
+        self.port = host.port_factory.get()
 
         self.executive = host.executive
         self.fs = host.filesystem
@@ -72,7 +73,8 @@ class TestImporter(object):
 
         args = ['--clean-up-affected-tests-only',
                 '--clean-up-test-expectations']
-        self._expectations_updater = WPTExpectationsUpdater(self.host, args)
+        self._expectations_updater = WPTExpectationsUpdater(
+            self.host, args, wpt_manifests)
 
     def main(self, argv=None):
         # TODO(robertma): Test this method! Split it to make it easier to test
@@ -155,14 +157,15 @@ class TestImporter(object):
         # TODO(robertma): Implement `add --all` in Git (it is different from `commit --all`).
         self.chromium_git.run(['add', '--all', self.dest_path])
 
+        # Remove expectations for tests that were deleted and rename tests
+        # in expectations for renamed tests.
+        self._expectations_updater.cleanup_test_expectations_files()
+
         self._generate_manifest()
 
         # TODO(crbug.com/800570 robertma): Re-enable it once we fix the bug.
         # self._delete_orphaned_baselines()
 
-        # Remove expectations for tests that were deleted and rename tests
-        # in expectations for renamed tests.
-        self._expectations_updater.cleanup_test_expectations_files()
 
         if not self.chromium_git.has_working_directory_changes():
             _log.info('Done: no changes to import.')
