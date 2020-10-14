@@ -117,8 +117,11 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
       WL_OUTPUT_SCALE_SINCE_VERSION) {
     // wl_output only supports integer scaling, so if device scale factor is
     // fractional we need to round it up to the closest integer.
-    wl_output_send_scale(output_resource_,
-                         std::ceil(display.device_scale_factor()));
+    // TODO(b/169984627, crbug:1137268): remove clamping to 2 once Parallels
+    // switches to a newer version of QT.
+    wl_output_send_scale(
+        output_resource_,
+        std::min(std::ceil(display.device_scale_factor()), 2.0f));
   }
 
   // TODO(reveman): Send real list of modes.
