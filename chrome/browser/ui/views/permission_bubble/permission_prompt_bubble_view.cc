@@ -82,6 +82,9 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
   for (permissions::PermissionRequest* request : visible_requests_)
     AddPermissionRequestLine(request);
 
@@ -242,13 +245,6 @@ base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
       template_id, name_or_origin_.name_or_origin,
       visible_requests_[0]->GetMessageTextFragment(),
       visible_requests_[1]->GetMessageTextFragment());
-}
-
-gfx::Size PermissionPromptBubbleView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void PermissionPromptBubbleView::ButtonPressed(views::Button* sender,

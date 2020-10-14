@@ -19,9 +19,6 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   explicit AppDialogView(const gfx::ImageSkia& image);
   ~AppDialogView() override;
 
-  // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
  protected:
   void InitializeView(const base::string16& heading_text);
 };

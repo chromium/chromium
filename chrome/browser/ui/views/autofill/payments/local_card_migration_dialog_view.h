@@ -29,12 +29,11 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
                                content::WebContents* web_contents);
   ~LocalCardMigrationDialogView() override;
 
-  // LocalCardMigrationDialog
+  // LocalCardMigrationDialog:
   void ShowDialog() override;
   void CloseDialog() override;
 
-  // views::BubbleDialogDelegateView
-  gfx::Size CalculatePreferredSize() const override;
+  // views::BubbleDialogDelegateView:
   ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;

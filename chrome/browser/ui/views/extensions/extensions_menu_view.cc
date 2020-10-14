@@ -92,6 +92,8 @@ ExtensionsMenuView::ExtensionsMenuView(
   // Let anchor view's MenuButtonController handle the highlight.
   set_highlight_button_when_shown(false);
 
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   Populate();
@@ -105,13 +107,6 @@ ExtensionsMenuView::~ExtensionsMenuView() {
 
   // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
   // directly within TabStripModelObserver::~TabStripModelObserver().
-}
-
-gfx::Size ExtensionsMenuView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void ExtensionsMenuView::Populate() {

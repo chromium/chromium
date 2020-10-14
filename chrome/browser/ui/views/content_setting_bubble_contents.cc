@@ -396,6 +396,9 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
         base::BindOnce(&ContentSettingBubbleModel::OnCancelButtonClicked,
                        base::Unretained(content_setting_bubble_model_.get())));
   }
+
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
 ContentSettingBubbleContents::~ContentSettingBubbleContents() {
@@ -407,13 +410,6 @@ ContentSettingBubbleContents::~ContentSettingBubbleContents() {
 void ContentSettingBubbleContents::WindowClosing() {
   if (content_setting_bubble_model_)
     content_setting_bubble_model_->CommitChanges();
-}
-
-gfx::Size ContentSettingBubbleContents::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void ContentSettingBubbleContents::OnListItemAdded(

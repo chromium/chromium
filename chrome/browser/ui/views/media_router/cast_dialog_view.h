@@ -88,8 +88,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void OnModelUpdated(const CastDialogModel& model) override;
   void OnControllerInvalidated() override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  // views::BubbleDialogDelegateView:
   void OnPaint(gfx::Canvas* canvas) override;
 
   // ui::SimpleMenuModel::Delegate:

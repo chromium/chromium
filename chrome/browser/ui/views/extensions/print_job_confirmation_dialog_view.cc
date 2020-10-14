@@ -92,9 +92,7 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
     : BubbleDialogDelegateView(anchor_view,
                                anchor_view ? views::BubbleBorder::TOP_RIGHT
                                            : views::BubbleBorder::NONE),
-      callback_(std::move(callback)),
-      dialog_is_bubble_(anchor_view != nullptr) {
-  SetModalType(dialog_is_bubble_ ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_WINDOW);
+      callback_(std::move(callback)) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_ALLOW));
@@ -117,10 +115,15 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
   SetCancelCallback(
       base::BindOnce(run_callback, base::Unretained(this), false));
 
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  const bool dialog_is_bubble = anchor_view != nullptr;
+  SetModalType(dialog_is_bubble ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_WINDOW);
+  SetFixedWidth(provider->GetDistanceMetric(
+      dialog_is_bubble ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
+                       : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   // Add margins for the icon plus the icon-title padding so that the dialog
   // contents align with the title text.
@@ -144,15 +147,6 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
 }
 
 PrintJobConfirmationDialogView::~PrintJobConfirmationDialogView() = default;
-
-gfx::Size PrintJobConfirmationDialogView::CalculatePreferredSize() const {
-  const int width =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          dialog_is_bubble_ ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
-                            : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-      margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
 
 namespace chrome {
 

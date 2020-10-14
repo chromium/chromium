@@ -71,7 +71,6 @@ class NativeFileSystemUsageBubbleView : public LocationBarBubbleDelegateView {
   void Init() override;
   void WindowClosing() override;
   void CloseBubble() override;
-  gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
   void OnDialogCancelled();

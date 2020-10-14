@@ -55,8 +55,7 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  // LocationBarBubbleDelegateView:
   void OnPaint(gfx::Canvas* canvas) override;
 
   // Shows the bubble view.

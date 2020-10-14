@@ -43,6 +43,8 @@ SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
       web_contents_(web_contents),
       controller_(controller) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   DCHECK(controller);
 }
 
@@ -74,12 +76,6 @@ void SendTabToSelfBubbleViewImpl::WindowClosing() {
 void SendTabToSelfBubbleViewImpl::ButtonPressed(views::Button* sender,
                                                 const ui::Event& event) {
   DevicePressed(sender->tag());
-}
-
-gfx::Size SendTabToSelfBubbleViewImpl::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void SendTabToSelfBubbleViewImpl::OnPaint(gfx::Canvas* canvas) {

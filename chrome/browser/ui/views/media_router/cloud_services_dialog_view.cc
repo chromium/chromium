@@ -72,13 +72,6 @@ void CloudServicesDialogView::OnDialogAccepted() {
   pref_service->SetBoolean(prefs::kMediaRouterCloudServicesPrefSet, true);
 }
 
-gfx::Size CloudServicesDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 CloudServicesDialogView::CloudServicesDialogView(views::View* anchor_view,
                                                  Browser* browser)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
@@ -93,8 +86,11 @@ CloudServicesDialogView::CloudServicesDialogView(views::View* anchor_view,
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_CANCEL));
   SetAcceptCallback(base::BindOnce(&CloudServicesDialogView::OnDialogAccepted,
                                    base::Unretained(this)));
+
   set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
 CloudServicesDialogView::~CloudServicesDialogView() = default;

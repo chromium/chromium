@@ -48,7 +48,6 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   ~ContentSettingBubbleContents() override;
 
   // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   void WindowClosing() override;
 
   // ContentSettingBubbleModel::Owner:

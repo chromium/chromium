@@ -42,18 +42,11 @@ class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
       const PrintJobConfirmationDialogView&) = delete;
 
  private:
-  // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
   // The name of the extension we are showing the dialog for.
   const base::string16 extension_name_;
 
   // Callback to call after the dialog is accepted or rejected.
   base::OnceCallback<void(bool)> callback_;
-
-  // TODO(pbos): Find a more direct way of determining if there's a bubble than
-  // checking |anchor_view|.
-  const bool dialog_is_bubble_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_PRINT_JOB_CONFIRMATION_DIALOG_VIEW_H_

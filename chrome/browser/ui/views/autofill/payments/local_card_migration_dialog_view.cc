@@ -358,6 +358,8 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
       &LocalCardMigrationDialogView::OnDialogAccepted, base::Unretained(this)));
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
+  SetFixedWidth(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
 LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {}
@@ -372,13 +374,6 @@ void LocalCardMigrationDialogView::ShowDialog() {
 void LocalCardMigrationDialogView::CloseDialog() {
   controller_ = nullptr;
   GetWidget()->Close();
-}
-
-gfx::Size LocalCardMigrationDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 ui::ModalType LocalCardMigrationDialogView::GetModalType() const {

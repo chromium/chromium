@@ -352,6 +352,8 @@ NativeFileSystemUsageBubbleView::NativeFileSystemUsageBubbleView(
   SetCancelCallback(
       base::BindOnce(&NativeFileSystemUsageBubbleView::OnDialogCancelled,
                      base::Unretained(this)));
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
 NativeFileSystemUsageBubbleView::~NativeFileSystemUsageBubbleView() = default;
@@ -462,13 +464,6 @@ void NativeFileSystemUsageBubbleView::CloseBubble() {
   // this. Additionally web_contents() may have been destroyed.
   bubble_ = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
-}
-
-gfx::Size NativeFileSystemUsageBubbleView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void NativeFileSystemUsageBubbleView::ChildPreferredSizeChanged(

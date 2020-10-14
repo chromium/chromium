@@ -71,6 +71,10 @@ CardUnmaskPromptViews::CardUnmaskPromptViews(
     : controller_(controller), web_contents_(web_contents) {
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CARD_UNMASK);
   UpdateButtons();
+
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
 CardUnmaskPromptViews::~CardUnmaskPromptViews() {
@@ -207,16 +211,6 @@ views::View* CardUnmaskPromptViews::GetContentsView() {
   return this;
 }
 
-gfx::Size CardUnmaskPromptViews::CalculatePreferredSize() const {
-  // If the margins width is not discounted here, the bubble border will be
-  // taken into consideration in the frame width size. Because of that, the
-  // dialog width will be snapped to a larger size when Harmony is enabled.
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 void CardUnmaskPromptViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
@@ -229,10 +223,6 @@ void CardUnmaskPromptViews::OnThemeChanged() {
   overlay_->SetBackground(views::CreateSolidBackground(bg_color));
   if (overlay_label_)
     overlay_label_->SetBackgroundColor(bg_color);
-}
-
-ui::ModalType CardUnmaskPromptViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 base::string16 CardUnmaskPromptViews::GetWindowTitle() const {

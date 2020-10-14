@@ -34,7 +34,6 @@ class PermissionPromptBubbleView : public views::ButtonListener,
   bool ShouldShowCloseButton() const override;
   base::string16 GetAccessibleWindowTitle() const override;
   base::string16 GetWindowTitle() const override;
-  gfx::Size CalculatePreferredSize() const override;
 
   // Button Listener
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

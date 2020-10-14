@@ -122,6 +122,9 @@ SharingDialogView::SharingDialogView(views::View* anchor_view,
       data_(std::move(data)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
   if (data_.type == SharingDialogType::kDialogWithoutDevicesWithApp) {
     SetFootnoteView(CreateHelpText());
   } else if ((data_.type == SharingDialogType::kDialogWithDevicesMaybeApps) &&
@@ -156,12 +159,6 @@ void SharingDialogView::WebContentsDestroyed() {
   // Call the close callback here already so we can log metrics for closed
   // dialogs before the controller is destroyed.
   WindowClosing();
-}
-
-gfx::Size SharingDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void SharingDialogView::AddedToWidget() {

@@ -39,9 +39,6 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
 
   static bool IsShowing();
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   MediaRemotingDialogView(views::View* anchor_view,
                           PrefService* pref_service,

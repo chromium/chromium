@@ -27,9 +27,6 @@ class CloudServicesDialogView : public views::BubbleDialogDelegateView {
   // Called by tests. Returns the singleton dialog instance.
   static CloudServicesDialogView* GetDialogForTest();
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   CloudServicesDialogView(views::View* anchor_view, Browser* browser);
   ~CloudServicesDialogView() override;

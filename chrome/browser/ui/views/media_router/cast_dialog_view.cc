@@ -154,12 +154,6 @@ void CastDialogView::OnControllerInvalidated() {
   // cause the dialog to immediately open again.
 }
 
-gfx::Size CastDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 void CastDialogView::OnPaint(gfx::Canvas* canvas) {
   views::BubbleDialogDelegateView::OnPaint(canvas);
   metrics_.OnPaint(base::Time::Now());
@@ -231,6 +225,8 @@ CastDialogView::CastDialogView(views::View* anchor_view,
       metrics_(start_time, activation_location, profile) {
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   sources_button_ =
       SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
           base::BindRepeating(&CastDialogView::ShowSourcesMenu,

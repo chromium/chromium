@@ -45,14 +45,10 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   void GotVerificationResult(const base::string16& error_message,
                              bool allow_retry) override;
 
-  // views::DialogDelegateView
+  // views::BubbleDialogDelegateView:
   View* GetContentsView() override;
-
-  // views::View
-  gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
   void DeleteDelegate() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;

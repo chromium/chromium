@@ -40,7 +40,6 @@ class RelaunchRecommendedBubbleView : public LocationBarBubbleDelegateView {
  protected:
   // LocationBarBubbleDelegateView:
   void Init() override;
-  gfx::Size CalculatePreferredSize() const override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
  private:
