@@ -36,7 +36,6 @@ class ComboBoxNode extends BasicNode {
     this.expandedChangedHandler_ = new RepeatedEventHandler(
         this.automationNode, chrome.automation.EventType.EXPANDED,
         () => this.onExpandedChanged(), {exactMatch: true});
-    this.automationNode.focus();
   }
 
   /** @override */
