@@ -62,7 +62,7 @@ class PasswordCheckBridge {
     }
 
     // TODO(crbug.com/1102025): Add call from native.
-    void onCompromisedCredentialFound(String signonRealm, GURL origin, String username,
+    void onCompromisedCredentialFound(String signonRealm, GURL associatedUrl, String username,
             String displayOrigin, String displayUsername, String password, String passwordChangeUrl,
             String associatedApp, long creationTime, boolean hasStartableScript,
             boolean hasAutoChangeButton) {
@@ -70,9 +70,10 @@ class PasswordCheckBridge {
         assert displayOrigin != null;
         assert username != null;
         assert password != null;
-        mPasswordCheckObserver.onCompromisedCredentialFound(new CompromisedCredential(signonRealm,
-                origin, username, displayOrigin, displayUsername, password, passwordChangeUrl,
-                associatedApp, creationTime, true, false, hasStartableScript, hasAutoChangeButton));
+        mPasswordCheckObserver.onCompromisedCredentialFound(
+                new CompromisedCredential(signonRealm, associatedUrl, username, displayOrigin,
+                        displayUsername, password, passwordChangeUrl, associatedApp, creationTime,
+                        true, false, hasStartableScript, hasAutoChangeButton));
     }
 
     @CalledByNative
@@ -97,13 +98,13 @@ class PasswordCheckBridge {
 
     @CalledByNative
     private static void insertCredential(CompromisedCredential[] credentials, int index,
-            String signonRealm, GURL origin, String username, String displayOrigin,
+            String signonRealm, GURL associatedUrl, String username, String displayOrigin,
             String displayUsername, String password, String passwordChangeUrl, String associatedApp,
             long creationTime, boolean leaked, boolean phished, boolean hasStartableScript,
             boolean hasAutoChangeButton) {
-        credentials[index] = new CompromisedCredential(signonRealm, origin, username, displayOrigin,
-                displayUsername, password, passwordChangeUrl, associatedApp, creationTime, leaked,
-                phished, hasStartableScript, hasAutoChangeButton);
+        credentials[index] = new CompromisedCredential(signonRealm, associatedUrl, username,
+                displayOrigin, displayUsername, password, passwordChangeUrl, associatedApp,
+                creationTime, leaked, phished, hasStartableScript, hasAutoChangeButton);
     }
 
     /**

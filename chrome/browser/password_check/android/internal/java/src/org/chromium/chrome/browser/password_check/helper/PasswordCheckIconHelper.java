@@ -99,7 +99,7 @@ public class PasswordCheckIconHelper {
         }
         if (!iconOrigin.isValid()) {
             // If neither URL is valid, try the display origin as a last, very weak hope.
-            iconOrigin = credential.getOrigin();
+            iconOrigin = credential.getAssociatedUrl();
             fallbackUrl = credential.getDisplayOrigin();
         }
         return new Pair<>(iconOrigin, fallbackUrl);

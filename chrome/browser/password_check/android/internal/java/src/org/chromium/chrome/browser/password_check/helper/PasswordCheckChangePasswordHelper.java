@@ -67,10 +67,13 @@ public class PasswordCheckChangePasswordHelper {
     /**
      * Launches a CCT with the site the given credential was used on and invokes the script that
      * fixes the compromised credential automatically.
+     *
+     * The associated URL will always contain a valid URL, never an Android app sign-on realm
+     * as scripts will only exist for websites.
      * @param credential A {@link CompromisedCredential}.
      */
     public void launchCctWithScript(CompromisedCredential credential) {
-        Intent intent = buildIntent(credential.getOrigin().getOrigin().getSpec());
+        Intent intent = buildIntent(credential.getAssociatedUrl().getOrigin().getSpec());
         populateAutofillAssistantExtras(intent, credential.getUsername());
         IntentUtils.safeStartActivity(mContext, intent);
     }

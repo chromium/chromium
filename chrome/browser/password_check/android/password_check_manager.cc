@@ -229,17 +229,6 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
       credential.signon_realm);
 
-  ui_credential.display_username = GetDisplayUsername(credential.username);
-  ui_credential.has_startable_script =
-      !credential.username.empty() && ShouldFetchPasswordScripts() &&
-      password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(credential.url.GetOrigin()),
-          version_info::GetVersion());
-  ui_credential.has_auto_change_button =
-      ui_credential.has_startable_script &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChangeInSettings);
-
   if (facet.IsValidAndroidFacetURI()) {
     const PasswordForm& android_form =
         insecure_credentials_manager_.GetSavedPasswordsFor(credential)[0];
@@ -256,6 +245,12 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
       ui_credential.display_origin =
           base::UTF8ToUTF16(android_form.app_display_name);
     }
+    // In case no affiliated_web_realm could be obtained we should not have an
+    // associated url for android credential.
+    ui_credential.url = android_form.affiliated_web_realm.empty()
+                            ? GURL::EmptyGURL()
+                            : GURL(android_form.affiliated_web_realm);
+
   } else {
     ui_credential.display_origin = url_formatter::FormatUrl(
         credential.url.GetOrigin(),
@@ -267,6 +262,17 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
     ui_credential.change_password_url =
         password_manager::CreateChangePasswordUrl(ui_credential.url).spec();
   }
+
+  ui_credential.display_username = GetDisplayUsername(credential.username);
+  ui_credential.has_startable_script =
+      !credential.username.empty() && ShouldFetchPasswordScripts() &&
+      password_script_fetcher_->IsScriptAvailable(
+          url::Origin::Create(ui_credential.url.GetOrigin()),
+          version_info::GetVersion());
+  ui_credential.has_auto_change_button =
+      ui_credential.has_startable_script &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeInSettings);
 
   return ui_credential;
 }

@@ -24,7 +24,7 @@ password_manager::CredentialView ConvertJavaObjectToCredentialView(
       ConvertJavaStringToUTF8(
           env, Java_CompromisedCredential_getSignonRealm(env, credential)),
       *url::GURLAndroid::ToNativeGURL(
-          env, Java_CompromisedCredential_getOrigin(env, credential)),
+          env, Java_CompromisedCredential_getAssociatedUrl(env, credential)),
       ConvertJavaStringToUTF16(
           env, Java_CompromisedCredential_getUsername(env, credential)),
       ConvertJavaStringToUTF16(

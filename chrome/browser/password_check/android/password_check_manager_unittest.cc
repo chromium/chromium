@@ -178,6 +178,7 @@ CompromisedCredentials MakeCompromised(
 auto ExpectCompromisedCredentialForUI(
     const base::string16& display_username,
     const base::string16& display_origin,
+    const GURL& url,
     const base::Optional<std::string>& package_name,
     const base::Optional<std::string>& change_password_url,
     InsecureCredentialTypeFlags insecure_type,
@@ -196,7 +197,8 @@ auto ExpectCompromisedCredentialForUI(
   return AllOf(
       Field(&CompromisedCredentialForUI::display_username, display_username),
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
-      package_name_field_matcher, change_password_url_field_matcher,
+      Field(&CompromisedCredentialForUI::url, url), package_name_field_matcher,
+      change_password_url_field_matcher,
       Field(&CompromisedCredentialForUI::insecure_type, insecure_type),
       Field(&CompromisedCredentialForUI::has_startable_script,
             has_startable_script),
@@ -340,7 +342,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
-          base::nullopt, "https://example.com/",
+          GURL(kExampleCom), base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
@@ -365,13 +367,14 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
       UnorderedElementsAre(
           ExpectCompromisedCredentialForUI(
               base::ASCIIToUTF16(kUsername1),
-              base::ASCIIToUTF16("App (com.example.app)"), "com.example.app",
-              base::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
+              base::ASCIIToUTF16("App (com.example.app)"), GURL::EmptyGURL(),
+              "com.example.app", base::nullopt,
+              InsecureCredentialTypeFlags::kCredentialLeaked,
               /*has_startable_script=*/false,
               /*has_auto_change_button=*/false),
           ExpectCompromisedCredentialForUI(
               base::ASCIIToUTF16(kUsername2), base::ASCIIToUTF16("Example App"),
-              "com.example.app", base::nullopt,
+              GURL(kExampleCom), "com.example.app", base::nullopt,
               InsecureCredentialTypeFlags::kCredentialLeaked,
               /*has_startable_script=*/false,
               /*has_auto_change_button=*/false)));
@@ -427,7 +430,7 @@ TEST_F(PasswordCheckManagerTest,
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
-          base::nullopt, "https://example.com/",
+          GURL(kExampleCom), base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
@@ -457,7 +460,7 @@ TEST_F(PasswordCheckManagerTest,
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
-          base::nullopt, "https://example.com/",
+          GURL(kExampleCom), base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/true,
           /*has_auto_change_button=*/true)));
@@ -489,7 +492,7 @@ TEST_F(PasswordCheckManagerTest,
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16("No username"), base::ASCIIToUTF16("example.com"),
-          base::nullopt, "https://example.com/",
+          GURL(kExampleCom), base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
@@ -522,7 +525,7 @@ TEST_F(PasswordCheckManagerTest,
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
-          base::nullopt, "https://example.com/",
+          GURL(kExampleCom), base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/true,
           /*has_auto_change_button=*/false)));
@@ -553,7 +556,7 @@ TEST_F(PasswordCheckManagerTest,
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
-          base::nullopt, "https://example.com/",
+          GURL(kExampleCom), base::nullopt, "https://example.com/",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/false,
           /*has_auto_change_button=*/false)));
