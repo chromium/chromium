@@ -1168,7 +1168,6 @@ if (!is_android) {
       "../browser/pdf/pdf_extension_test_util.cc",
       "../browser/pdf/pdf_extension_test_util.h",
       "../browser/performance_manager/background_tab_loading_policy_browsertest.cc",
-      "../browser/performance_manager/frame_node_impl_browsertest.cc",
       "../browser/performance_manager/graph/page_node_impl_browsertest.cc",
       "../browser/performance_manager/mechanisms/page_discarder_browsertest.cc",
       "../browser/performance_manager/page_load_tracker_decorator_browsertest.cc",

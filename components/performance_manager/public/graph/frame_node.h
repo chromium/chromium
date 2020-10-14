@@ -13,7 +13,6 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "ui/gfx/geometry/rect.h"
 
 class GURL;
 
@@ -174,9 +173,6 @@ class FrameNode : public Node {
   // Returns true if the frame is audible, false otherwise.
   virtual bool IsAudible() const = 0;
 
-  // Returns the intersection of this frame with the viewport.
-  virtual const gfx::Rect& GetViewportIntersection() const = 0;
-
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.
   virtual const RenderFrameHostProxy& GetRenderFrameHostProxy() const = 0;
@@ -244,9 +240,6 @@ class FrameNodeObserver {
   // Invoked when the IsAudible property changes.
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
 
-  // Invoked when a frame's intersection with the viewport changes
-  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
-
   // Events with no property changes.
 
   // Invoked when a non-persistent notification has been issued by the frame.
@@ -294,7 +287,6 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
       const PriorityAndReason& previous_value) override {}
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
   void OnNonPersistentNotificationCreated(
       const FrameNode* frame_node) override {}
   void OnFirstContentfulPaint(
