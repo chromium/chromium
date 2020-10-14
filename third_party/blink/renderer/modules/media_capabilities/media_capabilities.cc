@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access_initializer_base.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
+#include "third_party/blink/renderer/modules/media_capabilities/media_capabilities_identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -139,6 +140,16 @@ MediaCapabilitiesDecodingInfo* CreateDecodingInfoWith(bool value) {
   info->setSmooth(value);
   info->setPowerEfficient(value);
   return info;
+}
+
+ScriptPromise CreateResolvedPromiseToDecodingInfoWith(
+    bool value,
+    ScriptState* script_state,
+    const MediaDecodingConfiguration* config) {
+  MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(value);
+  media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
+      ExecutionContext::From(script_state), config, info);
+  return ScriptPromise::Cast(script_state, ToV8(info, script_state));
 }
 
 MediaCapabilitiesDecodingInfo* CreateEncryptedDecodingInfoWith(
@@ -618,10 +629,12 @@ void MediaCapabilities::Trace(blink::Visitor* visitor) const {
 MediaCapabilities::PendingCallbackState::PendingCallbackState(
     ScriptPromiseResolver* resolver,
     MediaKeySystemAccess* access,
-    const base::TimeTicks& request_time)
+    const base::TimeTicks& request_time,
+    base::Optional<IdentifiableToken> input_token)
     : resolver(resolver),
       key_system_access(access),
-      request_time(request_time) {}
+      request_time(request_time),
+      input_token(input_token) {}
 
 void MediaCapabilities::PendingCallbackState::Trace(
     blink::Visitor* visitor) const {
@@ -690,9 +703,11 @@ ScriptPromise MediaCapabilities::decodingInfo(
          !CheckMseSupport(video_mime_str, video_codec_str))) {
       // Unsupported EME queries should resolve with a null
       // MediaKeySystemAccess.
-      return ScriptPromise::Cast(
-          script_state,
-          ToV8(CreateEncryptedDecodingInfoWith(false, nullptr), script_state));
+      MediaCapabilitiesDecodingInfo* info =
+          CreateEncryptedDecodingInfoWith(false, nullptr);
+      media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
+          ExecutionContext::From(script_state), config, info);
+      return ScriptPromise::Cast(script_state, ToV8(info, script_state));
     }
   }
 
@@ -712,8 +727,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
                                            message);
     }
 
-    return ScriptPromise::Cast(
-        script_state, ToV8(CreateDecodingInfoWith(false), script_state));
+    return CreateResolvedPromiseToDecodingInfoWith(false, script_state, config);
   }
 
   // Validation errors should return above.
@@ -744,9 +758,8 @@ ScriptPromise MediaCapabilities::decodingInfo(
   // No need to check video capabilities if video not included in configuration
   // or when audio is already known to be unsupported.
   if (!audio_supported || !config->hasVideo()) {
-    return ScriptPromise::Cast(
-        script_state,
-        ToV8(CreateDecodingInfoWith(audio_supported), script_state));
+    return CreateResolvedPromiseToDecodingInfoWith(audio_supported,
+                                                   script_state, config);
   }
 
   DCHECK(message.IsEmpty());
@@ -755,8 +768,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
   // Return early for unsupported configurations.
   if (!IsVideoConfigurationSupported(video_mime_str, video_codec_str,
                                      video_color_space, hdr_metadata_type)) {
-    return ScriptPromise::Cast(
-        script_state, ToV8(CreateDecodingInfoWith(false), script_state));
+    return CreateResolvedPromiseToDecodingInfoWith(false, script_state, config);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -1059,6 +1071,8 @@ void MediaCapabilities::GetPerfInfo(
     // Audio-only is always smooth and power efficient.
     MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(true);
     info->setKeySystemAccess(access);
+    media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
+        execution_context, decoding_config, info);
     resolver->Resolve(info);
     return;
   }
@@ -1073,7 +1087,10 @@ void MediaCapabilities::GetPerfInfo(
   }
 
   if (!EnsurePerfHistoryService(execution_context)) {
-    resolver->Resolve(WrapPersistent(CreateDecodingInfoWith(true)));
+    MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(true);
+    media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
+        execution_context, decoding_config, info);
+    resolver->Resolve(WrapPersistent(info));
     return;
   }
 
@@ -1081,7 +1098,9 @@ void MediaCapabilities::GetPerfInfo(
   pending_cb_map_.insert(
       callback_id,
       MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
-          resolver, access, request_time));
+          resolver, access, request_time,
+          media_capabilities_identifiability_metrics::
+              ComputeDecodingInfoInputToken(decoding_config)));
 
   if (base::FeatureList::IsEnabled(media::kMediaLearningSmoothnessExperiment)) {
     GetPerfInfo_ML(execution_context, callback_id, video_codec, video_profile,
@@ -1296,6 +1315,8 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
                         process_time);
   }
 
+  media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
+      execution_context, pending_cb->input_token, info);
   pending_cb->resolver->Resolve(std::move(info));
   pending_cb_map_.erase(callback_id);
 }
