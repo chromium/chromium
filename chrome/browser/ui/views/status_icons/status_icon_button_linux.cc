@@ -31,7 +31,10 @@ class StatusIconWidget : public views::Widget {
 
 }  // namespace
 
-StatusIconButtonLinux::StatusIconButtonLinux() : Button(this) {}
+StatusIconButtonLinux::StatusIconButtonLinux()
+    : Button(base::BindRepeating(
+          [](StatusIconButtonLinux* button) { button->delegate_->OnClick(); },
+          base::Unretained(this))) {}
 
 StatusIconButtonLinux::~StatusIconButtonLinux() = default;
 
@@ -101,11 +104,6 @@ void StatusIconButtonLinux::ShowContextMenuForViewImpl(
                 views::MenuRunner::FIXED_ANCHOR);
   menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(point, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft, source_type);
-}
-
-void StatusIconButtonLinux::ButtonPressed(Button* sender,
-                                          const ui::Event& event) {
-  delegate_->OnClick();
 }
 
 void StatusIconButtonLinux::PaintButtonContents(gfx::Canvas* canvas) {

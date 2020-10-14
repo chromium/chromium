@@ -23,8 +23,7 @@ class WindowTreeHost;
 // OnImplInitializationFailed.
 class StatusIconButtonLinux : public views::StatusIconLinux,
                               public views::Button,
-                              public views::ContextMenuController,
-                              public views::ButtonListener {
+                              public views::ContextMenuController {
  public:
   StatusIconButtonLinux();
   ~StatusIconButtonLinux() override;
@@ -39,9 +38,6 @@ class StatusIconButtonLinux : public views::StatusIconLinux,
   void ShowContextMenuForViewImpl(View* source,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
