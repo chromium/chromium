@@ -1218,6 +1218,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="M95">
+  <owner>gogerald@chromium.org</owner>
+  <owner>nasims@google.com</owner>
+  <summary>
+    [iOS] The number of NTP tabs open when the app comes out of the background.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.NTPCountAtStartup" units="tabs" expires_after="M95">
+  <owner>gogerald@chromium.org</owner>
+  <owner>nasims@google.com</owner>
+  <summary>[iOS] The number of NTP tabs open at cold launch.</summary>
+</histogram>
+
 <histogram name="Tabs.NumberOfTabsOnResume" units="tabs" expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 

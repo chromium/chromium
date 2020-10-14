@@ -10,6 +10,7 @@
 #include "components/metrics/metrics_service.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/metrics/previous_session_info_private.h"
@@ -132,36 +133,55 @@ TEST_F(MetricsMediatorTest, connectionTypeChanged) {
 
 // A block that takes as arguments the caller and the arguments from
 // UserActivityHandler +handleStartupParameters and returns nothing.
-typedef void (^logLaunchMetricsBlock)(id, const char*, int);
+typedef void (^LogLaunchMetricsBlock)(id, const char*, int);
 
 class MetricsMediatorLogLaunchTest : public PlatformTest {
  protected:
-  MetricsMediatorLogLaunchTest() : has_been_called_(FALSE) {}
+  MetricsMediatorLogLaunchTest()
+      : num_tabs_has_been_called_(FALSE),
+        num_ntp_tabs_has_been_called_(FALSE) {}
 
   void initiateMetricsMediator(BOOL coldStart, int tabCount) {
-    swizzle_block_ = [^(id self, int numTab) {
-      has_been_called_ = YES;
+    num_tabs_swizzle_block_ = [^(id self, int numTab) {
+      num_tabs_has_been_called_ = YES;
+      // Tests.
+      EXPECT_EQ(tabCount, numTab);
+    } copy];
+    num_ntp_tabs_swizzle_block_ = [^(id self, int numTab) {
+      num_ntp_tabs_has_been_called_ = YES;
       // Tests.
       EXPECT_EQ(tabCount, numTab);
     } copy];
     if (coldStart) {
-      uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
+      tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
           [MetricsMediator class], @selector(recordNumTabAtStartup:),
-          swizzle_block_));
+          num_tabs_swizzle_block_));
+      ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
+          [MetricsMediator class], @selector(recordNumNTPTabAtStartup:),
+          num_ntp_tabs_swizzle_block_));
     } else {
-      uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
+      tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
           [MetricsMediator class], @selector(recordNumTabAtResume:),
-          swizzle_block_));
+          num_tabs_swizzle_block_));
+      ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
+          [MetricsMediator class], @selector(recordNumNTPTabAtResume:),
+          num_ntp_tabs_swizzle_block_));
     }
   }
 
-  void verifySwizzleHasBeenCalled() { EXPECT_TRUE(has_been_called_); }
+  void verifySwizzleHasBeenCalled() {
+    EXPECT_TRUE(num_tabs_has_been_called_);
+    EXPECT_TRUE(num_ntp_tabs_has_been_called_);
+  }
 
   web::WebTaskEnvironment task_environment_;
   NSArray<FakeSceneState*>* connected_scenes_;
-  __block BOOL has_been_called_;
-  logLaunchMetricsBlock swizzle_block_;
-  std::unique_ptr<ScopedBlockSwizzler> uma_histogram_swizzler_;
+  __block BOOL num_tabs_has_been_called_;
+  __block BOOL num_ntp_tabs_has_been_called_;
+  LogLaunchMetricsBlock num_tabs_swizzle_block_;
+  LogLaunchMetricsBlock num_ntp_tabs_swizzle_block_;
+  std::unique_ptr<ScopedBlockSwizzler> tabs_uma_histogram_swizzler_;
+  std::unique_ptr<ScopedBlockSwizzler> ntp_tabs_uma_histogram_swizzler_;
   std::set<std::unique_ptr<TestBrowser>> browsers_;
 };
 
@@ -173,9 +193,12 @@ TEST_F(MetricsMediatorLogLaunchTest,
   initiateMetricsMediator(coldStart, 23);
   // 23 tabs across three scenes.
   connected_scenes_ = [FakeSceneState sceneArrayWithCount:3];
-  [connected_scenes_[0] appendWebStatesWithURL:GURL() count:9];
-  [connected_scenes_[1] appendWebStatesWithURL:GURL() count:9];
-  [connected_scenes_[2] appendWebStatesWithURL:GURL() count:5];
+  [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:9];
+  [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:9];
+  [connected_scenes_[2] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:5];
   // Mark one of the scenes as active.
   connected_scenes_[0].activationLevel = SceneActivationLevelForegroundActive;
 
@@ -211,11 +234,15 @@ TEST_F(MetricsMediatorLogLaunchTest, logLaunchMetricsNoBackgroundDate) {
   initiateMetricsMediator(coldStart, 32);
   // 32 tabs across five scenes.
   connected_scenes_ = [FakeSceneState sceneArrayWithCount:5];
-  [connected_scenes_[0] appendWebStatesWithURL:GURL() count:8];
-  [connected_scenes_[1] appendWebStatesWithURL:GURL() count:8];
+  [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:8];
+  [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:8];
   // Scene 2 has zero tabs.
-  [connected_scenes_[3] appendWebStatesWithURL:GURL() count:8];
-  [connected_scenes_[4] appendWebStatesWithURL:GURL() count:8];
+  [connected_scenes_[3] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:8];
+  [connected_scenes_[4] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
+                                         count:8];
 
   id startupInformation =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
