@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -293,8 +294,9 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
     number_of_action_items++;
   }
 
-  // Text zoom is currently disabled on iPad. See crbug.com/1061119.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ios::GetChromeBrowserProvider()
+          ->GetTextZoomProvider()
+          ->IsTextZoomEnabled()) {
     number_of_action_items++;
   }
 
@@ -434,13 +436,6 @@ TEST_F(PopupMenuMediatorTest, TestReadLaterDisabled) {
 
 // Tests that the "Text Zoom..." button is disabled on non-HTML pages.
 TEST_F(PopupMenuMediatorTest, TestTextZoomDisabled) {
-  // This feature is currently disabled on iPad. See crbug.com/1061119.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(web::kWebPageTextAccessibility);
-
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
   mediator_.webStateList = web_state_list_.get();
@@ -506,27 +501,6 @@ TEST_F(PopupMenuMediatorTest, TestEnterpriseInfoShown) {
   mediator_.popupMenu = consumer;
   SetUpActiveWebState();
   ASSERT_TRUE(HasEnterpriseInfoItem(consumer));
-}
-
-// Tests that this feature is disabled on iPad, no matter the state of the
-// Feature flag. See crbug.com/1061119.
-TEST_F(PopupMenuMediatorTest, TestTextZoomDisabledIPad) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(web::kWebPageTextAccessibility);
-
-  CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
-                 /*trigger_incognito_hint=*/NO);
-  mediator_.webStateList = web_state_list_.get();
-
-  FakePopupMenuConsumer* consumer = [[FakePopupMenuConsumer alloc] init];
-  mediator_.popupMenu = consumer;
-  FontSizeTabHelper::CreateForWebState(web_state_list_->GetWebStateAt(0));
-  SetUpActiveWebState();
-  EXPECT_FALSE(HasItem(consumer, kToolsMenuTextZoom, /*enabled=*/YES));
 }
 
 // Tests that 1) the tools menu has an enabled 'Add to Bookmarks' button when

@@ -55,6 +55,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/user_agent.h"
@@ -706,7 +707,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
           !helper->IsFindUIActive());
 }
 
-// Whether or not text zoom is enabled
+// Whether or not text zoom is enabled for this page.
 - (BOOL)isTextZoomEnabled {
   if (self.webContentAreaShowingOverlay) {
     return NO;
@@ -933,8 +934,9 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   [actionsArray addObject:self.findInPageItem];
 
   // Text Zoom
-  if (!IsIPadIdiom() &&
-      base::FeatureList::IsEnabled(web::kWebPageTextAccessibility)) {
+  if (ios::GetChromeBrowserProvider()
+          ->GetTextZoomProvider()
+          ->IsTextZoomEnabled()) {
     self.textZoomItem = CreateTableViewItem(
         IDS_IOS_TOOLS_MENU_TEXT_ZOOM, PopupMenuActionTextZoom,
         @"popup_menu_text_zoom", kToolsMenuTextZoom);

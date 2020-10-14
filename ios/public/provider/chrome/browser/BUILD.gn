@@ -37,6 +37,8 @@ source_set("test_support") {
     "test_chrome_browser_provider.mm",
     "test_chrome_provider_initializer.h",
     "test_chrome_provider_initializer.mm",
+    "test_text_zoom_provider.h",
+    "test_text_zoom_provider.mm",
   ]
   deps = [
     ":browser",
