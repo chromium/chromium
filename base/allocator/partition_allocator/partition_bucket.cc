@@ -26,7 +26,7 @@ namespace internal {
 namespace {
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionPage<thread_safe>*
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     EXCLUSIVE_LOCKS_REQUIRED(root->lock_) {
   size_t size = PartitionBucket<thread_safe>::get_direct_map_size(raw_size);
@@ -86,22 +86,23 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
             &metadata->page);
 
   auto* page = &metadata->page;
-  PA_DCHECK(!page->next_page);
-  PA_DCHECK(!page->num_allocated_slots);
-  PA_DCHECK(!page->num_unprovisioned_slots);
-  PA_DCHECK(!page->page_offset);
-  PA_DCHECK(!page->empty_cache_index);
-  page->bucket = &metadata->bucket;
-  page->freelist_head = reinterpret_cast<PartitionFreelistEntry*>(slot);
+  PA_DCHECK(!page->slot_span_metadata_offset);
+  PA_DCHECK(!page->slot_span_metadata.next_slot_span);
+  PA_DCHECK(!page->slot_span_metadata.num_allocated_slots);
+  PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
+  PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
+  page->slot_span_metadata.bucket = &metadata->bucket;
+  page->slot_span_metadata.freelist_head =
+      reinterpret_cast<PartitionFreelistEntry*>(slot);
 
   auto* next_entry = reinterpret_cast<PartitionFreelistEntry*>(slot);
   next_entry->next = PartitionFreelistEntry::Encode(nullptr);
 
-  PA_DCHECK(!metadata->bucket.active_pages_head);
-  PA_DCHECK(!metadata->bucket.empty_pages_head);
-  PA_DCHECK(!metadata->bucket.decommitted_pages_head);
+  PA_DCHECK(!metadata->bucket.active_slot_spans_head);
+  PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
+  PA_DCHECK(!metadata->bucket.decommitted_slot_spans_head);
   PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
-  PA_DCHECK(!metadata->bucket.num_full_pages);
+  PA_DCHECK(!metadata->bucket.num_full_slot_spans);
   metadata->bucket.slot_size = size;
 
   auto* map_extent = &metadata->direct_map_extent;
@@ -115,7 +116,7 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   map_extent->prev_extent = nullptr;
   root->direct_map_list = map_extent;
 
-  return page;
+  return reinterpret_cast<SlotSpanMetadata<thread_safe>*>(page);
 }
 
 }  // namespace
@@ -188,10 +189,11 @@ template <bool thread_safe>
 void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
   slot_size = new_slot_size;
   slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
-  active_pages_head = PartitionPage<thread_safe>::get_sentinel_page();
-  empty_pages_head = nullptr;
-  decommitted_pages_head = nullptr;
-  num_full_pages = 0;
+  active_slot_spans_head =
+      SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
+  empty_slot_spans_head = nullptr;
+  decommitted_slot_spans_head = nullptr;
+  num_full_slot_spans = 0;
   num_system_pages_per_slot_span = get_system_pages_per_slot_span();
 }
 
@@ -405,41 +407,40 @@ ALWAYS_INLINE uint16_t PartitionBucket<thread_safe>::get_pages_per_slot_span() {
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
-    PartitionPage<thread_safe>* page) {
+    SlotSpanMetadata<thread_safe>* slot_span) {
   // The bucket never changes. We set it up once.
-  page->bucket = this;
-  page->empty_cache_index = -1;
+  slot_span->bucket = this;
+  slot_span->empty_cache_index = -1;
 
-  page->Reset();
+  slot_span->Reset();
 
   uint16_t num_partition_pages = get_pages_per_slot_span();
-  char* page_char_ptr = reinterpret_cast<char*>(page);
+  auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(slot_span);
   for (uint16_t i = 1; i < num_partition_pages; ++i) {
-    page_char_ptr += kPageMetadataSize;
-    auto* secondary_page =
-        reinterpret_cast<PartitionPage<thread_safe>*>(page_char_ptr);
-    secondary_page->page_offset = i;
+    auto* secondary_page = page + i;
+    secondary_page->slot_span_metadata_offset = i;
   }
 }
 
 template <bool thread_safe>
 ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
-    PartitionPage<thread_safe>* page) {
-  PA_DCHECK(page != PartitionPage<thread_safe>::get_sentinel_page());
-  uint16_t num_slots = page->num_unprovisioned_slots;
+    SlotSpanMetadata<thread_safe>* slot_span) {
+  PA_DCHECK(slot_span !=
+            SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
+  uint16_t num_slots = slot_span->num_unprovisioned_slots;
   PA_DCHECK(num_slots);
   // We should only get here when _every_ slot is either used or unprovisioned.
   // (The third state is "on the freelist". If we have a non-empty freelist, we
   // should not get here.)
-  PA_DCHECK(num_slots + page->num_allocated_slots == get_slots_per_span());
+  PA_DCHECK(num_slots + slot_span->num_allocated_slots == get_slots_per_span());
   // Similarly, make explicitly sure that the freelist is empty.
-  PA_DCHECK(!page->freelist_head);
-  PA_DCHECK(page->num_allocated_slots >= 0);
+  PA_DCHECK(!slot_span->freelist_head);
+  PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
   size_t size = slot_size;
-  char* base =
-      reinterpret_cast<char*>(PartitionPage<thread_safe>::ToPointer(page));
-  char* return_object = base + (size * page->num_allocated_slots);
+  char* base = reinterpret_cast<char*>(
+      SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+  char* return_object = base + (size * slot_span->num_allocated_slots);
   char* first_freelist_pointer = return_object + size;
   char* first_freelist_pointer_extent =
       first_freelist_pointer + sizeof(PartitionFreelistEntry*);
@@ -470,13 +471,13 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
   // sub page boundaries frequently for large bucket sizes.
   PA_DCHECK(num_new_freelist_entries + 1 <= num_slots);
   num_slots -= (num_new_freelist_entries + 1);
-  page->num_unprovisioned_slots = num_slots;
-  page->num_allocated_slots++;
+  slot_span->num_unprovisioned_slots = num_slots;
+  slot_span->num_allocated_slots++;
 
   if (LIKELY(num_new_freelist_entries)) {
     char* freelist_pointer = first_freelist_pointer;
     auto* entry = reinterpret_cast<PartitionFreelistEntry*>(freelist_pointer);
-    page->freelist_head = entry;
+    slot_span->freelist_head = entry;
     while (--num_new_freelist_entries) {
       freelist_pointer += size;
       auto* next_entry =
@@ -486,56 +487,57 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::AllocAndFillFreelist(
     }
     entry->next = PartitionFreelistEntry::Encode(nullptr);
   } else {
-    page->freelist_head = nullptr;
+    slot_span->freelist_head = nullptr;
   }
   return return_object;
 }
 
 template <bool thread_safe>
-bool PartitionBucket<thread_safe>::SetNewActivePage() {
-  PartitionPage<thread_safe>* page = active_pages_head;
-  if (page == PartitionPage<thread_safe>::get_sentinel_page())
+bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
+  SlotSpanMetadata<thread_safe>* slot_span = active_slot_spans_head;
+  if (slot_span == SlotSpanMetadata<thread_safe>::get_sentinel_slot_span())
     return false;
 
-  PartitionPage<thread_safe>* next_page;
+  SlotSpanMetadata<thread_safe>* next_slot_span;
 
-  for (; page; page = next_page) {
-    next_page = page->next_page;
-    PA_DCHECK(page->bucket == this);
-    PA_DCHECK(page != empty_pages_head);
-    PA_DCHECK(page != decommitted_pages_head);
+  for (; slot_span; slot_span = next_slot_span) {
+    next_slot_span = slot_span->next_slot_span;
+    PA_DCHECK(slot_span->bucket == this);
+    PA_DCHECK(slot_span != empty_slot_spans_head);
+    PA_DCHECK(slot_span != decommitted_slot_spans_head);
 
-    if (LIKELY(page->is_active())) {
-      // This page is usable because it has freelist entries, or has
+    if (LIKELY(slot_span->is_active())) {
+      // This slot span is usable because it has freelist entries, or has
       // unprovisioned slots we can create freelist entries from.
-      active_pages_head = page;
+      active_slot_spans_head = slot_span;
       return true;
     }
 
-    // Deal with empty and decommitted pages.
-    if (LIKELY(page->is_empty())) {
-      page->next_page = empty_pages_head;
-      empty_pages_head = page;
-    } else if (LIKELY(page->is_decommitted())) {
-      page->next_page = decommitted_pages_head;
-      decommitted_pages_head = page;
+    // Deal with empty and decommitted slot spans.
+    if (LIKELY(slot_span->is_empty())) {
+      slot_span->next_slot_span = empty_slot_spans_head;
+      empty_slot_spans_head = slot_span;
+    } else if (LIKELY(slot_span->is_decommitted())) {
+      slot_span->next_slot_span = decommitted_slot_spans_head;
+      decommitted_slot_spans_head = slot_span;
     } else {
-      PA_DCHECK(page->is_full());
-      // If we get here, we found a full page. Skip over it too, and also
+      PA_DCHECK(slot_span->is_full());
+      // If we get here, we found a full slot span. Skip over it too, and also
       // tag it as full (via a negative value). We need it tagged so that
-      // free'ing can tell, and move it back into the active page list.
-      page->num_allocated_slots = -page->num_allocated_slots;
-      ++num_full_pages;
-      // num_full_pages is a uint16_t for efficient packing so guard against
-      // overflow to be safe.
-      if (UNLIKELY(!num_full_pages))
+      // free'ing can tell, and move it back into the active list.
+      slot_span->num_allocated_slots = -slot_span->num_allocated_slots;
+      ++num_full_slot_spans;
+      // num_full_slot_spans is a uint16_t for efficient packing so guard
+      // against overflow to be safe.
+      if (UNLIKELY(!num_full_slot_spans))
         OnFull();
       // Not necessary but might help stop accidents.
-      page->next_page = nullptr;
+      slot_span->next_slot_span = nullptr;
     }
   }
 
-  active_pages_head = PartitionPage<thread_safe>::get_sentinel_page();
+  active_slot_spans_head =
+      SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
   return false;
 }
 
@@ -546,14 +548,14 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     size_t raw_size,
     bool* is_already_zeroed) {
   // The slow path is called when the freelist is empty.
-  PA_DCHECK(!active_pages_head->freelist_head);
+  PA_DCHECK(!active_slot_spans_head->freelist_head);
 
-  PartitionPage<thread_safe>* new_page = nullptr;
-  // |new_page->bucket| will always be |this|, except when |this| is the
+  SlotSpanMetadata<thread_safe>* new_slot_span = nullptr;
+  // |new_slot_span->bucket| will always be |this|, except when |this| is the
   // sentinel bucket, which is used to signal a direct mapped allocation.  In
-  // this case |new_page_bucket| will be set properly later. This avoids a read
-  // for most allocations.
-  PartitionBucket* new_page_bucket = this;
+  // this case |new_bucket| will be set properly later. This avoids a read for
+  // most allocations.
+  PartitionBucket* new_bucket = this;
   *is_already_zeroed = false;
 
   // For the PartitionRoot::Alloc() API, we have a bunch of buckets
@@ -562,15 +564,15 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   // branches.
   //
   // Note: The ordering of the conditionals matter! In particular,
-  // SetNewActivePage() has a side-effect even when returning
-  // false where it sweeps the active page list and may move things into
-  // the empty or decommitted lists which affects the subsequent conditional.
+  // SetNewActiveSlotSpan() has a side-effect even when returning
+  // false where it sweeps the active list and may move things into the empty or
+  // decommitted lists which affects the subsequent conditional.
   bool return_null = flags & PartitionAllocReturnNull;
   if (UNLIKELY(is_direct_mapped())) {
     PA_DCHECK(raw_size > kMaxBucketed);
     PA_DCHECK(this == &root->sentinel_bucket);
-    PA_DCHECK(active_pages_head ==
-              PartitionPage<thread_safe>::get_sentinel_page());
+    PA_DCHECK(active_slot_spans_head ==
+              SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
     if (raw_size > MaxDirectMapped()) {
       if (return_null)
         return nullptr;
@@ -599,62 +601,65 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       PartitionExcessiveAllocationSize(raw_size);
       IMMEDIATE_CRASH();  // Not required, kept as documentation.
     }
-    new_page = PartitionDirectMap(root, flags, raw_size);
-    if (new_page)
-      new_page_bucket = new_page->bucket;
-    // New pages from PageAllocator are always zeroed.
+    new_slot_span = PartitionDirectMap(root, flags, raw_size);
+    if (new_slot_span)
+      new_bucket = new_slot_span->bucket;
+    // Memory from PageAllocator is always zeroed.
     *is_already_zeroed = true;
-  } else if (LIKELY(SetNewActivePage())) {
-    // First, did we find an active page in the active pages list?
-    new_page = active_pages_head;
-    PA_DCHECK(new_page->is_active());
-  } else if (LIKELY(empty_pages_head != nullptr) ||
-             LIKELY(decommitted_pages_head != nullptr)) {
-    // Second, look in our lists of empty and decommitted pages.
-    // Check empty pages first, which are preferred, but beware that an
-    // empty page might have been decommitted.
-    while (LIKELY((new_page = empty_pages_head) != nullptr)) {
-      PA_DCHECK(new_page->bucket == this);
-      PA_DCHECK(new_page->is_empty() || new_page->is_decommitted());
-      empty_pages_head = new_page->next_page;
-      // Accept the empty page unless it got decommitted.
-      if (new_page->freelist_head) {
-        new_page->next_page = nullptr;
+  } else if (LIKELY(SetNewActiveSlotSpan())) {
+    // First, did we find an active slot span in the active list?
+    new_slot_span = active_slot_spans_head;
+    PA_DCHECK(new_slot_span->is_active());
+  } else if (LIKELY(empty_slot_spans_head != nullptr) ||
+             LIKELY(decommitted_slot_spans_head != nullptr)) {
+    // Second, look in our lists of empty and decommitted slot spans.
+    // Check empty slot spans first, which are preferred, but beware that an
+    // empty slot span might have been decommitted.
+    while (LIKELY((new_slot_span = empty_slot_spans_head) != nullptr)) {
+      PA_DCHECK(new_slot_span->bucket == this);
+      PA_DCHECK(new_slot_span->is_empty() || new_slot_span->is_decommitted());
+      empty_slot_spans_head = new_slot_span->next_slot_span;
+      // Accept the empty slot span unless it got decommitted.
+      if (new_slot_span->freelist_head) {
+        new_slot_span->next_slot_span = nullptr;
         break;
       }
-      PA_DCHECK(new_page->is_decommitted());
-      new_page->next_page = decommitted_pages_head;
-      decommitted_pages_head = new_page;
+      PA_DCHECK(new_slot_span->is_decommitted());
+      new_slot_span->next_slot_span = decommitted_slot_spans_head;
+      decommitted_slot_spans_head = new_slot_span;
     }
-    if (UNLIKELY(!new_page) && LIKELY(decommitted_pages_head != nullptr)) {
-      new_page = decommitted_pages_head;
-      PA_DCHECK(new_page->bucket == this);
-      PA_DCHECK(new_page->is_decommitted());
-      decommitted_pages_head = new_page->next_page;
-      void* addr = PartitionPage<thread_safe>::ToPointer(new_page);
-      root->RecommitSystemPages(addr, new_page->bucket->get_bytes_per_span());
-      new_page->Reset();
+    if (UNLIKELY(!new_slot_span) &&
+        LIKELY(decommitted_slot_spans_head != nullptr)) {
+      new_slot_span = decommitted_slot_spans_head;
+      PA_DCHECK(new_slot_span->bucket == this);
+      PA_DCHECK(new_slot_span->is_decommitted());
+      decommitted_slot_spans_head = new_slot_span->next_slot_span;
+      void* addr = SlotSpanMetadata<thread_safe>::ToPointer(new_slot_span);
+      root->RecommitSystemPages(addr,
+                                new_slot_span->bucket->get_bytes_per_span());
+      new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }
-    PA_DCHECK(new_page);
+    PA_DCHECK(new_slot_span);
   } else {
-    // Third. If we get here, we need a brand new page.
+    // Third. If we get here, we need a brand new slot span.
     uint16_t num_partition_pages = get_pages_per_slot_span();
-    void* raw_pages = AllocNewSlotSpan(root, flags, num_partition_pages,
-                                       get_bytes_per_span());
-    if (LIKELY(raw_pages != nullptr)) {
-      new_page =
-          PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(raw_pages);
-      InitializeSlotSpan(new_page);
-      // New pages from PageAllocator are always zeroed.
+    void* raw_memory = AllocNewSlotSpan(root, flags, num_partition_pages,
+                                        get_bytes_per_span());
+    if (LIKELY(raw_memory != nullptr)) {
+      new_slot_span =
+          SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(
+              raw_memory);
+      InitializeSlotSpan(new_slot_span);
+      // New memory from PageAllocator is always zeroed.
       *is_already_zeroed = true;
     }
   }
 
   // Bail if we had a memory allocation failure.
-  if (UNLIKELY(!new_page)) {
-    PA_DCHECK(active_pages_head ==
-              PartitionPage<thread_safe>::get_sentinel_page());
+  if (UNLIKELY(!new_slot_span)) {
+    PA_DCHECK(active_slot_spans_head ==
+              SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
     if (return_null)
       return nullptr;
     // See comment above.
@@ -663,24 +668,24 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
-  PA_DCHECK(new_page_bucket != &root->sentinel_bucket);
-  new_page_bucket->active_pages_head = new_page;
-  if (new_page->CanStoreRawSize())
-    new_page->SetRawSize(raw_size);
+  PA_DCHECK(new_bucket != &root->sentinel_bucket);
+  new_bucket->active_slot_spans_head = new_slot_span;
+  if (new_slot_span->CanStoreRawSize())
+    new_slot_span->SetRawSize(raw_size);
 
-  // If we found an active page with free slots, or an empty page, we have a
-  // usable freelist head.
-  if (LIKELY(new_page->freelist_head != nullptr)) {
-    PartitionFreelistEntry* entry = new_page->freelist_head;
+  // If we found an active slot span with free slots, or an empty slot span, we
+  // have a usable freelist head.
+  if (LIKELY(new_slot_span->freelist_head != nullptr)) {
+    PartitionFreelistEntry* entry = new_slot_span->freelist_head;
     PartitionFreelistEntry* new_head =
         EncodedPartitionFreelistEntry::Decode(entry->next);
-    new_page->freelist_head = new_head;
-    new_page->num_allocated_slots++;
+    new_slot_span->freelist_head = new_head;
+    new_slot_span->num_allocated_slots++;
     return entry;
   }
   // Otherwise, we need to build the freelist.
-  PA_DCHECK(new_page->num_unprovisioned_slots);
-  return AllocAndFillFreelist(new_page);
+  PA_DCHECK(new_slot_span->num_unprovisioned_slots);
+  return AllocAndFillFreelist(new_slot_span);
 }
 
 template struct PartitionBucket<ThreadSafe>;

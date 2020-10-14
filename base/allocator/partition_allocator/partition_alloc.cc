@@ -46,11 +46,11 @@ NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(size_t size) {
 }
 
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::DecommitEmptyPages() {
-  for (Page*& page : global_empty_page_ring) {
-    if (page)
-      page->DecommitIfPossible(this);
-    page = nullptr;
+void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
+  for (SlotSpan*& slot_span : global_empty_slot_span_ring) {
+    if (slot_span)
+      slot_span->DecommitIfPossible(this);
+    slot_span = nullptr;
   }
 }
 
@@ -283,10 +283,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   if (thread_safe && opts.pcscan == PartitionOptions::PCScan::kEnabled)
     pcscan.emplace(this);
 
-  // We mark the sentinel bucket/page as free to make sure it is skipped by our
-  // logic to find a new active page.
+  // We mark the sentinel slot span as free to make sure it is skipped by our
+  // logic to find a new active slot span.
   memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
-  sentinel_bucket.active_pages_head = Page::get_sentinel_page();
+  sentinel_bucket.active_slot_spans_head = SlotSpan::get_sentinel_slot_span();
 
   // This is a "magic" value so we can test if a root pointer is valid.
   inverted_self = ~reinterpret_cast<uintptr_t>(this);
@@ -306,7 +306,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       bucket->Init(current_size);
       // Disable pseudo buckets so that touching them faults.
       if (current_size % kSmallestBucket)
-        bucket->active_pages_head = nullptr;
+        bucket->active_slot_spans_head = nullptr;
       current_size += current_increment;
       ++bucket;
     }
@@ -339,9 +339,9 @@ PartitionRoot<thread_safe>::~PartitionRoot() = default;
 
 template <bool thread_safe>
 bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
-    internal::PartitionPage<thread_safe>* page,
+    internal::SlotSpanMetadata<thread_safe>* slot_span,
     size_t requested_size) {
-  PA_DCHECK(page->bucket->is_direct_mapped());
+  PA_DCHECK(slot_span->bucket->is_direct_mapped());
 
   size_t raw_size =
       internal::PartitionSizeAdjustAdd(allow_extras, requested_size);
@@ -352,12 +352,12 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     return false;
 
   // bucket->slot_size is the current size of the allocation.
-  size_t current_slot_size = page->bucket->slot_size;
-  char* char_ptr = static_cast<char*>(Page::ToPointer(page));
+  size_t current_slot_size = slot_span->bucket->slot_size;
+  char* char_ptr = static_cast<char*>(SlotSpan::ToPointer(slot_span));
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
   } else if (new_slot_size < current_slot_size) {
-    size_t map_size = DirectMapExtent::FromPage(page)->map_size;
+    size_t map_size = DirectMapExtent::FromSlotSpan(slot_span)->map_size;
 
     // Don't reallocate in-place if new size is less than 80 % of the full
     // map size, to avoid holding on to too much unused address space.
@@ -370,7 +370,8 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     DecommitSystemPages(char_ptr + new_slot_size, decommit_size);
     SetSystemPagesAccess(char_ptr + new_slot_size, decommit_size,
                          PageInaccessible);
-  } else if (new_slot_size <= DirectMapExtent::FromPage(page)->map_size) {
+  } else if (new_slot_size <=
+             DirectMapExtent::FromSlotSpan(slot_span)->map_size) {
     // Grow within the actually allocated memory. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
@@ -397,8 +398,8 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
   }
 #endif
 
-  page->SetRawSize(raw_size);
-  page->bucket->slot_size = new_slot_size;
+  slot_span->SetRawSize(raw_size);
+  slot_span->bucket->slot_size = new_slot_size;
   return true;
 }
 
@@ -438,19 +439,19 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
         &actual_old_size, ptr);
   }
   if (LIKELY(!overridden)) {
-    auto* page = Page::FromPointer(
+    auto* slot_span = SlotSpan::FromPointer(
         internal::PartitionPointerAdjustSubtract(allow_extras, ptr));
     bool success = false;
     {
       internal::ScopedGuard<thread_safe> guard{lock_};
       // TODO(palmer): See if we can afford to make this a CHECK.
-      PA_DCHECK(IsValidPage(page));
+      PA_DCHECK(IsValidSlotSpan(slot_span));
 
-      if (UNLIKELY(page->bucket->is_direct_mapped())) {
+      if (UNLIKELY(slot_span->bucket->is_direct_mapped())) {
         // We may be able to perform the realloc in place by changing the
         // accessibility of memory pages and, if reducing the size, decommitting
         // them.
-        success = ReallocDirectMappedInPlace(page, new_size);
+        success = ReallocDirectMappedInPlace(slot_span, new_size);
       }
     }
     if (success) {
@@ -471,10 +472,10 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       // Trying to allocate a block of size |new_size| would give us a block of
       // the same size as the one we've already got, so re-use the allocation
       // after updating statistics (and cookies, if present).
-      if (page->CanStoreRawSize()) {
+      if (slot_span->CanStoreRawSize()) {
         size_t new_raw_size =
             internal::PartitionSizeAdjustAdd(allow_extras, new_size);
-        page->SetRawSize(new_raw_size);
+        slot_span->SetRawSize(new_raw_size);
 #if DCHECK_IS_ON()
         // Write a new trailing cookie only when it is possible to keep track
         // raw size (otherwise we wouldn't know where to look for it later).
@@ -508,23 +509,24 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 }
 
 template <bool thread_safe>
-static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
-                                 bool discard) {
-  const internal::PartitionBucket<thread_safe>* bucket = page->bucket;
+static size_t PartitionPurgeSlotSpan(
+    internal::SlotSpanMetadata<thread_safe>* slot_span,
+    bool discard) {
+  const internal::PartitionBucket<thread_safe>* bucket = slot_span->bucket;
   size_t slot_size = bucket->slot_size;
-  if (slot_size < SystemPageSize() || !page->num_allocated_slots)
+  if (slot_size < SystemPageSize() || !slot_span->num_allocated_slots)
     return 0;
 
   size_t bucket_num_slots = bucket->get_slots_per_span();
   size_t discardable_bytes = 0;
 
-  if (page->CanStoreRawSize()) {
+  if (slot_span->CanStoreRawSize()) {
     uint32_t used_bytes =
-        static_cast<uint32_t>(RoundUpToSystemPage(page->GetRawSize()));
+        static_cast<uint32_t>(RoundUpToSystemPage(slot_span->GetRawSize()));
     discardable_bytes = bucket->slot_size - used_bytes;
     if (discardable_bytes && discard) {
       char* ptr = reinterpret_cast<char*>(
-          internal::PartitionPage<thread_safe>::ToPointer(page));
+          internal::SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
       ptr += used_bytes;
       DiscardSystemPages(ptr, discardable_bytes);
     }
@@ -545,8 +547,8 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
                SystemPageSize());
 #endif
   PA_DCHECK(bucket_num_slots <= kMaxSlotCount);
-  PA_DCHECK(page->num_unprovisioned_slots < bucket_num_slots);
-  size_t num_slots = bucket_num_slots - page->num_unprovisioned_slots;
+  PA_DCHECK(slot_span->num_unprovisioned_slots < bucket_num_slots);
+  size_t num_slots = bucket_num_slots - slot_span->num_unprovisioned_slots;
   char slot_usage[kMaxSlotCount];
 #if !defined(OS_WIN)
   // The last freelist entry should not be discarded when using OS_WIN.
@@ -555,10 +557,11 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
 #endif
   memset(slot_usage, 1, num_slots);
   char* ptr = reinterpret_cast<char*>(
-      internal::PartitionPage<thread_safe>::ToPointer(page));
-  // First, walk the freelist for this page and make a bitmap of which slots
-  // are not in use.
-  for (internal::PartitionFreelistEntry* entry = page->freelist_head; entry;
+      internal::SlotSpanMetadata<thread_safe>::ToPointer(slot_span));
+  // First, walk the freelist for this slot span and make a bitmap of which
+  // slots are not in use.
+  for (internal::PartitionFreelistEntry* entry = slot_span->freelist_head;
+       entry;
        /**/) {
     size_t slot_index = (reinterpret_cast<char*>(entry) - ptr) / slot_size;
     PA_DCHECK(slot_index < num_slots);
@@ -603,7 +606,8 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
     if (unprovisioned_bytes && discard) {
       PA_DCHECK(truncated_slots > 0);
       size_t num_new_entries = 0;
-      page->num_unprovisioned_slots += static_cast<uint16_t>(truncated_slots);
+      slot_span->num_unprovisioned_slots +=
+          static_cast<uint16_t>(truncated_slots);
 
       // Rewrite the freelist.
       internal::PartitionFreelistEntry* head = nullptr;
@@ -627,11 +631,11 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
 #endif
       }
 
-      page->freelist_head = head;
+      slot_span->freelist_head = head;
       if (back)
         back->next = internal::PartitionFreelistEntry::Encode(nullptr);
 
-      PA_DCHECK(num_new_entries == num_slots - page->num_allocated_slots);
+      PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
       // Discard the memory.
       DiscardSystemPages(begin_ptr, unprovisioned_bytes);
     }
@@ -671,13 +675,15 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
 template <bool thread_safe>
 static void PartitionPurgeBucket(
     internal::PartitionBucket<thread_safe>* bucket) {
-  if (bucket->active_pages_head !=
-      internal::PartitionPage<thread_safe>::get_sentinel_page()) {
-    for (internal::PartitionPage<thread_safe>* page = bucket->active_pages_head;
-         page; page = page->next_page) {
-      PA_DCHECK(page !=
-                internal::PartitionPage<thread_safe>::get_sentinel_page());
-      PartitionPurgePage(page, true);
+  if (bucket->active_slot_spans_head !=
+      internal::SlotSpanMetadata<thread_safe>::get_sentinel_slot_span()) {
+    for (internal::SlotSpanMetadata<thread_safe>* slot_span =
+             bucket->active_slot_spans_head;
+         slot_span; slot_span = slot_span->next_slot_span) {
+      PA_DCHECK(
+          slot_span !=
+          internal::SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
+      PartitionPurgeSlotSpan(slot_span, true);
     }
   }
 }
@@ -686,8 +692,8 @@ template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   {
     ScopedGuard guard{lock_};
-    if (flags & PartitionPurgeDecommitEmptyPages)
-      DecommitEmptyPages();
+    if (flags & PartitionPurgeDecommitEmptySlotSpans)
+      DecommitEmptySlotSpans();
     if (flags & PartitionPurgeDiscardUnusedSystemPages) {
       for (size_t i = 0; i < kNumBuckets; ++i) {
         Bucket* bucket = &buckets[i];
@@ -702,36 +708,37 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
 }
 
 template <bool thread_safe>
-static void PartitionDumpPageStats(PartitionBucketMemoryStats* stats_out,
-                                   internal::PartitionPage<thread_safe>* page) {
-  uint16_t bucket_num_slots = page->bucket->get_slots_per_span();
+static void PartitionDumpSlotSpanStats(
+    PartitionBucketMemoryStats* stats_out,
+    internal::SlotSpanMetadata<thread_safe>* slot_span) {
+  uint16_t bucket_num_slots = slot_span->bucket->get_slots_per_span();
 
-  if (page->is_decommitted()) {
-    ++stats_out->num_decommitted_pages;
+  if (slot_span->is_decommitted()) {
+    ++stats_out->num_decommitted_slot_spans;
     return;
   }
 
-  stats_out->discardable_bytes += PartitionPurgePage(page, false);
+  stats_out->discardable_bytes += PartitionPurgeSlotSpan(slot_span, false);
 
-  if (page->CanStoreRawSize()) {
-    stats_out->active_bytes += static_cast<uint32_t>(page->GetRawSize());
+  if (slot_span->CanStoreRawSize()) {
+    stats_out->active_bytes += static_cast<uint32_t>(slot_span->GetRawSize());
   } else {
     stats_out->active_bytes +=
-        (page->num_allocated_slots * stats_out->bucket_slot_size);
+        (slot_span->num_allocated_slots * stats_out->bucket_slot_size);
   }
 
-  size_t page_bytes_resident =
-      RoundUpToSystemPage((bucket_num_slots - page->num_unprovisioned_slots) *
-                          stats_out->bucket_slot_size);
-  stats_out->resident_bytes += page_bytes_resident;
-  if (page->is_empty()) {
-    stats_out->decommittable_bytes += page_bytes_resident;
-    ++stats_out->num_empty_pages;
-  } else if (page->is_full()) {
-    ++stats_out->num_full_pages;
+  size_t slot_span_bytes_resident = RoundUpToSystemPage(
+      (bucket_num_slots - slot_span->num_unprovisioned_slots) *
+      stats_out->bucket_slot_size);
+  stats_out->resident_bytes += slot_span_bytes_resident;
+  if (slot_span->is_empty()) {
+    stats_out->decommittable_bytes += slot_span_bytes_resident;
+    ++stats_out->num_empty_slot_spans;
+  } else if (slot_span->is_full()) {
+    ++stats_out->num_full_slot_spans;
   } else {
-    PA_DCHECK(page->is_active());
-    ++stats_out->num_active_pages;
+    PA_DCHECK(slot_span->is_active());
+    ++stats_out->num_active_slot_spans;
   }
 }
 
@@ -741,46 +748,51 @@ static void PartitionDumpBucketStats(
     const internal::PartitionBucket<thread_safe>* bucket) {
   PA_DCHECK(!bucket->is_direct_mapped());
   stats_out->is_valid = false;
-  // If the active page list is empty (==
-  // internal::PartitionPage::get_sentinel_page()), the bucket might still need
-  // to be reported if it has a list of empty, decommitted or full pages.
-  if (bucket->active_pages_head ==
-          internal::PartitionPage<thread_safe>::get_sentinel_page() &&
-      !bucket->empty_pages_head && !bucket->decommitted_pages_head &&
-      !bucket->num_full_pages)
+  // If the active slot span list is empty (==
+  // internal::SlotSpanMetadata::get_sentinel_slot_span()), the bucket might
+  // still need to be reported if it has a list of empty, decommitted or full
+  // slot spans.
+  if (bucket->active_slot_spans_head ==
+          internal::SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() &&
+      !bucket->empty_slot_spans_head && !bucket->decommitted_slot_spans_head &&
+      !bucket->num_full_slot_spans)
     return;
 
   memset(stats_out, '\0', sizeof(*stats_out));
   stats_out->is_valid = true;
   stats_out->is_direct_map = false;
-  stats_out->num_full_pages = static_cast<size_t>(bucket->num_full_pages);
+  stats_out->num_full_slot_spans =
+      static_cast<size_t>(bucket->num_full_slot_spans);
   stats_out->bucket_slot_size = bucket->slot_size;
   uint16_t bucket_num_slots = bucket->get_slots_per_span();
   size_t bucket_useful_storage = stats_out->bucket_slot_size * bucket_num_slots;
-  stats_out->allocated_page_size = bucket->get_bytes_per_span();
-  stats_out->active_bytes = bucket->num_full_pages * bucket_useful_storage;
+  stats_out->allocated_slot_span_size = bucket->get_bytes_per_span();
+  stats_out->active_bytes = bucket->num_full_slot_spans * bucket_useful_storage;
   stats_out->resident_bytes =
-      bucket->num_full_pages * stats_out->allocated_page_size;
+      bucket->num_full_slot_spans * stats_out->allocated_slot_span_size;
 
-  for (internal::PartitionPage<thread_safe>* page = bucket->empty_pages_head;
-       page; page = page->next_page) {
-    PA_DCHECK(page->is_empty() || page->is_decommitted());
-    PartitionDumpPageStats(stats_out, page);
+  for (internal::SlotSpanMetadata<thread_safe>* slot_span =
+           bucket->empty_slot_spans_head;
+       slot_span; slot_span = slot_span->next_slot_span) {
+    PA_DCHECK(slot_span->is_empty() || slot_span->is_decommitted());
+    PartitionDumpSlotSpanStats(stats_out, slot_span);
   }
-  for (internal::PartitionPage<thread_safe>* page =
-           bucket->decommitted_pages_head;
-       page; page = page->next_page) {
-    PA_DCHECK(page->is_decommitted());
-    PartitionDumpPageStats(stats_out, page);
+  for (internal::SlotSpanMetadata<thread_safe>* slot_span =
+           bucket->decommitted_slot_spans_head;
+       slot_span; slot_span = slot_span->next_slot_span) {
+    PA_DCHECK(slot_span->is_decommitted());
+    PartitionDumpSlotSpanStats(stats_out, slot_span);
   }
 
-  if (bucket->active_pages_head !=
-      internal::PartitionPage<thread_safe>::get_sentinel_page()) {
-    for (internal::PartitionPage<thread_safe>* page = bucket->active_pages_head;
-         page; page = page->next_page) {
-      PA_DCHECK(page !=
-                internal::PartitionPage<thread_safe>::get_sentinel_page());
-      PartitionDumpPageStats(stats_out, page);
+  if (bucket->active_slot_spans_head !=
+      internal::SlotSpanMetadata<thread_safe>::get_sentinel_slot_span()) {
+    for (internal::SlotSpanMetadata<thread_safe>* slot_span =
+             bucket->active_slot_spans_head;
+         slot_span; slot_span = slot_span->next_slot_span) {
+      PA_DCHECK(
+          slot_span !=
+          internal::SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
+      PartitionDumpSlotSpanStats(stats_out, slot_span);
     }
   }
 }
@@ -818,7 +830,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
       // Don't report the pseudo buckets that the generic allocator sets up in
       // order to preserve a fast size->bucket map (see
       // PartitionRoot::Init() for details).
-      if (!bucket->active_pages_head)
+      if (!bucket->active_slot_spans_head)
         bucket_stats[i].is_valid = false;
       else
         PartitionDumpBucketStats(&bucket_stats[i], bucket);
@@ -867,8 +879,8 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
       PartitionBucketMemoryStats mapped_stats = {};
       mapped_stats.is_valid = true;
       mapped_stats.is_direct_map = true;
-      mapped_stats.num_full_pages = 1;
-      mapped_stats.allocated_page_size = size;
+      mapped_stats.num_full_slot_spans = 1;
+      mapped_stats.allocated_slot_span_size = size;
       mapped_stats.bucket_slot_size = size;
       mapped_stats.active_bytes = size;
       mapped_stats.resident_bytes = size;
@@ -937,17 +949,19 @@ BASE_EXPORT size_t PartitionAllocGetSlotOffset(void* ptr) {
   // The only allocations that don't use tag are allocated outside of GigaCage,
   // hence we'd never get here in the use_tag=false case.
   ptr = internal::PartitionPointerAdjustSubtract(true /* use_tag */, ptr);
-  auto* page =
-      internal::PartitionAllocGetPageForSize<internal::ThreadSafe>(ptr);
-  PA_DCHECK(PartitionRoot<internal::ThreadSafe>::FromPage(page)->allow_extras);
+  auto* slot_span =
+      internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
+          ptr);
+  PA_DCHECK(PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span)
+                ->allow_extras);
 
   // Get the offset from the beginning of the slot span.
   uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);
   uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
-      internal::PartitionPage<internal::ThreadSafe>::ToPointer(page));
+      internal::SlotSpanMetadata<internal::ThreadSafe>::ToPointer(slot_span));
   size_t offset_in_slot_span = ptr_addr - slot_span_start;
 
-  return page->bucket->GetSlotOffset(offset_in_slot_span);
+  return slot_span->bucket->GetSlotOffset(offset_in_slot_span);
 }
 
 }  // namespace internal

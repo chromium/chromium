@@ -105,8 +105,8 @@ void PartitionAllocMemoryReclaimer::Reclaim() {
   AutoLock lock(lock_);  // Has to protect from concurrent (Un)Register calls.
   TRACE_EVENT0("base", "PartitionAllocMemoryReclaimer::Reclaim()");
 
-  constexpr int kFlags =
-      PartitionPurgeDecommitEmptyPages | PartitionPurgeDiscardUnusedSystemPages;
+  constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
+                         PartitionPurgeDiscardUnusedSystemPages;
 
   for (auto* partition : thread_safe_partitions_)
     partition->PurgeMemory(kFlags);

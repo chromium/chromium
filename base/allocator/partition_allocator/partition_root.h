@@ -52,7 +52,7 @@ struct PartitionOptions {
 // PartitionAllocator.
 template <bool thread_safe>
 struct BASE_EXPORT PartitionRoot {
-  using Page = internal::PartitionPage<thread_safe>;
+  using SlotSpan = internal::SlotSpanMetadata<thread_safe>;
   using Bucket = internal::PartitionBucket<thread_safe>;
   using SuperPageExtentEntry =
       internal::PartitionSuperPageExtentEntry<thread_safe>;
@@ -92,8 +92,8 @@ struct BASE_EXPORT PartitionRoot {
   SuperPageExtentEntry* current_extent = nullptr;
   SuperPageExtentEntry* first_extent = nullptr;
   DirectMapExtent* direct_map_list = nullptr;
-  Page* global_empty_page_ring[kMaxFreeableSpans] = {};
-  int16_t global_empty_page_ring_index = 0;
+  SlotSpan* global_empty_slot_span_ring[kMaxFreeableSpans] = {};
+  int16_t global_empty_slot_span_ring_index = 0;
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
@@ -119,16 +119,16 @@ struct BASE_EXPORT PartitionRoot {
   //
   // Allocates out of the given bucket. Properly, this function should probably
   // be in PartitionBucket, but because the implementation needs to be inlined
-  // for performance, and because it needs to inspect PartitionPage,
+  // for performance, and because it needs to inspect SlotSpanMetadata,
   // it becomes impossible to have it in PartitionBucket as this causes a
-  // cyclical dependency on PartitionPage function implementations.
+  // cyclical dependency on SlotSpanMetadata function implementations.
   //
   // Moving it a layer lower couples PartitionRoot and PartitionBucket, but
   // preserves the layering of the includes.
   void Init(PartitionOptions);
 
-  ALWAYS_INLINE static bool IsValidPage(Page* page);
-  ALWAYS_INLINE static PartitionRoot* FromPage(Page* page);
+  ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
+  ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -181,14 +181,14 @@ struct BASE_EXPORT PartitionRoot {
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
   // Immediately frees the pointer bypassing the quarantine.
-  ALWAYS_INLINE void FreeNoHooksImmediate(void* ptr, Page* page);
+  ALWAYS_INLINE void FreeNoHooksImmediate(void* ptr, SlotSpan* slot_span);
 
   ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
   ALWAYS_INLINE size_t GetSize(void* ptr) const;
   ALWAYS_INLINE size_t ActualSize(size_t size);
 
-  // Frees memory from this partition, if possible, by decommitting pages.
-  // |flags| is an OR of base::PartitionPurgeFlags.
+  // Frees memory from this partition, if possible, by decommitting pages or
+  // even etnire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
   void PurgeMemory(int flags);
 
   void DumpStats(const char* partition_name,
@@ -198,7 +198,7 @@ struct BASE_EXPORT PartitionRoot {
   static uint16_t SizeToBucketIndex(size_t size);
 
   // Frees memory, with |ptr| as returned by |RawAlloc()|.
-  ALWAYS_INLINE void RawFree(void* ptr, Page* page);
+  ALWAYS_INLINE void RawFree(void* ptr, SlotSpan* slot_span);
   static void RawFreeStatic(void* ptr);
 
   internal::ThreadCache* thread_cache_for_testing() const {
@@ -241,10 +241,10 @@ struct BASE_EXPORT PartitionRoot {
                                       bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool ReallocDirectMappedInPlace(internal::PartitionPage<thread_safe>* page,
-                                  size_t requested_size)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void DecommitEmptyPages() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  bool ReallocDirectMappedInPlace(
+      internal::SlotSpanMetadata<thread_safe>* slot_span,
+      size_t requested_size) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DecommitEmptySlotSpans() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   friend class internal::ThreadCache;
 };

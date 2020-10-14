@@ -11,7 +11,7 @@ namespace base {
 namespace internal {
 
 template <bool thread_safe>
-struct PartitionPage;
+struct SlotSpanMetadata;
 
 BASE_EXPORT size_t PartitionAllocGetSlotOffset(void* ptr);
 

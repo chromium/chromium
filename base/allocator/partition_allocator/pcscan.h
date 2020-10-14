@@ -36,7 +36,7 @@ template <bool thread_safe>
 class BASE_EXPORT PCScan final {
  public:
   using Root = PartitionRoot<thread_safe>;
-  using Page = PartitionPage<thread_safe>;
+  using SlotSpan = SlotSpanMetadata<thread_safe>;
 
   explicit PCScan(Root* root) : root_(root) {}
 
@@ -45,7 +45,7 @@ class BASE_EXPORT PCScan final {
 
   ~PCScan();
 
-  ALWAYS_INLINE void MoveToQuarantine(void* ptr, Page* page);
+  ALWAYS_INLINE void MoveToQuarantine(void* ptr, SlotSpan* slot_span);
 
  private:
   class PCScanTask;
@@ -113,15 +113,15 @@ void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded() {
 
 template <bool thread_safe>
 ALWAYS_INLINE void PCScan<thread_safe>::MoveToQuarantine(void* ptr,
-                                                         Page* page) {
-  PA_DCHECK(!page->bucket->is_direct_mapped());
+                                                         SlotSpan* slot_span) {
+  PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 
   QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
                               quarantine_data_.epoch(), ptr)
       ->SetBit(reinterpret_cast<uintptr_t>(ptr));
 
   const bool is_limit_reached =
-      quarantine_data_.Account(page->bucket->slot_size);
+      quarantine_data_.Account(slot_span->bucket->slot_size);
   if (is_limit_reached) {
     // Post a background task to not block the current thread.
     ScheduleTask(TaskType::kNonBlocking);

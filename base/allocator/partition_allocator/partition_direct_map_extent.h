@@ -20,8 +20,8 @@ struct PartitionDirectMapExtent {
   PartitionBucket<thread_safe>* bucket;
   size_t map_size;  // Mapped size, not including guard pages and meta-data.
 
-  ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromPage(
-      PartitionPage<thread_safe>* page);
+  ALWAYS_INLINE static PartitionDirectMapExtent<thread_safe>* FromSlotSpan(
+      SlotSpanMetadata<thread_safe>* slot_span);
 };
 
 // Metadata page for direct-mapped allocations.
@@ -39,9 +39,10 @@ struct PartitionDirectMapMetadata {
 
 template <bool thread_safe>
 ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
-PartitionDirectMapExtent<thread_safe>::FromPage(
-    PartitionPage<thread_safe>* page) {
-  PA_DCHECK(page->bucket->is_direct_mapped());
+PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
+    SlotSpanMetadata<thread_safe>* slot_span) {
+  PA_DCHECK(slot_span->bucket->is_direct_mapped());
+  auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(slot_span);
   // The page passed here is always |page| in |PartitionDirectMapMetadata|
   // above. To get the metadata structure, need to get the invalid page address.
   auto* first_invalid_page = page - 1;

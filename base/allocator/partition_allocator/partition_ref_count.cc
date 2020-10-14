@@ -17,11 +17,12 @@ namespace internal {
 // TODO(glazunov): Simplify the function once the non-thread-safe PartitionRoot
 // is no longer used.
 void PartitionRefCount::Free() {
-  auto* page = PartitionPage<ThreadSafe>::FromPointerNoAlignmentCheck(this);
-  auto* root = PartitionRoot<ThreadSafe>::FromPage(page);
+  auto* slot_span =
+      SlotSpanMetadata<ThreadSafe>::FromPointerNoAlignmentCheck(this);
+  auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
 
 #ifdef ADDRESS_SANITIZER
-  size_t utilized_slot_size = page->GetUtilizedSlotSize();
+  size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
   // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
   // supports extras.
   PA_DCHECK(root->allow_extras);
@@ -31,15 +32,15 @@ void PartitionRefCount::Free() {
 #endif
 
   if (root->is_thread_safe) {
-    root->RawFree(this, page);
+    root->RawFree(this, slot_span);
     return;
   }
 
-  auto* non_thread_safe_page =
-      reinterpret_cast<PartitionPage<NotThreadSafe>*>(page);
+  auto* non_thread_safe_slot_span =
+      reinterpret_cast<SlotSpanMetadata<NotThreadSafe>*>(slot_span);
   auto* non_thread_safe_root =
       reinterpret_cast<PartitionRoot<NotThreadSafe>*>(root);
-  non_thread_safe_root->RawFree(this, non_thread_safe_page);
+  non_thread_safe_root->RawFree(this, non_thread_safe_slot_span);
 }
 
 #endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR

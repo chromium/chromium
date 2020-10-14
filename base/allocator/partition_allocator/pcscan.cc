@@ -91,7 +91,7 @@ class PCScan<thread_safe>::PCScanTask final {
   void RunOnce() &&;
 
  private:
-  using Page = PartitionPage<thread_safe>;
+  using SlotSpan = SlotSpanMetadata<thread_safe>;
 
   struct ScanArea {
     uintptr_t* begin = nullptr;
@@ -134,7 +134,7 @@ template <bool thread_safe>
 QuarantineBitmap* PCScan<thread_safe>::PCScanTask::FindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
   // TODO(bikineev): Consider using the bitset in AddressPoolManager::Pool to
-  // quickly find a super-page.
+  // quickly find a super page.
   const auto super_page_base = maybe_ptr & kSuperPageBaseMask;
 
   auto it = super_pages_.lower_bound(super_page_base);
@@ -145,7 +145,7 @@ QuarantineBitmap* PCScan<thread_safe>::PCScanTask::FindScannerBitmapForPointer(
                                 reinterpret_cast<void*>(maybe_ptr)))
     return nullptr;
 
-  // We are certain here that |maybe_ptr| points to the superpage payload.
+  // We are certain here that |maybe_ptr| points to the super page payload.
   return QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner,
                                      pcscan_.quarantine_data_.epoch(),
                                      reinterpret_cast<char*>(maybe_ptr));
@@ -176,12 +176,13 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
 
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
 
-  auto target_page =
-      Page::FromPointerNoAlignmentCheck(reinterpret_cast<void*>(base));
-  PA_DCHECK(&root_ == PartitionRoot<thread_safe>::FromPage(target_page));
+  auto target_slot_span =
+      SlotSpan::FromPointerNoAlignmentCheck(reinterpret_cast<void*>(base));
+  PA_DCHECK(&root_ ==
+            PartitionRoot<thread_safe>::FromSlotSpan(target_slot_span));
 
   const size_t usable_size = PartitionSizeAdjustSubtract(
-      root_.allow_extras, target_page->GetUtilizedSlotSize());
+      root_.allow_extras, target_slot_span->GetUtilizedSlotSize());
   // Range check for inner pointers.
   if (maybe_ptr >= base + usable_size)
     return 0;
@@ -193,7 +194,7 @@ size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
                               pcscan_.quarantine_data_.epoch(),
                               reinterpret_cast<char*>(base))
       ->SetBit(base);
-  return target_page->bucket->slot_size;
+  return target_slot_span->bucket->slot_size;
 }
 
 template <bool thread_safe>
@@ -205,12 +206,12 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
         reinterpret_cast<char*>(super_page));
     bitmap->Iterate([allow_extras](uintptr_t ptr) {
       auto* object = reinterpret_cast<void*>(ptr);
-      auto* page = Page::FromPointerNoAlignmentCheck(object);
+      auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartition.
       memset(object, 0,
              PartitionSizeAdjustSubtract(allow_extras,
-                                         page->GetUtilizedSlotSize()));
+                                         slot_span->GetUtilizedSlotSize()));
     });
   }
 }
@@ -234,7 +235,7 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartition() NO_SANITIZE("thread") {
 // implemented.
 #if defined(PA_HAS_64_BITS_POINTERS)
       // On partitions without extras (partitions with aligned allocations),
-      // pages are not allocated from the GigaCage.
+      // memory is not allocated from the GigaCage.
       if (features::IsPartitionAllocGigaCageEnabled() && root_.allow_extras) {
         // With GigaCage, we first do a fast bitmask check to see if the pointer
         // points to the normal bucket pool.
@@ -267,9 +268,9 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
         reinterpret_cast<char*>(super_page));
     bitmap->Iterate([this, &swept_bytes](uintptr_t ptr) {
       auto* object = reinterpret_cast<void*>(ptr);
-      auto* page = Page::FromPointerNoAlignmentCheck(object);
-      swept_bytes += page->bucket->slot_size;
-      root_.FreeNoHooksImmediate(object, page);
+      auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
+      swept_bytes += slot_span->bucket->slot_size;
+      root_.FreeNoHooksImmediate(object, slot_span);
     });
     bitmap->Clear();
   }
@@ -293,25 +294,27 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
     }
   }
 
-  // Take a snapshot of all active pages.
+  // Take a snapshot of all active slot spans.
   static constexpr size_t kScanAreasReservationSlack = 10;
   const size_t kScanAreasReservationSize = root_.total_size_of_committed_pages /
                                            PartitionPageSize() /
                                            kScanAreasReservationSlack;
   scan_areas_.reserve(kScanAreasReservationSize);
   {
-    // TODO(bikineev): Scan full pages.
+    // TODO(bikineev): Scan full slot spans.
     for (const auto& bucket : root_.buckets) {
-      for (auto* page = bucket.active_pages_head;
-           page && page != page->get_sentinel_page(); page = page->next_page) {
+      for (auto* slot_span = bucket.active_slot_spans_head;
+           slot_span && slot_span != slot_span->get_sentinel_slot_span();
+           slot_span = slot_span->next_slot_span) {
         // The active list may contain false positives, skip them.
-        if (page->is_empty() || page->is_decommitted())
+        if (slot_span->is_empty() || slot_span->is_decommitted())
           continue;
 
-        auto* payload_begin = static_cast<uintptr_t*>(Page::ToPointer(page));
+        auto* payload_begin =
+            static_cast<uintptr_t*>(SlotSpan::ToPointer(slot_span));
         auto* payload_end =
             payload_begin +
-            (page->bucket->get_bytes_per_span() / sizeof(uintptr_t));
+            (slot_span->bucket->get_bytes_per_span() / sizeof(uintptr_t));
         scan_areas_.push_back({payload_begin, payload_end});
       }
     }

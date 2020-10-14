@@ -37,8 +37,8 @@ static_assert(
     sizeof(PartitionSuperPageExtentEntry<ThreadSafe>) <= kPageMetadataSize,
     "PartitionSuperPageExtentEntry must be able to fit in a metadata slot");
 
-// PartitionPage::Free() defers unmapping a large page until the lock is
-// released. Callers of PartitionPage::Free() must invoke Run().
+// SlotSpanMetadata::Free() defers unmapping a large page until the lock is
+// released. Callers of SlotSpanMetadata::Free() must invoke Run().
 // TODO(1061437): Reconsider once the new locking mechanism is implemented.
 struct DeferredUnmap {
   void* ptr = nullptr;
@@ -55,58 +55,46 @@ struct DeferredUnmap {
 using QuarantineBitmap =
     ObjectBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 
-// Some notes on page states. A page can be in one of four major states:
+// Metadata of the slot span.
+//
+// Some notes on slot span states. It can be in one of four major states:
 // 1) Active.
 // 2) Full.
 // 3) Empty.
 // 4) Decommitted.
-// An active page has available free slots. A full page has no free slots. An
-// empty page has no free slots, and a decommitted page is an empty page that
-// had its backing memory released back to the system.
-// There are two linked lists tracking the pages. The "active page" list is an
-// approximation of a list of active pages. It is an approximation because
-// full, empty and decommitted pages may briefly be present in the list until
-// we next do a scan over it.
-// The "empty page" list is an accurate list of pages which are either empty
-// or decommitted.
+// An active slot span has available free slots. A full slot span has no free
+// slots. An empty slot span has no free slots, and a decommitted slot span is
+// an empty one that had its backing memory released back to the system.
 //
-// The significant page transitions are:
-// - free() will detect when a full page has a slot free()'d and immediately
-// return the page to the head of the active list.
-// - free() will detect when a page is fully emptied. It _may_ add it to the
-// empty list or it _may_ leave it on the active list until a future list scan.
-// - malloc() _may_ scan the active page list in order to fulfil the request.
-// If it does this, full, empty and decommitted pages encountered will be
-// booted out of the active list. If there are no suitable active pages found,
-// an empty or decommitted page (if one exists) will be pulled from the empty
-// list on to the active list.
+// There are two linked lists tracking slot spans. The "active" list is an
+// approximation of a list of active slot spans. It is an approximation because
+// full, empty and decommitted slot spans may briefly be present in the list
+// until we next do a scan over it. The "empty" list is an accurate list of slot
+// spans which are either empty or decommitted.
 //
-// TODO(ajwong): Evaluate if this should be named PartitionSlotSpanMetadata or
-// similar. If so, all uses of the term "page" in comments, member variables,
-// local variables, and documentation that refer to this concept should be
-// updated.
+// The significant slot span transitions are:
+// - Free() will detect when a full slot span has a slot freed and immediately
+//   return the slot span to the head of the active list.
+// - Free() will detect when a slot span is fully emptied. It _may_ add it to
+//   the empty list or it _may_ leave it on the active list until a future
+//   list scan.
+// - Alloc() _may_ scan the active page list in order to fulfil the request.
+//   If it does this, full, empty and decommitted slot spans encountered will be
+//   booted out of the active list. If there are no suitable active slot spans
+//   found, an empty or decommitted slot spans (if one exists) will be pulled
+//   from the empty list on to the active list.
 template <bool thread_safe>
-struct PartitionPage {
-  union {
-    struct {
-      PartitionFreelistEntry* freelist_head;
-      PartitionPage<thread_safe>* next_page;
-      PartitionBucket<thread_safe>* bucket;
-      // Deliberately signed, 0 for empty or decommitted page, -n for full
-      // pages:
-      int16_t num_allocated_slots;
-      uint16_t num_unprovisioned_slots;
-      uint16_t page_offset;
-      int16_t empty_cache_index;  // -1 if not in the empty cache.
-    };
+struct __attribute__((packed)) SlotSpanMetadata {
+  PartitionFreelistEntry* freelist_head;
+  SlotSpanMetadata<thread_safe>* next_slot_span;
+  PartitionBucket<thread_safe>* bucket;
 
-    // sizeof(PartitionPage) must always be:
-    // - a power of 2 (for fast modulo operations)
-    // - below kPageMetadataSize
-    //
-    // This makes sure that this is respected no matter the architecture.
-    char optional_padding[kPageMetadataSize];
-  };
+  // Deliberately signed, 0 for empty or decommitted slot spans, -n for full
+  // slot spans:
+  int16_t num_allocated_slots;
+  uint16_t num_unprovisioned_slots;
+  int16_t empty_cache_index;  // -1 if not in the empty cache.
+
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
   // Callers must invoke DeferredUnmap::Run() after releasing the lock.
@@ -116,12 +104,13 @@ struct PartitionPage {
   void Decommit(PartitionRoot<thread_safe>* root);
   void DecommitIfPossible(PartitionRoot<thread_safe>* root);
 
-  // Pointer manipulation functions. These must be static as the input |page|
-  // pointer may be the result of an offset calculation and therefore cannot
-  // be trusted. The objective of these functions is to sanitize this input.
-  ALWAYS_INLINE static void* ToPointer(const PartitionPage* page);
-  ALWAYS_INLINE static PartitionPage* FromPointerNoAlignmentCheck(void* ptr);
-  ALWAYS_INLINE static PartitionPage* FromPointer(void* ptr);
+  // Pointer manipulation functions. These must be static as the input
+  // |slot_span| pointer may be the result of an offset calculation and
+  // therefore cannot be trusted. The objective of these functions is to
+  // sanitize this input.
+  ALWAYS_INLINE static void* ToPointer(const SlotSpanMetadata* slot_span);
+  ALWAYS_INLINE static SlotSpanMetadata* FromPointer(void* ptr);
+  ALWAYS_INLINE static SlotSpanMetadata* FromPointerNoAlignmentCheck(void* ptr);
 
   // Checks if it is feasible to store raw_size.
   ALWAYS_INLINE bool CanStoreRawSize() const;
@@ -146,7 +135,7 @@ struct PartitionPage {
   ALWAYS_INLINE void Reset();
 
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153
-  BASE_EXPORT static PartitionPage* get_sentinel_page();
+  BASE_EXPORT static SlotSpanMetadata* get_sentinel_slot_span();
 
   // Page State accessors.
   // Note that it's only valid to call these functions on pages found on one of
@@ -163,17 +152,74 @@ struct PartitionPage {
   ALWAYS_INLINE bool is_decommitted() const;
 
  private:
-  // g_sentinel_page is used as a sentinel to indicate that there is no page
-  // in the active page list. We can use nullptr, but in that case we need
-  // to add a null-check branch to the hot allocation path. We want to avoid
-  // that.
+  // sentinel_slot_span_ is used as a sentinel to indicate that there is no slot
+  // span in the active list. We could use nullptr, but in that case we need to
+  // add a null-check branch to the hot allocation path. We want to avoid that.
   //
   // Note, this declaration is kept in the header as opposed to an anonymous
   // namespace so the getter can be fully inlined.
-  static PartitionPage sentinel_page_;
+  static SlotSpanMetadata sentinel_slot_span_;
 };
+
+// Metadata of a non-first partition page in a slot span.
+struct SubsequentPageMetadata {
+  // Raw size is the size needed to satisfy the allocation (requested size +
+  // extras). If available, it can be used to report better statistics or to
+  // bring protective cookie closer to the allocated memory.
+  //
+  // It can be used only if:
+  // - there is no more than one slot in the slot span (otherwise we wouldn't
+  //   know which slot the raw size applies to)
+  // - there is more than one partition page in the slot span (the metadata of
+  //   the first one is used to store slot information, but the second one is
+  //   available for extra information)
+  size_t raw_size;
+};
+
+// Each partition page has metadata associated with it. The metadata of the
+// first page of a slot span, describes that slot span. If a slot span spans
+// more than 1 page, the page metadata may contain rudimentary additional
+// information.
+template <bool thread_safe>
+struct PartitionPage {
+  // "Pack" the union so that slot_span_metadata_offset still fits within
+  // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
+  union __attribute__((packed)) {
+    SlotSpanMetadata<thread_safe> slot_span_metadata;
+
+    SubsequentPageMetadata subsequent_page_metadata;
+
+    // sizeof(PartitionPageMetadata) must always be:
+    // - a power of 2 (for fast modulo operations)
+    // - below kPageMetadataSize
+    //
+    // This makes sure that this is respected no matter the architecture.
+    char optional_padding[kPageMetadataSize - sizeof(uint16_t)];
+  };
+
+  // The first PartitionPage of the slot span holds its metadata. This offset
+  // tells how many pages in from that first page we are.
+  uint16_t slot_span_metadata_offset;
+
+  ALWAYS_INLINE static PartitionPage* FromPointerNoAlignmentCheck(void* ptr);
+};
+
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
+static_assert(sizeof(PartitionPage<NotThreadSafe>) == kPageMetadataSize,
+              "PartitionPage must be able to fit in a metadata slot");
+
+// Certain functions rely on PartitionPage being either SlotSpanMetadata or
+// SubsequentPageMetadata, and therefore freely casting between each other.
+static_assert(offsetof(PartitionPage<ThreadSafe>, slot_span_metadata) == 0, "");
+static_assert(offsetof(PartitionPage<ThreadSafe>, subsequent_page_metadata) ==
+                  0,
+              "");
+static_assert(offsetof(PartitionPage<NotThreadSafe>, slot_span_metadata) == 0,
+              "");
+static_assert(offsetof(PartitionPage<NotThreadSafe>,
+                       subsequent_page_metadata) == 0,
+              "");
 
 ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
@@ -197,6 +243,14 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(bool with_pcscan, void* ptr) {
 
 // See the comment for |FromPointer|.
 template <bool thread_safe>
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
+  return reinterpret_cast<SlotSpanMetadata*>(
+      PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(ptr));
+}
+
+// See the comment for |FromPointer|.
+template <bool thread_safe>
 ALWAYS_INLINE PartitionPage<thread_safe>*
 PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
@@ -209,24 +263,22 @@ PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(void* ptr) {
   // pages.
   PA_DCHECK(partition_page_index);
   PA_DCHECK(partition_page_index < NumPartitionPagesPerSuperPage() - 1);
-  auto* page = reinterpret_cast<PartitionPage*>(
+  auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(
       PartitionSuperPageToMetadataArea(super_page_ptr) +
       (partition_page_index << kPageMetadataShift));
-  // Partition pages in the same slot span share the same page object. Adjust
+  // Partition pages in the same slot span share the same slot span metadata
+  // object (located in the first PartitionPage object of that span). Adjust
   // for that.
-  size_t delta = page->page_offset << kPageMetadataShift;
-  page =
-      reinterpret_cast<PartitionPage*>(reinterpret_cast<char*>(page) - delta);
+  page -= page->slot_span_metadata_offset;
   return page;
 }
 
-// Converts from a pointer to the PartitionPage object (within super pages's
-// metadata) into a pointer to the beginning of the partition page.
-// This doesn't have to be the first page in the slot span.
+// Converts from a pointer to the SlotSpanMetadata object (within super pages's
+// metadata) into a pointer to the beginning of the slot span.
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionPage<thread_safe>::ToPointer(
-    const PartitionPage<thread_safe>* page) {
-  uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(page);
+ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToPointer(
+    const SlotSpanMetadata* slot_span) {
+  uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
 
   uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
 
@@ -250,27 +302,23 @@ ALWAYS_INLINE void* PartitionPage<thread_safe>::ToPointer(
   return ret;
 }
 
-// Converts from a pointer inside a partition page into a pointer to the
-// PartitionPage object (within super pages's metadata).
-// The first PartitionPage of the slot span will be returned, regardless where
-// inside of the slot span |ptr| points to.
+// Converts from a pointer inside a slot span into a pointer to the
+// SlotSpanMetadata object (within super pages's metadata).
 template <bool thread_safe>
-ALWAYS_INLINE PartitionPage<thread_safe>*
-PartitionPage<thread_safe>::FromPointer(void* ptr) {
-  PartitionPage* page = PartitionPage::FromPointerNoAlignmentCheck(ptr);
-  // Checks that the pointer is a multiple of bucket size.
-  PA_DCHECK(!((reinterpret_cast<uintptr_t>(ptr) -
-               reinterpret_cast<uintptr_t>(PartitionPage::ToPointer(page))) %
-              page->bucket->slot_size));
-  return page;
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>::FromPointer(void* ptr) {
+  SlotSpanMetadata* slot_span =
+      SlotSpanMetadata::FromPointerNoAlignmentCheck(ptr);
+  // Checks that the pointer is a multiple of slot size.
+  PA_DCHECK(
+      !((reinterpret_cast<uintptr_t>(ptr) -
+         reinterpret_cast<uintptr_t>(SlotSpanMetadata::ToPointer(slot_span))) %
+        slot_span->bucket->slot_size));
+  return slot_span;
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE bool PartitionPage<thread_safe>::CanStoreRawSize() const {
-  // Raw size is the size needed to satisfy the allocation (requested size +
-  // extras). If available, it can be used to report better statistics or to
-  // bring protective cookie closer to the allocated memory.
-  //
+ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::CanStoreRawSize() const {
   // For direct-map as well as single-slot slot spans (recognized by checking
   // against |kMaxPartitionPagesPerSlotSpan|), we have some spare metadata space
   // in subsequent PartitionPage to store the raw size. It isn't only metadata
@@ -287,24 +335,24 @@ ALWAYS_INLINE bool PartitionPage<thread_safe>::CanStoreRawSize() const {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionPage<thread_safe>::SetRawSize(size_t raw_size) {
+ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetRawSize(size_t raw_size) {
   PA_DCHECK(CanStoreRawSize());
-  PartitionPage* the_next_page = this + 1;
-  the_next_page->freelist_head =
-      reinterpret_cast<PartitionFreelistEntry*>(raw_size);
+  auto* the_next_page = reinterpret_cast<PartitionPage<thread_safe>*>(this) + 1;
+  the_next_page->subsequent_page_metadata.raw_size = raw_size;
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionPage<thread_safe>::GetRawSize() const {
+ALWAYS_INLINE size_t SlotSpanMetadata<thread_safe>::GetRawSize() const {
   PA_DCHECK(CanStoreRawSize());
-  const PartitionPage* the_next_page = this + 1;
-  return reinterpret_cast<size_t>(the_next_page->freelist_head);
+  auto* the_next_page =
+      reinterpret_cast<const PartitionPage<thread_safe>*>(this) + 1;
+  return the_next_page->subsequent_page_metadata.raw_size;
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE DeferredUnmap PartitionPage<thread_safe>::Free(void* ptr) {
+ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
 #if DCHECK_IS_ON()
-  auto* root = PartitionRoot<thread_safe>::FromPage(this);
+  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
 #endif
 
@@ -329,17 +377,15 @@ ALWAYS_INLINE DeferredUnmap PartitionPage<thread_safe>::Free(void* ptr) {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE bool PartitionPage<thread_safe>::is_active() const {
-  PA_DCHECK(this != get_sentinel_page());
-  PA_DCHECK(!page_offset);
+ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_active() const {
+  PA_DCHECK(this != get_sentinel_slot_span());
   return (num_allocated_slots > 0 &&
           (freelist_head || num_unprovisioned_slots));
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE bool PartitionPage<thread_safe>::is_full() const {
-  PA_DCHECK(this != get_sentinel_page());
-  PA_DCHECK(!page_offset);
+ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_full() const {
+  PA_DCHECK(this != get_sentinel_slot_span());
   bool ret = (num_allocated_slots == bucket->get_slots_per_span());
   if (ret) {
     PA_DCHECK(!freelist_head);
@@ -349,16 +395,14 @@ ALWAYS_INLINE bool PartitionPage<thread_safe>::is_full() const {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE bool PartitionPage<thread_safe>::is_empty() const {
-  PA_DCHECK(this != get_sentinel_page());
-  PA_DCHECK(!page_offset);
+ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_empty() const {
+  PA_DCHECK(this != get_sentinel_slot_span());
   return (!num_allocated_slots && freelist_head);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE bool PartitionPage<thread_safe>::is_decommitted() const {
-  PA_DCHECK(this != get_sentinel_page());
-  PA_DCHECK(!page_offset);
+ALWAYS_INLINE bool SlotSpanMetadata<thread_safe>::is_decommitted() const {
+  PA_DCHECK(this != get_sentinel_slot_span());
   bool ret = (!num_allocated_slots && !freelist_head);
   if (ret) {
     PA_DCHECK(!num_unprovisioned_slots);
@@ -368,13 +412,13 @@ ALWAYS_INLINE bool PartitionPage<thread_safe>::is_decommitted() const {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionPage<thread_safe>::Reset() {
+ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Reset() {
   PA_DCHECK(is_decommitted());
 
   num_unprovisioned_slots = bucket->get_slots_per_span();
   PA_DCHECK(num_unprovisioned_slots);
 
-  next_page = nullptr;
+  next_slot_span = nullptr;
 }
 
 ALWAYS_INLINE void DeferredUnmap::Run() {

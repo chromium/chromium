@@ -21,7 +21,7 @@ class PCScanTest : public testing::Test {
                      PartitionOptions::PCScan::kEnabled});
   }
   ~PCScanTest() override {
-    allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptyPages |
+    allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                    PartitionPurgeDiscardUnusedSystemPages);
     PartitionAllocGlobalUninitForTesting();
   }
@@ -47,17 +47,17 @@ class PCScanTest : public testing::Test {
 
 namespace {
 
-using Page = ThreadSafePartitionRoot::Page;
+using SlotSpan = ThreadSafePartitionRoot::SlotSpan;
 
-struct FullPageAllocation {
-  Page* page;
+struct FullSlotSpanAllocation {
+  SlotSpan* slot_span;
   void* first;
   void* last;
 };
 
 // Assumes heap is purged.
-FullPageAllocation GetFullPage(ThreadSafePartitionRoot& root,
-                               size_t object_size) {
+FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
+                                       size_t object_size) {
   CHECK_EQ(0u, root.total_size_of_committed_pages_for_testing());
 
   const size_t size_with_extra = PartitionSizeAdjustAdd(true, object_size);
@@ -76,24 +76,24 @@ FullPageAllocation GetFullPage(ThreadSafePartitionRoot& root,
       last = PartitionPointerAdjustSubtract(true, ptr);
   }
 
-  EXPECT_EQ(ThreadSafePartitionRoot::Page::FromPointer(first),
-            ThreadSafePartitionRoot::Page::FromPointer(last));
+  EXPECT_EQ(SlotSpan::FromPointer(first), SlotSpan::FromPointer(last));
   if (bucket.num_system_pages_per_slot_span == NumSystemPagesPerPartitionPage())
     EXPECT_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
               reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
-  EXPECT_EQ(num_slots,
-            static_cast<size_t>(bucket.active_pages_head->num_allocated_slots));
-  EXPECT_EQ(nullptr, bucket.active_pages_head->freelist_head);
-  EXPECT_TRUE(bucket.active_pages_head);
-  EXPECT_TRUE(bucket.active_pages_head != Page::get_sentinel_page());
+  EXPECT_EQ(num_slots, static_cast<size_t>(
+                           bucket.active_slot_spans_head->num_allocated_slots));
+  EXPECT_EQ(nullptr, bucket.active_slot_spans_head->freelist_head);
+  EXPECT_TRUE(bucket.active_slot_spans_head);
+  EXPECT_TRUE(bucket.active_slot_spans_head !=
+              SlotSpan::get_sentinel_slot_span());
 
-  return {bucket.active_pages_head, PartitionPointerAdjustAdd(true, first),
+  return {bucket.active_slot_spans_head, PartitionPointerAdjustAdd(true, first),
           PartitionPointerAdjustAdd(true, last)};
 }
 
 bool IsInFreeList(void* object) {
-  auto* page = Page::FromPointerNoAlignmentCheck(object);
-  for (auto* entry = page->freelist_head; entry;
+  auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
+  for (auto* entry = slot_span->freelist_head; entry;
        entry = EncodedPartitionFreelistEntry::Decode(entry->next)) {
     if (entry == object)
       return true;
@@ -138,21 +138,23 @@ TEST_F(PCScanTest, ArbitraryObjectInQuarantine) {
 TEST_F(PCScanTest, FirstObjectInQuarantine) {
   static constexpr size_t kAllocationSize = 16;
 
-  FullPageAllocation full_page = GetFullPage(root(), kAllocationSize);
-  EXPECT_FALSE(IsInQuarantine(full_page.first));
+  FullSlotSpanAllocation full_slot_span =
+      GetFullSlotSpan(root(), kAllocationSize);
+  EXPECT_FALSE(IsInQuarantine(full_slot_span.first));
 
-  root().FreeNoHooks(full_page.first);
-  EXPECT_TRUE(IsInQuarantine(full_page.first));
+  root().FreeNoHooks(full_slot_span.first);
+  EXPECT_TRUE(IsInQuarantine(full_slot_span.first));
 }
 
 TEST_F(PCScanTest, LastObjectInQuarantine) {
   static constexpr size_t kAllocationSize = 16;
 
-  FullPageAllocation full_page = GetFullPage(root(), kAllocationSize);
-  EXPECT_FALSE(IsInQuarantine(full_page.last));
+  FullSlotSpanAllocation full_slot_span =
+      GetFullSlotSpan(root(), kAllocationSize);
+  EXPECT_FALSE(IsInQuarantine(full_slot_span.last));
 
-  root().FreeNoHooks(full_page.last);
-  EXPECT_TRUE(IsInQuarantine(full_page.last));
+  root().FreeNoHooks(full_slot_span.last);
+  EXPECT_TRUE(IsInQuarantine(full_slot_span.last));
 }
 
 namespace {
@@ -217,23 +219,22 @@ TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
   static const size_t kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages =
       static_cast<size_t>(PartitionPageSize() * 0.75);
 
-  FullPageAllocation full_page = GetFullPage(
+  FullSlotSpanAllocation full_slot_span = GetFullSlotSpan(
       root(),
       PartitionSizeAdjustSubtract(
           true, kObjectSizeForSlotSpanConsistingOfMultiplePartitionPages));
 
   // Assert that the first and the last objects are in the same slot span but on
   // different partition pages.
-  ASSERT_EQ(ThreadSafePartitionRoot::Page::FromPointerNoAlignmentCheck(
-                full_page.first),
-            ThreadSafePartitionRoot::Page::FromPointerNoAlignmentCheck(
-                full_page.last));
-  ASSERT_NE(reinterpret_cast<size_t>(full_page.first) & PartitionPageBaseMask(),
-            reinterpret_cast<size_t>(full_page.last) & PartitionPageBaseMask());
+  ASSERT_EQ(SlotSpan::FromPointerNoAlignmentCheck(full_slot_span.first),
+            SlotSpan::FromPointerNoAlignmentCheck(full_slot_span.last));
+  ASSERT_NE(
+      reinterpret_cast<size_t>(full_slot_span.first) & PartitionPageBaseMask(),
+      reinterpret_cast<size_t>(full_slot_span.last) & PartitionPageBaseMask());
 
   // Create two objects, on different partition pages.
-  auto* value = new (full_page.first) ValueList;
-  auto* source = new (full_page.last) SourceList;
+  auto* value = new (full_slot_span.first) ValueList;
+  auto* source = new (full_slot_span.last) SourceList;
   source->next = value;
 
   TestDanglingReference(*this, source, value);

@@ -226,12 +226,12 @@ static OomFunction g_oom_handling_function = nullptr;
 class PartitionStatsDumper;
 
 enum PartitionPurgeFlags {
-  // Decommitting the ring list of empty pages is reasonably fast.
-  PartitionPurgeDecommitEmptyPages = 1 << 0,
+  // Decommitting the ring list of empty slot spans is reasonably fast.
+  PartitionPurgeDecommitEmptySlotSpans = 1 << 0,
   // Discarding unused system pages is slower, because it involves walking all
-  // freelists in all active partition pages of all buckets >= system page
+  // freelists in all active slot spans of all buckets >= system page
   // size. It often frees a similar amount of memory to decommitting the empty
-  // pages, though.
+  // slot spans, though.
   PartitionPurgeDiscardUnusedSystemPages = 1 << 1,
 };
 
@@ -256,20 +256,21 @@ struct PartitionBucketMemoryStats {
   bool is_valid;       // Used to check if the stats is valid.
   bool is_direct_map;  // True if this is a direct mapping; size will not be
                        // unique.
-  uint32_t bucket_slot_size;     // The size of the slot in bytes.
-  uint32_t allocated_page_size;  // Total size the partition page allocated from
-                                 // the system.
-  uint32_t active_bytes;         // Total active bytes used in the bucket.
-  uint32_t resident_bytes;       // Total bytes provisioned in the bucket.
-  uint32_t decommittable_bytes;  // Total bytes that could be decommitted.
-  uint32_t discardable_bytes;    // Total bytes that could be discarded.
-  uint32_t num_full_pages;       // Number of pages with all slots allocated.
-  uint32_t num_active_pages;     // Number of pages that have at least one
-                                 // provisioned slot.
-  uint32_t num_empty_pages;      // Number of pages that are empty
-                                 // but not decommitted.
-  uint32_t num_decommitted_pages;  // Number of pages that are empty
-                                   // and decommitted.
+  uint32_t bucket_slot_size;          // The size of the slot in bytes.
+  uint32_t allocated_slot_span_size;  // Total size the slot span allocated
+                                      // from the system (committed pages).
+  uint32_t active_bytes;              // Total active bytes used in the bucket.
+  uint32_t resident_bytes;            // Total bytes provisioned in the bucket.
+  uint32_t decommittable_bytes;       // Total bytes that could be decommitted.
+  uint32_t discardable_bytes;         // Total bytes that could be discarded.
+  uint32_t num_full_slot_spans;       // Number of slot spans with all slots
+                                      // allocated.
+  uint32_t num_active_slot_spans;     // Number of slot spans that have at least
+                                      // one provisioned slot.
+  uint32_t num_empty_slot_spans;      // Number of slot spans that are empty
+                                      // but not decommitted.
+  uint32_t num_decommitted_slot_spans;  // Number of slot spans that are empty
+                                        // and decommitted.
 };
 
 // Interface that is passed to PartitionDumpStats and
@@ -380,42 +381,43 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     bool* is_already_zeroed) {
   *is_already_zeroed = false;
 
-  Page* page = bucket->active_pages_head;
-  // Check that this page is neither full nor freed.
-  PA_DCHECK(page);
-  PA_DCHECK(page->num_allocated_slots >= 0);
+  SlotSpan* slot_span = bucket->active_slot_spans_head;
+  // Check that this slot span is neither full nor freed.
+  PA_DCHECK(slot_span);
+  PA_DCHECK(slot_span->num_allocated_slots >= 0);
   *utilized_slot_size = bucket->slot_size;
 
-  void* ret = page->freelist_head;
+  void* ret = slot_span->freelist_head;
   if (LIKELY(ret)) {
     // If these DCHECKs fire, you probably corrupted memory. TODO(palmer): See
     // if we can afford to make these CHECKs.
-    PA_DCHECK(IsValidPage(page));
+    PA_DCHECK(IsValidSlotSpan(slot_span));
 
     // All large allocations must go through the slow path to correctly update
     // the size metadata.
-    PA_DCHECK(!page->CanStoreRawSize());
+    PA_DCHECK(!slot_span->CanStoreRawSize());
     internal::PartitionFreelistEntry* new_head =
         internal::EncodedPartitionFreelistEntry::Decode(
-            page->freelist_head->next);
-    page->freelist_head = new_head;
-    page->num_allocated_slots++;
+            slot_span->freelist_head->next);
+    slot_span->freelist_head = new_head;
+    slot_span->num_allocated_slots++;
 
-    PA_DCHECK(page->bucket == bucket);
+    PA_DCHECK(slot_span->bucket == bucket);
   } else {
     ret = bucket->SlowPathAlloc(this, flags, raw_size, is_already_zeroed);
     // TODO(palmer): See if we can afford to make this a CHECK.
-    PA_DCHECK(!ret || IsValidPage(Page::FromPointer(ret)));
+    PA_DCHECK(!ret || IsValidSlotSpan(SlotSpan::FromPointer(ret)));
 
     if (UNLIKELY(!ret))
       return nullptr;
 
-    page = Page::FromPointer(ret);
+    slot_span = SlotSpan::FromPointer(ret);
     // For direct mapped allocations, |bucket| is the sentinel.
-    PA_DCHECK((page->bucket == bucket) || (page->bucket->is_direct_mapped() &&
-                                           (bucket == &sentinel_bucket)));
+    PA_DCHECK((slot_span->bucket == bucket) ||
+              (slot_span->bucket->is_direct_mapped() &&
+               (bucket == &sentinel_bucket)));
 
-    *utilized_slot_size = page->GetUtilizedSlotSize();
+    *utilized_slot_size = slot_span->GetUtilizedSlotSize();
   }
 
   return ret;
@@ -447,25 +449,26 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     return;
 
   // No check as the pointer hasn't been adjusted yet.
-  Page* page = Page::FromPointerNoAlignmentCheck(ptr);
+  SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ptr);
   // TODO(palmer): See if we can afford to make this a CHECK.
-  PA_DCHECK(IsValidPage(page));
-  auto* root = PartitionRoot<thread_safe>::FromPage(page);
+  PA_DCHECK(IsValidSlotSpan(slot_span));
+  auto* root = FromSlotSpan(slot_span);
 
   // TODO(bikineev): Change the first condition to LIKELY once PCScan is enabled
   // by default.
-  if (UNLIKELY(root->pcscan) && LIKELY(!page->bucket->is_direct_mapped())) {
-    root->pcscan->MoveToQuarantine(ptr, page);
+  if (UNLIKELY(root->pcscan) &&
+      LIKELY(!slot_span->bucket->is_direct_mapped())) {
+    root->pcscan->MoveToQuarantine(ptr, slot_span);
     return;
   }
 
-  root->FreeNoHooksImmediate(ptr, page);
+  root->FreeNoHooksImmediate(ptr, slot_span);
 }
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     void* ptr,
-    Page* page) {
+    SlotSpan* slot_span) {
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/tag/ref-count management
   // - Before the "raw" allocator.
@@ -476,11 +479,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   //   a. Return to the thread cache if possible. If it succeeds, return.
   //   b. Otherwise, call the "raw" allocator <-- Locking
   PA_DCHECK(ptr);
-  PA_DCHECK(page);
-  PA_DCHECK(IsValidPage(page));
+  PA_DCHECK(slot_span);
+  PA_DCHECK(IsValidSlotSpan(slot_span));
 
 #if DCHECK_IS_ON()
-  size_t utilized_slot_size = page->GetUtilizedSlotSize();
+  size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
 #endif
 
   if (allow_extras) {
@@ -511,14 +514,14 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     internal::PartitionCookieCheckValue(end_cookie_ptr);
 #endif
 
-    if (!page->bucket->is_direct_mapped()) {
+    if (!slot_span->bucket->is_direct_mapped()) {
       // PartitionTagIncrementValue and PartitionTagClearValue require that the
       // size is tag_bitmap::kBytesPerPartitionTag-aligned (currently 16
       // bytes-aligned) when MTECheckedPtr is enabled. However,
       // utilized_slot_size may not be aligned for single-slot slot spans. So we
       // need the bucket's slot_size.
-      size_t slot_size_with_no_extras =
-          internal::PartitionSizeAdjustSubtract(true, page->bucket->slot_size);
+      size_t slot_size_with_no_extras = internal::PartitionSizeAdjustSubtract(
+          true, slot_span->bucket->slot_size);
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR && MTE_CHECKED_PTR_SET_TAG_AT_FREE
       internal::PartitionTagIncrementValue(ptr, slot_size_with_no_extras);
 #else
@@ -556,24 +559,26 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   //
   // Also the thread-unsafe variant doesn't have a use for a thread cache, so
   // make it statically known to the compiler.
-  if (thread_safe && with_thread_cache && !page->bucket->is_direct_mapped()) {
-    PA_DCHECK(page->bucket >= this->buckets &&
-              page->bucket <= &this->sentinel_bucket);
-    size_t bucket_index = page->bucket - this->buckets;
+  if (thread_safe && with_thread_cache &&
+      !slot_span->bucket->is_direct_mapped()) {
+    PA_DCHECK(slot_span->bucket >= this->buckets &&
+              slot_span->bucket <= &this->sentinel_bucket);
+    size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
     if (thread_cache && thread_cache->MaybePutInCache(ptr, bucket_index))
       return;
   }
 
-  RawFree(ptr, page);
+  RawFree(ptr, slot_span);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr, Page* page) {
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr,
+                                                       SlotSpan* slot_span) {
   internal::DeferredUnmap deferred_unmap;
   {
     ScopedGuard guard{lock_};
-    deferred_unmap = page->Free(ptr);
+    deferred_unmap = slot_span->Free(ptr);
   }
   deferred_unmap.Run();
 }
@@ -581,23 +586,24 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* ptr, Page* page) {
 // static
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::RawFreeStatic(void* ptr) {
-  Page* page = Page::FromPointerNoAlignmentCheck(ptr);
-  auto* root = PartitionRoot<thread_safe>::FromPage(page);
-  root->RawFree(ptr, page);
+  SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ptr);
+  auto* root = FromSlotSpan(slot_span);
+  root->RawFree(ptr, slot_span);
 }
 
 // static
 template <bool thread_safe>
-ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsValidPage(Page* page) {
-  PartitionRoot* root = FromPage(page);
+ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsValidSlotSpan(
+    SlotSpan* slot_span) {
+  PartitionRoot* root = FromSlotSpan(slot_span);
   return root->inverted_self == ~reinterpret_cast<uintptr_t>(root);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionRoot<thread_safe>* PartitionRoot<thread_safe>::FromPage(
-    Page* page) {
+ALWAYS_INLINE PartitionRoot<thread_safe>*
+PartitionRoot<thread_safe>::FromSlotSpan(SlotSpan* slot_span) {
   auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
-      reinterpret_cast<uintptr_t>(page) & SystemPageBaseMask());
+      reinterpret_cast<uintptr_t>(slot_span) & SystemPageBaseMask());
   return extent_entry->root;
 }
 
@@ -637,20 +643,20 @@ BASE_EXPORT void PartitionAllocGlobalInit(OomFunction on_out_of_memory);
 BASE_EXPORT void PartitionAllocGlobalUninitForTesting();
 
 namespace internal {
-// Gets the PartitionPage object for the first partition page of the slot span
-// that contains |ptr|. It's used with intention to do obtain the slot size.
-// CAUTION! It works well for normal buckets, but for direct-mapped allocations
-// it'll only work if |ptr| is in the first partition page of the allocation.
+// Gets the SlotSpanMetadata object of the slot span that contains |ptr|. It's
+// used with intention to do obtain the slot size. CAUTION! It works well for
+// normal buckets, but for direct-mapped allocations it'll only work if |ptr| is
+// in the first partition page of the allocation.
 template <bool thread_safe>
-ALWAYS_INLINE internal::PartitionPage<thread_safe>*
-PartitionAllocGetPageForSize(void* ptr) {
+ALWAYS_INLINE internal::SlotSpanMetadata<thread_safe>*
+PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
   // No need to lock here. Only |ptr| being freed by another thread could
   // cause trouble, and the caller is responsible for that not happening.
-  auto* page =
-      internal::PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(ptr);
+  auto* slot_span =
+      internal::SlotSpanMetadata<thread_safe>::FromPointerNoAlignmentCheck(ptr);
   // TODO(palmer): See if we can afford to make this a CHECK.
-  PA_DCHECK(PartitionRoot<thread_safe>::IsValidPage(page));
-  return page;
+  PA_DCHECK(PartitionRoot<thread_safe>::IsValidSlotSpan(slot_span));
+  return slot_span;
 }
 }  // namespace internal
 
@@ -662,10 +668,10 @@ PartitionAllocGetPageForSize(void* ptr) {
 // Used as malloc_usable_size.
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
-  Page* page = Page::FromPointerNoAlignmentCheck(ptr);
-  auto* root = PartitionRoot<thread_safe>::FromPage(page);
+  SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ptr);
+  auto* root = FromSlotSpan(slot_span);
 
-  size_t size = page->GetUtilizedSlotSize();
+  size_t size = slot_span->GetUtilizedSlotSize();
   // Adjust back by subtracing extras (if any).
   size = internal::PartitionSizeAdjustSubtract(root->allow_extras, size);
   return size;
@@ -677,9 +683,10 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetSize(void* ptr) const {
   ptr = internal::PartitionPointerAdjustSubtract(allow_extras, ptr);
-  auto* page = internal::PartitionAllocGetPageForSize<thread_safe>(ptr);
-  size_t size = internal::PartitionSizeAdjustSubtract(allow_extras,
-                                                      page->bucket->slot_size);
+  auto* slot_span =
+      internal::PartitionAllocGetSlotSpanForSizeQuery<thread_safe>(ptr);
+  size_t size = internal::PartitionSizeAdjustSubtract(
+      allow_extras, slot_span->bucket->slot_size);
   return size;
 }
 
@@ -815,12 +822,12 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     // Make sure that the allocated pointer comes from the same place it would
     // for a non-thread cache allocation.
     if (ret) {
-      Page* page = Page::FromPointerNoAlignmentCheck(ret);
+      SlotSpan* slot_span = SlotSpan::FromPointerNoAlignmentCheck(ret);
       // All large allocations must go through the RawAlloc path to correctly
       // set |utilized_slot_size|.
-      PA_DCHECK(!page->CanStoreRawSize());
-      PA_DCHECK(IsValidPage(page));
-      PA_DCHECK(page->bucket == &buckets[bucket_index]);
+      PA_DCHECK(!slot_span->CanStoreRawSize());
+      PA_DCHECK(IsValidSlotSpan(slot_span));
+      PA_DCHECK(slot_span->bucket == &buckets[bucket_index]);
     }
 #endif
   }
