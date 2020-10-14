@@ -23,6 +23,22 @@ std::unique_ptr<content::TraceUploader> AwTracingDelegate::GetTraceUploader(
   return NULL;
 }
 
+bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
+    const content::BackgroundTracingConfig& config,
+    bool requires_anonymized_data) {
+  // Background tracing is allowed in general and can be restricted when
+  // configuring BackgroundTracingManager.
+  return true;
+}
+
+bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
+    const content::BackgroundTracingConfig& config,
+    bool requires_anonymized_data) {
+  // Background tracing is allowed in general and can be restricted when
+  // configuring BackgroundTracingManager.
+  return true;
+}
+
 std::unique_ptr<base::DictionaryValue>
 AwTracingDelegate::GenerateMetadataDict() {
   auto metadata_dict = std::make_unique<base::DictionaryValue>();
