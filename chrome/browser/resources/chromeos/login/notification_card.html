@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
@@ -58,7 +59,8 @@
             hidden$="[[!buttonLabel]]">
           <span>[[buttonLabel]]</span>
         </gaia-button>
-        <a href="#" on-click="linkClicked_" hidden$="{{!linkLabel}}">
+        <a on-click="linkClicked_" hidden$="{{!linkLabel}}" is="action-link"
+            class="oobe-local-link">
           <span>[[linkLabel]]</span>
         </a>
       </div>

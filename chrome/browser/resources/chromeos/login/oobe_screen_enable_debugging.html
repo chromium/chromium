@@ -1,3 +1,9 @@
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/action_link.html">
+
 <div class="step hidden" id="debugging" role="group" hidden
      i18n-values="aria-label:enableDebuggingScreenAccessibleTitle">
   <div class="step-contents" aria-live="polite" aria-atomic="true">
@@ -16,8 +22,9 @@
       <div id="enable-debugging-remove-protection-details"
           class="remove-protection-specific">
         <span i18n-content="enableDebuggingRemveRootfsMessage"></span>
-        <a id="enable-debugging-help-link" href="#"
-            i18n-content="enableDebuggingLearnMore"></a>
+        <a id="enable-debugging-help-link" class="oobe-local-link"
+            is="action-link" i18n-content="enableDebuggingLearnMore">
+        </a>
       </div>
       <div id="enable-debugging-setup-details"
           i18n-content="enableDebuggingSetupMessage"

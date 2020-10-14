@@ -3,6 +3,7 @@
      found in the LICENSE file. -->
 
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
@@ -30,10 +31,10 @@
         </div>
         <!-- Help Link - Hidden when reverting/rolling back. -->
         <if expr="_google_chrome">
-          <a id="powerwash-help-link-md" href="#"
-              class="oobe-local-link"
-              hidden="[[inRevertState_]]"
-             on-click="onLearnMoreTap_">[[i18nDynamic(locale, 'learnMore')]]
+          <a id="powerwash-help-link-md" class="oobe-local-link"
+              hidden="[[inRevertState_]]" is="action-link"
+              on-click="onLearnMoreTap_">
+            [[i18nDynamic(locale, 'learnMore')]]
           </a>
         </if>
         <!-- Spinner - Shown when the revert process is ongoing -->
@@ -67,10 +68,10 @@
                 [[i18nDynamic(locale, 'resetTPMFirmwareUpdate')]]
               </span>
               <if expr="_google_chrome">
-                <a href="#"
-                    class="oobe-local-link"
-                    on-click="onTPMFirmwareUpdateLearnMore_"
-                    >[[i18nDynamic(locale, 'learnMore')]]</a>
+                <a class="oobe-local-link" is="action-link"
+                    on-click="onTPMFirmwareUpdateLearnMore_">
+                  [[i18nDynamic(locale, 'learnMore')]]
+                </a>
               </if>
             </div>
           </cr-checkbox>

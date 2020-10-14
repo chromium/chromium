@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
@@ -26,14 +27,16 @@
               class="oobe-tos-webview"></webview>
         </div>
         <div id="arcPolicyLink" class="arc-tos-content">
-          <a href="#">[[i18nDynamic(locale, 'arcPolicyLink')]]</a>
+          <a class="oobe-local-link" is="action-link">
+            [[i18nDynamic(locale, 'arcPolicyLink')]]
+          </a>
         </div>
         <div class="parameter-section arc-tos-content"
             hidden="[[isMetricsHidden]]">
           <p>
             <span>[[i18nDynamic(locale, metricsTextKey)]]</span>
-            <a href="#" id="learnMoreLinkMetrics"
-                on-click="onMetricsLearnMoreTap_">
+            <a id="learnMoreLinkMetrics" class="oobe-local-link"
+                on-click="onMetricsLearnMoreTap_" is="action-link">
               [[i18nDynamic(locale, 'arcLearnMoreText')]]
             </a>
           </p>
@@ -53,8 +56,8 @@
               disabled="[[backupRestoreManaged]]">
             <p>
               <span>[[i18nDynamic(locale, 'arcTextBackupRestore')]]</span>
-              <a href="#" id="learnMoreLinkBackupRestore"
-                on-click="onBackupRestoreLearnMoreTap_">
+              <a id="learnMoreLinkBackupRestore" class="oobe-local-link"
+                  on-click="onBackupRestoreLearnMoreTap_" is="action-link">
                 [[i18nDynamic(locale, 'arcLearnMoreText')]]
               </a>
             </p>
@@ -71,8 +74,8 @@
                 disabled="[[locationServiceManaged]]">
               <p>
                 <span>[[i18nDynamic(locale, 'arcTextLocationService')]]</span>
-                <a href="#" id="learnMoreLinkLocationService"
-                    on-click="onLocationServiceLearnMoreTap_">
+                <a id="learnMoreLinkLocationService" class="oobe-local-link"
+                    on-click="onLocationServiceLearnMoreTap_" is="action-link">
                   [[i18nDynamic(locale, 'arcLearnMoreText')]]
                 </a>
               </p>

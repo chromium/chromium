@@ -2,6 +2,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/action_link.html">
+
 <dom-module id="oobe-adb-sideloading-screen">
   <template>
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
@@ -22,7 +24,8 @@
       <div slot="subtitle">
         <div>
           [[i18nDynamic(locale, 'enableAdbSideloadingSetupMessage')]]
-          <a href="#" on-click="onLearnMoreTap_" class="oobe-local-link">
+          <a on-click="onLearnMoreTap_" class="oobe-local-link"
+              is="action-link">
             [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
           </a>
         </div>
@@ -55,7 +58,7 @@
       </hd-iron-icon>
       <div slot="subtitle">
         [[i18nDynamic(locale, 'enableAdbSideloadingErrorMessage')]]
-        <a href="#" on-click="onLearnMoreTap_" class="oobe-local-link">
+        <a on-click="onLearnMoreTap_" class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
         </a>
       </div>

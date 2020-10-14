@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <dom-module id="enterprise-enrollment">
@@ -168,7 +169,7 @@
             <span id="attributePromptMessage">
               [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
             </span>
-            <a href="#" id="learnMoreLink" class="oobe-local-link"
+            <a id="learnMoreLink" class="oobe-local-link" is="action-link"
                 on-click="onLearnMore_">
               [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
             </a>

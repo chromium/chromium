@@ -4,6 +4,7 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 
 <dom-module id="gaia-signin">
   <template>
@@ -84,9 +85,9 @@
         [[i18nDynamic(locale, 'samlInterstitialMessage',
                       samlInterstitialDomain_)]]
         <p>
-          <a href="#" class="oobe-local-link" on-click="onSamlPageChangeAccount_"
-              id="interstitial-change-account">
-              [[i18nDynamic(locale, 'samlInterstitialChangeAccountLink')]]
+          <a class="oobe-local-link" on-click="onSamlPageChangeAccount_"
+              id="interstitial-change-account" is="action-link">
+            [[i18nDynamic(locale, 'samlInterstitialChangeAccountLink')]]
           </a>
         </p>
       </div>

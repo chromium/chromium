@@ -1,11 +1,13 @@
 <!-- Copyright 2016 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <dom-module id="oobe-eula-md">
   <template>
@@ -36,12 +38,11 @@
             on-contentload="onFrameLoad_">
         </webview>
         <div id="footer-more" class="layout vertical">
-          <a href="#" id="additionalTerms" on-click="onAdditionalTermsClicked_"
-              class="oobe-local-link">
+          <a id="additionalTerms" on-click="onAdditionalTermsClicked_"
+              class="oobe-local-link" is="action-link">
             [[i18nDynamic(locale, 'oobeEulaAditionalTerms')]]
           </a>
-          <a id="securitySettings" href="#"
-              class="oobe-local-link"
+          <a id="securitySettings" class="oobe-local-link" is="action-link"
               on-click="onSecuritySettingsClicked_">
             [[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]
           </a>
@@ -53,9 +54,8 @@
                 <span id="usageStatsLabel">
                   [[i18nDynamic(locale, 'checkboxLogging')]]
                 </span>
-                <a id="learnMore" href="#"
-                    on-click="onUsageStatsHelpLinkClicked_"
-                    class="oobe-local-link">
+                <a id="learnMore" class="oobe-local-link" is="action-link"
+                    on-click="onUsageStatsHelpLinkClicked_">
                   [[i18nDynamic(locale, 'learnMore')]]
                 </a>
               </div>

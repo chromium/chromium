@@ -3,6 +3,7 @@
      found in the LICENSE file. -->
 
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 
@@ -116,8 +117,8 @@
           </video>
         </if>
         <div id="enableDebuggingDiv" hidden="[[!debuggingLinkVisible]]">
-          <a href="#" on-click="onDebuggingLinkClicked_" id="enableDebuggingLink"
-             class="oobe-local-link">
+          <a on-click="onDebuggingLinkClicked_" id="enableDebuggingLink"
+             class="oobe-local-link" is="action-link">
             [[i18nDynamic(locale, 'debuggingFeaturesLink')]]
           </a>
         </div>
