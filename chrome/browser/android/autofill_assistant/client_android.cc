@@ -108,6 +108,10 @@ ClientAndroid::~ClientAndroid() {
                                               java_object_);
 }
 
+base::WeakPtr<ClientAndroid> ClientAndroid::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 base::android::ScopedJavaLocalRef<jobject> ClientAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }
@@ -167,7 +171,7 @@ bool ClientAndroid::Start(JNIEnv* env,
   return controller_->Start(initial_url, std::move(trigger_context));
 }
 
-void ClientAndroid::DestroyUI(
+void ClientAndroid::OnJavaDestroyUI(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   DestroyUI();
@@ -514,17 +518,20 @@ void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;
 
-  if (ui_controller_android_ && ui_controller_android_->IsAttached())
-    DestroyUI();
-
-  if (started_)
-    Metrics::RecordDropOut(reason);
-
-  // Delete the controller in a separate task. This avoids tricky ordering
-  // issues when Shutdown is called from the controller.
+  // Shutdown in a separate task. This avoids tricky ordering issues when
+  // Shutdown is called from the controller or the ui_controller.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ClientAndroid::DestroyController,
-                                weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&ClientAndroid::SafeDestroyControllerAndUI,
+                                weak_ptr_factory_.GetWeakPtr(), reason));
+}
+
+void ClientAndroid::SafeDestroyControllerAndUI(Metrics::DropOutReason reason) {
+  if (started_) {
+    Metrics::RecordDropOut(reason);
+  }
+
+  DestroyUI();
+  DestroyController();
 }
 
 void ClientAndroid::FetchAccessToken(

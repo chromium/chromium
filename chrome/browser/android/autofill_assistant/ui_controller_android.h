@@ -18,7 +18,6 @@
 #include "chrome/browser/android/autofill_assistant/assistant_header_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_overlay_delegate.h"
 #include "components/autofill_assistant/browser/chip.h"
-#include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/controller_observer.h"
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
@@ -30,6 +29,7 @@
 namespace autofill_assistant {
 struct ClientSettings;
 class GenericUiRootControllerAndroid;
+class ClientAndroid;
 
 // Starts and owns the UI elements required to display AA.
 //
@@ -63,7 +63,7 @@ class UiControllerAndroid : public ControllerObserver {
   // lifetime of this instance or until Attach() is called again, with different
   // pointers.
   void Attach(content::WebContents* web_contents,
-              Client* client,
+              ClientAndroid* client,
               UiDelegate* ui_delegate);
 
   // Detaches the UI from |ui_delegate_|. It will stop receiving notifications
@@ -209,7 +209,7 @@ class UiControllerAndroid : public ControllerObserver {
 
  private:
   // A pointer to the client. nullptr until Attach() is called.
-  Client* client_ = nullptr;
+  ClientAndroid* client_ = nullptr;
 
   // A pointer to the ui_delegate. nullptr until Attach() is called.
   UiDelegate* ui_delegate_ = nullptr;

@@ -129,7 +129,7 @@ class AutofillAssistantClient {
     public void destroyUi() {
         if (mNativeClientAndroid == 0) return;
 
-        AutofillAssistantClientJni.get().destroyUI(
+        AutofillAssistantClientJni.get().onJavaDestroyUI(
                 mNativeClientAndroid, AutofillAssistantClient.this);
     }
 
@@ -390,7 +390,7 @@ class AutofillAssistantClient {
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);
-        void destroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
+        void onJavaDestroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
         void transferUITo(
                 long nativeClientAndroid, AutofillAssistantClient caller, Object otherWebContents);
         void fetchWebsiteActions(long nativeClientAndroid, AutofillAssistantClient caller,

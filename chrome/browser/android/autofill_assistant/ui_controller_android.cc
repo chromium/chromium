@@ -29,6 +29,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantOverlayModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantUiController_jni.h"
+#include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
@@ -311,7 +312,7 @@ UiControllerAndroid::UiControllerAndroid(
 }
 
 void UiControllerAndroid::Attach(content::WebContents* web_contents,
-                                 Client* client,
+                                 ClientAndroid* client,
                                  UiDelegate* ui_delegate) {
   DCHECK(web_contents);
   DCHECK(client);
@@ -622,10 +623,22 @@ void UiControllerAndroid::SnackbarResult(
 }
 
 void UiControllerAndroid::DestroySelf() {
+  // Note: shutdown happens asynchronously (if at all), so calling code after
+  // |ShutdownIfNecessary| returns should be ok.
   if (ui_delegate_)
     ui_delegate_->ShutdownIfNecessary();
 
-  client_->DestroyUI();
+  // Destroy self in separate task to avoid UaFs. Obviously, having this method
+  // in the first place is a terrible idea. We should refactor. The controller
+  // should always be in control. ui_controller should always hold a reference
+  // to ui_delegate, even when detached. ui_controller should not have a
+  // reference for client_android at all. It introduces a circular dependency,
+  // among other things.
+  //
+  // TODO(mcarlen): refactor lifecycle and deps of ui_controller.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ClientAndroid::DestroyUI, client_->GetWeakPtr()));
 }
 
 void UiControllerAndroid::SetVisible(
@@ -708,8 +721,6 @@ void UiControllerAndroid::OnTabSwitched(
   // TODO(b/167947210) Allow lite scripts to transition from CCT to regular
   // scripts.
   if (activity_changed && ui_delegate_->IsRunningLiteScript()) {
-    // Destroying UI here because Shutdown does not do so in all cases.
-    DestroySelf();
     Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
     return;
   }
@@ -914,8 +925,6 @@ bool UiControllerAndroid::OnBackButtonClicked() {
     // Lite scripts should not shut down here. The navigation will be handled
     // by the lite script coordinator.
     if (!ui_delegate_ || !ui_delegate_->IsRunningLiteScript()) {
-      // Destroying UI here because Shutdown does not do so in all cases.
-      DestroySelf();
       Shutdown(Metrics::DropOutReason::BACK_BUTTON_CLICKED);
     }
 
@@ -937,8 +946,6 @@ bool UiControllerAndroid::OnBackButtonClicked() {
 
 void UiControllerAndroid::OnBottomSheetClosedWithSwipe() {
   if (ui_delegate_->IsTabSelected() && ui_delegate_->IsRunningLiteScript()) {
-    // Destroying UI here because Shutdown does not do so in all cases.
-    DestroySelf();
     Shutdown(Metrics::DropOutReason::SHEET_CLOSED);
   }
 }

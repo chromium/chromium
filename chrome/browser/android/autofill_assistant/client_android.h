@@ -39,6 +39,8 @@ class ClientAndroid : public Client,
  public:
   ~ClientAndroid() override;
 
+  base::WeakPtr<ClientAndroid> GetWeakPtr();
+
   // Returns the corresponding Java AutofillAssistantClient.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -54,8 +56,8 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jobject>& jonboarding_coordinator,
       jboolean jonboarding_shown,
       jlong jservice);
-  void DestroyUI(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& jcaller);
+  void OnJavaDestroyUI(JNIEnv* env,
+                       const base::android::JavaParamRef<jobject>& jcaller);
   void TransferUITo(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
@@ -127,6 +129,7 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jobject>& jonboarding_coordinator);
   bool NeedsUI();
   void OnFetchWebsiteActions(const base::android::JavaRef<jobject>& jcallback);
+  void SafeDestroyControllerAndUI(Metrics::DropOutReason reason);
 
   base::android::ScopedJavaLocalRef<jobjectArray>
   GetDirectActionsAsJavaArrayOfStrings(JNIEnv* env) const;
