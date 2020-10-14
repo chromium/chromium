@@ -715,9 +715,9 @@
     // used by content embedders to specify custom style on certain platforms.
     {
       name: "viewportStyle",
-      initial: "web_pref::ViewportStyle::kDefault",
+      initial: "mojom::blink::ViewportStyle::kDefault",
       invalidate: "ViewportRule",
-      type: "web_pref::ViewportStyle",
+      type: "mojom::blink::ViewportStyle",
     },
 
     // Automatic track selection is performed based on user preference for track kind specified

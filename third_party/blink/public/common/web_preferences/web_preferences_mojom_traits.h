@@ -31,16 +31,6 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::HoverType, ui::HoverType> {
 };
 
 template <>
-struct BLINK_COMMON_EXPORT
-    EnumTraits<blink::mojom::ViewportStyle, blink::web_pref::ViewportStyle> {
-  static blink::mojom::ViewportStyle ToMojom(
-      blink::web_pref::ViewportStyle style);
-
-  static bool FromMojom(blink::mojom::ViewportStyle input,
-                        blink::web_pref::ViewportStyle* out);
-};
-
-template <>
 struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::EffectiveConnectionType,
                                       net::EffectiveConnectionType> {
   static blink::mojom::EffectiveConnectionType ToMojom(
@@ -419,7 +409,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.shrinks_viewport_contents_to_fit;
   }
 
-  static blink::web_pref::ViewportStyle viewport_style(
+  static blink::mojom::ViewportStyle viewport_style(
       const blink::web_pref::WebPreferences& r) {
     return r.viewport_style;
   }

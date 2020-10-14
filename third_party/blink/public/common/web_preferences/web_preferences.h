@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
@@ -144,7 +143,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // viewport_enabled is on.
   bool shrinks_viewport_contents_to_fit;
 
-  web_pref::ViewportStyle viewport_style;
+  blink::mojom::ViewportStyle viewport_style;
   bool always_show_context_menu_on_touch;
   bool smooth_scroll_for_find_enabled;
   bool main_frame_resizes_are_orientation_changes;

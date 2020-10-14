@@ -77,41 +77,6 @@ bool EnumTraits<blink::mojom::HoverType, ui::HoverType>::FromMojom(
 }
 
 // static
-blink::mojom::ViewportStyle
-EnumTraits<blink::mojom::ViewportStyle, blink::web_pref::ViewportStyle>::
-    ToMojom(blink::web_pref::ViewportStyle style) {
-  switch (style) {
-    case blink::web_pref::ViewportStyle::kDefault:
-      return blink::mojom::ViewportStyle::kDefault;
-    case blink::web_pref::ViewportStyle::kMobile:
-      return blink::mojom::ViewportStyle::kMobile;
-    case blink::web_pref::ViewportStyle::kTelevision:
-      return blink::mojom::ViewportStyle::kTelevision;
-  }
-  NOTREACHED();
-  return blink::mojom::ViewportStyle::kLast;
-}
-
-// static
-bool EnumTraits<blink::mojom::ViewportStyle, blink::web_pref::ViewportStyle>::
-    FromMojom(blink::mojom::ViewportStyle input,
-              blink::web_pref::ViewportStyle* out) {
-  switch (input) {
-    case blink::mojom::ViewportStyle::kDefault:
-      *out = blink::web_pref::ViewportStyle::kDefault;
-      return true;
-    case blink::mojom::ViewportStyle::kMobile:
-      *out = blink::web_pref::ViewportStyle::kMobile;
-      return true;
-    case blink::mojom::ViewportStyle::kTelevision:
-      *out = blink::web_pref::ViewportStyle::kTelevision;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
 blink::mojom::EffectiveConnectionType EnumTraits<
     blink::mojom::EffectiveConnectionType,
     net::EffectiveConnectionType>::ToMojom(net::EffectiveConnectionType type) {

@@ -34,7 +34,6 @@
 #include <unicode/uscript.h>
 
 #include "third_party/blink/public/common/css/navigation_controls.h"
-#include "third_party/blink/public/common/web_preferences/viewport_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-forward.h"
@@ -241,7 +240,7 @@ class WebSettings {
   virtual void SetTouchDragEndContextMenu(bool) = 0;
   virtual void SetBarrelButtonForDragEnabled(bool) = 0;
   virtual void SetUseLegacyBackgroundSizeShorthandBehavior(bool) = 0;
-  virtual void SetViewportStyle(web_pref::ViewportStyle) = 0;
+  virtual void SetViewportStyle(mojom::ViewportStyle) = 0;
   virtual void SetUseWideViewport(bool) = 0;
   virtual void SetV8CacheOptions(mojom::V8CacheOptions) = 0;
   virtual void SetValidationMessageTimerMagnification(int) = 0;

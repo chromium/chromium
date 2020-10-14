@@ -167,11 +167,11 @@ void InternalSettings::setViewportStyle(const String& style,
                                         ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
   if (EqualIgnoringASCIICase(style, "default"))
-    GetSettings()->SetViewportStyle(web_pref::ViewportStyle::kDefault);
+    GetSettings()->SetViewportStyle(mojom::blink::ViewportStyle::kDefault);
   else if (EqualIgnoringASCIICase(style, "mobile"))
-    GetSettings()->SetViewportStyle(web_pref::ViewportStyle::kMobile);
+    GetSettings()->SetViewportStyle(mojom::blink::ViewportStyle::kMobile);
   else if (EqualIgnoringASCIICase(style, "television"))
-    GetSettings()->SetViewportStyle(web_pref::ViewportStyle::kTelevision);
+    GetSettings()->SetViewportStyle(mojom::blink::ViewportStyle::kTelevision);
   else
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
