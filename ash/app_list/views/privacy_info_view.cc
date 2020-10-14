@@ -264,7 +264,8 @@ void PrivacyInfoView::InitText() {
   text_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kLink);
 
   views::StyledLabel::RangeStyleInfo style;
-  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor();
+  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor);
   text_view_->AddStyleRange(gfx::Range(0, offset), style);
 
   // Create a custom view for the link portion of the text. This allows an

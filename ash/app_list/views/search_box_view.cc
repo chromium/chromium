@@ -339,8 +339,8 @@ void SearchBoxView::UpdateBackground(double progress,
       progress, GetBackgroundColorForState(current_state),
       GetBackgroundColorForState(target_state));
   UpdateBackgroundColor(color);
-  search_box()->SetTextColor(
-      AppListColorProvider::Get()->GetSearchBoxTextColor());
+  search_box()->SetTextColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor));
 }
 
 void SearchBoxView::UpdateLayout(double progress,
@@ -393,7 +393,8 @@ void SearchBoxView::OnWallpaperColorsChanged() {
   AppListColorProvider* app_list_color_provider = AppListColorProvider::Get();
   search_box()->set_placeholder_text_color(
       app_list_color_provider->GetSearchBoxPlaceholderTextColor());
-  search_box()->SetTextColor(app_list_color_provider->GetSearchBoxTextColor());
+  search_box()->SetTextColor(app_list_color_provider->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor));
   if (features::IsDarkLightModeEnabled()) {
     UpdateBackgroundColor(
         app_list_color_provider->GetSearchBoxBackgroundColor());

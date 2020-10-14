@@ -96,7 +96,8 @@ SearchResultTileItemView::SearchResultTileItemView(
 
   title_ = new views::Label;
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      /*default_color*/ SK_ColorWHITE));
   title_->SetLineHeight(kTileTextLineHeight);
   title_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_->SetHandlesTooltips(false);
@@ -105,7 +106,8 @@ SearchResultTileItemView::SearchResultTileItemView(
 
   rating_ = new views::Label;
   rating_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          /*default_color*/ gfx::kGoogleGrey700));
   rating_->SetLineHeight(kTileTextLineHeight);
   rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   rating_->SetVisible(false);
@@ -116,13 +118,15 @@ SearchResultTileItemView::SearchResultTileItemView(
   rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor()));
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          gfx::kGoogleGrey700)));
   rating_star_->SetVisible(false);
   AddChildView(rating_star_);
 
   price_ = new views::Label;
   price_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor());
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          /*default_color*/ gfx::kGoogleGreen600));
   price_->SetLineHeight(kTileTextLineHeight);
   price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   price_->SetVisible(false);
@@ -188,8 +192,8 @@ void SearchResultTileItemView::OnResultChanged() {
     } else {
       title_->SetFontList(font);
     }
-    title_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxTextColor());
+    title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+        /*default_color*/ gfx::kGoogleGrey900));
   }
 
   title_->SetMaxLines(2);

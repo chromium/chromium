@@ -15,23 +15,26 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
 SkColor AppListColorProviderImpl::GetExpandArrowInkDropBaseColor() const {
-  return DeprecatedGetInkDropBaseColor(SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
+  return DeprecatedGetInkDropBaseColor(
+      /*default_color*/ SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
 }
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
   return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor, SK_ColorWHITE);
+      AshColorProvider::ContentLayerType::kButtonIconColor,
+      /*default_color*/ SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBackgroundColor() const {
   return DeprecatedGetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF));
+      /*default_color*/ SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF));
 }
 
 SkColor AppListColorProviderImpl::GetAppListBackgroundColor() const {
   return DeprecatedGetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield80, gfx::kGoogleGrey900);
+      AshColorProvider::ShieldLayerType::kShield80,
+      /*default_color*/ gfx::kGoogleGrey900);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
@@ -42,42 +45,44 @@ SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
 
 SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
   // Set solid color background to avoid broken text. See crbug.com/746563.
-  return ash_color_provider_->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque);
+  return DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType::kOpaque,
+                                     /*default_color*/ SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxPlaceholderTextColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary,
-      gfx::kGoogleGrey200);
+      /*default_color*/ gfx::kGoogleGrey200);
 }
 
-SkColor AppListColorProviderImpl::GetSearchBoxTextColor() const {
+SkColor AppListColorProviderImpl::GetSearchBoxTextColor(
+    SkColor default_color) const {
   return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      SkColorSetRGB(0x33, 0x33, 0x33));
+      AshColorProvider::ContentLayerType::kTextColorPrimary, default_color);
 }
 
-SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
+SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor(
+    SkColor default_color) const {
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary, default_color);
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor() const {
   return DeprecatedGetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      SkColorSetA(gfx::kGoogleGrey100, 0x14));
+      /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x14));
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary,
-      gfx::kGoogleGrey100);
+      /*default_color*/ gfx::kGoogleGrey100);
 }
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor() const {
   return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary, SK_ColorBLACK);
+      AshColorProvider::ContentLayerType::kTextColorPrimary,
+      /*default_color*/ SK_ColorBLACK);
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
@@ -125,7 +130,7 @@ SkColor AppListColorProviderImpl::GetFolderTitleTextColor(
 SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary,
-      gfx::kGoogleGrey600);
+      /*default_color*/ gfx::kGoogleGrey600);
 }
 
 SkColor AppListColorProviderImpl::GetFolderNameBackgroundColor(
@@ -133,10 +138,7 @@ SkColor AppListColorProviderImpl::GetFolderNameBackgroundColor(
   if (!active)
     return SK_ColorTRANSPARENT;
 
-  AshColorProvider::RippleAttributes ripple_attributes =
-      ash_color_provider_->GetRippleAttributes(GetAppListBackgroundColor());
-  return SkColorSetA(ripple_attributes.base_color,
-                     ripple_attributes.inkdrop_opacity * 255);
+  return DeprecatedGetInkDropRippleColor(/*default_color*/ gfx::kGoogleGrey100);
 }
 
 SkColor AppListColorProviderImpl::GetFolderNameBorderColor(bool active) const {
@@ -153,13 +155,15 @@ SkColor AppListColorProviderImpl::GetFolderNameSelectionColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
-  return ash_color_provider_->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
+      /*default_color*/ SkColorSetRGB(0xF2, 0xF2, 0xF2));
 }
 
 SkColor AppListColorProviderImpl::GetSeparatorColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
+  return DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor,
+      /*default_color*/ SkColorSetA(gfx::kGoogleGrey900, 0x24));
 }
 
 SkColor AppListColorProviderImpl::GetSearchResultViewInkDropColor() const {

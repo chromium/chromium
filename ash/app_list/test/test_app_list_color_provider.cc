@@ -36,11 +36,13 @@ SkColor TestAppListColorProvider::GetSearchBoxPlaceholderTextColor() const {
   return gfx::kGoogleGrey500;
 }
 
-SkColor TestAppListColorProvider::GetSearchBoxTextColor() const {
+SkColor TestAppListColorProvider::GetSearchBoxTextColor(
+    SkColor default_color) const {
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetSearchBoxSecondaryTextColor() const {
+SkColor TestAppListColorProvider::GetSearchBoxSecondaryTextColor(
+    SkColor default_color) const {
   return gfx::kGoogleGrey500;
 }
 

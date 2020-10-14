@@ -117,14 +117,17 @@ void SearchResultView::CreateTitleRenderText() {
   // When result is an omnibox non-url search, the matched tag indicates
   // proposed query. For all other cases, the matched tag indicates typed search
   // query.
-  render_text->SetColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
+  render_text->SetColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor));
   const SearchResult::Tags& tags = result()->title_tags();
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL) {
       render_text->ApplyColor(kUrlColor, tag.range);
     } else if (tag.styles & SearchResult::Tag::MATCH) {
       render_text->ApplyColor(
-          AppListColorProvider::Get()->GetSearchBoxTextColor(), tag.range);
+          AppListColorProvider::Get()->GetSearchBoxTextColor(
+              kDeprecatedSearchBoxTextDefaultColor),
+          tag.range);
     }
   }
   title_text_ = std::move(render_text);
@@ -141,7 +144,8 @@ void SearchResultView::CreateDetailsRenderText() {
   render_text->SetText(result()->details());
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   render_text->SetFontList(rb.GetFontList(ui::ResourceBundle::BaseFont));
-  render_text->SetColor(AppListColorProvider::Get()->GetSearchBoxTextColor());
+  render_text->SetColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor));
   const SearchResult::Tags& tags = result()->details_tags();
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL)
