@@ -97,8 +97,6 @@ void VerifyCommitCount(const DataTypeDebugInfoEmitter* emitter,
             emitter->GetCommitCounters().num_creation_commits_attempted);
   EXPECT_EQ(expected_deletion_count,
             emitter->GetCommitCounters().num_deletion_commits_attempted);
-  EXPECT_EQ(expected_creation_count + expected_deletion_count,
-            emitter->GetCommitCounters().num_commits_success);
 }
 
 }  // namespace
@@ -689,7 +687,6 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
   NormalInitialize();
 
   EXPECT_EQ(0, emitter()->GetUpdateCounters().num_non_initial_updates_received);
-  EXPECT_EQ(0, emitter()->GetUpdateCounters().num_updates_applied);
 
   const ClientTagHash tag_hash = GenerateTagHash(kTag1);
 
@@ -715,7 +712,6 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
   EXPECT_EQ(kValue1, entity.specifics.preference().value());
 
   EXPECT_EQ(1, emitter()->GetUpdateCounters().num_non_initial_updates_received);
-  EXPECT_EQ(1, emitter()->GetUpdateCounters().num_updates_applied);
 }
 
 TEST_F(ModelTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {

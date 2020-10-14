@@ -9,14 +9,34 @@
 
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/cycle/commit_counters.h"
-#include "components/sync/engine/cycle/update_counters.h"
 
 namespace base {
 class HistogramBase;
 }
 
 namespace syncer {
+
+// A class to maintain counts related to sync commit requests and responses.
+struct CommitCounters {
+  CommitCounters() = default;
+  ~CommitCounters() = default;
+
+  // Counters updated before sending a commit message to the server.
+  int num_creation_commits_attempted = 0;
+  int num_deletion_commits_attempted = 0;
+  int num_update_commits_attempted = 0;
+};
+
+// A class to maintain counts related to the update requests and responses for
+// a particular sync type.
+struct UpdateCounters {
+  UpdateCounters() = default;
+  ~UpdateCounters() = default;
+
+  int num_initial_updates_received = 0;
+  int num_non_initial_updates_received = 0;
+  int num_non_initial_tombstone_updates_received = 0;
+};
 
 // Supports various kinds of debugging requests for a certain directory type.
 //

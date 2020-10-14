@@ -161,11 +161,6 @@ SyncerError CommitContributionImpl::ProcessCommitResponse(
     }
   }
 
-  CommitCounters* counters = debug_info_emitter_->GetMutableCommitCounters();
-  counters->num_commits_success += successes;
-  counters->num_commits_conflict += transient_error_commits;
-  counters->num_commits_error += transient_error_commits;
-
   // Send whatever successful and failed responses we did get back to our
   // parent. It's the schedulers job to handle the failures, but parent may
   // react to them as well.

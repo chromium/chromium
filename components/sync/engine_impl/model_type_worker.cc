@@ -370,13 +370,8 @@ void ModelTypeWorker::ApplyPendingUpdates() {
   DeduplicatePendingUpdatesBasedOnClientTagHash();
   DeduplicatePendingUpdatesBasedOnOriginatorClientItemId();
 
-  int num_updates_applied = pending_updates_.size();
   model_type_processor_->OnUpdateReceived(model_type_state_,
                                           std::move(pending_updates_));
-
-  UpdateCounters* counters = debug_info_emitter_->GetMutableUpdateCounters();
-  counters->num_updates_applied += num_updates_applied;
-  debug_info_emitter_->EmitUpdateCountersUpdate();
 
   pending_updates_.clear();
 }
