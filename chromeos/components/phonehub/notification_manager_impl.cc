@@ -4,47 +4,41 @@
 
 #include "chromeos/components/phonehub/notification_manager_impl.h"
 
+#include "base/containers/flat_set.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/message_sender.h"
 #include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
 
-NotificationManagerImpl::NotificationManagerImpl() = default;
+NotificationManagerImpl::NotificationManagerImpl(MessageSender* message_sender)
+    : message_sender_(message_sender) {
+  DCHECK(message_sender_);
+}
 
 NotificationManagerImpl::~NotificationManagerImpl() = default;
 
-const Notification* NotificationManagerImpl::GetNotification(
-    int64_t notification_id) const {
-  return nullptr;
-}
-
-void NotificationManagerImpl::SetNotificationsInternal(
-    const base::flat_set<Notification>& notifications) {
-  PA_LOG(INFO) << "Setting notifications internally.";
-  // TODO(jimmyxong): Implement this stub function.
-}
-
-void NotificationManagerImpl::RemoveNotificationsInternal(
-    const base::flat_set<int64_t>& notification_ids) {
-  PA_LOG(INFO) << "Removing notifications internally.";
-  // TODO(jimmyxgong): Implement this stub function.
-}
-
 void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
   PA_LOG(INFO) << "Dismissing notification with ID " << notification_id << ".";
-}
 
-void NotificationManagerImpl::ClearNotificationsInternal() {
-  PA_LOG(INFO) << "Clearing notification internally.";
-  // TODO(jimmyxgong): Implement this stub function.
+  RemoveNotificationsInternal(base::flat_set<int64_t>{notification_id});
+  message_sender_->SendDismissNotificationRequest(notification_id);
 }
 
 void NotificationManagerImpl::SendInlineReply(
     int64_t notification_id,
     const base::string16& inline_reply_text) {
+  if (!GetNotification(notification_id)) {
+    PA_LOG(INFO) << "Could not send inline reply for notification with ID "
+                 << notification_id << ".";
+    return;
+  }
+
   PA_LOG(INFO) << "Sending inline reply for notification with ID "
                << notification_id << ".";
+  message_sender_->SendNotificationInlineReplyRequest(notification_id,
+                                                      inline_reply_text);
 }
 
 }  // namespace phonehub

@@ -255,11 +255,14 @@ void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
   SetReceivedNotifications(phone_status_update.updated_notifications());
   SetReceivedPhoneStatusModelStates(phone_status_update.properties());
 
-  base::flat_set<int64_t> removed_notification_ids;
-  for (auto& id : phone_status_update.removed_notification_ids()) {
-    removed_notification_ids.emplace(id);
+  if (!phone_status_update.removed_notification_ids().empty()) {
+    base::flat_set<int64_t> removed_notification_ids;
+    for (auto& id : phone_status_update.removed_notification_ids()) {
+      removed_notification_ids.emplace(id);
+    }
+    notification_manager_->RemoveNotificationsInternal(
+        removed_notification_ids);
   }
-  notification_manager_->RemoveNotificationsInternal(removed_notification_ids);
 }
 
 void PhoneStatusProcessor::OnHostStatusChanged(

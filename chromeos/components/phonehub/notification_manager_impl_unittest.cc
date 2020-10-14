@@ -8,13 +8,32 @@
 
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/phonehub/fake_message_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace phonehub {
 namespace {
 
+const char kAppName[] = "Test App";
+const char kPackageName[] = "com.google.testapp";
+
+const char kTitle[] = "Test notification";
+const char kTextContent[] = "This is a test notification";
+
 enum class NotificationState { kAdded, kUpdated, kRemoved };
+
+Notification CreateNotification(int64_t id) {
+  return chromeos::phonehub::Notification(
+      id,
+      chromeos::phonehub::Notification::AppMetadata(base::UTF8ToUTF16(kAppName),
+                                                    kPackageName,
+                                                    /*icon=*/gfx::Image()),
+      base::Time::Now(), Notification::Importance::kDefault,
+      /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
+      base::UTF8ToUTF16(kTextContent));
+}
 
 class FakeObserver : public NotificationManager::Observer {
  public:
@@ -63,23 +82,151 @@ class NotificationManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    manager_ = std::make_unique<NotificationManagerImpl>();
+    fake_message_sender_ = std::make_unique<FakeMessageSender>();
+    manager_ =
+        std::make_unique<NotificationManagerImpl>(fake_message_sender_.get());
     manager_->AddObserver(&fake_observer_);
   }
 
   void TearDown() override { manager_->RemoveObserver(&fake_observer_); }
 
   NotificationManager& manager() { return *manager_; }
+  FakeMessageSender& fake_message_sender() { return *fake_message_sender_; }
+
+  void SetNotificationsInternal(
+      const base::flat_set<Notification>& notifications) {
+    manager_->SetNotificationsInternal(notifications);
+  }
+
+  void ClearNotificationsInternal() { manager_->ClearNotificationsInternal(); }
+
+  size_t GetNumNotifications() {
+    return manager_->id_to_notification_map_.size();
+  }
+
+  base::Optional<NotificationState> GetNotificationState(
+      int64_t notification_id) {
+    return fake_observer_.GetState(notification_id);
+  }
 
  private:
   FakeObserver fake_observer_;
+  std::unique_ptr<FakeMessageSender> fake_message_sender_;
   std::unique_ptr<NotificationManager> manager_;
 };
 
-// TODO(khorimoto): Remove this test once we have real functionality to test.
-TEST_F(NotificationManagerImplTest, Initialize) {
-  EXPECT_FALSE(manager().GetNotification(/*notification_id=*/0));
+TEST_F(NotificationManagerImplTest, SetAndClearNotificationsInternal) {
+  EXPECT_EQ(0u, GetNumNotifications());
+  const int64_t expected_id1 = 0;
+  const int64_t expected_id2 = 1;
+
+  SetNotificationsInternal(base::flat_set<Notification>{
+      CreateNotification(expected_id1), CreateNotification(expected_id2)});
+  EXPECT_EQ(2u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id2));
+
+  ClearNotificationsInternal();
+  EXPECT_EQ(0u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kRemoved, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kRemoved, GetNotificationState(expected_id2));
 }
 
+TEST_F(NotificationManagerImplTest, GetNotification) {
+  EXPECT_EQ(0u, GetNumNotifications());
+  const int64_t expected_id1 = 0;
+
+  SetNotificationsInternal(
+      base::flat_set<Notification>{CreateNotification(expected_id1)});
+  EXPECT_EQ(1u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+
+  // Call GetNotification() on an existent notification id. Expect a non-null
+  // pointer.
+  EXPECT_TRUE(manager().GetNotification(expected_id1));
+
+  // Call GetNotification() on a non-existent notification id. Expect a null
+  // pointer.
+  EXPECT_FALSE(manager().GetNotification(/*notification_id=*/4));
+
+  // Remove |expected_id1| and expect that GetNotification() returns a null
+  // pointer.
+  manager().DismissNotification(expected_id1);
+  EXPECT_EQ(1u, fake_message_sender().GetDismissNotificationRequestCallCount());
+  EXPECT_EQ(expected_id1,
+            fake_message_sender().GetRecentDismissNotificationRequest());
+  EXPECT_FALSE(manager().GetNotification(expected_id1));
+}
+
+TEST_F(NotificationManagerImplTest, DismissNotifications) {
+  EXPECT_EQ(0u, GetNumNotifications());
+  const int64_t expected_id1 = 0;
+  const int64_t expected_id2 = 1;
+
+  SetNotificationsInternal(base::flat_set<Notification>{
+      CreateNotification(expected_id1), CreateNotification(expected_id2)});
+  EXPECT_EQ(2u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id2));
+
+  manager().DismissNotification(expected_id2);
+  EXPECT_EQ(1u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kRemoved, GetNotificationState(expected_id2));
+  EXPECT_EQ(1u, fake_message_sender().GetDismissNotificationRequestCallCount());
+  EXPECT_EQ(expected_id2,
+            fake_message_sender().GetRecentDismissNotificationRequest());
+}
+
+TEST_F(NotificationManagerImplTest, UpdatedNotification) {
+  EXPECT_EQ(0u, GetNumNotifications());
+  const int64_t expected_id1 = 0;
+  const int64_t expected_id2 = 1;
+
+  SetNotificationsInternal(base::flat_set<Notification>{
+      CreateNotification(expected_id1), CreateNotification(expected_id2)});
+  EXPECT_EQ(2u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id2));
+
+  // Simulate updating a notification.
+  SetNotificationsInternal(
+      base::flat_set<Notification>{CreateNotification(expected_id1)});
+  EXPECT_EQ(2u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kUpdated, GetNotificationState(expected_id1));
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id2));
+}
+
+TEST_F(NotificationManagerImplTest, SendInlineReply) {
+  EXPECT_EQ(0u, GetNumNotifications());
+  const int64_t expected_id1 = 0;
+
+  SetNotificationsInternal(
+      base::flat_set<Notification>{CreateNotification(expected_id1)});
+  EXPECT_EQ(1u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+
+  // Simulate sending an inline reply to a notification.
+  const base::string16& expected_reply(base::UTF8ToUTF16("test reply"));
+  manager().SendInlineReply(expected_id1, expected_reply);
+  EXPECT_EQ(1u, GetNumNotifications());
+  EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
+  EXPECT_EQ(1u,
+            fake_message_sender().GetNotificationInlineReplyRequestCallCount());
+  std::pair<int64_t, base::string16> pair =
+      fake_message_sender().GetRecentNotificationInlineReplyRequest();
+  EXPECT_EQ(expected_id1, pair.first);
+  EXPECT_EQ(expected_reply, pair.second);
+
+  // Simulate sending an inline reply to a non-existent notification. Expect
+  // that no new reply calls were called and that the most recent reply is the
+  // same as the previous inline reply call.
+  manager().SendInlineReply(/*notification_id=*/5, /*reply=*/base::string16());
+  EXPECT_EQ(1u,
+            fake_message_sender().GetNotificationInlineReplyRequestCallCount());
+  pair = fake_message_sender().GetRecentNotificationInlineReplyRequest();
+  EXPECT_EQ(expected_id1, pair.first);
+  EXPECT_EQ(expected_reply, pair.second);
+}
 }  // namespace phonehub
 }  // namespace chromeos

@@ -63,7 +63,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               feature_status_provider_.get(),
               message_sender_.get(),
               connection_scheduler_.get())),
-      notification_manager_(std::make_unique<NotificationManagerImpl>()),
+      notification_manager_(
+          std::make_unique<NotificationManagerImpl>(message_sender_.get())),
       onboarding_ui_tracker_(std::make_unique<OnboardingUiTrackerImpl>(
           pref_service,
           feature_status_provider_.get(),

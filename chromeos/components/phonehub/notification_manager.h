@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_MANAGER_H_
 
 #include <stdint.h>
+#include <unordered_map>
 
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
@@ -45,8 +46,7 @@ class NotificationManager {
   // Returns null if no notification exists with the given ID. Pointers returned
   // by this function should not be cached, since the underlying Notification
   // object may be deleted by a future update.
-  virtual const Notification* GetNotification(
-      int64_t notification_id) const = 0;
+  const Notification* GetNotification(int64_t notification_id) const;
 
   // Dismisses the notification with the given ID; if no notification exists
   // with this ID, this function is a no-op.
@@ -62,23 +62,24 @@ class NotificationManager {
 
  protected:
   friend class PhoneStatusProcessor;
+  friend class NotificationManagerImplTest;
 
   NotificationManager();
 
   // Sets the internal collection of notifications. This does not send any
   // requests to the remote phone device.
-  virtual void SetNotificationsInternal(
-      const base::flat_set<Notification>& notifications) = 0;
+  void SetNotificationsInternal(
+      const base::flat_set<Notification>& notifications);
 
   // Removes the dismissed notifications from the internal collection of
   // notifications. Does not send a request to remove notifications to the
   // remote device.
-  virtual void RemoveNotificationsInternal(
-      const base::flat_set<int64_t>& notification_ids) = 0;
+  void RemoveNotificationsInternal(
+      const base::flat_set<int64_t>& notification_ids);
 
   // Clears the underlying internal collection of notifications. This does not
   // send any requests to clear the phone's notifications.
-  virtual void ClearNotificationsInternal() = 0;
+  void ClearNotificationsInternal();
 
   void NotifyNotificationsAdded(
       const base::flat_set<int64_t>& notification_ids);
@@ -86,6 +87,8 @@ class NotificationManager {
       const base::flat_set<int64_t>& notification_ids);
   void NotifyNotificationsRemoved(
       const base::flat_set<int64_t>& notification_ids);
+
+  std::unordered_map<int64_t, Notification> id_to_notification_map_;
 
  private:
   base::ObserverList<Observer> observer_list_;
