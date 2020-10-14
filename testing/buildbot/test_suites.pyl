@@ -1977,6 +1977,22 @@
       },
     },
 
+    'gpu_angle_gles1_conformance_gtests': {
+      'standalone_angle_gles1_conformance_tests': {
+        'android_args': [
+          '--shard-timeout=180',
+          '-v',
+        ],
+        'args': [
+          'standalone_angle_gles1_conformance_tests',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+    },
+
     # Actually uploads results to the perf dashboard
     'gpu_angle_perf_isolated_scripts': {
       'angle_perftests': {
@@ -2054,14 +2070,18 @@
       # TODO(ynovikov): the old generator script said the white box
       # tests are supposed to run everywhere angle_end2end_tests do, but
       # they actually ran only on Windows and Linux.
-      'angle_white_box_tests': {
-        'desktop_args': [
-          # ANGLE test retries deliberately disabled to prevent flakiness.
-          # http://crbug.com/669196
-          '--test-launcher-retry-limit=0'
+      'standalone_angle_white_box_tests': {
+        'android_args': [
+          '--shard-timeout=180',
+          '-v',
         ],
-        'linux_args': ['--no-xvfb'],
-        'should_retry_with_patch': False,
+        'args': [
+          'standalone_angle_white_box_tests',
+        ],
+        'desktop_args': [
+          '--bot-mode',
+        ],
+        'use_isolated_scripts_api': True,
       },
     },
 
@@ -2303,10 +2323,6 @@
     },
 
     'gpu_fyi_and_optional_win_specific_gtests': {
-      'angle_gles1_conformance_tests': {
-        'args': ['--use-gpu-in-tests'],
-        'linux_args': ['--no-xvfb'],
-      },
       'gles2_conform_d3d9_test': {
         'args': [
           '--use-gpu-in-tests',
@@ -5050,6 +5066,7 @@
 
     'gpu_angle_win_gtests': [
       'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
@@ -5327,6 +5344,7 @@
 
     'gpu_fyi_win7_gtests': [
       'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
@@ -5348,6 +5366,7 @@
 
     'gpu_fyi_win_gtests': [
       'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
@@ -5384,6 +5403,7 @@
 
     'gpu_fyi_win_optional_gtests': [
       'gpu_angle_end2end_gtests',
+      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_default_and_optional_win_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',

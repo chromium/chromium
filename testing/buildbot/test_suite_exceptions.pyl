@@ -82,16 +82,6 @@
       'Linux FYI GPU TSAN Release',  # crbug.com/950542
     ],
   },
-  'angle_white_box_tests': {
-    'remove_from': [
-      # https://crbug.com/1035178
-      'Win10 FYI x64 Release (AMD RX 550)',
-      # https://crbug.com/1035461
-      'Linux FYI GPU TSAN Release',
-      # https://crbug.com/1094629
-      'Linux FYI Release (AMD R7 240)',
-    ],
-  },
   'blink_platform_unittests': {
     'modifications': {
       # TODO(crbug.com/1108121): Remove this filter
@@ -2551,6 +2541,16 @@
         },
       },
     },
+  },
+  'standalone_angle_white_box_tests': {
+    'remove_from': [
+      # https://crbug.com/1035178
+      'Win10 FYI x64 Release (AMD RX 550)',
+      # https://crbug.com/1035461
+      'Linux FYI GPU TSAN Release',
+      # https://crbug.com/1094629
+      'Linux FYI Release (AMD R7 240)',
+    ],
   },
   'storage_service_content_browsertests': {
     'modifications': {
