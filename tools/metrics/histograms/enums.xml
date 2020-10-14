@@ -29715,7 +29715,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3504" label="WindowScreenTouchSupport"/>
   <int value="3505" label="IdentifiabilityStudyReserved3505"/>
   <int value="3506" label="IdentifiabilityStudyReserved3506"/>
-  <int value="3507" label="IdentifiabilityStudyReserved3507"/>
+  <int value="3507"
+      label="V8PushManager_SupportedContentEncodings_AttributeGetter"/>
   <int value="3508" label="IdentifiabilityStudyReserved3508"/>
   <int value="3509" label="IdentifiabilityStudyReserved3509"/>
   <int value="3510" label="IdentifiabilityStudyReserved3510"/>

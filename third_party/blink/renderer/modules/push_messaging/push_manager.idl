@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=PushMessaging
 ] interface PushManager {
-    [SameObject, SaveSameObject]
+    [SameObject, SaveSameObject, HighEntropy=Direct, Measure]
     static readonly attribute FrozenArray<DOMString> supportedContentEncodings;
 
     [CallWith=ScriptState, RaisesException] Promise<PushSubscription> subscribe(optional PushSubscriptionOptionsInit options = {});
