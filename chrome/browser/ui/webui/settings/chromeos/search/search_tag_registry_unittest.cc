@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/index.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/index_sync.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -69,17 +69,17 @@ class SearchTagRegistryTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     search_tag_registry_.AddObserver(&observer_);
-    index_ = local_search_service_.GetIndex(
+    index_ = local_search_service_.GetIndexSync(
         local_search_service::IndexId::kCrosSettings,
         local_search_service::Backend::kLinearMap, nullptr /* local_state */);
   }
 
   void TearDown() override { search_tag_registry_.RemoveObserver(&observer_); }
 
-  local_search_service::LocalSearchService local_search_service_;
+  local_search_service::LocalSearchServiceSync local_search_service_;
   SearchTagRegistry search_tag_registry_;
   FakeObserver observer_;
-  local_search_service::Index* index_;
+  local_search_service::IndexSync* index_;
 };
 
 TEST_F(SearchTagRegistryTest, AddAndRemove) {
@@ -91,11 +91,11 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
 
     // Nothing should have happened yet, since |updater| has not gone out of
     // scope.
-    EXPECT_EQ(0u, index_->GetSize());
+    EXPECT_EQ(0u, index_->GetSizeSync());
     EXPECT_EQ(0u, observer_.num_calls());
   }
   // Now that it went out of scope, the update should have occurred.
-  EXPECT_EQ(3u, index_->GetSize());
+  EXPECT_EQ(3u, index_->GetSizeSync());
   EXPECT_EQ(1u, observer_.num_calls());
 
   std::string first_tag_id =
@@ -115,11 +115,11 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
 
     // Tags should not have been removed yet, since |updater| has not gone out
     // of scope.
-    EXPECT_EQ(3u, index_->GetSize());
+    EXPECT_EQ(3u, index_->GetSizeSync());
     EXPECT_EQ(1u, observer_.num_calls());
   }
   // Now that it went out of scope, the update should have occurred.
-  EXPECT_EQ(0u, index_->GetSize());
+  EXPECT_EQ(0u, index_->GetSizeSync());
   EXPECT_EQ(2u, observer_.num_calls());
 
   // The tag should no longer be accessible via GetTagMetadata().

@@ -70,15 +70,15 @@ bool IsItemRelevant(const TokenizedString& query,
 }  // namespace
 
 LinearMapSearch::LinearMapSearch(IndexId index_id, PrefService* local_state)
-    : Index(index_id, Backend::kLinearMap, local_state) {}
+    : IndexSync(index_id, Backend::kLinearMap, local_state) {}
 
 LinearMapSearch::~LinearMapSearch() = default;
 
-uint64_t LinearMapSearch::GetSize() {
+uint64_t LinearMapSearch::GetSizeSync() {
   return data_.size();
 }
 
-void LinearMapSearch::AddOrUpdate(
+void LinearMapSearch::AddOrUpdateSync(
     const std::vector<local_search_service::Data>& data) {
   for (const auto& item : data) {
     const auto& id = item.id;
@@ -92,7 +92,7 @@ void LinearMapSearch::AddOrUpdate(
   MaybeLogIndexSize();
 }
 
-uint32_t LinearMapSearch::Delete(const std::vector<std::string>& ids) {
+uint32_t LinearMapSearch::DeleteSync(const std::vector<std::string>& ids) {
   uint32_t num_deleted = 0u;
   for (const auto& id : ids) {
     DCHECK(!id.empty());
@@ -109,13 +109,13 @@ uint32_t LinearMapSearch::Delete(const std::vector<std::string>& ids) {
   return num_deleted;
 }
 
-void LinearMapSearch::ClearIndex() {
+void LinearMapSearch::ClearIndexSync() {
   data_.clear();
 }
 
-ResponseStatus LinearMapSearch::Find(const base::string16& query,
-                                     uint32_t max_results,
-                                     std::vector<Result>* results) {
+ResponseStatus LinearMapSearch::FindSync(const base::string16& query,
+                                         uint32_t max_results,
+                                         std::vector<Result>* results) {
   const base::TimeTicks start = base::TimeTicks::Now();
   DCHECK(results);
   results->clear();

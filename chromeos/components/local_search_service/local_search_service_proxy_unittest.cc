@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/local_search_service/index_proxy.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "chromeos/components/local_search_service/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +29,7 @@ class LocalSearchServiceProxyTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  LocalSearchService service_;
+  LocalSearchServiceSync service_;
   std::unique_ptr<LocalSearchServiceProxy> service_proxy_;
 };
 

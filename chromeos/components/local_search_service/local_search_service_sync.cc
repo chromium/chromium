@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 
 #include <utility>
 
@@ -12,13 +12,13 @@
 namespace chromeos {
 namespace local_search_service {
 
-LocalSearchService::LocalSearchService() = default;
+LocalSearchServiceSync::LocalSearchServiceSync() = default;
 
-LocalSearchService::~LocalSearchService() = default;
+LocalSearchServiceSync::~LocalSearchServiceSync() = default;
 
-Index* LocalSearchService::GetIndex(IndexId index_id,
-                                    Backend backend,
-                                    PrefService* local_state) {
+IndexSync* LocalSearchServiceSync::GetIndexSync(IndexId index_id,
+                                                Backend backend,
+                                                PrefService* local_state) {
   auto it = indices_.find(index_id);
   if (it == indices_.end()) {
     switch (backend) {

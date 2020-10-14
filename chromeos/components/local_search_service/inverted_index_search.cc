@@ -62,7 +62,7 @@ ExtractedContent ExtractDocumentsContent(const std::vector<Data>& data) {
 
 InvertedIndexSearch::InvertedIndexSearch(IndexId index_id,
                                          PrefService* local_state)
-    : Index(index_id, Backend::kInvertedIndex, local_state),
+    : IndexSync(index_id, Backend::kInvertedIndex, local_state),
       inverted_index_(std::make_unique<InvertedIndex>()),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -72,12 +72,12 @@ InvertedIndexSearch::~InvertedIndexSearch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-uint64_t InvertedIndexSearch::GetSize() {
+uint64_t InvertedIndexSearch::GetSizeSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return inverted_index_->NumberDocuments();
 }
 
-void InvertedIndexSearch::AddOrUpdate(
+void InvertedIndexSearch::AddOrUpdateSync(
     const std::vector<local_search_service::Data>& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!data.empty());
@@ -89,7 +89,7 @@ void InvertedIndexSearch::AddOrUpdate(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-uint32_t InvertedIndexSearch::Delete(const std::vector<std::string>& ids) {
+uint32_t InvertedIndexSearch::DeleteSync(const std::vector<std::string>& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ids.empty());
 
@@ -113,13 +113,13 @@ uint32_t InvertedIndexSearch::Delete(const std::vector<std::string>& ids) {
   return ids.size();
 }
 
-void InvertedIndexSearch::ClearIndex() {
+void InvertedIndexSearch::ClearIndexSync() {
   inverted_index_->ClearInvertedIndex();
 }
 
-ResponseStatus InvertedIndexSearch::Find(const base::string16& query,
-                                         uint32_t max_results,
-                                         std::vector<Result>* results) {
+ResponseStatus InvertedIndexSearch::FindSync(const base::string16& query,
+                                             uint32_t max_results,
+                                             std::vector<Result>* results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::TimeTicks start = base::TimeTicks::Now();
   DCHECK(results);
@@ -129,7 +129,7 @@ ResponseStatus InvertedIndexSearch::Find(const base::string16& query,
     MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
     return status;
   }
-  if (GetSize() == 0u) {
+  if (GetSizeSync() == 0u) {
     const ResponseStatus status = ResponseStatus::kEmptyIndex;
     MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
     return status;

@@ -10,36 +10,36 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
-#include "chromeos/components/local_search_service/index.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/index_sync.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace local_search_service {
 
-class LocalSearchServiceTest : public testing::Test {
+class LocalSearchServiceSyncTest : public testing::Test {
  protected:
-  LocalSearchService service_;
+  LocalSearchServiceSync service_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::DEFAULT,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
 };
 
-TEST_F(LocalSearchServiceTest, GetLinearMapSearch) {
-  Index* const index = service_.GetIndex(
+TEST_F(LocalSearchServiceSyncTest, GetLinearMapSearch) {
+  IndexSync* const index = service_.GetIndexSync(
       IndexId::kCrosSettings, Backend::kLinearMap, nullptr /* local_state */);
   CHECK(index);
 
-  EXPECT_EQ(index->GetSize(), 0u);
+  EXPECT_EQ(index->GetSizeSync(), 0u);
 }
 
-TEST_F(LocalSearchServiceTest, GetInvertedIndexSearch) {
-  Index* const index =
-      service_.GetIndex(IndexId::kCrosSettings, Backend::kInvertedIndex,
-                        nullptr /* local_state */);
+TEST_F(LocalSearchServiceSyncTest, GetInvertedIndexSearch) {
+  IndexSync* const index =
+      service_.GetIndexSync(IndexId::kCrosSettings, Backend::kInvertedIndex,
+                            nullptr /* local_state */);
   CHECK(index);
 
-  EXPECT_EQ(index->GetSize(), 0u);
+  EXPECT_EQ(index->GetSizeSync(), 0u);
 }
 
 }  // namespace local_search_service

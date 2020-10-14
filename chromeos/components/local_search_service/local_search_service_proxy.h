@@ -17,7 +17,7 @@ class PrefService;
 namespace chromeos {
 namespace local_search_service {
 
-class LocalSearchService;
+class LocalSearchServiceSync;
 class IndexProxy;
 enum class IndexId;
 enum class Backend;
@@ -25,7 +25,8 @@ enum class Backend;
 class LocalSearchServiceProxy : public mojom::LocalSearchServiceProxy,
                                 public KeyedService {
  public:
-  explicit LocalSearchServiceProxy(LocalSearchService* local_search_service);
+  explicit LocalSearchServiceProxy(
+      LocalSearchServiceSync* local_search_service);
   ~LocalSearchServiceProxy() override;
 
   LocalSearchServiceProxy(const LocalSearchServiceProxy&) = delete;
@@ -53,7 +54,7 @@ class LocalSearchServiceProxy : public mojom::LocalSearchServiceProxy,
                 mojo::PendingReceiver<mojom::IndexProxy> index_receiver);
 
  private:
-  LocalSearchService* const service_;
+  LocalSearchServiceSync* const service_;
   mojo::ReceiverSet<mojom::LocalSearchServiceProxy> receivers_;
   std::map<IndexId, std::unique_ptr<IndexProxy>> indices_;
 };

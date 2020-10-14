@@ -4,8 +4,8 @@
 
 #include "chromeos/components/local_search_service/local_search_service_proxy_factory.h"
 
-#include "chromeos/components/local_search_service/local_search_service_factory.h"
 #include "chromeos/components/local_search_service/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/local_search_service_sync_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
@@ -29,7 +29,7 @@ LocalSearchServiceProxyFactory::LocalSearchServiceProxyFactory()
     : BrowserContextKeyedServiceFactory(
           "LocalSearchServiceProxy",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(LocalSearchServiceFactory::GetInstance());
+  DependsOn(LocalSearchServiceSyncFactory::GetInstance());
 }
 
 LocalSearchServiceProxyFactory::~LocalSearchServiceProxyFactory() = default;
@@ -44,7 +44,7 @@ KeyedService* LocalSearchServiceProxyFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(context);
   return new LocalSearchServiceProxy(
-      LocalSearchServiceFactory::GetForBrowserContext(context));
+      LocalSearchServiceSyncFactory::GetForBrowserContext(context));
 }
 
 }  // namespace local_search_service

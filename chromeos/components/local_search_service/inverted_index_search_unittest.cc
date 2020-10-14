@@ -48,9 +48,9 @@ TEST_F(InvertedIndexSearchTest, Add) {
       {"id2", {{"cid_3", "help article on wi-fi"}}}};
 
   const std::vector<Data> data = CreateTestData(data_to_register);
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 2u);
+  EXPECT_EQ(search_->GetSizeSync(), 2u);
 
   {
     // "network" does not exist in the index.
@@ -104,9 +104,9 @@ TEST_F(InvertedIndexSearchTest, Update) {
       {"id2", {{"cid_3", "help article on wi-fi"}}}};
 
   const std::vector<Data> data = CreateTestData(data_to_register);
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 2u);
+  EXPECT_EQ(search_->GetSizeSync(), 2u);
 
   const std::map<std::string, std::vector<ContentWithId>> data_to_update = {
       {"id1",
@@ -115,9 +115,9 @@ TEST_F(InvertedIndexSearchTest, Update) {
       {"id3", {{"cid_3", "Google Map"}}}};
 
   const std::vector<Data> updated_data = CreateTestData(data_to_update);
-  search_->AddOrUpdate(updated_data);
+  search_->AddOrUpdateSync(updated_data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 3u);
+  EXPECT_EQ(search_->GetSizeSync(), 3u);
 
   {
     const TermOccurrence doc_with_freq =
@@ -146,7 +146,7 @@ TEST_F(InvertedIndexSearchTest, Update) {
   }
 }
 
-TEST_F(InvertedIndexSearchTest, Delete) {
+TEST_F(InvertedIndexSearchTest, DeleteSync) {
   const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
       {"id1",
        {{"cid_1", "This is a help wi-fi article"},
@@ -154,11 +154,11 @@ TEST_F(InvertedIndexSearchTest, Delete) {
       {"id2", {{"cid_3", "help article on wi-fi"}}}};
 
   const std::vector<Data> data = CreateTestData(data_to_register);
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 2u);
+  EXPECT_EQ(search_->GetSizeSync(), 2u);
 
-  EXPECT_EQ(search_->Delete({"id1", "id3"}), 2u);
+  EXPECT_EQ(search_->DeleteSync({"id1", "id3"}), 2u);
   Wait();
 
   {
@@ -170,7 +170,7 @@ TEST_F(InvertedIndexSearchTest, Delete) {
   }
 }
 
-TEST_F(InvertedIndexSearchTest, ClearIndex) {
+TEST_F(InvertedIndexSearchTest, ClearIndexSync) {
   const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
       {"id1",
        {{"cid_1", "This is a help wi-fi article"},
@@ -179,13 +179,13 @@ TEST_F(InvertedIndexSearchTest, ClearIndex) {
 
   const std::vector<Data> data = CreateTestData(data_to_register);
 
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 2u);
+  EXPECT_EQ(search_->GetSizeSync(), 2u);
 
-  search_->ClearIndex();
+  search_->ClearIndexSync();
   Wait();
-  EXPECT_EQ(search_->GetSize(), 0u);
+  EXPECT_EQ(search_->GetSizeSync(), 0u);
 }
 
 TEST_F(InvertedIndexSearchTest, Find) {
@@ -198,44 +198,45 @@ TEST_F(InvertedIndexSearchTest, Find) {
 
   // Nothing has been added to the index.
   std::vector<Result> results;
-  EXPECT_EQ(
-      search_->Find(base::UTF8ToUTF16("network"), /*max_results=*/10, &results),
-      ResponseStatus::kEmptyIndex);
+  EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("network"), /*max_results=*/10,
+                              &results),
+            ResponseStatus::kEmptyIndex);
   EXPECT_TRUE(results.empty());
 
   // Data is added and then deleted from index, making the index empty.
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 2u);
-  EXPECT_EQ(search_->Delete({"id1", "id2"}), 2u);
+  EXPECT_EQ(search_->GetSizeSync(), 2u);
+  EXPECT_EQ(search_->DeleteSync({"id1", "id2"}), 2u);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 0u);
+  EXPECT_EQ(search_->GetSizeSync(), 0u);
 
-  EXPECT_EQ(
-      search_->Find(base::UTF8ToUTF16("network"), /*max_results=*/10, &results),
-      ResponseStatus::kEmptyIndex);
+  EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("network"), /*max_results=*/10,
+                              &results),
+            ResponseStatus::kEmptyIndex);
   EXPECT_TRUE(results.empty());
 
   // Index is populated again, but query is empty.
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
   Wait();
-  EXPECT_EQ(search_->GetSize(), 2u);
+  EXPECT_EQ(search_->GetSizeSync(), 2u);
 
-  EXPECT_EQ(search_->Find(base::UTF8ToUTF16(""), /*max_results=*/10, &results),
-            ResponseStatus::kEmptyQuery);
+  EXPECT_EQ(
+      search_->FindSync(base::UTF8ToUTF16(""), /*max_results=*/10, &results),
+      ResponseStatus::kEmptyQuery);
   EXPECT_TRUE(results.empty());
 
   // No document is found for a given query.
-  EXPECT_EQ(search_->Find(base::UTF8ToUTF16("networkstuff"), /*max_results=*/10,
-                          &results),
+  EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("networkstuff"),
+                              /*max_results=*/10, &results),
             ResponseStatus::kSuccess);
   EXPECT_TRUE(results.empty());
 
   {
     // A document is found.
     // Query's case is normalized.
-    EXPECT_EQ(search_->Find(base::UTF8ToUTF16("ANOTHER networkstuff"),
-                            /*max_results=*/10, &results),
+    EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("ANOTHER networkstuff"),
+                                /*max_results=*/10, &results),
               ResponseStatus::kSuccess);
     EXPECT_EQ(results.size(), 1u);
 
@@ -251,8 +252,8 @@ TEST_F(InvertedIndexSearchTest, Find) {
 
   {
     // Two documents are found.
-    EXPECT_EQ(search_->Find(base::UTF8ToUTF16("another help"),
-                            /*max_results=*/10, &results),
+    EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("another help"),
+                                /*max_results=*/10, &results),
               ResponseStatus::kSuccess);
     EXPECT_EQ(results.size(), 2u);
 
@@ -282,8 +283,8 @@ TEST_F(InvertedIndexSearchTest, Find) {
 
   {
     // Same as above,  but max number of results is set to 1.
-    EXPECT_EQ(search_->Find(base::UTF8ToUTF16("another help"),
-                            /*max_results=*/1, &results),
+    EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("another help"),
+                                /*max_results=*/1, &results),
               ResponseStatus::kSuccess);
     EXPECT_EQ(results.size(), 1u);
     EXPECT_EQ(results[0].id, "id1");
@@ -291,14 +292,14 @@ TEST_F(InvertedIndexSearchTest, Find) {
 
   {
     // Same as above, but set max_results to 0, meaning no max.
-    EXPECT_EQ(search_->Find(base::UTF8ToUTF16("another help"),
-                            /*max_results=*/0, &results),
+    EXPECT_EQ(search_->FindSync(base::UTF8ToUTF16("another help"),
+                                /*max_results=*/0, &results),
               ResponseStatus::kSuccess);
     EXPECT_EQ(results.size(), 2u);
   }
 }
 
-TEST_F(InvertedIndexSearchTest, SequenceOfDeletes) {
+TEST_F(InvertedIndexSearchTest, SequenceOfDeleteSyncs) {
   const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
       {"id1",
        {{"cid_1", "This is a help wi-fi article"},
@@ -306,7 +307,7 @@ TEST_F(InvertedIndexSearchTest, SequenceOfDeletes) {
       {"id2", {{"cid_3", "help article on wi-fi"}}}};
 
   const std::vector<Data> data = CreateTestData(data_to_register);
-  search_->AddOrUpdate(data);
+  search_->AddOrUpdateSync(data);
 
   const std::map<std::string, std::vector<ContentWithId>> data_to_update = {
       {"id1",
@@ -315,14 +316,14 @@ TEST_F(InvertedIndexSearchTest, SequenceOfDeletes) {
       {"id3", {{"cid_3", "Google Map"}}}};
 
   const std::vector<Data> updated_data = CreateTestData(data_to_update);
-  search_->AddOrUpdate(updated_data);
+  search_->AddOrUpdateSync(updated_data);
 
-  EXPECT_EQ(search_->Delete({"id1"}), 1u);
-  EXPECT_EQ(search_->Delete({"id2", "id3"}), 2u);
+  EXPECT_EQ(search_->DeleteSync({"id1"}), 1u);
+  EXPECT_EQ(search_->DeleteSync({"id2", "id3"}), 2u);
 
   // Force all operations to complete.
   Wait();
-  EXPECT_EQ(search_->GetSize(), 0u);
+  EXPECT_EQ(search_->GetSizeSync(), 0u);
 }
 
 }  // namespace local_search_service

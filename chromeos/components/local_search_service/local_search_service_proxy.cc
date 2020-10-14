@@ -5,7 +5,7 @@
 #include "chromeos/components/local_search_service/local_search_service_proxy.h"
 
 #include "chromeos/components/local_search_service/index_proxy.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "components/prefs/pref_service.h"
 
@@ -13,7 +13,7 @@ namespace chromeos {
 namespace local_search_service {
 
 LocalSearchServiceProxy::LocalSearchServiceProxy(
-    local_search_service::LocalSearchService* local_search_service)
+    local_search_service::LocalSearchServiceSync* local_search_service)
     : service_(local_search_service) {
   DCHECK(service_);
 }
@@ -34,7 +34,7 @@ void LocalSearchServiceProxy::GetIndex(
     mojo::PendingReceiver<mojom::IndexProxy> index_receiver) {
   auto it = indices_.find(index_id);
   if (it == indices_.end()) {
-    Index* index = service_->GetIndex(index_id, backend, local_state);
+    IndexSync* index = service_->GetIndexSync(index_id, backend, local_state);
     it = indices_.emplace(index_id, std::make_unique<IndexProxy>(index)).first;
   }
   it->second->BindReceiver(std::move(index_receiver));

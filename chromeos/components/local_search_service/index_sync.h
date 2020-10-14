@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_H_
-#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_H_
+#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_SYNC_H_
+#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_SYNC_H_
 
 #include <map>
 #include <memory>
@@ -23,39 +23,39 @@ class PrefService;
 namespace chromeos {
 namespace local_search_service {
 
-// A local search service Index.
+// A local search service IndexSync.
 // It is the client-facing API for search and indexing. It can be implemented
 // with different backends that provide actual data storage/indexing/search
 // functions.
-class Index {
+class IndexSync {
  public:
-  Index(IndexId index_id, Backend backend, PrefService* local_state);
-  virtual ~Index();
+  IndexSync(IndexId index_id, Backend backend, PrefService* local_state);
+  virtual ~IndexSync();
 
-  Index(const Index&) = delete;
-  Index& operator=(const Index&) = delete;
+  IndexSync(const IndexSync&) = delete;
+  IndexSync& operator=(const IndexSync&) = delete;
 
   // Returns number of data items.
-  virtual uint64_t GetSize() = 0;
+  virtual uint64_t GetSizeSync() = 0;
 
   // Adds or updates data.
   // IDs of data should not be empty.
-  virtual void AddOrUpdate(const std::vector<Data>& data) = 0;
+  virtual void AddOrUpdateSync(const std::vector<Data>& data) = 0;
 
   // Deletes data with |ids| and returns number of items deleted.
   // If an id doesn't exist in the Index, no operation will be done.
   // IDs should not be empty.
-  virtual uint32_t Delete(const std::vector<std::string>& ids) = 0;
+  virtual uint32_t DeleteSync(const std::vector<std::string>& ids) = 0;
 
   // Clears all data in the index.
-  virtual void ClearIndex() = 0;
+  virtual void ClearIndexSync() = 0;
 
   // Returns matching results for a given query.
   // Zero |max_results| means no max.
   // Search behaviour depends on the implementation.
-  virtual ResponseStatus Find(const base::string16& query,
-                              uint32_t max_results,
-                              std::vector<Result>* results) = 0;
+  virtual ResponseStatus FindSync(const base::string16& query,
+                                  uint32_t max_results,
+                                  std::vector<Result>* results) = 0;
 
   // Logs daily search metrics if |reporter_| is non-null. Also logs other
   // UMA metrics (number results and search latency).
@@ -79,10 +79,10 @@ class Index {
  private:
   std::string histogram_prefix_;
   std::unique_ptr<SearchMetricsReporter> reporter_;
-  base::WeakPtrFactory<Index> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IndexSync> weak_ptr_factory_{this};
 };
 
 }  // namespace local_search_service
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_H_
+#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_SYNC_H_

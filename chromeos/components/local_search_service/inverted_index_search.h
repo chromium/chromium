@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
-#include "chromeos/components/local_search_service/index.h"
+#include "chromeos/components/local_search_service/index_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
 namespace chromeos {
@@ -24,7 +24,7 @@ class InvertedIndex;
 
 // An implementation of Index.
 // A search via the inverted index backend with TF-IDF based document ranking.
-class InvertedIndexSearch : public Index {
+class InvertedIndexSearch : public IndexSync {
  public:
   InvertedIndexSearch(IndexId index_id, PrefService* local_state);
   ~InvertedIndexSearch() override;
@@ -33,24 +33,24 @@ class InvertedIndexSearch : public Index {
   InvertedIndexSearch& operator=(const InvertedIndexSearch&) = delete;
 
   // Index overrides:
-  uint64_t GetSize() override;
+  uint64_t GetSizeSync() override;
   // TODO(jiameng): we always build the index after documents are updated. May
   // revise this strategy if there is a different use case.
-  void AddOrUpdate(const std::vector<Data>& data) override;
+  void AddOrUpdateSync(const std::vector<Data>& data) override;
   // TODO(jiameng): we always build the index after documents are deleted. May
   // revise this strategy if there is a different use case.
   // TODO(jiameng): for inverted index, the Delete function returns |ids| size,
   // and not actual number of documents deleted. This would change in the next
   // cl when these operations become async.
-  uint32_t Delete(const std::vector<std::string>& ids) override;
-  void ClearIndex() override;
+  uint32_t DeleteSync(const std::vector<std::string>& ids) override;
+  void ClearIndexSync() override;
   // Returns matching results for a given query by approximately matching the
   // query with terms in the documents. Documents are ranked by TF-IDF scores.
   // Scores in results are positive but not guaranteed to be in any particular
   // range.
-  ResponseStatus Find(const base::string16& query,
-                      uint32_t max_results,
-                      std::vector<Result>* results) override;
+  ResponseStatus FindSync(const base::string16& query,
+                          uint32_t max_results,
+                          std::vector<Result>* results) override;
 
   // Returns document id and number of occurrences of |term|.
   // Document ids are sorted in alphabetical order.

@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "chromeos/components/local_search_service/index.h"
+#include "chromeos/components/local_search_service/index_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
 class PrefService;
@@ -29,7 +29,7 @@ namespace local_search_service {
 // A search backend that linearly scans all documents in the storage and finds
 // documents that match the input query. Search is done by matching query with
 // documents' search tags.
-class LinearMapSearch : public Index {
+class LinearMapSearch : public IndexSync {
  public:
   LinearMapSearch(IndexId index_id, PrefService* local_state);
   ~LinearMapSearch() override;
@@ -38,16 +38,16 @@ class LinearMapSearch : public Index {
   LinearMapSearch& operator=(const LinearMapSearch&) = delete;
 
   // Index overrides:
-  uint64_t GetSize() override;
-  void AddOrUpdate(const std::vector<Data>& data) override;
-  uint32_t Delete(const std::vector<std::string>& ids) override;
-  void ClearIndex() override;
+  uint64_t GetSizeSync() override;
+  void AddOrUpdateSync(const std::vector<Data>& data) override;
+  uint32_t DeleteSync(const std::vector<std::string>& ids) override;
+  void ClearIndexSync() override;
   // For each data in the index, we return the 1st search tag that matches
   // the query (i.e. above the threshold). Client should put the most
   // important search tag first when registering the data in the index.
-  ResponseStatus Find(const base::string16& query,
-                      uint32_t max_results,
-                      std::vector<Result>* results) override;
+  ResponseStatus FindSync(const base::string16& query,
+                          uint32_t max_results,
+                          std::vector<Result>* results) override;
 
  private:
   // Returns all search results for a given query.

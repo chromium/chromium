@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom-test-utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,7 +129,7 @@ class SearchHandlerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  local_search_service::LocalSearchService local_search_service_;
+  local_search_service::LocalSearchServiceSync local_search_service_;
   SearchTagRegistry search_tag_registry_;
   FakeOsSettingsSections fake_sections_;
   FakeHierarchy fake_hierarchy_;

@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -53,7 +53,7 @@ SearchTagRegistry::ScopedTagUpdater::~ScopedTagUpdater() {
     bool is_pending_add = map_entry.second.second;
 
     // If tag metadata is present for this tag, it has already been added and is
-    // present in LocalSearchService.
+    // present in LocalSearchServiceSync.
     bool is_concept_already_added =
         registry_->GetTagMetadata(result_id) != nullptr;
 
@@ -99,8 +99,8 @@ void SearchTagRegistry::ScopedTagUpdater::ProcessPendingSearchTags(
 }
 
 SearchTagRegistry::SearchTagRegistry(
-    local_search_service::LocalSearchService* local_search_service)
-    : index_(local_search_service->GetIndex(
+    local_search_service::LocalSearchServiceSync* local_search_service)
+    : index_(local_search_service->GetIndexSync(
           local_search_service::IndexId::kCrosSettings,
           local_search_service::Backend::kLinearMap,
           g_browser_process ? g_browser_process->local_state() : nullptr)) {}
@@ -121,7 +121,7 @@ SearchTagRegistry::ScopedTagUpdater SearchTagRegistry::StartUpdate() {
 
 void SearchTagRegistry::AddSearchTags(
     const std::vector<const SearchConcept*>& search_tags) {
-  index_->AddOrUpdate(ConceptVectorToDataVector(search_tags));
+  index_->AddOrUpdateSync(ConceptVectorToDataVector(search_tags));
 
   // Add each concept to the map. Note that it is safe to take the address of
   // each concept because all concepts are allocated via static
@@ -141,7 +141,7 @@ void SearchTagRegistry::RemoveSearchTags(
     data_ids.push_back(std::move(result_id));
   }
 
-  index_->Delete(data_ids);
+  index_->DeleteSync(data_ids);
 
   NotifyRegistryUpdated();
 }

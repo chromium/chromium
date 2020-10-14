@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/local_search_service/index.h"
+#include "chromeos/components/local_search_service/index_sync.h"
 
 #include <utility>
 
@@ -20,7 +20,7 @@ void LogIndexIdAndBackendType(const std::string& histogram_prefix,
 }
 
 std::string IndexIdBasedHistogramPrefix(IndexId index_id) {
-  const std::string prefix = "LocalSearchService.";
+  const std::string prefix = "LocalSearchServiceSync.";
   switch (index_id) {
     case IndexId::kCrosSettings:
       return prefix + "CrosSettings";
@@ -30,7 +30,9 @@ std::string IndexIdBasedHistogramPrefix(IndexId index_id) {
 }
 
 }  // namespace
-Index::Index(IndexId index_id, Backend backend, PrefService* local_state) {
+IndexSync::IndexSync(IndexId index_id,
+                     Backend backend,
+                     PrefService* local_state) {
   histogram_prefix_ = IndexIdBasedHistogramPrefix(index_id);
   DCHECK(!histogram_prefix_.empty());
   LogIndexIdAndBackendType(histogram_prefix_, backend);
@@ -45,11 +47,11 @@ Index::Index(IndexId index_id, Backend backend, PrefService* local_state) {
   reporter_->SetIndexId(index_id);
 }
 
-Index::~Index() = default;
+IndexSync::~IndexSync() = default;
 
-void Index::MaybeLogSearchResultsStats(ResponseStatus status,
-                                       size_t num_results,
-                                       base::TimeDelta latency) {
+void IndexSync::MaybeLogSearchResultsStats(ResponseStatus status,
+                                           size_t num_results,
+                                           base::TimeDelta latency) {
   if (reporter_)
     reporter_->OnSearchPerformed();
 
@@ -62,19 +64,19 @@ void Index::MaybeLogSearchResultsStats(ResponseStatus status,
   }
 }
 
-void Index::MaybeLogIndexSize() {
-  const uint64_t index_size = GetSize();
+void IndexSync::MaybeLogIndexSize() {
+  const uint64_t index_size = GetSizeSync();
   if (index_size != 0u) {
     base::UmaHistogramCounts10000(histogram_prefix_ + ".NumberDocuments",
                                   index_size);
   }
 }
 
-void Index::SetSearchParams(const SearchParams& search_params) {
+void IndexSync::SetSearchParams(const SearchParams& search_params) {
   search_params_ = search_params;
 }
 
-SearchParams Index::GetSearchParamsForTesting() {
+SearchParams IndexSync::GetSearchParamsForTesting() {
   return search_params_;
 }
 

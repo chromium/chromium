@@ -5,12 +5,12 @@
 #include "chromeos/components/local_search_service/index_proxy.h"
 
 #include "base/optional.h"
-#include "chromeos/components/local_search_service/index.h"
+#include "chromeos/components/local_search_service/index_sync.h"
 
 namespace chromeos {
 namespace local_search_service {
 
-IndexProxy::IndexProxy(Index* index) : index_(index) {
+IndexProxy::IndexProxy(IndexSync* index) : index_(index) {
   DCHECK(index_);
 }
 
@@ -22,19 +22,19 @@ void IndexProxy::BindReceiver(
 }
 
 void IndexProxy::GetSize(GetSizeCallback callback) {
-  const uint64_t num_items = index_->GetSize();
+  const uint64_t num_items = index_->GetSizeSync();
   std::move(callback).Run(num_items);
 }
 
 void IndexProxy::AddOrUpdate(const std::vector<Data>& data,
                              AddOrUpdateCallback callback) {
-  index_->AddOrUpdate(data);
+  index_->AddOrUpdateSync(data);
   std::move(callback).Run();
 }
 
 void IndexProxy::Delete(const std::vector<std::string>& ids,
                         DeleteCallback callback) {
-  const uint64_t num_deleted = index_->Delete(ids);
+  const uint64_t num_deleted = index_->DeleteSync(ids);
   std::move(callback).Run(num_deleted);
 }
 
@@ -42,7 +42,7 @@ void IndexProxy::Find(const base::string16& query,
                       uint32_t max_results,
                       FindCallback callback) {
   std::vector<Result> results;
-  ResponseStatus status = index_->Find(query, max_results, &results);
+  ResponseStatus status = index_->FindSync(query, max_results, &results);
   if (status != ResponseStatus::kSuccess) {
     std::move(callback).Run(status, base::nullopt);
   } else {
@@ -51,7 +51,7 @@ void IndexProxy::Find(const base::string16& query,
 }
 
 void IndexProxy::ClearIndex(ClearIndexCallback callback) {
-  index_->ClearIndex();
+  index_->ClearIndexSync();
   std::move(callback).Run();
 }
 

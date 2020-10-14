@@ -15,11 +15,11 @@
 namespace chromeos {
 namespace local_search_service {
 
-class Index;
+class IndexSync;
 
 class IndexProxy : public mojom::IndexProxy {
  public:
-  explicit IndexProxy(Index* index);
+  explicit IndexProxy(IndexSync* index);
   ~IndexProxy() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::IndexProxy> receiver);
@@ -36,7 +36,7 @@ class IndexProxy : public mojom::IndexProxy {
   void ClearIndex(ClearIndexCallback callback) override;
 
  private:
-  Index* const index_;
+  IndexSync* const index_;
   mojo::ReceiverSet<mojom::IndexProxy> receivers_;
 };
 

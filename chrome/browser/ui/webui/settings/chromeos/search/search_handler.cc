@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_result_icon.mojom.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/local_search_service.h"
+#include "chromeos/components/local_search_service/local_search_service_sync.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -44,11 +44,11 @@ SearchHandler::SearchHandler(
     SearchTagRegistry* search_tag_registry,
     OsSettingsSections* sections,
     Hierarchy* hierarchy,
-    local_search_service::LocalSearchService* local_search_service)
+    local_search_service::LocalSearchServiceSync* local_search_service)
     : search_tag_registry_(search_tag_registry),
       sections_(sections),
       hierarchy_(hierarchy),
-      index_(local_search_service->GetIndex(
+      index_(local_search_service->GetIndexSync(
           local_search_service::IndexId::kCrosSettings,
           local_search_service::Backend::kLinearMap,
           g_browser_process ? g_browser_process->local_state() : nullptr)) {
@@ -76,11 +76,11 @@ std::vector<mojom::SearchResultPtr> SearchHandler::Search(
   uint32_t max_local_search_service_results = 5 * max_num_results;
 
   std::vector<local_search_service::Result> local_search_service_results;
-  local_search_service::ResponseStatus response_status = index_->Find(
+  local_search_service::ResponseStatus response_status = index_->FindSync(
       query, max_local_search_service_results, &local_search_service_results);
 
   if (response_status != local_search_service::ResponseStatus::kSuccess) {
-    LOG(ERROR) << "Cannot search; LocalSearchService returned "
+    LOG(ERROR) << "Cannot search; LocalSearchServiceSync returned "
                << static_cast<int>(response_status)
                << ". Returning empty results array.";
     return {};

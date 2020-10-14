@@ -40,7 +40,8 @@ void FindAndCheckResults(LinearMapSearch* index,
   DCHECK(index);
 
   std::vector<Result> results;
-  auto status = index->Find(base::UTF8ToUTF16(query), max_results, &results);
+  auto status =
+      index->FindSync(base::UTF8ToUTF16(query), max_results, &results);
 
   EXPECT_EQ(status, expected_status);
 
@@ -107,8 +108,8 @@ TEST_F(LinearMapSearchTest, RelevanceThreshold) {
   const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
       {"id1", {{"tag1", "Wi-Fi"}}}, {"id2", {{"tag2", "famous"}}}};
   std::vector<Data> data = CreateTestData(data_to_register);
-  index_->AddOrUpdate(data);
-  EXPECT_EQ(index_->GetSize(), 2u);
+  index_->AddOrUpdateSync(data);
+  EXPECT_EQ(index_->GetSizeSync(), 2u);
   {
     SearchParams search_params;
     search_params.relevance_threshold = 0.0;
@@ -145,8 +146,8 @@ TEST_F(LinearMapSearchTest, MaxResults) {
       {"id1", {{"tag1", "abcde"}, {"tag2", "Wi-Fi"}}},
       {"id2", {{"tag3", "wifi"}}}};
   std::vector<Data> data = CreateTestData(data_to_register);
-  index_->AddOrUpdate(data);
-  EXPECT_EQ(index_->GetSize(), 2u);
+  index_->AddOrUpdateSync(data);
+  EXPECT_EQ(index_->GetSizeSync(), 2u);
   SearchParams search_params;
   search_params.relevance_threshold = 0.3;
   index_->SetSearchParams(search_params);
@@ -173,8 +174,8 @@ TEST_F(LinearMapSearchTest, ResultFound) {
   std::vector<Data> data = CreateTestData(data_to_register);
   EXPECT_EQ(data.size(), 2u);
 
-  index_->AddOrUpdate(data);
-  EXPECT_EQ(index_->GetSize(), 2u);
+  index_->AddOrUpdateSync(data);
+  EXPECT_EQ(index_->GetSizeSync(), 2u);
 
   // Find result with query "id1". It returns an exact match.
   const std::vector<ResultWithIds> expected_results = {{"id1", {"cid1"}}};
@@ -192,11 +193,11 @@ TEST_F(LinearMapSearchTest, ClearIndex) {
   std::vector<Data> data = CreateTestData(data_to_register);
   EXPECT_EQ(data.size(), 2u);
 
-  index_->AddOrUpdate(data);
-  EXPECT_EQ(index_->GetSize(), 2u);
+  index_->AddOrUpdateSync(data);
+  EXPECT_EQ(index_->GetSizeSync(), 2u);
 
-  index_->ClearIndex();
-  EXPECT_EQ(index_->GetSize(), 0u);
+  index_->ClearIndexSync();
+  EXPECT_EQ(index_->GetSizeSync(), 0u);
 }
 
 }  // namespace local_search_service
