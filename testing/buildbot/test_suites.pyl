@@ -3166,7 +3166,7 @@
         ],
         'linux_args': [
           '--no-xvfb',
-          '--additional-driver-flag=--use-vulkan=native',
+          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
         ],
         'merge': {
           'args': [
@@ -3206,7 +3206,7 @@
         ],
         'linux_args': [
           '--no-xvfb',
-          '--additional-driver-flag=--use-vulkan=native',
+          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
         ],
         'merge': {
           'args': [
