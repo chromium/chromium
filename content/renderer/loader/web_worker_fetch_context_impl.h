@@ -175,10 +175,6 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
       int request_id,
       mojo::PendingReceiver<blink::mojom::WorkerTimingContainer> receiver);
 
-  blink::CrossVariantMojoRemote<
-      blink::mojom::ResourceLoadInfoNotifierInterfaceBase>
-  CloneResourceLoadInfoNotifier() override;
-
   std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;
 

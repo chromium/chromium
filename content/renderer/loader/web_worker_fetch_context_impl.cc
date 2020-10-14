@@ -694,29 +694,6 @@ void WebWorkerFetchContextImpl::AddPendingWorkerTimingReceiver(
   worker_timing_container_receivers_[request_id] = std::move(receiver);
 }
 
-blink::CrossVariantMojoRemote<
-    blink::mojom::ResourceLoadInfoNotifierInterfaceBase>
-WebWorkerFetchContextImpl::CloneResourceLoadInfoNotifier() {
-  if (!pending_resource_load_info_notifier_ && !resource_load_info_notifier_) {
-    return blink::CrossVariantMojoRemote<
-        blink::mojom::ResourceLoadInfoNotifierInterfaceBase>(
-        mojo::NullRemote());
-  }
-
-  if (pending_resource_load_info_notifier_) {
-    resource_load_info_notifier_.Bind(
-        std::move(pending_resource_load_info_notifier_));
-    resource_load_info_notifier_.set_disconnect_handler(base::BindOnce(
-        &WebWorkerFetchContextImpl::ResetWeakWrapperResourceLoadInfoNotifier,
-        base::Unretained(this)));
-  }
-
-  mojo::PendingRemote<blink::mojom::ResourceLoadInfoNotifier> pending_remote;
-  resource_load_info_notifier_->Clone(
-      pending_remote.InitWithNewPipeAndPassReceiver());
-  return std::move(pending_remote);
-}
-
 std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
 WebWorkerFetchContextImpl::CreateResourceLoadInfoNotifierWrapper() {
   // If |resource_load_info_notifier_| is unbound, we will create

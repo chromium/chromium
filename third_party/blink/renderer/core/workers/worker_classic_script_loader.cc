@@ -140,8 +140,6 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     const KURL& url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
-    CrossVariantMojoRemote<mojom::ResourceLoadInfoNotifierInterfaceBase>
-        resource_load_info_notifier,
     mojom::RequestContextType request_context,
     network::mojom::RequestDestination destination,
     network::mojom::RequestMode request_mode,
@@ -182,8 +180,7 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
     worker_main_script_loader_->Start(
         fetch_params, std::move(worker_main_script_load_params),
         &fetch_client_settings_object_fetcher_->Context(),
-        fetch_client_settings_object_fetcher->GetResourceLoadObserver(),
-        std::move(resource_load_info_notifier), this);
+        fetch_client_settings_object_fetcher->GetResourceLoadObserver(), this);
     return;
   }
 

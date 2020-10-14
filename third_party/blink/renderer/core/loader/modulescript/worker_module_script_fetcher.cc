@@ -57,8 +57,7 @@ void WorkerModuleScriptFetcher::Fetch(
     worker_main_script_loader_->Start(
         fetch_params, std::move(worker_main_script_load_params),
         &fetch_client_settings_object_fetcher->Context(),
-        fetch_client_settings_object_fetcher->GetResourceLoadObserver(),
-        global_scope_->CloneResourceLoadInfoNotifier(), this);
+        fetch_client_settings_object_fetcher->GetResourceLoadObserver(), this);
     return;
   }
 

@@ -6,10 +6,10 @@
 
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
-#include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
+#include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -26,31 +26,29 @@
 
 namespace blink {
 
+WorkerMainScriptLoader::WorkerMainScriptLoader() = default;
+
+WorkerMainScriptLoader::~WorkerMainScriptLoader() = default;
+
 void WorkerMainScriptLoader::Start(
     FetchParameters& fetch_params,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
     FetchContext* fetch_context,
-    ResourceLoadObserver* resource_loade_observer,
-    CrossVariantMojoRemote<mojom::ResourceLoadInfoNotifierInterfaceBase>
-        resource_load_info_notifier,
+    ResourceLoadObserver* resource_load_observer,
     WorkerMainScriptLoaderClient* client) {
-  DCHECK(resource_loade_observer);
+  DCHECK(resource_load_observer);
   DCHECK(client);
   initial_request_.CopyFrom(fetch_params.GetResourceRequest());
   resource_loader_options_ = fetch_params.Options();
   initial_request_url_ = fetch_params.GetResourceRequest().Url();
   last_request_url_ = initial_request_url_;
-  resource_load_observer_ = resource_loade_observer;
+  resource_load_observer_ = resource_load_observer;
   fetch_context_ = fetch_context;
   client_ = client;
-  resource_load_info_ = blink::mojom::ResourceLoadInfo::New();
 
-  // |resource_load_info_notifier| is valid when PlzDedicatedWorker.
-  if (resource_load_info_notifier) {
-    DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
-    resource_loader_info_notifier_.Bind(std::move(resource_load_info_notifier));
-  }
+  resource_load_info_notifier_wrapper_ =
+      fetch_context->CreateResourceLoadInfoNotifierWrapper();
 
   // TODO(crbug.com/929370): Support CSP check to post violation reports for
   // worker top-level scripts, if off-the-main-thread fetch is enabled.
@@ -59,6 +57,12 @@ void WorkerMainScriptLoader::Start(
       initial_request_.InspectorId(), initial_request_,
       /*redirect_response=*/ResourceResponse(), ResourceType::kScript,
       resource_loader_options_.initiator_info);
+
+  resource_load_info_notifier_wrapper_->NotifyResourceLoadInitiated(
+      /*request_id=*/-1, initial_request_url_,
+      initial_request_.HttpMethod().Latin1(),
+      WebStringToGURL(WebString(initial_request_.ReferrerString())),
+      initial_request_.GetRequestDestination(), net::HIGHEST);
 
   if (!worker_main_script_load_params->redirect_responses.empty()) {
     HandleRedirections(worker_main_script_load_params->redirect_infos,
@@ -71,7 +75,8 @@ void WorkerMainScriptLoader::Start(
       WebURL(last_request_url_), *response_head, &response,
       response_head->ssl_info.has_value(), /*request_id=*/-1);
   resource_response_ = response.ToResourceResponse();
-  NotifyResponseReceived(std::move(response_head));
+  resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
+      std::move(response_head), PreviewsTypes::kPreviewsUnspecified);
 
   resource_load_observer_->DidReceiveResponse(
       initial_request_.InspectorId(), initial_request_, resource_response_,
@@ -258,7 +263,7 @@ void WorkerMainScriptLoader::NotifyCompletionIfAppropriate() {
 
   data_pipe_.reset();
   watcher_->Cancel();
-  NotifyCompleteReceived(status_);
+  resource_load_info_notifier_wrapper_->NotifyResourceLoadCompleted(status_);
 
   if (!client_)
     return;
@@ -319,72 +324,8 @@ void WorkerMainScriptLoader::HandleRedirections(
     resource_load_observer_->WillSendRequest(
         new_request->InspectorId(), *new_request, response.ToResourceResponse(),
         ResourceType::kScript, resource_loader_options_.initiator_info);
-
-    NotifyRedirectionReceived(std::move(redirect_response), redirect_info);
-  }
-}
-
-void WorkerMainScriptLoader::NotifyResponseReceived(
-    network::mojom::URLResponseHeadPtr response_head) {
-  if (resource_loader_info_notifier_) {
-    resource_load_info_->mime_type = response_head->mime_type;
-    resource_load_info_->load_timing_info = response_head->load_timing;
-    resource_load_info_->network_info = blink::mojom::CommonNetworkInfo::New();
-    resource_load_info_->network_info->network_accessed =
-        response_head->network_accessed;
-    resource_load_info_->network_info->always_access_network =
-        network_utils::AlwaysAccessNetwork(response_head->headers);
-    resource_load_info_->network_info->remote_endpoint =
-        response_head->remote_endpoint;
-    resource_loader_info_notifier_->NotifyResourceResponseReceived(
-        /*request_id=*/-1, resource_load_info_->final_url,
-        std::move(response_head), resource_load_info_->request_destination,
-        PreviewsTypes::kPreviewsUnspecified);
-  }
-}
-
-void WorkerMainScriptLoader::NotifyRedirectionReceived(
-    network::mojom::URLResponseHeadPtr redirect_response,
-    const net::RedirectInfo& redirect_info) {
-  if (resource_loader_info_notifier_) {
-    resource_load_info_->final_url = redirect_info.new_url;
-    resource_load_info_->method = redirect_info.new_method;
-    resource_load_info_->referrer = GURL(redirect_info.new_referrer);
-    blink::mojom::RedirectInfoPtr net_redirect_info =
-        blink::mojom::RedirectInfo::New();
-    net_redirect_info->origin_of_new_url =
-        url::Origin::Create(redirect_info.new_url);
-    net_redirect_info->network_info = blink::mojom::CommonNetworkInfo::New();
-    net_redirect_info->network_info->network_accessed =
-        redirect_response->network_accessed;
-    net_redirect_info->network_info->always_access_network =
-        network_utils::AlwaysAccessNetwork(redirect_response->headers);
-    net_redirect_info->network_info->remote_endpoint =
-        redirect_response->remote_endpoint;
-    resource_load_info_->redirect_info_chain.push_back(
-        std::move(net_redirect_info));
-  }
-}
-
-void WorkerMainScriptLoader::NotifyCompleteReceived(
-    const network::URLLoaderCompletionStatus& status) {
-  blink::RecordLoadHistograms(
-      url::Origin::Create(resource_load_info_->final_url),
-      resource_load_info_->request_destination, status.error_code);
-  if (resource_loader_info_notifier_) {
-    resource_load_info_->network_info = blink::mojom::CommonNetworkInfo::New();
-    resource_load_info_->original_url = initial_request_url_;
-    resource_load_info_->request_destination =
-        initial_request_.GetRequestDestination();
-    resource_load_info_->was_cached = status.exists_in_cache;
-    resource_load_info_->net_error = status.error_code;
-    resource_load_info_->total_received_bytes = status.encoded_data_length;
-    resource_load_info_->raw_body_bytes = status.encoded_body_length;
-
-    // |resource_load_info_| is going to be transferred because it's the last
-    // notification during loading the script.
-    resource_loader_info_notifier_->NotifyResourceLoadCompleted(
-        std::move(resource_load_info_), status);
+    resource_load_info_notifier_wrapper_->NotifyResourceRedirectReceived(
+        redirect_info, std::move(redirect_response));
   }
 }
 

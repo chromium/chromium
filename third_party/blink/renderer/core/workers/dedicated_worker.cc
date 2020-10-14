@@ -244,7 +244,6 @@ void DedicatedWorker::OnHostCreated(
     classic_script_loader_->LoadTopLevelScriptAsynchronously(
         *GetExecutionContext(), GetExecutionContext()->Fetcher(),
         script_request_url_, nullptr /* worker_main_script_load_params */,
-        mojo::NullRemote() /* resource_load_info_notifier */,
         mojom::RequestContextType::WORKER,
         network::mojom::RequestDestination::kWorker,
         network::mojom::RequestMode::kSameOrigin,
