@@ -223,6 +223,7 @@ source_set("filters") {
       "fuchsia/fuchsia_video_decoder.h",
     ]
     deps += [
+      "//components/viz/common",
       "//gpu/command_buffer/client",
       "//gpu/command_buffer/common",
       "//gpu/ipc/common",
@@ -334,8 +335,10 @@ source_set("unit_tests") {
   if (is_fuchsia) {
     sources += [ "fuchsia/fuchsia_video_decoder_unittest.cc" ]
     deps += [
+      "//components/viz/common",
       "//components/viz/test:test_support",
       "//gpu/command_buffer/client",
+      "//gpu/config",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]

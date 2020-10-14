@@ -133,9 +133,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
     //
     // TODO(crbug.com/580386): Handle context loss properly.
     if (context_provider) {
-      video_decoders->push_back(
-          CreateFuchsiaVideoDecoder(gpu_factories->SharedImageInterface(),
-                                    context_provider->ContextSupport()));
+      video_decoders->push_back(CreateFuchsiaVideoDecoder(context_provider));
     } else {
       DLOG(ERROR)
           << "Can't create FuchsiaVideoDecoder due to GPU context loss.";

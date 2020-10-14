@@ -13,9 +13,12 @@
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder.h"
@@ -89,7 +92,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                  SkAlphaType alpha_type,
                                  uint32_t usage,
                                  gpu::SurfaceHandle surface_handle) override {
-    NOTREACHED();
+    ADD_FAILURE();
     return gpu::Mailbox();
   }
 
@@ -101,7 +104,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data) override {
-    NOTREACHED();
+    ADD_FAILURE();
     return gpu::Mailbox();
   }
 
@@ -128,12 +131,12 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override {
-    NOTREACHED();
+    ADD_FAILURE();
   }
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          std::unique_ptr<gfx::GpuFence> acquire_fence,
                          const gpu::Mailbox& mailbox) override {
-    NOTREACHED();
+    ADD_FAILURE();
   }
 
   void DestroySharedImage(const gpu::SyncToken& sync_token,
@@ -147,12 +150,12 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                      GrSurfaceOrigin surface_origin,
                                      SkAlphaType alpha_type,
                                      uint32_t usage) override {
-    NOTREACHED();
+    ADD_FAILURE();
     return SwapChainMailboxes();
   }
   void PresentSwapChain(const gpu::SyncToken& sync_token,
                         const gpu::Mailbox& mailbox) override {
-    NOTREACHED();
+    ADD_FAILURE();
   }
 
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
@@ -173,7 +176,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
 
   gpu::SyncToken GenVerifiedSyncToken() override {
-    NOTREACHED();
+    ADD_FAILURE();
     return gpu::SyncToken();
   }
   gpu::SyncToken GenUnverifiedSyncToken() override {
@@ -182,10 +185,10 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
 
   void WaitSyncToken(const gpu::SyncToken& sync_token) override {
-    NOTREACHED();
+    ADD_FAILURE();
   }
 
-  void Flush() override { NOTREACHED(); }
+  void Flush() override { ADD_FAILURE(); }
 
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const gpu::Mailbox& mailbox) override {
@@ -200,16 +203,93 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   base::flat_set<gpu::Mailbox> mailboxes_;
 };
 
+class TestRasterContextProvider
+    : public base::RefCountedThreadSafe<TestRasterContextProvider>,
+      public viz::RasterContextProvider {
+ public:
+  TestRasterContextProvider() {}
+
+  TestRasterContextProvider(TestRasterContextProvider&) = delete;
+  TestRasterContextProvider& operator=(TestRasterContextProvider&) = delete;
+
+  void SetOnDestroyedClosure(base::Closure on_destroyed) {
+    on_destroyed_ = on_destroyed;
+  }
+
+  // viz::RasterContextProvider implementation;
+  void AddRef() const override {
+    base::RefCountedThreadSafe<TestRasterContextProvider>::AddRef();
+  }
+  void Release() const override {
+    base::RefCountedThreadSafe<TestRasterContextProvider>::Release();
+  }
+  gpu::ContextResult BindToCurrentThread() override {
+    ADD_FAILURE();
+    return gpu::ContextResult::kFatalFailure;
+  }
+  void AddObserver(viz::ContextLostObserver* obs) override { ADD_FAILURE(); }
+  void RemoveObserver(viz::ContextLostObserver* obs) override { ADD_FAILURE(); }
+  base::Lock* GetLock() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  viz::ContextCacheController* CacheController() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  gpu::ContextSupport* ContextSupport() override {
+    return &gpu_context_support_;
+  }
+  class GrDirectContext* GrContext() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  gpu::SharedImageInterface* SharedImageInterface() override {
+    return &shared_image_interface_;
+  }
+  const gpu::Capabilities& ContextCapabilities() const override {
+    ADD_FAILURE();
+    static gpu::Capabilities dummy_caps;
+    return dummy_caps;
+  }
+  const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override {
+    ADD_FAILURE();
+    static gpu::GpuFeatureInfo dummy_feature_info;
+    return dummy_feature_info;
+  }
+  gpu::gles2::GLES2Interface* ContextGL() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+  gpu::raster::RasterInterface* RasterInterface() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<TestRasterContextProvider>;
+
+  ~TestRasterContextProvider() override {
+    if (on_destroyed_)
+      std::move(on_destroyed_).Run();
+  }
+
+  TestSharedImageInterface shared_image_interface_;
+  viz::TestContextSupport gpu_context_support_;
+
+  base::Closure on_destroyed_;
+};
+
 }  // namespace
 
 class FuchsiaVideoDecoderTest : public testing::Test {
  public:
-  FuchsiaVideoDecoderTest() {
-    decoder_ = CreateFuchsiaVideoDecoderForTests(&shared_image_interface_,
-                                                 &gpu_context_support_,
-
-                                                 /*enable_sw_decoding=*/true);
-  }
+  FuchsiaVideoDecoderTest()
+      : raster_context_provider_(
+            base::MakeRefCounted<TestRasterContextProvider>()),
+        decoder_(
+            CreateFuchsiaVideoDecoderForTests(raster_context_provider_.get(),
+                                              /*enable_sw_decoding=*/true)) {}
   ~FuchsiaVideoDecoderTest() override = default;
 
   bool InitializeDecoder(VideoDecoderConfig config) WARN_UNUSED_RESULT {
@@ -285,8 +365,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  TestSharedImageInterface shared_image_interface_;
-  viz::TestContextSupport gpu_context_support_;
+  scoped_refptr<TestRasterContextProvider> raster_context_provider_;
 
   std::unique_ptr<VideoDecoder> decoder_;
 
@@ -394,6 +473,37 @@ TEST_F(FuchsiaVideoDecoderTest, ResetAndReinitializeH264) {
   ASSERT_NO_FATAL_FAILURE(WaitDecodeDone());
 
   EXPECT_EQ(num_output_frames_, 4U);
+}
+
+// Verifies that the decoder keeps reference to the RasterContextProvider.
+TEST_F(FuchsiaVideoDecoderTest, RasterContextLifetime) {
+  bool context_destroyed = false;
+  raster_context_provider_->SetOnDestroyedClosure(base::BindLambdaForTesting(
+      [&context_destroyed]() { context_destroyed = true; }));
+  ASSERT_TRUE(InitializeDecoder(TestVideoConfig::NormalH264()));
+  ASSERT_FALSE(context_destroyed);
+
+  // Decoder should keep reference to RasterContextProvider.
+  raster_context_provider_.reset();
+  ASSERT_FALSE(context_destroyed);
+
+  // Feed some frames to decoder to get decoded video frames.
+  for (int i = 0; i < 4; ++i) {
+    DecodeBuffer(GetH264Frame(i));
+  }
+  ASSERT_NO_FATAL_FAILURE(WaitDecodeDone());
+
+  // Destroy the decoder. RasterContextProvider will not be destroyed since
+  // it's still referenced by frames in |output_frames_|.
+  decoder_.reset();
+  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(context_destroyed);
+
+  // RasterContextProvider reference should be dropped once all frames are
+  // dropped.
+  output_frames_.clear();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(context_destroyed);
 }
 
 }  // namespace media
