@@ -1251,6 +1251,29 @@ TEST_F(SQLDatabaseTest, GetAppropriateMmapSizeAltStatus) {
             ExecuteWithResult(&db(), "SELECT * FROM MmapStatus"));
 }
 
+TEST_F(SQLDatabaseTest, GetMemoryUsage) {
+  // Databases with mmap enabled may not follow the assumptions below.
+  db().Close();
+  db().set_mmap_disabled();
+  ASSERT_TRUE(db().Open(db_path()));
+
+  int initial_memory = db().GetMemoryUsage();
+  EXPECT_GT(initial_memory, 0)
+      << "SQLite should always use some memory for a database";
+
+  ASSERT_TRUE(db().Execute("CREATE TABLE foo (a, b)"));
+  ASSERT_TRUE(db().Execute("INSERT INTO foo(a, b) VALUES (12, 13)"));
+
+  int post_query_memory = db().GetMemoryUsage();
+  EXPECT_GT(post_query_memory, initial_memory)
+      << "Page cache usage should go up after executing queries";
+
+  db().TrimMemory();
+  int post_trim_memory = db().GetMemoryUsage();
+  EXPECT_GT(post_query_memory, post_trim_memory)
+      << "Page cache usage should go down after calling TrimMemory()";
+}
+
 TEST_F(SQLDatabaseTest, LockingModeExclusive) {
   db().Close();
   db().set_exclusive_locking();

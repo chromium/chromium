@@ -463,6 +463,15 @@ class COMPONENT_EXPORT(SQL) Database {
   // is closed.
   int GetLastChangeCount() const;
 
+  // Approximates the amount of memory used by SQLite for this database.
+  //
+  // This measures the memory used for the page cache (most likely the biggest
+  // consumer), database schema, and prepared statements.
+  //
+  // The memory used by the page cache can be recovered by calling TrimMemory(),
+  // which will cause SQLite to drop the page cache.
+  int GetMemoryUsage();
+
   // Errors --------------------------------------------------------------------
 
   // Returns the error code associated with the last sqlite operation.

@@ -1401,6 +1401,33 @@ int Database::GetLastChangeCount() const {
   return sqlite3_changes(db_);
 }
 
+int Database::GetMemoryUsage() {
+  if (!db_) {
+    DCHECK(poisoned_) << "Illegal use of Database without a db";
+    return 0;
+  }
+
+  int highwater_should_always_be_zero;
+  int cache_memory = 0, schema_memory = 0, statement_memory = 0;
+
+  int error =
+      sqlite3_db_status(db_, SQLITE_DBSTATUS_CACHE_USED, &cache_memory,
+                        &highwater_should_always_be_zero, /*resetFlg=*/false);
+  DCHECK_EQ(error, SQLITE_OK);
+
+  error =
+      sqlite3_db_status(db_, SQLITE_DBSTATUS_SCHEMA_USED, &schema_memory,
+                        &highwater_should_always_be_zero, /*resetFlg=*/false);
+  DCHECK_EQ(error, SQLITE_OK);
+
+  error =
+      sqlite3_db_status(db_, SQLITE_DBSTATUS_STMT_USED, &statement_memory,
+                        &highwater_should_always_be_zero, /*resetFlg=*/false);
+  DCHECK_EQ(error, SQLITE_OK);
+
+  return cache_memory + schema_memory + statement_memory;
+}
+
 int Database::GetErrorCode() const {
   if (!db_)
     return SQLITE_ERROR;
