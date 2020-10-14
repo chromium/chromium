@@ -36,11 +36,6 @@ const char kPerfCyclesCmd[] = "perf record -a -e cycles -c 1000003";
 const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
 const char kPerfLBRCallgraphCmd[] =
     "perf record -a -e cycles -c 4000037 --call-graph lbr";
-const char kPerfCyclesPPPCmd[] = "perf record -a -e cycles:ppp -c 1000003";
-const char kPerfFPCallgraphPPPCmd[] =
-    "perf record -a -e cycles:ppp -g -c 4000037";
-const char kPerfLBRCallgraphPPPCmd[] =
-    "perf record -a -e cycles:ppp -c 4000037 --call-graph lbr";
 const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 200011";
 const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 300001";
 const char kPerfITLBMissCyclesCmdIvyBridge[] =
@@ -519,11 +514,11 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
   ASSERT_GE(cmds.size(), 3UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
   // We have both FP and LBR based callstacks.
-  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPCmd);
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
-  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphPPPCmd);
+  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
   auto found =
       std::find_if(cmds.begin(), cmds.end(),
@@ -554,15 +549,15 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Goldmont) {
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
   ASSERT_GE(cmds.size(), 2UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
-  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPCmd);
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
   // No LBR callstacks because the microarchitecture doesn't support it.
   auto found =
       std::find_if(cmds.begin(), cmds.end(),
                    [](const RandomSelector::WeightAndValue& cmd) -> bool {
-                     return cmd.value == kPerfLBRCallgraphPPPCmd;
+                     return cmd.value == kPerfLBRCallgraphCmd;
                    });
   EXPECT_EQ(cmds.end(), found);
   found = std::find_if(cmds.begin(), cmds.end(),
@@ -593,15 +588,15 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
   ASSERT_GE(cmds.size(), 2UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
-  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPCmd);
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
   // No LBR callstacks because the microarchitecture doesn't support it.
   auto found =
       std::find_if(cmds.begin(), cmds.end(),
                    [](const RandomSelector::WeightAndValue& cmd) -> bool {
-                     return cmd.value == kPerfLBRCallgraphPPPCmd;
+                     return cmd.value == kPerfLBRCallgraphCmd;
                    });
   EXPECT_EQ(cmds.end(), found);
   found = std::find_if(cmds.begin(), cmds.end(),
