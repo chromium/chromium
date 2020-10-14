@@ -5222,6 +5222,8 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
 
 base::FilePath
 ChromeContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
+  if (!g_browser_process || !g_browser_process->profile_manager())
+    return base::FilePath();
   return g_browser_process->profile_manager()->user_data_dir();
 }
 

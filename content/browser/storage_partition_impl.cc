@@ -138,6 +138,9 @@ const storage::QuotaSettings* g_test_quota_settings;
 // recorded.
 const base::TimeDelta kSlowTaskTimeout = base::TimeDelta::FromSeconds(180);
 
+// If true, Storage Service instances will always be started in-process.
+bool g_force_in_process_storage_service = false;
+
 mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemoteStorage() {
   // NOTE: This use of sequence-local storage is only to ensure that the Remote
   // only lives as long as the UI-thread sequence, since the UI-thread sequence
@@ -174,20 +177,18 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
       GetStorageServiceRemoteStorage();
   if (!remote) {
 #if !defined(OS_ANDROID)
-    const bool oop_storage_enabled =
-        base::FeatureList::IsEnabled(features::kStorageServiceOutOfProcess);
+    const base::FilePath sandboxed_data_dir =
+        GetContentClient()
+            ->browser()
+            ->GetSandboxedStorageServiceDataDirectory();
     const bool single_process_mode =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kSingleProcess);
-    if (oop_storage_enabled && !single_process_mode) {
-      const base::FilePath sandboxed_data_dir =
-          GetContentClient()
-              ->browser()
-              ->GetSandboxedStorageServiceDataDirectory();
-      DCHECK(!sandboxed_data_dir.empty())
-          << "Cannot run Storage Service out-of-process without a non-default "
-          << "implementation of "
-          << "ContentBrowserClient::GetSandboxedStorageServiceDataDirectory().";
+    const bool oop_storage_enabled =
+        base::FeatureList::IsEnabled(features::kStorageServiceOutOfProcess) &&
+        !sandboxed_data_dir.empty() && !single_process_mode &&
+        !g_force_in_process_storage_service;
+    if (oop_storage_enabled) {
       remote = ServiceProcessHost::Launch<storage::mojom::StorageService>(
           ServiceProcessHost::Options()
               .WithDisplayName("Storage Service")
@@ -884,6 +885,11 @@ void StoragePartitionImpl::
       << "It is not expected that this is called with non-null callback when "
       << "another overriding callback is already set.";
   GetCreateURLLoaderFactoryCallback() = std::move(url_loader_factory_callback);
+}
+
+// static
+void StoragePartitionImpl::ForceInProcessStorageServiceForTesting() {
+  g_force_in_process_storage_service = true;
 }
 
 // Helper for deleting quota managed data from a partition.

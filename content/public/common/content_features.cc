@@ -666,7 +666,7 @@ const base::Feature kStoragePressureUI {
 
 // Enables the out-of-process Storage Service.
 const base::Feature kStorageServiceOutOfProcess{
-    "StorageServiceOutOfProcess", base::FEATURE_DISABLED_BY_DEFAULT};
+    "StorageServiceOutOfProcess", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether site isolation should use origins instead of scheme and
 // eTLD+1.

@@ -105,6 +105,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   static void SetGetURLLoaderFactoryForBrowserProcessCallbackForTesting(
       CreateNetworkFactoryCallback url_loader_factory_callback);
 
+  // Forces Storage Service instances to be run in-process, ignoring the
+  // StorageServiceOutOfProcess feature setting.
+  static void ForceInProcessStorageServiceForTesting();
+
   void OverrideQuotaManagerForTesting(
       storage::QuotaManager* quota_manager);
   void OverrideSpecialStoragePolicyForTesting(

@@ -12,6 +12,7 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "content/browser/network_service_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_host_resolver.h"
 #include "content/test/test_blink_web_unit_test_support.h"
@@ -82,6 +83,7 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
       command_line->GetSwitchValueASCII(switches::kDisableFeatures);
 
   ForceCreateNetworkServiceDirectlyForTesting();
+  StoragePartitionImpl::ForceInProcessStorageServiceForTesting();
 
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
