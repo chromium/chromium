@@ -9,6 +9,8 @@
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 #if defined(OS_WIN)
 #include <windows.h>
@@ -64,10 +66,12 @@ bool IsPhysicalFile(base::File& file) {
   DWORD type = GetFileType(file.GetPlatformFile());
   return type == FILE_TYPE_DISK;
 #else
-  base::stat_wrapper_t stat;
-  if (base::File::Fstat(file.GetPlatformFile(), &stat) != 0)
+  // This may block but in practice this is unlikely for already opened
+  // physical files.
+  struct stat st;
+  if (fstat(file.GetPlatformFile(), &st) != 0)
     return false;
-  return S_ISREG(stat.st_mode);
+  return S_ISREG(st.st_mode);
 #endif
 }
 
@@ -78,8 +82,9 @@ mojo::PlatformHandle StructTraits<mojo_base::mojom::ReadOnlyFileDataView,
   DCHECK(file.IsValid());
   // For now we require real files as on some platforms it is too difficult to
   // be sure that more general handles cannot be written or made writable. This
-  // could be relaxed if an interface needs readonly pipes.
-  CHECK(IsPhysicalFile(file));
+  // could be relaxed if an interface needs readonly pipes. This check may block
+  // so cannot be enabled in release builds.
+  DCHECK(IsPhysicalFile(file));
   CHECK(IsReadOnlyFile(file));
 
   return mojo::PlatformHandle(

@@ -139,6 +139,7 @@ TEST(FileTest, ReadOnlyFileDeath) {
 
 // This should work on all platforms. This check might be relaxed in which case
 // this test can be removed.
+#if DCHECK_IS_ON()
 TEST(FileTest, NonPhysicalFileDeath) {
 #if defined(OFFICIAL_BUILD)
   const char kPhysicalFileCheckFailedRegex[] = "";
@@ -162,6 +163,7 @@ TEST(FileTest, NonPhysicalFileDeath) {
                                                                &file_out),
       kPhysicalFileCheckFailedRegex);
 }
+#endif  // DCHECK_IS_ON()
 
 }  // namespace file_unittest
 }  // namespace mojo_base
