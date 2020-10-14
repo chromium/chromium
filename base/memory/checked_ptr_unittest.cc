@@ -890,7 +890,7 @@ TEST(CheckedPtr2OrMTEImpl, CrashOnUseAfterFree_WithOffset) {
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 TEST(BackupRefPtrImpl, Basic) {
   // This test works only if GigaCage is enabled. Bail out otherwise.
-  if (!IsPartitionAllocGigaCageEnabled())
+  if (!features::IsPartitionAllocGigaCageEnabled())
     return;
 
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to

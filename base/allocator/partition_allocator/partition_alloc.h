@@ -526,6 +526,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif
 
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+      size_t usable_size =
+          internal::PartitionSizeAdjustSubtract(true, utilized_slot_size);
       internal::PartitionRefCount* ref_count =
           internal::PartitionRefCountPointerNoOffset(ptr);
       // If we are holding the last reference to the allocation, it can be freed
