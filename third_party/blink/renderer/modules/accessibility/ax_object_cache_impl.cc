@@ -1892,7 +1892,7 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
   } else if (attr_name == html_names::kAriaHiddenAttr) {
     ChildrenChangedWithCleanLayout(element->parentNode());
   } else if (attr_name == html_names::kAriaInvalidAttr) {
-    PostNotification(element, ax::mojom::Event::kInvalidStatusChanged);
+    MarkElementDirty(element, false);
   } else if (attr_name == html_names::kAriaErrormessageAttr) {
     MarkElementDirty(element, false);
   } else if (attr_name == html_names::kAriaOwnsAttr) {

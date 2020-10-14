@@ -4066,9 +4066,6 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
     case ax::mojom::Event::kValueChanged:
       OnValueChanged();
       break;
-    case ax::mojom::Event::kInvalidStatusChanged:
-      OnInvalidStatusChanged();
-      break;
     case ax::mojom::Event::kWindowActivated:
       if (AtkUtilAuraLinux::GetInstance()->IsAtSpiReady()) {
         OnWindowActivated();

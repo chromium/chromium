@@ -31,7 +31,6 @@ bool ShouldIgnoreAXEvent(ax::mojom::Event event_type) {
     case ax::mojom::Event::kDocumentSelectionChanged:
     case ax::mojom::Event::kDocumentTitleChanged:
     case ax::mojom::Event::kExpandedChanged:
-    case ax::mojom::Event::kInvalidStatusChanged:
     case ax::mojom::Event::kLoadComplete:
     case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kRowCollapsed:

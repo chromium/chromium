@@ -22,7 +22,7 @@ async_test((t) => {
       ["Blur", new Map([
         ["select", 1],
       ])],
-      ["InvalidStatusChanged", new Map([
+      ["MarkDirty", new Map([
         ["select", 1],
       ])],
       ["ValueChanged", new Map([
@@ -38,7 +38,7 @@ async_test((t) => {
       ["Blur", new Map([
         ["AXRole: AXPopUpButton", 1],
       ])],
-      ["InvalidStatusChanged", new Map([
+      ["MarkDirty", new Map([
         ["AXRole: AXPopUpButton", 1],
       ])],
       ["ValueChanged", new Map([
@@ -117,7 +117,7 @@ async_test((t) => {
       // followed by a "Focus" notification on the slider.
       document.getElementById("slider").focus();
 
-      // This should trigger a "invalid status changed" notification on the select.
+      // This should trigger a "MarkDirty" notification on the select.
       document.getElementById("select").setAttribute("aria-invalid", "true");
 
       // This should trigger a "value changed" notification on the slider.

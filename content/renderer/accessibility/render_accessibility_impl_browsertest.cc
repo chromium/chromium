@@ -531,7 +531,6 @@ TEST_F(RenderAccessibilityImplTest, TestDeferred) {
       ax::mojom::Event::kDocumentTitleChanged,
       ax::mojom::Event::kExpandedChanged,
       ax::mojom::Event::kHide,
-      ax::mojom::Event::kInvalidStatusChanged,
       ax::mojom::Event::kLayoutComplete,
       ax::mojom::Event::kLocationChanged,
       ax::mojom::Event::kMenuListValueChanged,

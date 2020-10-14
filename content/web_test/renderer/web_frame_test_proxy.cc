@@ -579,9 +579,6 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kHover:
       event_name = "Hover";
       break;
-    case ax::mojom::Event::kInvalidStatusChanged:
-      event_name = "InvalidStatusChanged";
-      break;
     case ax::mojom::Event::kLayoutComplete:
       event_name = "LayoutComplete";
       break;

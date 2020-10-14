@@ -47,7 +47,6 @@ enum Event {
   kHitTestResult,
   kHover,
   kImageFrameUpdated,     // Web
-  kInvalidStatusChanged,  // Implicit
   kLayoutComplete,        // Web
   kLiveRegionCreated,     // Implicit
   kLiveRegionChanged,     // Web

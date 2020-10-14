@@ -55,8 +55,6 @@ const char* ToString(ax::mojom::Event event) {
       return "hover";
     case ax::mojom::Event::kImageFrameUpdated:
       return "imageFrameUpdated";
-    case ax::mojom::Event::kInvalidStatusChanged:
-      return "invalidStatusChanged";
     case ax::mojom::Event::kLayoutComplete:
       return "layoutComplete";
     case ax::mojom::Event::kLiveRegionCreated:
