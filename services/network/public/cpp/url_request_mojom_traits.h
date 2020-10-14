@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -309,8 +308,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::DataElement& element) {
     return element.type_;
   }
-  static mojo_base::BigBufferView buf(const network::DataElement& element) {
-    return mojo_base::BigBufferView(element.buf_);
+  static const std::vector<uint8_t>& buf(const network::DataElement& element) {
+    return element.buf_;
   }
   static const base::FilePath& path(const network::DataElement& element) {
     return element.path_;
