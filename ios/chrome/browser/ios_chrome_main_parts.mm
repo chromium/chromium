@@ -275,6 +275,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {
   TranslateServiceIOS::Shutdown();
+#if BUILDFLAG(ENABLE_RLZ)
+  rlz::RLZTracker::CleanupRlz();
+#endif  // BUILDFLAG(ENABLE_RLZ)
   application_context_->StartTearDown();
 }
 
