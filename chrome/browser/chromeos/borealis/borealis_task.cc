@@ -45,9 +45,11 @@ CreateDiskImage::~CreateDiskImage() = default;
 
 void CreateDiskImage::Run(BorealisContext* context,
                           CompletionStatusCallback callback) {
+  // We use a hard-coded name. When multi-instance becomes a feature we'll
+  // need to determine the name instead.
+  context->set_vm_name("borealis");
   vm_tools::concierge::CreateDiskImageRequest request;
-  request.set_disk_path(
-      base::FilePath(context->container_name()).AsUTF8Unsafe());
+  request.set_disk_path(context->vm_name());
   request.set_cryptohome_id(
       chromeos::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
@@ -98,7 +100,7 @@ void StartBorealisVm::Run(BorealisContext* context,
   request.set_enable_gpu(true);
   request.set_software_tpm(false);
   request.set_enable_audio_capture(false);
-  request.set_name(context->container_name());
+  request.set_name(context->vm_name());
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
   disk_image->set_path(context->disk_path().AsUTF8Unsafe());

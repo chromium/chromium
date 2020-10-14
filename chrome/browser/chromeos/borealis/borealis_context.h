@@ -31,13 +31,14 @@ class BorealisContext {
   bool borealis_running() const { return borealis_running_; }
   void set_borealis_running(bool success) { borealis_running_ = success; }
 
-  const std::string& container_name() { return container_name_; }
+  const std::string& vm_name() { return vm_name_; }
+  void set_vm_name(std::string vm_name) { vm_name_ = std::move(vm_name); }
 
   const std::string& root_path() const { return root_path_; }
-  void set_root_path(const std::string& path) { root_path_ = path; }
+  void set_root_path(std::string path) { root_path_ = std::move(path); }
 
   const base::FilePath& disk_path() const { return disk_path_; }
-  void set_disk_path(const base::FilePath& path) { disk_path_ = path; }
+  void set_disk_path(base::FilePath path) { disk_path_ = std::move(path); }
 
  private:
   friend class BorealisContextManagerImpl;
@@ -47,7 +48,7 @@ class BorealisContext {
 
   Profile* profile_ = nullptr;
   bool borealis_running_ = false;
-  std::string container_name_ = "borealis";
+  std::string vm_name_;
   std::string root_path_;
   base::FilePath disk_path_;
 };
