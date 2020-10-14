@@ -485,6 +485,9 @@ void ArCoreGl::GetFrameData(
 
   frame_data->pose = std::move(pose);
   frame_data->time_delta = now - base::TimeTicks();
+  if (rendering_time_ratio_ > 0) {
+    frame_data->rendering_time_ratio = rendering_time_ratio_;
+  }
 
   fps_meter_.AddFrame(now);
   TRACE_COUNTER1("gpu", "WebXR FPS", fps_meter_.GetFPS());
@@ -719,6 +722,21 @@ void ArCoreGl::GetRenderedFrameStats() {
                  submit_to_swap.InMilliseconds());
 
   average_render_time_.AddSample(completion_time - frame->time_copied);
+
+  // Save a GPU load estimate for use in GetFrameData. This is somewhat
+  // arbitrary, use the most recent rendering time divided by the nominal frame
+  // time. If this is greater than 1.0, it's not possible to hit the target
+  // framerate and the application should reduce its workload.
+  // (Intentionally not using averages here since the blink side is expected
+  // to do its own smoothing when using this data.)
+  base::TimeDelta copied_to_completion = completion_time - frame->time_copied;
+  base::TimeDelta arcore_frametime = EstimatedArCoreFrameTime();
+  DCHECK(!arcore_frametime.is_zero());
+  rendering_time_ratio_ = copied_to_completion / arcore_frametime;
+  DVLOG(3) << __func__
+           << ": rendering time ratio (%)=" << rendering_time_ratio_ * 100;
+  TRACE_COUNTER1("xr", "WebXR rendering time ratio (%)",
+                 rendering_time_ratio_ * 100);
 
   // Add Animating/Processing/Rendering async annotations to event traces.
 

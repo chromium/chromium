@@ -687,6 +687,14 @@ struct XRFrameData {
   // Hit test subscription results. Only present if the session supports
   // environment integration.
   XRHitTestSubscriptionResultsData? hit_test_subscription_results;
+
+  // If nonzero, an estimate of how much of the available render time budget
+  // was used for GPU rendering for the most recent measured frame. A value
+  // above 1.0 means that the application is dropping frames due to GPU load,
+  // and a value well below 1.0 means that GPU utilization is low. This is
+  // intended to be used as input for renderer-side adaptive viewport sizing.
+  // A value of zero means the ratio is unknown and must not be used.
+  float rendering_time_ratio;
 };
 
 // Used primarily in logging to indicate why a session was rejecting to aid

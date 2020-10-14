@@ -76,6 +76,8 @@ blink_modules_sources("xr") {
     "xr_session.h",
     "xr_session_event.cc",
     "xr_session_event.h",
+    "xr_session_viewport_scaler.cc",
+    "xr_session_viewport_scaler.h",
     "xr_setlike.h",
     "xr_space.cc",
     "xr_space.h",

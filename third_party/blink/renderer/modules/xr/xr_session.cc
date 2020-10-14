@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_session_event.h"
+#include "third_party/blink/renderer/modules/xr/xr_session_viewport_scaler.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
@@ -325,7 +326,8 @@ XRSession::XRSession(
           MakeGarbageCollected<XRFrameRequestCallbackCollection>(
               xr->GetExecutionContext())),
       uses_input_eventing_(device_config->uses_input_eventing),
-      supports_viewport_scaling_(device_config->supports_viewport_scaling),
+      supports_viewport_scaling_(immersive() &&
+                                 device_config->supports_viewport_scaling),
       sensorless_session_(sensorless_session) {
   client_receiver_.Bind(
       std::move(client_receiver),
@@ -1584,6 +1586,25 @@ void XRSession::UpdatePresentationFrameState(
   if (ended_)
     return;
 
+  // Apply dynamic viewport scaling if available.
+  if (frame_data && supports_viewport_scaling_) {
+    float gpu_load = frame_data->rendering_time_ratio;
+    base::Optional<double> scale = base::nullopt;
+    if (gpu_load > 0.0f) {
+      if (!viewport_scaler_) {
+        // Lazily create an instance of the viewport scaler on first use.
+        viewport_scaler_ = std::make_unique<XRSessionViewportScaler>();
+      }
+
+      viewport_scaler_->UpdateRenderingTimeRatio(gpu_load);
+      scale = viewport_scaler_->Scale();
+      DVLOG(3) << __func__ << ": gpu_load=" << gpu_load << " scale=" << *scale;
+    }
+    for (XRViewData* view : views()) {
+      view->SetRecommendedViewportScale(scale);
+    }
+  }
+
   mojo_from_viewer_ = getPoseMatrix(frame_pose);
   DVLOG(2) << __func__ << " : mojo_from_viewer_ valid? "
            << (mojo_from_viewer_ ? true : false);
@@ -1729,7 +1750,7 @@ void XRSession::OnFrame(
     // at the start of an animation frame:
     // https://immersive-web.github.io/webxr/#ref-for-view-viewport-modifiable
     if (supports_viewport_scaling_) {
-      for (XRViewData* view : views_) {
+      for (XRViewData* view : views()) {
         view->SetViewportModifiable(true);
       }
     }
