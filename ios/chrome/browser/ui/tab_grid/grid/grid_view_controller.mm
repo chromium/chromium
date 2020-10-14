@@ -73,8 +73,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, assign) CGPoint itemReorderTouchPoint;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
-// The default layout for the tab switcher.
-@property(nonatomic, strong) FlowLayout* defaultLayout;
+// The current layout for the tab switcher.
+@property(nonatomic, strong) FlowLayout* currentLayout;
 // The layout for the tab grid.
 @property(nonatomic, strong) GridLayout* gridLayout;
 // The layout for the thumb strip.
@@ -115,14 +115,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.horizontalLayout = [[HorizontalLayout alloc] init];
   self.gridLayout = [[GridLayout alloc] init];
   if (IsThumbStripEnabled()) {
-    self.defaultLayout = self.horizontalLayout;
+    self.currentLayout = self.horizontalLayout;
   } else {
-    self.defaultLayout = self.gridLayout;
+    self.currentLayout = self.gridLayout;
   }
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:self.defaultLayout];
+                         collectionViewLayout:self.currentLayout];
   [collectionView registerClass:[GridCell class]
       forCellWithReuseIdentifier:kCellIdentifier];
   collectionView.dataSource = self;
@@ -283,11 +283,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)prepareForDismissal {
   // Stop animating the collection view to prevent the insertion animation from
   // interfering with the tab presentation animation.
-  self.defaultLayout.animatesItemUpdates = NO;
+  self.currentLayout.animatesItemUpdates = NO;
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  self.defaultLayout.animatesItemUpdates = YES;
+  self.currentLayout.animatesItemUpdates = YES;
   [self.collectionView reloadData];
   // Selection is invalid if there are no items.
   if (self.items.count == 0) {
@@ -715,7 +715,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   auto completionBlock = ^(BOOL completed, BOOL finished) {
     completion(completed, finished);
     self.collectionView.scrollEnabled = YES;
-    self.defaultLayout = nextLayout;
+    self.currentLayout = nextLayout;
   };
   self.gridHorizontalTransitionLayout = [self.collectionView
       startInteractiveTransitionToCollectionViewLayout:nextLayout
@@ -865,7 +865,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
             CGPointMake(location.x - cellCenter.x, location.y - cellCenter.y);
         // Switch to the reordering layout.
         if (IsThumbStripEnabled() &&
-            self.defaultLayout == self.horizontalLayout) {
+            self.currentLayout == self.horizontalLayout) {
           [self.collectionView
               setCollectionViewLayout:self.horizontalReorderingLayout
                              animated:YES];
@@ -899,7 +899,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       // Note: The completion block must be added *before* any animations are
       // added in the transaction.
       [CATransaction setCompletionBlock:^{
-        [self.collectionView setCollectionViewLayout:self.defaultLayout
+        [self.collectionView setCollectionViewLayout:self.currentLayout
                                             animated:YES];
       }];
       [self.collectionView endInteractiveMovement];
@@ -911,7 +911,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.itemReorderTouchPoint = CGPointZero;
       [self.collectionView cancelInteractiveMovement];
       [self recordInteractiveReordering];
-      [self.collectionView setCollectionViewLayout:self.defaultLayout
+      [self.collectionView setCollectionViewLayout:self.currentLayout
                                           animated:YES];
       // Re-enable cancelled gesture.
       gesture.enabled = YES;
