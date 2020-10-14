@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/ios_sdk.gni")
-import("//build/config/mac/mac_sdk.gni")
-
 if (current_toolchain == host_toolchain) {
   executable("iossim") {
     sources = [ "iossim.mm" ]
