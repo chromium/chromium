@@ -83,6 +83,10 @@ using l10n_util::GetNSStringF;
 
 - (void)start {
   [super start];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(authenticationService->IsAuthenticated());
   // TODO(crbug.com/1019685): keys should be fetched to be sure the reauth is
   // still needed. The reauth should be really started only when fetch is
   // failed. If the fetch is success full, the coordinator can be closed

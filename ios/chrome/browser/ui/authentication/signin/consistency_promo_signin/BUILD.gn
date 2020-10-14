@@ -13,6 +13,7 @@ source_set("consistency_promo_signin") {
   deps = [
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
   ]

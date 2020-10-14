@@ -7,6 +7,8 @@
 #import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
@@ -76,6 +78,10 @@
 
 - (void)start {
   [super start];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(!authenticationService->IsAuthenticated());
   DCHECK(base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController

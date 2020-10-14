@@ -54,6 +54,10 @@ using l10n_util::GetNSString;
 
 - (void)start {
   [super start];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(authenticationService->IsAuthenticated());
   self.advancedSettingsSigninNavigationController =
       [[AdvancedSettingsSigninNavigationController alloc] init];
   self.advancedSettingsSigninNavigationController.modalPresentationStyle =
@@ -74,9 +78,6 @@ using l10n_util::GetNSString;
   // Create the mediator.
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   syncer::SyncService* syncService =
       ProfileSyncServiceFactory::GetForBrowserState(
