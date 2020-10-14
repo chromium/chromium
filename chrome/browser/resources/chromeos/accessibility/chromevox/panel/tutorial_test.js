@@ -537,6 +537,13 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
           assertNotEquals(firstLessonNode, getRangeStart());
           assertEquals(1, tutorial.activeLessonNum);
         })
+        // Pressing control, which is the desired key sequence, should move us
+        // to the next lesson.
+        .call(simulateKeyPress.bind(this, KeyCode.CONTROL, {}))
+        .expectSpeech('Essential Keys: Shift')
+        .call(() => {
+          assertEquals(2, tutorial.activeLessonNum);
+        })
         .replay();
   });
 });

@@ -68,13 +68,14 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'ActionUnitTest', function() {
   this.runWithLoadedTree(this.simpleDoc, function() {
     const keySequenceActionOne = UserActionMonitor.Action.fromActionInfo(
         {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
-    const keySequenceActionTwo = new UserActionMonitor.Action(
-        'key_sequence',
-        new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A)));
+    const keySequenceActionTwo = new UserActionMonitor.Action({
+      type: 'key_sequence',
+      value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A))
+    });
     const gestureActionOne = UserActionMonitor.Action.fromActionInfo(
         {type: 'gesture', value: 'swipeUp1'});
     const gestureActionTwo =
-        new UserActionMonitor.Action('gesture', 'swipeUp2');
+        new UserActionMonitor.Action({type: 'gesture', value: 'swipeUp2'});
 
     assertFalse(keySequenceActionOne.equals(keySequenceActionTwo));
     assertFalse(keySequenceActionOne.equals(gestureActionOne));
@@ -86,7 +87,7 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'ActionUnitTest', function() {
     const cloneKeySequenceActionOne = UserActionMonitor.Action.fromActionInfo(
         {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
     const cloneGestureActionOne =
-        new UserActionMonitor.Action('gesture', 'swipeUp1');
+        new UserActionMonitor.Action({type: 'gesture', value: 'swipeUp1'});
     assertTrue(keySequenceActionOne.equals(cloneKeySequenceActionOne));
     assertTrue(gestureActionOne.equals(cloneGestureActionOne));
   });
@@ -119,7 +120,7 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'Errors', function() {
     }
     assertCaughtAndReset();
     try {
-      new UserActionMonitor.Action('key_sequence', 'invalid');
+      new UserActionMonitor.Action({type: 'key_sequence', value: 'invalid'});
       assertTrue(false);  // Shouldn't execute
     } catch (error) {
       assertEquals(
@@ -415,5 +416,32 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'CloseChromeVox', function() {
     assertTrue(closed);
     // |finished| remains false since we didn't press the expected key sequence.
     assertFalse(finished);
+  });
+});
+
+// Tests that we can stop propagation of an action, even if it is matched.
+// In this test, we stop propagation of the Control key to avoid executing the
+// stopSpeech command.
+TEST_F('ChromeVoxUserActionMonitorTest', 'StopPropagation', function() {
+  this.runWithLoadedTree(this.simpleDoc, function() {
+    const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
+    let finished = false;
+    let executedCommand = false;
+    const actions = [{
+      type: 'key_sequence',
+      value: {keys: {keyCode: [KeyCode.CONTROL]}},
+      shouldPropagate: false
+    }];
+    const onFinished = () => finished = true;
+    ChromeVoxState.instance.createUserActionMonitor(actions, onFinished);
+    ChromeVoxKbHandler.commandHandler = function(command) {
+      executedCommand = true;
+    };
+    assertFalse(finished);
+    assertFalse(executedCommand);
+    keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
+    keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
+    assertFalse(executedCommand);
+    assertTrue(finished);
   });
 });

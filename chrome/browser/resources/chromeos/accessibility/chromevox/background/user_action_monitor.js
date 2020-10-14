@@ -55,15 +55,16 @@ UserActionMonitor = class {
       this.actions_.push(
           UserActionMonitor.Action.fromActionInfo(actionInfos[i]));
     }
-    if (this.actions_[0].opt_beforeActionCallback) {
-      this.actions_[0].opt_beforeActionCallback();
+    if (this.actions_[0].beforeActionCallback) {
+      this.actions_[0].beforeActionCallback();
     }
   }
 
   // Public methods.
 
   /**
-   * Returns true if the key sequence was matched. Returns false otherwise.
+   * Returns true if the key sequence should be allowed to propagate to other
+   * handlers. Returns false otherwise.
    * @param {!KeySequence} actualSequence
    * @return {boolean}
    */
@@ -85,7 +86,7 @@ UserActionMonitor = class {
     }
 
     this.expectedActionMatched_();
-    return true;
+    return expectedAction.shouldPropagate;
   }
 
   // Private methods.
@@ -93,8 +94,8 @@ UserActionMonitor = class {
   /** @private */
   expectedActionMatched_() {
     const action = this.getExpectedAction_();
-    if (action.opt_afterActionCallback) {
-      action.opt_afterActionCallback();
+    if (action.afterActionCallback) {
+      action.afterActionCallback();
     }
 
     this.nextAction_();
@@ -114,8 +115,8 @@ UserActionMonitor = class {
     }
 
     const action = this.getExpectedAction_();
-    if (action.opt_beforeActionCallback) {
-      action.opt_beforeActionCallback();
+    if (action.beforeActionCallback) {
+      action.beforeActionCallback();
     }
   }
 
@@ -155,8 +156,9 @@ UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
  * @typedef {{
  *    type: ActionType,
  *    value: (string|Object),
+ *    shouldPropagate: (boolean|undefined),
  *    beforeActionMsg: (string|undefined),
- *    afterActionMsg: (string|undefined)
+ *    afterActionMsg: (string|undefined),
  * }}
  */
 UserActionMonitor.ActionInfo;
@@ -164,38 +166,49 @@ UserActionMonitor.ActionInfo;
 // Represents an expected action.
 UserActionMonitor.Action = class {
   /**
-   * @param {ActionType} type
-   * @param {string|!KeySequence} value
-   * @param {(function():void)=} opt_beforeActionCallback Runs once before this
-   *     action is seen.
-   * @param {(function():void)=} opt_afterActionCallback Runs once after this
-   *     action is seen.
+   * Please see below for more information on arguments:
+   * type: The type of action.
+   * value: The action value.
+   * shouldPropagate: Whether or not this action should propagate to other
+   *  handlers e.g. CommandHandler.
+   * beforeActionCallback: A callback that runs once before this action is seen.
+   * afterActionCallback: A callback that runs once after this action is seen.
+   * @param {!{
+   *  type: ActionType,
+   *  value: (string|!KeySequence),
+   *  shouldPropagate: (boolean|undefined),
+   *  beforeActionCallback: (function(): void|undefined),
+   *  afterActionCallback: (function(): void|undefined)
+   * }} params
    */
-  constructor(type, value, opt_beforeActionCallback, opt_afterActionCallback) {
-    switch (type) {
+  constructor(params) {
+    /** @type {ActionType} */
+    this.type = params.type;
+    /** @type {string|!KeySequence} */
+    this.value = params.value;
+    /** @type {boolean} */
+    this.shouldPropagate =
+        (params.shouldPropagate !== undefined) ? params.shouldPropagate : true;
+    /** @type {(function():void)|undefined} */
+    this.beforeActionCallback = params.beforeActionCallback;
+    /** @type {(function():void)|undefined} */
+    this.afterActionCallback = params.afterActionCallback;
+
+    switch (this.type) {
       case ActionType.KEY_SEQUENCE:
-        if (!(value instanceof KeySequence)) {
+        if (!(this.value instanceof KeySequence)) {
           throw new Error(
               'UserActionMonitor: Must provide a KeySequence value for ' +
               'Actions of type ActionType.KEY_SEQUENCE');
         }
         break;
       default:
-        if (typeof value !== 'string') {
+        if (typeof this.value !== 'string') {
           throw new Error(
               'UserActionMonitor: Must provide a string value for Actions ' +
               'if type is other than ActionType.KEY_SEQUENCE');
         }
     }
-
-    /** @type {ActionType} */
-    this.type = type;
-    /** @type {string|!KeySequence} */
-    this.value = value;
-    /** @type {(function():void)|undefined} */
-    this.opt_beforeActionCallback = opt_beforeActionCallback;
-    /** @type {(function():void)|undefined} */
-    this.opt_afterActionCallback = opt_afterActionCallback;
   }
 
   /**
@@ -225,6 +238,7 @@ UserActionMonitor.Action = class {
     const value = (typeof info.value === 'object') ?
         KeySequence.deserialize(info.value) :
         info.value;
+    const shouldPropagate = info.shouldPropagate;
     const beforeActionMsg = info.beforeActionMsg;
     const afterActionMsg = info.afterActionMsg;
 
@@ -244,8 +258,13 @@ UserActionMonitor.Action = class {
       UserActionMonitor.Action.output_(afterActionMsg);
     };
 
-    return new UserActionMonitor.Action(
-        type, value, beforeActionCallback, afterActionCallback);
+    return new UserActionMonitor.Action({
+      type,
+      value,
+      shouldPropagate,
+      beforeActionCallback,
+      afterActionCallback
+    });
   }
 
   /**

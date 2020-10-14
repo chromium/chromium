@@ -170,9 +170,11 @@ Polymer({
             key.`],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.QUICK_ORIENTATION],
-          actions: [
-            {type: 'key_sequence', value: {keys: {keyCode: [17 /* Ctrl */]}}}
-          ],
+          actions: [{
+            type: 'key_sequence',
+            value: {keys: {keyCode: [17 /* Ctrl */]}},
+            shouldPropagate: false
+          }],
           autoInteractive: true,
         },
 

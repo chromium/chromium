@@ -89,9 +89,8 @@ ChromeVoxKbHandler.basicKeyDownActionsListener = function(evt) {
   const chromeVoxState = ChromeVoxState.instance;
   const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
   if (monitor && !monitor.onKeySequence(keySequence)) {
-    // UserActionMonitor returns true if this key sequence was matched. If a
-    // key sequence is matched by the UserActionMonitor, allow it to process.
-    // Otherwise, prevent the default action.
+    // UserActionMonitor returns true if this key sequence should propagate.
+    // Prevent the default action if it returns false.
     return false;
   }
 
