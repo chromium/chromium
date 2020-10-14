@@ -3,6 +3,7 @@
 <translationbundle lang="zh-HK">
 <translation id="1276998909102132017">相片集嘅相</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1473110567575736769">3 秒計時器</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">沒有記錄任何內容</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3569311554794739032">您確定要移除「<ph name="FILE" />」嗎？</translation>
 <translation id="3810838688059735925">影片</translation>
+<translation id="4000398125663085899">新相片和影片現在會儲存在「檔案」應用程式內的資料夾：[我的檔案] &gt; [相機]</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4329152592498422850">切換至正方形相片拍攝模式</translation>
@@ -62,6 +64,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="698156982839284926">3 秒</translation>
 <translation id="712848772518857951">您確定要移除這 <ph name="COUNT" /> 個項目嗎？</translation>
+<translation id="7134221860976209830">10 秒計時器</translation>
 <translation id="7243947652761655814">影片解像度</translation>
 <translation id="7337660886763914220">檔案系統錯誤。</translation>
 <translation id="7557677699350329807">切換至下一部相機</translation>

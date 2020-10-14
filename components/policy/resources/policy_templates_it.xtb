@@ -80,7 +80,6 @@
 <translation id="1095209545735032039">Blocca l'API Serial su questi siti</translation>
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento sito per ogni sito</translation>
-<translation id="1111470455889178048">Invia caricamenti e download degli utenti da analizzare</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="1128717055763152639">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali gli aggiornamenti dei contenuti misti bloccabili facoltativi verranno disattivati.
@@ -431,13 +430,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1727914891824633693">Consenti l'utilizzo di Lacros</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
 <translation id="1745973235372964482">Non consentire i file protetti da password</translation>
-<translation id="1749815929501097806">Consente di impostare i Termini di servizio che l'utente deve accettare per poter avviare una sessione con l'account locale del dispositivo.
-
-Se questa norma viene impostata, <ph name="PRODUCT_OS_NAME" /> scaricherà i Termini di servizio e li presenterà all'utente all'avvio di una sessione con l'account locale del dispositivo. L'utente potrà avviare la sessione soltanto dopo avere accettato i Termini di servizio.
-
-Se questa norma non viene impostata, i Termini di servizio non verranno visualizzati.
-
-Per la norma dovrebbe essere impostato un URL da cui <ph name="PRODUCT_OS_NAME" /> possa scaricare i Termini di servizio. I Termini di servizio devono essere in testo normale e pubblicati come testo di tipo MIME/semplice. Il markup non è consentito.</translation>
 <translation id="1750315445671978749">Blocca tutti i download</translation>
 <translation id="1760951637494635692">Consenti l'API Serial su questi siti</translation>
 <translation id="1765512315997108908">Consente di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> sono disponibili agli utenti.
@@ -911,16 +903,6 @@ Se questo criterio viene impostato su False, la Schermata sulla privacy sarà se
 Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
-<translation id="2423038190900972331">Consente di stabilire in che modo <ph name="PRODUCT_NAME" /> verifica eventuali violazioni delle regole relative alla protezione dei dati sensibili nei dati caricati, scaricati, incollati dagli appunti o trascinati.
-
-      Se questo criterio non è impostato o è impostato su "Nessuno", <ph name="PRODUCT_NAME" /> non verificherà la presenza di eventuali violazioni delle regole relative alla protezione dei dati sensibili all'interno dei dati.
-
-      Se questo criterio è impostato su "Verifica download" e l'utente tenta di scaricare un file da un URL incluso nel criterio <ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME" />, <ph name="PRODUCT_NAME" /> verificherà la conformità dei dati scaricati rispetto alle regole aziendali.
-
-      Se questo criterio è impostato su "Verifica caricamenti" e l'utente tenta di caricare un file in un dominio che non è incluso nel criterio <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> verificherà la conformità del file caricato, dei dati incollati dagli appunti o dei dati trascinati rispetto alle regole aziendali.
-
-      Se questo criterio viene impostato su "Verifica caricamenti e download", <ph name="PRODUCT_NAME" /> si comporta secondo le regole descritte nelle impostazioni "Verifica download" e "Verifica caricamenti".
-      </translation>
 <translation id="2423255396068675416">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono eseguire <ph name="PRODUCT_CROSTINI_NAME" />, finché <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sono impostati su Attivato. Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_CROSTINI_NAME" /> viene disattivato per l'utente. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
 <translation id="2424098959650060417">Consente di stabilire quali stampanti del criterio <ph name="BULK_PRINTERS_POLICY_NAME" /> sono a disposizione degli utenti.
 
@@ -1030,7 +1012,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
 <translation id="2548572254685798999">Segnala dati di Navigazione sicura</translation>
 <translation id="2550593661567988768">Solo stampa su un lato</translation>
-<translation id="2551520365302988324">Invia caricamenti degli utenti da analizzare</translation>
 <translation id="2552318891854145040">La configurazione del criterio consente di impostare un elenco di preferiti dove ognuno di questi è un dizionario con le chiavi "<ph name="NAME" />" e "<ph name="URL_LABEL" />" indicanti il nome e la destinazione del preferito. Gli amministratori possono configurare una sottocartella definendo un preferito senza una chiave "<ph name="URL_LABEL" />", ma con una chiave "<ph name="CHILDREN" />" aggiuntiva. Tale chiave contiene anche un elenco di preferiti, alcuni dei quali possono essere anche cartelle. Chrome corregge gli URL incompleti come se fossero stati inviati tramite la barra degli indirizzi. Ad esempio, "<ph name="GOOGLE_COM" />" diventa "<ph name="HTTPS_GOOGLE_COM" />".
 
       Gli utenti non possono modificare le cartelle in cui vengono inseriti i preferiti (ma possono nasconderle dalla barra dei Preferiti). Il nome predefinito della cartella per i preferiti gestiti è "Preferiti gestiti", ma può essere modificato aggiungendo un nuovo dizionario secondario al criterio con una chiave unica chiamata "<ph name="TOPLEVEL_NAME" />" e il nome della cartella che preferiscono gli utenti come valore. I preferiti gestiti non vengono sincronizzati con l'account utente e le estensioni non possono modificarli.</translation>
@@ -1090,11 +1071,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 <translation id="2649896281375932517">Consenti agli utenti di decidere</translation>
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude il coperchio</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
-<translation id="2659019163577049044">Se questa impostazione viene attivata, gli utenti potranno configurare il proprio dispositivo in modo da sincronizzare i messaggi SMS tra i telefoni e i Chromebooks. Tieni presente che se questa norma viene consentita, gli utenti devono attivare in modo esplicito questa funzione tramite il completamento del flusso di configurazione. Una volta completato il flusso di configurazione, gli utenti potranno inviare e ricevere messaggi SMS sui loro Chromebook.
-
-      Se questa impostazione è disattivata, gli utenti non potranno configurare la sincronizzazione degli SMS.
-
-      Se questa norma non viene impostata, per impostazione predefinita non sarà disponibile per gli utenti gestiti, mentre lo sarà invece per gli utenti non gestiti.</translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
 <translation id="2664682171745499686">Elimina gli avvisi di domini simili dai domini</translation>
 <translation id="2665422249821137126">Attiva il puntatore grande nella schermata di accesso</translation>
@@ -1785,7 +1761,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Per informazioni dettagliate su <ph name="CORS" />, visita la pagina <ph name="CORS_HELP_URL" />.
 
       Tieni presente che, nonostante sia stata comunicata la rimozione di questo criterio nella versione 82 di <ph name="PRODUCT_NAME" />, il criterio è stato rimosso nella versione 84.</translation>
-<translation id="3624515566460517364">Verifica eventuali violazioni delle regole relative alla protezione dei dati sensibili di caricamenti e download</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
 <translation id="3631099945620529777">Se la norma è impostata su false, il pulsante "Termina processo" in Task Manager viene disattivato.
@@ -1941,7 +1916,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
           Se il criterio non è impostato o è impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.</translation>
 <translation id="3877517141460819966">Modalità di autenticazione a due fattori integrata</translation>
-<translation id="3879196885908353077">Verifica eventuali violazioni delle regole relative alla protezione dei dati sensibili dei download</translation>
 <translation id="3879208481373875102">Configura l'elenco delle app web con installazione forzata</translation>
 <translation id="388237772682176890">Questa norma è stata ritirata in M53 e rimossa in M54 perché è stato rimosso il supporto di SPDY/3.1.
 
@@ -2040,11 +2014,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se il criterio è impostato su false, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul Web.</translation>
 <translation id="3993187551086357615">Ritarda caricamenti e download finché il risultato dell'analisi non viene reso noto</translation>
 <translation id="3997519162482760140">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video su pagine di accesso SAML</translation>
-<translation id="4001275826058808087">Gli amministratori IT di dispositivi aziendali possono utilizzare questo flag per stabilire se consentire agli utenti di utilizzare le offerte tramite la registrazione a Chrome OS.
-
-      Se questa norma viene impostata su true o non viene impostata, gli utenti potranno utilizzare le offerte tramite la registrazione a Chrome OS.
-
-      Se questa norma viene impostata su false, gli utenti non potranno utilizzare le offerte.</translation>
 <translation id="4008507541867797979">Se questa norma viene impostata su True o non viene configurata, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> verranno visualizzati gli utenti esistenti tra cui sarà possibile selezionare un utente.
 
       Se la norma è impostata su False, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> non verranno visualizzati gli utenti esistenti. Verrà visualizzata la normale schermata di accesso (richiesta di email utente e password o telefono) o la schermata interstiziale SAML (se attivata tramite la norma <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a meno che non sia stata configurata una sessione gestita. Quando viene configurata una sessione gestita, verranno visualizzati solo gli account della sessione gestita, consentendo di selezionarne uno.
@@ -2217,13 +2186,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 
       Se questa norma non è impostata, verrà utilizzato il percorso di profilo di roaming predefinito.</translation>
 <translation id="4239720644496144453">La cache non viene utilizzata per le app Android. Se più utenti installano la stessa app Android, questa viene scaricata per ogni utente.</translation>
-<translation id="4241202391219483189">Questo criterio consente di stabilire se l'utente può o meno importare e rimuovere certificati CA tramite Gestione certificati.
-
-      Se il criterio viene impostato su "Consenti agli utenti di gestire tutti i certificati" o se non viene impostato, gli utenti potranno modificare le impostazioni di attendibilità di tutti i certificati CA, rimuovere i certificati importati dagli utenti e importare certificati.
-
-      Se il criterio viene impostato su "Consenti agli utenti di gestire i certificati utente", gli utenti potranno gestire soltanto i certificati importati dagli utenti e non potranno modificare le impostazioni di attendibilità dei certificati integrati.
-
-      Se il criterio viene impostato su "Non consentire più agli utenti di gestire i certificati", gli utenti non potranno gestire i certificati CA, ma solo visualizzarli.</translation>
 <translation id="4242223728343693100">Se il criterio viene configurato, puoi creare un elenco di pattern URL che specificano i siti che non possono impostare i cookie.
 
       Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -2294,7 +2256,6 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 <translation id="4415603335307944578">Se questa norma è impostata su true o non è configurata, il browser mostrerà di nuovo la pagina di benvenuto al primo avvio successivo a un upgrade del sistema operativo.
 
       Se la norma è impostata su false, il browser non mostrerà di nuovo la pagina di benvenuto in occasione del primo avvio successivo a un upgrade del sistema operativo.</translation>
-<translation id="4418726081189202489">Se questa norma viene impostata su false, <ph name="PRODUCT_NAME" /> non può più inviare query occasionali a un server di Google per recuperare un timestamp preciso. Queste query vengono attivate se questa norma viene impostata su True o non viene configurata.</translation>
 <translation id="4423597592074154136">Specifica manualmente le impostazioni proxy</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
 <translation id="443454694385851356">Precedente (non sicuro)</translation>
@@ -2344,7 +2305,6 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
       La notifica viene sempre visualizzata sui dispositivi non gestiti.</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4515404363392014383">Attiva Navigazione sicura per le origini attendibili</translation>
-<translation id="4517928394515633751">Analizza i download degli utenti tramite Navigazione sicura</translation>
 <translation id="4518251772179446575">Chiedi ogni volta che un sito desidera monitorare la posizione fisica degli utenti</translation>
 <translation id="4529868888205510667">Se il criterio è impostato su True o non è configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su False, gli utenti non affiliati non possono utilizzare ARC.
 
@@ -2445,19 +2405,6 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
 
       Questo criterio è deprecato, al suo posto utilizza <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
 <translation id="4668325077104657568">Impostazione immagini predefinite</translation>
-<translation id="4668497019777708116">Consente di specificare l'elenco di app che è possibile attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
-
-      Se nella schermata di blocco viene attivata l'app per scrivere note preferita, nella schermata è presente l'elemento UI per avviare tale app.
-      Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare dati (note) nel contesto della schermata di blocco. L'app può importare note create nella sessione utente principale, quando la sessione è sbloccata. Attualmente, nella schermata di blocco sono supportate soltanto le app per scrivere note di Chrome.
-
-      Se il criterio viene configurato, l'utente può attivare un'app nella schermata di blocco soltanto se l'ID estensione dell'app è presente come valore nell'elenco del criterio.
-      Di conseguenza, se l'elenco di questo criterio viene lasciato vuoto, non è consentito scrivere note nella schermata di blocco.
-      Tieni presente che l'esistenza dell'ID di un'app nel criterio non implica necessariamente che l'utente può attivare l'app in questione come app per scrivere note nella schermata di blocco. Ad esempio, su Chrome 61, il gruppo di app disponibili è limitato ulteriormente dalla piattaforma.
-
-      Se il criterio non viene configurato, non ci sono limitazioni imposte da tale criterio relative al gruppo di app che l'utente può attivare nella schermata di blocco.
-
-
-     Questo criterio è deprecato. Usa il criterio "<ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />".</translation>
 <translation id="4670865688564083639">Minimo:</translation>
 <translation id="467236746355332046">Funzionalità supportate:</translation>
 <translation id="4674167212832291997">Consente di personalizzare l'elenco di pattern URL per i quali il rendering deve sempre essere eseguito da <ph name="PRODUCT_FRAME_NAME" />.
@@ -2509,15 +2456,6 @@ Se questa norma non viene impostata, verranno utilizzate le dimensioni predefini
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
-<translation id="4771144269610910963">Questo criterio consente di controllare l'analisi approfondita dei download degli utenti tramite Navigazione sicura. Se non viene impostato o viene impostata l'opzione predefinita "Non analizzare i file", i download degli utenti non verranno analizzati dalla funzionalità Navigazione sicura.
-
-      Se viene impostata l'opzione "Invia download degli utenti da analizzare", i download degli utenti verranno inviati tramite la rete alla funzionalità Navigazione sicura per verificare l'eventuale presenza di malware.
-
-      Se viene impostata l'opzione "Invia caricamenti degli utenti da analizzare", i caricamenti degli utenti verranno inviati tramite la rete alla funzionalità Navigazione sicura per verificare l'eventuale presenza di malware.
-
-      Se viene impostata l'opzione "Invia caricamenti e download degli utenti da analizzare", il criterio si comporta secondo le regole descritte nelle impostazioni "Invia caricamenti degli utenti da analizzare" e "Invia download degli utenti da analizzare".
-
-      Per informazioni dettagliate sulla modalità di visualizzazione dei risultati dell'analisi per l'utente e l'amministratore, vedi i criteri <ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME" /> e <ph name="UNSAFE_EVENTS_REPORTING_ENABLED" />.</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.
 
       <ph name="PAGE_SIZE_NAME" /> non dovrebbe contenere uno dei formati elencati o "personalizzato" se la dimensione della carta richiesta non è nell'elenco. Se viene fornito il valore "personalizzato", deve essere specificata la proprietà <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Descrive l'altezza e la larghezza desiderate in micrometri. Diversamente la proprietà <ph name="PAGE_SIZE_CUSTOM_SIZE" /> non deve essere specificata. Il criterio che viola queste regole viene ignorato.
@@ -2702,7 +2640,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5148753489738115745">Consente di specificare dei parametri aggiuntivi da utilizzare quando <ph name="PRODUCT_FRAME_NAME" /> avvia <ph name="PRODUCT_NAME" />.
 
 Se questa norma non viene impostata viene utilizzata la riga di comando predefinita.</translation>
-<translation id="5150323673529584553">Non analizzare i file</translation>
 <translation id="5152393033264257734">Consenti controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="5152787786897382519">Chromium e Google Chrome hanno alcuni gruppi di criteri che dipendono gli uni dagli altri per fornire il controllo di una funzionalità. Questi insiemi sono rappresentati dai seguenti gruppi di criteri. Dato che i criteri possono avere diverse origini, vengono applicati soltanto i valori provenienti dall'origine con la priorità massima. I valori dello stesso gruppo provenienti da un'origine con priorità inferiore vengono ignorati. L'ordine di priorità è definito in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Questo criterio è obsoleto. Usa il criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />".
@@ -3606,7 +3543,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6378393933102834628">Se il criterio è impostato su True, la scorciatoia per le app viene visualizzata. Se il criterio è impostato su False, tale scorciatoia non viene mai visualizzata.
 
       Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se mostrare o nascondere la scorciatoia per le app dal menu contestuale della barra dei Preferiti.</translation>
-<translation id="638668187106406971">Verifica eventuali violazioni delle regole relative alla protezione dei dati sensibili dei caricamenti</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
@@ -3748,11 +3684,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Nota: per le istanze di Windows® che non fanno parte di un dominio <ph name="MS_AD_NAME" />, l'installazione forzata è limitata alle app e alle estensioni elencate nel Chrome Web Store.</translation>
 <translation id="6598235178374410284">Immagine avatar utente</translation>
 <translation id="6603004149426829878">Consente di inviare sempre al server i segnali relativi alla posizione disponibili durante le operazioni per stabilire il fuso orario</translation>
-<translation id="6607920041550065565">
-      Se viene impostato su false, questo criterio non consente di attivare la funzionalità Powerwash sul dispositivo. Si verifica un'eccezione se il criterio <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> è impostato su un valore che consente l'aggiornamento del firmware TPM e tale firmware non era ancora stato aggiornato.
-      Se viene impostato su true, consente di attivare la funzionalità Powerwash sul dispositivo.
-      Se non viene configurato, il valore predefinito sarà true, consentendo al dispositivo di attivare la funzionalità Powerwash.
-      </translation>
 <translation id="6614020900120353107">Consente di stabilire se usare o meno in <ph name="PRODUCT_NAME" /> il client DNS integrato.
 
       Questo criterio non influisce sui server DNS utilizzati, ma soltanto sullo stack software usato per comunicare con loro. Ad esempio, se il sistema operativo è configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Tuttavia, è possibile che il client DNS integrato indirizzi i server in modi diversi usando protocolli DNS più moderni, come DNS-over-TLS.
@@ -4023,9 +3954,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6926703471186170050">Attiva la stampa fronte/retro su lato lungo</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
-<translation id="6932419914671987652">Se questo criterio è impostato come attivo, <ph name="PRODUCT_NAME" /> applicherà le sessioni ospiti ed eviterà gli accessi ai profili. Gli accessi ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono nella modalità di navigazione in incognito.
-
-      Se questo criterio è impostato come disattivato o non è impostato oppure la modalità ospite del browser è disattivata dal criterio <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> consentirà l'utilizzo di profili nuovi ed esistenti.</translation>
 <translation id="6936894225179401731">Consente di specificare il numero massimo di connessioni simultanee al server proxy.
 
       Alcuni server proxy non sono in grado di gestire un numero elevato di connessioni simultanee per client e questo problema può essere risolto impostando un valore inferiore per questa norma.
@@ -4123,16 +4051,6 @@ Se questa norma è impostata su True o non è impostata, il modello di oscuramen
       Se il criterio non viene impostato, la shelf verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
-<translation id="7063842402585660314">L'elenco di app consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
-
-      Se nella schermata di blocco viene attivata l'app preferita per creare note, nella schermata sarà presente l'elemento UI per avviare tale app.
-      Una volta avviata, l'app potrà aprire una finestra sopra la schermata di blocco e creare degli elementi di dati (note) nel contesto della schermata di blocco. L'app potrà importare le note create nella sessione dell'utente principale, quando la sessione è sbloccata. Attualmente, nella schermata di blocco sono supportate soltanto le app per creare note di Chrome.
-
-      Se il criterio viene configurato, l'utente potrà attivare un'app nella schermata di blocco soltanto se l'ID estensione dell'app è presente come valore nell'elenco del criterio.
-      Di conseguenza, se l'elenco di questo criterio viene lasciato vuoto, non sarà consentito creare note nella schermata di blocco.
-      Tieni presente che l'esistenza dell'ID di un'app nel criterio non implica necessariamente che l'utente potrà attivare l'app in questione come app per creare note nella schermata di blocco. Ad esempio, su Chrome 61, la serie di app disponibili è limitata ulteriormente dalla piattaforma.
-
-      Se il criterio non viene configurato, non ci saranno limitazioni imposte da tale criterio relative alla serie di app che l'utente può attivare nella schermata di blocco.</translation>
 <translation id="7063895219334505671">Consenti popup su questi siti</translation>
 <translation id="706669471845501145">Consenti la visualizzazione di notifiche desktop da parte dei siti</translation>
 <translation id="7068108874199666656">Consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
@@ -4840,7 +4758,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
 <translation id="7995610550667275367">Scansione (supportata dalla versione 87)</translation>
 <translation id="8001701200415781021">Limita gli Account Google che è possibile impostare come account principali del browser in <ph name="PRODUCT_NAME" /></translation>
-<translation id="8003853057959146975">Invia file per l'ispezione di eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>
 <translation id="8006219716745491366">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> consente di specificare un elenco di URL alternativi per l'estrazione dei termini di ricerca dal motore di ricerca. Gli URL devono includere la stringa <ph name="SEARCH_TERM_MARKER" />.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" /> non viene configurato, per l'estrazione dei termini di ricerca non vengono utilizzati URL alternativi.</translation>
@@ -5242,7 +5159,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="858309738002328421">Blocca i caricamenti di file di grandi dimensioni</translation>
 <translation id="8583509234908413302">Consenti downgrade a protocolli TLS/DTLS precedenti in WebRTC</translation>
 <translation id="8584279193368801689">Consente di limitare la modalità di stampa PIN. Se il criterio non viene impostato non vengono applicate limitazioni. Se la modalità non è disponibile, questo criterio viene ignorato. Tieni presente che la funzionalità di stampa PIN viene attivata solo per le stampanti che usano uno dei protocolli IPPS, HTTPS, USB o IPP-over-USB.</translation>
-<translation id="8585558195682146109">Invia download degli utenti da analizzare</translation>
 <translation id="8587229956764455752">Consenti la creazione di nuovi account utente</translation>
 <translation id="8591713876665299827">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -5477,7 +5393,6 @@ https://www.w3.org/TR/secure-contexts/
       Se non viene configurato, non è possibile verificare la validità dei Termini di servizio dell'account della scuola.
 
       Questo criterio viene utilizzato unicamente per gli utenti di Family Link.</translation>
-<translation id="8943934315109955032">Non verificare eventuali violazioni delle regole relative alla protezione dei dati sensibili</translation>
 <translation id="8947415621777543415">Segnala posizione del dispositivo</translation>
 <translation id="8948062138228904066">Lista consentita di server di autenticazione</translation>
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>

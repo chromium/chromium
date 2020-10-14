@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">boîte de dialogue d'alerte</translation>
 <translation id="1821985195704844674">arborescence</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">note de bas de page</translation>
 <translation id="1832974991323546415">lire sur l'appareil distant</translation>
 <translation id="190587075670221089">suppression</translation>
 <translation id="1907737156431278478">exemple</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">Afficher le mois précédent</translation>
 <translation id="421884353938374759">sélecteur de couleur</translation>
 <translation id="4248100235867064564">barre de menu</translation>
+<translation id="4293574643247337246">en-tête de page</translation>
 <translation id="4360991593054037559">Veuillez entrer une valeur valide. Les deux valeurs valides les plus proches sont « <ph name="VALID_VALUE_LOW" /> » et « <ph name="VALID_VALUE_HIGHER" /> ».</translation>
 <translation id="4384583879834880242">Questions/réponses</translation>
 <translation id="4444765639179266822">La photo semble contenir le texte suivant : <ph name="OCR_TEXT" /></translation>

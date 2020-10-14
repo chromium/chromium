@@ -4503,7 +4503,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="628352644014831790">4 sekondes</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> word nie gewoonlik afgelaai nie en kan gevaarlik wees.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nuwe drukker in jou netwerk}other{Nuwe drukkers in jou netwerk}}</translation>
-<translation id="6289626062715012577">Programme en webwerwe wat veelvuldige tale steun, sal die eerste gesteunde taal op hierdie lys gebruik. Taalvoorkeure sinkroniseer met Chrome-blaaier. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370"><ph name="ORGANIZATION_NAME" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Linux te begin.</translation>
 <translation id="6291949900244949761">Vra wanneer 'n werf toegang tot USB-toestelle wil hê (aanbeveel)</translation>
 <translation id="6291953229176937411">Wys in vinder</translation>
@@ -5881,7 +5880,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Jou wagwoord is op die bediener verander. Meld af en meld dan weer aan.</translation>
 <translation id="7915457674565721553">Koppel aan die internet om ouerkontroles op te stel</translation>
-<translation id="7915471803647590281">Laat ons weet wat gebeur voor jy die terugvoering stuur.</translation>
 <translation id="7918257978052780342">Skryf in</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekyk</translation>

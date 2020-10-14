@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">アラート ダイアログ</translation>
 <translation id="1821985195704844674">ツリーグリッド</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">ページフッター</translation>
 <translation id="1832974991323546415">リモート デバイスで再生</translation>
 <translation id="190587075670221089">削除</translation>
 <translation id="1907737156431278478">例</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">前の月を表示</translation>
 <translation id="421884353938374759">カラー選択ツール</translation>
 <translation id="4248100235867064564">メニューバー</translation>
+<translation id="4293574643247337246">ページヘッダー</translation>
 <translation id="4360991593054037559">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE_LOW" /> と <ph name="VALID_VALUE_HIGHER" /> です。</translation>
 <translation id="4384583879834880242">Q＆A</translation>
 <translation id="4444765639179266822"><ph name="OCR_TEXT" /> というテキストのようです</translation>

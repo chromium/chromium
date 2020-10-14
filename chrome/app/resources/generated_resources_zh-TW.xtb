@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">有效期間：<ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">繼續設定</translation>
 <translation id="1436784010935106834">已移除</translation>
+<translation id="1437986450143295708">請詳細說明問題</translation>
 <translation id="144283815522798837">已選取 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 個項目</translation>
 <translation id="1442851588227551435">設定使用中的 Kerberos 票證</translation>
 <translation id="1444628761356461360">這項設定是由裝置擁有者「<ph name="OWNER_EMAIL" />」管理。</translation>
@@ -4460,7 +4461,6 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413">一般使用者不常下載 <ph name="FILE_NAME" />，代表這個檔案可能不安全。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您的網路上有一台新印表機}other{您的網路上有多台新印表機}}</translation>
-<translation id="6289626062715012577">支援多種語言的應用程式和網站會使用這個清單上第一個支援的語言。語言偏好設定會同步處理至 Chrome 瀏覽器。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370"><ph name="ORGANIZATION_NAME" /> 要求你備份資料，並將這部 Chromebook 恢復原廠設定，才能啟動 Linux。</translation>
 <translation id="6291949900244949761">網站要求存取 USB 裝置時詢問我 (建議)</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
@@ -5818,7 +5818,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">伺服器上的密碼已變更。請先登出然後重新登入。</translation>
 <translation id="7915457674565721553">如要設定家長監護功能，請連線至網際網路</translation>
-<translation id="7915471803647590281">請將發生的狀況告訴我們，然後再提供意見。</translation>
 <translation id="7918257978052780342">註冊</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以檢視「<ph name="FILENAME" />」</translation>

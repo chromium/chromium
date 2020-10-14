@@ -4503,7 +4503,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="628352644014831790">4 másodperc</translation>
 <translation id="6285120108426285413">A(z) <ph name="FILE_NAME" /> fájlt nem gyakran töltik le, és veszélyes lehet.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Új nyomtató a hálózaton}other{Új nyomtatók a hálózaton}}</translation>
-<translation id="6289626062715012577">A több nyelvet támogató alkalmazások és webhelyek az ezen a listán szereplő első támogatott nyelvet használják majd. A nyelvi beállítások szinkronizálódnak a Chrome böngészővel. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="6291163159361301370">A Linux indításához a(z) <ph name="ORGANIZATION_NAME" /> szervezet megköveteli, hogy készítsen biztonsági másolatot az adatairól, és állítsa vissza ennek a Chromebooknak a gyári beállításait.</translation>
 <translation id="6291949900244949761">Kérdezzen rá, ha valamelyik webhely hozzá szeretne férni az USB-eszközökhöz (ajánlott)</translation>
 <translation id="6291953229176937411">Me&amp;gjelenítés a Finderben</translation>
@@ -5881,7 +5880,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">A jelszó megváltozott a szerveren. Jelentkezzen ki, majd jelentkezzen be újra.</translation>
 <translation id="7915457674565721553">A Szülői felügyelet beállításához csatlakozzon az internethez</translation>
-<translation id="7915471803647590281">Kérjük, mondja el, mi történik, mielőtt elküldené a visszajelzést.</translation>
 <translation id="7918257978052780342">Feliratkozás</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> mp</translation>
 <translation id="7920363873148656176">A(z) <ph name="ORIGIN" /> megtekintheti a következő fájlt: <ph name="FILENAME" /></translation>

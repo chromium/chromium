@@ -542,7 +542,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6537924328260219877">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pregunta al administrador</translation>
-<translation id="6584550827717945790">Desactivar la accesibilidad con interruptores</translation>
 <translation id="6585808820553845416">La sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, gestionada por el administrador</translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
@@ -629,7 +628,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves ventanas a otro escritorio, es posible que se produzca un comportamiento inesperado. Puede que las notificaciones, las ventanas y los cuadros de diálogo que aparezcan después de realizar esta acción se dividan entre los escritorios.</translation>
-<translation id="7568294522609223312">Desactivar clics automáticos</translation>
 <translation id="7568637526529101738">Si haces clic con el botón derecho en el texto seleccionado o lo mantienes pulsado, el Asistente te mostrará información sobre él, como su definición o la conversión de unidades.</translation>
 <translation id="7569509451529460200">Braille y ChromeVox están habilitados</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>

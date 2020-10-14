@@ -393,6 +393,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> வரை செல்லுபடியாகும்</translation>
 <translation id="1436671784520050284">அமைவைத் தொடர்க</translation>
 <translation id="1436784010935106834">அகற்றப்பட்டது</translation>
+<translation id="1437986450143295708">சிக்கல் குறித்து விரிவாக விளக்கவும்</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="1442851588227551435">செயலில் உள்ள Kerberos டிக்கெட்டை அமைத்தல்</translation>
 <translation id="1444628761356461360">இந்த அமைப்பானது சாதனத்தின் உரிமையாளரால் <ph name="OWNER_EMAIL" /> நிர்வகிக்கப்படுகிறது.</translation>
@@ -4502,7 +4503,6 @@
 <translation id="628352644014831790">4 வினாடிகள்</translation>
 <translation id="6285120108426285413">பொதுவாக <ph name="FILE_NAME" /> பதிவிறக்கப்படாது, அத்துடன் இது ஆபத்துக்குரியதாக இருக்கலாம்.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{உங்கள் நெட்வொர்க்கில் புதிய பிரிண்டர் உள்ளது}other{உங்கள் நெட்வொர்க்கில் புதிய பிரிண்டர்கள் உள்ளன}}</translation>
-<translation id="6289626062715012577">பல மொழிகளை ஆதரிக்கும் ஆப்ஸும் இணையதளங்களும் இந்தப் பட்டியலில் முதலில் உள்ள ஆதரிக்கும் மொழியைப் பயன்படுத்தும். Chrome உலாவியில் ஒத்திசைக்கப்பட்ட மொழி விருப்பத்தேர்வுகள். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linuxஸைத் தொடங்க, உங்கள் தரவை காப்புப் பிரதி எடுத்து இந்த Chromebookகை ஆரம்பநிலை அமைப்புகளுக்கு மீட்டமைக்குமாறு <ph name="ORGANIZATION_NAME" /> வேண்டுகிறது.</translation>
 <translation id="6291949900244949761">ஒரு தளம்  USB சாதனங்களை அணுக விரும்பும் போது அனுமதி கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="6291953229176937411">&amp;கண்டுபிடிப்பானில் காண்பி</translation>
@@ -5880,7 +5880,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">சேவையகத்தில் உங்கள் கடவுச்சொல் மாற்றப்பட்டது. வெளியேறி, மீண்டும் உள்நுழையவும்.</translation>
 <translation id="7915457674565721553">பெற்றோர் கட்டுப்பாடுகளை அமைக்க இணையத்துடன் இணைக்கவும்</translation>
-<translation id="7915471803647590281">மறுமொழி அனுப்புவதற்கு முன், என்ன நடந்துகொண்டிருக்கிறது என்பதை எங்களிடம் தெரியப்படுத்துங்கள்.</translation>
 <translation id="7918257978052780342">பதிவுபெறுக</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />வி</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> தளத்தால் <ph name="FILENAME" /> கோப்பைப் பார்க்க முடியும்</translation>

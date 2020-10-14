@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">Có hiệu lực trong <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Tiếp tục thiết lập</translation>
 <translation id="1436784010935106834">Đã xóa</translation>
+<translation id="1437986450143295708">Mô tả chi tiết về vấn đề</translation>
 <translation id="144283815522798837">Đã chọn <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Đặt phiếu Kerberos đang hoạt động</translation>
 <translation id="1444628761356461360">Cài đặt này do chủ sở hữu thiết bị, <ph name="OWNER_EMAIL" /> quản lý.</translation>
@@ -4462,7 +4463,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="628352644014831790">4 giây</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> thường không được tải xuống và có thể nguy hiểm.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Máy in mới trên mạng của bạn}other{Máy in mới trên mạng của bạn}}</translation>
-<translation id="6289626062715012577">Các ứng dụng và trang web hỗ trợ nhiều ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Các tùy chọn ngôn ngữ sẽ đồng bộ hóa với trình duyệt Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Để khởi động Linux, <ph name="ORGANIZATION_NAME" /> yêu cầu bạn sao lưu dữ liệu của mình và đặt lại thiết bị Chromebook này về trạng thái cài đặt ban đầu.</translation>
 <translation id="6291949900244949761">Hỏi khi một trang web muốn truy cập vào các thiết bị USB (khuyên dùng)</translation>
 <translation id="6291953229176937411">&amp;Hiển thị trong Trình tìm kiếm</translation>
@@ -5820,7 +5820,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Đã thay đổi mật khẩu của bạn trên máy chủ. Vui lòng đăng xuất rồi đăng nhập lại.</translation>
 <translation id="7915457674565721553">Hãy kết nối Internet để thiết lập quyền kiểm soát của cha mẹ</translation>
-<translation id="7915471803647590281">Vui lòng cho chúng tôi biết điều đang xảy ra trước khi gửi phản hồi.</translation>
 <translation id="7918257978052780342">Đăng ký</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> có thể xem <ph name="FILENAME" /></translation>

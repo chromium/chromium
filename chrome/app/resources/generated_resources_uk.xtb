@@ -4463,7 +4463,6 @@
 <translation id="628352644014831790">4 секунди</translation>
 <translation id="6285120108426285413">Файл <ph name="FILE_NAME" /> рідко завантажують. Він може бути небезпечним.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Новий принтер у вашій мережі}one{Нові принтери у вашій мережі}few{Нові принтери у вашій мережі}many{Нові принтери у вашій мережі}other{Нові принтери у вашій мережі}}</translation>
-<translation id="6289626062715012577">Додатки та веб-сайти, які підтримують кілька мов, використовуватимуть першу доступну мову зі списку. Налаштування мови синхронізуються з веб-переглядачем Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Для запуску Linux <ph name="ORGANIZATION_NAME" /> вимагає створити резервні копії даних і скинути цей комп'ютер Chromebook до заводських налаштувань.</translation>
 <translation id="6291949900244949761">Запитувати, коли сайт хоче отримати доступ до пристроїв USB (рекомендовано)</translation>
 <translation id="6291953229176937411">&amp;Показати в програмі Finder</translation>
@@ -5821,7 +5820,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Ваш пароль змінено на сервері. Вийдіть і знову ввійдіть в обліковий запис.</translation>
 <translation id="7915457674565721553">Щоб налаштувати батьківський контроль, під'єднайте пристрій до Інтернету</translation>
-<translation id="7915471803647590281">Перед тим як надіслати відгук, повідомте нас, що відбувається.</translation>
 <translation id="7918257978052780342">Зареєструвати</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> може переглядати файл "<ph name="FILENAME" />"</translation>

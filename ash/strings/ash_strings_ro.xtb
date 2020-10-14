@@ -557,7 +557,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6537924328260219877">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Întreabă administratorul</translation>
-<translation id="6584550827717945790">Dezactivează accesul prin comutare</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="6614169507485700968">Ecranul de confidențialitate este activat</translation>
@@ -646,7 +645,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
 <translation id="7564874036684306347">Mutarea ferestrelor pe alt desktop poate duce la un comportament neașteptat. Notificările, ferestrele și casetele de dialog ulterioare ar putea fi împărțite între ecrane.</translation>
-<translation id="7568294522609223312">Dezactivează clicurile automate</translation>
 <translation id="7568637526529101738">Dacă dai clic dreapta sau apeși lung, Asistentul îți arată informații cum ar fi definiția sau conversia unităților pentru selecția ta.</translation>
 <translation id="7569509451529460200">Braille și ChromeVox sunt activate</translation>
 <translation id="7579778809502851308">Captură de ecran</translation>

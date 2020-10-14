@@ -557,7 +557,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6537924328260219877">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
-<translation id="6584550827717945790">Wyłączanie Switch Access</translation>
 <translation id="6585808820553845416">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
@@ -646,7 +645,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
-<translation id="7568294522609223312">Wyłączanie automatycznych kliknięć</translation>
 <translation id="7568637526529101738">Gdy klikniesz prawym przyciskiem lub przytrzymasz zaznaczony na ekranie fragment, Asystent poda Ci związane z nim informacje, takie jak definicja lub przeliczenie jednostek.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>

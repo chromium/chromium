@@ -541,7 +541,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6537924328260219877">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Đang truyền tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Hỏi quản trị viên</translation>
-<translation id="6584550827717945790">Tắt tính năng Tiếp cận bằng công tắc</translation>
 <translation id="6585808820553845416">Phiên sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6614169507485700968">Màn hình bảo vệ quyền riêng tư đang bật</translation>
@@ -628,7 +627,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7551643184018910560">Ghim vào giá</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
-<translation id="7568294522609223312">Tắt tính năng tự động nhấp</translation>
 <translation id="7568637526529101738">Khi nhấp chuột phải hoặc nhấn và giữ, Trợ lý sẽ hiển thị các thông tin như định nghĩa hoặc hoạt động chuyển đổi đơn vị để bạn lựa chọn.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
 <translation id="7579778809502851308">Chụp ảnh màn hình</translation>

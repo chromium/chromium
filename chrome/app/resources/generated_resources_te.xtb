@@ -4463,7 +4463,6 @@
 <translation id="628352644014831790">4 సెకన్లు</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> సాధారణంగా డౌన్‌లోడ్ చేయబడలేదు మరియు ప్రమాదకరమైనది కావచ్చు.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{మీ నెట్‌వర్క్‌లోని కొత్త ప్రింటర్}other{మీ నెట్‌వర్క్‌లోని కొత్త ప్రింటర్‌లు}}</translation>
-<translation id="6289626062715012577">అనేక భాషలను సపోర్ట్ చేసే యాప్‌లు, వెబ్‌సైట్‌లు లిస్ట్ లోని మొదటి సపోర్ట్ చేసే భాషను ఉపయోగించుకుంటాయి. భాష ప్రాధాన్యతలు Chrome బ్రౌజర్‌కు సింక్ చేయబడ్డాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linuxను ప్రారంభించడానికి, <ph name="ORGANIZATION_NAME" />కు మీ డేటాను బ్యాకప్ చేసి, ఈ Chromebookను ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేయాలి.</translation>
 <translation id="6291949900244949761">సైట్ USB పరికరాలను యాక్సెస్ చేయాలనుకున్నప్పుడు అడుగు (సిఫార్సు చేయబడింది)</translation>
 <translation id="6291953229176937411">శోధినిలో &amp;చూపించు</translation>
@@ -5820,7 +5819,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">సర్వర్‌లో మీ పాస్‌వర్డ్ మార్చబడింది. దచయేసి సైన్ అవుట్ చేసి, సైన్ ఇన్ చేయండి.</translation>
 <translation id="7915457674565721553">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయడానికి ఇంటర్నెట్‌కు కనెక్ట్ చేయండి</translation>
-<translation id="7915471803647590281">దయచేసి అభిప్రాయాన్ని పంపడానికి ముందు ఏమి జరిగిందో మాకు చెప్పండి.</translation>
 <translation id="7918257978052780342">నమోదు చేయి</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />సె</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" />ను చూడగలదు</translation>

@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">صالحة لمدة <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">متابعة الإعداد</translation>
 <translation id="1436784010935106834">تمت الإزالة</translation>
+<translation id="1437986450143295708">يُرجى وصف المشكلة بالتفصيل.</translation>
 <translation id="144283815522798837">عدد العناصر المحدَّدة: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">‏ضبط تذكرة Kerberos النشِطة</translation>
 <translation id="1444628761356461360">يتولى إدارة هذا الإعداد مالك الجهاز، <ph name="OWNER_EMAIL" />.</translation>
@@ -4461,7 +4462,6 @@
 <translation id="628352644014831790">4 ثوانٍ</translation>
 <translation id="6285120108426285413">لا يتم تنزيل <ph name="FILE_NAME" /> بشكل شائع وربما يكون ضارًا.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{طابعة جديدة على شبكتك}zero{طابعات جديدة على شبكتك}two{طابعتان جديدتان على شبكتك}few{طابعات جديدة على شبكتك}many{طابعات جديدة على شبكتك}other{طابعات جديدة على شبكتك}}</translation>
-<translation id="6289626062715012577">‏ستستخدم التطبيقات والمواقع الإلكترونية التي تدعم اللغات المتعدّدة أول لغة معتمَدة من هذه القائمة. وتتم مزامنة الإعدادت المفضّلة للغة مع متصفِّح Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">‏لبدء تشغيل نظام التشغيل Linux، تتطلّب شركة <ph name="ORGANIZATION_NAME" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإعادة ضبط جهاز Chromebook هذا على الإعدادات الأصلية.</translation>
 <translation id="6291949900244949761">‏طلب الإذن في حال محاولة أحد المواقع الوصول إلى أجهزة USB (مُوصى به)</translation>
 <translation id="6291953229176937411">إ&amp;ظهار في الباحث</translation>
@@ -5819,7 +5819,6 @@
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
 <translation id="7912080627461681647">تم تغيير كلمة المرور على الخادم. يُرجى الخروج ثم تسجيل الدخول مجددًا.</translation>
 <translation id="7915457674565721553">الاتصال بالإنترنت لإعداد أدوات الرقابة الأبوية</translation>
-<translation id="7915471803647590281">يُرجى إخبارنا بما يحدث قبل إرسال التعليقات.</translation>
 <translation id="7918257978052780342">تسجيل</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> ثوانٍ</translation>
 <translation id="7920363873148656176">بإمكان <ph name="ORIGIN" /> عرض الملف <ph name="FILENAME" />.</translation>

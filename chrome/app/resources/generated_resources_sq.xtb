@@ -4459,7 +4459,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="628352644014831790">4 sekonda</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer i ri në rrjetin tënd}other{Printerë të rinj në rrjetin tënd}}</translation>
-<translation id="6289626062715012577">Aplikacionet dhe sajtet e uebit që mbështesin shumë gjuhë do të përdorin gjuhën e parë të mbështetur nga kjo listë. Preferencat e gjuhës sinkronizohen te shfletuesi Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Për të nisur Linux, <ph name="ORGANIZATION_NAME" /> kërkon që të rezervosh të dhënat e tua dhe ta rivendosësh këtë Chromebook te cilësimet e fabrikës.</translation>
 <translation id="6291949900244949761">Pyet kur një sajt dëshiron të ketë qasje në pajisje me USB (rekomandohet)</translation>
 <translation id="6291953229176937411">Shfaqe te "Gjetësi"</translation>
@@ -5816,7 +5815,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Fjalëkalimi yt është ndryshuar në server. Dil dhe më pas identifikohu përsëri.</translation>
 <translation id="7915457674565721553">Lidhu në internet për të konfiguruar kontrollet prindërore</translation>
-<translation id="7915471803647590281">Na trego çfarë po ndodh, para se të dërgosh komentin.</translation>
 <translation id="7918257978052780342">Regjistroje</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> mund ta shikojë skedarin <ph name="FILENAME" /></translation>

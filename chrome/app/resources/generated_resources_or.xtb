@@ -4493,7 +4493,6 @@
 <translation id="628352644014831790">4 ସେକେଣ୍ଡ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ସାଧାରଣତଃ ଡାଉନ୍‌ଲୋଡ୍ କରାଯାଏ ନାହିଁ ଏବଂ ଏହା ହୁଏତ ବିପଜ୍ଜନକ ହୋଇଥାଇପାରେ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ଆପଣଙ୍କ ନେଟ୍‌ୱାର୍କରେ ନୂତନ ପ୍ରିଣ୍ଟର୍}other{ଆପଣଙ୍କ ନେଟ୍‌ୱାର୍କରେ ନୂତନ ପ୍ରିଣ୍ଟର୍‌ଗୁଡ଼ିକ}}</translation>
-<translation id="6289626062715012577">ଏକାଧିକ ଭାଷାକୁ ସମର୍ଥନ କରୁଥିବା ଆପ୍ ଏବଂ ୱେବସାଇଟଗୁଡ଼ିକ ଏହି ତାଲିକାରୁ ପ୍ରଥମ ସମର୍ଥିତ ଭାଷାକୁ ବ୍ୟବହାର କରିବ। ଭାଷାର ପସନ୍ଦଗୁଡ଼ିକୁ Chrome ବ୍ରାଉଜରରେ ସିଙ୍କ କରନ୍ତୁ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ଆରମ୍ଭ କରିବା ନିମନ୍ତେ, <ph name="ORGANIZATION_NAME" /> ଆପଣ ଆପଣଙ୍କ ଡାଟା ବ୍ୟାକଅପ୍ କରିବା ଏବଂ ଏହି Chromebook ଫ୍ୟାକ୍ଟୋରୀ ସେଟିଂସକୁ ରିସେଟ୍ କରିବା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="6291949900244949761">ଯେତେବେଳେ ଏକ ସାଇଟ୍‍ USB ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ଚାହୁଁଛି, ସେତେବେଳେ ପଚାରନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="6291953229176937411">&amp;ଫାଇଣ୍ଡର୍‌ରେ ଦେଖାନ୍ତୁ</translation>
@@ -5873,7 +5872,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">ସର୍ଭର୍‌ରେ ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ଦୟାକରି ସାଇନ୍‌ ଆଉଟ୍‌ କରନ୍ତୁ, ତା’ପରେ ପୁଣି ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="7915457674565721553">ବାପାମାଙ୍କ ଦ୍ୱାରା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ସେଟ୍‌ଅପ୍ କରିବା ପାଇଁ ଇଣ୍ଟର୍ନେଟ୍ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
-<translation id="7915471803647590281">ମତାମତ ପଠାଇବା ପୂର୍ବରୁ ଦୟାକରି କ'ଣ ଘଟିଛି ତାହା ଆମକୁ କୁହନ୍ତୁ।</translation>
 <translation id="7918257978052780342">ପଞ୍ଜିକରଣ କରନ୍ତୁ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ସେ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> ଦେଖିପାରିବ</translation>

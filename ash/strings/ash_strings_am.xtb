@@ -557,7 +557,6 @@
 <translation id="6537924328260219877">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">ወደ <ph name="RECEIVER_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="6559976592393364813">አስተዳዳሪን ይጠይቁ</translation>
-<translation id="6584550827717945790">የማብሪያ/ማጥፊያ መዳረሻን ያጥፉ</translation>
 <translation id="6585808820553845416">ክፍለ-ጊዜ በ<ph name="SESSION_TIME_REMAINING" /> ውስጥ ያበቃል።</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በአስተዳዳሪዎ የሚቀናበር</translation>
 <translation id="6614169507485700968">የግላዊነት ማያ ገጽ በርቷል</translation>
@@ -646,7 +645,6 @@
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7561982940498449837">ምናሌን ዝጋ</translation>
 <translation id="7564874036684306347">መስኮትን ወደ ሌላ ዴስክቶፕ መውሰድ ያልተጠበቀ ባህሪን ሊያስከትል ይችላል። ተከትለው የሚመጡ ማሳወቂያዎችን፣ መስኮቶች እና መገናኛዎች በዴስክቶፖች መካከል ሊከፈሉ ይችላሉ።</translation>
-<translation id="7568294522609223312">ራስሰር ጠቅ ማድረጎችን ያጥፉ</translation>
 <translation id="7568637526529101738">በቀኝ ጠቅታ ወይም ረጅም መጫን አማካኝነት ረዳት እርስዎ ለመረጡት እንደ ፍቺ ወይም የአሃድ ልወጣ ያለ መረጃን ያሳያል።</translation>
 <translation id="7569509451529460200">ብሬይል እና ChromeVox ነቅተዋል</translation>
 <translation id="7579778809502851308">የማያ ገጽ ቀረጻ</translation>

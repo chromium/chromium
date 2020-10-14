@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1276998909102132017">Изображения в галерията</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1473110567575736769">Таймер за 3 секунди</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Нищо не е записано</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
 <translation id="3810838688059735925">Видео</translation>
+<translation id="4000398125663085899">Новите снимки и видеоклипове вече ще се запазват в папка в приложението Файлове: „Моите файлове &gt; Камера“</translation>
 <translation id="4118525110028899586">Пауза на записа</translation>
 <translation id="4279490309300973883">Дублиране</translation>
 <translation id="4329152592498422850">Превключвател за правене на квадратна снимка</translation>
@@ -62,6 +64,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="712848772518857951">Наистина ли искате да премахнете <ph name="COUNT" /> елемента?</translation>
+<translation id="7134221860976209830">Таймер за 10 секунди</translation>
 <translation id="7243947652761655814">Разделителна способност за видеоклиповете</translation>
 <translation id="7337660886763914220">Грешки във файловата система.</translation>
 <translation id="7557677699350329807">Превключване към следващата камера</translation>

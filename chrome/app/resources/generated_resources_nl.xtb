@@ -4463,7 +4463,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="628352644014831790">4 seconden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nieuwe printer in je netwerk}other{Nieuwe printers in je netwerk}}</translation>
-<translation id="6289626062715012577">Apps en websites die meerdere talen ondersteunen, gebruiken de eerste ondersteunde taal uit deze lijst. Synchroniseer taalvoorkeuren naar Chrome-browser. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Als je Linux wilt starten, vereist <ph name="ORGANIZATION_NAME" /> dat je een back-up maakt van je gegevens en dat je deze Chromebook terugzet naar de fabrieksinstellingen.</translation>
 <translation id="6291949900244949761">Goedkeuring vragen wanneer een site toegang wil hebben tot USB-apparaten (aanbevolen)</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>
@@ -5820,7 +5819,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Je wachtwoord is gewijzigd op de server. Log uit en weer in.</translation>
 <translation id="7915457674565721553">Maak verbinding met internet om ouderlijk toezicht in te stellen</translation>
-<translation id="7915471803647590281">Vertel ons wat er aan de hand is voordat je de feedback verzendt.</translation>
 <translation id="7918257978052780342">Aanmelden</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>

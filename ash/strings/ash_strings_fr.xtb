@@ -541,7 +541,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6537924328260219877">Force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Diffusion vers <ph name="RECEIVER_NAME" />…</translation>
 <translation id="6559976592393364813">Se renseigner auprès de l'administrateur</translation>
-<translation id="6584550827717945790">Désactiver Switch Access</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
@@ -628,7 +627,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
-<translation id="7568294522609223312">Désactiver les clics automatiques</translation>
 <translation id="7568637526529101738">Si vous effectuez un clic droit ou appuyez de manière prolongée sur cette fonctionnalité, l'Assistant vous fournit des informations, comme une définition ou une conversion d'unités, en fonction de l'élément sélectionné.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>

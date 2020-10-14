@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1276998909102132017">갤러리 이미지</translation>
 <translation id="1430915738399379752">인쇄</translation>
+<translation id="1473110567575736769">3초 타이머</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">녹화된 동영상이 없습니다.</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">세로 모드 사진을 찍을 수 없습니다.</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> 파일을 삭제하시겠습니까?</translation>
 <translation id="3810838688059735925">동영상</translation>
+<translation id="4000398125663085899">이제 새로운 사진과 동영상이 Files 앱의 내 파일 &gt; 카메라 폴더에 저장됩니다.</translation>
 <translation id="4118525110028899586">녹화 일시중지</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4329152592498422850">스퀘어 사진 촬영으로 전환</translation>
@@ -62,6 +64,7 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="698156982839284926">3초</translation>
 <translation id="712848772518857951">항목 <ph name="COUNT" />개를 삭제하시겠습니까?</translation>
+<translation id="7134221860976209830">10초 타이머</translation>
 <translation id="7243947652761655814">동영상 해상도</translation>
 <translation id="7337660886763914220">파일 시스템 오류가 발생했습니다.</translation>
 <translation id="7557677699350329807">다음 카메라로 전환</translation>

@@ -4457,7 +4457,6 @@
 <translation id="628352644014831790">४ सेकेन्ड</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> लाई सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{तपाईँको नेटवर्कमा नयाँ प्रिन्टर}other{ तपाईँको नेटवर्कमा नयाँ प्रिन्टरहरू}}</translation>
-<translation id="6289626062715012577">एकभन्दा बढी भाषा प्रयोग गर्न मिल्ने एप र वेबसाइटहरूले यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषा प्रयोग गर्ने छन्। भाषासम्बन्धी प्राथमिकताहरू Chrome ब्राउजरमा सिंक हुन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux सुरु गर्न <ph name="ORGANIZATION_NAME" /> को मागअनुसार तपाईंले आफ्नो डेटा ब्याकअप गरी यो Chromebook रिसेट गरेर फ्याक्ट्री सेटिङमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="6291949900244949761">कुनै साइटले USB यन्त्रहरूमाथि पहुँच राख्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6291953229176937411">&amp;फोल्डरमा देखाउनुहोस्</translation>
@@ -5815,7 +5814,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">सर्भरमा तपाईंको पासवर्ड परिवर्तन गरिएको छ। कृपया साइन आउट गर्नुहोस्, त्यसपछि फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="7915457674565721553">अभिभावकीय नियन्त्रणहरू सेट अप गर्न इन्टरनेटमा जोडिनुहोस्</translation>
-<translation id="7915471803647590281">कृपया प्रतिक्रिया पठाउन भन्दा अगाडि हामीलाई के भइरहेको छ भनेर भन्नुहोस्।</translation>
 <translation id="7918257978052780342">भर्ना गर्नुहोस्</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकेन्ड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> हेर्न सक्छ</translation>

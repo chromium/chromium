@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Се отвораат датотеките на Linux…</translation>
 <translation id="1547964879613821194">канадско англиска</translation>
 <translation id="1556189134700913550">Примени на сите</translation>
+<translation id="1561842594491319104">Уреди со Chrome</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
 <translation id="158809615184981282">Фарска тастатура</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">Транслитерација (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Датотеки на Windows</translation>
 <translation id="3078461028045006476">Споделете со <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Уреди Chromebit</translation>
 <translation id="3116361045094675131">САД тастатура</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ГОТОВО</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4823651846660089135">Уредот е само за читање</translation>
 <translation id="4839847978919684242">Избрани ставки: <ph name="SELCTED_FILES_COUNT" /></translation>
+<translation id="4843566743023903107">Уреди Chromebase</translation>
 <translation id="4849981557599196363">германски (Белгија)</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">германски</translation>
@@ -469,6 +472,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Дајте им дозвола на апликациите на Linux да ги менуваат датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ставки</translation>
+<translation id="5957366693331451795">Уреди Chromebox</translation>
 <translation id="5982621672636444458">Подреди опции</translation>
 <translation id="6005282720244019462">латиноамериканска тастатура</translation>
 <translation id="6007237601604674381">Потегот не успеа. <ph name="ERROR_MESSAGE" /></translation>
@@ -628,6 +632,7 @@
     <ph name="MARKUP_4" />да избришете датотеки од папката Преземања<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Форматирање уред</translation>
 <translation id="7799329977874311193">Документ HTML</translation>
+<translation id="7801354353640549019">Уреди Chromebook</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7821462174190887129">Најдени се <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

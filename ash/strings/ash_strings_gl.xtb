@@ -542,7 +542,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6537924328260219877">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, batería do teléfono ao <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Emitindo en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pedirllo ao administrador</translation>
-<translation id="6584550827717945790">Desactivar a función Acceso con interruptores</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
@@ -629,7 +628,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7551643184018910560">Fixar no estante</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
-<translation id="7568294522609223312">Desactivar clics automáticos</translation>
 <translation id="7568637526529101738">Se fas clic co botón dereito ou realizas unha pulsación longa, o Asistente móstrache información como a definición ou a conversión de unidades relacionada coa túa selección.</translation>
 <translation id="7569509451529460200">Activouse o braille e ChromeVox</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>

@@ -557,7 +557,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6537924328260219877">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Notiek apraide uz ierīci <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Jautājiet administratoram</translation>
-<translation id="6584550827717945790">Slēdžu piekļuves izslēgšana</translation>
 <translation id="6585808820553845416">Atlikušais laiks līdz šīs sesijas beigām: <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>
@@ -646,7 +645,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
 <translation id="7564874036684306347">Logu pārvietošana uz citu darbvirsmu var izraisīt neparedzētu darbību. Turpmākie paziņojumi, logi un dialoglodziņi var tikt sadalīti pa darbvirsmām.</translation>
-<translation id="7568294522609223312">Izslēgt automātiskos klikšķus</translation>
 <translation id="7568637526529101738">Ja noklikšķināsiet uz satura ar peles labo pogu vai nospiedīsiet un turēsiet saturu, Asistents parādīs ar atlasi saistītu informāciju, piemēram, definīciju vai citās mērvienībās izteiktu vērtību.</translation>
 <translation id="7569509451529460200">Braila raksts un ChromeVox ir iespējoti</translation>
 <translation id="7579778809502851308">Veidot ekrānuzņēmumu</translation>

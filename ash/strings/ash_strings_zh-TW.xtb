@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">詢問系統管理員</translation>
-<translation id="6584550827717945790">關閉開關功能</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致未預期的行為。後續的通知、視窗和對話方塊可能會分開顯示在不同桌面上。</translation>
-<translation id="7568294522609223312">關閉自動點擊功能</translation>
 <translation id="7568637526529101738">按一下或長按滑鼠右鍵，Google 助理即可針對你選取的內容顯示定義或單位轉換等資訊。</translation>
 <translation id="7569509451529460200">點字模式和 ChromeVox 已啟用</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>

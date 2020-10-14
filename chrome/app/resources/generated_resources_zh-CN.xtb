@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">有效期：<ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">继续设置</translation>
 <translation id="1436784010935106834">已删除</translation>
+<translation id="1437986450143295708">请详细描述您遇到的问题</translation>
 <translation id="144283815522798837">已选择 <ph name="NUMBER_OF_ITEMS_SELECTED" /> 项</translation>
 <translation id="1442851588227551435">设置有效的 Kerberos 票据</translation>
 <translation id="1444628761356461360">此设置由设备所有者<ph name="OWNER_EMAIL" />管理。</translation>
@@ -4457,7 +4458,6 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 的下载方式实属异常，因此它可能存在危险。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您的网络中有 1 台新打印机}other{您的网络中有多台新打印机}}</translation>
-<translation id="6289626062715012577">支持多种语言的应用和网站将会使用此列表中第一种受支持的语言。语言偏好设置会同步到 Chrome 浏览器。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">根据 <ph name="ORGANIZATION_NAME" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6291949900244949761">当网站要访问 USB 设备时询问您（推荐）</translation>
 <translation id="6291953229176937411">在 Finder 中显示(&amp;S)</translation>
@@ -5815,7 +5815,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">您已在服务器上更改密码。请先退出，然后重新登录。</translation>
 <translation id="7915457674565721553">请连接到互联网以设置家长控制</translation>
-<translation id="7915471803647590281">请先告诉我们所发生的情况，然后再发送反馈。</translation>
 <translation id="7918257978052780342">注册</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>

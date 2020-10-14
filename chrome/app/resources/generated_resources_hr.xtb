@@ -4502,7 +4502,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="628352644014831790">Četiri sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> obično se ne preuzima i mogla bi biti opasna.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Novi pisač na vašoj mreži}one{Novi pisači na vašoj mreži}few{Novi pisači na vašoj mreži}other{Novi pisači na vašoj mreži}}</translation>
-<translation id="6289626062715012577">Aplikacije i web-lokacije koje podržavaju više jezika koristit će prvi podržani jezik s ovog popisa. Postavke jezika sinkroniziraju se s preglednikom Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Da biste pokrenuli Linux, <ph name="ORGANIZATION_NAME" /> zahtijeva da sigurnosno kopirate svoje podatke i vratite ovaj Chromebook na tvorničke postavke.</translation>
 <translation id="6291949900244949761">Kada web-lokacija želi pristupiti USB uređajima, prikaži upit (preporučeno)</translation>
 <translation id="6291953229176937411">&amp;Prikaži u programu Finder</translation>
@@ -5880,7 +5879,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Zaporka se promijenila na poslužitelju. Odjavite se pa se ponovo prijavite.</translation>
 <translation id="7915457674565721553">Povežite se s internetom da biste postavili Roditeljski nadzor</translation>
-<translation id="7915471803647590281">Recite nam što se događa prije nego što nam pošaljete povratnu informaciju.</translation>
 <translation id="7918257978052780342">Registriraj</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> može pregledavati datoteku <ph name="FILENAME" /></translation>

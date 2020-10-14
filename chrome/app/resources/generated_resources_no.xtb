@@ -4497,7 +4497,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> lastes sjelden ned og kan være farlig.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny skriver på nettverket}other{Nye skrivere på nettverket}}</translation>
-<translation id="6289626062715012577">Apper og nettsteder som støtter flere språk, bruker det første støttede språket på denne listen. Språkpreferansene synkroniseres med Chrome-nettleseren. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Før du kan starte Linux, krever <ph name="ORGANIZATION_NAME" /> at du sikkerhetskopierer dataene dine og tilbakestiller Chromebook til fabrikkstandard.</translation>
 <translation id="6291949900244949761">Spør når et nettsted vil ha tilgang til USB-enheter (anbefales)</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
@@ -5875,7 +5874,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Passordet ditt er endret på tjeneren. Logg av og på igjen.</translation>
 <translation id="7915457674565721553">Koble til internett for å sette opp foreldrekontroll</translation>
-<translation id="7915471803647590281">Fortell oss hva som skjer før du sender tilbakemeldingen.</translation>
 <translation id="7918257978052780342">Registrer deg</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan se <ph name="FILENAME" /></translation>

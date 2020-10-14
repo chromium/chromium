@@ -558,7 +558,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6537924328260219877">Signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Küsige administraatorilt</translation>
-<translation id="6584550827717945790">Lülitiga juurdepääsu väljalülitamine</translation>
 <translation id="6585808820553845416">Seansi lõpuni on jäänud <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="6614169507485700968">Privaatsuskuva on sees</translation>
@@ -647,7 +646,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7551643184018910560">Riiulile kinnitamine</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
 <translation id="7564874036684306347">Kui teisaldate aknad teisele töölauale, võib tagajärjeks olla ootamatu käitumine. Järgmised märguanded, aknad ja dialoogid võivad jaguneda eri töölaudade vahel.</translation>
-<translation id="7568294522609223312">Automaatsete klikkide väljalülitamine</translation>
 <translation id="7568637526529101738">Paremkliki või pika vajutusega kuvab assistent teavet, näiteks teie valitud üksuse definitsiooni või ühiku teisenduse.</translation>
 <translation id="7569509451529460200">Punktkiri ja ChromeVox on lubatud</translation>
 <translation id="7579778809502851308">Ekraanikuva jäädvustamine</translation>

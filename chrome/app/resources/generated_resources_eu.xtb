@@ -4463,7 +4463,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="628352644014831790">4 segundo</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ez da deskargatzen sarriegi, eta arriskutsua izan liteke.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Inprimagailu berria dago sarean}other{Inprimagailu berriak daude sarean}}</translation>
-<translation id="6289626062715012577">Hizkuntza bat baino gehiago onartzen dituzten aplikazioek eta webguneek hizkuntza onartuen zerrendan agertzen den lehenengo hizkuntza erabiliko dute. Hizkuntza-hobespenak Chrome arakatzailearekin sinkronizatzen dira. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux abiarazteko, datuen babeskopia egitea eta Chromebook honen jatorrizko ezarpenak berrezartzea eskatzen du <ph name="ORGANIZATION_NAME" /> erakundeak.</translation>
 <translation id="6291949900244949761">Eskatu nire baimena webguneren batek USB gailuak atzitu nahi dituenean (gomendatua)</translation>
 <translation id="6291953229176937411">&amp;Erakutsi Finder-en</translation>
@@ -5821,7 +5820,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Pasahitza aldatu egin da zerbitzarian. Amaitu saioa eta has ezazu berriro.</translation>
 <translation id="7915457674565721553">Konektatu Internetera gurasoen murriztapenak konfiguratzeko</translation>
-<translation id="7915471803647590281">Iritzia bidali aurretik, esan iezaguzu zer gertatzen ari den.</translation>
 <translation id="7918257978052780342">Erregistratu</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> ikus dezake</translation>

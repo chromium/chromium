@@ -80,7 +80,6 @@
 <translation id="1095209545735032039">Bloquear la API Serial en estos sitios web</translation>
 <translation id="1096105751829466145">Proveedor de búsquedas predeterminadas</translation>
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
-<translation id="1111470455889178048">Enviar subidas y descargas de usuario para analizarlas</translation>
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
 <translation id="1118093128235245168">Permitir que los sitios web pidan permiso al usuario para acceder a un dispositivo USB conectado</translation>
 <translation id="1128717055763152639">Permite definir una lista de patrones de URL donde se especifica qué sitios web pueden mostrar contenido mixto (es decir, contenido HTTP en sitios web HTTPS) bloqueable (es decir, activo), y para qué contenido mixto opcionalmente bloqueable se inhabilitarán las actualizaciones.
@@ -445,13 +444,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1727914891824633693">Permitir el uso de Lacros</translation>
 <translation id="1736269219679256369">Permitir que se continúe desde la página de advertencia de SSL</translation>
 <translation id="1745973235372964482">No permitir archivos protegidos con contraseña</translation>
-<translation id="1749815929501097806">Permite establecer los Términos del Servicio que el usuario debe aceptar antes de empezar una sesión de cuenta de dispositivo local.
-
-      Si se establece esta política, <ph name="PRODUCT_OS_NAME" /> descargará los Términos del Servicio y las presentará al usuario siempre que se haya iniciado una sesión de cuenta de dispositivo local.
-
-     Si no se establece esta política, no se mostrarán los Términos del Servicio.
-
-      La política se debe establecer en una URL desde la que <ph name="PRODUCT_OS_NAME" /> podrá descargar los Términos del Servicio. Las Condiciones de Servicio deben ser texto sin formato, que actúe como texto/sin formato del tipo de MIME. No se permite ningún tipo de marcado.</translation>
 <translation id="1750315445671978749">Bloquear todas las descargas</translation>
 <translation id="1760951637494635692">Permitir la API Serial en estos sitios web</translation>
 <translation id="1765512315997108908">Controla qué impresoras de la política <ph name="DEVICE_PRINTERS_POLICY_NAME" /> están disponibles para los usuarios.
@@ -930,16 +922,6 @@ Si se le asigna el valor "False", la pantalla de privacidad siempre estará inha
 Si se asigna un valor a esta política, el usuario no podrá anularlo.
 
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
-<translation id="2423038190900972331">Controla cómo comprueba <ph name="PRODUCT_NAME" /> si los datos subidos, descargados, pegados desde el portapapeles o arrastrados y soltados han infringido las normas de protección de datos sensibles.
-
-      Si no se define esta política o se le asigna el valor "Ninguno", <ph name="PRODUCT_NAME" /> no comprobará ningún dato para detectar si se ha infringido las normas de protección de datos sensibles.
-
-      Si se le asigna el valor "Check downloads" y el usuario intenta descargar un archivo de una URL incluida en la política <ph name="DOMAINS_TO_CHECK_COMPLIANCE_OF_DOWNLOADED_CONTENT_POLICTY_NAME" />, <ph name="PRODUCT_NAME" /> comprobará si los datos descargados cumplen las normas de empresa.
-
-      Si se le asigna el valor "Check uploads" y el usuario intenta subir un archivo a un dominio que no esté incluido en la política <ph name="DOMAINS_TO_NOT_CHECK_COMPLIANCE_OF_UPLOADED_CONTENT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> comprobará si el archivo subido o los datos pegados desde el portapapeles o arrastrados y soltados cumplen las normas empresariales.
-
-      Si se le asigna el valor "Check uploads and downloads", <ph name="PRODUCT_NAME" /> se comportará según las reglas descritas en los valores "Check downloads" y "Check uploads".
-      </translation>
 <translation id="2423255396068675416">Si se habilita la política o no se establece, los usuarios podrán ejecutar <ph name="PRODUCT_CROSTINI_NAME" />, siempre y cuando las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> estén habilitadas. Si se inhabilita la política, se desactivará <ph name="PRODUCT_CROSTINI_NAME" /> para el usuario. En caso de inhabilitar la política, esto se aplicará a los nuevos contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se empiecen a usar, pero no a los que ya estén ejecutándose.</translation>
 <translation id="2424098959650060417">Controla qué impresoras de la política <ph name="BULK_PRINTERS_POLICY_NAME" /> están disponibles para los usuarios.
 
@@ -1048,7 +1030,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
 <translation id="2548572254685798999">Recoger información sobre Navegación segura</translation>
 <translation id="2550593661567988768">Solo impresión por una cara</translation>
-<translation id="2551520365302988324">Enviar subidas de usuario para analizarlas</translation>
 <translation id="2552318891854145040">Si se establece esta política, se definirá una lista de marcadores en la que cada uno es un diccionario con las claves "<ph name="NAME" />" y "<ph name="URL_LABEL" />". Estas claves contienen el nombre y la URL de destino del marcador. Los administradores podrán configurar una subcarpeta definiendo un marcador sin una clave "<ph name="URL_LABEL" />", pero con una clave "<ph name="CHILDREN" />" adicional. Esta clave también contiene una lista de marcadores, algunos de los cuales también pueden ser carpetas. Chrome modifica las URL incompletas como si se enviasen mediante la barra de direcciones. Por ejemplo, "<ph name="GOOGLE_COM" />" se convierte en "<ph name="HTTPS_GOOGLE_COM" />".
 
       Los usuarios no podrán cambiar las carpetas en las que están colocados los marcadores, pero podrán ocultarlas de la barra de marcadores. El nombre predeterminado de la carpeta de marcadores administrados es "Marcadores administrados", pero se puede cambiar si se añade un nuevo subdiccionario a la política con una única clave llamada "<ph name="TOPLEVEL_NAME" />" que tenga asignado como valor el nombre que se quiera asignar a la carpeta. Los marcadores administrados no se sincronizan con la cuenta de usuario y las extensiones no pueden modificarlos.</translation>
@@ -1108,11 +1089,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2649896281375932517">Permitir que los usuarios decidan</translation>
 <translation id="2650049181907741121">Acción que se realiza cuando el usuario cierra la tapa</translation>
 <translation id="2658653824183107970">Permite usar la implementación antigua de <ph name="CORS" /> en vez de la nueva implementación de <ph name="CORS" />.</translation>
-<translation id="2659019163577049044">Si este ajuste está habilitado, el usuario podrá configurar sus dispositivos para sincronizar SMS entre su teléfono y su Chromebook. Ten en cuenta que, si se permite esta política, los usuarios deben habilitar la función completando un proceso de configuración. Después, podrán enviar y recibir SMS con sus Chromebooks.
-
-      Si este ajuste está inhabilitado, los usuarios no podrán configurar la sincronización de SMS.
-
-      Si no se define esta política, no estará disponible de forma predeterminada para los usuarios administrados pero sí lo estará para los no administrados.</translation>
 <translation id="2660846099862559570">No utilizar nunca un proxy</translation>
 <translation id="2664682171745499686">Eliminar las advertencias de dominio similares en dominios</translation>
 <translation id="2665422249821137126">Habilitar el cursor grande en la pantalla de inicio de sesión</translation>
@@ -1805,7 +1781,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Para consultar más información sobre <ph name="CORS" />, visita <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
-<translation id="3624515566460517364">Comprueba si se ha producido una infracción de las normas de protección de datos sensibles en las subidas y descargas</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
 <translation id="3631099945620529777">Si se asigna el valor "False" a esta política, se inhabilita el botón Finalizar proceso en el administrador de tareas.
@@ -1961,7 +1936,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
           Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados.</translation>
 <translation id="3877517141460819966">Modo de autenticación de dos factores integrado</translation>
-<translation id="3879196885908353077">Comprueba si se han infringido las normas de protección de datos sensibles en las descargas</translation>
 <translation id="3879208481373875102">Configurar lista de aplicaciones web de instalación forzada</translation>
 <translation id="388237772682176890">Esta política está obsoleta en M53 y se ha quitado de M54, ya que se ha retirado la compatibilidad con SPDY/3.1.
 
@@ -2060,11 +2034,6 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se le asigna el valor "False", la función Autocompletar nunca sugerirá ni completará información de tarjetas de crédito, ni tampoco guardará la información adicional de tarjetas de crédito que puedan enviar los usuarios mientras navegan por la Web.</translation>
 <translation id="3993187551086357615">Retrasar tanto las subidas como las descargas hasta conocer el resultado del análisis</translation>
 <translation id="3997519162482760140">URLs a las que los dispositivos de captura de vídeo podrán acceder en las páginas de inicio de sesión con SAML</translation>
-<translation id="4001275826058808087">Los administradores de TI para dispositivos de empresa pueden utilizar esta opción para controlar si permiten que los usuarios canjeen ofertas a través del servicio de registro de Chrome OS.
-
-Si esta política se establece en True o no se establece, los usuarios podrán canjear ofertas a través del servicio de registro de Chrome OS.
-
-Si esta política se establece en False, el usuario no podrá canjear ofertas.</translation>
 <translation id="4008507541867797979">Si esta política no se establece o el valor correspondiente se establece en "True", <ph name="PRODUCT_OS_NAME" /> mostrará los usuarios existentes en la pantalla de inicio de sesión y permitirá seleccionar uno de ellos.
 
       Si el valor correspondiente a esta política se establece en "False", <ph name="PRODUCT_OS_NAME" /> no mostrará a los usuarios existentes en la pantalla de inicio de sesión. Se mostrará la pantalla de inicio de sesión normal, en la que solicita la dirección de correo electrónico del usuario y su contraseña o teléfono, o la pantalla intersticial SAML (si se ha activado mediante la política <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a menos que se configure una sesión administrada. Si se ha configurado una sesión administrada, solo se mostrarán las cuentas de dicha sesión, lo que permite seleccionar una de ellas.
@@ -2237,13 +2206,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si no se asigna ningún valor a esta política, se utilizará la ruta de perfil de itinerancia predeterminada.</translation>
 <translation id="4239720644496144453">La caché no se utiliza en las aplicaciones para Android. Si varios usuarios instalan la misma aplicación para Android, se descargará una nueva para cada uno de ellos.</translation>
-<translation id="4241202391219483189">Esta política controla si el usuario puede importar o quitar certificados de CA mediante el administrador de certificados.
-
-      Si se selecciona "Permitir que los usuarios gestionen todos los certificados" o no se selecciona nada, los usuarios podrán editar la configuración de confianza de todos los certificados de CA, quitar certificados importados por usuarios e importar certificados.
-
-      Si se elige "Permitir que los usuarios gestionen certificados de usuario", solo podrán gestionar certificados importados por usuarios y no podrán cambiar la configuración de confianza de los certificados integrados.
-
-      Si se selecciona ''No permitir que los usuarios gestionen certificados'', los usuarios no podrán gestionar certificados de CA, solo verlos.</translation>
 <translation id="4242223728343693100">Si asignas un valor a esta política, podrás crear una lista de patrones de URL donde se especifique qué sitios web no podrán establecer cookies.
 
       Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios web, si se ha definido previamente. Si no se ha definido previamente, se aplicará la configuración personal del usuario.
@@ -2314,7 +2276,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="4415603335307944578">Si se asigna el valor "True" a esta política o no se configura, el navegador volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.
 
       Si se le asigna el valor "False", el navegador no volverá a mostrar la página de bienvenida la primera vez que inicies el navegador después de actualizar el SO.</translation>
-<translation id="4418726081189202489">Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no podrá enviar consultas de forma ocasional a un servidor de Google para obtener una marca de tiempo precisa. Estas consultas se habilitarán si le asigna el valor true a esta política o si no se configura.</translation>
 <translation id="4423597592074154136">Especificar configuración de proxy manualmente</translation>
 <translation id="4432762137771104529">Habilita los informes ampliados de Navegación segura</translation>
 <translation id="443454694385851356">Antiguos (no seguro)</translation>
@@ -2364,7 +2325,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       En dispositivos no administrados, la notificación se muestra siempre.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
-<translation id="4517928394515633751">Analizar las descargas de los usuarios con Navegación segura</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="4529868888205510667">Si se asigna el valor "true" a esta política o no se le asigna ninguno, se permite a los usuarios utilizar ARC, a menos que ARC se haya desactivado de otra forma. Si se le asigna el valor "false", no se permite usar ARC a los usuarios no afiliados.
 
@@ -2465,19 +2425,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Esta política está obsoleta. Usa la política <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" /> en su lugar.</translation>
 <translation id="4668325077104657568">Configuración de imágenes predeterminada</translation>
-<translation id="4668497019777708116">Especifica la lista de aplicaciones que se pueden habilitar como aplicaciones para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
-
-      Si la aplicación para tomar notas preferida está habilitada en la pantalla de bloqueo, esta contendrá un elemento de UI para iniciar dicha aplicación.
-      Cuando se inicie, la aplicación podrá abrir una ventana de aplicación en la parte superior de la pantalla de bloqueo y crear elementos de datos (notas) en dicha pantalla. La aplicación también podrá importar notas ya creadas a la sesión del usuario principal cuando la sesión esté desbloqueada. Actualmente, solo se admiten las aplicaciones para tomar notas de Chrome en la pantalla de bloqueo.
-
-      Si se configura esta política, el usuario solo podrá habilitar aplicaciones en la pantalla de bloqueo si el ID de extensión de la aplicación está incluido en los valores de la lista de políticas.
-      Como consecuencia, configurar esta política con una lista vacía inhabilitará por completo la toma de notas en la pantalla de bloqueo.
-      Ten en cuenta que aunque la política incluya el ID de una aplicación, esto no significa que el usuario pueda habilitarla como aplicación para tomar notas en la pantalla de bloqueo. Por ejemplo, en Chrome 61, la plataforma también restringe el conjunto de aplicaciones disponibles.
-
-      Si no se define esta política, no se restringirá el conjunto de aplicaciones que el usuario puede habilitar en la pantalla de bloqueo.
-
-
-      Esta política está obsoleta. Usa la política <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> en su lugar.</translation>
 <translation id="4670865688564083639">Mínimo:</translation>
 <translation id="467236746355332046">Funciones admitidas:</translation>
 <translation id="4674167212832291997">Personaliza la lista de patrones de URL que <ph name="PRODUCT_FRAME_NAME" /> debería procesar siempre.
@@ -2529,15 +2476,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, el audio en mono se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
-<translation id="4771144269610910963">Esta política controla el análisis profundo de las descargas de usuario con Navegación segura. Si no se le asigna ningún valor o se le asigna el valor predeterminado "No analizar archivos", las descargas de usuario no se analizarán con Navegación segura.
-
-      Si se le asigna el valor "Enviar descargas de usuario para analizarlas", las descargas de usuario se enviarán a Navegación segura a través de la red para realizar un análisis de software malicioso.
-
-      Si se le asigna el valor "Enviar subidas de usuario para analizarlas", las subidas de usuario se enviarán a Navegación segura a través de la red para realizar un análisis de software malicioso.
-
-      Si se le asigna el valor "Enviar subidas y descargas de usuario para analizarlas", seguirá las reglas de los valores "Enviar subidas de usuario para analizarlas" y "Enviar descargas de usuario para analizarlas" que hemos descrito.
-
-      Consulta las políticas <ph name="DELAY_DELIVER_UNTIL_VERDICT_POLICY_NAME" /> y <ph name="UNSAFE_EVENTS_REPORTING_ENABLED" /> para obtener más información sobre cómo se muestran los resultados del análisis al usuario y al administrador.</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.
 
       <ph name="PAGE_SIZE_NAME" /> debe contener uno de los formatos incluidos en la lista, o "personalizado" si el tamaño del papel necesario no está en la lista. Si se proporciona un valor "personalizado", se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Describe el ancho y altura deseados en micrómetros. De lo contrario, no se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Se ignorará la política que infrinja estas reglas.
@@ -2724,7 +2662,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="5148753489738115745">Te permite especificar los parámetros adicionales que se utilizan cuando <ph name="PRODUCT_FRAME_NAME" /> inicia <ph name="PRODUCT_NAME" />.
 
           Si no se establece esta política, se utilizará la línea de comandos predeterminada.</translation>
-<translation id="5150323673529584553">No analizar archivos</translation>
 <translation id="5152393033264257734">Permitir las comprobaciones de interceptación de DNS y las barras de información aclaratorias "http://intranetsite/".</translation>
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="515816885693899426">Esta política está obsoleta. Usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.
@@ -3629,7 +3566,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="6378393933102834628">Si se asigna el valor "Verdadero" a esta política, se mostrarán los accesos directos a aplicaciones. Si se le asigna el valor "Falso", no se mostrarán nunca estos accesos directos.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si se muestran o se ocultan los accesos directos a aplicaciones en el menú contextual de la barra de marcadores.</translation>
-<translation id="638668187106406971">Comprueba si se han infringido las normas de protección de datos sensibles en las subidas</translation>
 <translation id="6394350458541421998">Esta política no está disponible desde la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
 <translation id="6401669939808766804">Cerrar la sesión del usuario</translation>
 <translation id="640244877779556713">Habilitar sugerencias de emojis</translation>
@@ -3772,11 +3708,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Nota: Para las instancias de Windows® que no estén conectadas a un dominio de <ph name="MS_AD_NAME" />, la instalación forzada se limitará a las aplicaciones y extensiones disponibles en Chrome Web Store.</translation>
 <translation id="6598235178374410284">Imagen de avatar del usuario</translation>
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se detecta la zona horaria</translation>
-<translation id="6607920041550065565">
-      Si se asigna el valor "false" a esta política, el dispositivo no podrá activar la función Powerwash. Se produce una excepción si a la política <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> se le asigna un valor que permite la actualización de firmware de TPM y este firmware aún no se ha actualizado.
-      Si se le asigna el valor "true", el dispositivo podrá activar la función Powerwash.
-      Si no se establece esta política, el valor predeterminado es "true", lo que significa que el dispositivo podrá activar la función Powerwash.
-      </translation>
 <translation id="6614020900120353107">Controla si se debe usar el cliente DNS integrado en <ph name="PRODUCT_NAME" />.
 
       Esto no decide qué servidores DNS se van a usar, sino solo la pila de software que se utiliza para comunicarse con ellos. Por ejemplo, si el sistema operativo está configurado para utilizar un servidor DNS de empresa, el cliente DNS integrado usaría ese mismo servidor. Sin embargo, es posible que el cliente DNS integrado se dirija a los servidores de formas diferentes con protocolos DNS más modernos, como DNS mediante TLS.
@@ -4047,9 +3978,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="6926703471186170050">Habilitar impresión de borde largo por las dos caras</translation>
 <translation id="6931242315485576290">Inhabilitar sincronización de datos con Google</translation>
-<translation id="6932419914671987652">Si se habilita esta política, <ph name="PRODUCT_NAME" /> forzará las sesiones de invitado y evitará los inicios de sesión de perfil. Los inicios de sesión como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo de incógnito.
-
-      Si la política está inhabilitada o no está definida, o el modo invitados del navegador está inhabilitado por la política <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> permitirá que se usen perfiles nuevos y ya creados.</translation>
 <translation id="6936894225179401731">Permite especificar el número máximo de conexiones simultáneas que se pueden establecer con el servidor proxy.
 
       Algunos servidores proxy no admiten una gran cantidad de conexiones simultáneas por cliente, lo que se puede solucionar estableciendo un valor inferior para esta política.
@@ -4146,16 +4074,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
-<translation id="7063842402585660314">La lista de aplicaciones que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
-
-      Si la aplicación preferida para tomar notas está habilitada en la pantalla de bloqueo, esta contendrá un elemento de interfaz de usuario para iniciarla.
-      Una vez iniciada, la aplicación podrá abrir una ventana de aplicación sobre la pantalla de bloqueo y crear elementos de datos (notas) en el contexto de la pantalla de bloqueo. La aplicación podrá importar las notas creadas a la sesión del usuario principal una vez que se desbloquee la sesión. Actualmente, solo se admiten las aplicaciones para tomar notas de Chrome en la pantalla de bloqueo.
-
-      Si se establece la política, el usuario podrá habilitar una aplicación en la pantalla de bloqueo únicamente si el ID de extensión de la aplicación se encuentra entre los valores de la lista de la política.
-      Por lo tanto, si se configura esta política con una lista vacía, se inhabilitará por completo la toma de notas en la pantalla de bloqueo.
-      Ten en cuenta que, aunque la política incluya el ID de una aplicación, no significa necesariamente que el usuario pueda habilitarla como aplicación para tomar notas en la pantalla de bloqueo. Por ejemplo, en Chrome 61, la plataforma también restringe el conjunto de aplicaciones disponibles.
-
-      Si no se establece esta política, no habrá restricciones impuestas por la política en relación con el conjunto de aplicaciones que el usuario puede habilitar en la pantalla de bloqueo.</translation>
 <translation id="7063895219334505671">Permitir pop-ups en estos sitios</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio</translation>
 <translation id="7068108874199666656">Permite aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
@@ -4870,7 +4788,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
 <translation id="7995610550667275367">Análisis (compatible desde la versión 87)</translation>
 <translation id="8001701200415781021">Restringir las cuentas de Google que se pueden establecer como cuentas principales de navegador en <ph name="PRODUCT_NAME" /></translation>
-<translation id="8003853057959146975">Envía archivos para inspeccionar si se han infringido las normas de protección de datos sensibles</translation>
 <translation id="8006219716745491366">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, se especificará una lista con URL alternativas para extraer términos de búsqueda del buscador. Las URL deben incluir la cadena <ph name="SEARCH_TERM_MARKER" />.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ALTERNATE_URLS_POLICY_NAME" />, no se usará ninguna URL alternativa para extraer términos de búsqueda.</translation>
@@ -5273,7 +5190,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="858309738002328421">Bloquear las subidas de archivos grandes</translation>
 <translation id="8583509234908413302">Permitir cambiar la versión de WebRTC a versiones antiguas de TLS/DTLS</translation>
 <translation id="8584279193368801689">Restringe el modo de impresión con PIN. Si no se establece esta política, no se aplicará ninguna restricción. Si el modo no está disponible, se ignorará esta política. Ten en cuenta que la función de impresión con PIN solo está habilitada en impresoras que utilizan uno de los protocolos IPPS, HTTPS, USB o IPP por USB.</translation>
-<translation id="8585558195682146109">Enviar descargas de usuario para analizarlas</translation>
 <translation id="8587229956764455752">Permitir la creación de nuevas cuentas de usuario</translation>
 <translation id="8591713876665299827">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
@@ -5524,7 +5440,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se le asigna ningún valor, no será posible verificar la validez de los Términos del Servicio de Edu Coexistence.
 
       Esta política solo se usa para usuarios de Family Link.</translation>
-<translation id="8943934315109955032">No comprueba si se infringen las normas de protección de datos sensibles</translation>
 <translation id="8947415621777543415">Informar de ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de permitidos de servidores de autenticación</translation>
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="sl">
 <translation id="1276998909102132017">Slike v galeriji</translation>
 <translation id="1430915738399379752">Natisni</translation>
+<translation id="1473110567575736769">3-sekundni časovnik</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nič ni posneto</translation>
@@ -30,6 +31,7 @@
 <translation id="3517926952904427380">Portretne fotografije ni bilo mogoče posneti</translation>
 <translation id="3569311554794739032">Ali res želite odstraniti datoteko <ph name="FILE" />?</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="4000398125663085899">Nove fotografije in videoposnetki bodo zdaj shranjeni v mapo v aplikaciji Datoteke: Moje datoteke &gt; Fotoaparat.</translation>
 <translation id="4118525110028899586">Začasna zaustavitev snemanja</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4329152592498422850">Preklop na snemanje kvadratnih fotografij</translation>
@@ -62,6 +64,7 @@
 <translation id="6965382102122355670">V redu</translation>
 <translation id="698156982839284926">3 sekunde</translation>
 <translation id="712848772518857951">Ali res želite odstraniti toliko elementov: <ph name="COUNT" />?</translation>
+<translation id="7134221860976209830">10-sekundni časovnik</translation>
 <translation id="7243947652761655814">Ločljivost videoposnetka</translation>
 <translation id="7337660886763914220">Napake datotečnega sistema.</translation>
 <translation id="7557677699350329807">Preklop na naslednji fotoaparat</translation>

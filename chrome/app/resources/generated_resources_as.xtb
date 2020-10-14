@@ -4453,7 +4453,6 @@
 <translation id="628352644014831790">৪ছেকেণ্ড</translation>
 <translation id="6285120108426285413">সাধাৰণতে <ph name="FILE_NAME" /> ডাউনল'ড কৰা নহয় আৰু ই ক্ষতিকাৰক হ'ব পাৰে।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{আপোনাৰ নেটৱর্কত দেখুওৱা নতুন প্ৰিণ্টাৰ}one{আপোনাৰ নেটৱর্কত দেখুওৱা নতুন প্ৰিণ্টাৰসমূহ}other{আপোনাৰ নেটৱর্কত দেখুওৱা নতুন প্ৰিণ্টাৰসমূহ}}</translation>
-<translation id="6289626062715012577">একাধিক ভাষা সমৰ্থন কৰা এপ্ আৰু ৱেবছাইটসমূহে এই সূচীখনৰ পৰা প্ৰথম সমৰ্থিত ভাষাটো ব্যৱহাৰ কৰিব। ভাষাৰ অগ্ৰাধিকাৰসমূহ Chrome ব্ৰাউজাৰত ছিংক কৰক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ব্যৱহাৰ কৰা আৰম্ভ কৰিবলৈ, <ph name="ORGANIZATION_NAME" />ৰ বাবে আপুনি আপোনাৰ ডেটা বেকআপ লোৱা আৰু এই Chromebookক ফেক্টৰীৰ ছেটিংসমূহলৈ ৰিছেট কৰাটো আৱশ্যক হয়।</translation>
 <translation id="6291949900244949761">কোনো ছাইটে ইউএছবি ডিভাইচ এক্সেছ কৰিব বিচাৰিলে সোধক (আমি পৰামৰ্শ কৰোঁ)</translation>
 <translation id="6291953229176937411">&amp;Finderত দেখুৱাওক</translation>
@@ -5805,7 +5804,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">আপোনাৰ পাছৱৰ্ডটো ছাৰ্ভাৰত সলনি কৰা হৈছে। অনুগ্ৰহ কৰি ছাইন আউট কৰি পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="7915457674565721553">অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ছেট আপ কৰিবলৈ ইণ্টাৰনেটৰ সৈতে সংযোগ কৰক</translation>
-<translation id="7915471803647590281">অনুগ্ৰহ কৰি প্ৰতিক্ৰিয়া পঠিওৱাৰ আগতে কি সংঘটিত হৈছে সেয়া আমাক জনাওক৷</translation>
 <translation id="7918257978052780342">পঞ্জীয়ন কৰক</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ছে</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />এ <ph name="FILENAME" /> চাব পাৰে</translation>

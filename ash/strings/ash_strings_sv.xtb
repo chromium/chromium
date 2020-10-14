@@ -557,7 +557,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6537924328260219877">Signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batteri<ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Fråga administratören</translation>
-<translation id="6584550827717945790">Inaktivera brytarstyrning</translation>
 <translation id="6585808820553845416">Sessionen upphör om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
@@ -646,7 +645,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
-<translation id="7568294522609223312">Inaktivera automatiska klick</translation>
 <translation id="7568637526529101738">Assistenten visar information om det som är markerat när du högerklickar eller trycker länge på det, t.ex. en definition eller en omräkning till en annan enhet.</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
 <translation id="7579778809502851308">Skärmbild</translation>

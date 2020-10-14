@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">正在投射到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">询问您的管理员</translation>
-<translation id="6584550827717945790">关闭“开关控制”</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
-<translation id="7568294522609223312">关闭自动点击</translation>
 <translation id="7568637526529101738">只要您右键点击或长按所选内容，Google 助理即会显示与其相关的信息（例如定义或单位换算）。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
 <translation id="7579778809502851308">截取屏幕</translation>

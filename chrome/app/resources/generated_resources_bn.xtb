@@ -4462,7 +4462,6 @@
 <translation id="628352644014831790">৪ সেকেন্ড</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> সাধারণভাবে ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{আপনার নেটওয়ার্কে নতুন প্রিন্টারটি}one{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}other{আপনার নেটওয়ার্কে নতুন প্রিন্টারগুলি}}</translation>
-<translation id="6289626062715012577">যেসব অ্যাপ ও ওয়েবসাইট একাধিক ভাষায় কাজ করে সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। Chrome ব্রাউজারে পছন্দমতো ভাষা সিঙ্ক করুন। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux চালু করার আগে, <ph name="ORGANIZATION_NAME" /> আপনাকে ডেটা ব্যাক-আপ নিতে ও এই Chromebook ফ্যাক্টরি সেটিংসে রিসেট করতে বলছে।</translation>
 <translation id="6291949900244949761">কোনও সাইট ইউএসবি ডিভাইস অ্যাক্সেস করতে চাইলে আমাকে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6291953229176937411">ফাইন্ডারে &amp;দেখান</translation>
@@ -5819,7 +5818,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">সার্ভারে আপনার পাসওয়ার্ড পাল্টানো হয়েছে। অনুগ্রহ করে সাইন-আউট করে আবার সাইন-ইন করুন।</translation>
 <translation id="7915457674565721553">অভিভাবকীয় নিয়ন্ত্রণ সেট-আপ করতে ইন্টারনেটে কানেক্ট করুন</translation>
-<translation id="7915471803647590281">প্রতিক্রিয়াটি প্রেরণের আগে কী ঘটছে তা দয়া করে আমাদের জানান৷ </translation>
 <translation id="7918257978052780342">নথিভুক্ত করুন</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> সেকেন্ড</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> নামের ফাইলটি দেখতে পারবে</translation>

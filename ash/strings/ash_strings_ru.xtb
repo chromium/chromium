@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6559976592393364813">Обратитесь к администратору</translation>
-<translation id="6584550827717945790">Подтвердите действие</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333">Статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
-<translation id="7568294522609223312">Выключение автоматического нажатия</translation>
 <translation id="7568637526529101738">Чтобы, например, посмотреть определение слова или перевести одни единицы измерения в другие, выберите нужный элемент с помощью правого клика или долгого нажатия.</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
 <translation id="7579778809502851308">Демонстрация экрана</translation>

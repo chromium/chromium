@@ -4502,7 +4502,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="628352644014831790">4 secunde</translation>
 <translation id="6285120108426285413">Fișierul <ph name="FILE_NAME" /> nu este descărcat de obicei și ar putea fi periculos.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Imprimantă nouă în rețea}few{Imprimante noi în rețea}other{Imprimante noi în rețea}}</translation>
-<translation id="6289626062715012577">Aplicațiile și site-urile care acceptă mai multe limbi vor folosi prima limbă acceptată din această listă. Preferințele pentru limbă se sincronizează cu browserul Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Pentru a inițializa Linux, <ph name="ORGANIZATION_NAME" /> îți solicită să faci backup datelor și să revii la setările din fabrică ale Chromebookului.</translation>
 <translation id="6291949900244949761">Anunță-mă dacă un site vrea să acceseze dispozitive USB (recomandat)</translation>
 <translation id="6291953229176937411">&amp;Afișează în Finder</translation>
@@ -5880,7 +5879,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Parola a fost modificată pe server. Deconectează-te, apoi conectează-te din nou.</translation>
 <translation id="7915457674565721553">Conectează-te la internet pentru a configura controlul parental</translation>
-<translation id="7915471803647590281">Spune-ne ce se întâmplă înainte de a trimite feedback.</translation>
 <translation id="7918257978052780342">Înscrieți</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sec.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> poate să vadă <ph name="FILENAME" /></translation>

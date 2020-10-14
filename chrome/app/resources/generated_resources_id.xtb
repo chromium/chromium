@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">Berlaku selama <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Lanjutkan penyiapan</translation>
 <translation id="1436784010935106834">Dihapus</translation>
+<translation id="1437986450143295708">Jelaskan masalahnya secara mendetail</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> dipilih</translation>
 <translation id="1442851588227551435">Setel tiket Kerberos aktif</translation>
 <translation id="1444628761356461360">Setelan ini dikelola oleh pemilik perangkat, <ph name="OWNER_EMAIL" />.</translation>
@@ -4462,7 +4463,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="628352644014831790">4 detik</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa didownload dan mungkin berbahaya.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer baru di jaringan Anda}other{Printer baru di jaringan Anda}}</translation>
-<translation id="6289626062715012577">Aplikasi dan situs yang mendukung beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi bahasa disinkronkan ke browser Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Untuk memulai Linux, <ph name="ORGANIZATION_NAME" /> mengharuskan Anda mencadangkan data dan menyetel ulang Chromebook ini ke setelan pabrik.</translation>
 <translation id="6291949900244949761">Tanyakan saat situs ingin mengakses perangkat USB (direkomendasikan)</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>
@@ -5820,7 +5820,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Sandi Anda telah diubah di server. Harap logout, lalu login kembali.</translation>
 <translation id="7915457674565721553">Sambungkan ke internet untuk menyiapkan kontrol orang tua</translation>
-<translation id="7915471803647590281">Beri tahu kami apa yang terjadi sebelum mengirim masukan.</translation>
 <translation id="7918257978052780342">Daftarkan</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />d</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> dapat melihat <ph name="FILENAME" /></translation>

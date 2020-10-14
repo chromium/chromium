@@ -4502,7 +4502,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="628352644014831790">4 segons</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no se sol baixar i podria ser perillós.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Impressora nova a la xarxa}other{Impressores noves a la xarxa}}</translation>
-<translation id="6289626062715012577">Les aplicacions i les pàgines web que admeten diversos idiomes utilitzaran el primer idioma admès d'aquesta llista. Les preferències d'idioma se sincronitzen al navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Per iniciar Linux, <ph name="ORGANIZATION_NAME" /> requereix que creïs una còpia de seguretat de les teves dades i que restableixis la configuració de fàbrica d'aquest Chromebook.</translation>
 <translation id="6291949900244949761">Pregunta'm quan un lloc web vulgui accedir a dispositius USB (opció recomanada)</translation>
 <translation id="6291953229176937411">&amp;Mostra a Finder</translation>
@@ -5880,7 +5879,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">La contrasenya s'ha canviat al servidor. Tanca la sessió i torna-la a iniciar.</translation>
 <translation id="7915457674565721553">Connecta't a Internet per configurar els controls parentals</translation>
-<translation id="7915471803647590281">Indica'ns el problema abans d'enviar els comentaris.</translation>
 <translation id="7918257978052780342">Inscriu</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pot veure <ph name="FILENAME" /></translation>

@@ -557,7 +557,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6537924328260219877">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Spør administratoren</translation>
-<translation id="6584550827717945790">Slå av brytertilgang</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
@@ -646,7 +645,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
 <translation id="7564874036684306347">Flytting av vinduer til et annet skrivebord kan føre til uventet atferd. Følgende varsler, vinduer og dialogbokser kan bli delt mellom skrivebordene.</translation>
-<translation id="7568294522609223312">Slå av automatiske klikk</translation>
 <translation id="7568637526529101738">Med et høyreklikk eller langt trykk viser assistenten informasjon, som for eksempel definisjonen eller enhetsomregningen for det du har merket.</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er slått på</translation>
 <translation id="7579778809502851308">Skjermdump</translation>

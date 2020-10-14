@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, <ph name="BATTERY_STATUS" /> फोनको ब्याट्री</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6559976592393364813">प्रशासकलाई सोध्नुहोस्</translation>
-<translation id="6584550827717945790">स्विचमार्फत पहुँच राख्ने सुविधा निष्क्रिय पार्नुहोस्</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>
 <translation id="7564874036684306347">विन्डोलाई अर्को डेस्कटपमा सार्नुले अनपेक्षित व्यवहार देखाउन सक्छ। यसपछि आउने सूचना, विन्डो र संवादहरू डेस्कटपहरूका बीचमा विभाजित हुन सक्छन्।</translation>
-<translation id="7568294522609223312">स्वचालित क्लिक सुविधा निष्क्रिय पार्नुहोस्</translation>
 <translation id="7568637526529101738">दायाँ क्लिक गर्दा वा लङ प्रेस गर्दा सहायकले तपाईंलाई आफूले चयन गरेको कुराको परिभाषा वा त्यसको एकाइ रूपान्तरण जस्ता जानकारी देखाउँछ।</translation>
 <translation id="7569509451529460200">Braille र ChromeVox सक्षम पारिएका छन्</translation>
 <translation id="7579778809502851308">स्क्रिन क्याप्चर</translation>

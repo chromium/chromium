@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">ใช้ได้เป็นเวลา <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">ตั้งค่าต่อ</translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
+<translation id="1437986450143295708">อธิบายปัญหาอย่างละเอียด</translation>
 <translation id="144283815522798837">เลือกไว้ <ph name="NUMBER_OF_ITEMS_SELECTED" /> รายการ</translation>
 <translation id="1442851588227551435">ตั้งค่าตั๋ว Kerberos ที่ใช้งานอยู่</translation>
 <translation id="1444628761356461360"><ph name="OWNER_EMAIL" /> ซึ่งเป็นเจ้าของอุปกรณ์เป็นผู้จัดการการตั้งค่านี้</translation>
@@ -4462,7 +4463,6 @@
 <translation id="628352644014831790">4 วินาที</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ไม่ได้ถูกดาวน์โหลดตามปกติและอาจเป็นอันตราย</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{เครื่องพิมพ์ใหม่บนเครือข่ายของคุณ}other{เครื่องพิมพ์ใหม่บนเครือข่ายของคุณ}}</translation>
-<translation id="6289626062715012577">แอปและเว็บไซต์ที่รองรับหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ค่ากำหนดภาษาจะซิงค์กับเบราว์เซอร์ Chrome <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">ในการเริ่มต้น Linux <ph name="ORGANIZATION_NAME" /> จะขอให้คุณสำรองข้อมูลและรีเซ็ต Chromebook เป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="6291949900244949761">ถามเมื่อเว็บไซต์ต้องการเข้าถึงอุปกรณ์ USB (แนะนำ)</translation>
 <translation id="6291953229176937411">&amp;แสดงใน Finder</translation>
@@ -5820,7 +5820,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">มีการเปลี่ยนรหัสผ่านของคุณในเซิร์ฟเวอร์ โปรดออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="7915457674565721553">เชื่อมต่ออินเทอร์เน็ตเพื่อตั้งค่าการควบคุมโดยผู้ปกครอง</translation>
-<translation id="7915471803647590281">โปรดแจ้งให้เราทราบถึงสิ่งที่เกิดขึ้นก่อนส่งความคิดเห็น</translation>
 <translation id="7918257978052780342">ลงทะเบียน</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> วิ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ดู "<ph name="FILENAME" />" ได้</translation>

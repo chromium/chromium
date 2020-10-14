@@ -557,7 +557,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6537924328260219877">Jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Emitiranje na uređaj <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pitajte administratora</translation>
-<translation id="6584550827717945790">Isključivanje prekidača za pristup</translation>
 <translation id="6585808820553845416">Sesija će završiti za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="6614169507485700968">Uključen je zaslon privatnosti</translation>
@@ -646,7 +645,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7551643184018910560">Prikvači na policu</translation>
 <translation id="7561982940498449837">Zatvori izbornik</translation>
 <translation id="7564874036684306347">Premještanje prozora na drugu radnu površinu može dovesti do neočekivanog ponašanja. Daljnje obavijesti, prozori i dijaloški okviri mogu se podijeliti između radnih površina.</translation>
-<translation id="7568294522609223312">Isključi automatske klikove</translation>
 <translation id="7568637526529101738">Ako kliknete desnom tipkom ili dugo zadržite pritisak, Asistent će vam prikazati informacije kao što su definicija ili preračunavanje jedinica za vaš odabir.</translation>
 <translation id="7569509451529460200">Brajica i ChromeVox omogućeni</translation>
 <translation id="7579778809502851308">Snimka zaslona</translation>

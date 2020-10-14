@@ -4502,7 +4502,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="628352644014831790">4 seconds</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> is not commonly downloaded and may be dangerous.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{New printer on your network}other{New printers on your network}}</translation>
-<translation id="6289626062715012577">Apps and websites that support multiple languages will use the first supported language from this list. Language preferences sync to Chrome browser. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">To start Linux, <ph name="ORGANIZATION_NAME" /> requires you to back up your data and reset this Chromebook to factory settings.</translation>
 <translation id="6291949900244949761">Ask when a site wants to access USB devices (recommended)</translation>
 <translation id="6291953229176937411">&amp;Show in Finder</translation>
@@ -5880,7 +5879,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Your password has been changed on the server. Please sign out then sign in again.</translation>
 <translation id="7915457674565721553">Connect to the Internet to set up parental controls</translation>
-<translation id="7915471803647590281">Please tell us what is happening before sending the feedback.</translation>
 <translation id="7918257978052780342">Enrol</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>

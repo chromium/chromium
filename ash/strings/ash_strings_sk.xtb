@@ -557,7 +557,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6537924328260219877">Sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Prebieha prenášanie do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Požiadajte o to správcu</translation>
-<translation id="6584550827717945790">Vypnutie ovládania prepínačmi</translation>
 <translation id="6585808820553845416">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="6614169507485700968">Obrazovka ochrany súkromia je zapnutá</translation>
@@ -646,7 +645,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
-<translation id="7568294522609223312">Vypnutie automatických kliknutí</translation>
 <translation id="7568637526529101738">Po kliknutí pravým tlačidlom alebo dlhom stlačení zobrazí Asistent informácie pre váš výber, napríklad definíciu alebo prevod jednotiek.</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>

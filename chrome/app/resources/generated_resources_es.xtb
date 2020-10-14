@@ -4462,7 +4462,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413">El archivo <ph name="FILE_NAME" /> no se descarga habitualmente y puede ser peligroso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nueva impresora en tu red}other{Nuevas impresoras en tu red}}</translation>
-<translation id="6289626062715012577">Las aplicaciones y los sitios web que admitan varios idiomas utilizarán el primer idioma compatible de esta lista. Las preferencias de idioma se sincronizan con el navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar Linux, <ph name="ORGANIZATION_NAME" /> necesita que crees una copia de seguridad de tus datos y restablezcas la configuración de fábrica del Chromebook.</translation>
 <translation id="6291949900244949761">Preguntar cuando un sitio web quiera acceder a los dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>
@@ -5820,7 +5819,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Tu contraseña se ha cambiado en el servidor. Cierra la sesión y vuelve a iniciarla.</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar el control parental</translation>
-<translation id="7915471803647590281">Debes describir el error.</translation>
 <translation id="7918257978052780342">Registrar</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>

@@ -541,7 +541,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6537924328260219877">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, bateria e telefonit <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Po transmeton <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pyet administratorin</translation>
-<translation id="6584550827717945790">Çaktivizo "Qasjen me çelës"</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
@@ -628,7 +627,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
-<translation id="7568294522609223312">Çaktivizo klikimet automatike</translation>
 <translation id="7568637526529101738">Me një klikim me butonin djathtas ose shtypje të gjatë, "Asistenti" shfaq informacione si p.sh. përkufizimi ose konvertimi i njësisë për zgjedhjen tënde.</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>

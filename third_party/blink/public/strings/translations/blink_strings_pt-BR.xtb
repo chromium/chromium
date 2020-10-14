@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">grade de árvore</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">rodapé da página</translation>
 <translation id="1832974991323546415">reproduzir em dispositivo remoto</translation>
 <translation id="190587075670221089">exclusão</translation>
 <translation id="1907737156431278478">exemplo</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="421884353938374759">Seletor de cores</translation>
 <translation id="4248100235867064564">barra de menu</translation>
+<translation id="4293574643247337246">título da página</translation>
 <translation id="4360991593054037559">Insira um valor válido. Os dois valores válidos mais próximos são <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Perguntas e respostas</translation>
 <translation id="4444765639179266822">Parece dizer: <ph name="OCR_TEXT" /></translation>

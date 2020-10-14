@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6559976592393364813">Зверніться до адміністратора</translation>
-<translation id="6584550827717945790">Вимкнути кнопковий доступ</translation>
 <translation id="6585808820553845416">Сеанс закінчиться через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="6614169507485700968">Екран конфіденційності ввімкнено</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">Закріпити на полиці</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
-<translation id="7568294522609223312">Вимкнути автоматичні кліки</translation>
 <translation id="7568637526529101738">Натисніть вибраний контент правою кнопкою миші або втримуйте його, і Асистент покаже визначення терміна, конвертує одиницю тощо.</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
 <translation id="7579778809502851308">Знімок екрана</translation>

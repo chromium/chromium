@@ -4462,7 +4462,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="628352644014831790">4 secondi</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non viene scaricato spesso e potrebbe essere pericoloso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nuova stampante in rete}other{Nuove stampanti in rete}}</translation>
-<translation id="6289626062715012577">I siti web e le app che supportano più lingue useranno la prima lingua supportata in questo elenco. Le preferenze di lingua si sincronizzano con il browser Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Per avviare Linux, <ph name="ORGANIZATION_NAME" /> richiede il backup dei dati e il ripristino del Chromebook alle impostazioni di fabbrica.</translation>
 <translation id="6291949900244949761">Chiedi conferma quando un sito vuole accedere ai dispositivi USB (consigliata)</translation>
 <translation id="6291953229176937411">Mo&amp;stra nel Finder</translation>
@@ -5820,7 +5819,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">La password è stata modificata sul server. Esci e accedi nuovamente.</translation>
 <translation id="7915457674565721553">Connettiti a Internet per configurare il Controllo genitori</translation>
-<translation id="7915471803647590281">Comunicaci cosa sta accadendo prima di inviare il feedback.</translation>
 <translation id="7918257978052780342">Registrati</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> può visualizzare <ph name="FILENAME" /></translation>

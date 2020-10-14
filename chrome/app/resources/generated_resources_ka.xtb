@@ -393,6 +393,7 @@
 <translation id="1436390408194692385">ძალაშია <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">დაყენების გაგრძელება</translation>
 <translation id="1436784010935106834">წაშლილი</translation>
+<translation id="1437986450143295708">დეტალურად აღწერეთ პრობლემა</translation>
 <translation id="144283815522798837">არჩეულია <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">აქტიური Kerberos ბილეთის დაყენება</translation>
 <translation id="1444628761356461360">ამ პარამეტრს მართავს აპარატის მფლობელი. <ph name="OWNER_EMAIL" />.</translation>
@@ -4500,7 +4501,6 @@
 <translation id="628352644014831790">4 წამი</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> შეიძლება სახიფათო იყოს, რადგან მისი ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ახალი პრინტერი თქვენს ქსელში}other{ახალი პრინტერები თქვენს ქსელში}}</translation>
-<translation id="6289626062715012577">აპები და ვებსაიტები, რომელთა მიერაც მხარდაჭერილია რამდენიმე ენა, ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ენების არჩევანი სინქრონიზდება Chrome ბრაუზერთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux-ის გასაშვებად <ph name="ORGANIZATION_NAME" /> საჭიროებს თქვენი მონაცემების სარეზერვო ასლის შექმნასა და ამ Chromebook-ის ქარხნულ პარამეტრებზე დაბრუნებას.</translation>
 <translation id="6291949900244949761">საიტების მიერ USB-მოწყობილობებზე წვდომის მოთხოვნა (რეკომენდებულია)</translation>
 <translation id="6291953229176937411">ჩ&amp;ვენება მაძიებელში</translation>
@@ -5878,7 +5878,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">თქვენი პაროლი შეიცვალა სერვერზე. გთხოვთ, გახვიდეთ და ხელახლა შეხვიდეთ სისტემაში.</translation>
 <translation id="7915457674565721553">მშობლის მიერ კონტროლის დასაყენებლად დაუკავშირდით ინტერნეტს</translation>
-<translation id="7915471803647590281">გთხოვთ გვითხრათ, რა ხდება უკუკავშირის გაგზავნამდე.</translation>
 <translation id="7918257978052780342">რეგისტრაცია</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />წმ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის ნახვა</translation>

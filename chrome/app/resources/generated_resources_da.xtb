@@ -4503,7 +4503,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> downloades normalt ikke og kan være skadelig.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny printer på dit netværk}one{Nye printere på dit netværk}other{Nye printere på dit netværk}}</translation>
-<translation id="6289626062715012577">Apps og websites, der understøtter flere sprog, bruger det første understøttede sprog på denne liste. Sprogpræferencer synkroniseres med Chrome-browseren. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370"><ph name="ORGANIZATION_NAME" /> kræver, at du sikkerhedskopierer dine data og gendanner fabriksindstillingerne på denne Chromebook, før du kan starte Linux.</translation>
 <translation id="6291949900244949761">Spørg, når et website vil have adgang til USB-enheder (anbefales)</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
@@ -5880,7 +5879,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Din adgangskode er blevet ændret på serveren. Log ud, og log derefter ind igen.</translation>
 <translation id="7915457674565721553">Opret forbindelse til internettet for at konfigurere børnesikring</translation>
-<translation id="7915471803647590281">Fortæl os, hvad der sker, inden du sender feedback.</translation>
 <translation id="7918257978052780342">Tilmeld dig</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan se <ph name="FILENAME" /></translation>

@@ -542,7 +542,6 @@
 <translation id="6537924328260219877">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, फ़ोन की बैटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="6559976592393364813">एडमिन से पूछें</translation>
-<translation id="6584550827717945790">ऐक्सेस करने का तरीका बदलने की सुविधा को बंद करें</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> में खत्म होने वाला है.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="6614169507485700968">निजता स्क्रीन चालू है</translation>
@@ -629,7 +628,6 @@
 <translation id="7551643184018910560">अलमारी से पिन करें</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
 <translation id="7564874036684306347">विंडो को किसी दूसरे डेस्कटॉप पर ले जाने से अनचाहा बर्ताव हो सकता है. इसके बाद की सूचनाएं, विंडो और संवाद डेस्कटॉप के बीच बंट सकती हैं.</translation>
-<translation id="7568294522609223312">अपने-आप क्लिक होने की सुविधा बंद करें</translation>
 <translation id="7568637526529101738">दायां क्लिक करने या दबाकर रखने पर, Assistant आपको स्क्रीन पर चुने गए कॉन्टेंट से जुड़ी जानकारी दिखाती है. जैसे कि परिभाषा या एक यूनिट से दूसरी यूनिट में बदलकर दिखाना.</translation>
 <translation id="7569509451529460200">ब्रेल और ChromeVox सक्षम हैं</translation>
 <translation id="7579778809502851308">स्क्रीन कैप्चर</translation>

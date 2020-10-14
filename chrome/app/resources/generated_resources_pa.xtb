@@ -390,6 +390,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ਲਈ ਵੈਧ ਹੋਵੇਗੀ</translation>
 <translation id="1436671784520050284">ਸੈੱਟਅੱਪ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="1436784010935106834">ਹਟਾਈਆਂ ਗਈਆਂ</translation>
+<translation id="1437986450143295708">ਸਮੱਸਿਆ ਦਾ ਵੇਰਵੇ ਸਹਿਤ ਵਰਣਨ ਕਰੋ</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ਚੁਣੀਆਂ ਗਈਆਂ</translation>
 <translation id="1442851588227551435">Kerberos ਟਿਕਟ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ 'ਤੇ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1444628761356461360">ਇਹ ਸੈਟਿੰਗ ਡੀਵਾਈਸ ਮਾਲਕ <ph name="OWNER_EMAIL" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
@@ -4460,7 +4461,6 @@
 <translation id="628352644014831790">4 ਸਕਿੰਟ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ਆਮ ਤੌਰ 'ਤੇ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ ਅਤੇ ਇਹ ਹਾਨੀਕਾਰਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵਾਂ ਪ੍ਰਿੰਟਰ}one{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}other{ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਤੇ ਨਵੇਂ ਪ੍ਰਿੰਟਰ}}</translation>
-<translation id="6289626062715012577">ਕਈ ਭਾਸ਼ਾਵਾਂ ਦਾ ਸਮਰਥਨ ਕਰਨ ਵਾਲੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਇਸ ਸੂਚੀ ਤੋਂ ਪਹਿਲੀ ਸਮਰਥਿਤ ਭਾਸ਼ਾ ਦੀ ਵਰਤੋਂ ਕਰਨਗੀਆਂ। Chrome ਬ੍ਰਾਊਜ਼ਰ ਨਾਲ ਭਾਸ਼ਾ ਤਰਜੀਹਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਹੁੰਦਾ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਵਾਸਤੇ, <ph name="ORGANIZATION_NAME" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ ਇਸ Chromebook ਨੂੰ ਫੈਕਟਰੀ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="6291949900244949761">ਕਿਸੇ ਸਾਈਟ ਦੇ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵੇਲੇ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="6291953229176937411">&amp;ਫਾਈਂਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
@@ -5817,7 +5817,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਸਰਵਰ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਆਊਟ ਹੋ ਕੇ ਫਿਰ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="7915457674565721553">ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੋ</translation>
-<translation id="7915471803647590281">ਕਿਰਪਾ ਕਰਕੇ ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਫੀਡਬੈਕ ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਕੀ ਹੋ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7918257978052780342">ਦਰਜ ਕਰੋ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> ਸਕਿੰਟ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ਵੱਲੋਂ <ph name="FILENAME" /> ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>

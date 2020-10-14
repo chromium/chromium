@@ -558,7 +558,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6537924328260219877">Jelerősség: <ph name="SIGNAL_STRENGTH" />, telefon akkumulátora: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Küldés ide: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Érdeklődjön a rendszergazdánál</translation>
-<translation id="6584550827717945790">A Kapcsolóalapú hozzáférés kikapcsolása</translation>
 <translation id="6585808820553845416">A munkamenet <ph name="SESSION_TIME_REMAINING" /> múlva véget ér.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="6614169507485700968">Az adatvédelmi képernyő be van kapcsolva</translation>
@@ -647,7 +646,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
 <translation id="7561982940498449837">Menü bezárása</translation>
 <translation id="7564874036684306347">Az ablakok másik asztalra történő áthelyezése váratlan viselkedést eredményezhet. Az ezt követő értesítéseket, ablakokat és párbeszédpaneleket a rendszer megoszthatja az asztalok között.</translation>
-<translation id="7568294522609223312">Automatikus kattintások kikapcsolása</translation>
 <translation id="7568637526529101738">Jobb kattintással vagy nyomva tartással információkat kérhet Segédjétől (például definíciót a szavakhoz vagy átváltást a mértékegységekhez).</translation>
 <translation id="7569509451529460200">Braille és ChromeVox bekapcsolva</translation>
 <translation id="7579778809502851308">Képernyőfelvétel</translation>

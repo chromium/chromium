@@ -559,7 +559,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6537924328260219877">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Suoratoistetaan: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Pyydä apua järjestelmänvalvojalta</translation>
-<translation id="6584550827717945790">Kytkimen käytön ottaminen pois päältä</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6614169507485700968">Näytönsuoja on päällä</translation>
@@ -648,7 +647,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
-<translation id="7568294522609223312">Lopeta automaattinen klikkaaminen</translation>
 <translation id="7568637526529101738">Kun klikkaat jotain kakkospainikkeella tai painat sitä pitkään, Assistant näyttää valintaasi liittyviä tietoja, kuten määritelmän tai yksikkömuunnoksen.</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>

@@ -541,7 +541,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6537924328260219877">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
 <translation id="6559976592393364813">Administratorga murojaat qiling</translation>
-<translation id="6584550827717945790">Switch Access funksiyasini faolsizlantirish</translation>
 <translation id="6585808820553845416">Sessiya yakunlanishiga <ph name="SESSION_TIME_REMAINING" /> qoldi.</translation>
 <translation id="661203523074512333">Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="6614169507485700968">Maxfiylik ekrani yoniq</translation>
@@ -628,7 +627,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
-<translation id="7568294522609223312">Avtomatik kliklarni faolsizlantirish</translation>
 <translation id="7568637526529101738">Oʻng klik yoki biroz bosib turilsa, Assistent ekranda tanlangan narsaga mos tavsif yoki birliklar konvertorini chiqaradi.</translation>
 <translation id="7569509451529460200">Brayl yozuvi va ChromeVox yoqildi</translation>
 <translation id="7579778809502851308">Ekranni suratga olish</translation>

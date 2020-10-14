@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6559976592393364813">વ્યવસ્થાપકને પૂછો</translation>
-<translation id="6584550827717945790">સ્વિચ ઍક્સેસ બંધ કરો</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> માં સત્ર સમાપ્ત થાય છે.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
 <translation id="7561982940498449837">મેનૂ બંધ કરો</translation>
 <translation id="7564874036684306347">વિંડોને બીજા ડેસ્કટૉપમાં ખસેડવું તે અનપેક્ષિત વર્તણૂકનું કારણ બની શકે છે. અનુગામી નોટિફિકેશન, વિંડો અને સંવાદો ડેસ્કટૉપ વચ્ચે વિભાજિત થઈ શકે છે.</translation>
-<translation id="7568294522609223312">ઑટોમૅટિક ક્લિક બંધ કરો</translation>
 <translation id="7568637526529101738">બટનને રાઇટ ક્લિક કરવાથી અથવા થોડીવાર દબાવી રાખવાથી, Assistant તમારી પસંદગી માટે વ્યાખ્યા અથવા એકમના રૂપાંતરણ જેવી માહિતી બતાવે છે.</translation>
 <translation id="7569509451529460200">બ્રેઇલ અને ChromeVox સક્ષમ કર્યાં</translation>
 <translation id="7579778809502851308">સ્ક્રીન કૅપ્ચર</translation>

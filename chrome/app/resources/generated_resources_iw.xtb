@@ -393,6 +393,7 @@
 <translation id="1436390408194692385">תקף למשך <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">להמשך ההגדרה</translation>
 <translation id="1436784010935106834">הוסר</translation>
+<translation id="1437986450143295708">יש לתאר את הבעיה בפירוט</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> פריטים נבחרו</translation>
 <translation id="1442851588227551435">‏הגדרה של כרטיס Kerberos פעיל</translation>
 <translation id="1444628761356461360">ההגדרה הזו מנוהלת על ידי בעל המכשיר, <ph name="OWNER_EMAIL" />.</translation>
@@ -4499,7 +4500,6 @@
 <translation id="628352644014831790">4 שניות</translation>
 <translation id="6285120108426285413">הורדת הקובץ <ph name="FILE_NAME" /> אינה נפוצה והוא עלול להיות מסוכן.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{מדפסת חדשה ברשת שלך}two{מדפסות חדשות ברשת שלך}many{מדפסות חדשות ברשת שלך}other{מדפסות חדשות ברשת שלך}}</translation>
-<translation id="6289626062715012577">‏אפליקציות ואתרים שתומכים במספר שפות ישתמשו בשפה הנתמכת הראשונה ברשימה הזו. העדפות השפה מסונכרנות עם דפדפן Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">‏כדי להפעיל את Linux, עליך לגבות את הנתונים ולאפס את ה-Chromebook הזה להגדרות היצרן על פי דרישת <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="6291949900244949761">‏צריך לבקש ממני אישור כשאתר רוצה לגשת למכשירי USB (מומלץ)</translation>
 <translation id="6291953229176937411">‏&amp;הצג ב-Finder</translation>
@@ -5876,7 +5876,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">הסיסמה שלך שונתה בשרת. צא ולאחר מכן היכנס מחדש.</translation>
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
-<translation id="7915471803647590281">לפני שליחת המשוב, יש לתאר את הבעיה.</translation>
 <translation id="7918257978052780342">הירשם</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
 <translation id="7920363873148656176">ל-<ph name="ORIGIN" /> יש אפשרות להציג את <ph name="FILENAME" /></translation>

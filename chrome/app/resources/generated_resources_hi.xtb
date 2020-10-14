@@ -390,6 +390,7 @@
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> के लिए मान्य</translation>
 <translation id="1436671784520050284">सेटअप जारी रखें</translation>
 <translation id="1436784010935106834">निकाला गया</translation>
+<translation id="1437986450143295708">समस्या के बारे में ज़्यादा जानकारी दें</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयनित</translation>
 <translation id="1442851588227551435">चालू Kerberos टिकट सेट करें</translation>
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
@@ -4461,7 +4462,6 @@
 <translation id="628352644014831790">4 सेकंड</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> को आमतौर पर डाउनलोड नहीं किया जाता और यह खतरनाक हो सकता है.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{आपके नेटवर्क पर नया प्रिंटर}one{आपके नेटवर्क पर नए प्रिंटर}other{आपके नेटवर्क पर नए प्रिंटर}}</translation>
-<translation id="6289626062715012577">कई भाषाओं में काम करने वाले ऐप्लिकेशन और वेबसाइटें, इस सूची में दी गई पहली भाषा का इस्तेमाल करेंगी. Chrome ब्राउज़र में, भाषा की प्राथमिकताएं सिंक होती हैं. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux शुरू करने के लिए, <ph name="ORGANIZATION_NAME" /> चाहता है कि आप अपने डेटा का बैक अप ले लें. साथ ही, इस Chromebook को फ़ैक्ट्री सेटिंग पर रीसेट कर लें.</translation>
 <translation id="6291949900244949761">जब कोई साइट USB डिवाइस एक्सेस करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6291953229176937411">खोजकर्ता में &amp;दिखाएं</translation>
@@ -5818,7 +5818,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">सर्वर पर आपका पासवर्ड बदल दिया गया है. कृपया साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="7915457674565721553">'माता-पिता के नियंत्रण में' सुविधा सेट करने के लिए इंटरनेट से कनेक्ट करें</translation>
-<translation id="7915471803647590281">कृपया फ़ीडबैक भेजने से पहले हमें बताएं कि क्‍या हो रहा है.</translation>
 <translation id="7918257978052780342">नामांकित करें</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकंड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> को देख सकती है</translation>

@@ -557,7 +557,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6537924328260219877">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Peça ao administrador.</translation>
-<translation id="6584550827717945790">Desative o acesso por comutador</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
@@ -646,7 +645,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
-<translation id="7568294522609223312">Desative os cliques automáticos</translation>
 <translation id="7568637526529101738">Ao clicar com o botão direito do rato ou ao manter o botão premido, o Assistente mostra-lhe informações como a definição ou a conversão de unidades para a sua seleção.</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>
 <translation id="7579778809502851308">Captura de ecrã</translation>

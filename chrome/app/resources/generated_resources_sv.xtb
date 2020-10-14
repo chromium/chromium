@@ -4502,7 +4502,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> brukar inte laddas ned och kan vara skadlig.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Ny skrivare i nätverket}other{Nya skrivare i nätverket}}</translation>
-<translation id="6289626062715012577">Det första språk som stöds i den här listan kommer att användas i appar och webbplatser som har stöd för flera språk. Språkinställningarna synkroniseras med webbläsaren Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">För att kunna starta Linux kräver <ph name="ORGANIZATION_NAME" /> att du säkerhetskopierar din data och återställer Chromebook-enheten till standardinställningarna.</translation>
 <translation id="6291949900244949761">Fråga när en webbplats försöker få åtkomst till USB-enheter (rekommenderas)</translation>
 <translation id="6291953229176937411">&amp;Visa i Finder</translation>
@@ -5880,7 +5879,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Lösenordet har ändrats på servern. Logga ut och logga sedan in igen.</translation>
 <translation id="7915457674565721553">Anslut till internet om du vill ställa in föräldrakontroller</translation>
-<translation id="7915471803647590281">Berätta för oss vad som händer innan du skickar feedback.</translation>
 <translation id="7918257978052780342">Registrera</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> har visningsbehörighet till <ph name="FILENAME" /></translation>

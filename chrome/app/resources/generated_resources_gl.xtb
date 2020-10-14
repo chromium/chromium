@@ -4461,7 +4461,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non se descarga habitualmente e pode ser perigoso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nova impresora na túa rede}other{Novas impresoras na túa rede}}</translation>
-<translation id="6289626062715012577">As aplicacións e os sitios web que ofrecen varios idiomas usarán o primeiro idioma da lista no que estean dispoñibles. As preferencias de idioma sincronízanse co navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar Linux, <ph name="ORGANIZATION_NAME" /> require que fagas unha copia de seguranza dos teus datos e que reinicies este Chomebook coa configuración de fábrica.</translation>
 <translation id="6291949900244949761">Preguntar cando un sitio web queira acceder aos dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>
@@ -5819,7 +5818,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">O teu contrasinal cambiouse no servidor. Pecha sesión e volve iniciala.</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar a función Controis parentais</translation>
-<translation id="7915471803647590281">Indícanos o que está pasando antes de enviar os comentarios.</translation>
 <translation id="7918257978052780342">Inscribir</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>

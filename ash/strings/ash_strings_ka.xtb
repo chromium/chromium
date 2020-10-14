@@ -557,7 +557,6 @@
 <translation id="6537924328260219877">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">მიმდინარეობს ტრანსლირება <ph name="RECEIVER_NAME" />-ში</translation>
 <translation id="6559976592393364813">ჰკითხეთ ადმინისტრატორს</translation>
-<translation id="6584550827717945790">გადამრთველით წვდომის გამორთვა</translation>
 <translation id="6585808820553845416">სესიის დასრულებამდე დარჩა <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="6614169507485700968">კონფიდენციალურობის ეკრანი ჩართულია</translation>
@@ -646,7 +645,6 @@
 <translation id="7551643184018910560">დაამაგრეთ თაროზე</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
-<translation id="7568294522609223312">ავტომატური დაწკაპუნებების გამორთვა</translation>
 <translation id="7568637526529101738">მარჯვენა ღილაკზე დაწკაპუნების ან ხანგრძლივად დაჭერის შემთხვევაში ასისტენტი გაჩვენებთ არჩეულ კონტენტთან დაკავშირებულ ინფორმაციას, მაგალითად, განმარტებას ან საზომი ერთეულის გარდაქმნის ვარიანტს.</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
 <translation id="7579778809502851308">ეკრანის აღბეჭდვა</translation>

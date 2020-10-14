@@ -393,6 +393,7 @@
 <translation id="1436390408194692385">ໃຊ້ໄດ້ສຳລັບ <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">ສືບຕໍ່ການຕັ້ງຄ່າ</translation>
 <translation id="1436784010935106834">ເອົາອອກໄປແລ້ວ</translation>
+<translation id="1437986450143295708">ອະທິບາຍບັນຫາລະອຽດ</translation>
 <translation id="144283815522798837">ເລືອກ <ph name="NUMBER_OF_ITEMS_SELECTED" /> ແລ້ວ</translation>
 <translation id="1442851588227551435">ຕັ້ງຄ່າປີ້ Kerberos ທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="1444628761356461360">ການຕັ້ງຄ່ານີ້ຖືກຈັດການໂດຍ​ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​, <ph name="OWNER_EMAIL" />.</translation>
@@ -4499,7 +4500,6 @@
 <translation id="628352644014831790">4 ວິນາທີ</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ບໍ່ຖືກດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດຈະເປັນອັນຕະລາຍ.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ເຄື່ອງ​ພິມ​ໃຫມ່​ຢູ່​ເທິງ​ເຄືອ​ຂ່າຍ​ຂອງ​ທ່ານ}other{ເຄື່ອງ​ພິມ​ໃຫມ່​ຢູ່​ເທິງ​ເຄືອ​ຂ່າຍ​ຂອງ​ທ່ານ}}</translation>
-<translation id="6289626062715012577">ແອັບ ແລະ ເວັບໄຊທີ່ຮອງຮັບຫຼາຍພາສາຈະໃຊ້ພາສາທີ່ຮອງຮັບທຳອິດຈາກລາຍການນີ້. ການຕັ້ງຄ່າພາສາຈະຊິ້ງຂໍ້ມູນກັບໂປຣແກຣມທ່ອງເວັບ Chrome <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">ເພື່ອເລີ່ມ Linux, <ph name="ORGANIZATION_NAME" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ຣີເຊັດ Chromebook ນີ້ເປັນການຕັ້ງຄ່າຈາກໂຮງງານ.</translation>
 <translation id="6291949900244949761">ຖາມເມື່ອເວັບໄຊໃດໜຶ່ງຕ້ອງການເຂົ້າເຖິງອຸປະກອນ USB (ແນະນຳ)</translation>
 <translation id="6291953229176937411">ສະແດງຢູ່ໃນຕົວຊອກ​ຫາ</translation>
@@ -5876,7 +5876,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">ລະຫັດຜ່ານຂອງທ່ານໄດ້ຖືກປ່ຽນໃນເຊີບເວີແລ້ວ. ກະລຸນາອອກຈາກລະບົບ ແລ້ວເຂົ້າສູ່ລະບົບຄືນໃໝ່.</translation>
 <translation id="7915457674565721553">ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດເພື່ອຕັ້ງຄ່າການຄວບຄຸມຂອງພໍ່ແມ່</translation>
-<translation id="7915471803647590281">ກະ​ລຸ​ນາ​ບອກ​ໃຫ້​ພວກ​ເຮົາຮູ້​ສິ່ງ​ທີ່​ກໍາລັງເກີດ​ຂຶ້ນ ​ກ່ອນ​ທີ່​ຈະ​ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ​.</translation>
 <translation id="7918257978052780342">ລົງ​ທະ​ບຽນ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ວິ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ສາມາດເບິ່ງ <ph name="FILENAME" /> ໄດ້</translation>

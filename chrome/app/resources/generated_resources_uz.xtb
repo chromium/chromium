@@ -4461,7 +4461,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="628352644014831790">4 soniya</translation>
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Tarmoqda yangi printer}other{Tarmoqda yangi printerlar}}</translation>
-<translation id="6289626062715012577">Bir nechta tilda ishlaydigan ilova va saytlar shu roʻyxatdagi birinchi mos tilni ishlatadi. Til parametrlari Chrome brauzeriga sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linux ishga tushirilishi uchun <ph name="ORGANIZATION_NAME" /> maʼlumotlaringizni zaxiralash va bu Chromebookni zavod sozlamalariga qaytarishni talab qiladi.</translation>
 <translation id="6291949900244949761">Sayt USB qurilmalardan foydalanmoqchi bo‘lganda ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="6291953229176937411">&amp;Finder’da ko‘rsatish</translation>
@@ -5818,7 +5817,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Serverdagi parolingiz yangilandi. Hisobingizdan chiqing va qaytadan kiring.</translation>
 <translation id="7915457674565721553">Ota-ona nazoratini sozlash uchun internetga ulaning</translation>
-<translation id="7915471803647590281">Fikr va mulohazangizni kiriting.</translation>
 <translation id="7918257978052780342">Ro‘yhatdan o‘tish</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> sayti <ph name="FILENAME" /> faylini koʻra oladi</translation>

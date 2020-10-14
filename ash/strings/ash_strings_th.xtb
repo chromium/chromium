@@ -541,7 +541,6 @@
 <translation id="6537924328260219877">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">แคสต์ไปที่<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">ถามผู้ดูแลระบบ</translation>
-<translation id="6584550827717945790">ปิดการเข้าถึงด้วยสวิตช์</translation>
 <translation id="6585808820553845416">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="6614169507485700968">หน้าจอส่วนตัวเปิดอยู่</translation>
@@ -628,7 +627,6 @@
 <translation id="7551643184018910560">ตรึงที่ชั้นวาง</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
-<translation id="7568294522609223312">ปิดการคลิกอัตโนมัติ</translation>
 <translation id="7568637526529101738">เมื่อคลิกขวาหรือกดค้าง Assistant จะแสดงข้อมูล เช่น คำจำกัดความหรือการแปลงหน่วยสำหรับรายการที่คุณเลือก</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>

@@ -4502,7 +4502,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="628352644014831790">4 sekundit</translation>
 <translation id="6285120108426285413">Faili <ph name="FILE_NAME" /> ei laadita sageli alla ja see võib olla ohtlik.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Teie võrgus on uus printer}other{Teie võrgus on uued printerid}}</translation>
-<translation id="6289626062715012577">Mitut keelt toetavad veebisaidid ja rakendused kasutavad esimest toetatud keelt selles loendis. Keele-eelistused sünkroonitakse Chrome'i brauseriga. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Linuxi käivitamiseks nõuab <ph name="ORGANIZATION_NAME" />, et varundaksite oma andmed ja lähtestaksite selle Chromebooki tehaseseadetele.</translation>
 <translation id="6291949900244949761">Küsi, kui sait soovib juurdepääsu USB-seadmetele (soovitatav)</translation>
 <translation id="6291953229176937411">&amp;Näita otsijas</translation>
@@ -5880,7 +5879,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Teie parool serveris on muutunud. Logige välja ja seejärel uuesti sisse.</translation>
 <translation id="7915457674565721553">Vanemliku järelevalve seadistamiseks looge Interneti-ühendus</translation>
-<translation id="7915471803647590281">Teatage meile enne tagasiside saatmist, mis toimub.</translation>
 <translation id="7918257978052780342">Registreerimine</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> saab vaadata faili <ph name="FILENAME" /></translation>

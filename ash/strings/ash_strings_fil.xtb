@@ -557,7 +557,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6537924328260219877">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Magtanong sa Administrator</translation>
-<translation id="6584550827717945790">I-off ang Switch Access</translation>
 <translation id="6585808820553845416">Matatapos ang session pagkalipas ng <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="6614169507485700968">Naka-on ang privacy screen</translation>
@@ -646,7 +645,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="7564874036684306347">Kapag inilipat ang mga window sa isa pang desktop, maaari itong magresulta sa hindi inaasahang gawi. Maaaring hatiin ang mga susunod na notification, window, at dialog sa pagitan ng mga desktop.</translation>
-<translation id="7568294522609223312">I-off ang mga awtomatikong pag-click</translation>
 <translation id="7568637526529101738">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpapakita ang Assistant ng impormasyon tulad ng kahulugan o conversion ng unit para sa iyong napili.</translation>
 <translation id="7569509451529460200">Na-enable ang Braille at ChromeVox</translation>
 <translation id="7579778809502851308">Screen capture</translation>

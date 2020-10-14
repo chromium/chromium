@@ -4461,7 +4461,6 @@
 <translation id="628352644014831790">4 секунды</translation>
 <translation id="6285120108426285413">Файл <ph name="FILE_NAME" /> скачивают редко. Возможно, он вредоносный.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Новый принтер в сети}one{Новые принтеры в сети}few{Новые принтеры в сети}many{Новые принтеры в сети}other{Новые принтеры в сети}}</translation>
-<translation id="6289626062715012577">Приложения и сайты, которые поддерживают несколько языков, будут использовать первый подходящий вариант из списка ниже. Языковые параметры синхронизируются с браузером Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Для запуска Linux организация <ph name="ORGANIZATION_NAME" /> требует выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
 <translation id="6291949900244949761">Запрашивать мое разрешение на доступ сайтов к USB-устройствам (рекомендуется)</translation>
 <translation id="6291953229176937411">Показать в Finder</translation>
@@ -5819,7 +5818,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Пароль был изменен на сервере. Выйдите из аккаунта и войдите снова.</translation>
 <translation id="7915457674565721553">Чтобы настроить родительский контроль, подключитесь к Интернету.</translation>
-<translation id="7915471803647590281">Введите текст отзыва.</translation>
 <translation id="7918257978052780342">Зарегистрироваться</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> сек.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> может просматривать файл "<ph name="FILENAME" />".</translation>

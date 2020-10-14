@@ -557,7 +557,6 @@
 <translation id="6537924328260219877">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Μετάδοση στη συσκευή <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Απευθυνθείτε στον διαχειριστή</translation>
-<translation id="6584550827717945790">Απενεργοποίηση της πρόσβασης με διακόπτη</translation>
 <translation id="6585808820553845416">Η περίοδος σύνδεσης λήγει σε <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="6614169507485700968">Η οθόνη απορρήτου είναι ενεργοποιημένη.</translation>
@@ -646,7 +645,6 @@
 <translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
 <translation id="7564874036684306347">Η μετακίνηση των παραθύρων σε άλλη επιφάνεια εργασίας ενδέχεται να οδηγήσει σε μη αναμενόμενη συμπεριφορά. Ενδέχεται να γίνει διαχωρισμός μεταγενέστερων ειδοποιήσεων, παραθύρων και παραθύρων διαλόγου μεταξύ των επιφανειών εργασίας.</translation>
-<translation id="7568294522609223312">Απενεργοποίηση αυτόματων κλικ</translation>
 <translation id="7568637526529101738">Με δεξί κλικ ή παρατεταμένο πάτημα, ο Βοηθός σάς εμφανίζει πληροφορίες όπως τον ορισμό ή μια μετατροπή μονάδων για την επιλογή σας.</translation>
 <translation id="7569509451529460200">Το Braille και το ChromeVox ενεργοποιήθηκαν</translation>
 <translation id="7579778809502851308">Λήψη οθόνης</translation>

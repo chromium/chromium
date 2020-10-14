@@ -4498,7 +4498,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="628352644014831790">4 s</translation>
 <translation id="6285120108426285413">Plik <ph name="FILE_NAME" /> jest rzadko pobierany i może być niebezpieczny.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nowa drukarka w Twojej sieci}few{Nowe drukarki w Twojej sieci}many{Nowe drukarki w Twojej sieci}other{Nowe drukarki w Twojej sieci}}</translation>
-<translation id="6289626062715012577">Aplikacje i strony, które obsługują wiele języków, będą używać pierwszego obsługiwanego języka z tej listy. Preferowane języki są synchronizowane z przeglądarką Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Przed uruchomieniem Linuksa <ph name="ORGANIZATION_NAME" /> wymaga utworzenia kopii zapasowej danych oraz przywrócenia na tym Chromebooku ustawień fabrycznych.</translation>
 <translation id="6291949900244949761">Pytaj, gdy strona chce uzyskać dostęp do urządzeń USB (zalecane)</translation>
 <translation id="6291953229176937411">&amp;Pokaż w Finderze</translation>
@@ -5876,7 +5875,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Twoje hasło zostało zmienione na serwerze. Wyloguj się i zaloguj się ponownie.</translation>
 <translation id="7915457674565721553">Połącz się z internetem, by skonfigurować kontrolę rodzicielską</translation>
-<translation id="7915471803647590281">Zanim wyślesz opinię, powiedz nam, co się dzieje.</translation>
 <translation id="7918257978052780342">Zarejestruj</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176">Strona <ph name="ORIGIN" /> może wyświetlać: <ph name="FILENAME" /></translation>

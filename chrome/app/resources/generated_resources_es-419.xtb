@@ -390,6 +390,7 @@
 <translation id="1436390408194692385">Período de validez: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="1436784010935106834">Eliminado</translation>
+<translation id="1437986450143295708">Describe el problema de forma detallada</translation>
 <translation id="144283815522798837">Cantidad seleccionada: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Activar un ticket de Kerberos</translation>
 <translation id="1444628761356461360">Esta configuración es administrada por el propietario del dispositivo: <ph name="OWNER_EMAIL" />.</translation>
@@ -4459,7 +4460,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no es un archivo que se descargue de forma habitual y es posible que sea peligroso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nueva impresora en la red}other{Nuevas impresoras en la red}}</translation>
-<translation id="6289626062715012577">Las apps y los sitios web que admiten múltiples idiomas usarán el primer idioma de esta lista. Las preferencias de idioma se sincronizan con el navegador Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Para iniciar Linux, <ph name="ORGANIZATION_NAME" /> requiere que hagas una copia de seguridad de tus datos y restablezcas esta Chromebook a la configuración de fábrica.</translation>
 <translation id="6291949900244949761">Preguntarme cuando un sitio desee acceder a dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">Mo&amp;strar en Buscador</translation>
@@ -5817,7 +5817,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Se cambió la contraseña en el servidor. Sal de la cuenta y vuelve a acceder.</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar los controles parentales</translation>
-<translation id="7915471803647590281">Comunícanos lo que está pasando antes de enviarnos tus comentarios</translation>
 <translation id="7918257978052780342">Inscribir</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>

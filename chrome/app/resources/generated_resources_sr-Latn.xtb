@@ -4500,7 +4500,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="628352644014831790">4 sekunde</translation>
 <translation id="6285120108426285413">Datoteka <ph name="FILE_NAME" /> se obično ne preuzima i može da bude opasna.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nov štampač na mreži}one{Novi štampači na mreži}few{Novi štampači na mreži}other{Novi štampači na mreži}}</translation>
-<translation id="6289626062715012577">Aplikacije i veb-sajtovi koji podržavaju više jezika koriste prvi podržani jezik sa ove liste. Podešavanja jezika se sinhronizuju sa pregledačem Chrome. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6291163159361301370">Da biste pokrenuli Linux, <ph name="ORGANIZATION_NAME" /> zahteva da napravite rezervnu kopiju podataka i resetujete ovaj Chromebook na fabrička podešavanja.</translation>
 <translation id="6291949900244949761">Pitaj kada sajt želi da pristupi USB uređajima (preporučeno)</translation>
 <translation id="6291953229176937411">&amp;Prikaži u Finder-u</translation>
@@ -5878,7 +5877,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Lozinka je promenjena na serveru. Odjavite se, pa se ponovo prijavite.</translation>
 <translation id="7915457674565721553">Povežite se na internet da biste podesili roditeljski nadzor</translation>
-<translation id="7915471803647590281">Recite nam šta se dešava pre nego što pošaljete povratne informacije.</translation>
 <translation id="7918257978052780342">Prijavi me</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> može da pregleda <ph name="FILENAME" /></translation>

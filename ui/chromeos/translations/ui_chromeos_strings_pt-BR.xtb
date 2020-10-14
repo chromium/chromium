@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Abrindo arquivos do Linux…</translation>
 <translation id="1547964879613821194">Inglês canadense</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
+<translation id="1561842594491319104">Dispositivos Chrome</translation>
 <translation id="1572585716423026576">Definir como plano de fundo</translation>
 <translation id="158809615184981282">Teclado feroês</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">Transliteração (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Arquivos do Windows</translation>
 <translation id="3078461028045006476">Compartilhar com <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Chromebits</translation>
 <translation id="3116361045094675131">Teclado do Reino Unido</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">Abacate</translation>
 <translation id="4823651846660089135">O dispositivo é somente leitura</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> itens selecionados</translation>
+<translation id="4843566743023903107">Chromebases</translation>
 <translation id="4849981557599196363">Alemão (Bélgica)</translation>
 <translation id="4850886885716139402">Visualizar</translation>
 <translation id="485316830061041779">Alemão</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Conceda aos apps do Linux permissão para modificar os arquivos no seu Google Drive. As alterações serão sincronizadas com seus outros dispositivos.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> itens</translation>
+<translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opções de classificação</translation>
 <translation id="6005282720244019462">Teclado da América Latina</translation>
 <translation id="6007237601604674381">Falha na transferência. <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +633,7 @@
     <ph name="MARKUP_4" />exclua arquivos da sua pasta "Downloads"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formatar dispositivo</translation>
 <translation id="7799329977874311193">documento HTML</translation>
+<translation id="7801354353640549019">Chromebooks</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7821462174190887129">Total de arquivos encontrados: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

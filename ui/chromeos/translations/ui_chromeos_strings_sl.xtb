@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">Odpiranje datotek za Linux ...</translation>
 <translation id="1547964879613821194">kanadska angleščina</translation>
 <translation id="1556189134700913550">Uporabi za vse</translation>
+<translation id="1561842594491319104">Naprave Chrome</translation>
 <translation id="1572585716423026576">Nastavi kot ozadje</translation>
 <translation id="158809615184981282">Ferska tipkovnica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">Prečrkovanje (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Datoteka sistema Windows</translation>
 <translation id="3078461028045006476">Skupna raba z: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">Naprave Chromebit</translation>
 <translation id="3116361045094675131">Angleška tipkovnica (Velika Britanija)</translation>
 <translation id="3126026824346185272">CTRL</translation>
 <translation id="3144126448740580210">KONČANO</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Naprava je samo za branje</translation>
 <translation id="4839847978919684242">Št. izbranih elementov: <ph name="SELCTED_FILES_COUNT" /></translation>
+<translation id="4843566743023903107">Naprave Chromebase</translation>
 <translation id="4849981557599196363">nemščina (Belgija)</translation>
 <translation id="4850886885716139402">Pogled</translation>
 <translation id="485316830061041779">nemščina</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">Aplikacijam za Linux dovolite spreminjanje datotek v Googlu Drive. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="5955954492236143329">Št. datotek: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="5957366693331451795">Chromeboxi</translation>
 <translation id="5982621672636444458">Možnosti razvrščanja</translation>
 <translation id="6005282720244019462">Latinskoameriška tipkovnica</translation>
 <translation id="6007237601604674381">Premikanje ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +633,7 @@
         <ph name="MARKUP_4" />izbrišite datoteke iz mape »Prenosi«<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Formatiraj napravo</translation>
 <translation id="7799329977874311193">Dokument HTML</translation>
+<translation id="7801354353640549019">Chromebooki</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7821462174190887129">Št. najdenih: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
