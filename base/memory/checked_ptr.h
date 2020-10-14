@@ -38,12 +38,8 @@ static_assert(ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR,
 #define CHECKED_PTR2_USE_NO_OP_WRAPPER 0
 #define CHECKED_PTR2_USE_TRIVIAL_UNWRAPPER 0
 
-// Set it to 1 to avoid branches when checking if per-pointer protection is
-// enabled.
-#define CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED 0
 // Set it to 1 to avoid branches when dereferencing the pointer.
-// Must be 1 if the above is 1.
-#define CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING 0
+#define CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING 1
 
 namespace base {
 
@@ -159,20 +155,6 @@ struct CheckedPtr2OrMTEImplPartitionAllocSupport {
   static ALWAYS_INLINE void* TagPointer(void* ptr) {
     return PartitionTagPointer(ptr);
   }
-
-#if CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
-  // Returns offset of the tag from the beginning of the slot. Works only with
-  // CheckedPtr2 algorithm.
-  static constexpr size_t TagOffset() {
-#if ENABLE_TAG_FOR_CHECKED_PTR2
-    return kPartitionTagOffset;
-#else
-    // Unreachable, but can't use NOTREACHED() due to constexpr. Return
-    // something weird so that the caller is very likely to crash.
-    return 0x87654321FEDCBA98;
-#endif
-  }
-#endif
 };
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_CHECKED_PTR2_OR_MTE_IMPL
 
@@ -209,10 +191,6 @@ struct CheckedPtr2OrMTEImpl {
 
     generation <<= kValidAddressBits;
     addr |= generation;
-#if CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
-    // Always set top bit to 1, to indicated that the protection is enabled.
-    addr |= kTopBit;
-#endif  // CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
 #endif  // !CHECKED_PTR2_USE_NO_OP_WRAPPER
     return addr;
   }
@@ -231,86 +209,6 @@ struct CheckedPtr2OrMTEImpl {
   // hasn't been freed. The function is allowed to crash on nullptr.
   static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(
       uintptr_t wrapped_ptr) {
-#if CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
-    // This variant can only be used with CheckedPtr2 algorithm, because it
-    // relies on the generation to exist at a constant offset before the
-    // allocation.
-    static_assert(ENABLE_TAG_FOR_CHECKED_PTR2, "");
-
-    // Top bit tells if the protection is enabled. Use it to decide whether to
-    // read the word before the allocation, which exists only if the protection
-    // is enabled. Otherwise it may crash, in which case read the data from the
-    // beginning of the allocation instead and ignore it later. All this magic
-    // is to avoid a branch, for performance reasons.
-    //
-    // A couple examples, assuming 64-bit system (continued below):
-    //   Ex.1: wrapped_ptr=0x8442000012345678
-    //           => enabled=0x8000000000000000
-    //           => offset=1
-    //   Ex.2: wrapped_ptr=0x0000000012345678
-    //           => enabled=0x0000000000000000
-    //           => offset=0
-    uintptr_t enabled = wrapped_ptr & kTopBit;
-    // We can't have protection disabled and generation set in the same time.
-    DCHECK(!(enabled == 0 && (ExtractGeneration(wrapped_ptr)) != 0));
-    uintptr_t offset = enabled >> kTopBitShift;  // 0 or 1
-    // Use offset to decide if the generation should be read at the beginning or
-    // before the allocation.
-    // TODO(bartekn): Do something about 1-byte allocations. Reading 2-byte
-    // generation at the allocation could crash. This case is executed
-    // specifically for non-PartitionAlloc pointers, so we can't make
-    // assumptions about alignment.
-    //
-    // Cast to volatile to ensure memory is read. E.g. in a tight loop, the
-    // compiler could cache the value in a register and thus could miss that
-    // another thread freed memory and cleared generation.
-    //
-    // Examples (continued):
-    //   Ex.1: generation_ptr=0x0000000012345676
-    //     a) if pointee wasn't freed, read e.g. generation=0x0442 (could be
-    //        also 0x8442, the top bit is overwritten later)
-    //     b) if pointee was freed, read e.g. generation=0x1234 (could be
-    //        anything)
-    //   Ex.2: generation_ptr=0x0000000012345678, read e.g. 0x2345 (doesn't
-    //         matter what we read, as long as this read doesn't crash)
-    volatile PartitionTag* generation_ptr =
-        static_cast<volatile PartitionTag*>(ExtractPtr(wrapped_ptr)) -
-        offset * (PartitionAllocSupport::TagOffset() / sizeof(PartitionTag));
-    uintptr_t generation = *generation_ptr;
-    // Shift generation into the right place and add back the enabled bit.
-    //
-    // Examples (continued):
-    //   Ex.1:
-    //     a) generation=0x8442000000000000
-    //     a) generation=0x9234000000000000
-    //   Ex.2: generation=0x2345000000000000
-    generation <<= kValidAddressBits;
-    generation |= enabled;
-
-    // If the protection isn't enabled, clear top bits. Casting to a signed
-    // type makes >> sign extend the last bit.
-    //
-    // Examples (continued):
-    //   Ex.1: mask=0xffff000000000000
-    //     a) generation=0x8442000000000000
-    //     b) generation=0x9234000000000000
-    //   Ex.2: mask=0x0000000000000000 => generation=0x0000000000000000
-    uintptr_t mask = static_cast<intptr_t>(enabled) >> (kGenerationBits - 1);
-    generation &= mask;
-
-    // Use hardware to detect generation mismatch. CPU will crash if top bits
-    // aren't all 0 (technically it won't if all bits are 1, but that's a kernel
-    // mode address, which isn't allowed either... also, top bit will be always
-    // zeroed out).
-    //
-    // Examples (continued):
-    //   Ex.1:
-    //     a) returning 0x0000000012345678
-    //     b) returning 0x1676000012345678 (this will generate a desired crash)
-    //   Ex.2: returning 0x0000000012345678
-    static_assert(CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING, "");
-    return reinterpret_cast<void*>(generation ^ wrapped_ptr);
-#else  // CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
     uintptr_t ptr_generation = wrapped_ptr >> kValidAddressBits;
     if (ptr_generation > 0) {
       // Read the generation provided by PartitionAlloc.
@@ -333,25 +231,14 @@ struct CheckedPtr2OrMTEImpl {
 #endif  // CHECKED_PTR2_AVOID_BRANCH_WHEN_DEREFERENCING
     }
     return reinterpret_cast<void*>(wrapped_ptr);
-#endif  // CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
   }
 
   // Unwraps the pointer's uintptr_t representation, while asserting that memory
   // hasn't been freed. The function must handle nullptr gracefully.
   static ALWAYS_INLINE void* SafelyUnwrapPtrForExtraction(
       uintptr_t wrapped_ptr) {
-#if CHECKED_PTR2_AVOID_BRANCH_WHEN_CHECKING_ENABLED
-    // In this implementation, SafelyUnwrapPtrForDereference doesn't tolerate
-    // nullptr, because it reads unconditionally to avoid branches. Handle the
-    // nullptr case here.
-    if (wrapped_ptr == kWrappedNullPtr)
-      return nullptr;
+    // SafelyUnwrapPtrForDereference handles nullptr case well.
     return SafelyUnwrapPtrForDereference(wrapped_ptr);
-#else
-    // In this implementation, SafelyUnwrapPtrForDereference handles nullptr
-    // case well.
-    return SafelyUnwrapPtrForDereference(wrapped_ptr);
-#endif
   }
 
   // Unwraps the pointer's uintptr_t representation, without making an assertion
