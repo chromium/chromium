@@ -49,6 +49,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
@@ -1144,11 +1145,19 @@ void LockContentsView::OnAuthDisabledForUser(
 void LockContentsView::OnSetTpmLockedState(const AccountId& user,
                                            bool is_locked,
                                            base::TimeDelta time_left) {
+  LockContentsView::UserState* state = FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user when setting TPM lock state";
+    return;
+  }
+
+  state->time_until_tpm_unlock =
+      is_locked ? base::make_optional(time_left) : base::nullopt;
+
   LoginBigUserView* big_user =
-      TryToFindBigUser(user, false /*require_auth_active*/);
+      TryToFindBigUser(user, true /*require_auth_active*/);
   if (big_user && big_user->auth_user()) {
     LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-    big_user->auth_user()->SetTpmLockedState(is_locked, time_left);
   }
 }
 
@@ -1879,7 +1888,12 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
           view->auth_user()->current_user().basic_user_info.account_id);
       uint32_t to_update_auth;
       LoginAuthUserView::AuthMethodsMetadata auth_metadata;
-      if (state->force_online_sign_in) {
+      if (state->time_until_tpm_unlock.has_value()) {
+        // TPM is locked
+        to_update_auth = LoginAuthUserView::AUTH_DISABLED_TPM_LOCKED;
+        auth_metadata.time_until_tpm_unlock =
+            state->time_until_tpm_unlock.value();
+      } else if (state->force_online_sign_in) {
         to_update_auth = LoginAuthUserView::AUTH_ONLINE_SIGN_IN;
       } else if (state->disable_auth) {
         to_update_auth = LoginAuthUserView::AUTH_DISABLED;

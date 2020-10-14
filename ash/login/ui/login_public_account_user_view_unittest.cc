@@ -62,7 +62,15 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
   int public_account_tap_count_ = 0;
 
  private:
-  void OnUserViewTapped() { ++user_view_tap_count_; }
+  void OnUserViewTapped() {
+    ++user_view_tap_count_;
+    // Simulate the pod becoming active as it does when it is a part of
+    // LoginAuthUserView.
+    public_account_view_->SetAuthEnabled(/*enabled=*/true, /*animate=*/false);
+    // 'on_tap' must run before 'public_account_tap'
+    ASSERT_TRUE(public_account_tap_count_ == 0);
+  }
+
   void OnPublicAccountTapped() { ++public_account_tap_count_; }
 
   DISALLOW_COPY_AND_ASSIGN(LoginPublicAccountUserViewTest);
@@ -126,11 +134,33 @@ TEST_F(LoginPublicAccountUserViewTest, VerifyCallackRun) {
   GetEventGenerator()->ClickLeftButton();
   EXPECT_EQ(user_view_tap_count_, 1);
 
-  // Tap on the arrow button and verify on_public_account_tapped callback is
-  // run.
+  // Now that the pod is active, clicking on the arrow should not trigger
+  // another 'on_tap' callback. Only on_public_account_tapped should be called.
+  user_view_tap_count_ = 0;
+
   GetEventGenerator()->MoveMouseTo(
       public_account_test.arrow_button()->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(public_account_tap_count_, 1);
+  EXPECT_EQ(user_view_tap_count_, 0);
+}
+
+// Verifies that tapping on the arrow when the pod isn't active will first call
+// the 'on_tap' callback to make the pod active, and then run the public
+// account tap callback.
+TEST_F(LoginPublicAccountUserViewTest, OnTapIsCalledWhenNotActive) {
+  LoginPublicAccountUserView::TestApi public_account_test(public_account_view_);
+
+  // Disable auth to simulate the pod being inactive.
+  public_account_view_->SetAuthEnabled(false, /*animate=*/false);
+
+  // Tap on the arrow and verify that 'on_tap' will be called before
+  // 'on_public_account_tapped' is called. The temporal aspect of this
+  // expectation is verified in OnUserViewTapped.
+  GetEventGenerator()->MoveMouseTo(
+      public_account_test.arrow_button()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(user_view_tap_count_, 1);
   EXPECT_EQ(public_account_tap_count_, 1);
 }
 

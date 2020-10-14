@@ -154,6 +154,12 @@ void LoginPublicAccountUserView::ButtonPressed(views::Button* sender,
                                                const ui::Event& event) {
   if (sender == arrow_button_) {
     DCHECK(arrow_button_);
+    // If the pod isn't active, activate it first.
+    if (!auth_enabled_) {
+      OnUserViewTap();
+    }
+
+    DCHECK(auth_enabled_);
     on_public_account_tap_.Run();
   }
 }
