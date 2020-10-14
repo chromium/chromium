@@ -200,6 +200,9 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
 
   DialInternalMessageUtil internal_message_util_;
 
+  // Mojo remote to the logger owned by the Media Router.
+  mojo::Remote<mojom::Logger> logger_;
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DialMediaRouteProvider> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DialMediaRouteProvider);
