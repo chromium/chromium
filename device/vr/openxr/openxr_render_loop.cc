@@ -17,11 +17,9 @@ namespace device {
 OpenXrRenderLoop::OpenXrRenderLoop(
     base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
         on_display_info_changed,
-    XrInstance instance,
-    const OpenXrExtensionHelper& extension_helper)
+    XrInstance instance)
     : XRCompositorCommon(),
       instance_(instance),
-      extension_helper_(extension_helper),
       on_display_info_changed_(std::move(on_display_info_changed)) {
   DCHECK(instance_ != XR_NULL_HANDLE);
 }
@@ -93,11 +91,11 @@ bool OpenXrRenderLoop::StartRuntime() {
 
   texture_helper_.SetUseBGRA(true);
   LUID luid;
-  if (XR_FAILED(openxr->GetLuid(&luid, extension_helper_)) ||
+  if (XR_FAILED(openxr->GetLuid(&luid)) ||
       !texture_helper_.SetAdapterLUID(luid) ||
       !texture_helper_.EnsureInitialized() ||
-      XR_FAILED(openxr->InitSession(texture_helper_.GetDevice(), &input_helper_,
-                                    extension_helper_))) {
+      XR_FAILED(
+          openxr->InitSession(texture_helper_.GetDevice(), &input_helper_))) {
     texture_helper_.Reset();
     return false;
   }

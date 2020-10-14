@@ -7,6 +7,7 @@
 
 #include "base/stl_util.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "device/vr/openxr/openxr_defs.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -380,7 +381,7 @@ constexpr OpenXrControllerInteractionProfile kHTCViveInteractionProfile = {
 constexpr OpenXrControllerInteractionProfile kSamsungOdysseyInteractionProfile =
     {OpenXrInteractionProfileType::kSamsungOdyssey,
      "/interaction_profiles/samsung/odyssey_controller",
-     XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
+     kExtSamsungOdysseyControllerExtensionName,
      GamepadMapping::kXrStandard,
      kSamsungOdysseyInputProfiles,
      base::size(kSamsungOdysseyInputProfiles),
@@ -394,7 +395,7 @@ constexpr OpenXrControllerInteractionProfile kSamsungOdysseyInteractionProfile =
 constexpr OpenXrControllerInteractionProfile kHPReverbG2InteractionProfile = {
     OpenXrInteractionProfileType::kHPReverbG2,
     "/interaction_profiles/hp/mixed_reality_controller",
-    XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
+    kExtHPMixedRealityControllerExtensionName,
     GamepadMapping::kXrStandard,
     kHPReverbG2InputProfiles,
     base::size(kHPReverbG2InputProfiles),

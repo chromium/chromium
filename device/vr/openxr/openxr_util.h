@@ -5,15 +5,23 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_UTIL_H_
 #define DEVICE_VR_OPENXR_OPENXR_UTIL_H_
 
-#include <d3d11.h>
 #include <vector>
 
 #include "base/logging.h"
-#include "device/vr/openxr/openxr_extension_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 namespace device {
+class OpenXrExtensionHelper {
+ public:
+  OpenXrExtensionHelper();
+  ~OpenXrExtensionHelper();
+
+  bool ExtensionSupported(const char* extension_name) const;
+
+ private:
+  std::vector<XrExtensionProperties> extension_properties_;
+};
+
 // These macros aren't common in Chromium and generally discouraged, so define
 // all OpenXR helper macros here so they can be kept track of. This file
 // should not be included outside of device/vr/openxr.
@@ -50,9 +58,7 @@ XrPosef PoseIdentity();
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system);
 
-XrResult CreateInstance(
-    XrInstance* instance,
-    const OpenXrExtensionEnumeration& extension_enumeration);
+XrResult CreateInstance(XrInstance* instance);
 
 std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
                                                            XrSystemId system);

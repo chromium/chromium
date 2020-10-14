@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -25,8 +24,7 @@ class OpenXrRenderLoop : public XRCompositorCommon {
  public:
   OpenXrRenderLoop(base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
                        on_display_info_changed,
-                   XrInstance instance,
-                   const OpenXrExtensionHelper& extension_helper_);
+                   XrInstance instance);
   ~OpenXrRenderLoop() override;
 
  private:
@@ -55,7 +53,6 @@ class OpenXrRenderLoop : public XRCompositorCommon {
 
   // Owned by OpenXrStatics
   XrInstance instance_;
-  const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
   std::unique_ptr<OpenXRInputHelper> input_helper_;

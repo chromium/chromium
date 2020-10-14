@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_defs.h"
 
+#include <d3d11.h>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/stl_util.h"
@@ -12,6 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 namespace device {
 
@@ -52,9 +56,30 @@ bool IsRunningInWin32AppContainer() {
 }
 #endif
 
-XrResult CreateInstance(
-    XrInstance* instance,
-    const OpenXrExtensionEnumeration& extension_enumeration) {
+OpenXrExtensionHelper::OpenXrExtensionHelper() {
+  uint32_t extension_count;
+  if (XR_SUCCEEDED(xrEnumerateInstanceExtensionProperties(
+          nullptr, 0, &extension_count, nullptr))) {
+    extension_properties_.resize(extension_count,
+                                 {XR_TYPE_EXTENSION_PROPERTIES});
+    xrEnumerateInstanceExtensionProperties(nullptr, extension_count,
+                                           &extension_count,
+                                           extension_properties_.data());
+  }
+}
+
+OpenXrExtensionHelper::~OpenXrExtensionHelper() = default;
+
+bool OpenXrExtensionHelper::ExtensionSupported(
+    const char* extension_name) const {
+  return std::find_if(
+             extension_properties_.begin(), extension_properties_.end(),
+             [&extension_name](const XrExtensionProperties& properties) {
+               return strcmp(properties.extensionName, extension_name) == 0;
+             }) != extension_properties_.end();
+}
+
+XrResult CreateInstance(XrInstance* instance) {
   XrInstanceCreateInfo instance_create_info = {XR_TYPE_INSTANCE_CREATE_INFO};
 
   std::string application_name = version_info::GetProductName() + " " +
@@ -96,14 +121,15 @@ XrResult CreateInstance(
     // Add the win32 app container compatible extension to our list of
     // extensions. If this runtime does not support execution in an app
     // container environment, one of xrCreateInstance or xrGetSystem will fail.
-    extensions.push_back(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
+    extensions.push_back(kWin32AppcontainerCompatibleExtensionName);
   }
 
   // XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME, is required for optional
   // functionality (unbounded reference spaces) and thus only requested if it is
   // available.
+  OpenXrExtensionHelper extension_helper;
   const bool unboundedSpaceExtensionSupported =
-      extension_enumeration.ExtensionSupported(
+      extension_helper.ExtensionSupported(
           XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
   if (unboundedSpaceExtensionSupported) {
     extensions.push_back(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
@@ -112,17 +138,17 @@ XrResult CreateInstance(
   // Input extensions. These enable interaction profiles not defined in the core
   // spec
   const bool samsungInteractionProfileExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME);
+      extension_helper.ExtensionSupported(
+          kExtSamsungOdysseyControllerExtensionName);
   if (samsungInteractionProfileExtensionSupported) {
-    extensions.push_back(XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME);
+    extensions.push_back(kExtSamsungOdysseyControllerExtensionName);
   }
 
   const bool hpControllerExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
+      extension_helper.ExtensionSupported(
+          kExtHPMixedRealityControllerExtensionName);
   if (hpControllerExtensionSupported) {
-    extensions.push_back(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
+    extensions.push_back(kExtHPMixedRealityControllerExtensionName);
   }
 
   const bool handInteractionExtensionSupported =
