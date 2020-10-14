@@ -3682,6 +3682,7 @@ test("unit_tests") {
     "../browser/subresource_filter/subresource_filter_abusive_unittest.cc",
     "../browser/subresource_filter/subresource_filter_configuration_unittest.cc",
     "../browser/subresource_filter/subresource_filter_content_settings_manager_unittest.cc",
+    "../browser/subresource_filter/subresource_filter_history_observer_unittest.cc",
     "../browser/subresource_filter/subresource_filter_test_harness.cc",
     "../browser/subresource_filter/subresource_filter_test_harness.h",
     "../browser/subresource_filter/subresource_filter_unittest.cc",

@@ -8,16 +8,21 @@
 #include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
 
 SubresourceFilterProfileContext::SubresourceFilterProfileContext(
-    HostContentSettingsMap* settings_map,
-    history::HistoryService* history_service)
+    HostContentSettingsMap* settings_map)
     : settings_manager_(
           std::make_unique<SubresourceFilterContentSettingsManager>(
-              settings_map,
-              history_service)),
+              settings_map)),
       ads_intervention_manager_(
           std::make_unique<AdsInterventionManager>(settings_manager_.get())) {}
 
 SubresourceFilterProfileContext::~SubresourceFilterProfileContext() {}
+
+void SubresourceFilterProfileContext::SetEmbedderData(
+    std::unique_ptr<SubresourceFilterProfileContext::EmbedderData>
+        embedder_data) {
+  DCHECK(!embedder_data_);
+  embedder_data_ = std::move(embedder_data);
+}
 
 void SubresourceFilterProfileContext::Shutdown() {
   settings_manager_.reset();

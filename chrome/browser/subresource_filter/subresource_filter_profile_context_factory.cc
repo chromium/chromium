@@ -9,6 +9,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/subresource_filter/subresource_filter_history_observer.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -38,10 +39,21 @@ KeyedService* SubresourceFilterProfileContextFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new SubresourceFilterProfileContext(
-      HostContentSettingsMapFactory::GetForProfile(profile),
-      HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
+  auto* subresource_filter_profile_context =
+      new SubresourceFilterProfileContext(
+          HostContentSettingsMapFactory::GetForProfile(profile));
+
+  // Create and attach a SubresourceFilterHistoryObserver instance if possible.
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  if (history_service) {
+    subresource_filter_profile_context->SetEmbedderData(
+        std::make_unique<SubresourceFilterHistoryObserver>(
+            subresource_filter_profile_context->settings_manager(),
+            history_service));
+  }
+
+  return subresource_filter_profile_context;
 }
 
 content::BrowserContext*

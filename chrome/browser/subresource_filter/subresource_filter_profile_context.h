@@ -14,15 +14,18 @@ class HostContentSettingsMap;
 class SubresourceFilterContentSettingsManager;
 class AdsInterventionManager;
 
-namespace history {
-class HistoryService;
-}
-
 // This class holds profile scoped context for subresource filtering.
 class SubresourceFilterProfileContext : public KeyedService {
  public:
-  SubresourceFilterProfileContext(HostContentSettingsMap* settings_map,
-                                  history::HistoryService* history_service);
+  // An opaque class that the embedder can use to scope an embedder-level object
+  // to SubresourceFilterProfileContext via SetEmbedderData().
+  class EmbedderData {
+   public:
+    virtual ~EmbedderData() = default;
+  };
+
+  explicit SubresourceFilterProfileContext(
+      HostContentSettingsMap* settings_map);
   ~SubresourceFilterProfileContext() override;
 
   SubresourceFilterContentSettingsManager* settings_manager() {
@@ -33,6 +36,11 @@ class SubresourceFilterProfileContext : public KeyedService {
     return ads_intervention_manager_.get();
   }
 
+  // Can be used to attach an embedder-level object to this object. Can only be
+  // invoked once. |embedder_data| will be destroyed before the other objects
+  // owned by this object, and thus it can safely depend on those other objects.
+  void SetEmbedderData(std::unique_ptr<EmbedderData> embedder_data);
+
  private:
   // KeyedService:
   void Shutdown() override;
@@ -42,6 +50,10 @@ class SubresourceFilterProfileContext : public KeyedService {
   // Manages ads interventions that have been triggered on previous
   // navigations.
   std::unique_ptr<AdsInterventionManager> ads_intervention_manager_;
+
+  // NOTE: Declared after the objects above to ensure that it is destroyed
+  // before them.
+  std::unique_ptr<EmbedderData> embedder_data_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContext);
 };

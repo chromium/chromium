@@ -14,7 +14,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "url/gurl.h"
 
 namespace {
@@ -41,14 +40,11 @@ constexpr base::TimeDelta
 
 SubresourceFilterContentSettingsManager::
     SubresourceFilterContentSettingsManager(
-        HostContentSettingsMap* settings_map,
-        history::HistoryService* history_service)
+        HostContentSettingsMap* settings_map)
     : settings_map_(settings_map),
       clock_(std::make_unique<base::DefaultClock>(base::DefaultClock())),
       should_use_smart_ui_(ShouldUseSmartUI()) {
   DCHECK(settings_map_);
-  if (history_service)
-    history_observer_.Add(history_service);
 }
 
 SubresourceFilterContentSettingsManager::
@@ -205,23 +201,6 @@ bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
 
   base::Time expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
   return clock_->Now() > expiry_time;
-}
-
-// When history URLs are deleted, clear the metadata for the smart UI.
-void SubresourceFilterContentSettingsManager::OnURLsDeleted(
-    history::HistoryService* history_service,
-    const history::DeletionInfo& deletion_info) {
-  if (deletion_info.IsAllHistory()) {
-    ClearMetadataForAllSites();
-    return;
-  }
-
-  for (const auto& entry : deletion_info.deleted_urls_origin_map()) {
-    const GURL& origin = entry.first;
-    int remaining_urls = entry.second.first;
-    if (!origin.is_empty() && remaining_urls == 0)
-      ClearSiteMetadata(origin);
-  }
 }
 
 bool SubresourceFilterContentSettingsManager::GetSiteActivationFromMetadata(

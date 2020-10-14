@@ -9,12 +9,9 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/history_service_observer.h"
 
 class GURL;
 class HostContentSettingsMap;
@@ -22,10 +19,6 @@ class HostContentSettingsMap;
 namespace base {
 class DictionaryValue;
 }  // namespace base
-
-namespace history {
-class HistoryService;
-}
 
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
@@ -65,13 +58,11 @@ class HistoryService;
 // content_settings::Observer. Generally speaking, we want a system where we can
 // easily log metrics if the content setting has changed meaningfully from it's
 // previous value.
-class SubresourceFilterContentSettingsManager
-    : public history::HistoryServiceObserver {
+class SubresourceFilterContentSettingsManager {
  public:
-  SubresourceFilterContentSettingsManager(
-      HostContentSettingsMap* settings_map,
-      history::HistoryService* history_service);
-  ~SubresourceFilterContentSettingsManager() override;
+  explicit SubresourceFilterContentSettingsManager(
+      HostContentSettingsMap* settings_map);
+  ~SubresourceFilterContentSettingsManager();
 
   ContentSetting GetSitePermission(const GURL& url) const;
 
@@ -139,10 +130,6 @@ class SubresourceFilterContentSettingsManager
                                  std::unique_ptr<base::DictionaryValue> dict);
 
  private:
-  // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
-
   void SetSiteMetadata(const GURL& url,
                        std::unique_ptr<base::DictionaryValue> dict);
 
@@ -153,9 +140,6 @@ class SubresourceFilterContentSettingsManager
   // expiry time set by an ads intervention.
   bool ShouldDeleteDataWithNoActivation(base::DictionaryValue* dict,
                                         ActivationSource activation_source);
-
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
 
   HostContentSettingsMap* settings_map_;
 

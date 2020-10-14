@@ -15,15 +15,12 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/test/history_service_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -80,17 +77,6 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
   SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManagerTest);
-};
-
-// It isn't very cheap to initialize the history service. Tests that need it can
-// use this harness.
-class SubresourceFilterContentSettingsManagerHistoryTest
-    : public SubresourceFilterContentSettingsManagerTest {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(profile()->CreateHistoryService());
-    SubresourceFilterContentSettingsManagerTest::SetUp();
-  }
 };
 
 TEST_F(SubresourceFilterContentSettingsManagerTest, LogDefaultSetting) {
@@ -357,80 +343,6 @@ TEST_F(SubresourceFilterContentSettingsManagerTest, ClearMetadataForAllSites) {
   EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(initial_url));
   EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(same_origin_url));
   EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(different_origin_url));
-}
-
-TEST_F(SubresourceFilterContentSettingsManagerHistoryTest,
-       HistoryUrlDeleted_ClearsWebsiteSetting) {
-  // Simulate a history already populated with a URL.
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile(), ServiceAccessType::EXPLICIT_ACCESS);
-  ASSERT_TRUE(history_service);
-  history_service->AddPage(GURL("https://already-browsed.com/"),
-                           base::Time::Now(), history::SOURCE_BROWSED);
-
-  // Ensure the website setting is set.
-  GURL url1("https://example.test/1");
-  GURL url2("https://example.test/2");
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url2));
-  settings_manager()->OnDidShowUI(url1);
-
-  // Simulate adding two page to the history for example.test.
-  history_service->AddPage(url1, base::Time::Now(), history::SOURCE_BROWSED);
-  history_service->AddPage(url2, base::Time::Now(), history::SOURCE_BROWSED);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
-
-  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url2));
-
-  // Deleting a URL from history while there are still other urls for the
-  // same origin should not delete the setting.
-  history_service->DeleteURLs({url1});
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
-  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url2));
-
-  // Deleting all URLs of an origin from history should clear the setting for
-  // this URL. Note that since there is another URL in the history this won't
-  // clear all items.
-  history_service->DeleteURLs({url2});
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
-
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url2));
-}
-
-TEST_F(SubresourceFilterContentSettingsManagerHistoryTest,
-       AllHistoryUrlDeleted_ClearsWebsiteSetting) {
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile(), ServiceAccessType::EXPLICIT_ACCESS);
-  ASSERT_TRUE(history_service);
-
-  GURL url1("https://example.test");
-  GURL url2("https://example.test");
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url2));
-  settings_manager()->OnDidShowUI(url1);
-  settings_manager()->OnDidShowUI(url2);
-
-  // Simulate adding the pages to the history.
-  history_service->AddPage(url1, base::Time::Now(), history::SOURCE_BROWSED);
-  history_service->AddPage(url2, base::Time::Now(), history::SOURCE_BROWSED);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
-
-  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_FALSE(settings_manager()->ShouldShowUIForSite(url2));
-
-  // Deleting all the URLs should clear everything.
-  base::RunLoop run_loop;
-  base::CancelableTaskTracker task_tracker;
-  history_service->ExpireHistoryBetween(std::set<GURL>(), base::Time(),
-                                        base::Time(), /*user_initiated*/ true,
-                                        run_loop.QuitClosure(), &task_tracker);
-  run_loop.Run();
-
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url1));
-  EXPECT_TRUE(settings_manager()->ShouldShowUIForSite(url2));
 }
 
 }  // namespace
