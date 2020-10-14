@@ -4334,36 +4334,6 @@
       },
       {
         "args": [
-          "standalone_angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--shard-timeout=180",
-          "-v"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "L",
-              "device_os_type": "userdebug",
-              "device_type": "hammerhead",
-              "os": "Android",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "standalone_angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "args": [
           "standalone_angle_unittests",
           "-v"
         ],
@@ -5438,36 +5408,6 @@
       },
       {
         "args": [
-          "standalone_angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--shard-timeout=180",
-          "-v"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "L",
-              "device_os_type": "userdebug",
-              "device_type": "shamu",
-              "os": "Android",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "standalone_angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "args": [
           "standalone_angle_unittests",
           "-v"
         ],
@@ -6533,36 +6473,6 @@
         },
         "test": "gpu_unittests",
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
-      },
-      {
-        "args": [
-          "standalone_angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--shard-timeout=180",
-          "-v"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_os": "M",
-              "device_os_type": "userdebug",
-              "device_type": "flounder",
-              "os": "Android",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "standalone_angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
-        "use_isolated_scripts_api": true
       },
       {
         "args": [
@@ -8327,34 +8237,6 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/"
-      },
-      {
-        "args": [
-          "standalone_angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode",
-          "--max-processes=4"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "standalone_angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
-        "use_isolated_scripts_api": true
       },
       {
         "args": [
@@ -10243,35 +10125,6 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/"
-      },
-      {
-        "args": [
-          "standalone_angle_end2end_tests",
-          "--gtest_filter=-*Vulkan_SwiftShader*",
-          "--bot-mode",
-          "--max-processes=4"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "gpu": "1002:6613",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
-          "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "standalone_angle_end2end_tests",
-        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_end2end_tests/",
-        "use_isolated_scripts_api": true
       },
       {
         "args": [

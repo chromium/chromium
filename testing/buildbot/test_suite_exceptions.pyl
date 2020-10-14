@@ -74,21 +74,6 @@
       },
     },
   },
-  'angle_end2end_tests': {
-    'remove_from': [
-      # TODO(ynovikov) Investigate why the test breaks on older devices.
-      'Android FYI Release (Nexus 5)',
-      'Android FYI Release (Nexus 6)',
-      'Android FYI Release (Nexus 9)',
-      # Temporarily disabled due to AMDGPU-PRO issues crbug.com/786219
-      'Linux FYI Release (AMD R7 240)',
-      # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
-      'Linux FYI Debug (NVIDIA)',
-      # Disabling on RX 550 as we are currently qualifying the card and not
-      # checking for regressions. crbug.com/1025745
-      'Win10 FYI x64 Release (AMD RX 550)',
-    ],
-  },
   'angle_perftests': {
     'remove_from': [
       'Android FYI Release (Nexus 5)',  # crbug.com/915429
@@ -2538,6 +2523,18 @@
         ],
       }
     }
+  },
+  'standalone_angle_end2end_tests': {
+    'remove_from': [
+      # TODO(ynovikov) Investigate why the test breaks on older devices.
+      'Android FYI Release (Nexus 5)',
+      'Android FYI Release (Nexus 6)',
+      'Android FYI Release (Nexus 9)',
+      # Temporarily disabled due to AMDGPU-PRO issues crbug.com/786219
+      'Linux FYI Release (AMD R7 240)',
+      # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
+      'Linux FYI Debug (NVIDIA)',
+    ],
   },
   'standalone_angle_unittests': {
     'remove_from': [
