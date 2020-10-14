@@ -174,7 +174,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mIsFromSigninScreen =
                 IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
 
-        getActivity().setTitle(R.string.manage_sync_title);
+        getActivity().setTitle(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                        ? R.string.sync_category_title
+                        : R.string.manage_sync_title);
         setHasOptionsMenu(true);
         // TODO(https://crbug.com/1063982): Change accessibility text for Advanced Sync Flow.
 
