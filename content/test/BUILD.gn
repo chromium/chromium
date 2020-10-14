@@ -18,6 +18,9 @@ import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
+import("//third_party/closure_compiler/closure_args.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//v8/gni/v8.gni")
 
@@ -778,7 +781,26 @@ mojom("content_test_mojo_bindings") {
 }
 
 mojom("web_ui_test_mojo_bindings") {
-  sources = [ "data/web_ui_test_mojo_bindings.mojom" ]
+  testonly = true
+  sources = [
+    "data/web_ui_test.test-mojom",
+    "data/web_ui_test_types.test-mojom",
+  ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/content/test/data"
+}
+
+js_library("web_ui_mojo_test_js") {
+  sources = [ "data/web_ui_mojo_test.js" ]
+  deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
+}
+
+# NOTE: Building this target serves as a compile test for type-checking of
+# WebUI JS that consumes generated Mojom JS bindings.
+js_type_check("web_ui_mojo_test_js_type_check") {
+  uses_js_modules = true
+  deps = [ ":web_ui_mojo_test_js" ]
+  closure_flags = mojom_js_args
 }
 
 mojom("mojo_web_test_bindings") {
@@ -1181,6 +1203,7 @@ test("content_browsertests") {
   ]
 
   public_deps = [
+    ":web_ui_mojo_test_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
   ]
@@ -1190,6 +1213,7 @@ test("content_browsertests") {
     ":content_test_mojo_bindings",
     ":test_interfaces",
     ":test_support",
+    ":web_ui_mojo_test_js_type_check",
     ":web_ui_test_mojo_bindings",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
@@ -1305,7 +1329,6 @@ test("content_browsertests") {
   data = []
 
   data_deps = [
-    ":web_ui_test_mojo_bindings_js_data_deps",
     "//content/shell:pak",
     "//testing/buildbot/filters:content_browsertests_filters",
     "//third_party/mesa_headers",
@@ -1619,6 +1642,22 @@ test("content_browsertests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+}
+
+grit("web_ui_mojo_test_resources") {
+  source = "web_ui_mojo_test_resources.grd"
+
+  outputs = [
+    "grit/web_ui_mojo_test_resources.h",
+    "grit/web_ui_mojo_test_resources_map.cc",
+    "grit/web_ui_mojo_test_resources_map.h",
+    "web_ui_mojo_test_resources.pak",
+  ]
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+  deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
 }
 
 static_library("run_all_unittests") {

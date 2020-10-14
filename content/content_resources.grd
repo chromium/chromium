@@ -35,6 +35,7 @@ Other resources that belong in this file:
       <include name="IDR_UNGUESSABLE_TOKEN_MOJO_JS" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_URL_MOJO_HTML" file="${root_gen_dir}/url/mojom/url.mojom.html" use_base_dir="false" type="BINDATA" />
       <include name="IDR_URL_MOJO_JS" file="${root_gen_dir}/url/mojom/url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_URL_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/url.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_VULKAN_INFO_MOJO_JS" file="${root_gen_dir}/gpu/ipc/common/vulkan_info.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_VULKAN_TYPES_MOJO_JS" file="${root_gen_dir}/gpu/ipc/common/vulkan_types.mojom-lite.js" use_base_dir="false" type="BINDATA" />
     </includes>

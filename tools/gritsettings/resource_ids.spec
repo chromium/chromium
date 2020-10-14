@@ -484,6 +484,9 @@
   "content/shell/shell_resources.grd": {
     "includes": [2940],
   },
+  "content/test/web_ui_mojo_test_resources.grd": {
+    "includes": [2950],
+  },
 
   # This file is generated during the build.
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/tracing/tracing_resources.grd": {

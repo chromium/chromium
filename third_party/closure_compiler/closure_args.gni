@@ -57,6 +57,22 @@ js_modules_args = [
   "chrome_pass=false",
 ]
 
+mojom_js_args = [
+  "js_module_root=gen/mojo/public/js/",
+  "js_module_root=gen/mojom-webui/",
+
+  # Mojom WebUI JS modules load bindings.js which may be compiled and stripped
+  # of type annotations. Rewrite these references to the uncompiled equivalent
+  # for compilation and type-checking.
+  "browser_resolver_prefix_replacements=\"chrome://resources/mojo/mojo/public/js/bindings.js=/bindings_uncompiled.js\"",
+
+  # Shared Mojom WebUI JS modules are by convention exposed through URLs like
+  # chrome://resources/mojo/<path-to-module>. At build time these will be given
+  # as gen/<path-to-module> for compilation, so we can rewrite them as absolute
+  # paths.
+  "browser_resolver_prefix_replacements=\"chrome://resources/mojo/=/\"",
+]
+
 polymer3_args = js_modules_args + [
                   "browser_resolver_prefix_replacements=\"../polymer/polymer_bundled.min.js=../polymer/polymer_bundled.js\"",
                   "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js=../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js\"",

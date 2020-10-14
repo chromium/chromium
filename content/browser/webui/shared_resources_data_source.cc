@@ -93,41 +93,9 @@ const std::map<int, std::string> CreateContentResourceIdToAliasMap() {
        "mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js"},
       {IDR_URL_MOJO_HTML, "mojo/url/mojom/url.mojom.html"},
       {IDR_URL_MOJO_JS, "mojo/url/mojom/url.mojom-lite.js"},
+      {IDR_URL_MOJOM_WEBUI_JS, "mojo/url/mojom/url.mojom-webui.js"},
       {IDR_VULKAN_INFO_MOJO_JS, "gpu/ipc/common/vulkan_info.mojom-lite.js"},
       {IDR_VULKAN_TYPES_MOJO_JS, "gpu/ipc/common/vulkan_types.mojom-lite.js"},
-  };
-}
-
-const std::map<int, std::string> CreateMojoResourceIdToAliasMap() {
-  return std::map<int, std::string> {
-    {IDR_MOJO_MOJO_BINDINGS_LITE_HTML,
-     "mojo/mojo/public/js/mojo_bindings_lite.html"},
-        {IDR_MOJO_MOJO_BINDINGS_LITE_JS,
-         "mojo/mojo/public/js/mojo_bindings_lite.js"},
-        {IDR_MOJO_BIG_BUFFER_MOJOM_HTML,
-         "mojo/mojo/public/mojom/base/big_buffer.mojom.html"},
-        {IDR_MOJO_BIG_BUFFER_MOJOM_LITE_JS,
-         "mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js"},
-        {IDR_MOJO_FILE_MOJOM_HTML,
-         "mojo/mojo/public/mojom/base/file.mojom.html"},
-        {IDR_MOJO_FILE_MOJOM_LITE_JS,
-         "mojo/mojo/public/mojom/base/file.mojom-lite.js"},
-        {IDR_MOJO_STRING16_MOJOM_HTML,
-         "mojo/mojo/public/mojom/base/string16.mojom.html"},
-        {IDR_MOJO_STRING16_MOJOM_LITE_JS,
-         "mojo/mojo/public/mojom/base/string16.mojom-lite.js"},
-        {IDR_MOJO_TEXT_DIRECTION_MOJOM_HTML,
-         "mojo/mojo/public/mojom/base/text_direction.mojom.html"},
-        {IDR_MOJO_TEXT_DIRECTION_MOJOM_LITE_JS,
-         "mojo/mojo/public/mojom/base/text_direction.mojom-lite.js"},
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_ANDROID)
-        {IDR_MOJO_TIME_MOJOM_HTML,
-         "mojo/mojo/public/mojom/base/time.mojom.html"},
-        {IDR_MOJO_TIME_MOJOM_LITE_JS,
-         "mojo/mojo/public/mojom/base/time.mojom-lite.js"},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS) || defined(OS_ANDROID)
   };
 }
 
@@ -248,6 +216,14 @@ void AddAliasedResourcesToMap(
   }
 }
 
+// Adds |resources| to |resources_map| using the path given by resource_path in
+// each GRD entry.
+void AddGritResourcesToMap(base::span<const GritResourceMap> resources,
+                           ResourcesMap* resources_map) {
+  for (const GritResourceMap& entry : resources)
+    AddResource(entry.name, entry.value, resources_map);
+}
+
 const ResourcesMap* CreateResourcesMap() {
   ResourcesMap* result = new ResourcesMap();
   AddResourcesToMap(result);
@@ -256,9 +232,9 @@ const ResourcesMap* CreateResourcesMap() {
   AddAliasedResourcesToMap(CreateContentResourceIdToAliasMap(),
                            kMediaInternalsResources,
                            kMediaInternalsResourcesSize, result);
-  AddAliasedResourcesToMap(CreateMojoResourceIdToAliasMap(),
-                           kMojoBindingsResources, kMojoBindingsResourcesSize,
-                           result);
+  AddGritResourcesToMap(
+      base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize),
+      result);
   AddAliasedResourcesToMap(CreateSkiaResourceIdToAliasMap(), kSkiaResources,
                            kSkiaResourcesSize, result);
 #if defined(OS_CHROMEOS)

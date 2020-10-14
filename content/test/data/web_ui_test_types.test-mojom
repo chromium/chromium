@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "url/mojom/url.mojom";
+
+// This struct is imported by web_ui_test.test-mojom and is used to provide
+// test coverage of non-shared WebUI mojom JS modules importing other
+// non-shared WebUI mojom JS modules.
+struct CacheItem {
+  url.mojom.Url url;
+  string contents;
+};
+

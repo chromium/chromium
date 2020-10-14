@@ -40,6 +40,8 @@ mojom("url_mojom_gurl") {
       traits_public_deps = [ "//url" ]
     },
   ]
+
+  webui_module_path = "chrome://resources/mojo/url/mojom"
 }
 
 mojom("url_mojom_origin") {

@@ -934,6 +934,7 @@ grit("generate_mojo_resources") {
   ]
   deps = [
     "//mojo/public/js:bindings_lite",
+    "//mojo/public/js:bindings_module",
     "//mojo/public/mojom/base:base_js",
   ]
 }
