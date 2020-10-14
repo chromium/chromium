@@ -1722,11 +1722,6 @@
         },
       },
     },
-    'remove_from': [
-      # TODO(crbug.com/1137405): Re-enable once the test harness supports
-      # the --avd-config flag.
-      'android-marshmallow-x86-rel-non-cq',
-    ],
   },
   'monochrome_public_test_ar_apk': {
     'modifications': {
