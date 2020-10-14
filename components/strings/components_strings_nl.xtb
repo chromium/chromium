@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Passen opslaan...</translation>
 <translation id="10614374240317010">Nooit opgeslagen</translation>
 <translation id="1062160989074299343">Prc10 (envelop)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> cashback</translation>
 <translation id="106701514854093668">Desktopbookmarks</translation>
 <translation id="1068672505746868501">Pagina's in het <ph name="SOURCE_LANGUAGE" /> nooit vertalen</translation>
 <translation id="1070901266639972381">Nacht</translation>
@@ -491,6 +492,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2955913368246107853">Zoekbalk sluiten</translation>
 <translation id="2969319727213777354">Als je een beveiligde verbinding tot stand wilt brengen, moet je klok correct zijn ingesteld. Dit moet omdat de certificaten die deze websites gebruiken om zichzelf te identificeren, slechts gedurende bepaalde perioden geldig zijn. Aangezien de klok van je apparaat niet goed is ingesteld, kan Chrome deze certificaten niet verifiëren.</translation>
 <translation id="2972581237482394796">&amp;Opnieuw</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> korting</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, momenteel geselecteerd. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Als deze instelling is ingeschakeld, slaat Chromium een kopie van je pas op dit apparaat op zodat formulieren sneller kunnen worden ingevuld.</translation>
 <translation id="2985398929374701810">Geef een geldig adres op</translation>
@@ -1879,6 +1881,7 @@ Aanvullende informatie:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Beschikbaar</translation>
 <translation id="868922510921656628">Pagina's per set</translation>
+<translation id="8697373104056314601"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Schakel geoptimaliseerde beveiliging in<ph name="END_ENHANCED_PROTECTION_LINK" /> om het hoogste beveiligingsniveau van Chrome te gebruiken.</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699041776323235191">HID-apparaat</translation>
 <translation id="8703575177326907206">Je verbinding met <ph name="DOMAIN" /> is niet gecodeerd.</translation>

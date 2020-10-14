@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Txartelak gordetzen…</translation>
 <translation id="10614374240317010">Sekula gorde gabeak</translation>
 <translation id="1062160989074299343">Prc10 (gutun-azala)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> itzuliko dizute</translation>
 <translation id="106701514854093668">Mahaigaineko laster-markak</translation>
 <translation id="1068672505746868501">Ez itzuli inoiz <ph name="SOURCE_LANGUAGE" /> darabilten orriak</translation>
 <translation id="1070901266639972381">Gaua</translation>
@@ -490,6 +491,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2955913368246107853">Itxi bilaketa-barra</translation>
 <translation id="2969319727213777354">Konexio segurua ezartzeko, behar bezala ezarrita egon behar du erlojuak, webguneek beren burua identifikatzeko erabiltzen dituzten ziurtagiriek denboraldi jakinetarako bakarrik balio dutelako. Gailuaren erlojua oker ezarrita dagoenez, Google Chrome-k ezin ditu egiaztatu ziurtagiri horiek.</translation>
 <translation id="2972581237482394796">&amp;Berregin</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> gutxiago</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> dago hautatuta. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Gaituta badago, Chromium-ek txartelaren kopia bat gordeko du gailuan, inprimakiak bizkorrago betetzeko.</translation>
 <translation id="2985398929374701810">Idatzi balio duen helbide bat</translation>
@@ -1874,6 +1876,7 @@ Xehetasun gehiago:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Erabilgarri</translation>
 <translation id="868922510921656628">Multzo bakoitzeko orri kopurua</translation>
+<translation id="8697373104056314601">Chrome-ren segurtasun-maila handiena lortzeko, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />aktibatu babes hobetua<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8699041776323235191">HID gailua</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeinuarekiko duzun konexioa ez dago enkriptatuta.</translation>

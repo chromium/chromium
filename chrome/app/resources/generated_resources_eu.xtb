@@ -2798,6 +2798,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="425573743389990240">Bateriaren deskarga-abiadura wattetan (balioa negatiboa bada, bateria kargatzen ari dela esan nahi du)</translation>
 <translation id="4256316378292851214">&amp;Gorde bideoa honela…</translation>
 <translation id="4258348331913189841">Fitxategi-sistemak</translation>
+<translation id="4259388776256904261">Unetxo bat beharko da</translation>
 <translation id="4260182282978351200">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea. Google-ren Babes aurreratua programara bidali nahi duzu aztertzeko? Sakatu Maius eta F6 deskargen barraren eremura iritsi arte.</translation>
 <translation id="4263223596040212967">Egiaztatu teklatuaren diseinua egokia dela eta saiatu berriro.</translation>
 <translation id="4263757076580287579">Inprimagailua erregistratzea bertan behera utzi da.</translation>
@@ -2905,6 +2906,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4400632832271803360">Goiko errenkadako teklen portaera aldatzeko, eduki sakatuta Abiarazlea tekla</translation>
 <translation id="4400963414856942668">Fitxen laster-markak egiteko, egin klik izarrean</translation>
 <translation id="4403775189117163360">Aukeratu beste karpeta bat</translation>
+<translation id="440391631796167175">Pasahitz guztiak seguruak dira</translation>
 <translation id="4404136731284211429">Aztertu berriro</translation>
 <translation id="4404843640767531781">Guraso batek <ph name="APP_NAME" /> blokeatu du. Eska iezaiozu baimena aplikazioa erabiltzeko.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5058,6 +5060,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6995899638241819463">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Jardueren erregistroa</translation>
 <translation id="6997707937646349884">Gailu hauetan:</translation>
+<translation id="6998093258894828179">Ezkutatu txartelak</translation>
 <translation id="6998793565256476099">Erregistratu gailua bideo-konferentziak egiteko</translation>
 <translation id="6999956497249459195">Talde berria</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> konektatu da baina konfiguratu egin behar da</translation>
@@ -5728,6 +5731,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatikoki blokeatu da</translation>
 <translation id="7799299114731150374">Ezarri da horma-papera</translation>
 <translation id="7800518121066352902">Biratu &amp;erlojuaren orratzen aurka</translation>
+<translation id="7802539296536804623">Ez erakutsi txartelak orri honetan</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804072833593604762">Itxi da fitxa</translation>
 <translation id="7805768142964895445">Egoera</translation>
@@ -6179,6 +6183,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8300011035382349091">Editatu fitxa honen laster-marka</translation>
 <translation id="8300374739238450534">Urdin iluna</translation>
 <translation id="8300849813060516376">OTASP zerbitzuak huts egin du</translation>
+<translation id="8304383784961451596">Ez duzu baimenik gailu hau erabiltzeko. Jarri harremanetan administratzailearekin saioa hasteko baimena lortzeko, edo hasi saioa Family Link-ek gainbegiratutako Google-ko kontu batean.</translation>
 <translation id="8308179586020895837">Galdetu <ph name="HOST" /> ostalariak zure kamera atzitu nahi duenean</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Ziurtagiria badago lehendik</translation>

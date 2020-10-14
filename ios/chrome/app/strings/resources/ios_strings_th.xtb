@@ -61,6 +61,7 @@
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
 <translation id="1552525382687785070">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
+<translation id="1580715474678097352">รับการปกป้องจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
 <translation id="1605405588277479165">ปิด - ไม่แนะนำ</translation>
@@ -728,6 +729,7 @@
 <translation id="9087108903408689779">รหัสผ่านที่ Chrome แนะนำ</translation>
 <translation id="9094033019050270033">อัปเดตรหัสผ่าน</translation>
 <translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
+<translation id="9107664647686727385">ตรวจหารหัสผ่านที่ถูกละเมิด</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9152539721251340337">สร้างคิวอาร์โค้ด</translation>
 <translation id="9157836665414082580">ระงับกล่องโต้ตอบ</translation>

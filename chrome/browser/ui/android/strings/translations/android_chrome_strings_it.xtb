@@ -165,6 +165,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2169830938017475061">Ora</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="218608176142494674">Condivisione</translation>
+<translation id="2195339740518523951">Proteggiti con lo strumento di sicurezza più efficace di Chrome</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">Sincronizzazione e servizi Google</translation>
 <translation id="2239812875700136898">Controlla le notizie utilizzando il pulsante Opzioni per Discover</translation>
@@ -256,6 +257,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2893180576842394309">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google</translation>
 <translation id="2898264748040935573">Modifica la password memorizzata</translation>
 <translation id="2900528713135656174">Crea evento</translation>
+<translation id="2901411048554510387">Visualizzazione dei suggerimenti per <ph name="WEBSITE_TITLE" />…</translation>
 <translation id="2904414404539560095">Elenco di dispositivi con cui condividere una scheda aperto a schermo intero.</translation>
 <translation id="2905036901251765993">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
@@ -441,6 +443,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4405224443901389797">Sposta in…</translation>
 <translation id="4411535500181276704">Modalità Lite</translation>
 <translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
+<translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="4440958355523780886">Pagina Lite fornita da Google. Tocca per caricare l'originale.</translation>
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
@@ -821,7 +824,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6955535239952325894">Questa impostazione è disattivata sui browser gestiti</translation>
 <translation id="6963766334940102469">Elimina Preferiti</translation>
-<translation id="6979737339423435258">Tutto</translation>
+<translation id="6979737339423435258">Dall'inizio</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6989267951144302301">Download non riuscito</translation>
 <translation id="6990079615885386641">Scarica l'app dal Google Play Store: <ph name="APP_ACTION" /></translation>

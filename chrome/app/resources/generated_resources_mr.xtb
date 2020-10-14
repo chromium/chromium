@@ -2795,6 +2795,7 @@
 <translation id="425573743389990240">बॅटरी डिस्चार्ज रेट वॉट्स मध्ये (ऋण मूल्य म्हणजे बॅटरी चार्ज होत आहे)</translation>
 <translation id="4256316378292851214">म्हणून व्हिडिओ ज&amp;तन करा...</translation>
 <translation id="4258348331913189841">फाइल सिस्टम</translation>
+<translation id="4259388776256904261">यासाठी थोडा वेळ लागू शकतो</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> धोकादायक असू शकते. ती स्कॅन करण्यासाठी Google प्रगत संरक्षण कडे पाठवायची? डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 दाबा.</translation>
 <translation id="4263223596040212967">तुमचा कीबोर्ड लेआउट तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="4263757076580287579">प्रिंटर नोंदणी रद्द केली गेली आहे.</translation>
@@ -2902,6 +2903,7 @@
 <translation id="4400632832271803360">शीर्ष-पंक्ती की चे वर्तन स्विच करण्यासाठी लाँचर की धरून ठेवा.</translation>
 <translation id="4400963414856942668">तुम्ही टॅब बुकमार्क करण्यासाठी ताऱ्यावर क्लिक करू शकता</translation>
 <translation id="4403775189117163360">वेगळे फोल्डर निवडा</translation>
+<translation id="440391631796167175">कमकुवत पासवर्ड आढळले नाहीत</translation>
 <translation id="4404136731284211429">पुन्हा स्कॅन करा</translation>
 <translation id="4404843640767531781">तुमच्या पालकाने <ph name="APP_NAME" /> ब्लॉक केले आहे. तुमच्या पालकाकडे हे अ‍ॅप वापरण्याची परवानगी मागा.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5056,6 +5058,7 @@
 <translation id="6995899638241819463">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी द्या</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ॲक्टिव्हिटी लॉग</translation>
 <translation id="6997707937646349884">तुमच्या डिव्हाइसवर:</translation>
+<translation id="6998093258894828179">कार्ड लपवा</translation>
 <translation id="6998793565256476099">डीव्हाइसची व्हिडिओ काँफरंससाठी नोंदणी करा</translation>
 <translation id="6999956497249459195">नवीन गट</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> कनेक्ट केलेला आहे पण कॉन्फिगर करणे आवश्यक आहे</translation>
@@ -5724,6 +5727,7 @@
 <translation id="7798844538707273832">आपोआप ब्लॉक केलेली <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">वॉलपेपर यशस्वीरीत्‍‍‍‍या सेट केला</translation>
 <translation id="7800518121066352902">घड्याळाच्या वि&amp;रुद्ध दिशेने फिरवा</translation>
+<translation id="7802539296536804623">या पेजवर कार्ड दाखवू नका</translation>
 <translation id="780301667611848630">नाही, नको</translation>
 <translation id="7804072833593604762">टॅब बंद केला</translation>
 <translation id="7805768142964895445">स्थिती</translation>
@@ -6176,6 +6180,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8300011035382349091">या टॅबचे बुकमार्क संपादित करा</translation>
 <translation id="8300374739238450534">भडक निळा</translation>
 <translation id="8300849813060516376">OTASP बिघडले</translation>
+<translation id="8304383784961451596">तुम्ही हे डिव्हाइस वापरण्याची परवानगी नाही. कृपया साइन इन करण्याच्या परवानगीसाठी अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा किंवा Family Link ने पर्यवेक्षण असलेल्या Google खाते वापरून साइन इन करा.</translation>
 <translation id="8308179586020895837"><ph name="HOST" /> तुमचा कॅमेरा ॲक्सेस करू इच्छित असल्यास विचारा</translation>
 <translation id="830868413617744215">बीटा</translation>
 <translation id="8309458809024885768">सर्टिफिकेट आधीपासूनच अस्तित्वात आहे</translation>

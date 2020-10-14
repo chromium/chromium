@@ -2797,6 +2797,7 @@
 <translation id="425573743389990240">बैटरी डिस्चार्ज दर वॉट में (ऋणात्मक मान का अर्थ है कि बैटरी चार्ज हो रही है)</translation>
 <translation id="4256316378292851214">इस रूप में वीडियो स&amp;हेजें...</translation>
 <translation id="4258348331913189841">फ़ाइल सिस्टम</translation>
+<translation id="4259388776256904261">इसमें कुछ समय लग सकता है</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या आप इसे स्कैनिंग के लिए 'Google बेहतर सुरक्षा' को भेजना चाहते हैं? डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4263223596040212967">अपना कीबोर्ड लेआउट जांचें और फिर से कोशिश करें.</translation>
 <translation id="4263757076580287579">प्रिंटर पंजीकरण को रद्द कर दिया गया है.</translation>
@@ -2904,6 +2905,7 @@
 <translation id="4400632832271803360">शीर्ष-पंक्ति वाली कुंजियों का व्यवहार स्विच करने के लिए Launcher कुंजी दबाए रखें</translation>
 <translation id="4400963414856942668">टैब को बुकमार्क करने के लिए आप स्टार के निशान पर क्लिक कर सकते हैं</translation>
 <translation id="4403775189117163360">कोई दूसरा फ़ोल्डर चुनें</translation>
+<translation id="440391631796167175">कोई कमज़ोर पासवर्ड नहीं मिला</translation>
 <translation id="4404136731284211429">फिर से स्कैन करें</translation>
 <translation id="4404843640767531781">आपके माता-पिता ने <ph name="APP_NAME" /> को ब्लॉक किया है. उनसे इस ऐप्लिकेशन का इस्तेमाल करने की अनुमति लें.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5057,6 +5059,7 @@
 <translation id="6995899638241819463">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - गतिविधि लॉग</translation>
 <translation id="6997707937646349884">आपके इन डिवाइस पर:</translation>
+<translation id="6998093258894828179">कार्ड छिपाएं</translation>
 <translation id="6998793565256476099">डिवाइस को वीडियो कॉन्फ़्रेंसिंग के लिए नामांकित करें</translation>
 <translation id="6999956497249459195">नया ग्रुप</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> कनेक्ट है पर उसे कॉन्फ़िगर करने की ज़रूरत है</translation>
@@ -5726,6 +5729,7 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> को अपने-आप ब्लॉक किया गया है</translation>
 <translation id="7799299114731150374">वॉलपेपर सही तरीके से सेट हो गया</translation>
 <translation id="7800518121066352902">घड़ी की &amp;विपरीत दिशा में घुमाएं</translation>
+<translation id="7802539296536804623">इस पेज पर कार्ड न दिखाएं</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7804072833593604762">टैब बंद है</translation>
 <translation id="7805768142964895445">स्थिति</translation>
@@ -6178,6 +6182,7 @@
 <translation id="8300011035382349091">इस टैब के लिए बुकमार्क में बदलाव करें</translation>
 <translation id="8300374739238450534">गहरा नीला (मिड नाइट ब्लू)</translation>
 <translation id="8300849813060516376">OTASP विफल</translation>
+<translation id="8304383784961451596">आपको इस डिवाइस का इस्तेमाल करने की अनुमति नहीं है. ए़डमिन से साइन-इन की अनुमति के लिए संपर्क करें या किसी ऐसे Google खाते से साइन इन करें जिसे Family Link की मदद से प्रबंधित किया जाता है.</translation>
 <translation id="8308179586020895837">अगर <ph name="HOST" /> आपका कैमरा और माइक्रोफ़ोन एक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="830868413617744215">बीटा</translation>
 <translation id="8309458809024885768">प्रमाणपत्र पहले से मौजूद है</translation>

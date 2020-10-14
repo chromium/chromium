@@ -2798,6 +2798,7 @@
 <translation id="425573743389990240">Швидкість розряджання акумулятора у ватах (від’ємне значення означає, що акумулятор заряджається)</translation>
 <translation id="4256316378292851214">Збере&amp;гти відео як...</translation>
 <translation id="4258348331913189841">Файлові системи</translation>
+<translation id="4259388776256904261">Це може зайняти якийсь час</translation>
 <translation id="4260182282978351200">Файл <ph name="FILE_NAME" /> може бути небезпечним. Надіслати його в Додатковий захист Google на перевірку? Натискайте Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4263223596040212967">Перевірте розкладку клавіатури й повторіть спробу.</translation>
 <translation id="4263757076580287579">Реєстрацію принтера скасовано.</translation>
@@ -2905,6 +2906,7 @@
 <translation id="4400632832271803360">Утримуйте клавішу панелі запуску, щоб змінити функції клавіш верхнього ряду</translation>
 <translation id="4400963414856942668">Щоб створити закладку для вкладки, натисніть значок зірочки</translation>
 <translation id="4403775189117163360">Вибрати іншу папку</translation>
+<translation id="440391631796167175">Усі паролі надійні</translation>
 <translation id="4404136731284211429">Шукати знову</translation>
 <translation id="4404843640767531781">Додаток <ph name="APP_NAME" /> заблоковано батьками. Попроси в них дозвіл використовувати цей додаток.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5058,6 +5060,7 @@
 <translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – журнал активності</translation>
 <translation id="6997707937646349884">На ваших пристроях:</translation>
+<translation id="6998093258894828179">Сховати картки</translation>
 <translation id="6998793565256476099">Зареєструвати пристрій для відеоконференцій</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Принтер <ph name="PRINTER_NAME" /> під'єднано, але його потрібно налаштувати</translation>
@@ -5728,6 +5731,7 @@
 <translation id="7798844538707273832">Автоматично заблоковано: <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Фоновий малюнок налаштовано</translation>
 <translation id="7800518121066352902">Повернути п&amp;роти годинникової стрілки</translation>
+<translation id="7802539296536804623">Не показувати картки на цій сторінці</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7804072833593604762">Вкладку закрито</translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -6180,6 +6184,7 @@
 <translation id="8300011035382349091">Змінити закладку для цієї вкладки</translation>
 <translation id="8300374739238450534">Темно-синій</translation>
 <translation id="8300849813060516376">Помилка OTASP</translation>
+<translation id="8304383784961451596">У вас немає дозволу користуватися цим пристроєм. Попросіть адміністратора надати вам дозвіл на вхід або увійдіть в обліковий запис Google, яким керують через Family Link.</translation>
 <translation id="8308179586020895837">Запитувати, якщо хост <ph name="HOST" /> хоче отримати доступ до вашої камери</translation>
 <translation id="830868413617744215">Бета-версія</translation>
 <translation id="8309458809024885768">Сертифікат уже існує</translation>

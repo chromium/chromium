@@ -2796,6 +2796,7 @@
 <translation id="425573743389990240">電池放電速率 (瓦特) (如為負值，表示電池正在充電)</translation>
 <translation id="4256316378292851214">另存影片(&amp;V)...</translation>
 <translation id="4258348331913189841">檔案系統</translation>
+<translation id="4259388776256904261">請稍待片刻</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危險內容。要傳送至 Google 進階保護進行掃描嗎？按下 Shift + F6 鍵即可返回下載內容列區域。</translation>
 <translation id="4263223596040212967">請檢查你的鍵盤配置，然後再試一次。</translation>
 <translation id="4263757076580287579">已取消註冊印表機。</translation>
@@ -2903,6 +2904,7 @@
 <translation id="4400632832271803360">按住啟動器鍵即可切換最上排按鍵的行為</translation>
 <translation id="4400963414856942668">按一下星號即可將分頁加入書籤</translation>
 <translation id="4403775189117163360">選擇其他資料夾</translation>
+<translation id="440391631796167175">未發現任何低強度密碼</translation>
 <translation id="4404136731284211429">重新掃描</translation>
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
@@ -5056,6 +5058,7 @@
 <translation id="6995899638241819463">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在你的裝置上：</translation>
+<translation id="6998093258894828179">隱藏資訊卡</translation>
 <translation id="6998793565256476099">註冊視訊會議裝置</translation>
 <translation id="6999956497249459195">新群組</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> 已連接，請進行設定</translation>
@@ -5726,6 +5729,7 @@
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">已成功設定桌布</translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
+<translation id="7802539296536804623">不要在這個頁面顯示資訊卡</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804072833593604762">已關閉分頁</translation>
 <translation id="7805768142964895445">狀態</translation>
@@ -6177,6 +6181,7 @@
 <translation id="8300011035382349091">編輯此分頁的書籤</translation>
 <translation id="8300374739238450534">午夜藍</translation>
 <translation id="8300849813060516376">OTASP 失敗</translation>
+<translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或是使用 Family Link 受監督的 Google 帳戶登入。</translation>
 <translation id="8308179586020895837">當 <ph name="HOST" /> 要求存取攝影機時詢問我。</translation>
 <translation id="830868413617744215">測試版</translation>
 <translation id="8309458809024885768">憑證已存在</translation>

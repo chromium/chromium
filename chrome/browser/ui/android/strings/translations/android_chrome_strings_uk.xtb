@@ -165,6 +165,7 @@
 <translation id="2169830938017475061">Щойно</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Спільний доступ</translation>
+<translation id="2195339740518523951">Найвищий рівень безпеки в Chrome</translation>
 <translation id="2227444325776770048">Продовжити як <ph name="USER_FULL_NAME" /></translation>
 <translation id="2234876718134438132">Синхронізація та сервіси Google</translation>
 <translation id="2239812875700136898">Контролюйте новини за допомогою кнопки "Налаштування рекомендацій"</translation>
@@ -256,6 +257,7 @@
 <translation id="2893180576842394309">Google може використовувати вашу історію, щоб персоналізувати Пошук та інші сервіси Google</translation>
 <translation id="2898264748040935573">Змінити збережений пароль</translation>
 <translation id="2900528713135656174">Створити подію</translation>
+<translation id="2901411048554510387">Показано пропозиції для сайту <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Список пристроїв, на які можна надіслати вкладку, відкрито на всю висоту екрана.</translation>
 <translation id="2905036901251765993">Щоб ділитися даними з людьми поблизу, дозвольте їм зісканувати цей QR-код</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -441,6 +443,7 @@
 <translation id="4405224443901389797">Перемістити в папку…</translation>
 <translation id="4411535500181276704">Спрощений режим</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
+<translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4440958355523780886">Спрощену сторінку надає Google. Натисніть, щоб завантажити оригінал.</translation>
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>

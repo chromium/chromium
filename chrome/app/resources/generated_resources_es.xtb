@@ -2797,6 +2797,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="425573743389990240">Tasa de descarga de la batería en vatios (si el valor es negativo, significa que la batería se está cargando)</translation>
 <translation id="4256316378292851214">Gu&amp;ardar vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de archivos</translation>
+<translation id="4259388776256904261">Este proceso puede tardar un poco</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> podría ser peligroso. ¿Quieres enviarlo a Protección Avanzada de Google para que lo analice? Pulsa Mayús + F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="4263223596040212967">Revisa el diseño del teclado y vuelve a intentarlo.</translation>
 <translation id="4263757076580287579">Se ha cancelado el registro en la impresora.</translation>
@@ -2904,6 +2905,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4400632832271803360">Mantén pulsado el menú de aplicaciones para cambiar el comportamiento de las teclas de la fila superior</translation>
 <translation id="4400963414856942668">Haz clic en la estrella para añadir una pestaña a marcadores</translation>
 <translation id="4403775189117163360">Elegir otra carpeta</translation>
+<translation id="440391631796167175">No se han encontrado contraseñas poco seguras</translation>
 <translation id="4404136731284211429">Volver a analizar</translation>
 <translation id="4404843640767531781">Tu padre o madre ha bloqueado <ph name="APP_NAME" />. Pídele permiso para usar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5057,6 +5059,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6995899638241819463">Avisar si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
+<translation id="6998093258894828179">Ocultar tarjetas</translation>
 <translation id="6998793565256476099">Registrar dispositivo para hacer videoconferencias</translation>
 <translation id="6999956497249459195">Nuevo grupo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero es necesario configurarla</translation>
@@ -5727,6 +5730,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7798844538707273832">bloqueado automáticamente: <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Fondo de pantalla establecido correctamente</translation>
 <translation id="7800518121066352902">Girar a la &amp;izquierda</translation>
+<translation id="7802539296536804623">No se muestran tarjetas en esta página</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="7805768142964895445">Estado</translation>
@@ -6179,6 +6183,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8300011035382349091">Editar marcador de esta pestaña</translation>
 <translation id="8300374739238450534">Azul noche</translation>
 <translation id="8300849813060516376">Error de OTASP</translation>
+<translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Ponte en contacto con el administrador para obtener permiso para iniciar sesión, o inicia sesión con una cuenta de Google supervisada con Family Link.</translation>
 <translation id="8308179586020895837">Preguntar si <ph name="HOST" /> quiere acceder a la cámara</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">El certificado ya existe</translation>

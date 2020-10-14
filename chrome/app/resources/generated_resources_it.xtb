@@ -2797,6 +2797,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="425573743389990240">Velocità di esaurimento della batteria in watt (un valore negativo indica che la batteria è in carica)</translation>
 <translation id="4256316378292851214">Sal&amp;va video come...</translation>
 <translation id="4258348331913189841">File system</translation>
+<translation id="4259388776256904261">L'operazione potrebbe richiedere un po' di tempo</translation>
 <translation id="4260182282978351200">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare alla protezione avanzata di Google per la scansione? Premi Maiusc+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4263223596040212967">Controlla il layout della tastiera e riprova.</translation>
 <translation id="4263757076580287579">Registrazione della stampante annullata.</translation>
@@ -2904,6 +2905,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4400632832271803360">Tieni premuto il tasto Avvio applicazioni per modificare la funzione dei tasti della fila superiore.</translation>
 <translation id="4400963414856942668">Puoi fare clic sulla stella per aggiungere una scheda ai preferiti</translation>
 <translation id="4403775189117163360">Scegli una cartella diversa</translation>
+<translation id="440391631796167175">Nessuna password inefficace trovata</translation>
 <translation id="4404136731284211429">Analizza di nuovo</translation>
 <translation id="4404843640767531781">L'app <ph name="APP_NAME" /> è stata bloccata da un genitore. Chiedi al tuo genitore l'autorizzazione per poterla usare.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5041,7 +5043,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6978121630131642226">Motori di ricerca</translation>
 <translation id="6979044105893951891">Avvio e chiusura di sessioni Ospite gestite</translation>
 <translation id="6979440798594660689">Disattivazione audio (impostazione predefinita)</translation>
-<translation id="6979737339423435258">Tutto</translation>
+<translation id="6979737339423435258">Dall'inizio</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6983507711977005608">Disconnetti rete con tethering istantaneo</translation>
 <translation id="6983783921975806247">OID registrato</translation>
@@ -5057,6 +5059,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6995899638241819463">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="6997642619627518301">Log delle attività - <ph name="NAME_PH" /></translation>
 <translation id="6997707937646349884">Sui tuoi dispositivi:</translation>
+<translation id="6998093258894828179">Nascondi schede</translation>
 <translation id="6998793565256476099">Registra il dispositivo per le videoconferenze</translation>
 <translation id="6999956497249459195">Nuovo gruppo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> è connessa ma deve essere configurata</translation>
@@ -5727,6 +5730,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7799299114731150374">Sfondo impostato correttamente</translation>
 <translation id="7800518121066352902">Ruota in senso anti&amp;orario</translation>
+<translation id="7802539296536804623">Non mostrare schede in questa pagina</translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7804072833593604762">Scheda chiusa</translation>
 <translation id="7805768142964895445">Stato</translation>
@@ -6178,6 +6182,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8300011035382349091">Modifica il preferito per questa scheda</translation>
 <translation id="8300374739238450534">Blu notte</translation>
 <translation id="8300849813060516376">OTASP non riuscito</translation>
+<translation id="8304383784961451596">Non disponi dell'autorizzazione per utilizzare questo dispositivo. Contatta l'amministratore per richiedere l'autorizzazione di accesso o per accedere con un Account Google supervisionato tramite Family Link.</translation>
 <translation id="8308179586020895837">Chiedi conferma se <ph name="HOST" /> vuole accedere alla webcam</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">Il certificato esiste già</translation>

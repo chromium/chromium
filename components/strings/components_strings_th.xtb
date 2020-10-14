@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">กำลังบันทึกบัตร...</translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
 <translation id="1062160989074299343">Prc10 (ซองจดหมาย)</translation>
+<translation id="1066573427009091463">เงินคืน <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">บุ๊กมาร์กบนเดสก์ท็อป</translation>
 <translation id="1068672505746868501">ไม่ต้องแปลหน้าเว็บภาษา<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">กลางคืน</translation>
@@ -490,6 +491,7 @@
 <translation id="2955913368246107853">ปิดแถบค้นหา</translation>
 <translation id="2969319727213777354">หากต้องการสร้างการเชื่อมต่อที่ปลอดภัย คุณต้องตั้งค่านาฬิกาให้ถูกต้องเนื่องจากใบรับรองที่เว็บไซต์ใช้เพื่อระบุตัวตนจะใช้ได้ในช่วงเวลาที่เจาะจงเท่านั้น แต่เนื่องจากนาฬิกาของอุปกรณ์ไม่ถูกต้อง Google Chrome จึงไม่สามารถยืนยันใบรับรองเหล่านี้</translation>
 <translation id="2972581237482394796">&amp;ทำซ้ำ</translation>
+<translation id="2975775789586780239">ลด <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">เลือก <ph name="ROW_NAME" /> อยู่ตอนนี้ <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">หากเปิดใช้ไว้ Chromium จะจัดเก็บสำเนาบัตรของคุณในอุปกรณ์นี้เพื่อการกรอกแบบฟอร์มที่รวดเร็วขึ้น</translation>
 <translation id="2985398929374701810">ป้อนที่อยู่ที่ถูกต้อง</translation>
@@ -1879,6 +1881,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">มีอยู่</translation>
 <translation id="868922510921656628">จำนวนหน้าต่อชุด</translation>
+<translation id="8697373104056314601"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />เปิดการปกป้องที่ปรับปรุงแล้ว<ph name="END_ENHANCED_PROTECTION_LINK" />เพื่อให้ Chrome รักษาความปลอดภัยในระดับสูงที่สุด</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>
 <translation id="8703575177326907206">การเชื่อมต่อของคุณไปยัง <ph name="DOMAIN" /> ไม่ได้รับการเข้ารหัส</translation>

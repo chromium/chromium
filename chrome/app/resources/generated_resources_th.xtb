@@ -2798,6 +2798,7 @@
 <translation id="425573743389990240">อัตราการใช้แบตเตอรี่เป็นวัตต์ (ค่าลบหมายถึงแบตเตอรี่กำลังชาร์จ)</translation>
 <translation id="4256316378292851214">บั&amp;นทึกวิดีโอเป็น...</translation>
 <translation id="4258348331913189841">ระบบไฟล์</translation>
+<translation id="4259388776256904261">อาจใช้เวลาสักครู่</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้การปกป้องขั้นสูงของ Google สแกนไหม กด Shift+F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="4263223596040212967">โปรดตรวจสอบรูปแบบแป้นพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="4263757076580287579">การลงทะเบียนเครื่องพิมพ์ถูกยกเลิก</translation>
@@ -2905,6 +2906,7 @@
 <translation id="4400632832271803360">กดแป้น "Launcher" ค้างไว้เพื่อเปลี่ยนการทำงานของแป้นแถวบนสุด</translation>
 <translation id="4400963414856942668">คุณคลิกดาวเพื่อบุ๊กมาร์กแท็บได้</translation>
 <translation id="4403775189117163360">เลือกโฟลเดอร์อื่น</translation>
+<translation id="440391631796167175">ไม่พบรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="4404136731284211429">สแกนอีกครั้ง</translation>
 <translation id="4404843640767531781">ผู้ปกครองของคุณบล็อก <ph name="APP_NAME" /> ไว้ โปรดขอสิทธิ์จากผู้ปกครองเพื่อใช้แอปนี้</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5058,6 +5060,7 @@
 <translation id="6995899638241819463">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - บันทึกกิจกรรม</translation>
 <translation id="6997707937646349884">บนอุปกรณ์ของคุณ:</translation>
+<translation id="6998093258894828179">ซ่อนการ์ด</translation>
 <translation id="6998793565256476099">ลงทะเบียนอุปกรณ์สำหรับการประชุมทางวิดีโอ</translation>
 <translation id="6999956497249459195">กลุ่มใหม่</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> เชื่อมต่อแล้วแต่ต้องกำหนดค่า</translation>
@@ -5728,6 +5731,7 @@
 <translation id="7798844538707273832">บล็อก<ph name="PERMISSION" />โดยอัตโนมัติ</translation>
 <translation id="7799299114731150374">ตั้งค่าวอลเปเปอร์เรียบร้อยแล้ว</translation>
 <translation id="7800518121066352902">หมุน&amp;ทวนเข็มนาฬิกา</translation>
+<translation id="7802539296536804623">ไม่แสดงการ์ดในหน้านี้</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7804072833593604762">ปิดแท็บแล้ว</translation>
 <translation id="7805768142964895445">สถานะ</translation>
@@ -6180,6 +6184,7 @@
 <translation id="8300011035382349091">แก้ไขบุ๊กมาร์กของแท็บนี้</translation>
 <translation id="8300374739238450534">สีน้ำเงินแก่</translation>
 <translation id="8300849813060516376">OTASP ล้มเหลว</translation>
+<translation id="8304383784961451596">คุณไม่ได้รับอนุญาตให้ใช้อุปกรณ์นี้ โปรดติดต่อผู้ดูแลระบบเพื่อขอสิทธิ์ลงชื่อเข้าใช้ หรือลงชื่อเข้าใช้ด้วยบัญชี Google ที่อยู่ภายใต้การควบคุมดูแลของ Family Link</translation>
 <translation id="8308179586020895837">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงกล้องของคุณไหม</translation>
 <translation id="830868413617744215">เบต้า</translation>
 <translation id="8309458809024885768">มีใบรับรองนี้อยู่แล้ว</translation>

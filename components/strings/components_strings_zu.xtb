@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Ilondoloz amakhadi...</translation>
 <translation id="10614374240317010">Ayikaze yalondolozwa</translation>
 <translation id="1062160989074299343">Prc10 (Envelope)</translation>
+<translation id="1066573427009091463">Imbuyiselo Yemali engu-<ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Amabhukhimakhi wedeskithophu</translation>
 <translation id="1068672505746868501">Ungahumushi amakhasi ngesi-<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Ebusuku</translation>
@@ -496,6 +497,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2955913368246107853">Vala ibha yokuthola</translation>
 <translation id="2969319727213777354">Ukuze kusungulwe ukuxhumeka okuvikelekile, iwashi lakho kumele lisethwe ngokulungile. Lokhu yingenxa yokuthi izitifiketi amawebhusayithi azisebenzisela ukuzikhomba ngazo zivumeleke kuphela ngezikhathi ezithile. Njengoba iwashi ledivayisi yakho lingalungile, i-Google Chrome ayikwazi ukuqinisekisa lezi zitifiketi.</translation>
 <translation id="2972581237482394796">&amp;Yenza futhi</translation>
+<translation id="2975775789586780239">Isaphulelo sika-<ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">I-<ph name="ROW_NAME" />, manje ikhethiwe. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Uma inikwe amandla, i-Chromium izogcina ikhophi yekhadi lakho kule divayisi ngokugcwalisa ifomu ngokushesha.</translation>
 <translation id="2985398929374701810">Faka ikheli elivumelekile</translation>
@@ -1887,6 +1889,7 @@ Imininingwane engeziwe:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Kuyatholakala</translation>
 <translation id="868922510921656628">Amakhasi ngesethi ngayinye</translation>
+<translation id="8697373104056314601">Ukuze uthole ileveli yokuphepha ephakeme kakhulu ye-Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />vula isivielo esithuthukisiwe<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Idethi yokuphelelwa yisikhathi</translation>
 <translation id="8699041776323235191">Idivayisi ye-HID</translation>
 <translation id="8703575177326907206">Ukuxhumeka kwakho ku-<ph name="DOMAIN" /> akubetheliwe.</translation>
