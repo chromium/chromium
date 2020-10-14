@@ -139,6 +139,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     args_.frame_id = frame_id;
     args_.frame_time = AdvanceNowByMs(10);
     args_.interval = base::TimeDelta::FromMilliseconds(16);
+    current_id_ = frame_id;
     return args_;
   }
 
@@ -1333,6 +1334,46 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   EXPECT_EQ(3u, dropped_counter.total_frames());
   EXPECT_EQ(1u, dropped_counter.total_main_dropped());
+
+  reporting_controller_.ResetReporters();
+  reporting_controller_.SetDroppedFrameCounter(nullptr);
+}
+
+TEST_F(CompositorFrameReportingControllerTest,
+       SkippedFramesFromDisplayCompositorAreDropped) {
+  DroppedFrameCounter dropped_counter;
+  reporting_controller_.SetDroppedFrameCounter(&dropped_counter);
+
+  // Submit and present two compositor frames.
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(1u, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
+
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(2u, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
+
+  // Now skip over a few frames, and submit + present another frame.
+  const uint32_t kSkipFrames = 5;
+  for (uint32_t i = 0; i < kSkipFrames; ++i)
+    IncrementCurrentId();
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(3u + kSkipFrames, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(kSkipFrames, dropped_counter.total_compositor_dropped());
+
+  // Stop requesting frames, skip over a few frames, and submit + present
+  // another frame. There should no new dropped frames.
+  dropped_counter.Reset();
+  reporting_controller_.OnStoppedRequestingBeginFrames();
+  for (uint32_t i = 0; i < kSkipFrames; ++i)
+    IncrementCurrentId();
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(1u, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
 
   reporting_controller_.ResetReporters();
   reporting_controller_.SetDroppedFrameCounter(nullptr);

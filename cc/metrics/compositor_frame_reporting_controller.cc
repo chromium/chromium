@@ -61,8 +61,19 @@ bool CompositorFrameReportingController::HasReporterAt(
   return !!reporters_[stage].get();
 }
 
+void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
+    const viz::BeginFrameArgs& args) {
+  if (previous_frame_.IsValid() &&
+      previous_frame_.frame_id.source_id == args.frame_id.source_id) {
+    CreateReportersForDroppedFrames(previous_frame_, args);
+  }
+  previous_frame_ = args;
+}
+
 void CompositorFrameReportingController::WillBeginImplFrame(
     const viz::BeginFrameArgs& args) {
+  ProcessSkippedFramesIfNecessary(args);
+
   base::TimeTicks begin_time = Now();
   if (reporters_[PipelineStage::kBeginImplFrame]) {
     auto& reporter = reporters_[PipelineStage::kBeginImplFrame];
@@ -363,6 +374,7 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
                                     now);
     }
   }
+  previous_frame_ = {};
 }
 
 void CompositorFrameReportingController::SetBlinkBreakdown(
@@ -464,6 +476,33 @@ CompositorFrameReportingController::GetSmoothThread() const {
   return is_compositor_thread_driving_smoothness_
              ? SmoothThread::kSmoothCompositor
              : SmoothThread::kSmoothNone;
+}
+
+void CompositorFrameReportingController::CreateReportersForDroppedFrames(
+    const viz::BeginFrameArgs& old_args,
+    const viz::BeginFrameArgs& new_args) const {
+  DCHECK_EQ(new_args.frame_id.source_id, old_args.frame_id.source_id);
+  DCHECK_GE(new_args.frame_id.sequence_number,
+            old_args.frame_id.sequence_number);
+  const uint32_t interval =
+      new_args.frame_id.sequence_number - old_args.frame_id.sequence_number;
+  auto timestamp = old_args.frame_time + old_args.interval;
+  for (uint32_t i = 1; i < interval; ++i, timestamp += old_args.interval) {
+    auto args = viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, old_args.frame_id.source_id,
+        old_args.frame_id.sequence_number + i, timestamp,
+        timestamp + old_args.interval, old_args.interval,
+        viz::BeginFrameArgs::NORMAL);
+    auto reporter = std::make_unique<CompositorFrameReporter>(
+        active_trackers_, args, latency_ukm_reporter_.get(),
+        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_);
+    reporter->set_tick_clock(tick_clock_);
+    reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
+                         timestamp);
+    reporter->SetDroppedFrameCounter(dropped_frame_counter_);
+    reporter->TerminateFrame(FrameTerminationStatus::kDidNotPresentFrame,
+                             args.deadline);
+  }
 }
 
 }  // namespace cc

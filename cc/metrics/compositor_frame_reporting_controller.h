@@ -119,6 +119,16 @@ class CC_EXPORT CompositorFrameReportingController {
       const viz::BeginFrameId& id);
   CompositorFrameReporter::SmoothThread GetSmoothThread() const;
 
+  // If the display-compositor skips over some frames (e.g. when the gpu is
+  // busy, or the client is non-responsive), then it will not issue any
+  // |BeginFrameArgs| for those frames. However, |CompositorFrameReporter|
+  // instances should still be created for these frames. The following
+  // functions accomplish this.
+  void ProcessSkippedFramesIfNecessary(const viz::BeginFrameArgs& args);
+  void CreateReportersForDroppedFrames(
+      const viz::BeginFrameArgs& old_args,
+      const viz::BeginFrameArgs& new_args) const;
+
   const bool should_report_metrics_;
   const int layer_tree_host_id_;
 
@@ -144,6 +154,9 @@ class CC_EXPORT CompositorFrameReportingController {
   // DO NOT reorder this line and the one above. The latency_ukm_reporter_ must
   // outlive the objects in |submitted_compositor_frames_|.
   base::circular_deque<SubmittedCompositorFrame> submitted_compositor_frames_;
+
+  // The latest frame that was started.
+  viz::BeginFrameArgs previous_frame_;
 
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
