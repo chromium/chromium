@@ -25,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT,
         AccountConsistencyPromoAction.SHOWN,
         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
+        AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -71,5 +72,12 @@ public @interface AccountConsistencyPromoAction {
      */
     int SUPPRESSED_SIGNIN_NOT_ALLOWED = 7;
 
-    int MAX = 8;
+    /**
+     * User has added an account and signed in with this account.
+     * When this metric is recorded, we won't record SIGNED_IN_WITH_DEFAULT_ACCOUNT or
+     * SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT.
+     */
+    int SIGNED_IN_WITH_ADDED_ACCOUNT = 8;
+
+    int MAX = 9;
 }
