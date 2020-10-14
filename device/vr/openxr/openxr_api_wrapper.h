@@ -47,7 +47,8 @@ class OpenXrApiWrapper {
   bool UpdateAndGetSessionEnded();
 
   XrResult InitSession(const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
-                       std::unique_ptr<OpenXRInputHelper>* input_helper);
+                       std::unique_ptr<OpenXRInputHelper>* input_helper,
+                       const OpenXrExtensionHelper& extension_helper);
 
   XrResult BeginFrame(Microsoft::WRL::ComPtr<ID3D11Texture2D>* texture);
   XrResult EndFrame();
@@ -60,7 +61,8 @@ class OpenXrApiWrapper {
 
   gfx::Size GetViewSize() const;
   XrTime GetPredictedDisplayTime() const;
-  XrResult GetLuid(LUID* luid) const;
+  XrResult GetLuid(LUID* luid,
+                   const OpenXrExtensionHelper& extension_helper) const;
   bool GetStageParameters(XrExtent2Df* stage_bounds,
                           gfx::Transform* local_from_stage);
   void RegisterInteractionProfileChangeCallback(
@@ -89,8 +91,8 @@ class OpenXrApiWrapper {
       const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
   XrResult CreateSwapchain();
   XrResult CreateSpace(XrReferenceSpaceType type, XrSpace* space);
-  XrResult CreateGamepadHelper(
-      std::unique_ptr<OpenXRInputHelper>* input_helper);
+  XrResult CreateGamepadHelper(std::unique_ptr<OpenXRInputHelper>* input_helper,
+                               const OpenXrExtensionHelper& extension_helper);
 
   XrResult BeginSession();
   XrResult UpdateProjectionLayers();

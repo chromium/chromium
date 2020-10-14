@@ -271,7 +271,8 @@ bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
 // objects that may have been created before the failure.
 XrResult OpenXrApiWrapper::InitSession(
     const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
-    std::unique_ptr<OpenXRInputHelper>* input_helper) {
+    std::unique_ptr<OpenXRInputHelper>* input_helper,
+    const OpenXrExtensionHelper& extension_helper) {
   DCHECK(d3d_device.Get());
   DCHECK(IsInitialized());
 
@@ -286,14 +287,13 @@ XrResult OpenXrApiWrapper::InitSession(
   CreateSpace(XR_REFERENCE_SPACE_TYPE_STAGE, &stage_space_);
   UpdateStageBounds();
 
-  OpenXrExtensionHelper extension_helper;
-  if (extension_helper.ExtensionSupported(
+  if (extension_helper.ExtensionEnumeration()->ExtensionSupported(
           XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME)) {
     RETURN_IF_XR_FAILED(
         CreateSpace(XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT, &unbounded_space_));
   }
 
-  RETURN_IF_XR_FAILED(CreateGamepadHelper(input_helper));
+  RETURN_IF_XR_FAILED(CreateGamepadHelper(input_helper, extension_helper));
 
   // Since the objects in these arrays are used on every frame,
   // we don't want to create and destroy these objects every frame,
@@ -395,12 +395,13 @@ XrResult OpenXrApiWrapper::CreateSpace(XrReferenceSpaceType type,
 }
 
 XrResult OpenXrApiWrapper::CreateGamepadHelper(
-    std::unique_ptr<OpenXRInputHelper>* input_helper) {
+    std::unique_ptr<OpenXRInputHelper>* input_helper,
+    const OpenXrExtensionHelper& extension_helper) {
   DCHECK(HasSession());
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
 
-  return OpenXRInputHelper::CreateOpenXRInputHelper(instance_, session_,
-                                                    local_space_, input_helper);
+  return OpenXRInputHelper::CreateOpenXRInputHelper(
+      instance_, extension_helper, session_, local_space_, input_helper);
 }
 
 XrResult OpenXrApiWrapper::BeginSession() {
@@ -620,13 +621,20 @@ void OpenXrApiWrapper::GetHeadFromEyes(XrView* left, XrView* right) const {
   *right = head_from_eye_views_[1];
 }
 
-XrResult OpenXrApiWrapper::GetLuid(LUID* luid) const {
+XrResult OpenXrApiWrapper::GetLuid(
+    LUID* luid,
+    const OpenXrExtensionHelper& extension_helper) const {
   DCHECK(IsInitialized());
+
+  if (extension_helper.ExtensionMethods().xrGetD3D11GraphicsRequirementsKHR ==
+      nullptr)
+    return XR_ERROR_FUNCTION_UNSUPPORTED;
 
   XrGraphicsRequirementsD3D11KHR graphics_requirements = {
       XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
-  RETURN_IF_XR_FAILED(xrGetD3D11GraphicsRequirementsKHR(
-      instance_, system_, &graphics_requirements));
+  RETURN_IF_XR_FAILED(
+      extension_helper.ExtensionMethods().xrGetD3D11GraphicsRequirementsKHR(
+          instance_, system_, &graphics_requirements));
 
   luid->LowPart = graphics_requirements.adapterLuid.LowPart;
   luid->HighPart = graphics_requirements.adapterLuid.HighPart;

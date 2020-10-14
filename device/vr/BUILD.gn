@@ -229,9 +229,10 @@ if (enable_vr) {
         "openxr/openxr_api_wrapper.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
-        "openxr/openxr_defs.h",
         "openxr/openxr_device.cc",
         "openxr/openxr_device.h",
+        "openxr/openxr_extension_helper.cc",
+        "openxr/openxr_extension_helper.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
         "openxr/openxr_interaction_profiles.h",
@@ -321,7 +322,8 @@ if (enable_openxr) {
     include_dirs = [ "//third_party/openxr/src/include" ]
 
     sources = [
-      "openxr/openxr_defs.h",
+      "openxr/openxr_extension_helper.cc",
+      "openxr/openxr_extension_helper.h",
       "openxr/openxr_util.cc",
       "openxr/openxr_util.h",
       "openxr/test/fake_openxr_impl_api.cc",

@@ -13,6 +13,7 @@
 
 #include "device/vr/openxr/openxr_controller.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/openxr/openxr_util.h"
 
 namespace device {
 
@@ -20,6 +21,7 @@ class OpenXRInputHelper {
  public:
   static XrResult CreateOpenXRInputHelper(
       XrInstance instance,
+      const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace local_space,
       std::unique_ptr<OpenXRInputHelper>* helper);
@@ -38,7 +40,8 @@ class OpenXRInputHelper {
  private:
   base::Optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
 
-  XrResult Initialize(XrInstance instance);
+  XrResult Initialize(XrInstance instance,
+                      const OpenXrExtensionHelper& extension_helper);
 
   XrResult SyncActions(XrTime predicted_display_time);
 
