@@ -397,6 +397,7 @@ source_set("unit_tests") {
     "pay/arc_payment_app_bridge_unittest.cc",
     "power/arc_power_bridge_unittest.cc",
     "property/arc_property_bridge_unittest.cc",
+    "session/arc_container_client_adapter_unittest.cc",
     "session/arc_data_remover_unittest.cc",
     "session/arc_property_util_unittest.cc",
     "session/arc_session_impl_unittest.cc",
