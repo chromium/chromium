@@ -3217,3 +3217,41 @@ TEST_F('ChromeVoxBackgroundTest', 'FocusOnWebAreaIgnoresEvents', function() {
     assertEquals(undefined, nextSpeech);
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'AriaLeaves', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div role="radio"><p>PM</p></div>
+    <div role="switch"><p>Agree</p></div>
+    <div role="checkbox"><p>Agree</p></div>
+    <script>
+      const p = document.getElementsByTagName('p')[0];
+      p.addEventListener('click', () => {});
+    </script>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    mockFeedback.expectSpeech('PM, radio button unselected')
+        .call(doCmd('nextObject'))
+        .expectSpeech('PM')
+        .call(
+            () => assertEquals(
+                RoleType.STATIC_TEXT,
+                ChromeVoxState.instance.currentRange.start.node.role))
+
+        .call(doCmd('nextObject'))
+        .expectSpeech('Agree, switch off')
+        .call(
+            () => assertEquals(
+                RoleType.SWITCH,
+                ChromeVoxState.instance.currentRange.start.node.role))
+
+        .call(doCmd('nextObject'))
+        .expectSpeech('Agree', 'Check box')
+        .call(
+            () => assertEquals(
+                RoleType.CHECK_BOX,
+                ChromeVoxState.instance.currentRange.start.node.role))
+
+        .replay();
+  });
+});

@@ -5,7 +5,7 @@
 ++++[static] name='Heading'
 ++[push button] name='Button' actions=(press)
 ++[link] name='Link' actions=(jump)
-++++[static] name='Link' actions=(click-ancestor)
+++++[static] name='Link' actions=(clickAncestor)
 ++[entry] selectable-text actions=(activate)
 ++[entry] selectable-text actions=(activate)
 ++[entry] selectable-text actions=(activate)
@@ -21,10 +21,10 @@
 ++++[menu]
 ++++++[menu item] name='Pop-up button' selectable selected actions=(select)
 ++[section] actions=(click)
-++++[static] name='Div with click handler' actions=(click-ancestor)
+++++[static] name='Div with click handler' actions=(clickAncestor)
 ++[panel] actions=(click)
-++++[paragraph] actions=(click-ancestor)
-++++++[static] name='Paragraph with click handler on parent' actions=(click-ancestor)
+++++[paragraph] actions=(clickAncestor)
+++++++[static] name='Paragraph with click handler on parent' actions=(clickAncestor)
 ++[menu]
 ++++[menu item] name='Menu item 1' actions=(select)
 ++++[check menu item] name='Menu item 2' checked actions=(uncheck) checkable:true

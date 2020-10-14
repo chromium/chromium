@@ -688,7 +688,7 @@ const char* ToString(ax::mojom::DefaultActionVerb default_action_verb) {
     case ax::mojom::DefaultActionVerb::kClickAncestor:
       // Some screen readers, such as Jaws, expect the following spelling of
       // this verb.
-      return "click-ancestor";
+      return "clickAncestor";
     case ax::mojom::DefaultActionVerb::kJump:
       return "jump";
     case ax::mojom::DefaultActionVerb::kOpen:

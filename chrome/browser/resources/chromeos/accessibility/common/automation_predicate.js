@@ -26,7 +26,9 @@ const State = chrome.automation.StateType;
  */
 const isActionableOrHasActionableDescendant = function(node) {
   // DefaultActionVerb does not have value 'none' even though it gets set.
-  if (node.defaultActionVerb != 'none') {
+  // Static text nodes are never actionable for the purposes of navigation even
+  // if they have default action verb set.
+  if (node.role != Role.STATIC_TEXT && node.defaultActionVerb != 'none') {
     return true;
   }
 
@@ -179,8 +181,10 @@ AutomationPredicate = class {
    */
   static touchLeaf(node) {
     return !!(!node.firstChild && node.name) || node.role == Role.BUTTON ||
-        node.role == Role.POP_UP_BUTTON || node.role == Role.PORTAL ||
-        node.role == Role.SLIDER || node.role == Role.TEXT_FIELD ||
+        node.role == Role.CHECK_BOX || node.role == Role.POP_UP_BUTTON ||
+        node.role == Role.PORTAL || node.role == Role.RADIO_BUTTON ||
+        node.role == Role.SLIDER || node.role == Role.SWITCH ||
+        node.role == Role.TEXT_FIELD ||
         (node.role == Role.MENU_ITEM && !hasActionableDescendant(node));
   }
 
@@ -350,7 +354,9 @@ AutomationPredicate = class {
 
     // Always try to dive into subtrees with actionable descendants for some
     // roles even if these roles are not naturally containers.
-    if (node.role == Role.BUTTON && hasActionableDescendant(node)) {
+    if ((node.role == Role.BUTTON || node.role == Role.CHECK_BOX ||
+         node.role == Role.RADIO_BUTTON || node.role == Role.SWITCH) &&
+        hasActionableDescendant(node)) {
       return true;
     }
 

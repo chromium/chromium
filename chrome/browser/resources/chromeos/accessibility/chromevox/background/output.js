@@ -2186,7 +2186,7 @@ Output.ROLE_INFO_ = {
   application: {msgId: 'role_application', inherits: 'abstractContainer'},
   audio: {msgId: 'tag_audio', inherits: 'abstractContainer'},
   banner: {msgId: 'role_banner', inherits: 'abstractContainer'},
-  button: {msgId: 'role_button', earconId: 'BUTTON', inherits: 'button'},
+  button: {msgId: 'role_button', earconId: 'BUTTON'},
   buttonDropDown: {msgId: 'role_button', earconId: 'BUTTON'},
   checkBox: {msgId: 'role_checkbox'},
   columnHeader: {msgId: 'role_columnheader', inherits: 'cell'},
