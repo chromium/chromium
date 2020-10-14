@@ -256,10 +256,7 @@ void CaptureModeController::Start() {
   if (capture_mode_session_)
     return;
 
-  // TODO(afakhry): Use root window of the mouse cursor or the one for new
-  // windows.
-  capture_mode_session_ =
-      std::make_unique<CaptureModeSession>(this, Shell::GetPrimaryRootWindow());
+  capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
 }
 
 void CaptureModeController::Stop() {

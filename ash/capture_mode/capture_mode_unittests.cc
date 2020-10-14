@@ -24,8 +24,10 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -57,6 +59,16 @@ void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator) {
   event_generator->PressKey(key_code, /*flags=*/0);
   event_generator->ReleaseKey(key_code, /*flags=*/0);
+}
+
+// Moves the mouse and updates the cursor's display manually to imitate what a
+// real mouse move event does in shell.
+void MoveMouseToAndUpdateCursorDisplay(
+    const gfx::Point& point,
+    ui::test::EventGenerator* event_generator) {
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestPoint(point));
+  event_generator->MoveMouseTo(point);
 }
 
 }  // namespace
@@ -148,14 +160,20 @@ class CaptureModeTest : public AshTestBase {
     return base::nullopt;
   }
 
-  // Start Capture Mode with source region and type image.
-  CaptureModeController* StartImageRegionCapture() {
+  CaptureModeController* StartCaptureSession(CaptureModeSource source,
+                                             CaptureModeType type) {
     auto* controller = CaptureModeController::Get();
-    controller->SetSource(CaptureModeSource::kRegion);
-    controller->SetType(CaptureModeType::kImage);
+    controller->SetSource(source);
+    controller->SetType(type);
     controller->Start();
     DCHECK(controller->IsActive());
     return controller;
+  }
+
+  // Start Capture Mode with source region and type image.
+  CaptureModeController* StartImageRegionCapture() {
+    return StartCaptureSession(CaptureModeSource::kRegion,
+                               CaptureModeType::kImage);
   }
 
   // Select a region by pressing and dragging the mouse.
@@ -696,6 +714,122 @@ TEST_F(CaptureModeTest, WindowCapture) {
   // Stop the capture session to avoid CaptureModeSession from receiving more
   // events during test tearing down.
   controller->Stop();
+}
+
+// Tests that the capture bar is located on the root with the cursor when
+// starting capture mode.
+TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
+  UpdateDisplay("800x800,801+0-800x800");
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
+                  .Contains(controller->capture_mode_session()
+                                ->capture_mode_bar_view()
+                                ->GetBoundsInScreen()));
+  controller->Stop();
+
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+  StartImageRegionCapture();
+  EXPECT_TRUE(gfx::Rect(800, 800).Contains(controller->capture_mode_session()
+                                               ->capture_mode_bar_view()
+                                               ->GetBoundsInScreen()));
+}
+
+// Tests behavior of a capture mode session if the active display is removed.
+TEST_F(CaptureModeTest, DisplayRemoval) {
+  UpdateDisplay("800x800,801+0-800x800");
+
+  // Start capture mode on the secondary display.
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), GetEventGenerator());
+  auto* controller = StartImageRegionCapture();
+  auto* session = controller->capture_mode_session();
+  EXPECT_TRUE(
+      gfx::Rect(801, 0, 800, 800)
+          .Contains(session->capture_mode_bar_view()->GetBoundsInScreen()));
+  ASSERT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+
+  // Remove secondary display.
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // Spin the run loop so that we get a signal that the associated root window
+  // of the removed display is destroyed.
+  base::RunLoop().RunUntilIdle();
+
+  // Tests that the capture mode bar is now on the primary display.
+  EXPECT_TRUE(gfx::Rect(800, 800).Contains(
+      session->capture_mode_bar_view()->GetBoundsInScreen()));
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+}
+
+// Tests that using fullscreen or window source, moving the mouse across
+// displays will change the root window of the capture session.
+TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
+  UpdateDisplay("800x800,801+0-800x800");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+
+  for (auto source :
+       {CaptureModeSource::kFullscreen, CaptureModeSource::kWindow}) {
+    SCOPED_TRACE(source == CaptureModeSource::kFullscreen ? "Fullscreen source"
+                                                          : "Window source");
+
+    auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                           CaptureModeType::kImage);
+    auto* session = controller->capture_mode_session();
+    EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+    MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+    EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+
+    MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+    EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+    controller->Stop();
+  }
+}
+
+// Tests that in region mode, moving the mouse across displays will not change
+// the root window of the capture session, but clicking on a new display will.
+TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
+  UpdateDisplay("800x800,801+0-800x800");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  auto* event_generator = GetEventGenerator();
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+
+  auto* controller = StartImageRegionCapture();
+  auto* session = controller->capture_mode_session();
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Tests that moving the mouse to the secondary display does not change the
+  // root.
+  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Tests that pressing the mouse changes the root. The capture bar stays on
+  // the primary display until the mouse is released.
+  event_generator->PressLeftButton();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+  EXPECT_TRUE(gfx::Rect(800, 800).Contains(controller->capture_mode_session()
+                                               ->capture_mode_bar_view()
+                                               ->GetBoundsInScreen()));
+
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+  EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
+                  .Contains(controller->capture_mode_session()
+                                ->capture_mode_bar_view()
+                                ->GetBoundsInScreen()));
 }
 
 }  // namespace ash

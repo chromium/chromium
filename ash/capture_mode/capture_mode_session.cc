@@ -17,12 +17,16 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_dimmer.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -144,16 +148,21 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
   return params;
 }
 
+aura::Window* GetPreferredRootWindow() {
+  // The Display object returned by CursorManager::GetDisplay may be stale, but
+  // will have the correct id.
+  int64_t display_id = Shell::Get()->cursor_manager()->GetDisplay().id();
+  DCHECK_NE(display::kInvalidDisplayId, display_id);
+  return Shell::GetRootWindowForDisplayId(display_id);
+}
+
 }  // namespace
 
-CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
-                                       aura::Window* root)
+CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
     : controller_(controller),
-      current_root_(root),
+      current_root_(GetPreferredRootWindow()),
       capture_mode_bar_view_(new CaptureModeBarView()),
-      magnifier_glass_(kMagnifierParams),
-      old_mouse_warp_status_(SetMouseWarpEnabled(controller_->source() !=
-                                                 CaptureModeSource::kRegion)) {
+      magnifier_glass_(kMagnifierParams) {
   Shell::Get()->AddPreTargetHandler(this);
 
   SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
@@ -163,8 +172,9 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
   parent->layer()->Add(layer());
   layer()->SetBounds(parent->bounds());
 
-  capture_mode_bar_widget_.Init(CreateWidgetParams(
-      parent, CaptureModeBarView::GetBounds(root), "CaptureModeBarWidget"));
+  capture_mode_bar_widget_.Init(
+      CreateWidgetParams(parent, CaptureModeBarView::GetBounds(current_root_),
+                         "CaptureModeBarWidget"));
   capture_mode_bar_widget_.SetContentsView(
       base::WrapUnique(capture_mode_bar_view_));
   capture_mode_bar_widget_.Show();
@@ -176,13 +186,21 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
     capture_window_observer_ =
         std::make_unique<CaptureWindowObserver>(this, controller_->type());
   }
+
+  UpdateRootWindowDimmers();
+
   TabletModeController::Get()->AddObserver(this);
+  current_root_->AddObserver(this);
 }
 
 CaptureModeSession::~CaptureModeSession() {
-  Shell::Get()->RemovePreTargetHandler(this);
+  current_root_->RemoveObserver(this);
   TabletModeController::Get()->RemoveObserver(this);
-  SetMouseWarpEnabled(old_mouse_warp_status_);
+  Shell::Get()->RemovePreTargetHandler(this);
+
+  // This may happen if we hit esc while dragging.
+  if (old_mouse_warp_status_)
+    SetMouseWarpEnabled(*old_mouse_warp_status_);
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {
@@ -199,7 +217,6 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   }
 
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
-  SetMouseWarpEnabled(new_source != CaptureModeSource::kRegion);
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   layer()->SchedulePaint(layer()->bounds());
   UpdateCaptureLabelWidget();
@@ -251,6 +268,31 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeSession::OnMouseEvent(ui::MouseEvent* event) {
+  // For fullscreen/window mode, change the root window as soon as we detect the
+  // cursor on a new display. For region mode, wait until the user clicks to try
+  // to select a new region on the new display.
+  const CaptureModeSource source = controller_->source();
+  const bool can_change_root = source != CaptureModeSource::kRegion ||
+                               (source == CaptureModeSource::kRegion &&
+                                event->type() == ui::ET_MOUSE_PRESSED);
+  if (can_change_root)
+    MaybeChangeRoot(GetPreferredRootWindow());
+
+  // The root may have switched while pressing the mouse down. Move the capture
+  // bar to the current display if that is the case and make sure it is stacked
+  // at the top. The dimensions label and capture button have been moved and
+  // stacked on mouse press so manually stack at top instead of calling
+  // RefreshStackingOrder.
+  if (event->type() == ui::ET_MOUSE_RELEASED &&
+      source == CaptureModeSource::kRegion &&
+      current_root_ !=
+          capture_mode_bar_widget_.GetNativeWindow()->GetRootWindow()) {
+    capture_mode_bar_widget_.SetBounds(
+        CaptureModeBarView::GetBounds(current_root_));
+    auto* parent = GetParentContainer(current_root_);
+    parent->StackChildAtTop(capture_mode_bar_widget_.GetNativeWindow());
+  }
+
   OnLocatedEvent(event, /*is_touch=*/false);
 }
 
@@ -264,6 +306,11 @@ void CaptureModeSession::OnTabletModeStarted() {
 
 void CaptureModeSession::OnTabletModeEnded() {
   UpdateCaptureLabelWidget();
+}
+
+void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
+  DCHECK_EQ(current_root_, window);
+  MaybeChangeRoot(Shell::GetPrimaryRootWindow());
 }
 
 gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
@@ -361,10 +408,14 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
 
   gfx::Point location = event->location();
+  gfx::Point screen_location = event->location();
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
   aura::Window::ConvertPointToTarget(event_target, current_root_, &location);
+  wm::ConvertPointToScreen(event_target, &screen_location);
+
   const bool is_event_on_capture_bar =
-      CaptureModeBarView::GetBounds(current_root_).Contains(location);
+      capture_mode_bar_widget_.GetWindowBoundsInScreen().Contains(
+          screen_location);
 
   if (capture_source == CaptureModeSource::kWindow) {
     // Do not handle any event located on the capture mode bar.
@@ -378,8 +429,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_MOUSE_MOVED:
       case ui::ET_TOUCH_PRESSED:
       case ui::ET_TOUCH_MOVED: {
-        gfx::Point screen_location(event->location());
-        ::wm::ConvertPointToScreen(event_target, &screen_location);
         capture_window_observer_->UpdateSelectedWindowAtPosition(
             screen_location);
         break;
@@ -395,6 +444,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
+  DCHECK_EQ(CaptureModeSource::kRegion, capture_source);
+
   // Let the capture button handle any events it can handle first.
   if (ShouldCaptureLabelHandleEvent(event_target))
     return;
@@ -409,7 +460,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
     case ui::ET_TOUCH_PRESSED:
-      OnLocatedEventPressed(location, is_touch);
+      old_mouse_warp_status_ = SetMouseWarpEnabled(false);
+      OnLocatedEventPressed(location, is_touch, is_event_on_capture_bar);
       break;
     case ui::ET_MOUSE_DRAGGED:
     case ui::ET_TOUCH_MOVED:
@@ -417,6 +469,11 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       break;
     case ui::ET_MOUSE_RELEASED:
     case ui::ET_TOUCH_RELEASED:
+      // Reenable mouse warping.
+      if (old_mouse_warp_status_)
+        SetMouseWarpEnabled(*old_mouse_warp_status_);
+      old_mouse_warp_status_.reset();
+
       OnLocatedEventReleased(location);
       break;
     default:
@@ -426,7 +483,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
 void CaptureModeSession::OnLocatedEventPressed(
     const gfx::Point& location_in_root,
-    bool is_touch) {
+    bool is_touch,
+    bool is_event_on_capture_bar) {
   initial_location_in_root_ = location_in_root;
   previous_location_in_root_ = location_in_root;
 
@@ -465,10 +523,13 @@ void CaptureModeSession::OnLocatedEventPressed(
     // restart to the select phase.
     if (controller_->user_capture_region().Contains(location_in_root)) {
       fine_tune_position_ = FineTunePosition::kCenter;
-    } else if (!CaptureModeBarView::GetBounds(current_root_)
-                    .Contains(location_in_root)) {
-      is_selecting_region_ = true;
-      UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
+    } else {
+      gfx::Point location_in_screen = location_in_root;
+      wm::ConvertPointToScreen(current_root_, &location_in_screen);
+      if (!is_event_on_capture_bar) {
+        is_selecting_region_ = true;
+        UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
+      }
     }
     return;
   }
@@ -584,8 +645,14 @@ void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
     dimensions_label_widget_->SetContentsView(std::move(size_label));
 
     dimensions_label_widget_->Show();
-    parent->StackChildBelow(dimensions_label_widget_->GetNativeWindow(),
-                            capture_mode_bar_widget_.GetNativeWindow());
+
+    // When moving to a new display, the dimensions label gets created/moved
+    // onto the new display on press, while the capture bar gets moved on
+    // release. In this case, we do not have to stack the dimensions label.
+    if (parent == capture_mode_bar_widget_.GetNativeWindow()->parent()) {
+      parent->StackChildBelow(dimensions_label_widget_->GetNativeWindow(),
+                              capture_mode_bar_widget_.GetNativeWindow());
+    }
   }
 
   views::Label* size_label =
@@ -617,6 +684,7 @@ void CaptureModeSession::UpdateDimensionsLabelBounds() {
   screen_region.Inset(0, 0, 0, kSizeLabelYDistanceFromRegionDp);
   bounds.AdjustToFit(screen_region);
 
+  wm::ConvertRectToScreen(current_root_, &bounds);
   dimensions_label_widget_->SetBounds(bounds);
 }
 
@@ -747,6 +815,9 @@ void CaptureModeSession::UpdateCaptureLabelWidgetBounds() {
     bounds.ClampToCenteredSize(preferred_size);
   }
 
+  // User capture region bounds are in root window coordinates so convert them
+  // here.
+  wm::ConvertRectToScreen(current_root_, &bounds);
   capture_label_widget_->SetBounds(bounds);
 }
 
@@ -760,6 +831,56 @@ bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   return label_view->ShouldHandleEvent();
+}
+
+void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+  DCHECK(new_root->IsRootWindow());
+
+  if (new_root == current_root_)
+    return;
+
+  current_root_->RemoveObserver(this);
+  new_root->AddObserver(this);
+
+  auto* new_parent = GetParentContainer(new_root);
+  new_parent->layer()->Add(layer());
+  layer()->SetBounds(new_parent->bounds());
+
+  current_root_ = new_root;
+
+  // Update the bounds of the widgets after setting the new root. For region
+  // capture, the capture bar will move at a later time, when the mouse is
+  // released.
+  if (controller_->source() != CaptureModeSource::kRegion) {
+    capture_mode_bar_widget_.SetBounds(
+        CaptureModeBarView::GetBounds(current_root_));
+  }
+
+  // The following call to UpdateCaptureRegion will update the capture label
+  // bounds, moving it onto the correct display, but will early return if the
+  // region is already empty.
+  if (controller_->user_capture_region().IsEmpty())
+    UpdateCaptureLabelWidgetBounds();
+
+  // Start with a new region when we switch displays.
+  is_selecting_region_ = true;
+  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false);
+
+  UpdateRootWindowDimmers();
+}
+
+void CaptureModeSession::UpdateRootWindowDimmers() {
+  root_window_dimmers_.clear();
+
+  // Add dimmers for all root windows except |current_root_| if needed.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    if (root_window == current_root_)
+      continue;
+
+    auto dimmer = std::make_unique<WindowDimmer>(root_window);
+    dimmer->window()->Show();
+    root_window_dimmers_.emplace(std::move(dimmer));
+  }
 }
 
 }  // namespace ash

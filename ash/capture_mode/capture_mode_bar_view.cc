@@ -75,8 +75,8 @@ CaptureModeBarView::~CaptureModeBarView() = default;
 gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root) {
   DCHECK(root);
 
-  auto bounds = root->GetBoundsInRootWindow();
-  const int y = bounds.height() - kDistanceFromScreenBottom - kBarSize.height();
+  auto bounds = root->GetBoundsInScreen();
+  const int y = bounds.bottom() - kDistanceFromScreenBottom - kBarSize.height();
   bounds.ClampToCenteredSize(kBarSize);
   bounds.set_y(y);
   return bounds;

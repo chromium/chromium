@@ -11,6 +11,9 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "base/containers/flat_set.h"
+#include "base/optional.h"
+#include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/events/event.h"
@@ -27,6 +30,7 @@ namespace ash {
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureWindowObserver;
+class WindowDimmer;
 
 // Encapsulates an active capture mode session (i.e. an instance of this class
 // lives as long as capture mode is active). It creates and owns the capture
@@ -38,10 +42,11 @@ class CaptureWindowObserver;
 class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                                       public ui::LayerDelegate,
                                       public ui::EventHandler,
-                                      public TabletModeObserver {
+                                      public TabletModeObserver,
+                                      public aura::WindowObserver {
  public:
-  // Creates the bar widget on the given |root| window.
-  CaptureModeSession(CaptureModeController* controller, aura::Window* root);
+  // Creates the bar widget on a calculated root window.
+  explicit CaptureModeSession(CaptureModeController* controller);
   CaptureModeSession(const CaptureModeSession&) = delete;
   CaptureModeSession& operator=(const CaptureModeSession&) = delete;
   ~CaptureModeSession() override;
@@ -84,6 +89,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
   views::Widget* capture_label_widget_for_testing() const {
     return capture_label_widget_.get();
   }
@@ -114,7 +122,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Handles updating the select region UI.
-  void OnLocatedEventPressed(const gfx::Point& location_in_root, bool is_touch);
+  void OnLocatedEventPressed(const gfx::Point& location_in_root,
+                             bool is_touch,
+                             bool is_event_on_capture_bar);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
   void OnLocatedEventReleased(const gfx::Point& location_in_root);
 
@@ -159,6 +169,15 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // child is visible.
   bool ShouldCaptureLabelHandleEvent(aura::Window* event_target);
 
+  // Handles changing |root_window_| when the mouse cursor changes to another
+  // display, or if a display was removed. Moves the capture mode widgets to
+  // |new_root| depending on the capture mode source an whether it was a display
+  // removal.
+  void MaybeChangeRoot(aura::Window* new_root);
+
+  // Updates |root_window_dimmers_| to dim the correct root windows.
+  void UpdateRootWindowDimmers();
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may
@@ -202,12 +221,16 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // underway.
   std::vector<gfx::Point> anchor_points_;
 
-  // Caches the old status of mouse warping before the session started to be
-  // restored at the end.
-  bool old_mouse_warp_status_;
+  // Caches the old status of mouse warping while dragging or resizing a
+  // captured region.
+  base::Optional<bool> old_mouse_warp_status_;
 
   // Observer to observe the current selected to-be-captured window.
   std::unique_ptr<CaptureWindowObserver> capture_window_observer_;
+
+  // Contains the window dimmers which dim all the root windows except
+  // |current_root_|.
+  base::flat_set<std::unique_ptr<WindowDimmer>> root_window_dimmers_;
 };
 
 }  // namespace ash

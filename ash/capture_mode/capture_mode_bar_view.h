@@ -52,7 +52,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View,
   }
   CaptureModeCloseButton* close_button() const { return close_button_; }
 
-  // Gets the ideal bounds of the bar of widget on the given |root| window.
+  // Gets the ideal bounds in screen coordinates of the bar of widget on the
+  // given |root| window.
   static gfx::Rect GetBounds(aura::Window* root);
 
   // Called when either the capture mode source or type changes.
