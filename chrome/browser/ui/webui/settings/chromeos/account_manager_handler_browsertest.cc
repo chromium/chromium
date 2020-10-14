@@ -212,6 +212,22 @@ class AccountManagerUIHandlerTest
     return accounts;
   }
 
+  bool HasDummyGaiaToken(const AccountManager::AccountKey& account_key) {
+    bool has_dummy_token_result;
+
+    base::RunLoop run_loop;
+    account_manager_->HasDummyGaiaToken(
+        account_key,
+        base::BindLambdaForTesting(
+            [&has_dummy_token_result, &run_loop](bool has_dummy_token) {
+              has_dummy_token_result = has_dummy_token;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    return has_dummy_token_result;
+  }
+
   DeviceAccountInfo GetDeviceAccountInfo() const { return GetParam(); }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -336,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
         user_manager::UserType::USER_TYPE_CHILD) {
       EXPECT_FALSE(account.FindBoolKey("unmigrated").value());
     } else {
-      EXPECT_EQ(account_manager()->HasDummyGaiaTokenSync(expected_account.key),
+      EXPECT_EQ(HasDummyGaiaToken(expected_account.key),
                 account.FindBoolKey("unmigrated").value());
     }
     EXPECT_EQ(expected_account.key.account_type,
