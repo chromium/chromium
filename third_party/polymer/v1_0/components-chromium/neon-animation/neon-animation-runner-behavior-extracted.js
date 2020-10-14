@@ -20,7 +20,7 @@
             if (!neonAnimation.configure) {
               /**
                * @param {Object} config
-               * @return {AnimationEffectReadOnly}
+               * @return {AnimationEffect}
                */
               neonAnimation.configure = function(config) {
                 return null;

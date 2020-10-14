@@ -104,7 +104,7 @@ mojo.internal.setUint64 = function(dataView, byteOffset, value) {
 /**
  * @param {!DataView} dataView
  * @param {number} byteOffset
- * @return {number}
+ * @return {bigint|number}
  */
 mojo.internal.getInt64 = function(dataView, byteOffset) {
   let low, high;
@@ -225,7 +225,7 @@ mojo.internal.computeTotalArraySize = function(arraySpec, value) {
 /**
  * @param {!DataView} dataView
  * @param {number} byteOffset
- * @return {number}
+ * @return {bigint|number}
  */
 mojo.internal.getUint64 = function(dataView, byteOffset) {
   let low, high;

@@ -453,3 +453,16 @@ index 07d7d945d3a4..ca60d7e8e2a0 100644
        --paper-grey-50: #fafafa;
        --paper-grey-100: #f5f5f5;
        --paper-grey-200: #eeeeee;
+diff --git a/components-chromium/neon-animation/neon-animation-runner-behavior-extracted.js b/components-chromium/neon-animation/neon-animation-runner-behavior-extracted.js
+index 9661322ca948..806a2b068933 100644
+--- a/components-chromium/neon-animation/neon-animation-runner-behavior-extracted.js
++++ b/components-chromium/neon-animation/neon-animation-runner-behavior-extracted.js
+@@ -20,7 +20,7 @@
+             if (!neonAnimation.configure) {
+               /**
+                * @param {Object} config
+-               * @return {AnimationEffectReadOnly}
++               * @return {AnimationEffect}
+                */
+               neonAnimation.configure = function(config) {
+                 return null;

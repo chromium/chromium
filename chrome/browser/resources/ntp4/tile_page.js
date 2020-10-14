@@ -462,7 +462,7 @@ cr.define('ntp', function() {
       this.addEventListener(
           'DOMNodeInsertedIntoDocument', this.onNodeInsertedIntoDocument_);
 
-      this.content_.addEventListener('scroll', this.onScroll_.bind(this));
+      this.content_.addEventListener('scroll', this.onScroll.bind(this));
 
       this.dragWrapper_ = new cr.ui.DragWrapper(this.tileGrid_, this);
 
@@ -1094,9 +1094,9 @@ cr.define('ntp', function() {
     /**
      * Handler for the 'scroll' event on |content_|.
      * @param {Event} e The scroll event.
-     * @private
+     * @protected
      */
-    onScroll_(e) {
+    onScroll(e) {
       this.queueUpdateScrollbars_();
     },
 

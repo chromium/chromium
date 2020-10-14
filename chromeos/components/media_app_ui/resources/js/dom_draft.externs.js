@@ -9,16 +9,3 @@
 
 /** @type {function(): !Promise<!ArrayBuffer>} */
 Blob.prototype.arrayBuffer;
-
-/**
- * @see https://www.w3.org/TR/2016/WD-html51-20160310/webappapis.html#the-promiserejectionevent-interface
- * @extends {Event}
- * @constructor
- */
-const PromiseRejectionEvent = function() {};
-
-/** @type {Promise<*>} */
-PromiseRejectionEvent.prototype.promise;
-
-/** @type {*} */
-PromiseRejectionEvent.prototype.reason;

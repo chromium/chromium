@@ -618,7 +618,7 @@ cr.define('ntp', function() {
 
       this.addEventListener('tilePage:tile_added', this.onTileAdded_);
 
-      this.content_.addEventListener('scroll', this.onScroll_.bind(this));
+      this.content_.addEventListener('scroll', this.onScroll.bind(this));
     },
 
     /**
@@ -679,9 +679,9 @@ cr.define('ntp', function() {
     /**
      * A handler for when the apps page is scrolled (then we need to reposition
      * the bubbles.
-     * @private
+     * @override
      */
-    onScroll_() {
+    onScroll() {
       if (!this.selected) {
         return;
       }
