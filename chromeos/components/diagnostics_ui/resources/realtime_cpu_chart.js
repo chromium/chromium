@@ -20,10 +20,19 @@ Polymer({
   _template: html`{__html_template__}`,
 
   /**
+   * Helper function to map range of x coordinates to graph width.
+   * @private {?d3.LinearScale}
+   */
+  xAxisScaleFn_: null,
+
+  /**
    * Helper function to map range of y coordinates to graph height.
    * @private {?d3.LinearScale}
    */
   yAxisScaleFn_: null,
+
+  /** @private {!Array<Object>} */
+  data_: [],
 
   properties: {
     user: {
@@ -76,9 +85,20 @@ Polymer({
   },
 
   /** @override */
+  created() {
+    // TODO(joonbug): Remove this when chart is ready.
+    // Initialize entire data array with a random data for now.
+    for (var i = 0; i < this.numDataPoints_; ++i) {
+      this.data_.push({user: 25, system: 65});
+    }
+  },
+
+  /** @override */
   ready() {
     this.setScaling_();
     this.initializeChart_();
+    this.drawChartLine_('user-line');
+    this.drawChartLine_('system-line');
   },
 
   /**
@@ -97,10 +117,17 @@ Polymer({
    * @private
    */
   setScaling_() {
-    // Map y-values (0, 100) to (graphHeight, 0) inverse linearly.
+    // Map y-values [0, 100] to [graphHeight, 0] inverse linearly.
     // Data value of 0 will map to graphHeight, 100 maps to 0.
     this.yAxisScaleFn_ =
         d3.scaleLinear().domain([0, 100]).range([this.graphHeight_, 0]);
+
+    // Map x-values [0, numDataPoints] to [0, graphWidth] linearly.
+    // Data value of 0 will map to 0, and numDataPoints maps to graphWidth.
+    this.xAxisScaleFn_ =
+        d3.scaleLinear().domain([0, this.numDataPoints_]).range([
+          0, this.graphWidth_
+        ]);
   },
 
   /** @private */
@@ -116,10 +143,40 @@ Polymer({
     // reversing the ticks back into the chart body.
     chartGroup.select('#gridLines')
         .call(
-            d3.axisLeft(/** @type {!d3.LinearScale} */(this.yAxisScaleFn_))
+            d3.axisLeft(/** @type {!d3.LinearScale} */ (this.yAxisScaleFn_))
                 .ticks(3)                     // Number of y-axis ticks
                 .tickSize(-this.graphWidth_)  // Extend the ticks into the
                                               // entire graph as gridlines.
         );
+  },
+
+  /**
+   * @param {string} lineClass class string for <path> element.
+   * @return {d3.Line}
+   * @private
+   */
+  getLineDefinition_(lineClass) {
+    return d3
+        .line()
+        // Curved line
+        .curve(d3.curveBasis)
+        // Take the index of each data as x values.
+        .x((data, i) => this.xAxisScaleFn_(i))
+        // Pick system or user numbers to use as y values.
+        .y(data => this.yAxisScaleFn_(
+               lineClass === 'user-line' ? data.user : data.system));
+  },
+
+  /**
+   * @param {string} lineClass class string for <path> element.
+   * @private
+   */
+  drawChartLine_(lineClass) {
+    const lineElement = this.$$(`path.${lineClass}`);
+
+    // Attach data array and draw the line
+    d3.select(lineElement)
+        .datum(this.data_)
+        .attr('d', this.getLineDefinition_(lineClass));
   },
 });

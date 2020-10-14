@@ -1,8 +1,8 @@
 <style include="diagnostics-shared diagnostics-fonts">
   .grid line {
-    shape-rendering: crispEdges;
-    stroke-opacity: 0.7;
     stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
   }
 
   #chart-legend {
@@ -17,6 +17,20 @@
   #chart-legend > div > span {
     padding: 2px;
   }
+
+  #plotGroup {
+    fill: none;
+    stroke-width: 1.5px;
+  }
+
+  /* TODO(joonbug): Update with real colors as vars */
+  .user-line {
+    stroke: blue;
+  }
+
+  .system-line {
+    stroke: orange;
+  }
 </style>
 
 <svg id="chart" width$="[[width_]]" height$="[[height_]]">
@@ -29,6 +43,10 @@
     </defs>
 
     <g id="gridLines" class="grid"></g>
+    <g id="plotGroup" clip-path="url(#defClip)">
+      <path class="user-line"></path>
+      <path class="system-line"></path>
+    </g>
   </g>
 </svg>
 <div id="chart-legend">
