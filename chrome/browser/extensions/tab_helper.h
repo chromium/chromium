@@ -55,7 +55,7 @@ class TabHelper : public content::WebContentsObserver,
   //
   // NOTE: this should only be manipulated before the tab is added to a browser.
   // TODO(sky): resolve if this is the right way to identify an app tab. If it
-  // is, than this should be passed in the constructor.
+  // is, then this should be passed in the constructor.
   void SetExtensionApp(const Extension* extension);
 
   // Convenience for setting the app extension by id. This does nothing if

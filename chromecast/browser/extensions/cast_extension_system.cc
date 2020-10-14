@@ -45,7 +45,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifestFromString(
   std::unique_ptr<base::Value> root(deserializer.Deserialize(nullptr, error));
   if (!root.get()) {
     if (error->empty()) {
-      // If |error| is empty, than the file could not be read.
+      // If |error| is empty, then the file could not be read.
       // It would be cleaner to have the JSON reader give a specific error
       // in this case, but other code tests for a file error with
       // error->empty().  For now, be consistent.
