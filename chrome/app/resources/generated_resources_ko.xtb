@@ -2796,6 +2796,7 @@
 <translation id="425573743389990240">배터리 방전율(와트, 음수 값은 배터리가 충전 중임을 나타냄)</translation>
 <translation id="4256316378292851214">동영상을 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="4258348331913189841">파일 시스템</translation>
+<translation id="4259388776256904261">잠시만 기다려 주세요.</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 고급 보호 프로그램에 전송할까요? 다운로드바 영역으로 이동하려면 Shift+F6을 누르세요.</translation>
 <translation id="4263223596040212967">키보드 레이아웃을 확인한 다음 다시 시도해 주세요.</translation>
 <translation id="4263757076580287579">프린터 등록이 취소되었습니다.</translation>
@@ -2903,6 +2904,7 @@
 <translation id="4400632832271803360">맨 윗 줄 키의 동작을 전환하려면 런처 키를 길게 누르세요.</translation>
 <translation id="4400963414856942668">별표를 클릭하여 탭을 북마크에 추가할 수 있습니다.</translation>
 <translation id="4403775189117163360">다른 폴더 선택</translation>
+<translation id="440391631796167175">취약한 비밀번호 없음</translation>
 <translation id="4404136731284211429">다시 검색</translation>
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5056,6 +5058,7 @@
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
+<translation id="6998093258894828179">카드 숨기기</translation>
 <translation id="6998793565256476099">화상회의용 기기 등록</translation>
 <translation id="6999956497249459195">새 그룹</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />이(가) 연결되어 있으나 구성이 필요함</translation>
@@ -5726,6 +5729,7 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> 권한이 자동으로 차단됨</translation>
 <translation id="7799299114731150374">배경화면 설정이 완료되었습니다.</translation>
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
+<translation id="7802539296536804623">이 페이지에 카드를 표시하지 않습니다.</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
 <translation id="7805768142964895445">상태</translation>
@@ -6178,6 +6182,7 @@
 <translation id="8300011035382349091">이 탭의 북마크 수정</translation>
 <translation id="8300374739238450534">미드나잇 블루</translation>
 <translation id="8300849813060516376">OTASP 실패</translation>
+<translation id="8304383784961451596">이 기기를 사용할 권한이 없습니다. 관리자에게 문의하여 로그인 권한을 요청하거나 Family Link의 감독을 받는 Google 계정으로 로그인하세요.</translation>
 <translation id="8308179586020895837"><ph name="HOST" />에서 카메라에 액세스하려는 경우 메시지 표시</translation>
 <translation id="830868413617744215">베타</translation>
 <translation id="8309458809024885768">인증서가 이미 존재합니다.</translation>

@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Карталар сакталууда...</translation>
 <translation id="10614374240317010">Эч качан сакталбайт</translation>
 <translation id="1062160989074299343">Prc10 (Конверт)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> кешбэк</translation>
 <translation id="106701514854093668">Иштактадагы кыстармалар</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> тилиндеги барактар эч качан которулбасын</translation>
 <translation id="1070901266639972381">Түн</translation>
@@ -496,6 +497,7 @@
 <translation id="2955913368246107853">Издөө тилкесин жабуу</translation>
 <translation id="2969319727213777354">Коопсуз туташууну орнотуу үчүн, саатыңыз туура коюлушу керек. Себеби вебсайттардын аныктыгын текшере турган тастыктамалар белгилүү бир убакыт аралыгында гана жарактуу болот. Түзмөгүңүздүн сааты туура эмес болгондуктан, Google Chrome бул тастыктамаларды текшере албайт.</translation>
 <translation id="2972581237482394796">&amp;Кайталоо</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> арзан</translation>
 <translation id="2977665033722899841">Учурда <ph name="ROW_NAME" /> тандалган. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Эгер иштетилсе, форманы тезирээк толтуруу үчүн карточкаңыздын көчүрмөсүн Chromium ушул түзмөккө сактап коёт.</translation>
 <translation id="2985398929374701810">Дарегин туура киргизиңиз</translation>
@@ -1889,6 +1891,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Бош</translation>
 <translation id="868922510921656628">Бир топтомдогу барактар</translation>
+<translation id="8697373104056314601">Chrome’ду жогорку деңгээлде коопсуздандыруу үчүн <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />өркүндөтүлгөн коргоону күйгүзүңүз<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>
 <translation id="8699041776323235191">HID түзмөгү</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> менен туташуу аракетиңиз шифрленген эмес.</translation>

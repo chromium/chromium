@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">ကတ်များကို သိမ်းဆည်းနေသည်...</translation>
 <translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
 <translation id="1062160989074299343">Prc10 (စာအိတ်)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> ငွေပြန်အမ်းခြင်း</translation>
 <translation id="106701514854093668">ဒက်စတော့ စာညှပ်</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ဘာသာ စာမျက်နှာများကို ဘယ်သောအခါမျှ ဘာသာမပြန်ရန်</translation>
 <translation id="1070901266639972381">ည</translation>
@@ -500,6 +501,7 @@
 ညှိပေးရန် လိုအပ်သည်။ ဝက်ဘ်ဆိုက်များက မိမိကို သက်သေပြရန် 
 အသုံးပြုကြသည့် လက်မှတ်များမှာ သတ်မှတ်ထားသည့် အချိန်ကာလ အတွင်းမှာသာ သက်တမ်းရှိကြပါမည်။ သင့်ကိရိယာ၏ နာရီမှာ မမှန်သောကြောင့် Chromium  က ဤလက်မှတ်များကို အတည်မပြုနိုင်ပါ။</translation>
 <translation id="2972581237482394796">&amp;ပြန်လုပ်ရန်</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> လျှော့ဈေး</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> ကို လက်ရှိရွေးထားသည်။ <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">ဖွင့်ထားလျှင်၊ ပုံစံဖြည့်မှု မြန်လာစေရန် Chrome က သင့်ကဒ်၏ မိတ္ထူကို ဤကိရိယာထဲတွင် သိမ်းထားပါမည်။</translation>
 <translation id="2985398929374701810">မှန်ကန်သည့် လိပ်စာကို ထည့်ပါ</translation>
@@ -1890,6 +1892,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">ရနိုင်သည်</translation>
 <translation id="868922510921656628">အတွဲတစ်တွဲပါ စာမျက်နှာများ</translation>
+<translation id="8697373104056314601">Chrome ၏ အမြင့်ဆုံးလုံခြုံရေး ရရှိရန် <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှုကို ဖွင့်ပါ<ph name="END_ENHANCED_PROTECTION_LINK" />။</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
 <translation id="8699041776323235191">HID စက်ပစ္စည်း</translation>
 <translation id="8703575177326907206">သင်၏ <ph name="DOMAIN" />သို့ ချိတ်က်မှုကို လျှို့ဝှက်ကုဒ် မသွင်းထားပါ။</translation>

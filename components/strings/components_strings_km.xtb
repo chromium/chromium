@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">កំពុងរក្សាទុកបណ្ណ...</translation>
 <translation id="10614374240317010">មិនដែលបានរក្សាទុក</translation>
 <translation id="1062160989074299343">Prc10 (ស្រោម​សំបុត្រ)</translation>
+<translation id="1066573427009091463">ទទួល​បានប្រាក់​មកវិញ <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">ចំណាំដេស៍ថប</translation>
 <translation id="1068672505746868501">កុំ​បកប្រែ​ទំព័រ​ជាភាសា <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">យប់</translation>
@@ -499,6 +500,7 @@
 <translation id="2955913368246107853">បិទរបារស្វែងរក</translation>
 <translation id="2969319727213777354">ដើម្បីបង្កើតការតភ្ជាប់ដែលមានសុវត្ថិភាព ត្រូវកំណត់ម៉ោងរបស់អ្នកឲ្យបានត្រឹមត្រូវ ពីព្រោះវិញ្ញាបនបត្រដែលគេហទំព័រប្រើដើម្បីកំណត់អត្តសញ្ញាណខ្លួនវាមានសុពលភាពត្រឹមមួយរយៈពេលប៉ុណ្ណោះ។ ប្រសិនបើម៉ោងឧបករណ៍របស់អ្នកមិនត្រឹមត្រូវទេ នោះ Google Chrom មិនអាចផ្ទៀងផ្ទាត់វិញ្ញាបនបត្រទាំងនេះបានឡើយ។</translation>
 <translation id="2972581237482394796">ធ្វើវិញ</translation>
+<translation id="2975775789586780239">បញ្ចុះតម្លៃ <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">បច្ចុប្បន្ន​បាន​ជ្រើសរើស <ph name="ROW_NAME" /> ។ <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">បើបើកដំណើរការ នោះ Chromium នឹងផ្ទុកច្បាប់ចម្លងកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទឲ្យបានលឿនជាងមុន។</translation>
 <translation id="2985398929374701810">បញ្ចូលអាសយដ្ឋានដែលត្រឹមត្រូវ</translation>
@@ -1895,6 +1897,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">នៅសល់</translation>
 <translation id="868922510921656628">ទំព័រក្នុង​ការកំណត់មួយលើក</translation>
+<translation id="8697373104056314601">ដើម្បីទទួលបានកម្រិតសុវត្ថិភាពខ្ពស់បំផុតរបស់ Chrome <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />សូមបើកការការពារ​ដែលប្រសើរជាងមុន<ph name="END_ENHANCED_PROTECTION_LINK" />។</translation>
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>
 <translation id="8699041776323235191">ឧបករណ៍ HID</translation>
 <translation id="8703575177326907206">ការភ្ជាប់របស់អ្នកទៅ <ph name="DOMAIN" /> មិនត្រូវបានអ៊ីនគ្រីបទេ។</translation>

@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">කාඩ්පත් සුරකිමින්...</translation>
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
 <translation id="1062160989074299343">Prc10 (ලියුම් කවරය)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" />ක මුදල් ආපසු</translation>
 <translation id="106701514854093668">වැඩතල පිටුසලකුණු</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> හි පිටු කිසිදාක පරිවර්තනය කරන්න එපා</translation>
 <translation id="1070901266639972381">රාත්‍රී</translation>
@@ -494,6 +495,7 @@
 <translation id="2955913368246107853">සෙවීම් බාර් එක වසන්න</translation>
 <translation id="2969319727213777354">ආරක්ෂිත සබැඳුමක් ස්ථාපනය කිරීමට, ඔබගේ ඔරලෝසුව නිවැරදිව කිරීම අවශ්‍යය. මෙයට හේතුව වෙබ් අඩවි ඔවුන්ව හඳුනා ගැනීමට භාවිත කරන සහතිකපත්‍ර වලංගු වන්නේ යම්කිසි කාලයක් සඳහා පමණක් වීමය. ඔබගේ උපාංගයේ ඔරලෝසුව වැරදි විට, Google Chrome හට මෙම සහතික සත්‍යාපනය කිරීම කළ නොහැකිය.</translation>
 <translation id="2972581237482394796">&amp;නැවත කරන්න</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" />ක් අඩුයි</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, දැනට තෝරා ඇත. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">සබල නම්, වඩා වේගවත් පෝරමක් පිරවීම සඳහා Chromium ඔබේ කාඩ්පතේ පිටපතක් මෙම උපාංගයෙහි ගබඩා කරනු ඇත.</translation>
 <translation id="2985398929374701810">වලංගු ලිපිනයක් ඇතුළු කරන්න</translation>
@@ -1885,6 +1887,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">තිබේ</translation>
 <translation id="868922510921656628">කට්ටලයකට පිටු</translation>
+<translation id="8697373104056314601">Chrome හි ඉහළම ආරක්ෂාව ලබා ගැනීමට, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />වැඩි දියුණු කළ ආරක්ෂාව ක්‍රියාත්මක කරන්න<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="8699041776323235191">HID උපාංගය</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> වෙත ඔබේ සම්බන්ධතාව සංකේතනය කර නැත.</translation>

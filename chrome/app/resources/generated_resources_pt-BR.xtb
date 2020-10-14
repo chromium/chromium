@@ -2799,6 +2799,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="425573743389990240">Taxa de descarga da bateria em Watts (um valor negativo significa que a bateria está sendo carregada)</translation>
 <translation id="4256316378292851214">Sal&amp;var vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de arquivos</translation>
+<translation id="4259388776256904261">Isso pode demorar um pouco</translation>
 <translation id="4260182282978351200">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Enviar para verificação no Proteção Avançada do Google? Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4263223596040212967">Verifique o layout do seu teclado e tente novamente.</translation>
 <translation id="4263757076580287579">O registro da impressora foi cancelado.</translation>
@@ -2906,6 +2907,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4400632832271803360">Toque na tecla Iniciador e mantenha-a pressionada para alternar o comportamento das teclas de função</translation>
 <translation id="4400963414856942668">Você pode clicar no ícone da estrela para adicionar uma guia aos favoritos</translation>
 <translation id="4403775189117163360">Escolher uma pasta diferente</translation>
+<translation id="440391631796167175">Nenhuma senha fraca encontrada</translation>
 <translation id="4404136731284211429">Verificar novamente</translation>
 <translation id="4404843640767531781">O app <ph name="APP_NAME" /> foi bloqueado pelo seu pai/mãe. É necessário pedir permissão para usá-lo.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -5061,6 +5063,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6995899638241819463">Avisar se suas senhas forem expostas em uma violação de dados</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: registro de atividades</translation>
 <translation id="6997707937646349884">Nos seus dispositivos:</translation>
+<translation id="6998093258894828179">Ocultar cards</translation>
 <translation id="6998793565256476099">Cadastre o dispositivo para videoconferência</translation>
 <translation id="6999956497249459195">Novo grupo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, mas precisa ser configurada</translation>
@@ -5731,6 +5734,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7798844538707273832"><ph name="PERMISSION" /> bloqueada automaticamente</translation>
 <translation id="7799299114731150374">Plano de fundo definido</translation>
 <translation id="7800518121066352902">Girar no s&amp;entido anti-horário</translation>
+<translation id="7802539296536804623">Não mostrar cards nesta página</translation>
 <translation id="780301667611848630">Não</translation>
 <translation id="7804072833593604762">Guia fechada</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -6183,6 +6187,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8300011035382349091">Editar favorito para esta guia</translation>
 <translation id="8300374739238450534">Azul noturno</translation>
 <translation id="8300849813060516376">Falha no OTASP</translation>
+<translation id="8304383784961451596">Você não tem autorização para usar este dispositivo. Entre em contato com o administrador para falar sobre permissões de login ou faça login com uma Conta do Google supervisionada pelo Family Link.</translation>
 <translation id="8308179586020895837">Perguntar se <ph name="HOST" /> deseja acessar sua câmera</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8309458809024885768">O certificado já existe</translation>

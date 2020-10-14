@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Картите се запазват...</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062160989074299343">Prc10 (плик)</translation>
+<translation id="1066573427009091463">Връщане на пари (<ph name="PERCENT" />) при покупка</translation>
 <translation id="106701514854093668">Настолни отметки</translation>
 <translation id="1068672505746868501">Страниците на <ph name="SOURCE_LANGUAGE" /> да не се превеждат</translation>
 <translation id="1070901266639972381">През нощта</translation>
@@ -492,6 +493,7 @@
 <translation id="2955913368246107853">Затваряне на лентата за търсене</translation>
 <translation id="2969319727213777354">За установяване на сигурна връзка е необходимо часовникът ви да е верен. Това е така, защото сертификатите, с които уебсайтовете се идентифицират, са валидни само за конкретни периоди от време. Тъй като часовникът на устройството ви не е верен, Google Chrome не може да потвърди тези сертификати.</translation>
 <translation id="2972581237482394796">&amp;Възстановяване</translation>
+<translation id="2975775789586780239">Отстъпка от <ph name="DISCOUNT" /></translation>
 <translation id="2977665033722899841">Понастоящем сте избрали реда „<ph name="ROW_NAME" />“. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Ако настройката е активирана, Chromium ще съхранява на това устройство копие на картата ви с цел по-бързо попълване на формуляри.</translation>
 <translation id="2985398929374701810">Въведете валиден адрес</translation>
@@ -1886,6 +1888,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Свободно място</translation>
 <translation id="868922510921656628">Страници на набор</translation>
+<translation id="8697373104056314601">За да използвате най-високото ниво на сигурност на Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />включете подобрената защита<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699041776323235191">HID устройство</translation>
 <translation id="8703575177326907206">Връзката ви с <ph name="DOMAIN" /> не е шифрована.</translation>

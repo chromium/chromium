@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Enregistrement des cartes en cours…</translation>
 <translation id="10614374240317010">Jamais enregistré</translation>
 <translation id="1062160989074299343">Enveloppe Prc10</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> de remise en argent</translation>
 <translation id="106701514854093668">Favoris d'ordinateur de bureau</translation>
 <translation id="1068672505746868501">Ne jamais traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Nuit</translation>
@@ -490,6 +491,7 @@
 <translation id="2955913368246107853">Fermer la barre de recherche</translation>
 <translation id="2969319727213777354">Pour établir une connexion sécurisée, votre horloge doit être correctement réglée. En effet, les sites Web utilisent des certificats d'authentification valides pour une durée limitée. L'horloge de votre appareil étant incorrecte, Google Chrome ne peut pas authentifier les certificats.</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> de rabais</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Si l'option est activée, Chromium conservera une copie de votre carte sur cet appareil pour vous permettre de remplir plus rapidement vos formulaires.</translation>
 <translation id="2985398929374701810">Entrez une adresse valide</translation>
@@ -1879,6 +1881,7 @@ Détails supplémentaires :
 <translation id="8685155993131031756">PRC 16K</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pages par ensemble</translation>
+<translation id="8697373104056314601">Pour profiter du niveau de sécurité le plus élevé de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activez la protection renforcée<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699041776323235191">Appareil HID</translation>
 <translation id="8703575177326907206">Votre connexion à <ph name="DOMAIN" /> n'est pas chiffrée.</translation>

@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Kartlar yadda saxlanılır...</translation>
 <translation id="10614374240317010">Heç vaxt saxlanılmır</translation>
 <translation id="1062160989074299343">Prc10 (Zərf)</translation>
+<translation id="1066573427009091463"><ph name="PERCENT" /> Keşbek</translation>
 <translation id="106701514854093668">Masaüstü əlfəcinləri</translation>
 <translation id="1068672505746868501">Heç vaxt <ph name="SOURCE_LANGUAGE" /> dilində olan səhifələri tərcümə etməyin</translation>
 <translation id="1070901266639972381">Gecə</translation>
@@ -496,6 +497,7 @@
 <translation id="2955913368246107853">Tapmaq panelini qapadın</translation>
 <translation id="2969319727213777354">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Google Chrome bu sertifikatları doğrulaya bilmir.</translation>
 <translation id="2972581237482394796">&amp;Yenidən edin</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> Deaktiv</translation>
 <translation id="2977665033722899841">Hazırda <ph name="ROW_NAME" /> seçilib. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Aktiv edildiyi halda Chromium kartınızın kopyasını bu cihazda saxlayacaq ki, forma doldurmaq daha sürətli olsun.</translation>
 <translation id="2985398929374701810">Düzgün ünvan daxil edin</translation>
@@ -1885,6 +1887,7 @@
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Əlçatandır</translation>
 <translation id="868922510921656628">Dəst üzrə səhifələr</translation>
+<translation id="8697373104056314601">Chrome'un ən yüksək təhlükəsizlik səviyyəsini əldə etmək üçün<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />təkmil qorumanı yandırın<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8699041776323235191">HID cihazı</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeninə olan bağlantınız şifrələnib.</translation>
