@@ -10,10 +10,19 @@ for more details about the presubmit API built into depot_tools.
 
 def CommonChecks(input_api, output_api):
   commands = [
-    input_api.Command(
-      name='run_content_test_gpu_unittests', cmd=[
-        input_api.python_executable, 'run_unittests.py', 'gpu_tests'],
-      kwargs={}, message=output_api.PresubmitError),
+      input_api.Command(
+          name='run_content_test_gpu_unittests',
+          cmd=[input_api.python_executable, 'run_unittests.py', 'gpu_tests'],
+          kwargs={},
+          message=output_api.PresubmitError),
+      input_api.Command(name='validate_tag_consistency',
+                        cmd=[
+                            input_api.python_executable,
+                            'validate_tag_consistency.py',
+                            'validate',
+                        ],
+                        kwargs={},
+                        message=output_api.PresubmitError)
   ]
   return input_api.RunTests(commands)
 
