@@ -1877,7 +1877,7 @@ void FileManagerBrowserTestBase::StartTest() {
 
   base::FilePath store;
   CHECK(base::PathService::Get(base::DIR_EXE, &store));
-  store = store.AppendASCII("coverage").AppendASCII("file_manager");
+  store = store.AppendASCII("coverage").AppendASCII("devtools_code_coverage");
   CHECK(base::CreateDirectory(store));
 
   base::FilePath tests = store.AppendASCII("tests");
