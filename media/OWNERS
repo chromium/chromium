@@ -23,5 +23,3 @@ per-file *_fuchsia*=file://build/fuchsia/OWNERS
 
 # For GpuMemoryBuffer-related changes:
 per-file *gpu_memory_buffer*=dcastagna@chromium.org
-
-# COMPONENT: Internals>Media
