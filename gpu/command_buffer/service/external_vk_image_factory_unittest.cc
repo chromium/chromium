@@ -208,6 +208,7 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
     auto sk_image = SkImage::MakeFromTexture(
         context_state_->gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
         kRGBA_8888_SkColorType, kOpaque_SkAlphaType, nullptr);
+    EXPECT_TRUE(sk_image);
 
     const SkImageInfo dst_info =
         SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
