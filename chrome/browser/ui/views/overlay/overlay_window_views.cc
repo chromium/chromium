@@ -1046,7 +1046,7 @@ ui::Layer* OverlayWindowViews::GetResizeHandleLayer() {
 gfx::Rect OverlayWindowViews::GetWorkAreaForWindow() const {
   return display::Screen::GetScreen()
       ->GetDisplayNearestWindow(
-          native_widget()
+          native_widget() && IsVisible()
               ? GetNativeWindow()
               : controller_->GetWebContents()->GetTopLevelNativeWindow())
       .work_area();
@@ -1058,6 +1058,9 @@ gfx::Size OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area,
 
   if (!native_widget())
     return window_size;
+
+  // native_widget() is required for OnSizeConstraintsChanged.
+  OnSizeConstraintsChanged();
 
   if (window_size.width() <= max_size_.width() &&
       window_size.height() <= max_size_.height()) {
