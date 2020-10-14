@@ -4,23 +4,30 @@
 
 // <include src="../../assert.js">
 
+// #import {assert} from '../../assert.m.js';
+// #import {isWindows} from '../../cr.m.js';
+// #import {EventTracker} from '../../event_tracker.m.js'
+// #import {define as crUiDefine, decorate} from '../ui.m.js';
+// #import {positionPopupAroundElement, AnchorType} from './position_util.m.js';
+// #import {Menu} from './menu.m.js';
+// #import {MenuItem} from './menu_item.m.js';
 
 cr.define('cr.ui', function() {
-  /** @const */
-  const Menu = cr.ui.Menu;
+  /* #ignore */ const Menu = cr.ui.Menu;
 
   /**
    * Enum for type of hide. Delayed is used when called by clicking on a
    * checkable menu item.
    * @enum {number}
    */
-  const HideType = {
+  /* #export */ const HideType = {
     INSTANT: 0,
     DELAYED: 1,
   };
 
   /** @const */
-  const positionPopupAroundElement = cr.ui.positionPopupAroundElement;
+  /* #ignore */ const positionPopupAroundElement =
+      /* #ignore */ cr.ui.positionPopupAroundElement;
 
   /**
    * Creates a new menu button element.
@@ -29,7 +36,7 @@ cr.define('cr.ui', function() {
    * @extends {HTMLButtonElement}
    * @implements {EventListener}
    */
-  const MenuButton = cr.ui.define('button');
+  /* #export */ const MenuButton = cr.ui.define('button');
 
   MenuButton.prototype = {
     __proto__: HTMLButtonElement.prototype,
@@ -345,6 +352,7 @@ cr.define('cr.ui', function() {
   };
 
   // Export
+  // #cr_define_end
   return {
     HideType: HideType,
     MenuButton: MenuButton,

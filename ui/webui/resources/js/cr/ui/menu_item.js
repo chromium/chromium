@@ -2,8 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {loadTimeData} from '../../load_time_data.m.js';
+// #import {assert} from '../../assert.m.js';
+// #import {Command} from './command.m.js';
+// #import {define as crUiDefine, decorate, swallowDoubleClick} from '../ui.m.js';
+// #import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
+// clang-format on
+
 cr.define('cr.ui', function() {
-  /** @const */ const Command = cr.ui.Command;
+  /* #ignore */ const Command = cr.ui.Command;
 
   /**
    * Creates a new menu item element.
@@ -12,7 +20,7 @@ cr.define('cr.ui', function() {
    * @extends {HTMLElement}
    * @implements {EventListener}
    */
-  const MenuItem = cr.ui.define('cr-menu-item');
+  /* #export */ const MenuItem = cr.ui.define('cr-menu-item');
 
   /**
    * Creates a new menu separator element.
@@ -20,7 +28,9 @@ cr.define('cr.ui', function() {
    */
   MenuItem.createSeparator = function() {
     const el = /** @type {!cr.ui.MenuItem} */ (document.createElement('hr'));
-    MenuItem.decorate(el);
+    if (MenuItem.decorate) {
+      MenuItem.decorate(el);
+    }
     return el;
   };
 
@@ -251,32 +261,50 @@ cr.define('cr.ui', function() {
       }
     }
   };
-
   /**
    * Whether the menu item is disabled or not.
+   * @type {boolean}
    */
-  cr.defineProperty(MenuItem, 'disabled', cr.PropertyKind.BOOL_ATTR);
+  MenuItem.prototype.disabled;
+  Object.defineProperty(
+      MenuItem.prototype, 'disabled',
+      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is hidden or not.
    */
-  cr.defineProperty(MenuItem, 'hidden', cr.PropertyKind.BOOL_ATTR);
+  Object.defineProperty(
+      MenuItem.prototype, 'hidden',
+      cr.getPropertyDescriptor('hidden', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is selected or not.
+   * @type {boolean}
    */
-  cr.defineProperty(MenuItem, 'selected', cr.PropertyKind.BOOL_ATTR);
+  MenuItem.prototype.selected;
+  Object.defineProperty(
+      MenuItem.prototype, 'selected',
+      cr.getPropertyDescriptor('selected', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is checked or not.
+   * @type {boolean}
    */
-  cr.defineProperty(MenuItem, 'checked', cr.PropertyKind.BOOL_ATTR);
+  MenuItem.prototype.checked;
+  Object.defineProperty(
+      MenuItem.prototype, 'checked',
+      cr.getPropertyDescriptor('checked', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is checkable or not.
+   * @type {boolean}
    */
-  cr.defineProperty(MenuItem, 'checkable', cr.PropertyKind.BOOL_ATTR);
+  MenuItem.prototype.checkable;
+  Object.defineProperty(
+      MenuItem.prototype, 'checkable',
+      cr.getPropertyDescriptor('checkable', cr.PropertyKind.BOOL_ATTR));
 
   // Export
+  // #cr_define_end
   return {MenuItem: MenuItem};
 });

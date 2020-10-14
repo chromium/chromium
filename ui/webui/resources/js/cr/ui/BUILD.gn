@@ -249,6 +249,8 @@ js_library("tree") {
 js_modulizer("modulize") {
   input_files = [
     "array_data_model.js",
+    "command.js",
+    "context_menu_handler.js",
     "dialogs.js",
     "drag_wrapper.js",
     "focus_grid.js",
@@ -256,12 +258,16 @@ js_modulizer("modulize") {
     "focus_row.js",
     "focus_row_behavior.js",
     "focus_without_ink.js",
+    "grid.js",
     "keyboard_shortcut_list.js",
     "list.js",
     "list_item.js",
     "list_selection_controller.js",
     "list_selection_model.js",
     "list_single_selection_model.js",
+    "menu.js",
+    "menu_button.js",
+    "menu_item.js",
     "position_util.js",
     "splitter.js",
     "store.js",
@@ -273,6 +279,8 @@ js_modulizer("modulize") {
     "cr.PropertyKind|PropertyKind",
     "cr.dispatchPropertyChange|dispatchPropertyChange",
     "cr.EventTarget|EventTarget",
+    "cr.ui.Command|Command",
+    "cr.ui.decorate|decorate",
     "cr.ui.dialogs.BaseDialog|BaseDialog",
     "cr.ui.dialogs.AlertDialog|AlertDialog",
     "cr.ui.dialogs.ConfirmDialog|ConfirmDialog",
@@ -285,12 +293,18 @@ js_modulizer("modulize") {
     "cr.ui.DragWrapperDelegate|DragWrapperDelegate",
     "cr.ui.FocusRowDelegate|FocusRowDelegate",
     "cr.ui.FocusRow|FocusRow",
+    "cr.ui.Grid|Grid",
+    "cr.ui.HideType|HideType",
     "cr.ui.limitInputWidth|limitInputWidth",
     "cr.ui.List|List",
-    "cr.ui.Size|Size",
     "cr.ui.ListItem|ListItem",
     "cr.ui.ListSelectionModel|ListSelectionModel",
     "cr.ui.ListSelectionController|ListSelectionController",
+    "cr.ui.Menu|Menu",
+    "cr.ui.positionPopupAroundElement|positionPopupAroundElement",
+    "cr.ui.positionPopupAtPoint|positionPopupAtPoint",
+    "cr.ui.swallowDoubleClick|swallowDoubleClick",
+    "cr.ui.Size|Size",
     "cr.ui.StoreObserver|StoreObserver",
     "cr.ui.Tree|Tree",
     "cr.ui.TreeItem|TreeItem",
@@ -302,6 +316,8 @@ js_type_check("ui_resources_modules") {
   is_polymer3 = true
   deps = [
     ":array_data_model.m",
+    ":command.m",
+    ":context_menu_handler.m",
     ":dialogs.m",
     ":drag_wrapper.m",
     ":focus_grid.m",
@@ -309,12 +325,16 @@ js_type_check("ui_resources_modules") {
     ":focus_row.m",
     ":focus_row_behavior.m",
     ":focus_without_ink.m",
+    ":grid.m",
     ":keyboard_shortcut_list.m",
     ":list.m",
     ":list_item.m",
     ":list_selection_controller.m",
     ":list_selection_model.m",
     ":list_single_selection_model.m",
+    ":menu.m",
+    ":menu_button.m",
+    ":menu_item.m",
     ":position_util.m",
     ":splitter.m",
     ":store.m",
@@ -329,6 +349,36 @@ js_library("array_data_model.m") {
   deps = [
     "..:event_target.m",
     "../..:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("command.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/command.m.js" ]
+  deps = [
+    ":keyboard_shortcut_list.m",
+    "../:ui.m",
+    "../..:assert.m",
+    "../..:cr.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("context_menu_handler.m") {
+  sources =
+      [ "$root_gen_dir/ui/webui/resources/js/cr/ui/context_menu_handler.m.js" ]
+  deps = [
+    ":menu.m",
+    ":menu_button.m",
+    ":menu_item.m",
+    ":position_util.m",
+    "..:event_target.m",
+    "../:ui.m",
+    "../..:assert.m",
+    "../..:cr.m",
+    "../..:event_tracker.m",
   ]
 
   extra_deps = [ ":modulize" ]
@@ -391,6 +441,18 @@ js_library("focus_without_ink.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("grid.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/grid.m.js" ]
+  deps = [
+    ":list.m",
+    ":list_item.m",
+    ":list_selection_controller.m",
+    ":list_selection_model.m",
+    "../:ui.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("keyboard_shortcut_list.m") {
   sources = [
     "$root_gen_dir/ui/webui/resources/js/cr/ui/keyboard_shortcut_list.m.js",
@@ -443,6 +505,43 @@ js_library("list_single_selection_model.m") {
   deps = [
     "..:event_target.m",
     "../..:cr.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("menu.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/menu.m.js" ]
+  deps = [
+    ":menu_item.m",
+    "../:ui.m",
+    "../..:assert.m",
+    "../..:cr.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("menu_button.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/menu_button.m.js" ]
+  deps = [
+    ":menu.m",
+    ":menu_item.m",
+    ":position_util.m",
+    "../:ui.m",
+    "../..:assert.m",
+    "../..:cr.m",
+    "../..:event_tracker.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("menu_item.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/menu_item.m.js" ]
+  deps = [
+    ":command.m",
+    "../:ui.m",
+    "../..:assert.m",
+    "../..:cr.m",
+    "../..:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]
 }

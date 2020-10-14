@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {assert, assertInstanceof} from '../../assert.m.js';
+// #import {define as crUiDefine, decorate} from '../ui.m.js';
+// #import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
+// #import {MenuItem} from './menu_item.m.js';
+
 cr.define('cr.ui', function() {
-  /** @const */ const MenuItem = cr.ui.MenuItem;
+  /* #ignore */ /** @const */ const MenuItem = cr.ui.MenuItem;
 
   /**
    * Creates a new menu element. Menu dispatches all commands on the element it
@@ -13,7 +18,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {HTMLElement}
    */
-  const Menu = cr.ui.define('cr-menu');
+  /* #export */ const Menu = cr.ui.define('cr-menu');
 
   Menu.prototype = {
     __proto__: HTMLElement.prototype,
@@ -361,6 +366,7 @@ cr.define('cr.ui', function() {
     }
   };
 
+  /** @suppress {globalThis} This standalone function is used like method. */
   function selectedIndexChanged(selectedIndex, oldSelectedIndex) {
     const oldSelectedItem = this.menuItems[oldSelectedIndex];
     if (oldSelectedItem) {
@@ -375,16 +381,24 @@ cr.define('cr.ui', function() {
 
   /**
    * The selected menu item.
-   * type {number}
+   * @type {number}
    */
-  cr.defineProperty(
-      Menu, 'selectedIndex', cr.PropertyKind.JS, selectedIndexChanged);
+  Menu.prototype.selectedIndex;
+  Object.defineProperty(
+      Menu.prototype, 'selectedIndex',
+      cr.getPropertyDescriptor(
+          'selectedIndex', cr.PropertyKind.JS, selectedIndexChanged));
 
   /**
    * Selector for children which are menu items.
+   * @type {string}
    */
-  cr.defineProperty(Menu, 'menuItemSelector', cr.PropertyKind.ATTR);
+  Menu.prototype.menuItemSelector;
+  Object.defineProperty(
+      Menu.prototype, 'menuItemSelector',
+      cr.getPropertyDescriptor('menuItemSelector', cr.PropertyKind.ATTR));
 
   // Export
+  // #cr_define_end
   return {Menu: Menu};
 });

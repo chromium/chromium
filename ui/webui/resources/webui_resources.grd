@@ -89,8 +89,32 @@ without changes to the corresponding grd file. -->
         <include name="IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL_M_JS"
                  file="${root_gen_dir}/ui/webui/resources/js/cr/ui/array_data_model.m.js"
                  use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_COMMAND_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/command.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_CONTEXT_MENU_HANDLER_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/context_menu_handler.m.js"
+                 use_base_dir="false" type="BINDATA" />
         <include name="IDR_WEBUI_JS_CR_UI_DIALOGS_M_JS"
                  file="${root_gen_dir}/ui/webui/resources/js/cr/ui/dialogs.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_GRID_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/grid.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_MENU_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/menu.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_MENU_BUTTON_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/menu_button.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_MENU_ITEM_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/menu_item.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_LIST_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_LIST_ITEM_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_item.m.js"
                  use_base_dir="false" type="BINDATA" />
         <include name="IDR_WEBUI_JS_CR_UI_LIST_SELECTION_CONTROLLER_M_JS"
                  file="${root_gen_dir}/ui/webui/resources/js/cr/ui/list_selection_controller.m.js"
@@ -106,6 +130,9 @@ without changes to the corresponding grd file. -->
                  use_base_dir="false" type="BINDATA" />
         <include name="IDR_WEBUI_JS_CR_UI_SPLITTER_M_JS"
                  file="${root_gen_dir}/ui/webui/resources/js/cr/ui/splitter.m.js"
+                 use_base_dir="false" type="BINDATA" />
+        <include name="IDR_WEBUI_JS_CR_UI_TREE_M_JS"
+                 file="${root_gen_dir}/ui/webui/resources/js/cr/ui/tree.m.js"
                  use_base_dir="false" type="BINDATA" />
       </if>
       <!-- Web UI shared JS module resources. -->

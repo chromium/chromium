@@ -15,13 +15,21 @@
  * command if there might be other command listeners higher up in the DOM tree.
  */
 
+// clang-format off
+// #import {assert} from '../../assert.m.js';
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {KeyboardShortcutList} from './keyboard_shortcut_list.m.js';
+// #import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
+// #import {MenuItem} from './menu_item.m.js';
+// clang-format on
+
 cr.define('cr.ui', function() {
   /**
    * Creates a new command element.
    * @constructor
    * @extends {HTMLElement}
    */
-  const Command = cr.ui.define('command');
+  /* #export */ const Command = cr.ui.define('command');
 
   Command.prototype = {
     __proto__: HTMLElement.prototype,
@@ -113,23 +121,37 @@ cr.define('cr.ui', function() {
 
   /**
    * The label of the command.
+   * @type {string}
    */
-  cr.defineProperty(Command, 'label', cr.PropertyKind.ATTR);
+  Command.prototype.label;
+  Object.defineProperty(
+      Command.prototype, 'label',
+      cr.getPropertyDescriptor('label', cr.PropertyKind.ATTR));
 
   /**
    * Whether the command is disabled or not.
+   * @type {boolean}
    */
-  cr.defineProperty(Command, 'disabled', cr.PropertyKind.BOOL_ATTR);
+  Command.prototype.disabled;
+  Object.defineProperty(
+      Command.prototype, 'disabled',
+      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the command is hidden or not.
    */
-  cr.defineProperty(Command, 'hidden', cr.PropertyKind.BOOL_ATTR);
+  Object.defineProperty(
+      Command.prototype, 'hidden',
+      cr.getPropertyDescriptor('hidden', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the command is checked or not.
+   * @type {boolean}
    */
-  cr.defineProperty(Command, 'checked', cr.PropertyKind.BOOL_ATTR);
+  Command.prototype.checked;
+  Object.defineProperty(
+      Command.prototype, 'checked',
+      cr.getPropertyDescriptor('checked', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * The flag that prevents the shortcut text from being displayed on menu.
@@ -137,8 +159,12 @@ cr.define('cr.ui', function() {
    * If false, the keyboard shortcut text (eg. "Ctrl+X" for the cut command)
    * is displayed in menu when the command is associated with a menu item.
    * Otherwise, no text is displayed.
+   * @type {boolean}
    */
-  cr.defineProperty(Command, 'hideShortcutText', cr.PropertyKind.BOOL_ATTR);
+  Command.prototype.hideShortcutText;
+  Object.defineProperty(
+      Command.prototype, 'hideShortcutText',
+      cr.getPropertyDescriptor('hideShortcutText', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Dispatches a canExecute event on the target.
@@ -240,7 +266,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @class
    */
-  function CanExecuteEvent(command) {
+  /* #export */ function CanExecuteEvent(command) {
     const e = new Event('canExecute', {bubbles: true, cancelable: true});
     e.__proto__ = CanExecuteEvent.prototype;
     e.command = command;
@@ -274,6 +300,7 @@ cr.define('cr.ui', function() {
   };
 
   // Export
+  // #cr_define_end
   return {
     Command: Command,
     CanExecuteEvent: CanExecuteEvent,

@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// require: list_selection_model.js
-// require: list_selection_controller.js
-// require: list.js
+// clang-format off
+// #import {define as crUiDefine} from '../ui.m.js';
+// #import {ListSelectionModel} from './list_selection_model.m.js';
+// #import {ListSelectionController} from './list_selection_controller.m.js';
+// #import {List} from './list.m.js';
+// #import {ListItem} from './list_item.m.js';
+// clang-format on
 
 /**
  * @fileoverview This implements a grid control. Grid contains a bunch of
@@ -13,9 +17,10 @@
  */
 
 cr.define('cr.ui', function() {
-  /** @const */ const ListSelectionController = cr.ui.ListSelectionController;
-  /** @const */ const List = cr.ui.List;
-  /** @const */ const ListItem = cr.ui.ListItem;
+  /* #ignore */ /** @const */ const ListSelectionController =
+      /* #ignore */ cr.ui.ListSelectionController;
+  /* #ignore */ /** @const */ const List = cr.ui.List;
+  /* #ignore */ /** @const */ const ListItem = cr.ui.ListItem;
 
   /**
    * Creates a new grid item element.
@@ -23,7 +28,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {cr.ui.ListItem}
    */
-  function GridItem(dataItem) {
+  /* #export */ function GridItem(dataItem) {
     const el = document.createElement('li');
     el.dataItem = dataItem;
     el.__proto__ = GridItem.prototype;
@@ -48,7 +53,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {cr.ui.List}
    */
-  const Grid = cr.ui.define('grid');
+  /* #export */ const Grid = cr.ui.define('grid');
 
   Grid.prototype = {
     __proto__: List.prototype,
@@ -357,7 +362,7 @@ cr.define('cr.ui', function() {
    * @constructor
    * @extends {cr.ui.ListSelectionController}
    */
-  function GridSelectionController(selectionModel, grid) {
+  /* #export */ function GridSelectionController(selectionModel, grid) {
     this.selectionModel_ = selectionModel;
     this.grid_ = grid;
   }
@@ -438,6 +443,7 @@ cr.define('cr.ui', function() {
     }
   };
 
+  // #cr_define_end
   return {
     Grid: Grid,
     GridItem: GridItem,
