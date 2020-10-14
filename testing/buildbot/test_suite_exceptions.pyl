@@ -1069,6 +1069,8 @@
   },
   'content_shell_crash_test': {
     'remove_from': [
+      'Mac10.10 Tests',  # crbug.com/1138050
+      'Mac10.11 Tests',  # crbug.com/1138050
       'android-marshmallow-x86-rel-non-cq', # crbug.com/1084353
     ],
     'modifications': {

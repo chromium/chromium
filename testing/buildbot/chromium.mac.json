@@ -1535,28 +1535,6 @@
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
-        "isolate_name": "content_shell_crash_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "content_shell_crash_test",
-        "resultdb": {
-          "enable": false
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.10"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
-      },
-      {
         "isolate_name": "extension_docserver_python_unittests",
         "merge": {
           "args": [],
@@ -3259,28 +3237,6 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components:components_perftests/"
-      },
-      {
-        "isolate_name": "content_shell_crash_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "content_shell_crash_test",
-        "resultdb": {
-          "enable": false
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "none",
-              "os": "Mac-10.11"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
         "isolate_name": "extension_docserver_python_unittests",
