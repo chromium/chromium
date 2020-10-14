@@ -83,7 +83,7 @@ suite('AmbientModeHandler', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
-  test('toggleAmbientMode', function() {
+  test('toggleAmbientMode', () => {
     const button = ambientModePage.$$('#ambientModeEnable');
     assertTrue(!!button);
     assertFalse(button.disabled);
@@ -110,12 +110,77 @@ suite('AmbientModeHandler', function() {
     assertEquals(enabled, enabled_toggled_twice);
   });
 
+  test('hasNoTopicSourceItemsWhenLoading', () => {
+    const spinner = ambientModePage.$$('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+    assertFalse(spinner.hidden);
+
+    const topicSourceListDiv = ambientModePage.$$('#topicSourceListDiv');
+    assertFalse(!!topicSourceListDiv);
+  });
+
+  test('hasTopicSourceItemsAfterLoad', function() {
+    const spinner = ambientModePage.$$('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+    assertFalse(spinner.hidden);
+
+    const topicSourceListDiv = ambientModePage.$$('#topicSourceListDiv');
+    assertFalse(!!topicSourceListDiv);
+
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    // Select celsius as the initial temperature unit.
+    cr.webUIListenerCallback(
+        'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
+
+    // Spinner is not active and not visible.
+    assertFalse(spinner.active);
+    assertTrue(spinner.hidden);
+
+    const topicSourceList = ambientModePage.$$('topic-source-list');
+    const ironList = topicSourceList.$$('iron-list');
+    const topicSourceItems = ironList.querySelectorAll('topic-source-item');
+
+    // Only have two topics source items: GOOGLE_PHOTOS and ART_GALLERY.
+    assertEquals(2, topicSourceItems.length);
+  });
+
+  test('topicSourceItemHasCorrectRowHeight', function() {
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    // Select celsius as the initial temperature unit.
+    cr.webUIListenerCallback(
+        'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
+
+    const topicSourceList = ambientModePage.$$('topic-source-list');
+    const ironList = topicSourceList.$$('iron-list');
+    const topicSourceItems = ironList.querySelectorAll('topic-source-item');
+
+    topicSourceItems.forEach((row) => {
+      assertEquals(64, row.offsetHeight);
+    });
+  });
+
   test('doubleClickTopicSource', () => {
     // Select the google photos topic source.
     cr.webUIListenerCallback('topic-source-changed', {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
+    // Select celsius as the initial temperature unit.
+    cr.webUIListenerCallback(
+        'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
 
     const topicSourceList = ambientModePage.$$('topic-source-list');
     const ironList = topicSourceList.$$('iron-list');
@@ -140,23 +205,6 @@ suite('AmbientModeHandler', function() {
     assertEquals('topicSource=0', router.getQueryParameters().toString());
   });
 
-  test('hasTopicSourceItems', function() {
-    const topicSourceListElement = ambientModePage.$$('topic-source-list');
-    const ironList = topicSourceListElement.$$('iron-list');
-    const topicSourceItems = ironList.querySelectorAll('topic-source-item');
-    assertEquals(2, topicSourceItems.length);
-  });
-
-  test('topicSourceItemHasCorrectRowHeight', function() {
-    const topicSourceListElement = ambientModePage.$$('topic-source-list');
-    const ironList = topicSourceListElement.$$('iron-list');
-    const topicSourceItems = ironList.querySelectorAll('topic-source-item');
-
-    topicSourceItems.forEach((row) => {
-      assertEquals(64, row.offsetHeight);
-    });
-  });
-
   test('Deep link to topic sources', async () => {
     loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
@@ -166,6 +214,16 @@ suite('AmbientModeHandler', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.AMBIENT_MODE, params);
 
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    // Select celsius as the initial temperature unit.
+    cr.webUIListenerCallback(
+        'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
+
     const deepLinkElement =
         ambientModePage.$$('topic-source-list').$$('topic-source-item');
     await test_util.waitAfterNextRender(deepLinkElement);
@@ -174,28 +232,40 @@ suite('AmbientModeHandler', function() {
         'Topic sources row should be focused for settingId=502.');
   });
 
-  test('temperatureUnitRadioButtonsDisabled', () => {
-    // When |selectedTemperatureUnit_| is invalid the radio buttons should be
-    // disabled. This is the initial state.
-    const radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+  test('temperatureUnitRadioButtonsVisibility', () => {
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    Polymer.dom.flush();
 
-    assertTrue(radioGroup.disabled);
+    // When |selectedTemperatureUnit_| is invalid the radio buttons is not
+    // visible. This is the initial state.
+    let radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+    assertFalse(!!radioGroup);
 
     // When |selectedTemperatureUnit_| is valid the radio buttons should be
-    // enabled.
+    // visible and enabled.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    assertFalse(radioGroup.disabled);
+    Polymer.dom.flush();
 
-    cr.webUIListenerCallback(
-        'temperature-unit-changed', AmbientModeTemperatureUnit.UNKNOWN);
-    assertTrue(radioGroup.disabled);
+    radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+    assertTrue(!!radioGroup);
+    assertFalse(radioGroup.disabled);
   });
 
   test('temperatureUnitRadioButtons', async () => {
-    // Simulate C++ setting celsius as the initial temperature unit.
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
 
     const celsiusButton = ambientModePage.$$('cr-radio-button[name=celsius]');
     const fahrenheitButton =
@@ -234,9 +304,15 @@ suite('AmbientModeHandler', function() {
   });
 
   test('temperatureUnitRadioButtonsDoubleClick', async () => {
-    // Simulate C++ setting celsius as the default temperature unit.
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
 
     const celsiusButton = ambientModePage.$$('cr-radio-button[name=celsius]');
 
@@ -246,4 +322,44 @@ suite('AmbientModeHandler', function() {
     celsiusButton.click();
     assertEquals(0, browserProxy.getCallCount('setSelectedTemperatureUnit'));
   });
+
+  test('topicSourceAndWeatherDisabledWhenToggleOff', () => {
+    // Select the google photos topic source.
+    cr.webUIListenerCallback('topic-source-changed', {
+      'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
+      'hasAlbums': true
+    });
+    // Select celsius as the initial temperature unit.
+    cr.webUIListenerCallback(
+        'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
+    Polymer.dom.flush();
+
+    const button = ambientModePage.$$('#ambientModeEnable');
+    assertTrue(!!button);
+    assertFalse(button.disabled);
+
+    // The button's state is set by the pref value.
+    let enabled =
+        ambientModePage.getPref('settings.ambient_mode.enabled.value');
+    assertTrue(enabled);
+    assertEquals(enabled, button.checked);
+
+    // Topic source list and weather radio group are enabled.
+    const topicSourceList = ambientModePage.$$('topic-source-list');
+    assertFalse(topicSourceList.disabled);
+    const radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
+    assertFalse(radioGroup.disabled);
+
+    // Click the button will toggle the pref value.
+    button.click();
+    Polymer.dom.flush();
+    enabled = ambientModePage.getPref('settings.ambient_mode.enabled.value');
+    assertFalse(enabled);
+    assertEquals(enabled, button.checked);
+
+    // Topic source list and weather radio group are disabled.
+    assertTrue(topicSourceList.disabled);
+    assertTrue(radioGroup.disabled);
+  });
+
 });

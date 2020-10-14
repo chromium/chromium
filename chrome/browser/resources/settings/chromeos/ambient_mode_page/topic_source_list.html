@@ -29,14 +29,16 @@
         background-color: var(--cr-focused-item-color);
       }
     </style>
-    <h2 id="topicSourceTitle">$i18n{ambientModeTopicSourceTitle}</h2>
+    <h2 id="topicSourceTitle" aria-hidden="true">
+      $i18n{ambientModeTopicSourceTitle}
+    </h2>
 
     <iron-list id="topicSourceList" items="[[topicSources]]">
       <template>
-        <topic-source-item item="[[item]]" tabindex$="[[tabIndex]]"
+        <topic-source-item item="[[item]]" disabled$="[[disabled]]"
+            tabindex$="[[computeTabIndex_(tabIndex, disabled)]]"
             has-google-photos-albums="[[hasGooglePhotosAlbums]]"
-            checked="[[isSelected_(item, selectedTopicSource)]]"
-            disabled$="[[disabled]]">
+            checked="[[isSelected_(item, selectedTopicSource)]]">
         </topic-source-item>
       </template>
     </iron-list>

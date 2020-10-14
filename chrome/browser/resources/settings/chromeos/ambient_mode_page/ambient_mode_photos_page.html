@@ -16,8 +16,13 @@
 <dom-module id="settings-ambient-mode-photos-page">
   <template>
     <style include="settings-shared">
+      #pageDescription {
+        display: flex;
+        min-height: 32px;
+        padding: 0 var(--cr-section-padding);
+      }
     </style>
-    <settings-localized-link class="cr-row first"
+    <settings-localized-link id="pageDescription"
         localized-string="[[getTitleInnerHtml_(topicSource)]]">
     </settings-localized-link>
 

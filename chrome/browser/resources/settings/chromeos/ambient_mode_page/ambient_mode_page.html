@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="constants.html">
 <link rel="import" href="topic_source_list.html">
 <link rel="import" href="../deep_linking_behavior.html">
@@ -53,6 +54,12 @@
         padding-inline-start: var(--cr-section-padding);
       }
 
+      paper-spinner-lite {
+        display: block;
+        height: 28px;
+        margin: 100px auto;
+        width: 28px;
+      }
     </style>
     <h2 id="pageDescription">
       $i18n{ambientModePageDescription}
@@ -66,15 +73,20 @@
         deep-link-focus-id$="[[Setting.kAmbientModeOnOff]]">
     </settings-toggle-button>
 
-    <template is="dom-if" if="[[prefs.settings.ambient_mode.enabled.value]]">
-      <div id="topicSourceListDiv" class="layout vertical flex">
+    <paper-spinner-lite active='[[!showSettings_]]' hidden='[[showSettings_]]'>
+    </paper-spinner-lite>
+
+    <template is="dom-if" if="[[showSettings_]]">
+      <div id="topicSourceListDiv" class="layout vertical flex"
+          aria-hidden="[[disableSettings_]]">
         <topic-source-list topic-sources="[[topicSources_]]"
             selected-topic-source="[[selectedTopicSource_]]"
             has-google-photos-albums="[[hasGooglePhotosAlbums_]]"
-            disabled="[[!isValidTopicSource_(selectedTopicSource_)]]">
+            disabled='[[disableSettings_]]'>
         </topic-source-list>
       </div>
-      <div id="weatherDiv" class="layout vertical flex">
+      <div id="weatherDiv" class="layout vertical flex"
+          aria-hidden="[[disableSettings_]]">
         <h2 id="weatherTitle" aria-hidden="true">
           $i18n{ambientModeWeatherTitle}
         </h2>
@@ -82,7 +94,7 @@
           <cr-radio-group
               id="ambientTemperatureUnit"
               selected="{{selectedTemperatureUnit_}}"
-              disabled$="[[!isValidTemperatureUnit_(selectedTemperatureUnit_)]]"
+              disabled$='[[disableSettings_]]'
               aria-labelledby="weatherTitle">
             <cr-radio-button
                 name="[[AmbientModeTemperatureUnit_.FAHRENHEIT]]"

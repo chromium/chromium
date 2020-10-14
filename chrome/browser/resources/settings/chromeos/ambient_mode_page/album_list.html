@@ -18,16 +18,17 @@
 
       paper-spinner-lite {
         display: block;
-        height: 32px;
-        margin: auto;
-        width: 32px;
+        height: 28px;
+        margin: 150px auto;
+        width: 28px;
       }
 
       iron-list > :focus {
         background-color: var(--cr-focused-item-color);
       }
     </style>
-    <paper-spinner-lite active="[[!albums]]"></paper-spinner-lite>
+    <paper-spinner-lite active="[[!albums]]" hidden="[[albums]]">
+    </paper-spinner-lite>
 
     <iron-list grid scrollable scroll-target="document" items="{{albums}}">
       <template>

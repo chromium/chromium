@@ -151,6 +151,24 @@ suite('AmbientModeHandler', function() {
     assertEquals('album1', album1.album.title);
   });
 
+  test('spinnerVisibility', function() {
+    const albumList = ambientModePhotosPage.$$('album-list');
+    const spinner = albumList.$$('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+    assertFalse(spinner.hidden);
+
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0'},
+      {albumId: 'id1', checked: false, title: 'album1'}
+    ];
+    Polymer.dom.flush();
+
+    // Spinner is not active and not visible.
+    assertFalse(spinner.active);
+    assertTrue(spinner.hidden);
+  });
+
   test('personalPhotosImageContainerHasCorrectSize', function() {
     ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},

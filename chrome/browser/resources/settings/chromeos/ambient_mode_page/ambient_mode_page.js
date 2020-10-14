@@ -72,6 +72,19 @@ Polymer({
         chromeos.settings.mojom.Setting.kAmbientModeSource,
       ]),
     },
+
+    /** @private */
+    showSettings_: {
+      type: Boolean,
+      computed: 'computeShowSettings_(' +
+          'selectedTopicSource_, selectedTemperatureUnit_)',
+    },
+
+    /** @private */
+    disableSettings_: {
+      type: Boolean,
+      computed: 'computeDisableSettings_(prefs.settings.ambient_mode.*)',
+    }
   },
 
   listeners: {
@@ -194,5 +207,24 @@ Polymer({
     params.append('topicSource', JSON.stringify(event.detail));
     settings.Router.getInstance().navigateTo(
         settings.routes.AMBIENT_MODE_PHOTOS, params);
+  },
+
+  /**
+   * Whether to show settings.
+   * @return {boolean}
+   * @private
+   */
+  computeShowSettings_() {
+    return this.isValidTopicSource_(this.selectedTopicSource_) &&
+        this.isValidTemperatureUnit_(this.selectedTemperatureUnit_);
+  },
+
+  /**
+   * Whether to disable settings.
+   * @return {boolean}
+   * @private
+   */
+  computeDisableSettings_() {
+    return !this.getPref('settings.ambient_mode.enabled').value;
   }
 });

@@ -30,6 +30,12 @@ Polymer({
     },
 
     hasGooglePhotosAlbums: Boolean,
+
+    /**
+     * The items in this list will be disabled when |selectedTopicSource| is
+     * |AmbientModeTopicSource.UNKNOWN|.
+     */
+    disabled: Boolean,
   },
 
   /**
@@ -39,4 +45,18 @@ Polymer({
   isSelected_(topic_source) {
     return this.selectedTopicSource === topic_source;
   },
+
+  /**
+   * @param {number} tabIndex
+   * @param {boolean} disabled
+   * @return {number}
+   * @private
+   */
+  computeTabIndex_(tabIndex, disabled) {
+    // Disabled "topic-source-item" cannot be navigated into.
+    if (disabled) {
+      return -1;
+    }
+    return tabIndex;
+  }
 });
