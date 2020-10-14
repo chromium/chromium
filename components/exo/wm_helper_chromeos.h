@@ -60,6 +60,8 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       ash::WindowTreeHostManager::Observer* observer);
   void RemoveDisplayConfigurationObserver(
       ash::WindowTreeHostManager::Observer* observer);
+  void AddFrameThrottlingObserver();
+  void RemoveFrameThrottlingObserver();
 
   // Overridden from WMHelper
   void AddActivationObserver(wm::ActivationChangeObserver* observer) override;

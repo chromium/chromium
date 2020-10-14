@@ -5,6 +5,7 @@
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/exo/wm_helper.h"
 
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -59,6 +60,16 @@ void WMHelperChromeOS::AddDisplayConfigurationObserver(
 void WMHelperChromeOS::RemoveDisplayConfigurationObserver(
     ash::WindowTreeHostManager::Observer* observer) {
   ash::Shell::Get()->window_tree_host_manager()->RemoveObserver(observer);
+}
+
+void WMHelperChromeOS::AddFrameThrottlingObserver() {
+  ash::Shell::Get()->frame_throttling_controller()->AddArcObserver(
+      &vsync_timing_manager_);
+}
+
+void WMHelperChromeOS::RemoveFrameThrottlingObserver() {
+  ash::Shell::Get()->frame_throttling_controller()->RemoveArcObserver(
+      &vsync_timing_manager_);
 }
 
 void WMHelperChromeOS::AddActivationObserver(

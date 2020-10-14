@@ -43,14 +43,22 @@ class ASH_EXPORT FrameThrottlingController {
   void AddObserver(FrameThrottlingObserver* observer);
   void RemoveObserver(FrameThrottlingObserver* observer);
 
+  void AddArcObserver(FrameThrottlingObserver* observer);
+  void RemoveArcObserver(FrameThrottlingObserver* observer);
+
   uint8_t throttled_fps() const { return throttled_fps_; }
 
  private:
-  void StartThrottling(const std::vector<viz::FrameSinkId>& frame_sink_ids,
-                       uint8_t fps);
+  void StartThrottlingFrameSinks(
+      const std::vector<viz::FrameSinkId>& frame_sink_ids);
+  void StartThrottlingArc(const std::vector<aura::Window*>& windows);
+  void EndThrottlingFrameSinks();
+  void EndThrottlingArc();
 
   ui::ContextFactory* context_factory_ = nullptr;
   base::ObserverList<FrameThrottlingObserver> observers_;
+  base::ObserverList<FrameThrottlingObserver> arc_observers_;
+
   // The fps used for throttling.
   uint8_t throttled_fps_ = kDefaultThrottleFps;
   bool windows_throttled_ = false;

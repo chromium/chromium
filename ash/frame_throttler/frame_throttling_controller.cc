@@ -8,6 +8,8 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/shell.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -64,32 +66,90 @@ void FrameThrottlingController::StartThrottling(
   if (windows_throttled_)
     EndThrottling();
 
-  windows_throttled_ = true;
-  std::vector<viz::FrameSinkId> frame_sink_ids;
-  frame_sink_ids.reserve(windows.size());
-  CollectBrowserFrameSinkIds(windows, &frame_sink_ids);
-  if (!frame_sink_ids.empty())
-    StartThrottling(frame_sink_ids, throttled_fps_);
+  auto all_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
-  for (auto& observer : observers_) {
-    observer.OnThrottlingStarted(windows, throttled_fps_);
+  std::vector<aura::Window*> all_arc_windows;
+  std::copy_if(all_windows.begin(), all_windows.end(),
+               std::back_inserter(all_arc_windows), [](aura::Window* window) {
+                 return ash::AppType::ARC_APP ==
+                        static_cast<ash::AppType>(
+                            window->GetProperty(aura::client::kAppType));
+               });
+
+  std::vector<aura::Window*> browser_windows;
+  browser_windows.reserve(windows.size());
+  std::vector<aura::Window*> arc_windows;
+  arc_windows.reserve(windows.size());
+  for (auto* window : windows) {
+    ash::AppType type =
+        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    switch (type) {
+      case ash::AppType::BROWSER:
+        browser_windows.push_back(window);
+        break;
+      case ash::AppType::ARC_APP:
+        arc_windows.push_back(window);
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (!browser_windows.empty()) {
+    std::vector<viz::FrameSinkId> frame_sink_ids;
+    frame_sink_ids.reserve(browser_windows.size());
+    CollectBrowserFrameSinkIds(browser_windows, &frame_sink_ids);
+    if (!frame_sink_ids.empty())
+      StartThrottlingFrameSinks(frame_sink_ids);
+  }
+
+  std::vector<aura::Window*> all_windows_to_throttle(browser_windows);
+
+  // Do not throttle arc if at least one arc window should not be throttled.
+  if (!arc_windows.empty() && (arc_windows.size() == all_arc_windows.size())) {
+    StartThrottlingArc(arc_windows);
+    all_windows_to_throttle.insert(all_windows_to_throttle.end(),
+                                   arc_windows.begin(), arc_windows.end());
+  }
+
+  if (!all_windows_to_throttle.empty()) {
+    windows_throttled_ = true;
+    for (auto& observer : observers_)
+      observer.OnThrottlingStarted(all_windows_to_throttle, throttled_fps_);
   }
 }
 
-void FrameThrottlingController::StartThrottling(
-    const std::vector<viz::FrameSinkId>& frame_sink_ids,
-    uint8_t fps) {
-  DCHECK_GT(fps, 0);
+void FrameThrottlingController::StartThrottlingFrameSinks(
+    const std::vector<viz::FrameSinkId>& frame_sink_ids) {
   DCHECK(!frame_sink_ids.empty());
   if (context_factory_) {
     context_factory_->GetHostFrameSinkManager()->StartThrottling(
-        frame_sink_ids, base::TimeDelta::FromSeconds(1) / fps);
+        frame_sink_ids, base::TimeDelta::FromSeconds(1) / throttled_fps_);
+  }
+}
+
+void FrameThrottlingController::StartThrottlingArc(
+    const std::vector<aura::Window*>& arc_windows) {
+  for (auto& arc_observer : arc_observers_) {
+    arc_observer.OnThrottlingStarted(arc_windows, throttled_fps_);
+  }
+}
+
+void FrameThrottlingController::EndThrottlingFrameSinks() {
+  if (context_factory_)
+    context_factory_->GetHostFrameSinkManager()->EndThrottling();
+}
+
+void FrameThrottlingController::EndThrottlingArc() {
+  for (auto& arc_observer : arc_observers_) {
+    arc_observer.OnThrottlingEnded();
   }
 }
 
 void FrameThrottlingController::EndThrottling() {
-  if (context_factory_)
-    context_factory_->GetHostFrameSinkManager()->EndThrottling();
+  EndThrottlingFrameSinks();
+  EndThrottlingArc();
 
   for (auto& observer : observers_) {
     observer.OnThrottlingEnded();
@@ -104,6 +164,16 @@ void FrameThrottlingController::AddObserver(FrameThrottlingObserver* observer) {
 void FrameThrottlingController::RemoveObserver(
     FrameThrottlingObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void FrameThrottlingController::AddArcObserver(
+    FrameThrottlingObserver* observer) {
+  arc_observers_.AddObserver(observer);
+}
+
+void FrameThrottlingController::RemoveArcObserver(
+    FrameThrottlingObserver* observer) {
+  arc_observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash

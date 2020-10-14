@@ -63,6 +63,7 @@ class ExoTestBase : public ash::AshTestBase {
       ShellSurface* parent);
 
   ExoTestHelper* exo_test_helper() { return &exo_test_helper_; }
+  WMHelper* wm_helper() { return wm_helper_.get(); }
 
  private:
   ExoTestHelper exo_test_helper_;

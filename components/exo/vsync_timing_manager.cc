@@ -6,11 +6,13 @@
 
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace exo {
 
 VSyncTimingManager::VSyncTimingManager(Delegate* delegate)
-    : delegate_(delegate) {}
+    : last_interval_(viz::BeginFrameArgs::DefaultInterval()),
+      delegate_(delegate) {}
 
 VSyncTimingManager::~VSyncTimingManager() = default;
 
@@ -36,8 +38,25 @@ void VSyncTimingManager::RemoveObserver(Observer* obs) {
 
 void VSyncTimingManager::OnUpdateVSyncParameters(base::TimeTicks timebase,
                                                  base::TimeDelta interval) {
-  for (auto* observer : observers_)
-    observer->OnUpdateVSyncParameters(timebase, interval);
+  for (auto* observer : observers_) {
+    observer->OnUpdateVSyncParameters(timebase, throttled_interval_.is_zero()
+                                                    ? interval
+                                                    : throttled_interval_);
+  }
+  last_timebase_ = timebase;
+  last_interval_ = interval;
+}
+
+void VSyncTimingManager::OnThrottlingStarted(
+    const std::vector<aura::Window*>& windows,
+    uint8_t fps) {
+  throttled_interval_ = base::TimeDelta::FromSeconds(1) / fps;
+  OnUpdateVSyncParameters(last_timebase_, last_interval_);
+}
+
+void VSyncTimingManager::OnThrottlingEnded() {
+  throttled_interval_ = base::TimeDelta();
+  OnUpdateVSyncParameters(last_timebase_, last_interval_);
 }
 
 void VSyncTimingManager::InitializeConnection() {

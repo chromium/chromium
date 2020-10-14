@@ -189,6 +189,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "mock_vsync_timing_observer.cc",
+    "mock_vsync_timing_observer.h",
     "test/exo_test_base_views.cc",
     "test/exo_test_base_views.h",
     "test/exo_test_suite_aura.cc",
@@ -294,6 +296,7 @@ source_set("unit_tests") {
       "toast_surface_unittest.cc",
       "touch_unittest.cc",
       "ui_lock_controller_unittest.cc",
+      "wm_helper_chromeos_unittest.cc",
       "xdg_shell_surface_unittest.cc",
     ]
 

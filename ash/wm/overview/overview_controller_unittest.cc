@@ -686,11 +686,15 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
   frame_throttling_controller->AddObserver(&observer);
-  const int window_count = 5;
-  std::unique_ptr<aura::Window> created_windows[window_count];
-  std::vector<aura::Window*> windows(window_count, nullptr);
-  for (int i = 0; i < window_count; ++i) {
-    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
+  const int browser_window_count = 3;
+  const int arc_window_count = 2;
+  const int total_window_count = browser_window_count + arc_window_count;
+  std::unique_ptr<aura::Window> created_windows[total_window_count];
+  std::vector<aura::Window*> windows(total_window_count, nullptr);
+  for (int i = 0; i < total_window_count; ++i) {
+    created_windows[i] = CreateAppWindow(gfx::Rect(), i < browser_window_count
+                                                          ? AppType::BROWSER
+                                                          : AppType::ARC_APP);
     windows[i] = created_windows[i].get();
   }
 
