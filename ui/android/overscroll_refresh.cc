@@ -17,10 +17,6 @@ namespace {
 // release results in a small upward fling (quite common during a slow scroll).
 const float kMinFlingVelocityForActivation = -500.f;
 
-// The default distance in dp from a side of the device to start a navigation
-// from.
-const float kNavigationEdgeWidth = 48.f;
-
 // Weighted value used to determine whether a scroll should trigger vertical
 // scroll or horizontal navigation.
 const float kWeightAngle30 = 1.73f;
@@ -28,12 +24,12 @@ const float kWeightAngle30 = 1.73f;
 }  // namespace
 
 OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
-                                     float dpi_scale)
+                                     float edge_width)
     : scrolled_to_top_(true),
       top_at_scroll_start_(true),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
-      edge_width_(kNavigationEdgeWidth * dpi_scale),
+      edge_width_(edge_width),
       handler_(handler) {
   DCHECK(handler);
 }
@@ -42,7 +38,7 @@ OverscrollRefresh::OverscrollRefresh()
     : scrolled_to_top_(true),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
-      edge_width_(kNavigationEdgeWidth * 1.f),
+      edge_width_(kDefaultNavigationEdgeWidth * 1.f),
       handler_(nullptr) {}
 
 OverscrollRefresh::~OverscrollRefresh() {
