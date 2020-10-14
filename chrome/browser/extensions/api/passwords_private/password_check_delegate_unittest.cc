@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -81,6 +82,7 @@ using password_manager::CompromiseType;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
+using password_manager::SavedPasswordsPresenter;
 using password_manager::TestPasswordStore;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
 using signin::IdentityTestEnvironment;
@@ -230,6 +232,7 @@ class PasswordCheckDelegateTest : public ::testing::Test {
  public:
   PasswordCheckDelegateTest() {
     prefs_.registry()->RegisterDoublePref(kLastTimePasswordCheckCompleted, 0.0);
+    presenter_.Init();
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -241,6 +244,7 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   TestingProfile& profile() { return profile_; }
   TestPasswordStore& store() { return *store_; }
   BulkLeakCheckService* service() { return bulk_leak_check_service_; }
+  SavedPasswordsPresenter& presenter() { return presenter_; }
   PasswordCheckDelegate& delegate() { return delegate_; }
 
   void EnableWellKnownChangePasswordFeatureFlag() {
@@ -263,7 +267,8 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
   base::test::ScopedFeatureList scoped_feature_list_;
-  PasswordCheckDelegate delegate_{&profile_};
+  SavedPasswordsPresenter presenter_{store_};
+  PasswordCheckDelegate delegate_{&profile_, &presenter_};
 };
 
 }  // namespace
@@ -1119,7 +1124,9 @@ TEST_F(PasswordCheckDelegateTest,
 
   // Use a local delegate instead of |delegate()| so that the Password Store can
   // be set-up prior to constructing the object.
-  PasswordCheckDelegate delegate(&profile());
+  SavedPasswordsPresenter new_presenter(&store());
+  PasswordCheckDelegate delegate(&profile(), &new_presenter);
+  new_presenter.Init();
   delegate.StartPasswordCheck(callback1.Get());
   delegate.StartPasswordCheck(callback2.Get());
   RunUntilIdle();

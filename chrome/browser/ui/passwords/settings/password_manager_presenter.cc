@@ -295,6 +295,15 @@ PasswordManagerPresenter::GetPasswords(size_t index) const {
   return TryGetPasswordForms(password_map_, index);
 }
 
+base::span<const std::unique_ptr<autofill::PasswordForm>>
+PasswordManagerPresenter::GetPasswordsForKey(
+    const std::string& sort_key) const {
+  auto it = password_map_.find(sort_key);
+  if (it != password_map_.end())
+    return it->second;
+  return {};
+}
+
 std::vector<base::string16> PasswordManagerPresenter::GetUsernamesForRealm(
     size_t index) {
   const password_manager::PasswordForm* current_form =
@@ -323,57 +332,6 @@ FormVector PasswordManagerPresenter::GetAllPasswords() {
 const password_manager::PasswordForm*
 PasswordManagerPresenter::GetPasswordException(size_t index) const {
   return TryGetPasswordForm(exception_map_, index);
-}
-
-bool PasswordManagerPresenter::ChangeSavedPassword(
-    const std::vector<std::string>& sort_keys,
-    const base::string16& new_username,
-    const base::string16& new_password) {
-  // Make sure new_password is not empty.
-  if (new_password.empty()) {
-    DLOG(ERROR) << "The password is empty.";
-    return false;
-  }
-  DCHECK(!sort_keys.empty());
-
-  std::vector<base::span<const FormVector::value_type>> old_forms_for_sort_keys;
-
-  for (const auto& sort_key : sort_keys) {
-    // Find the equivalence class that needs to be updated.
-    auto it = password_map_.find(sort_key);
-    if (it == password_map_.end())
-      return false;
-
-    const FormVector& old_forms = it->second;
-    DCHECK(!old_forms.empty());
-
-    // In case the username changed, make sure that there exists no other
-    // credential with the same signon_realm and username.
-    auto has_conflicting_username = [&old_forms,
-                                     &new_username](const auto& form) {
-      return new_username == form->username_value &&
-             base::ranges::any_of(old_forms, [&form](const auto& old_form) {
-               return form->signon_realm == old_form->signon_realm &&
-                      form->IsUsingAccountStore() ==
-                          old_form->IsUsingAccountStore();
-             });
-    };
-
-    const base::string16& old_username = old_forms[0]->username_value;
-
-    if (old_username != new_username &&
-        base::ranges::any_of(GetAllPasswords(), has_conflicting_username)) {
-      return false;
-    }
-    old_forms_for_sort_keys.push_back(old_forms);
-  }
-
-  for (const auto& old_forms : old_forms_for_sort_keys) {
-    EditSavedPasswords(password_view_->GetProfile(), old_forms, new_username,
-                       new_password);
-  }
-
-  return true;
 }
 
 void PasswordManagerPresenter::RemoveSavedPassword(size_t index) {

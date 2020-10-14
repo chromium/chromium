@@ -221,33 +221,31 @@ std::vector<CompromisedCredentialAndType> OrderCompromisedCredentials(
 
 }  // namespace
 
-PasswordCheckDelegate::PasswordCheckDelegate(Profile* profile)
+PasswordCheckDelegate::PasswordCheckDelegate(
+    Profile* profile,
+    password_manager::SavedPasswordsPresenter* presenter)
     : profile_(profile),
-      profile_password_store_(PasswordStoreFactory::GetForProfile(
-          profile,
-          ServiceAccessType::EXPLICIT_ACCESS)),
-      account_password_store_(AccountPasswordStoreFactory::GetForProfile(
-          profile,
-          ServiceAccessType::EXPLICIT_ACCESS)),
-      saved_passwords_presenter_(profile_password_store_,
-                                 account_password_store_),
-      insecure_credentials_manager_(&saved_passwords_presenter_,
-                                    profile_password_store_,
-                                    account_password_store_),
+      saved_passwords_presenter_(presenter),
+      insecure_credentials_manager_(presenter,
+                                    PasswordStoreFactory::GetForProfile(
+                                        profile,
+                                        ServiceAccessType::EXPLICIT_ACCESS),
+                                    AccountPasswordStoreFactory::GetForProfile(
+                                        profile,
+                                        ServiceAccessType::EXPLICIT_ACCESS)),
       bulk_leak_check_service_adapter_(
-          &saved_passwords_presenter_,
+          presenter,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
           profile_->GetPrefs()) {
-  observed_saved_passwords_presenter_.Add(&saved_passwords_presenter_);
+  observed_saved_passwords_presenter_.Add(saved_passwords_presenter_);
   observed_insecure_credentials_manager_.Add(&insecure_credentials_manager_);
   observed_bulk_leak_check_service_.Add(
       BulkLeakCheckServiceFactory::GetForProfile(profile_));
 
-  // Instructs the presenter and provider to initialize and built their caches.
+  // Instructs the provider to initialize and build its cache.
   // This will soon after invoke OnCompromisedCredentialsChanged(). Calls to
   // GetCompromisedCredentials() that might happen until then will return an
   // empty list.
-  saved_passwords_presenter_.Init();
   insecure_credentials_manager_.Init();
 }
 
@@ -354,7 +352,7 @@ void PasswordCheckDelegate::StartPasswordCheck(
   }
 
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
-  for (const auto& password : saved_passwords_presenter_.GetSavedPasswords())
+  for (const auto& password : saved_passwords_presenter_->GetSavedPasswords())
     progress->IncrementCounts(password);
 
   password_check_progress_ = progress->GetWeakPtr();
@@ -391,7 +389,7 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
 
   State state = bulk_leak_check_service_adapter_.GetBulkLeakCheckState();
   SavedPasswordsView saved_passwords =
-      saved_passwords_presenter_.GetSavedPasswords();
+      saved_passwords_presenter_->GetSavedPasswords();
 
   // Handle the currently running case first, only then consider errors.
   if (state == State::kRunning) {

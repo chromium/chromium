@@ -57,6 +57,10 @@ class PasswordManagerPresenter
   // Gets the password entry at |index|.
   const password_manager::PasswordForm* GetPassword(size_t index) const;
 
+  // Gets the password entries corresponding to |sort_key|.
+  base::span<const std::unique_ptr<autofill::PasswordForm>> GetPasswordsForKey(
+      const std::string& sort_key) const;
+
   // Gets the vector of password entries with the same credentials and from the
   // same site as the one stored at |index|.
   base::span<const std::unique_ptr<password_manager::PasswordForm>>
@@ -73,11 +77,6 @@ class PasswordManagerPresenter
   // Gets the password exception entry at |index|.
   const password_manager::PasswordForm* GetPasswordException(
       size_t index) const;
-
-  // Changes the password corresponding to |sort_keys|.
-  bool ChangeSavedPassword(const std::vector<std::string>& sort_keys,
-                           const base::string16& new_username,
-                           const base::string16& new_password);
 
   // Removes the saved password entries at |index|, or corresponding to
   // |sort_key|, respectively.

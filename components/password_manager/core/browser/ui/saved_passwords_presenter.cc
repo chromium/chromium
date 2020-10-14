@@ -13,6 +13,31 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+
+namespace {
+using password_manager::metrics_util::IsPasswordChanged;
+using password_manager::metrics_util::IsUsernameChanged;
+using SavedPasswordsView =
+    password_manager::SavedPasswordsPresenter::SavedPasswordsView;
+
+bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
+                           SavedPasswordsView forms_to_check,
+                           const base::string16& new_username) {
+  // In case the username changed, make sure that there exists no other
+  // credential with the same signon_realm and username in the same store.
+  auto has_conflicting_username = [&forms_to_check,
+                                   &new_username](const auto& form) {
+    return new_username == form.username_value &&
+           base::ranges::any_of(forms_to_check, [&form](const auto& old_form) {
+             return form.signon_realm == old_form.signon_realm &&
+                    form.IsUsingAccountStore() ==
+                        old_form.IsUsingAccountStore();
+           });
+  };
+  return base::ranges::any_of(all_forms, has_conflicting_username);
+}
+}  // namespace
 
 namespace password_manager {
 
@@ -53,6 +78,47 @@ bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
       form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
   store.UpdateLogin(*found);
   NotifyEdited(*found);
+  return true;
+}
+
+bool SavedPasswordsPresenter::EditSavedPasswords(
+    const SavedPasswordsView forms,
+    const base::string16& new_username,
+    const base::string16& new_password) {
+  IsUsernameChanged username_changed(new_username != forms[0].username_value);
+  IsPasswordChanged password_changed(new_password != forms[0].password_value);
+
+  if (new_password.empty())
+    return false;
+  if (username_changed &&
+      IsUsernameAlreadyUsed(passwords_, forms, new_username))
+    return false;
+
+  // An updated username implies a change in the primary key, thus we need to
+  // make sure to call the right API. Update every entry in the equivalence
+  // class.
+  if (username_changed || password_changed) {
+    for (const auto& old_form : forms) {
+      PasswordStore& store =
+          old_form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
+
+      autofill::PasswordForm new_form = old_form;
+      new_form.username_value = new_username;
+      new_form.password_value = new_password;
+
+      if (username_changed) {
+        // Changing username requires deleting old form and adding new one. So
+        // the different API should be called.
+        store.UpdateLoginWithPrimaryKey(new_form, old_form);
+      } else {
+        store.UpdateLogin(new_form);
+      }
+      NotifyEdited(new_form);
+    }
+  }
+
+  password_manager::metrics_util::LogPasswordEditResult(username_changed,
+                                                        password_changed);
   return true;
 }
 

@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "extensions/browser/extension_function.h"
 
 class Profile;
@@ -145,6 +146,9 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
 
   // Used to communicate with the password store.
   std::unique_ptr<PasswordManagerPresenter> password_manager_presenter_;
+
+  // Used to edit passwords and to create |password_check_delegate_|.
+  password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
   // Used to control the export and import flows.
   std::unique_ptr<PasswordManagerPorter> password_manager_porter_;

@@ -16,6 +16,7 @@ using password_manager::metrics_util::IsPasswordChanged;
 using password_manager::metrics_util::IsUsernameChanged;
 }  // namespace
 
+// TODO(crbug.com/1136815): Drop this, once Android no longer use it.
 void EditSavedPasswords(
     Profile* profile,
     const base::span<const std::unique_ptr<password_manager::PasswordForm>>

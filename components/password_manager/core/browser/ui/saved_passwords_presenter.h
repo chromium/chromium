@@ -69,6 +69,13 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // in |passwords_|.
   bool EditPassword(const PasswordForm& form, base::string16 new_password);
 
+  // Modifies provided password forms, with |new_username| and |new_password|.
+  // |forms| must represent single credential, with its duplicates, or the
+  // same form saved on another store type.
+  bool EditSavedPasswords(const SavedPasswordsView forms,
+                          const base::string16& new_username,
+                          const base::string16& new_password);
+
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;
 

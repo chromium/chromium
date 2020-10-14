@@ -24,10 +24,6 @@
 
 class Profile;
 
-namespace password_manager {
-class PasswordStore;
-}
-
 namespace extensions {
 
 extern const char kPasswordCheckDataKey[];
@@ -44,7 +40,8 @@ class PasswordCheckDelegate
   using StartPasswordCheckCallback =
       PasswordsPrivateDelegate::StartPasswordCheckCallback;
 
-  explicit PasswordCheckDelegate(Profile* profile);
+  PasswordCheckDelegate(Profile* profile,
+                        password_manager::SavedPasswordsPresenter* presenter);
   PasswordCheckDelegate(const PasswordCheckDelegate&) = delete;
   PasswordCheckDelegate& operator=(const PasswordCheckDelegate&) = delete;
   ~PasswordCheckDelegate() override;
@@ -132,14 +129,10 @@ class PasswordCheckDelegate
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   Profile* profile_ = nullptr;
 
-  // Handles to the password stores, powering both |saved_passwords_presenter_|
-  // and |insecure_credentials_manager_|.
-  scoped_refptr<password_manager::PasswordStore> profile_password_store_;
-  scoped_refptr<password_manager::PasswordStore> account_password_store_;
-
   // Used by |insecure_credentials_manager_| to obtain the list of saved
   // passwords.
-  password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
+  password_manager::SavedPasswordsPresenter* saved_passwords_presenter_ =
+      nullptr;
 
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_;
