@@ -39,7 +39,10 @@ ScenicOverlayView::ScenicOverlayView(
   });
 }
 
-ScenicOverlayView::~ScenicOverlayView() = default;
+ScenicOverlayView::~ScenicOverlayView() {
+  if (surface_)
+    surface_->RemoveOverlayView(buffer_collection_id_);
+}
 
 void ScenicOverlayView::Initialize(
     fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
@@ -52,12 +55,12 @@ void ScenicOverlayView::Initialize(
     ZX_LOG(FATAL, status) << "ImagePipe disconnected";
   });
 
-  scenic::Material image_material(&scenic_session_);
-  image_material.SetTexture(image_pipe_id);
+  image_material_ = std::make_unique<scenic::Material>(&scenic_session_);
+  image_material_->SetTexture(image_pipe_id);
 
   scenic::ShapeNode shape(&scenic_session_);
   shape.SetShape(scenic::Rectangle(&scenic_session_, 1.f, 1.f));
-  shape.SetMaterial(image_material);
+  shape.SetMaterial(*image_material_);
 
   view_.AddChild(shape);
   scenic_session_.ReleaseResource(image_pipe_id);
@@ -71,7 +74,63 @@ void ScenicOverlayView::Initialize(
   // TODO(emircan): Consider using one ImagePipe per video decoder instead.
   image_pipe_->AddBufferCollection(kImagePipeBufferCollectionId,
                                    std::move(collection_token));
-  LOG(ERROR) << __func__;
+}
+
+bool ScenicOverlayView::AddImages(uint32_t buffer_count,
+                                  const gfx::Size& size) {
+  fuchsia::sysmem::ImageFormat_2 image_format = {};
+  image_format.coded_width = size.width();
+  image_format.coded_height = size.height();
+  for (uint32_t i = 0; i < buffer_count; ++i) {
+    // Image id cannot be 0, so add 1 to all buffer indices.
+    image_pipe_->AddImage(i + 1, kImagePipeBufferCollectionId, i, image_format);
+  }
+  return true;
+}
+
+bool ScenicOverlayView::PresentImage(uint32_t buffer_index) {
+  image_pipe_->PresentImage(buffer_index + 1, zx_clock_get_monotonic(),
+                            std::vector<zx::event>(), std::vector<zx::event>(),
+                            [](auto) {});
+  return true;
+}
+
+void ScenicOverlayView::SetBlendMode(bool enable_blend) {
+  if (enable_blend_ == enable_blend)
+    return;
+
+  enable_blend_ = enable_blend;
+  // Setting alpha as |255| marks the image as opaque and no content below would
+  // be seen. Anything lower than 255 allows blending.
+  image_material_->SetColor(255, 255, 255, enable_blend ? 254 : 255);
+  scenic_session_.Present2(
+      /*requested_presentation_time=*/0,
+      /*requested_prediction_span=*/0,
+      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+}
+
+bool ScenicOverlayView::CanAttachToAcceleratedWidget(
+    gfx::AcceleratedWidget widget) {
+  return view_holder_token_.value.is_valid() || (widget_ == widget);
+}
+
+bool ScenicOverlayView::AttachToScenicSurface(
+    ScenicSurface* surface,
+    gfx::AcceleratedWidget widget,
+    gfx::SysmemBufferCollectionId id) {
+  if (surface_ && surface_ == surface)
+    return true;
+
+  if (!view_holder_token_.value.is_valid()) {
+    DLOG(ERROR) << "ViewHolder is already attached.";
+    return false;
+  }
+
+  surface_ = surface;
+  buffer_collection_id_ = id;
+  widget_ = widget;
+  return surface_->PresentOverlayView(buffer_collection_id_,
+                                      std::move(view_holder_token_));
 }
 
 }  // namespace ui

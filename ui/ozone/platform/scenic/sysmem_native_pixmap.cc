@@ -4,6 +4,11 @@
 
 #include "ui/ozone/platform/scenic/sysmem_native_pixmap.h"
 
+#include "base/logging.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/ozone/platform/scenic/scenic_surface.h"
+#include "ui/ozone/platform/scenic/scenic_surface_factory.h"
+
 namespace ui {
 
 SysmemNativePixmap::SysmemNativePixmap(
@@ -67,12 +72,26 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     const gfx::RectF& crop_rect,
     bool enable_blend,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
+  DCHECK(collection_->surface_factory());
+  ScenicSurface* surface = collection_->surface_factory()->GetSurface(widget);
+  if (!surface) {
+    DLOG(ERROR) << "Failed to find surface.";
+    return false;
+  }
+
   DCHECK(collection_->scenic_overlay_view());
-  // TODO(crbug.com/1127984): Present to ScenicOverlayView's ImagePipe. Send
-  // ScenicOverlayView's viewholder to the ScenicSurface associated with
-  // |widget|.
-  NOTIMPLEMENTED();
-  return false;
+  ScenicOverlayView* overlay_view = collection_->scenic_overlay_view();
+  const auto& buffer_collection_id = handle_.buffer_collection_id.value();
+  if (!overlay_view->AttachToScenicSurface(surface, widget,
+                                           buffer_collection_id)) {
+    DLOG(ERROR) << "Failed to attach to surface.";
+    return false;
+  }
+  surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
+                                     display_bounds);
+  overlay_view->SetBlendMode(enable_blend);
+  overlay_view->PresentImage(handle_.buffer_index);
+  return true;
 }
 
 gfx::NativePixmapHandle SysmemNativePixmap::ExportHandle() {
@@ -81,7 +100,11 @@ gfx::NativePixmapHandle SysmemNativePixmap::ExportHandle() {
 
 bool SysmemNativePixmap::SupportsOverlayPlane(
     gfx::AcceleratedWidget widget) const {
-  return collection_->scenic_overlay_view();
+  if (!collection_->scenic_overlay_view())
+    return false;
+
+  return collection_->scenic_overlay_view()->CanAttachToAcceleratedWidget(
+      widget);
 }
 
 }  // namespace ui

@@ -108,6 +108,7 @@ bool SysmemBufferCollection::Initialize(
 
   if (register_with_image_pipe) {
     scenic_overlay_view_.emplace(scenic_surface_factory->CreateScenicSession());
+    surface_factory_ = scenic_surface_factory;
   }
 
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
@@ -413,6 +414,11 @@ bool SysmemBufferCollection::InitializeInternal(
   image_size_ = gfx::Size(width, height);
   buffer_size_ = buffers_info_.settings.buffer_settings.size_bytes;
   is_protected_ = buffers_info_.settings.buffer_settings.is_secure;
+
+  // Add all images to Image pipe for presentation later.
+  if (scenic_overlay_view_.has_value()) {
+    scenic_overlay_view_->AddImages(buffers_info_.buffer_count, image_size_);
+  }
 
   // CreateVkImage() should always be called on the same thread, but it may be
   // different from the thread that called Initialize().

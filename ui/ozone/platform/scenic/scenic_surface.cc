@@ -13,26 +13,60 @@
 
 namespace ui {
 
+namespace {
+
+// Scenic has z-fighting problems in 3D API, so we add tiny z plane increments
+// to elevate content. ViewProperties set by ScenicWindow sets z-plane to
+// [-0.5f, 0.5f] range, so 0.01f is small enough to make a difference.
+constexpr float kElevationStep = 0.01f;
+
+}  // namespace
+
 ScenicSurface::ScenicSurface(
     ScenicSurfaceFactory* scenic_surface_factory,
     gfx::AcceleratedWidget window,
     scenic::SessionPtrAndListenerRequest sesion_and_listener_request)
     : scenic_session_(std::move(sesion_and_listener_request)),
-      shape_(&scenic_session_),
+      main_shape_(&scenic_session_),
+      main_material_(&scenic_session_),
       scenic_surface_factory_(scenic_surface_factory),
       window_(window) {
   // Setting alpha to 0 makes this transparent.
   scenic::Material transparent_material(&scenic_session_);
   transparent_material.SetColor(0, 0, 0, 0);
-  shape_.SetShape(scenic::Rectangle(&scenic_session_, 1.f, 1.f));
-  shape_.SetMaterial(transparent_material);
+  main_shape_.SetShape(scenic::Rectangle(&scenic_session_, 1.f, 1.f));
+  main_shape_.SetMaterial(transparent_material);
+  main_shape_.SetEventMask(fuchsia::ui::gfx::kMetricsEventMask);
   scenic_surface_factory->AddSurface(window, this);
   scenic_session_.SetDebugName("Chromium ScenicSurface");
+  scenic_session_.set_event_handler(
+      fit::bind_member(this, &ScenicSurface::OnScenicEvents));
 }
 
 ScenicSurface::~ScenicSurface() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   scenic_surface_factory_->RemoveSurface(window_);
+}
+
+void ScenicSurface::OnScenicEvents(
+    std::vector<fuchsia::ui::scenic::Event> events) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (const auto& event : events) {
+    DCHECK(event.is_gfx());
+    switch (event.gfx().Which()) {
+      case fuchsia::ui::gfx::Event::kMetrics: {
+        DCHECK(event.gfx().metrics().node_id == main_shape_.id());
+        // This is enough to track size because |main_shape_| is 1x1.
+        const auto& metrics = event.gfx().metrics().metrics;
+        main_shape_size_.set_width(metrics.scale_x);
+        main_shape_size_.set_height(metrics.scale_y);
+        UpdateViewHolderScene();
+        break;
+      }
+      default:
+        break;
+    }
+  }
 }
 
 bool ScenicSurface::SetTextureToNewImagePipe(
@@ -41,9 +75,8 @@ bool ScenicSurface::SetTextureToNewImagePipe(
   uint32_t image_pipe_id = scenic_session_.AllocResourceId();
   scenic_session_.Enqueue(scenic::NewCreateImagePipe2Cmd(
       image_pipe_id, std::move(image_pipe_request)));
-  scenic::Material image_material(&scenic_session_);
-  image_material.SetTexture(image_pipe_id);
-  shape_.SetMaterial(image_material);
+  main_material_.SetTexture(image_pipe_id);
+  main_shape_.SetMaterial(main_material_);
   scenic_session_.ReleaseResource(image_pipe_id);
   scenic_session_.Present2(
       /*requested_presentation_time=*/0,
@@ -54,9 +87,58 @@ bool ScenicSurface::SetTextureToNewImagePipe(
 
 void ScenicSurface::SetTextureToImage(const scenic::Image& image) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  scenic::Material image_material(&scenic_session_);
-  image_material.SetTexture(image);
-  shape_.SetMaterial(image_material);
+  main_material_.SetTexture(image);
+  main_shape_.SetMaterial(main_material_);
+}
+
+bool ScenicSurface::PresentOverlayView(
+    gfx::SysmemBufferCollectionId id,
+    fuchsia::ui::views::ViewHolderToken view_holder_token) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  scenic::ViewHolder view_holder(&scenic_session_, std::move(view_holder_token),
+                                 "OverlayViewHolder");
+  scenic::EntityNode entity_node(&scenic_session_);
+  entity_node.AddChild(view_holder);
+  parent_->AddChild(entity_node);
+  scenic_session_.Present2(
+      /*requested_presentation_time=*/0,
+      /*requested_prediction_span=*/0,
+      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+
+  DCHECK(!overlays_.count(id));
+  overlays_.emplace(id, std::move(entity_node));
+
+  return true;
+}
+
+bool ScenicSurface::UpdateOverlayViewPosition(gfx::SysmemBufferCollectionId id,
+                                              int plane_z_order,
+                                              const gfx::Rect& display_bounds) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(overlays_.count(id));
+  auto& overlay_view_info = overlays_.at(id);
+  if (overlay_view_info.plane_z_order == plane_z_order &&
+      overlay_view_info.display_bounds == display_bounds) {
+    return false;
+  }
+  overlay_view_info.plane_z_order = plane_z_order;
+  overlay_view_info.display_bounds = display_bounds;
+  UpdateViewHolderScene();
+  return true;
+}
+
+bool ScenicSurface::RemoveOverlayView(gfx::SysmemBufferCollectionId id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto it = overlays_.find(id);
+  DCHECK(it != overlays_.end());
+  parent_->DetachChild(it->second.entity_node);
+  scenic_session_.Present2(
+      /*requested_presentation_time=*/0,
+      /*requested_prediction_span=*/0,
+      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  overlays_.erase(it);
+  return true;
 }
 
 mojo::PlatformHandle ScenicSurface::CreateView() {
@@ -68,13 +150,44 @@ mojo::PlatformHandle ScenicSurface::CreateView() {
   auto tokens = scenic::ViewTokenPair::New();
   parent_ = std::make_unique<scenic::View>(
       &scenic_session_, std::move(tokens.view_token), "chromium surface");
-  parent_->AddChild(shape_);
+  parent_->AddChild(main_shape_);
 
   scenic_session_.Present2(
       /*requested_presentation_time=*/0,
       /*requested_prediction_span=*/0,
       [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
   return mojo::PlatformHandle(std::move(tokens.view_holder_token.value));
+}
+
+void ScenicSurface::UpdateViewHolderScene() {
+  // |plane_z_order| for main surface is 0.
+  int min_z_order = 0;
+  for (const auto& overlay : overlays_) {
+    min_z_order = std::min(overlay.second.plane_z_order, min_z_order);
+  }
+  for (auto& overlay : overlays_) {
+    const float scaled_width =
+        overlay.second.display_bounds.width() / main_shape_size_.width();
+    const float scaled_height =
+        overlay.second.display_bounds.height() / main_shape_size_.height();
+    overlay.second.entity_node.SetScale(scaled_width, scaled_height, 1.f);
+    const float scaled_x =
+        overlay.second.display_bounds.x() / main_shape_size_.width();
+    const float scaled_y =
+        overlay.second.display_bounds.y() / main_shape_size_.height();
+    overlay.second.entity_node.SetTranslation(
+        scaled_x - (0.5f - scaled_width / 2),
+        scaled_y - (0.5f - scaled_height / 2),
+        (min_z_order - overlay.second.plane_z_order) * kElevationStep);
+  }
+
+  main_material_.SetColor(255, 255, 255, 0 > min_z_order ? 254 : 255);
+  main_shape_.SetTranslation(0.f, 0.f, min_z_order * kElevationStep);
+
+  scenic_session_.Present2(
+      /*requested_presentation_time=*/0,
+      /*requested_prediction_span=*/0,
+      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
 }
 
 }  // namespace ui

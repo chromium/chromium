@@ -91,6 +91,7 @@ class SysmemBufferCollection
     return scenic_overlay_view_.has_value() ? &scenic_overlay_view_.value()
                                             : nullptr;
   }
+  ScenicSurfaceFactory* surface_factory() { return surface_factory_; }
 
  private:
   friend class base::RefCountedThreadSafe<SysmemBufferCollection>;
@@ -134,6 +135,7 @@ class SysmemBufferCollection
   // in buffer allocation negotiations, the associated images can be displayed
   // as overlays.
   base::Optional<ScenicOverlayView> scenic_overlay_view_;
+  ScenicSurfaceFactory* surface_factory_ = nullptr;
 
   // Thread checker used to verify that CreateVkImage() is always called from
   // the same thread. It may be unsafe to use vk_buffer_collection_ on different

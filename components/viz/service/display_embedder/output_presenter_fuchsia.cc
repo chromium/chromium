@@ -394,10 +394,12 @@ void OutputPresenterFuchsia::ScheduleOverlays(
       LOG(ERROR) << "Cannot access SysmemNativePixmap";
       continue;
     }
+    // TODO(crbug.com/1137991): Pass acquire and release fences for
+    // PresentImage() calls.
     pixmap->ScheduleOverlayPlane(
         dependency_->GetSurfaceHandle(), overlay.plane_z_order,
-        overlay.transform, ToNearestRect(overlay.display_rect), overlay.uv_rect,
-        !overlay.is_opaque, nullptr /* gpu_fence */);
+        overlay.transform, gfx::ToRoundedRect(overlay.display_rect),
+        overlay.uv_rect, !overlay.is_opaque, nullptr /* gpu_fence */);
   }
 }
 
