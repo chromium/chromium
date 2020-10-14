@@ -92,6 +92,10 @@
 #include <stdlib.h>
 #endif
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
 #endif  // defined(ADDRESS_SANITIZER)
@@ -105,6 +109,26 @@
     }                                                 \
     PA_CHECK(false);                                  \
   }
+
+namespace {
+
+// Returns true if we've hit the end of a random-length period. We don't want to
+// invoke `RandomValue` too often, because we call this function in a hot spot
+// (`Free`), and `RandomValue` incurs the cost of atomics.
+#if !DCHECK_IS_ON()
+ALWAYS_INLINE bool RandomPeriod() {
+  static thread_local uint8_t counter = 0;
+  if (UNLIKELY(counter == 0)) {
+    // It's OK to truncate this value.
+    counter = static_cast<uint8_t>(base::RandomValue());
+  }
+  // If `counter` is 0, this will wrap. That is intentional and OK.
+  counter--;
+  return counter == 0;
+}
+#endif
+
+}  // namespace
 
 namespace base {
 
@@ -479,10 +503,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   PA_DCHECK(page);
   PA_DCHECK(IsValidPage(page));
 
-#if DCHECK_IS_ON()
-  size_t utilized_slot_size = page->GetUtilizedSlotSize();
-#endif
-
+  const size_t utilized_slot_size = page->GetUtilizedSlotSize();
   if (allow_extras) {
     // |ptr| points after the tag and the cookie.
     //
@@ -548,6 +569,17 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
 #if DCHECK_IS_ON()
   memset(ptr, kFreedByte, utilized_slot_size);
+#else
+  // `memset` only once in a while: we're trading off safety for time
+  // efficiency.
+  if (UNLIKELY(RandomPeriod()) && !page->bucket->is_direct_mapped()) {
+#if defined(OS_WIN)
+    SecureZeroMemory(ptr, allocated_size);
+#else
+    // TODO(palmer): Use an equivalent of memset_s.
+    memset(ptr, 0, utilized_slot_size);
+#endif
+  }
 #endif
 
   // TLS access can be expensive, do a cheap local check first.
