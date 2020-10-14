@@ -414,7 +414,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
         if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
             // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
             // performing a single click on position: 0. See code below.
@@ -485,7 +485,7 @@ public class StartSurfaceTest {
                 .check(matches(withEffectiveVisibility(GONE)));
 
         if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
             // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
             // performing a single click on position: 0. See code below.
@@ -555,7 +555,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
         if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
             // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
             // performing a single click on position: 0. See code below.
@@ -694,7 +694,7 @@ public class StartSurfaceTest {
         onView(withId(R.id.primary_tasks_surface_view));
 
         if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                         && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
             // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
             // performing a single click on position: 0. See code below.
