@@ -25,6 +25,7 @@ Here's what works well:
     well, even though startup times can be fairly high (~40 seconds with
     gdb on Linux, much lower on Windows). You can step through code, inspect
     variables, view call stacks for multiple threads etc.
+    *   For more information on debugging Python code, see [here](vscode_python.md).
 *   Opening files and searching solution-wide works well now after having
     problems in earlier versions.
 *   Building works well. Build tools are easy to integrate. Warnings and errors
