@@ -271,7 +271,11 @@ public class SigninPromoController {
 
         view.getDescription().setText(mDescriptionStringIdNoAccount);
 
-        view.getPrimaryButton().setText(R.string.sign_in_to_chrome);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
+        } else {
+            view.getPrimaryButton().setText(R.string.sign_in_to_chrome);
+        }
         view.getPrimaryButton().setOnClickListener(v -> signinWithNewAccount(context));
 
         view.getSecondaryButton().setVisibility(View.GONE);
@@ -284,9 +288,13 @@ public class SigninPromoController {
 
         view.getDescription().setText(mDescriptionStringId);
 
-        String signinButtonText = context.getString(
-                R.string.signin_promo_continue_as, mProfileData.getGivenNameOrFullNameOrEmail());
-        view.getPrimaryButton().setText(signinButtonText);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
+        } else {
+            String signinButtonText = context.getString(R.string.signin_promo_continue_as,
+                    mProfileData.getGivenNameOrFullNameOrEmail());
+            view.getPrimaryButton().setText(signinButtonText);
+        }
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
 
         view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
