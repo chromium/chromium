@@ -783,9 +783,9 @@ TEST_F(CacheStorageTest, Add) {
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
 }
 
-// Verify an error response causes Cache::addAll() to trigger its associated
-// AbortController to cancel outstanding requests.
-TEST_F(CacheStorageTest, AddAllAbort) {
+// Verify we don't create and trigger the AbortController when a single request
+// to add() addAll() fails.
+TEST_F(CacheStorageTest, AddAllAbortOne) {
   ScriptState::Scope scope(GetScriptState());
   DummyExceptionStateForTesting exception_state;
   auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
@@ -803,6 +803,36 @@ TEST_F(CacheStorageTest, AddAllAbort) {
   fetcher->SetResponse(response);
 
   HeapVector<RequestInfo> info_list;
+  info_list.push_back(RequestToRequestInfo(request));
+
+  ScriptPromise promise =
+      cache->addAll(GetScriptState(), info_list, exception_state);
+
+  EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+  EXPECT_FALSE(cache->IsAborted());
+}
+
+// Verify an error response causes Cache::addAll() to trigger its associated
+// AbortController to cancel outstanding requests.
+TEST_F(CacheStorageTest, AddAllAbortMany) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  const String url = "http://www.cacheadd.test/";
+  const String content_type = "text/plain";
+  const String content = "hello cache";
+
+  TestCache* cache =
+      CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+
+  Request* request = NewRequestFromUrl(url);
+  fetcher->SetExpectedFetchUrl(&url);
+
+  Response* response = Response::error(GetScriptState());
+  fetcher->SetResponse(response);
+
+  HeapVector<RequestInfo> info_list;
+  info_list.push_back(RequestToRequestInfo(request));
   info_list.push_back(RequestToRequestInfo(request));
 
   ScriptPromise promise =
