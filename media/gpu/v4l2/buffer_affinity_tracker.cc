@@ -13,6 +13,8 @@ BufferAffinityTracker::BufferAffinityTracker(size_t nb_buffers) {
   resize(0);
 }
 
+BufferAffinityTracker::~BufferAffinityTracker() = default;
+
 void BufferAffinityTracker::resize(size_t nb_buffers) {
   base::AutoLock lock(lock_);
 

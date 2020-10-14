@@ -1204,7 +1204,7 @@ base::Optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
   }
 
   gfx::GenericSharedMemoryId id;
-  if (auto gmb = frame.GetGpuMemoryBuffer()) {
+  if (auto* gmb = frame.GetGpuMemoryBuffer()) {
     id = gmb->GetId();
   } else if (frame.HasDmaBufs()) {
     id = gfx::GenericSharedMemoryId(frame.DmabufFds()[0].get());

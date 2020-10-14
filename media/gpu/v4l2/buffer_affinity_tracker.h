@@ -27,6 +27,7 @@ namespace media {
 class BufferAffinityTracker {
  public:
   explicit BufferAffinityTracker(size_t nb_buffers);
+  ~BufferAffinityTracker();
   size_t nb_buffers() const { return nb_buffers_; }
   // Resize this tracker and reset its state.
   void resize(size_t nb_buffers);
