@@ -38,6 +38,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingTestHelper.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingUiCaptureTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/PasswordGenerationIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryModernViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewTest.java",
