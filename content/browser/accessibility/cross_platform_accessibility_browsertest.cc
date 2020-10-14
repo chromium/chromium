@@ -40,9 +40,10 @@
 #include "ui/base/win/atl_module.h"
 #endif
 
-#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) &&         \
-    !defined(LEAK_SANITIZER) && !defined(MEMORY_SANITIZER) && \
-    !defined(THREAD_SANITIZER) && !defined(UNDEFINED_SANITIZER)
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) &&              \
+    !defined(LEAK_SANITIZER) && !defined(MEMORY_SANITIZER) &&      \
+    !defined(THREAD_SANITIZER) && !defined(UNDEFINED_SANITIZER) && \
+    !defined(OS_ANDROID)
 #define IS_FAST_BUILD
 #endif
 
