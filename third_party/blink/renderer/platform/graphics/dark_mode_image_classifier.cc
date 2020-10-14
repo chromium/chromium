@@ -41,7 +41,7 @@ DarkModeImageClassifier::DarkModeImageClassifier() = default;
 DarkModeImageClassifier::~DarkModeImageClassifier() = default;
 
 DarkModeResult DarkModeImageClassifier::Classify(const SkPixmap& pixmap,
-                                                 const SkIRect& src) {
+                                                 const SkIRect& src) const {
   // Empty pixmap or |src| out of bounds cannot be classified.
   SkIRect bounds = pixmap.bounds();
   if (src.isEmpty() || bounds.isEmpty() || !bounds.contains(src) ||
@@ -57,7 +57,7 @@ DarkModeResult DarkModeImageClassifier::Classify(const SkPixmap& pixmap,
 
 base::Optional<DarkModeImageClassifier::Features>
 DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
-                                     const SkIRect& src) {
+                                     const SkIRect& src) const {
   DCHECK(!pixmap.bounds().isEmpty());
   float transparency_ratio;
   float background_ratio;
@@ -80,7 +80,7 @@ void DarkModeImageClassifier::GetSamples(const SkPixmap& pixmap,
                                          const SkIRect& src,
                                          std::vector<SkColor>* sampled_pixels,
                                          float* transparency_ratio,
-                                         float* background_ratio) {
+                                         float* background_ratio) const {
   DCHECK(!src.isEmpty());
 
   int num_sampled_pixels =
@@ -147,7 +147,7 @@ void DarkModeImageClassifier::GetBlockSamples(
     const SkIRect& block,
     const int required_samples_count,
     std::vector<SkColor>* sampled_pixels,
-    int* transparent_pixels_count) {
+    int* transparent_pixels_count) const {
   *transparent_pixels_count = 0;
 
   DCHECK(pixmap.bounds().contains(block));
@@ -173,7 +173,7 @@ void DarkModeImageClassifier::GetBlockSamples(
 DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
     const std::vector<SkColor>& sampled_pixels,
     const float transparency_ratio,
-    const float background_ratio) {
+    const float background_ratio) const {
   int samples_count = static_cast<int>(sampled_pixels.size());
 
   // Is image grayscale.
@@ -198,7 +198,7 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
 
 float DarkModeImageClassifier::ComputeColorBucketsRatio(
     const std::vector<SkColor>& sampled_pixels,
-    const ColorMode color_mode) {
+    const ColorMode color_mode) const {
   std::set<uint16_t> buckets;
 
   // If image is in color, use 4 bits per color channel, otherwise 4 bits for
@@ -228,7 +228,7 @@ float DarkModeImageClassifier::ComputeColorBucketsRatio(
 }
 
 DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
-    const Features& features) {
+    const Features& features) const {
   DarkModeResult result = ClassifyUsingDecisionTree(features);
 
   // If decision tree cannot decide, we use a neural network to decide whether
@@ -253,7 +253,7 @@ DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
 }
 
 DarkModeResult DarkModeImageClassifier::ClassifyUsingDecisionTree(
-    const DarkModeImageClassifier::Features& features) {
+    const DarkModeImageClassifier::Features& features) const {
   float low_color_count_threshold =
       kLowColorCountThreshold[features.is_colorful];
   float high_color_count_threshold =

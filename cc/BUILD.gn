@@ -279,6 +279,7 @@ cc_component("cc") {
     "tiles/picture_layer_tiling_set.h",
     "tiles/prioritized_tile.cc",
     "tiles/prioritized_tile.h",
+    "tiles/raster_dark_mode_filter.h",
     "tiles/raster_tile_priority_queue.cc",
     "tiles/raster_tile_priority_queue.h",
     "tiles/raster_tile_priority_queue_all.cc",
