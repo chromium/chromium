@@ -11,6 +11,11 @@ namespace features {
 const base::Feature kClosedTabCache{"ClosedTabCache",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Destroy profiles when their last browser window is closed, instead of when
+// the browser exits.
+const base::Feature kDestroyProfileOnBrowserClose{
+    "DestroyProfileOnBrowserClose", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables executing the browser commands sent by the NTP promos.
 const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

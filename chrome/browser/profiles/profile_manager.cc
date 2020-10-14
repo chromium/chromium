@@ -34,6 +34,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/account_manager/child_account_type_changed_user_data.h"
@@ -1457,6 +1458,14 @@ bool ProfileManager::AddProfile(std::unique_ptr<Profile> profile) {
   return true;
 }
 
+// static
+void ProfileManager::RemoveProfile(const base::FilePath& profile_path) {
+  TRACE_EVENT0("browser", "ProfileManager::RemoveProfile");
+  ProfileManager* pm = g_browser_process->profile_manager();
+  DCHECK(base::Contains(pm->profiles_info_, profile_path));
+  pm->profiles_info_.erase(profile_path);
+}
+
 Profile* ProfileManager::CreateAndInitializeProfile(
     const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::CreateAndInitializeProfile");
@@ -1870,6 +1879,22 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
 
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     CleanUpGuestProfile();
+
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
+      !profile->IsOffTheRecord() &&
+      !profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+    // TODO(crbug.com/88586): Add EarlyProfileCleanup support for Guest and
+    // Ephemeral profiles.
+
+    // TODO(crbug.com/88586): Make sure this works with Background Mode.
+
+    // Post a task to remove the Profile, so other OnBrowserClosed() hooks and
+    // the destructor for Browser can run without referencing a deleted Profile.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ProfileManager::RemoveProfile, profile->GetPath()));
+    return;
+  }
 
   base::FilePath path = profile->GetPath();
   if (IsProfileDirectoryMarkedForDeletion(path)) {

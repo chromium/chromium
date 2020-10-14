@@ -393,6 +393,10 @@ void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
   services_delegate_->RemovePasswordProtectionService(profile);
   services_delegate_->RemoveTelemetryService(profile);
   services_delegate_->RemoveSafeBrowsingNetworkContext(profile);
+
+  PrefService* pref_service = profile->GetPrefs();
+  DCHECK(pref_service);
+  prefs_map_.erase(pref_service);
 }
 
 void SafeBrowsingService::CreateServicesForProfile(Profile* profile) {

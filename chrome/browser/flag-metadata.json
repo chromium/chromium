@@ -804,6 +804,11 @@
     "expiry_milestone": 87
   },
   {
+    "name": "destroy-profile-on-browser-close",
+    "owners": [ "nicolaso" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "detect-target-embedding-lookalikes",
     "owners": [ "jdeblasio", "meacer" ],
     "expiry_milestone": 87

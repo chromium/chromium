@@ -836,6 +836,9 @@ extern const char kNewProfilePickerDescription[];
 extern const char kProfilesUIRevampName[];
 extern const char kProfilesUIRevampDescription[];
 
+extern const char kDestroyProfileOnBrowserCloseName[];
+extern const char kDestroyProfileOnBrowserCloseDescription[];
+
 extern const char kNewUsbBackendName[];
 extern const char kNewUsbBackendDescription[];
 

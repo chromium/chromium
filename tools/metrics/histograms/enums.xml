@@ -42627,6 +42627,7 @@ from previous Chrome versions.
   <int value="-980889204" label="SharingRenameDevices:enabled"/>
   <int value="-980317085" label="EnablePasswordsAccountStorage:disabled"/>
   <int value="-980260493" label="NTPSnippets:disabled"/>
+  <int value="-980054107" label="DestroyProfileOnBrowserClose:enabled"/>
   <int value="-979313250" label="enable-google-branded-context-menu"/>
   <int value="-979057409" label="enable-seccomp-filter-sandbox"/>
   <int value="-979034258" label="disable-ntp-other-sessions-menu"/>
@@ -43551,6 +43552,7 @@ from previous Chrome versions.
   <int value="-29507521" label="ContextualNudges:disabled"/>
   <int value="-28295905" label="AutofillEnableAccountWalletStorage:enabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
+  <int value="-24570936" label="DestroyProfileOnBrowserClose:disabled"/>
   <int value="-24217468" label="QuickAnswersTextAnnotator:enabled"/>
   <int value="-23804418"
       label="NTPArticleSuggestionsExpandableHeader:disabled"/>

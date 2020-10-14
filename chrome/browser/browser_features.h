@@ -18,6 +18,8 @@ namespace features {
 
 extern const base::Feature kClosedTabCache;
 
+extern const base::Feature kDestroyProfileOnBrowserClose;
+
 extern const base::Feature kPromoBrowserCommands;
 extern const char kPromoBrowserCommandIdParam[];
 

@@ -73,6 +73,12 @@ void SyncSessionDurationsMetricsRecorder::OnSessionEnded(
     return;
   }
 
+  if (session_length.is_zero()) {
+    // During Profile teardown, this method is called with a |session_length|
+    // of zero.
+    session_length = total_session_timer_->Elapsed();
+  }
+
   base::TimeDelta total_session_time = total_session_timer_->Elapsed();
   base::TimeDelta signin_session_time = signin_session_timer_->Elapsed();
   base::TimeDelta sync_account_session_time_ =

@@ -38,6 +38,14 @@ DesktopProfileSessionDurationsService::
     ~DesktopProfileSessionDurationsService() = default;
 
 void DesktopProfileSessionDurationsService::Shutdown() {
+  // The Profile is being destroyed, e.g. because the
+  // DestroyProfileOnBrowserClose flag is enabled. Recorders expect every call
+  // to OnSessionStarted() to have a corresponding OnSessionEnded().
+  //
+  // Use a |session_length| of zero, so each recorder can infer the duration
+  // based on their internal state.
+  OnSessionEnded(base::TimeDelta(), base::TimeTicks::Now());
+
   password_metrics_recorder_.reset();
   sync_metrics_recorder_.reset();
 }

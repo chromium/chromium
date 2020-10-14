@@ -59,6 +59,13 @@ void PasswordSessionDurationsMetricsRecorder::OnSessionEnded(
   // If there was no active session, just ignore this call.
   if (!total_session_timer_)
     return;
+
+  if (session_length.is_zero()) {
+    // During Profile teardown, this method is called with a |session_length|
+    // of zero.
+    session_length = total_session_timer_->Elapsed();
+  }
+
   DCHECK(user_state_session_timer_);
 
   // Record metrics for the just-ended session.

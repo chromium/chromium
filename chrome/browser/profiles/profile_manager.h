@@ -35,6 +35,10 @@ class ProfileAttributesStorage;
 class ProfileInfoCache;
 class ProfileManagerObserver;
 
+// Manages the lifecycle of Profile objects.
+//
+// Note that the Profile objects may be destroyed when their last browser window
+// is closed. The DestroyProfileOnBrowserClose flag controls this behavior.
 class ProfileManager : public content::NotificationObserver,
                        public Profile::Delegate {
  public:
@@ -311,6 +315,9 @@ class ProfileManager : public content::NotificationObserver,
   // The Profile should not already be managed by this ProfileManager.
   // Returns true if the profile was added, false otherwise.
   bool AddProfile(std::unique_ptr<Profile> profile);
+
+  // Removes the Profile at |profile_path| from the manager and destroys it.
+  static void RemoveProfile(const base::FilePath& profile_path);
 
   // Synchronously creates and returns a profile. This handles both the full
   // creation and adds it to the set managed by this ProfileManager. Returns

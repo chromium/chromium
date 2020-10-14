@@ -4915,6 +4915,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kProfilesUIRevamp)},
 #endif
 
+    {"destroy-profile-on-browser-close",
+     flag_descriptions::kDestroyProfileOnBrowserCloseName,
+     flag_descriptions::kDestroyProfileOnBrowserCloseDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kDestroyProfileOnBrowserClose)},
+
 #if defined(OS_CHROMEOS)
     {"enable-usbguard", flag_descriptions::kUsbguardName,
      flag_descriptions::kUsbguardDescription, kOsCrOS,

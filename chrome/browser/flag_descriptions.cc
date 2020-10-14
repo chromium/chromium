@@ -1417,6 +1417,12 @@ const char kProfilesUIRevampDescription[] =
     "Enables several profile-related features including a new signin flow, "
     "profile promo bubbles and a color picker in settings";
 
+const char kDestroyProfileOnBrowserCloseName[] =
+    "Destroy Profile on browser close";
+const char kDestroyProfileOnBrowserCloseDescription[] =
+    "Release memory and other resources when a Profile's last browser window "
+    "is closed, rather than when Chrome closes completely.";
+
 const char kNewUsbBackendName[] = "Enable new USB backend";
 const char kNewUsbBackendDescription[] =
     "Enables the new experimental USB backends for macOS and Windows";
