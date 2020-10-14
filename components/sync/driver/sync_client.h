@@ -11,7 +11,6 @@
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/data_type_controller.h"
-#include "components/sync/engine/model_safe_worker.h"
 
 class PrefService;
 
@@ -63,12 +62,6 @@ class SyncClient {
   virtual syncer::SyncInvalidationsService* GetSyncInvalidationsService() = 0;
   virtual TrustedVaultClient* GetTrustedVaultClient() = 0;
   virtual scoped_refptr<ExtensionsActivity> GetExtensionsActivity() = 0;
-
-  // Creates and returns a new ModelSafeWorker for the group, or null if one
-  // cannot be created.
-  // TODO(maxbogue): Move this inside SyncApiComponentFactory.
-  virtual scoped_refptr<ModelSafeWorker> CreateModelWorkerForGroup(
-      ModelSafeGroup group) = 0;
 
   // Returns the current SyncApiComponentFactory instance.
   virtual SyncApiComponentFactory* GetSyncApiComponentFactory() = 0;

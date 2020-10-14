@@ -27,7 +27,6 @@
 #include "components/sync/engine_impl/backoff_delay_provider.h"
 #include "components/sync/engine_impl/cycle/test_util.h"
 #include "components/sync/test/callback_counter.h"
-#include "components/sync/test/engine/fake_model_worker.h"
 #include "components/sync/test/engine/mock_connection_manager.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
@@ -128,17 +127,11 @@ class SyncSchedulerImplTest : public testing::Test {
     delay_ = nullptr;
     extensions_activity_ = new ExtensionsActivity();
 
-    workers_.clear();
-    workers_.push_back(
-        base::MakeRefCounted<FakeModelWorker>(GROUP_NON_BLOCKING));
-    workers_.push_back(base::MakeRefCounted<FakeModelWorker>(GROUP_PASSIVE));
-
     connection_ = std::make_unique<MockConnectionManager>();
     connection_->SetServerReachable();
 
     model_type_registry_ = std::make_unique<ModelTypeRegistry>(
-        workers_, &mock_nudge_handler_, &cancelation_signal_,
-        &encryption_handler_);
+        &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
     model_type_registry_->ConnectDataType(
         HISTORY_DELETE_DIRECTIVES,
         MakeFakeActivationResponse(HISTORY_DELETE_DIRECTIVES));
@@ -335,7 +328,6 @@ class SyncSchedulerImplTest : public testing::Test {
   MockNudgeHandler mock_nudge_handler_;
   MockSyncer* syncer_;
   MockDelayProvider* delay_;
-  std::vector<scoped_refptr<ModelSafeWorker>> workers_;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
   base::WeakPtrFactory<SyncSchedulerImplTest> weak_ptr_factory_{this};
 };

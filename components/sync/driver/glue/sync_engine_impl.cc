@@ -169,8 +169,6 @@ void SyncEngineImpl::StopSyncingForShutdown() {
   // Immediately stop sending messages to the host.
   host_ = nullptr;
 
-  registrar_->RequestWorkerStopOnUIThread();
-
   backend_->ShutdownOnUIThread();
 }
 

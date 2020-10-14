@@ -34,7 +34,6 @@
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/engine/passive_model_worker.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -250,17 +249,6 @@ IOSChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     default:
       NOTREACHED();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
-  }
-}
-
-scoped_refptr<syncer::ModelSafeWorker>
-IOSChromeSyncClient::CreateModelWorkerForGroup(syncer::ModelSafeGroup group) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  switch (group) {
-    case syncer::GROUP_PASSIVE:
-      return new syncer::PassiveModelWorker();
-    default:
-      return nullptr;
   }
 }
 

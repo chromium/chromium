@@ -12,13 +12,8 @@
 
 namespace syncer {
 
-SyncBackendRegistrar::SyncBackendRegistrar(
-    const std::string& name,
-    ModelSafeWorkerFactory worker_factory)
-    : name_(name) {
-  DCHECK(!worker_factory.is_null());
-  MaybeAddWorker(worker_factory, GROUP_PASSIVE);
-}
+SyncBackendRegistrar::SyncBackendRegistrar(const std::string& name)
+    : name_(name) {}
 
 void SyncBackendRegistrar::RegisterDataType(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -109,23 +104,6 @@ ModelTypeSet SyncBackendRegistrar::GetLastConfiguredTypes() const {
   return last_configured_types_;
 }
 
-void SyncBackendRegistrar::RequestWorkerStopOnUIThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock lock(lock_);
-  for (const auto& kv : workers_) {
-    kv.second->RequestStop();
-  }
-}
-
-void SyncBackendRegistrar::GetWorkers(
-    std::vector<scoped_refptr<ModelSafeWorker>>* out) {
-  base::AutoLock lock(lock_);
-  out->clear();
-  for (const auto& kv : workers_) {
-    out->push_back(kv.second.get());
-  }
-}
-
 ModelTypeSet SyncBackendRegistrar::GetTypesWithRoutingInfo() const {
   base::AutoLock lock(lock_);
   return GetTypesWithRoutingInfoNoLock();
@@ -139,21 +117,11 @@ ModelTypeSet SyncBackendRegistrar::GetTypesWithRoutingInfoNoLock() const {
   return types;
 }
 
-SyncBackendRegistrar::~SyncBackendRegistrar() {
-}
-
-void SyncBackendRegistrar::MaybeAddWorker(ModelSafeWorkerFactory worker_factory,
-                                          ModelSafeGroup group) {
-  scoped_refptr<ModelSafeWorker> worker = worker_factory.Run(group);
-  if (worker) {
-    DCHECK(workers_.find(group) == workers_.end());
-    workers_[group] = worker;
-  }
-}
-
-ModelSafeGroup SyncBackendRegistrar::GetInitialGroupForType(
-    ModelType type) const {
+SyncBackendRegistrar::ModelSafeGroup
+SyncBackendRegistrar::GetInitialGroupForType(ModelType type) const {
   return registered_types_.Has(type) ? GROUP_NON_BLOCKING : GROUP_PASSIVE;
 }
+
+SyncBackendRegistrar::~SyncBackendRegistrar() {}
 
 }  // namespace syncer

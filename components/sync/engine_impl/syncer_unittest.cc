@@ -31,7 +31,6 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine_impl/backoff_delay_provider.h"
 #include "components/sync/engine_impl/cycle/mock_debug_info_getter.h"
 #include "components/sync/engine_impl/cycle/sync_cycle_context.h"
@@ -41,7 +40,6 @@
 #include "components/sync/nigori/keystore_keys_handler.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
-#include "components/sync/test/engine/fake_model_worker.h"
 #include "components/sync/test/engine/mock_connection_manager.h"
 #include "components/sync/test/engine/mock_model_type_processor.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"
@@ -154,14 +152,11 @@ class SyncerTest : public testing::Test,
   void SetUp() override {
     mock_server_ = std::make_unique<MockConnectionManager>();
     debug_info_getter_ = std::make_unique<MockDebugInfoGetter>();
-    workers_.push_back(scoped_refptr<ModelSafeWorker>(
-        new FakeModelWorker(GROUP_NON_BLOCKING)));
     std::vector<SyncEngineEventListener*> listeners;
     listeners.push_back(this);
 
     model_type_registry_ = std::make_unique<ModelTypeRegistry>(
-        workers_, &mock_nudge_handler_, &cancelation_signal_,
-        &encryption_handler_);
+        &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
 
     EnableDatatype(BOOKMARKS);
     EnableDatatype(EXTENSIONS);
@@ -258,7 +253,6 @@ class SyncerTest : public testing::Test,
   base::TimeDelta last_sessions_commit_delay_;
   base::TimeDelta last_bookmarks_commit_delay_;
   int last_client_invalidation_hint_buffer_size_;
-  std::vector<scoped_refptr<ModelSafeWorker>> workers_;
 
   ModelTypeSet enabled_datatypes_;
   NudgeTracker nudge_tracker_;

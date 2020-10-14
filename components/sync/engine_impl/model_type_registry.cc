@@ -51,19 +51,12 @@ void CommitQueueProxy::NudgeForCommit() {
 
 }  // namespace
 
-ModelTypeRegistry::ModelTypeRegistry(
-    const std::vector<scoped_refptr<ModelSafeWorker>>& workers,
-    NudgeHandler* nudge_handler,
-    CancelationSignal* cancelation_signal,
-    KeystoreKeysHandler* keystore_keys_handler)
+ModelTypeRegistry::ModelTypeRegistry(NudgeHandler* nudge_handler,
+                                     CancelationSignal* cancelation_signal,
+                                     KeystoreKeysHandler* keystore_keys_handler)
     : nudge_handler_(nudge_handler),
       cancelation_signal_(cancelation_signal),
-      keystore_keys_handler_(keystore_keys_handler) {
-  for (size_t i = 0u; i < workers.size(); ++i) {
-    workers_map_.insert(
-        std::make_pair(workers[i]->GetModelSafeGroup(), workers[i]));
-  }
-}
+      keystore_keys_handler_(keystore_keys_handler) {}
 
 ModelTypeRegistry::~ModelTypeRegistry() = default;
 

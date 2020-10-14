@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/model_safe_worker.h"
 
 namespace syncer {
+
 struct DataTypeActivationResponse;
 
 // An interface into the core parts of sync for model types. By adding/removing

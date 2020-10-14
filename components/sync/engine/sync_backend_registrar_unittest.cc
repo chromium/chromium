@@ -10,7 +10,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "components/sync/engine/passive_model_worker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,14 +26,10 @@ class SyncBackendRegistrarTest : public testing::Test {
   void SetUp() override {
     db_thread_.StartAndWaitForTesting();
     sync_thread_.StartAndWaitForTesting();
-    registrar_ = std::make_unique<SyncBackendRegistrar>(
-        "test", base::BindRepeating(
-                    &SyncBackendRegistrarTest::CreateModelWorkerForGroup,
-                    base::Unretained(this)));
+    registrar_ = std::make_unique<SyncBackendRegistrar>("test");
   }
 
   void TearDown() override {
-    registrar_->RequestWorkerStopOnUIThread();
     sync_thread_.task_runner()->DeleteSoon(FROM_HERE, registrar_.release());
     sync_thread_.FlushForTesting();
   }
@@ -44,39 +39,21 @@ class SyncBackendRegistrarTest : public testing::Test {
               registrar_->GetTypesWithRoutingInfo());
   }
 
-  size_t GetWorkersSize() {
-    std::vector<scoped_refptr<ModelSafeWorker>> workers;
-    registrar_->GetWorkers(&workers);
-    return workers.size();
-  }
-
   SyncBackendRegistrar* registrar() { return registrar_.get(); }
   scoped_refptr<base::SequencedTaskRunner> db_task_runner() {
     return db_thread_.task_runner();
   }
 
  private:
-  scoped_refptr<ModelSafeWorker> CreateModelWorkerForGroup(
-      ModelSafeGroup group) {
-    switch (group) {
-      case GROUP_PASSIVE:
-        return new PassiveModelWorker();
-      default:
-        return nullptr;
-    }
-  }
-
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::Thread db_thread_;
   base::Thread sync_thread_;
-
   std::unique_ptr<SyncBackendRegistrar> registrar_;
 };
 
 TEST_F(SyncBackendRegistrarTest, ConstructorEmpty) {
   registrar()->SetInitialTypes(ModelTypeSet());
   EXPECT_FALSE(registrar()->IsNigoriEnabled());
-  EXPECT_EQ(1u, GetWorkersSize());
   ExpectRoutingInfo(ModelTypeSet());
 }
 
@@ -84,9 +61,8 @@ TEST_F(SyncBackendRegistrarTest, ConstructorNonEmpty) {
   registrar()->RegisterDataType(BOOKMARKS);
   registrar()->SetInitialTypes(ModelTypeSet(BOOKMARKS, NIGORI));
   EXPECT_TRUE(registrar()->IsNigoriEnabled());
-  EXPECT_EQ(1u, GetWorkersSize());
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
-  // Bookmarks dropped because it is in ModelSafeGroup::GROUP_NON_BLOCKING.
+  // Bookmarks dropped because it's nonblocking.
   // Passwords dropped because of no password store.
   ExpectRoutingInfo({NIGORI});
 }
@@ -95,9 +71,8 @@ TEST_F(SyncBackendRegistrarTest, ConstructorNonEmptyReversedInitialization) {
   registrar()->SetInitialTypes(ModelTypeSet(BOOKMARKS, NIGORI));
   registrar()->RegisterDataType(BOOKMARKS);
   EXPECT_TRUE(registrar()->IsNigoriEnabled());
-  EXPECT_EQ(1u, GetWorkersSize());
   EXPECT_EQ(ModelTypeSet(NIGORI), registrar()->GetLastConfiguredTypes());
-  // Bookmarks dropped because it is in ModelSafeGroup::GROUP_NON_BLOCKING.
+  // Bookmarks dropped because it's nonblocking.
   // Passwords dropped because of no password store.
   ExpectRoutingInfo({NIGORI});
 }

@@ -15,7 +15,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine/model_type_connector.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine_impl/nudge_handler.h"
@@ -36,8 +35,7 @@ using CommitContributorMap = std::map<ModelType, CommitContributor*>;
 class ModelTypeRegistry : public ModelTypeConnector,
                           public SyncEncryptionHandler::Observer {
  public:
-  ModelTypeRegistry(const std::vector<scoped_refptr<ModelSafeWorker>>& workers,
-                    NudgeHandler* nudge_handler,
+  ModelTypeRegistry(NudgeHandler* nudge_handler,
                     CancelationSignal* cancelation_signal,
                     KeystoreKeysHandler* keystore_keys_handler);
   ~ModelTypeRegistry() override;
@@ -109,9 +107,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
 
   // Map of DebugInfoEmitters for sync data types. Does not own its contents.
   DataTypeDebugInfoEmitterMap data_type_debug_info_emitter_map_;
-
-  // The known ModelSafeWorkers.
-  std::map<ModelSafeGroup, scoped_refptr<ModelSafeWorker>> workers_map_;
 
   // A copy of the most recent cryptographer.
   std::unique_ptr<Cryptographer> cryptographer_;

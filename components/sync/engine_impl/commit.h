@@ -15,7 +15,6 @@
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/cycle/nudge_tracker.h"
 #include "components/sync/protocol/sync.pb.h"

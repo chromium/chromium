@@ -233,7 +233,6 @@ class FinancialPing;
 namespace syncer {
 class GetLocalChangesRequest;
 class HttpBridge;
-class ModelSafeWorker;
 }
 namespace ui {
 class CommandBufferClientImpl;
@@ -469,7 +468,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
       LaunchXdgUtilityScopedAllowBaseSyncPrimitives;
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
-  friend class syncer::ModelSafeWorker;
   friend class webrtc::DesktopConfigurationMonitor;
 
   // Usage that should be fixed:

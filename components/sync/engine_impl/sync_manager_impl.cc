@@ -179,7 +179,7 @@ void SyncManagerImpl::Init(InitArgs* args) {
   }
 
   model_type_registry_ = std::make_unique<ModelTypeRegistry>(
-      args->workers, this, args->cancelation_signal,
+      this, args->cancelation_signal,
       sync_encryption_handler_->GetKeystoreKeysHandler());
   sync_encryption_handler_->AddObserver(model_type_registry_.get());
 

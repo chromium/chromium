@@ -20,7 +20,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "content/public/test/browser_test.h"
 
 using passwords_helper::AddLogin;

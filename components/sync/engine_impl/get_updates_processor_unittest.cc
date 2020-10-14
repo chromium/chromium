@@ -18,7 +18,6 @@
 #include "components/sync/engine_impl/cycle/status_controller.h"
 #include "components/sync/engine_impl/get_updates_delegate.h"
 #include "components/sync/engine_impl/update_handler.h"
-#include "components/sync/test/engine/fake_model_worker.h"
 #include "components/sync/test/engine/mock_update_handler.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "testing/gtest/include/gtest/gtest.h"

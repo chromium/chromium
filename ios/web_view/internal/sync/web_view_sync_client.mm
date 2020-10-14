@@ -19,7 +19,6 @@
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/driver/sync_api_component_factory.h"
-#include "components/sync/engine/passive_model_worker.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_string.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -198,17 +197,6 @@ base::WeakPtr<syncer::ModelTypeControllerDelegate>
 WebViewSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
   NOTREACHED();
   return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
-}
-
-scoped_refptr<syncer::ModelSafeWorker>
-WebViewSyncClient::CreateModelWorkerForGroup(syncer::ModelSafeGroup group) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  switch (group) {
-    case syncer::GROUP_PASSIVE:
-      return new syncer::PassiveModelWorker();
-    default:
-      return nullptr;
-  }
 }
 
 syncer::SyncApiComponentFactory*

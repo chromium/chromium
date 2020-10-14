@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
-#include "components/sync/engine/model_safe_worker.h"
 
 namespace syncer {
 

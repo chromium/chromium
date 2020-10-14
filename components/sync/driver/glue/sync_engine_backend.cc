@@ -286,7 +286,6 @@ void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
   args.enable_local_sync_backend = params.enable_local_sync_backend;
   args.local_sync_backend_folder = params.local_sync_backend_folder;
   args.post_factory = std::move(params.http_factory_getter).Run();
-  registrar_->GetWorkers(&args.workers);
   args.encryption_observer_proxy = std::move(params.encryption_observer_proxy);
   args.extensions_activity = params.extensions_activity.get();
   args.authenticated_account_id = params.authenticated_account_id;

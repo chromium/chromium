@@ -55,8 +55,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
-  scoped_refptr<syncer::ModelSafeWorker> CreateModelWorkerForGroup(
-      syncer::ModelSafeGroup group) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
 

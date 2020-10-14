@@ -18,38 +18,31 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine/sync_manager.h"
 
 namespace syncer {
 
-// A class that keep track of the workers and routing info for the enabled sync
-// types.
+// A class that keep track of the routing info for the enabled sync types.
+// TODO(crbug.com/1138132): This class is a remainder from the old Directory
+// implementation and should be removed.
 class SyncBackendRegistrar {
  public:
-  using ModelSafeWorkerFactory =
-      base::RepeatingCallback<scoped_refptr<ModelSafeWorker>(ModelSafeGroup)>;
-
   // |name| is used for debugging. Must be created on the UI thread.
-  SyncBackendRegistrar(const std::string& name,
-                       ModelSafeWorkerFactory worker_factory);
+  explicit SyncBackendRegistrar(const std::string& name);
 
   // A SyncBackendRegistrar is owned by a SyncEngineImpl. It is destroyed by
   // SyncEngineImpl::Shutdown() which performs the following operations on the
   // UI thread:
   //
-  //   1) Call SyncBackendRegistrar::RequestWorkerStopOnUIThread().
-  //   2) Post a SyncEngineBackend::DoShutdown() task to the sync thread. This
+  //   1) Post a SyncEngineBackend::DoShutdown() task to the sync thread. This
   //      task destroys SyncManager which holds a SyncBackendRegistrar pointer.
-  //   3) Take ownership of the sync thread.
-  //   4) Post a task to delete the SyncBackendRegistrar on the sync thread.
+  //   2) Take ownership of the sync thread.
+  //   3) Post a task to delete the SyncBackendRegistrar on the sync thread.
   //      When this task runs, there are no remaining pointers to the
   //      SyncBackendRegistrar.
   ~SyncBackendRegistrar();
 
-  // Adds |type| to the set of registered types. These types are assigned to
-  // GROUP_NON_BLOCKING model safe group and will be treated differently in
-  // ModelTypeRegistry.
+  // Adds |type| to the set of registered types.
   void RegisterDataType(ModelType type);
 
   // Informs the SyncBackendRegistrar of the currently enabled set of types.
@@ -79,23 +72,17 @@ class SyncBackendRegistrar {
   // to DeactiveDataType being called separately from ConfigureDataTypes.
   ModelTypeSet GetLastConfiguredTypes() const;
 
-  // Must be called from the UI thread. (See destructor comment.)
-  void RequestWorkerStopOnUIThread();
-
-  void GetWorkers(std::vector<scoped_refptr<ModelSafeWorker>>* out);
-
   // Returns the set of currently enabled types.
   ModelTypeSet GetTypesWithRoutingInfo() const;
 
  private:
+  // Legacy concept of model-safe groups, no longer relevant as of 2020.
+  // TODO(crbug.com/1138132): Delete this enum.
+  enum ModelSafeGroup { GROUP_PASSIVE, GROUP_NON_BLOCKING };
+
   // Same as GetTypesWithRoutingInfo() but callers are responsible for holding
   // |lock_|.
   ModelTypeSet GetTypesWithRoutingInfoNoLock() const;
-
-  // Add a worker for |group| to the worker map if one is successfully created
-  // by |worker_factory|.
-  void MaybeAddWorker(ModelSafeWorkerFactory worker_factory,
-                      ModelSafeGroup group);
 
   // Returns model safe group that should be assigned to type when it is first
   // configured (before activation).
@@ -109,9 +96,6 @@ class SyncBackendRegistrar {
 
   // Protects all variables below.
   mutable base::Lock lock_;
-
-  // Workers created by this SyncBackendRegistrar.
-  std::map<ModelSafeGroup, scoped_refptr<ModelSafeWorker>> workers_;
 
   // Maps ModelType to ModelSafeGroup.
   std::map<ModelType, ModelSafeGroup> routing_info_;

@@ -77,7 +77,6 @@
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
-#include "components/sync/engine/passive_model_worker.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/model_impl/forwarding_model_type_controller_delegate.h"
@@ -688,17 +687,6 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     default:
       NOTREACHED();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
-  }
-}
-
-scoped_refptr<syncer::ModelSafeWorker>
-ChromeSyncClient::CreateModelWorkerForGroup(syncer::ModelSafeGroup group) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  switch (group) {
-    case syncer::GROUP_PASSIVE:
-      return new syncer::PassiveModelWorker();
-    default:
-      return nullptr;
   }
 }
 

@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine_impl/commit.h"
 #include "components/sync/engine_impl/model_type_registry.h"
 

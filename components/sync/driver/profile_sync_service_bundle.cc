@@ -10,7 +10,6 @@
 #include "base/bind_helpers.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/engine/passive_model_worker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -39,9 +38,6 @@ ProfileSyncServiceBundle::CreateSyncClientMock() {
       .WillByDefault(Return(&component_factory_));
   ON_CALL(*sync_client, GetSyncInvalidationsService())
       .WillByDefault(Return(sync_invalidations_service()));
-  // Used by control types.
-  ON_CALL(*sync_client, CreateModelWorkerForGroup(GROUP_PASSIVE))
-      .WillByDefault(Return(base::MakeRefCounted<PassiveModelWorker>()));
   return std::move(sync_client);
 }
 

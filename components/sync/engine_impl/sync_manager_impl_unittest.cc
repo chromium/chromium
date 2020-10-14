@@ -28,7 +28,6 @@
 #include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/engine_util.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
 #include "components/sync/engine/polling_constants.h"
@@ -45,7 +44,6 @@
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/callback_counter.h"
-#include "components/sync/test/engine/fake_model_worker.h"
 #include "components/sync/test/engine/fake_sync_scheduler.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -159,14 +157,6 @@ class SyncManagerTest : public testing::Test {
 
     EXPECT_FALSE(js_backend_.IsInitialized());
 
-    std::vector<scoped_refptr<ModelSafeWorker>> workers;
-
-    // This works only because all routing info types are GROUP_PASSIVE.
-    // If we had types in other groups, we would need additional workers
-    // to support them.
-    scoped_refptr<ModelSafeWorker> worker = new FakeModelWorker(GROUP_PASSIVE);
-    workers.push_back(worker);
-
     auto encryption_observer =
         std::make_unique<StrictMock<SyncEncryptionHandlerObserverMock>>();
     encryption_observer_ = encryption_observer.get();
@@ -174,7 +164,6 @@ class SyncManagerTest : public testing::Test {
     SyncManager::InitArgs args;
     args.service_url = GURL("https://example.com/");
     args.post_factory = std::make_unique<TestHttpPostProviderFactory>();
-    args.workers = workers;
     args.encryption_observer_proxy = std::move(encryption_observer);
     args.extensions_activity = extensions_activity_.get();
     if (!enable_local_sync_backend)

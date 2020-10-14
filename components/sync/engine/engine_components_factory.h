@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "components/sync/engine/model_safe_worker.h"
 
 namespace syncer {
 

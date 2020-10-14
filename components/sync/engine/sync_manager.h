@@ -24,7 +24,6 @@
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine/model_type_connector.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/sync_credentials.h"
@@ -105,8 +104,6 @@ class SyncManager {
 
     // Used to communicate with the sync server.
     std::unique_ptr<HttpPostProviderFactory> post_factory;
-
-    std::vector<scoped_refptr<ModelSafeWorker>> workers;
 
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 

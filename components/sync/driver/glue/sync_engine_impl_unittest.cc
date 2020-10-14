@@ -34,9 +34,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/fake_sync_manager.h"
-#include "components/sync/engine/model_safe_worker.h"
 #include "components/sync/engine/net/http_bridge.h"
-#include "components/sync/engine/passive_model_worker.h"
 #include "components/sync/engine/sync_engine_host_stub.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/invalidations/mock_sync_invalidations_service.h"
@@ -62,15 +60,6 @@ namespace {
 
 static const base::FilePath::CharType kTestSyncDir[] =
     FILE_PATH_LITERAL("sync-test");
-
-scoped_refptr<ModelSafeWorker> CreateModelWorkerForGroup(ModelSafeGroup group) {
-  switch (group) {
-    case GROUP_PASSIVE:
-      return new PassiveModelWorker();
-    default:
-      return nullptr;
-  }
-}
 
 class TestSyncEngineHost : public SyncEngineHostStub {
  public:
@@ -230,8 +219,7 @@ class SyncEngineImplTest : public testing::Test {
 
     SyncEngine::InitParams params;
     params.host = &host_;
-    params.registrar = std::make_unique<SyncBackendRegistrar>(
-        std::string(), base::BindRepeating(&CreateModelWorkerForGroup));
+    params.registrar = std::make_unique<SyncBackendRegistrar>(std::string());
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
