@@ -156,9 +156,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                         aura::Window* gained_capture) override;
 
   // views::WidgetDelegate:
-  bool CanResize() const override;
-  bool CanMaximize() const override;
-  bool CanMinimize() const override;
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
   void WindowClosing() override;
   views::Widget* GetWidget() override;
@@ -242,6 +239,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void StartCapture();
 
   const gfx::Rect& geometry() const { return geometry_; }
+  aura::Window* parent() const { return parent_; }
 
   // Install custom window targeter. Used to restore window targeter.
   void InstallCustomWindowTargeter();
@@ -253,8 +251,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   virtual void OnPostWidgetCommit();
 
+  void SetParentInternal(aura::Window* window);
+  void SetContainerInternal(int container);
+
   views::Widget* widget_ = nullptr;
-  aura::Window* parent_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;
 
@@ -291,6 +291,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   void CommitWidget();
 
+  aura::Window* parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
   bool has_frame_colors_ = false;

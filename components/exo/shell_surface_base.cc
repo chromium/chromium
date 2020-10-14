@@ -323,6 +323,9 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
   host_window()->Show();
   set_owned_by_client();
 
+  SetCanMinimize(can_minimize_);
+  SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));
+  SetCanResize(true);
   SetShowTitle(false);
 }
 
@@ -483,8 +486,7 @@ void ShellSurfaceBase::SetActivatable(bool activatable) {
 
 void ShellSurfaceBase::SetContainer(int container) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetContainer", "container", container);
-
-  container_ = container;
+  SetContainerInternal(container);
 }
 
 void ShellSurfaceBase::SetMaximumSize(const gfx::Size& size) {
@@ -513,10 +515,12 @@ void ShellSurfaceBase::SetCanMinimize(bool can_minimize) {
                can_minimize);
 
   can_minimize_ = can_minimize;
+  WidgetDelegate::SetCanMinimize(!parent_ && can_minimize_);
 }
 
 void ShellSurfaceBase::DisableMovement() {
   movement_disabled_ = true;
+  SetCanResize(false);
 
   if (widget_)
     widget_->set_movement_disabled(true);
@@ -677,28 +681,6 @@ void ShellSurfaceBase::OnSurfaceDestroying(Surface* surface) {
 ////////////////////////////////////////////////////////////////////////////////
 // views::WidgetDelegate overrides:
 
-bool ShellSurfaceBase::CanResize() const {
-  if (movement_disabled_)
-    return false;
-  // The shell surface is resizable by default when min/max size is empty,
-  // othersize it's resizable when min size != max size.
-  return minimum_size_.IsEmpty() || minimum_size_ != maximum_size_;
-}
-
-bool ShellSurfaceBase::CanMaximize() const {
-  // Shell surfaces in system modal container cannot be maximized.
-  if (!ash::desks_util::IsDeskContainerId(container_))
-    return false;
-
-  // Non-transient shell surfaces can be maximized.
-  return !parent_;
-}
-
-bool ShellSurfaceBase::CanMinimize() const {
-  // Non-transient shell surfaces can be minimized.
-  return !parent_ && can_minimize_;
-}
-
 bool ShellSurfaceBase::OnCloseRequested(
     views::Widget::ClosedReason close_reason) {
   if (!pre_close_callback_.is_null())
@@ -834,12 +816,8 @@ void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 // aura::WindowObserver overrides:
 
 void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
-  if (window == parent_) {
-    parent_ = nullptr;
-    // |parent_| being set to null effects the ability to maximize the window.
-    if (widget_)
-      widget_->OnSizeConstraintsChanged();
-  }
+  if (window == parent_)
+    SetParentInternal(nullptr);
   window->RemoveObserver(this);
 }
 
@@ -903,7 +881,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     // override redirect is used for menu, tooltips etc, which should be placed
     // above normal windows, but below lock screen. Specify the container here
     // to avoid using parent_ in params.parent.
-    container_ = ash::kShellWindowId_ShelfBubbleContainer;
+    SetContainerInternal(ash::kShellWindowId_ShelfBubbleContainer);
     // X11 override redirect should not be activatable.
     activatable_ = false;
     DisableMovement();
@@ -1140,6 +1118,23 @@ void ShellSurfaceBase::OnPostWidgetCommit() {
   shadow_bounds_changed_ = false;
 }
 
+void ShellSurfaceBase::SetContainerInternal(int container) {
+  container_ = container;
+  WidgetDelegate::SetCanMaximize(
+      !parent_ && ash::desks_util::IsDeskContainerId(container_));
+  if (widget_)
+    widget_->OnSizeConstraintsChanged();
+}
+
+void ShellSurfaceBase::SetParentInternal(aura::Window* parent) {
+  parent_ = parent;
+  WidgetDelegate::SetCanMinimize(!parent_ && can_minimize_);
+  WidgetDelegate::SetCanMaximize(
+      !parent_ && ash::desks_util::IsDeskContainerId(container_));
+  if (widget_)
+    widget_->OnSizeConstraintsChanged();
+}
+
 void ShellSurfaceBase::CommitWidget() {
   // Apply new window geometry.
   geometry_ = pending_geometry_;
@@ -1150,6 +1145,8 @@ void ShellSurfaceBase::CommitWidget() {
                                  maximum_size_ != pending_maximum_size_;
   minimum_size_ = pending_minimum_size_;
   maximum_size_ = pending_maximum_size_;
+  SetCanResize(!movement_disabled_ &&
+               (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_));
 
   if (!widget_)
     return;

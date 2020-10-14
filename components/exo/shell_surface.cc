@@ -501,32 +501,28 @@ bool ShellSurface::OnPreWidgetCommit() {
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurface, private:
 
-void ShellSurface::SetParentWindow(aura::Window* parent) {
-  if (parent_) {
-    parent_->RemoveObserver(this);
+void ShellSurface::SetParentWindow(aura::Window* new_parent) {
+  if (parent()) {
+    parent()->RemoveObserver(this);
     if (widget_) {
       aura::Window* child_window = widget_->GetNativeWindow();
       wm::TransientWindowManager::GetOrCreate(child_window)
           ->set_parent_controls_visibility(false);
-      wm::RemoveTransientChild(parent_, child_window);
+      wm::RemoveTransientChild(parent(), child_window);
     }
   }
-  parent_ = parent;
-  if (parent_) {
-    parent_->AddObserver(this);
+  SetParentInternal(new_parent);
+  if (parent()) {
+    parent()->AddObserver(this);
     MaybeMakeTransient();
   }
-
-  // If |parent_| is set effects the ability to maximize the window.
-  if (widget_)
-    widget_->OnSizeConstraintsChanged();
 }
 
 void ShellSurface::MaybeMakeTransient() {
-  if (!parent_ || !widget_)
+  if (!parent() || !widget_)
     return;
   aura::Window* child_window = widget_->GetNativeWindow();
-  wm::AddTransientChild(parent_, child_window);
+  wm::AddTransientChild(parent(), child_window);
   // In the case of activatable non-popups, we also want the parent to control
   // the child's visibility.
   if (!widget_->is_top_level() || !widget_->CanActivate())
