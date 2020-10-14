@@ -126,8 +126,8 @@ DeferredUnmap PartitionPage<thread_safe>::FreeSlowPath() {
       bucket->SetNewActivePage();
     PA_DCHECK(bucket->active_pages_head != this);
 
-    set_raw_size(0);
-    PA_DCHECK(!get_raw_size());
+    if (CanStoreRawSize())
+      SetRawSize(0);
 
     PartitionRegisterEmptyPage(this);
   } else {

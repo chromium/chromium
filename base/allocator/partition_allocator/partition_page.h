@@ -123,29 +123,25 @@ struct PartitionPage {
   ALWAYS_INLINE static PartitionPage* FromPointerNoAlignmentCheck(void* ptr);
   ALWAYS_INLINE static PartitionPage* FromPointer(void* ptr);
 
+  // Checks if it is feasible to store raw_size.
+  ALWAYS_INLINE bool CanStoreRawSize() const;
+  // The caller is responsible for ensuring that raw_size can be stored before
+  // calling Set/GetRawSize.
+  ALWAYS_INLINE void SetRawSize(size_t raw_size);
+  ALWAYS_INLINE size_t GetRawSize() const;
+
   // Returns size of the region used within a slot. The used region comprises
   // of actual allocated data, extras and possibly empty space.
   ALWAYS_INLINE size_t GetUtilizedSlotSize() const {
     // The returned size can be:
     // - The slot size for small buckets.
     // - Exact needed size to satisfy allocation (incl. extras), for large
-    //   buckets and direct-mapped allocations (see the comment in
-    //   get_raw_size_ptr() for more info).
-    size_t result = bucket->slot_size;
-    if (UNLIKELY(get_raw_size_ptr()))  // has raw size.
-      result = get_raw_size();
-
-    return result;
+    //   buckets and direct-mapped allocations (see also the comment in
+    //   CanStoreRawSize() for more info).
+    if (LIKELY(!CanStoreRawSize()))
+      return bucket->slot_size;
+    return GetRawSize();
   }
-
-  ALWAYS_INLINE const size_t* get_raw_size_ptr() const;
-  ALWAYS_INLINE size_t* get_raw_size_ptr() {
-    return const_cast<size_t*>(
-        const_cast<const PartitionPage*>(this)->get_raw_size_ptr());
-  }
-
-  ALWAYS_INLINE size_t get_raw_size() const;
-  ALWAYS_INLINE void set_raw_size(size_t size);
 
   ALWAYS_INLINE void Reset();
 
@@ -270,29 +266,39 @@ PartitionPage<thread_safe>::FromPointer(void* ptr) {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE const size_t* PartitionPage<thread_safe>::get_raw_size_ptr()
-    const {
-  // For direct-map as well as single-slot buckets which span more than
-  // |kMaxPartitionPagesPerSlotSpan| partition pages, we have some spare
-  // metadata space to store the raw size needed to satisfy the allocation
-  // (requested size + extras). We can use this to report better statistics.
+ALWAYS_INLINE bool PartitionPage<thread_safe>::CanStoreRawSize() const {
+  // Raw size is the size needed to satisfy the allocation (requested size +
+  // extras). If available, it can be used to report better statistics or to
+  // bring protective cookie closer to the allocated memory.
+  //
+  // For direct-map as well as single-slot slot spans (recognized by checking
+  // against |kMaxPartitionPagesPerSlotSpan|), we have some spare metadata space
+  // in subsequent PartitionPage to store the raw size. It isn't only metadata
+  // space though, slot spans that have more than one slot can't have raw size
+  // stored, because we wouldn't know which slot it applies to.
   if (LIKELY(bucket->slot_size <=
              MaxSystemPagesPerSlotSpan() * SystemPageSize()))
-    return nullptr;
+    return false;
 
   PA_DCHECK((bucket->slot_size % SystemPageSize()) == 0);
   PA_DCHECK(bucket->is_direct_mapped() || bucket->get_slots_per_span() == 1);
 
-  const PartitionPage* the_next_page = this + 1;
-  return reinterpret_cast<const size_t*>(&the_next_page->freelist_head);
+  return true;
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE size_t PartitionPage<thread_safe>::get_raw_size() const {
-  const size_t* ptr = get_raw_size_ptr();
-  if (UNLIKELY(ptr != nullptr))
-    return *ptr;
-  return 0;
+ALWAYS_INLINE void PartitionPage<thread_safe>::SetRawSize(size_t raw_size) {
+  PA_DCHECK(CanStoreRawSize());
+  PartitionPage* the_next_page = this + 1;
+  the_next_page->freelist_head =
+      reinterpret_cast<PartitionFreelistEntry*>(raw_size);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE size_t PartitionPage<thread_safe>::GetRawSize() const {
+  PA_DCHECK(CanStoreRawSize());
+  const PartitionPage* the_next_page = this + 1;
+  return reinterpret_cast<size_t>(the_next_page->freelist_head);
 }
 
 template <bool thread_safe>
@@ -316,8 +322,8 @@ ALWAYS_INLINE DeferredUnmap PartitionPage<thread_safe>::Free(void* ptr) {
     return FreeSlowPath();
   } else {
     // All single-slot allocations must go through the slow path to
-    // correctly update the size metadata.
-    PA_DCHECK(get_raw_size() == 0);
+    // correctly update the raw size.
+    PA_DCHECK(!CanStoreRawSize());
   }
   return {};
 }
@@ -359,13 +365,6 @@ ALWAYS_INLINE bool PartitionPage<thread_safe>::is_decommitted() const {
     PA_DCHECK(empty_cache_index == -1);
   }
   return ret;
-}
-
-template <bool thread_safe>
-ALWAYS_INLINE void PartitionPage<thread_safe>::set_raw_size(size_t size) {
-  size_t* raw_size_ptr = get_raw_size_ptr();
-  if (UNLIKELY(raw_size_ptr != nullptr))
-    *raw_size_ptr = size;
 }
 
 template <bool thread_safe>

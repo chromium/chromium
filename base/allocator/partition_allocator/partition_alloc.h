@@ -394,7 +394,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
 
     // All large allocations must go through the slow path to correctly update
     // the size metadata.
-    PA_DCHECK(!page->get_raw_size_ptr());  // doesn't have raw size
+    PA_DCHECK(!page->CanStoreRawSize());
     internal::PartitionFreelistEntry* new_head =
         internal::EncodedPartitionFreelistEntry::Decode(
             page->freelist_head->next);
@@ -816,7 +816,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       Page* page = Page::FromPointerNoAlignmentCheck(ret);
       // All large allocations must go through the RawAlloc path to correctly
       // set |utilized_slot_size|.
-      PA_DCHECK(!page->get_raw_size_ptr());  // doesn't have raw size
+      PA_DCHECK(!page->CanStoreRawSize());
       PA_DCHECK(IsValidPage(page));
       PA_DCHECK(page->bucket == &buckets[bucket_index]);
     }

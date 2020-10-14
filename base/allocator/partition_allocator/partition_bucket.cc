@@ -665,7 +665,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 
   PA_DCHECK(new_page_bucket != &root->sentinel_bucket);
   new_page_bucket->active_pages_head = new_page;
-  new_page->set_raw_size(raw_size);
+  if (new_page->CanStoreRawSize())
+    new_page->SetRawSize(raw_size);
 
   // If we found an active page with free slots, or an empty page, we have a
   // usable freelist head.

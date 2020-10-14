@@ -397,9 +397,7 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
   }
 #endif
 
-  page->set_raw_size(raw_size);
-  PA_DCHECK(page->get_raw_size() == raw_size);
-
+  page->SetRawSize(raw_size);
   page->bucket->slot_size = new_slot_size;
   return true;
 }
@@ -473,16 +471,19 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       // Trying to allocate a block of size |new_size| would give us a block of
       // the same size as the one we've already got, so re-use the allocation
       // after updating statistics (and cookies, if present).
-      size_t new_raw_size =
-          internal::PartitionSizeAdjustAdd(allow_extras, new_size);
-      page->set_raw_size(new_raw_size);
+      if (page->CanStoreRawSize()) {
+        size_t new_raw_size =
+            internal::PartitionSizeAdjustAdd(allow_extras, new_size);
+        page->SetRawSize(new_raw_size);
 #if DCHECK_IS_ON()
-      // Write a new trailing cookie when it is possible to keep track of
-      // |new_size| via the raw size pointer.
-      if (page->get_raw_size_ptr() && allow_extras) {
-        internal::PartitionCookieWriteValue(static_cast<char*>(ptr) + new_size);
-      }
+        // Write a new trailing cookie only when it is possible to keep track
+        // raw size (otherwise we wouldn't know where to look for it later).
+        if (allow_extras) {
+          internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
+                                              new_size);
+        }
 #endif
+      }
       return ptr;
     }
   }
@@ -517,9 +518,9 @@ static size_t PartitionPurgePage(internal::PartitionPage<thread_safe>* page,
   size_t bucket_num_slots = bucket->get_slots_per_span();
   size_t discardable_bytes = 0;
 
-  size_t raw_size = page->get_raw_size();
-  if (raw_size) {
-    uint32_t used_bytes = static_cast<uint32_t>(RoundUpToSystemPage(raw_size));
+  if (page->CanStoreRawSize()) {
+    uint32_t used_bytes =
+        static_cast<uint32_t>(RoundUpToSystemPage(page->GetRawSize()));
     discardable_bytes = bucket->slot_size - used_bytes;
     if (discardable_bytes && discard) {
       char* ptr = reinterpret_cast<char*>(
@@ -712,9 +713,8 @@ static void PartitionDumpPageStats(PartitionBucketMemoryStats* stats_out,
 
   stats_out->discardable_bytes += PartitionPurgePage(page, false);
 
-  size_t raw_size = page->get_raw_size();
-  if (raw_size) {
-    stats_out->active_bytes += static_cast<uint32_t>(raw_size);
+  if (page->CanStoreRawSize()) {
+    stats_out->active_bytes += static_cast<uint32_t>(page->GetRawSize());
   } else {
     stats_out->active_bytes +=
         (page->num_allocated_slots * stats_out->bucket_slot_size);
