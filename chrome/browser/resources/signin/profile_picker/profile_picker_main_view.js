@@ -113,6 +113,10 @@ Polymer({
    * @private
    */
   onAskOnStartupChangedByUser_() {
+    if (this.hideAskOnStartup_) {
+      return;
+    }
+
     this.manageProfilesBrowserProxy_.askOnStartupChanged(this.askOnStartup_);
   },
 
