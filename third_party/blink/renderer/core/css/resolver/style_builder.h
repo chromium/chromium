@@ -39,7 +39,7 @@
 namespace blink {
 
 class CSSPropertyName;
-class CSSValue;
+class ScopedCSSValue;
 class StyleResolverState;
 
 class CORE_EXPORT StyleBuilder {
@@ -52,7 +52,7 @@ class CORE_EXPORT StyleBuilder {
   // CustomProperty instance is created to carry out the application.
   static void ApplyProperty(const CSSPropertyName&,
                             StyleResolverState&,
-                            const CSSValue&);
+                            const ScopedCSSValue&);
 
   // Apply a property/value pair to the ComputedStyle.
   //
@@ -61,7 +61,7 @@ class CORE_EXPORT StyleBuilder {
   // instance. See Variable::IsStaticInstance.
   static void ApplyProperty(const CSSProperty&,
                             StyleResolverState&,
-                            const CSSValue&);
+                            const ScopedCSSValue&);
 };
 
 }  // namespace blink

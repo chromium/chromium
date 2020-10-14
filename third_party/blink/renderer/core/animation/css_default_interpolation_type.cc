@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 
 namespace blink {
 
@@ -48,7 +49,9 @@ void CSSDefaultInterpolationType::Apply(
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(),
       To<CSSInterpolationEnvironment>(environment).GetState(),
-      *To<CSSDefaultNonInterpolableValue>(non_interpolable_value)->CssValue());
+      ScopedCSSValue(*To<CSSDefaultNonInterpolableValue>(non_interpolable_value)
+                          ->CssValue(),
+                     nullptr));
 }
 
 }  // namespace blink

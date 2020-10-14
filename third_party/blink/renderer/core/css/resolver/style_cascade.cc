@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -78,6 +79,14 @@ const CSSValue* ValueAt(const MatchResult& result, uint32_t position) {
   const MatchedPropertiesVector& vector = result.GetMatchedProperties();
   const CSSPropertyValueSet* set = vector[matched_properties_index].properties;
   return &set->PropertyAt(declaration_index).Value();
+}
+
+const TreeScope& TreeScopeAt(const MatchResult& result, uint32_t position) {
+  size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
+  const MatchedProperties& properties =
+      result.GetMatchedProperties()[matched_properties_index];
+  DCHECK_EQ(properties.types_.origin, CascadeOrigin::kAuthor);
+  return result.ScopeFromTreeOrder(properties.types_.tree_order);
 }
 
 PropertyHandle ToPropertyHandle(const CSSProperty& property,
@@ -397,7 +406,14 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
       *p = priority;
       CascadeOrigin origin = priority.GetOrigin();
       const CSSValue* value = Resolve(property, e.Value(), origin, resolver);
-      StyleBuilder::ApplyProperty(property, state_, *value);
+      // TODO(futhark): Use a user scope TreeScope to support tree-scoped names
+      // for animations in user stylesheets.
+      const TreeScope* tree_scope =
+          origin == CascadeOrigin::kAuthor
+              ? &match_result_.ScopeFromTreeOrder(e.TreeOrder())
+              : nullptr;
+      StyleBuilder::ApplyProperty(property, state_,
+                                  ScopedCSSValue(*value, tree_scope));
     }
   }
 }
@@ -524,7 +540,11 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   value = Resolve(property, *value, origin, resolver);
   DCHECK(!value->IsVariableReferenceValue());
   DCHECK(!value->IsPendingSubstitutionValue());
-  StyleBuilder::ApplyProperty(property, state_, *value);
+  const TreeScope* tree_scope{nullptr};
+  if (origin == CascadeOrigin::kAuthor)
+    tree_scope = &TreeScopeAt(match_result_, priority.GetPosition());
+  StyleBuilder::ApplyProperty(property, state_,
+                              ScopedCSSValue(*value, tree_scope));
 }
 
 void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
@@ -602,11 +622,14 @@ void StyleCascade::ForceColors() {
   MaybeForceColor(GetCSSPropertyInternalVisitedTextEmphasisColor(),
                   style->InternalVisitedTextEmphasisColor());
 
-  auto* none = CSSIdentifierValue::Create(CSSValueID::kNone);
-  StyleBuilder::ApplyProperty(GetCSSPropertyTextShadow(), state_, *none);
-  StyleBuilder::ApplyProperty(GetCSSPropertyBoxShadow(), state_, *none);
-  if (!style->HasUrlBackgroundImage())
-    StyleBuilder::ApplyProperty(GetCSSPropertyBackgroundImage(), state_, *none);
+  ScopedCSSValue scoped_none(*CSSIdentifierValue::Create(CSSValueID::kNone),
+                             nullptr);
+  StyleBuilder::ApplyProperty(GetCSSPropertyTextShadow(), state_, scoped_none);
+  StyleBuilder::ApplyProperty(GetCSSPropertyBoxShadow(), state_, scoped_none);
+  if (!style->HasUrlBackgroundImage()) {
+    StyleBuilder::ApplyProperty(GetCSSPropertyBackgroundImage(), state_,
+                                scoped_none);
+  }
 
   // Preserve the author/user defined background alpha channel.
   style->SetBackgroundColor(
@@ -628,7 +651,9 @@ void StyleCascade::MaybeForceColor(const CSSProperty& property,
     return;
 
   StyleBuilder::ApplyProperty(
-      property, state_, *GetForcedColorValue(property.GetCSSPropertyName()));
+      property, state_,
+      ScopedCSSValue(*GetForcedColorValue(property.GetCSSPropertyName()),
+                     nullptr));
 }
 
 const CSSValue* StyleCascade::GetForcedColorValue(CSSPropertyName name) {

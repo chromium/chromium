@@ -533,6 +533,7 @@ blink_core_sources("css") {
     "rule_feature_set.h",
     "rule_set.cc",
     "rule_set.h",
+    "scoped_css_value.h",
     "select_rule_feature_set.cc",
     "select_rule_feature_set.h",
     "selector_checker.cc",
