@@ -197,7 +197,8 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
       profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
   for (auto it = base::DictionaryValue::Iterator(*map); !it.IsAtEnd();
        it.Advance()) {
-    if (base::StartsWith(it.value().GetString(), base_pref_value,
+    if (it.value().is_string() &&
+        base::StartsWith(it.value().GetString(), base_pref_value,
                          base::CompareCase::SENSITIVE))
       return FindByAppId(profile, it.key());
   }
