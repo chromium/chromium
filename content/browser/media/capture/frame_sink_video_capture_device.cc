@@ -44,7 +44,7 @@ std::unique_ptr<T, BrowserThread::DeleteOnUIThread> RescopeToUIThread(
 // complete. VideoFrameReceiver requires owning an object that it will destroy
 // once consumption is complete. This class adapts between that scheme and
 // running a "done callback" to notify that consumption is complete.
-class ScopedFrameDoneHelper
+class ScopedFrameDoneHelper final
     : public base::ScopedClosureRunner,
       public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:

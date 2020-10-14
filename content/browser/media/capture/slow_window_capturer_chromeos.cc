@@ -149,7 +149,7 @@ void SlowWindowCapturerChromeOS::CreateOverlay(
       std::make_unique<SlowCaptureOverlayChromeOS>(this, std::move(receiver));
 }
 
-class SlowWindowCapturerChromeOS::InFlightFrame
+class SlowWindowCapturerChromeOS::InFlightFrame final
     : public viz::mojom::FrameSinkVideoConsumerFrameCallbacks {
  public:
   InFlightFrame(base::WeakPtr<SlowWindowCapturerChromeOS> capturer,

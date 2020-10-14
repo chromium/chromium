@@ -466,7 +466,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
 // call even if WillDispatch() was called if a filter further down the chain
 // discarded it. Long story short, the order in which filters are added is
 // important!
-class MessageFilterChain : public mojo::MessageFilter {
+class MessageFilterChain final : public mojo::MessageFilter {
  public:
   MessageFilterChain() = default;
   ~MessageFilterChain() final = default;

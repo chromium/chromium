@@ -111,7 +111,7 @@ std::string SanitizedURL(const GURL& url) {
   return url.GetAsReferrer().spec();
 }
 
-class Receiver : public network::mojom::CrossOriginOpenerPolicyReporter {
+class Receiver final : public network::mojom::CrossOriginOpenerPolicyReporter {
  public:
   Receiver(content::CrossOriginOpenerPolicyReporter* reporter,
            std::string initial_popup_url)

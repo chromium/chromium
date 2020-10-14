@@ -25,7 +25,7 @@ struct DesktopMediaID;
 
 // Captures the displayed contents of an aura::Window, producing a stream of
 // video frames.
-class CONTENT_EXPORT AuraWindowVideoCaptureDevice
+class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
     : public FrameSinkVideoCaptureDevice,
       public base::SupportsWeakPtr<AuraWindowVideoCaptureDevice> {
  public:

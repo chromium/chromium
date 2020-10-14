@@ -35,7 +35,7 @@ namespace content {
 // renderer.
 //
 // TODO(crbug/806366): The goal is to remove this code by 2019.
-class CONTENT_EXPORT SlowCaptureOverlayChromeOS
+class CONTENT_EXPORT SlowCaptureOverlayChromeOS final
     : public viz::mojom::FrameSinkVideoCaptureOverlay {
  public:
   // Implemented by SlowWindowCapturerChromeOS.

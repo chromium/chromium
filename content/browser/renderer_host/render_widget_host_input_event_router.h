@@ -69,7 +69,7 @@ viz::HitTestQuery* GetHitTestQuery(
 // own. When an input event requires routing based on window coordinates,
 // this class requests a Surface hit test from the provided |root_view| and
 // forwards the event to the owning RWHV of the returned Surface ID.
-class CONTENT_EXPORT RenderWidgetHostInputEventRouter
+class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
     : public RenderWidgetHostViewBaseObserver,
       public RenderWidgetTargeter::Delegate,
       public TouchEmulatorClient,

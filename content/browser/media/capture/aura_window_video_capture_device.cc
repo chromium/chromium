@@ -32,7 +32,7 @@ namespace content {
 
 // Threading note: This is constructed on the device thread, while the
 // destructor and the rest of the class will run exclusively on the UI thread.
-class AuraWindowVideoCaptureDevice::WindowTracker
+class AuraWindowVideoCaptureDevice::WindowTracker final
     : public aura::WindowObserver,
       public base::SupportsWeakPtr<
           AuraWindowVideoCaptureDevice::WindowTracker> {

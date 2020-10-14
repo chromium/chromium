@@ -16,8 +16,9 @@
 
 namespace content {
 
-class MouseCursorOverlayController::Observer : public ui::EventHandler,
-                                               public aura::WindowObserver {
+class MouseCursorOverlayController::Observer final
+    : public ui::EventHandler,
+      public aura::WindowObserver {
  public:
   explicit Observer(MouseCursorOverlayController* controller,
                     aura::Window* window)

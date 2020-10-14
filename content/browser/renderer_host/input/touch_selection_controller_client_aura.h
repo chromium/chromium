@@ -99,7 +99,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   // Not owned, non-null for the lifetime of this object.
   RenderWidgetHostViewAura* rwhva_;
 
-  class InternalClient : public TouchSelectionControllerClient {
+  class InternalClient final : public TouchSelectionControllerClient {
    public:
     explicit InternalClient(RenderWidgetHostViewAura* rwhva) : rwhva_(rwhva) {}
     ~InternalClient() final {}

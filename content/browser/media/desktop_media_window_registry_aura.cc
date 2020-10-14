@@ -10,8 +10,8 @@
 
 namespace content {
 
-class DesktopMediaWindowRegistryAura : public DesktopMediaWindowRegistry,
-                                       public aura::WindowObserver {
+class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
+                                             public aura::WindowObserver {
  public:
   static DesktopMediaWindowRegistryAura* GetInstance() {
     static base::NoDestructor<DesktopMediaWindowRegistryAura> instance;

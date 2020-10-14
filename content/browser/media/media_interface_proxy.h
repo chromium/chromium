@@ -41,7 +41,7 @@ class RenderFrameHost;
 // rather than the general media service.
 // - Forward CDM requests to different CdmService instances based on library
 //   CDM types.
-class MediaInterfaceProxy : public media::mojom::InterfaceFactory {
+class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
  public:
   MediaInterfaceProxy(RenderFrameHost* render_frame_host);
   ~MediaInterfaceProxy() final;

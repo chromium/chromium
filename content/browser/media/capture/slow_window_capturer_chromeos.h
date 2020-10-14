@@ -50,9 +50,10 @@ namespace content {
 // running.
 //
 // TODO(crbug/806366): The goal is to remove this code by 2019.
-class SlowWindowCapturerChromeOS : public viz::mojom::FrameSinkVideoCapturer,
-                                   public SlowCaptureOverlayChromeOS::Owner,
-                                   public aura::WindowObserver {
+class SlowWindowCapturerChromeOS final
+    : public viz::mojom::FrameSinkVideoCapturer,
+      public SlowCaptureOverlayChromeOS::Owner,
+      public aura::WindowObserver {
  public:
   explicit SlowWindowCapturerChromeOS(aura::Window* target);
   ~SlowWindowCapturerChromeOS() final;

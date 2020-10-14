@@ -27,7 +27,8 @@ namespace content {
 // RenderProcessHostImpl. Unlike MediaInterfaceProxy, only
 // CreateVideoDecoder() is implemented. This allows WebRTC to create
 // MojoVideoDecoder instances without a RenderFrame.
-class CONTENT_EXPORT VideoDecoderProxy : public media::mojom::InterfaceFactory {
+class CONTENT_EXPORT VideoDecoderProxy final
+    : public media::mojom::InterfaceFactory {
  public:
   VideoDecoderProxy();
   ~VideoDecoderProxy() final;
