@@ -215,25 +215,10 @@ Polymer({
 
   /** @private */
   onCaptionsClick_() {
-    // Open the system captions dialog for Mac.
-    // <if expr="is_macosx">
-    CaptionsBrowserProxyImpl.getInstance().openSystemCaptionsDialog();
-    // </if>
-
-    // Open the system captions dialog for Windows 10+ or navigate to the
-    // caption settings page for older versions of Windows
-    // <if expr="is_win">
-    if (loadTimeData.getBoolean('isWindows10OrNewer')) {
+    if (this.captionSettingsOpensExternally_) {
       CaptionsBrowserProxyImpl.getInstance().openSystemCaptionsDialog();
     } else {
       Router.getInstance().navigateTo(routes.CAPTIONS);
     }
-    // </if>
-
-    // Navigate to the caption settings page for Linux as they do not have
-    // system caption settings.
-    // <if expr="is_linux">
-    Router.getInstance().navigateTo(routes.CAPTIONS);
-    // </if>
   },
 });

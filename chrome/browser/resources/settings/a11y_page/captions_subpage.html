@@ -23,14 +23,43 @@
         background-size: cover;
         display: flex;
         justify-content: center;
-        margin: 0 var(--cr-section-padding) var(--cr-section-padding);
+        margin: var(--cr-section-padding);
+        margin-inline-start: var(--cr-section-indent-padding);
         min-height: 112px;
         padding: 20px;
         text-align: center;
       }
+
+      /* Override the default padding-top of the h2 so that there is not too
+         much padding between the subpage title and the section title. */
+      h2.less-top-padding {
+        padding-top: var(--cr-section-vertical-padding);
+      }
+
+      /* Override the default min-height of a cr-row element so that there is
+         not too much padding between the title and the subtitle. */
+      .cr-row-subtitle {
+        min-height: 0;
+      }
+
+      /* Override the default cr-row padding so that it does not have an indent.
+         Add margin-top to give space between itself and the previous item. */
+      .new-section {
+        margin-top: var(--cr-section-padding);
+        padding: 0;
+      }
+
+      /* Ensure the toggle button stretches the width of its container despite
+         removing its parent's padding. */
+      #liveCaptionToggleButton {
+        width: 100%;
+      }
     </style>
     <div class="cr-row first">
-      <h2>$i18n{captionsPreview}</h2>
+      <h2 class="start less-top-padding">$i18n{captionsPreferencesTitle}</h2>
+    </div>
+    <div class="cr-row cr-row-subtitle first">
+      <div class="start">$i18n{captionsPreferencesSubtitle}</div>
     </div>
     <div class="preview-box">
       <span style="
@@ -48,9 +77,6 @@
               prefs.accessibility.captions.text_size.value)]]">
         $i18n{quickBrownFox}
       </span>
-    </div>
-    <div class="cr-row continuation">
-      <h2 class="start">$i18n{captionsSettings}</h2>
     </div>
     <div class="list-frame">
       <div class="list-item underbar first">
@@ -124,6 +150,16 @@
         </settings-dropdown-menu>
       </div>
     </div>
+    <template is="dom-if" if="[[enableLiveCaption_]]">
+      <div class="cr-row new-section">
+        <settings-toggle-button id="liveCaptionToggleButton"
+            pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+            on-change="onA11yLiveCaptionChange_"
+            label="$i18n{captionsEnableLiveCaptionTitle}"
+            sub-label="$i18n{captionsEnableLiveCaptionSubtitle}">
+        </settings-toggle-button>
+      </div>
+    </template>
   </template>
   <script src="captions_subpage.js"></script>
 </dom-module>

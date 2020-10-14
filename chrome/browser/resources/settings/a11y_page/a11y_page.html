@@ -10,19 +10,28 @@
         </cr-link-row>
 </if>
 <if expr="not chromeos">
-        <cr-link-row class="hr" id="captions"
-            label="$i18n{captionsTitle}"
-            sub-label="$i18n{captionsSubtitle}"
-            on-click="onCaptionsClick_"
-            external$="[[captionSettingsOpensExternally_]]">
-        </cr-link-row>
-        <template is="dom-if" if="[[enableLiveCaption_]]">
-          <settings-toggle-button
-              pref="{{prefs.accessibility.captions.live_caption_enabled}}"
-              on-change="onA11yLiveCaptionChange_"
-              label="$i18n{captionsEnableLiveCaptionTitle}"
-              sub-label="[[enableLiveCaptionSubtitle_]]">
-          </settings-toggle-button>
+        <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
+          <cr-link-row class="hr" id="captions"
+              label="$i18n{captionsPreferencesTitle}"
+              sub-label="$i18n{captionsPreferencesSubtitle}"
+              on-click="onCaptionsClick_"
+              external$="[[captionSettingsOpensExternally_]]">
+          </cr-link-row>
+          <template is="dom-if" if="[[enableLiveCaption_]]">
+            <settings-toggle-button
+                pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+                on-change="onA11yLiveCaptionChange_"
+                label="$i18n{captionsEnableLiveCaptionTitle}"
+                sub-label="[[enableLiveCaptionSubtitle_]]">
+            </settings-toggle-button>
+          </template>
+        </template>
+        <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
+          <cr-link-row class="first"
+              label="$i18n{captionsTitle}"
+              on-click="onCaptionsClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
         </template>
         <settings-toggle-button
             class="hr"

@@ -167,6 +167,14 @@ Polymer({
         ];
       },
     },
+
+    /** @private */
+    enableLiveCaption_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('enableLiveCaption');
+      },
+    },
   },
 
   /** @private {?settings.FontsBrowserProxy} */
@@ -269,6 +277,16 @@ Polymer({
     }
 
     return `${+ size.slice(0, -1) / 100}%`;
-  }
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onA11yLiveCaptionChange_(event) {
+    const a11yLiveCaptionOn = event.target.checked;
+    chrome.metricsPrivate.recordBoolean(
+        'Accessibility.LiveCaption.ToggleEnabled', a11yLiveCaptionOn);
+  },
 });
 })();

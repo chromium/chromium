@@ -30,10 +30,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if defined(OS_CHROMEOS)
-#include "ui/base/l10n/l10n_util.h"
-#endif
-
 namespace settings {
 #if defined(OS_CHROMEOS)
 namespace {
@@ -52,9 +48,9 @@ base::string16 GetHelpUrlWithBoard(const std::string& original_url) {
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"captionsTitle", IDS_SETTINGS_CAPTIONS},
-      {"captionsSubtitle", IDS_SETTINGS_CAPTIONS_SUBTITLE},
-      {"captionsSettings", IDS_SETTINGS_CAPTIONS_SETTINGS},
-      {"captionsPreview", IDS_SETTINGS_CAPTIONS_PREVIEW},
+      {"captionsPreferencesTitle", IDS_SETTINGS_CAPTIONS_PREFERENCES_TITLE},
+      {"captionsPreferencesSubtitle",
+       IDS_SETTINGS_CAPTIONS_PREFERENCES_SUBTITLE},
       {"captionsTextSize", IDS_SETTINGS_CAPTIONS_TEXT_SIZE},
       {"captionsTextFont", IDS_SETTINGS_CAPTIONS_TEXT_FONT},
       {"captionsTextColor", IDS_SETTINGS_CAPTIONS_TEXT_COLOR},
@@ -82,8 +78,15 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
       {"captionsColorCyan", IDS_SETTINGS_CAPTIONS_COLOR_CYAN},
       {"captionsColorMagenta", IDS_SETTINGS_CAPTIONS_COLOR_MAGENTA},
       {"captionsDefaultSetting", IDS_SETTINGS_CAPTIONS_DEFAULT_SETTING},
+      {"captionsEnableLiveCaptionTitle",
+       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE},
+      {"captionsEnableLiveCaptionSubtitle",
+       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+
+  html_source->AddBoolean("enableLiveCaption",
+                          base::FeatureList::IsEnabled(media::kLiveCaption));
 }
 
 void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {

@@ -312,19 +312,9 @@
     <template is="dom-if" if="[[!isKioskModeActive_]]">
       <cr-link-row id="captionsSubpageButton" class="first"
           label="$i18n{captionsTitle}"
-          sub-label="$i18n{captionsSubtitle}"
           on-click="onCaptionsClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[enableLiveCaption_]]">
-      <settings-toggle-button
-          pref="{{prefs.accessibility.captions.live_caption_enabled}}"
-          on-change="onA11yLiveCaptionChange_"
-          label="$i18n{captionsEnableLiveCaptionTitle}"
-          sub-label="$i18n{captionsEnableLiveCaptionSubtitle}"
-          deep-link-focus-id$="[[Setting.kLiveCaptions]]">
-      </settings-toggle-button>
     </template>
     <settings-toggle-button
         class="hr"

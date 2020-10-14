@@ -557,10 +557,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL},
       {"tabletModeShelfNavigationButtonsSettingDescription",
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION},
-      {"captionsEnableLiveCaptionTitle",
-       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE},
-      {"captionsEnableLiveCaptionSubtitle",
-       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE},
       {"caretBrowsingTitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE},
       {"caretBrowsingSubtitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE},
   };
@@ -581,8 +577,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
-
-  html_source->AddBoolean("enableLiveCaption", AreLiveCaptionsAllowed());
 
   html_source->AddBoolean("showExperimentalAccessibilityCursorColor",
                           IsCursorColorAllowed());
