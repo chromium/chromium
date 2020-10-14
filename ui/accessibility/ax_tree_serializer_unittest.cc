@@ -342,7 +342,7 @@ TEST_F(AXTreeSerializerTest, MaximumSerializedNodeCount) {
   ASSERT_EQ(5u, update.nodes.size());
 }
 
-#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
+#if !defined(ADDRESS_SANITIZER) && defined(NDEBUG) && !DCHECK_IS_ON()
 // If duplicate ids are encountered, it returns an error and the next
 // update will re-send the entire tree.
 // Test does not work with address sanitizer -- if EXPECT_DEATH is used to

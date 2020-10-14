@@ -267,8 +267,8 @@ using base::TimeDelta;
 
 namespace content {
 
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-// Wrapping this in ADDRESS_SANITIZER will enable it to run on
+#if DCHECK_IS_ON() || !defined(NDEBUG)
+// Wrapping this in DCHECK_IS_ON() will enable it to run on
 // clusterfuzz, which should help narrow down illegal ax trees more quickly.
 // static
 int RenderFrameHostImpl::max_accessibility_resets_ = 0;

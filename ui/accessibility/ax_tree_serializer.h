@@ -392,11 +392,11 @@ ClientTreeNode*
 AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::GetClientTreeNodeParent(
     ClientTreeNode* obj) {
   ClientTreeNode* parent = obj->parent;
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || !defined(NDEBUG)
   if (!parent)
     return nullptr;
   DCHECK(ClientTreeNodeById(parent->id)) << "Parent not in id map.";
-#endif  // DCHECK_IS_ON()
+#endif  // DCHECK_IS_ON() || !defined(NDEBUG)
   return parent;
 }
 
@@ -579,9 +579,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
 
     ClientTreeNode* client_child = ClientTreeNodeById(new_child_id);
     if (client_child && GetClientTreeNodeParent(client_child) != client_node) {
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-      // Wrapping this in ADDRESS_SANITIZER will cause it to run on
-      // clusterfuzz, which should help us narrow down remaining issues.
+#if DCHECK_IS_ON() || !defined(NDEBUG)
       // TODO(accessibility) Remove all cases where this occurs and re-add
       // NOTREACHED(), or add a histogram.
       // This condition leads to performance problems. It will
@@ -675,9 +673,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       new_child->invalid = false;
       client_node->children.push_back(new_child);
       if (ClientTreeNodeById(child_id)) {
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
-        // Wrapping this in ADDRESS_SANITIZER will cause it to run on
-        // clusterfuzz, which should help us narrow down remaining issues.
+#if DCHECK_IS_ON() || !defined(NDEBUG)
         // TODO(accessibility) Remove all cases where this occurs and re-add
         // NOTREACHED(), or add a histogram.
         // This condition leads to performance problems. It will
