@@ -11,11 +11,14 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -48,13 +51,19 @@ base::string16 GetAction(int consent_status) {
 
 class AssistantOptInContainer : public views::Button {
  public:
-  explicit AssistantOptInContainer(views::ButtonListener* listener)
-      : views::Button(listener) {
+  METADATA_HEADER(AssistantOptInContainer);
+
+  explicit AssistantOptInContainer(views::Button::PressedCallback callback)
+      : views::Button(callback) {
     constexpr float kHighlightOpacity = 0.06f;
     SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
         SkColorSetA(SK_ColorBLACK, 0xff * kHighlightOpacity),
         kPreferredHeightDip / 2));
   }
+
+  AssistantOptInContainer(const AssistantOptInContainer&) = delete;
+
+  AssistantOptInContainer& operator=(const AssistantOptInContainer) = delete;
 
   ~AssistantOptInContainer() override = default;
 
@@ -78,10 +87,10 @@ class AssistantOptInContainer : public views::Button {
     flags.setColor(gfx::kGoogleBlue500);
     canvas->DrawRoundRect(GetContentsBounds(), height() / 2, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInContainer);
 };
+
+BEGIN_METADATA(AssistantOptInContainer, views::Button)
+END_METADATA
 
 }  // namespace
 
@@ -98,21 +107,12 @@ AssistantOptInView::~AssistantOptInView() {
   AssistantState::Get()->RemoveObserver(this);
 }
 
-const char* AssistantOptInView::GetClassName() const {
-  return "AssistantOptInView";
-}
-
 void AssistantOptInView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
 void AssistantOptInView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   label_->SizeToFit(width());
-}
-
-void AssistantOptInView::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  delegate_->OnOptInButtonPressed();
 }
 
 void AssistantOptInView::OnAssistantConsentStatusChanged(int consent_status) {
@@ -132,7 +132,8 @@ void AssistantOptInView::InitLayout() {
 
   // Container.
   container_ = AddChildView(
-      std::make_unique<AssistantOptInContainer>(/*listener=*/this));
+      std::make_unique<AssistantOptInContainer>(base::BindRepeating(
+          &AssistantOptInView::OnButtonPressed, base::Unretained(this))));
 
   layout_manager =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -186,5 +187,12 @@ void AssistantOptInView::UpdateLabel(int consent_status) {
   container_->Layout();
   container_->SchedulePaint();
 }
+
+void AssistantOptInView::OnButtonPressed() {
+  delegate_->OnOptInButtonPressed();
+}
+
+BEGIN_METADATA(AssistantOptInView, views::View)
+END_METADATA
 
 }  // namespace ash

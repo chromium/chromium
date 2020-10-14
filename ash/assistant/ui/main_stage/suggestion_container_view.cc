@@ -26,6 +26,7 @@
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -115,10 +116,6 @@ SuggestionContainerView::~SuggestionContainerView() {
     AssistantSuggestionsController::Get()->GetModel()->RemoveObserver(this);
 }
 
-const char* SuggestionContainerView::GetClassName() const {
-  return "SuggestionContainerView";
-}
-
 gfx::Size SuggestionContainerView::CalculatePreferredSize() const {
   return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
 }
@@ -201,8 +198,11 @@ void SuggestionContainerView::OnAllViewsRemoved() {
 
 std::unique_ptr<ElementAnimator> SuggestionContainerView::AddSuggestionChip(
     const AssistantSuggestion& suggestion) {
-  auto suggestion_chip_view = std::make_unique<SuggestionChipView>(
-      delegate(), suggestion, /*listener=*/this);
+  auto suggestion_chip_view =
+      std::make_unique<SuggestionChipView>(delegate(), suggestion);
+  suggestion_chip_view->set_callback(base::BindRepeating(
+      &SuggestionContainerView::OnButtonPressed, base::Unretained(this),
+      base::Unretained(suggestion_chip_view.get())));
 
   // The chip will be animated on its own layer.
   suggestion_chip_view->SetPaintToLayer();
@@ -212,13 +212,6 @@ std::unique_ptr<ElementAnimator> SuggestionContainerView::AddSuggestionChip(
   // Add to the view hierarchy and return the animator for the suggestion chip.
   return std::make_unique<SuggestionChipAnimator>(
       contents()->AddChildView(std::move(suggestion_chip_view)), this);
-}
-
-void SuggestionContainerView::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  // Remember which chip was selected, so we can give it a special animation.
-  selected_chip_ = static_cast<SuggestionChipView*>(sender);
-  delegate()->OnSuggestionPressed(selected_chip_->suggestion_id());
 }
 
 void SuggestionContainerView::OnUiVisibilityChanged(
@@ -247,5 +240,14 @@ void SuggestionContainerView::OnUiVisibilityChanged(
   layout_manager_->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
 }
+
+void SuggestionContainerView::OnButtonPressed(SuggestionChipView* chip_view) {
+  // Remember which chip was selected, so we can give it a special animation.
+  selected_chip_ = chip_view;
+  delegate()->OnSuggestionPressed(selected_chip_->suggestion_id());
+}
+
+BEGIN_METADATA(SuggestionContainerView, AnimatedContainerView)
+END_METADATA
 
 }  // namespace ash

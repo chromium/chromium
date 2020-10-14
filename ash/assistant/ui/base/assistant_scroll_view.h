@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -36,13 +37,12 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
     ~Observer() override = default;
   };
 
+  METADATA_HEADER(AssistantScrollView);
+
   AssistantScrollView();
   AssistantScrollView(const AssistantScrollView&) = delete;
   AssistantScrollView& operator=(const AssistantScrollView) = delete;
   ~AssistantScrollView() override;
-
-  // views::ScrollView:
-  const char* GetClassName() const override;
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* view) override;

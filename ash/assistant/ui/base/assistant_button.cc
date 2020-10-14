@@ -7,6 +7,7 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -34,7 +35,10 @@ AssistantButton::InitParams::~InitParams() = default;
 
 AssistantButton::AssistantButton(AssistantButtonListener* listener,
                                  AssistantButtonId button_id)
-    : views::ImageButton(this), listener_(listener), id_(button_id) {
+    : views::ImageButton(base::BindRepeating(&AssistantButton::OnButtonPressed,
+                                             base::Unretained(this))),
+      listener_(listener),
+      id_(button_id) {
   constexpr SkColor kInkDropBaseColor = SK_ColorBLACK;
   constexpr float kInkDropVisibleOpacity = 0.06f;
 
@@ -121,8 +125,7 @@ std::unique_ptr<views::InkDropRipple> AssistantButton::CreateInkDropRipple()
       GetInkDropBaseColor(), GetInkDropVisibleOpacity());
 }
 
-void AssistantButton::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
+void AssistantButton::OnButtonPressed() {
   assistant::util::IncrementAssistantButtonClickCount(id_);
   listener_->OnButtonPressed(id_);
 }

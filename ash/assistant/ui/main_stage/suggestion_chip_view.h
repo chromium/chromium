@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -25,15 +26,15 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
  public:
   using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
 
-  static constexpr char kClassName[] = "SuggestionChipView";
+  METADATA_HEADER(SuggestionChipView);
 
   SuggestionChipView(AssistantViewDelegate* delegate,
-                     const AssistantSuggestion& suggestion,
-                     views::ButtonListener* listener);
+                     const AssistantSuggestion& suggestion);
+  SuggestionChipView(const SuggestionChipView&) = delete;
+  SuggestionChipView& operator=(const SuggestionChipView&) = delete;
   ~SuggestionChipView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void ChildVisibilityChanged(views::View* child) override;
@@ -62,8 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
   views::Label* text_view_;           // Owned by view hierarchy.
 
   base::WeakPtrFactory<SuggestionChipView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionChipView);
 };
 
 }  // namespace ash

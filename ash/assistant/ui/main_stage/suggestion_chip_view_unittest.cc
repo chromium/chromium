@@ -38,8 +38,7 @@ TEST_F(SuggestionChipViewTest, ShouldHandleLocalIcons) {
   SuggestionChipView suggestion_chip_view(
       /*delegate=*/nullptr,
       CreateSuggestionWithIconUrl(
-          "googleassistant://resource?type=icon&name=assistant"),
-      /*listener=*/nullptr);
+          "googleassistant://resource?type=icon&name=assistant"));
 
   const auto& actual = suggestion_chip_view.GetIcon();
   gfx::ImageSkia expected = gfx::CreateVectorIcon(
@@ -62,8 +61,7 @@ TEST_F(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
   SuggestionChipView suggestion_chip_view(
       &delegate,
       CreateSuggestionWithIconUrl("https://www.gstatic.com/images/branding/"
-                                  "product/2x/googleg_48dp.png"),
-      /*listener=*/nullptr);
+                                  "product/2x/googleg_48dp.png"));
 
   const auto& actual = suggestion_chip_view.GetIcon();
   EXPECT_TRUE(actual.BackedBySameObjectAs(expected));

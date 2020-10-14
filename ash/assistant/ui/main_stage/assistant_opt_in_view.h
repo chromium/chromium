@@ -8,9 +8,11 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace views {
+class Button;
 class StyledLabel;
 }  // namespace views
 
@@ -22,19 +24,18 @@ class AssistantViewDelegate;
 
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
     : public views::View,
-      public views::ButtonListener,
       public AssistantStateObserver {
  public:
+  METADATA_HEADER(AssistantOptInView);
+
   explicit AssistantOptInView(AssistantViewDelegate* delegate_);
+  AssistantOptInView(const AssistantOptInView&) = delete;
+  AssistantOptInView& operator=(const AssistantOptInView&) = delete;
   ~AssistantOptInView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // AssistantStateObserver:
   void OnAssistantConsentStatusChanged(int consent_status) override;
@@ -43,13 +44,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
   void InitLayout();
   void UpdateLabel(int consent_status);
 
+  void OnButtonPressed();
+
   views::StyledLabel* label_;  // Owned by view hierarchy.
 
   views::Button* container_;
 
   AssistantViewDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInView);
 };
 
 }  // namespace ash

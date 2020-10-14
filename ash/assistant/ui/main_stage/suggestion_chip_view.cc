@@ -20,6 +20,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -42,21 +43,13 @@ constexpr int kPreferredHeightDip = 32;
 
 // SuggestionChipView ----------------------------------------------------------
 
-// static
-constexpr char SuggestionChipView::kClassName[];
-
 SuggestionChipView::SuggestionChipView(AssistantViewDelegate* delegate,
-                                       const AssistantSuggestion& suggestion,
-                                       views::ButtonListener* listener)
-    : Button(listener), delegate_(delegate), suggestion_id_(suggestion.id) {
+                                       const AssistantSuggestion& suggestion)
+    : delegate_(delegate), suggestion_id_(suggestion.id) {
   InitLayout(suggestion);
 }
 
 SuggestionChipView::~SuggestionChipView() = default;
-
-const char* SuggestionChipView::GetClassName() const {
-  return kClassName;
-}
 
 gfx::Size SuggestionChipView::CalculatePreferredSize() const {
   const int preferred_width = views::View::CalculatePreferredSize().width();
@@ -188,5 +181,8 @@ void SuggestionChipView::SetText(const base::string16& text) {
 const base::string16& SuggestionChipView::GetText() const {
   return text_view_->GetText();
 }
+
+BEGIN_METADATA(SuggestionChipView, views::Button)
+END_METADATA
 
 }  // namespace ash

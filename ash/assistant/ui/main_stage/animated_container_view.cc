@@ -14,6 +14,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -377,5 +378,8 @@ bool AnimatedContainerView::FadeOutObserverCallback(
   // We return true to delete our observer.
   return true;
 }
+
+BEGIN_METADATA(AnimatedContainerView, AssistantScrollView)
+END_METADATA
 
 }  // namespace ash

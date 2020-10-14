@@ -9,6 +9,7 @@
 
 #include "base/optional.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -93,10 +94,6 @@ AssistantScrollView::AssistantScrollView() {
 
 AssistantScrollView::~AssistantScrollView() = default;
 
-const char* AssistantScrollView::GetClassName() const {
-  return "AssistantScrollView";
-}
-
 void AssistantScrollView::OnViewPreferredSizeChanged(views::View* view) {
   DCHECK_EQ(content_view_, view);
 
@@ -130,5 +127,8 @@ void AssistantScrollView::InitLayout() {
   vertical_scroll_bar_ = SetVerticalScrollBar(
       std::make_unique<InvisibleScrollBar>(&observers_, /*horizontal=*/false));
 }
+
+BEGIN_METADATA(AssistantScrollView, views::ScrollView)
+END_METADATA
 
 }  // namespace ash

@@ -36,6 +36,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -64,7 +65,7 @@ void FindDescendentByClassName(views::View* parent, T** result) {
     auto* candidate = children.front();
     children.pop();
 
-    if (candidate->GetClassName() == T::kClassName) {
+    if (views::IsViewClass<T>(candidate)) {
       *result = static_cast<T*>(candidate);
       return;
     }

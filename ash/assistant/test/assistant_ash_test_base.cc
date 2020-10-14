@@ -24,6 +24,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -66,8 +67,7 @@ void PressHomeButton() {
 // This includes direct and indirect children.
 // For this class to work, _ChildView must:
 //      * Inherit from |views::View|.
-//      * Have a static variable called |kClassName|.
-//      * Return |_ChildView::kClassName| from its GetClassName() method.
+//      * Implement view metadata (see comments on views::View).
 template <class _ChildView>
 class ChildViewCollector {
  public:
@@ -84,7 +84,7 @@ class ChildViewCollector {
 
  private:
   void Get(views::View* view, Views* result) {
-    if (view->GetClassName() == _ChildView::kClassName)
+    if (views::IsViewClass<_ChildView>(view))
       result->push_back(static_cast<_ChildView*>(view));
     for (views::View* child : view->children())
       Get(child, result);

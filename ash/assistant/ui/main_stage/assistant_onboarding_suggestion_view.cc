@@ -7,6 +7,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/util/resource_util.h"
+#include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -17,6 +18,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -66,14 +68,13 @@ SkColor GetForegroundColor(int index) {
 
 // AssistantOnboardingSuggestionView -------------------------------------------
 
-// static
-constexpr char AssistantOnboardingSuggestionView::kClassName[];
-
 AssistantOnboardingSuggestionView::AssistantOnboardingSuggestionView(
     AssistantViewDelegate* delegate,
     const chromeos::assistant::AssistantSuggestion& suggestion,
     int index)
-    : views::Button(this),
+    : views::Button(base::BindRepeating(
+          &AssistantOnboardingSuggestionView::OnButtonPressed,
+          base::Unretained(this))),
       delegate_(delegate),
       suggestion_id_(suggestion.id),
       index_(index) {
@@ -82,10 +83,6 @@ AssistantOnboardingSuggestionView::AssistantOnboardingSuggestionView(
 
 AssistantOnboardingSuggestionView::~AssistantOnboardingSuggestionView() =
     default;
-
-const char* AssistantOnboardingSuggestionView::GetClassName() const {
-  return kClassName;
-}
 
 int AssistantOnboardingSuggestionView::GetHeightForWidth(int width) const {
   return kPreferredHeightDip;
@@ -114,11 +111,6 @@ void AssistantOnboardingSuggestionView::RemoveLayerBeneathView(
   // we inversely need to remove ink drop layers from |ink_drop_container_|
   // here. See also comments in AddLayerBeneathView().
   ink_drop_container_->RemoveLayerBeneathView(layer);
-}
-
-void AssistantOnboardingSuggestionView::ButtonPressed(views::Button* sender,
-                                                      const ui::Event& event) {
-  delegate_->OnSuggestionPressed(suggestion_id_);
 }
 
 const gfx::ImageSkia& AssistantOnboardingSuggestionView::GetIcon() const {
@@ -226,5 +218,12 @@ void AssistantOnboardingSuggestionView::UpdateIcon(const gfx::ImageSkia& icon) {
   if (!icon.isNull())
     icon_->SetImage(icon);
 }
+
+void AssistantOnboardingSuggestionView::OnButtonPressed() {
+  delegate_->OnSuggestionPressed(suggestion_id_);
+}
+
+BEGIN_METADATA(AssistantOnboardingSuggestionView, views::Button)
+END_METADATA
 
 }  // namespace ash
