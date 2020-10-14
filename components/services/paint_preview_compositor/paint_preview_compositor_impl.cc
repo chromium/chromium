@@ -86,8 +86,10 @@ base::Optional<SkBitmap> CreateBitmap(sk_sp<SkPicture> skp,
                                       float scale_factor) {
   TRACE_EVENT0("paint_preview", "PaintPreviewCompositorImpl::CreateBitmap");
   SkBitmap bitmap;
-  if (!bitmap.tryAllocPixels(
-          SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()))) {
+  // Use N32 rather than an alpha color type as frames cannot have transparent
+  // backgrounds.
+  if (!bitmap.tryAllocPixels(SkImageInfo::MakeN32(
+          clip_rect.width(), clip_rect.height(), kOpaque_SkAlphaType))) {
     return base::nullopt;
   }
   SkCanvas canvas(bitmap);

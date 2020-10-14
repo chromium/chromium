@@ -599,7 +599,8 @@ TEST(PaintPreviewCompositorTest, TestComposite) {
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
   SkCanvas canvas(bitmap);
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
@@ -670,7 +671,8 @@ TEST(PaintPreviewCompositorTest, TestCompositeWithMemoryBuffer) {
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
   SkCanvas canvas(bitmap);
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
@@ -719,7 +721,8 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameNoDependencies) {
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
   SkCanvas canvas(bitmap);
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
@@ -773,7 +776,8 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependency) {
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
   SkCanvas canvas(bitmap);
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
@@ -831,7 +835,8 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependencyScrolled) {
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
   SkCanvas canvas(bitmap);
   canvas.scale(scale_factor, scale_factor);
   DrawDummyTestPicture(&canvas, SK_ColorDKGRAY, root_frame_scroll_extent);
@@ -892,7 +897,8 @@ TEST(PaintPreviewCompositorTest,
   gfx::Rect rect =
       gfx::ScaleToEnclosingRect(root_frame_clip_rect, scale_factor);
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  bitmap.allocPixels(
+      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType));
   SkCanvas canvas(bitmap);
   canvas.scale(scale_factor, scale_factor);
   // Offset the canvas to simulate the root frame being scrolled.
