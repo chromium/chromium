@@ -336,6 +336,17 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunGatewayCanBePingedRoutine() => (RunRoutineResponse response);
+
+  // Requests that the HasSecureWiFiConnection routine is created and started
+  // on the platform. This routine checks whether the WiFi connection is
+  // secure. Note that if WiFi is not connected, the routine will not run. This
+  // routine is only available if GetAvailableRoutines returned
+  // kHasSecureWiFiConnection.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunHasSecureWiFiConnectionRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
