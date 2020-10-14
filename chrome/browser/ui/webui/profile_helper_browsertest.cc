@@ -175,12 +175,6 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   Browser* new_browser = added_observer.Wait();
 
   EXPECT_EQ(1u, browser_list->size());
-  // On Lacros, the pointer to the new browser may be the same as the old one.
-  // https://crbug.com/1130131
-#if !defined(OS_CHROMEOS) || !defined(OS_LINUX)
-  EXPECT_FALSE(base::Contains(*browser_list, original_browser));
-  EXPECT_NE(new_browser, original_browser);
-#endif
   EXPECT_NE(original_browser_profile_path, new_browser->profile()->GetPath());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
