@@ -44,18 +44,6 @@
   }
 }
 
-- (void)setIcon:(NSImage*)icon {
-  if (icon) {
-    if ([icon conformsToProtocol:@protocol(NSSecureCoding)]) {
-      [_notificationData setObject:icon
-                            forKey:notification_constants::kNotificationImage];
-    } else {  // NSImage only conforms to NSSecureCoding from 10.10 onwards.
-      [_notificationData setObject:[icon TIFFRepresentation]
-                            forKey:notification_constants::kNotificationImage];
-    }
-  }
-}
-
 - (void)setButtons:(NSString*)primaryButton
     secondaryButton:(NSString*)secondaryButton {
   DCHECK(primaryButton.length);

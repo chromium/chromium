@@ -14,6 +14,11 @@
 
 @implementation UNNotificationBuilder
 
+- (void)setIconPath:(NSString*)iconPath {
+  [_notificationData setObject:iconPath
+                        forKey:notification_constants::kNotificationIconPath];
+}
+
 - (UNMutableNotificationContent*)buildUserNotification {
   base::scoped_nsobject<UNMutableNotificationContent> toast(
       [[UNMutableNotificationContent alloc] init]);
@@ -65,6 +70,30 @@
       objectForKey:notification_constants::kNotificationIncognito]);
   NSNumber* incognito = [_notificationData
       objectForKey:notification_constants::kNotificationIncognito];
+
+  // Icon
+  if ([_notificationData
+          objectForKey:notification_constants::kNotificationIconPath]) {
+    NSURL* url = [NSURL
+        fileURLWithPath:
+            [_notificationData
+                objectForKey:notification_constants::kNotificationIconPath]];
+    // When the files are saved using NotificationImageRetainer, they're saved
+    // without the .png extension. So |options| here is used to tell the system
+    // that the file is of type PNG, as NotificationImageRetainer converts files
+    // to PNG before writing them.
+    UNNotificationAttachment* attachment = [UNNotificationAttachment
+        attachmentWithIdentifier:notificationId
+                             URL:url
+                         options:@{
+                           UNNotificationAttachmentOptionsTypeHintKey :
+                               (NSString*)kUTTypePNG
+                         }
+                           error:nil];
+
+    if (attachment != nil)
+      [toast setAttachments:@[ attachment ]];
+  }
 
   [toast setUserInfo:@{
     notification_constants::kNotificationOrigin : origin,

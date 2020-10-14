@@ -39,6 +39,8 @@
                       optionsLabel:(NSString*)optionsLabel
                      settingsLabel:(NSString*)settingsLabel;
 
+// Sets the icon that is displayed in the notification if present
+- (void)setIcon:(NSImage*)icon;
 
 // Returns a notification ready to be displayed out of the provided
 // |notificationData|.

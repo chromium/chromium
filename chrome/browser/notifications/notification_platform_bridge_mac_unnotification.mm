@@ -10,6 +10,7 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
@@ -86,6 +87,15 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
                            /*is_persistent=*/false, notification,
                            requires_attribution))];
+
+  if (!notification.icon().IsEmpty()) {
+    // TODO(crbug/1138176): Resize images by adding a transparent border so that
+    // its dimensions are uniform and do not get resized once sent to the
+    // notification center
+    base::FilePath path =
+        image_retainer_.RegisterTemporaryImage(notification.icon());
+    [builder setIconPath:base::SysUTF8ToNSString(path.value())];
+  }
 
   [builder setOrigin:base::SysUTF8ToNSString(notification.origin_url().spec())];
   [builder setNotificationId:base::SysUTF8ToNSString(notification.id())];

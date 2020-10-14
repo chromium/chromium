@@ -29,7 +29,6 @@
 - (void)setTitle:(NSString*)title;
 - (void)setSubTitle:(NSString*)subTitle;
 - (void)setContextMessage:(NSString*)contextMessage;
-- (void)setIcon:(NSImage*)icon;
 - (void)setButtons:(NSString*)primaryButton
     secondaryButton:(NSString*)secondaryButton;
 - (void)setTag:(NSString*)tag;

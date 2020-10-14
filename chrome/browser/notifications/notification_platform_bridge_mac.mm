@@ -185,6 +185,9 @@ void NotificationPlatformBridgeMac::Display(
                            is_persistent, notification, requires_attribution))];
 
   if (!notification.icon().IsEmpty()) {
+    // TODO(crbug/1138176): Resize images by adding a transparent border so that
+    // its dimensions are uniform and do not get resized once sent to the
+    // notification center
     [builder setIcon:notification.icon().ToNSImage()];
   }
 

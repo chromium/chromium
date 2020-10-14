@@ -10,6 +10,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/notifications/notification_common.h"
+#include "chrome/browser/notifications/notification_image_retainer.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
 @class UNNotificationCenterDelegate;
@@ -60,6 +61,9 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
   // The notification center to use for local banner notifications,
   // this can be overridden in tests.
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
+
+  // An object that keeps temp files alive long enough for macOS to pick up.
+  NotificationImageRetainer image_retainer_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UNNOTIFICATION_H_

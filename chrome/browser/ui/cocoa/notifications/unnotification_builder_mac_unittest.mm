@@ -4,12 +4,20 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#include "base/files/file_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/notifications/notification_image_retainer.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
+#include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 
@@ -40,6 +48,7 @@ TEST(UNNotificationBuilderMacTest, TestNotificationData) {
     EXPECT_EQ("hey there", base::SysNSStringToUTF8([content body]));
     EXPECT_EQ("https://www.moe.example.com",
               base::SysNSStringToUTF8([content subtitle]));
+    EXPECT_EQ(0ul, [[content attachments] count]);
   }
 }
 
@@ -191,5 +200,46 @@ TEST(UNNotificationBuilderMacTest,
     EXPECT_TRUE([[content
         valueForKey:@"shouldPreventNotificationDismissalAfterDefaultAction"]
         boolValue]);
+  }
+}
+
+TEST(UNNotificationBuilderMacTest, TestIcon) {
+  if (@available(macOS 10.14, *)) {
+    base::scoped_nsobject<UNNotificationBuilder> builder =
+        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
+
+    base::test::TaskEnvironment task_environment(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    base::ScopedPathOverride user_data_dir_override(chrome::DIR_USER_DATA);
+
+    auto image_retainer = std::make_unique<NotificationImageRetainer>(
+        task_environment.GetMainThreadTaskRunner(),
+        task_environment.GetMockTickClock());
+
+    SkBitmap icon;
+    icon.allocN32Pixels(64, 64);
+    icon.eraseARGB(255, 100, 150, 200);
+    gfx::Image image = gfx::Image::CreateFrom1xBitmap(icon);
+
+    base::FilePath temp_file = image_retainer->RegisterTemporaryImage(image);
+    ASSERT_FALSE(temp_file.empty());
+    ASSERT_TRUE(base::PathExists(temp_file));
+
+    [builder setIconPath:base::SysUTF8ToNSString(temp_file.value())];
+
+    UNMutableNotificationContent* content = [builder buildUserNotification];
+
+    EXPECT_EQ(1ul, [[content attachments] count]);
+  }
+}
+
+TEST(UNNotificationBuilderMacTest, TestIconWrongPath) {
+  if (@available(macOS 10.14, *)) {
+    base::scoped_nsobject<UNNotificationBuilder> builder =
+        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
+    [builder setIconPath:@"wrong-path"];
+    UNMutableNotificationContent* content = [builder buildUserNotification];
+
+    EXPECT_EQ(0ul, [[content attachments] count]);
   }
 }

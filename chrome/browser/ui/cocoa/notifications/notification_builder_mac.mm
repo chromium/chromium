@@ -30,6 +30,19 @@
   return self;
 }
 
+- (void)setIcon:(NSImage*)icon {
+  if (!icon)
+    return;
+
+  if ([icon conformsToProtocol:@protocol(NSSecureCoding)]) {
+    [_notificationData setObject:icon
+                          forKey:notification_constants::kNotificationIcon];
+  } else {  // NSImage only conforms to NSSecureCoding from 10.10 onwards.
+    [_notificationData setObject:[icon TIFFRepresentation]
+                          forKey:notification_constants::kNotificationIcon];
+  }
+}
+
 - (NSUserNotification*)buildUserNotification {
   base::scoped_nsobject<NSUserNotification> toast(
       [[NSUserNotification alloc] init]);
@@ -44,16 +57,15 @@
 
   // Icon
   if ([_notificationData
-          objectForKey:notification_constants::kNotificationImage]) {
+          objectForKey:notification_constants::kNotificationIcon]) {
     if ([[NSImage class] conformsToProtocol:@protocol(NSSecureCoding)]) {
       NSImage* image = [_notificationData
-          objectForKey:notification_constants::kNotificationImage];
+          objectForKey:notification_constants::kNotificationIcon];
       [toast setContentImage:image];
     } else {  // NSImage only conforms to NSSecureCoding from 10.10 onwards.
       base::scoped_nsobject<NSImage> image([[NSImage alloc]
-          initWithData:
-              [_notificationData
-                  objectForKey:notification_constants::kNotificationImage]]);
+          initWithData:[_notificationData objectForKey:notification_constants::
+                                                           kNotificationIcon]]);
       [toast setContentImage:image];
     }
   }
