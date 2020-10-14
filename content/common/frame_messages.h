@@ -65,7 +65,6 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -114,9 +113,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PolicyDisposition,
                           blink::mojom::PolicyDisposition::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameVisibility,
                           blink::mojom::FrameVisibility::kMaxValue)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::FrameOcclusionState,
-                              blink::FrameOcclusionState::kUnknown,
-                              blink::FrameOcclusionState::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::WebFeature,
                           blink::mojom::WebFeature::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::InsecureRequestPolicy,
@@ -209,16 +205,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::FramePolicy)
   IPC_STRUCT_TRAITS_MEMBER(required_document_policy)
   IPC_STRUCT_TRAITS_MEMBER(allowed_to_download)
   IPC_STRUCT_TRAITS_MEMBER(disallow_document_access)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(blink::ViewportIntersectionState)
-  IPC_STRUCT_TRAITS_MEMBER(viewport_intersection)
-  IPC_STRUCT_TRAITS_MEMBER(main_frame_intersection)
-  IPC_STRUCT_TRAITS_MEMBER(compositor_visible_rect)
-  IPC_STRUCT_TRAITS_MEMBER(occlusion_state)
-  IPC_STRUCT_TRAITS_MEMBER(main_frame_viewport_size)
-  IPC_STRUCT_TRAITS_MEMBER(main_frame_scroll_offset)
-  IPC_STRUCT_TRAITS_MEMBER(main_frame_transform)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::FrameNavigateParams)
@@ -573,12 +559,6 @@ IPC_MESSAGE_ROUTED0(FrameHostMsg_Unload_ACK)
 // Tells the browser that a child's visual properties have changed.
 IPC_MESSAGE_ROUTED1(FrameHostMsg_SynchronizeVisualProperties,
                     blink::FrameVisualProperties)
-
-// Sent by a parent frame to notify its child about the state of the child's
-// intersection with the parent's viewport, primarily for use by the
-// IntersectionObserver API.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_UpdateViewportIntersection,
-                    blink::ViewportIntersectionState /* intersection_state */)
 
 // Used to tell the parent that the user right clicked on an area of the
 // content area, and a context menu should be shown for it. The params

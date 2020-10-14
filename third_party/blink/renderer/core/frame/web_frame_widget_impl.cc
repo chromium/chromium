@@ -697,18 +697,23 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
 }
 
 void WebFrameWidgetImpl::SetRemoteViewportIntersection(
-    const ViewportIntersectionState& intersection_state) {
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
+  SetViewportIntersection(intersection_state.Clone());
+}
+
+void WebFrameWidgetImpl::SetViewportIntersection(
+    mojom::blink::ViewportIntersectionStatePtr intersection_state) {
   // Remote viewports are only applicable to local frames with remote ancestors.
   DCHECK(LocalRootImpl()->Parent() &&
          LocalRootImpl()->Parent()->IsWebRemoteFrame() &&
          LocalRootImpl()->GetFrame());
 
   compositor_visible_rect_ =
-      gfx::Rect(intersection_state.compositor_visible_rect);
+      gfx::Rect(intersection_state->compositor_visible_rect);
   widget_base_->LayerTreeHost()->SetViewportVisibleRect(
       compositor_visible_rect_);
   LocalRootImpl()->GetFrame()->SetViewportIntersectionFromParent(
-      intersection_state);
+      *intersection_state);
 }
 
 void WebFrameWidgetImpl::SetIsInertForSubFrame(bool inert) {

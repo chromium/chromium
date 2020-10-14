@@ -15,6 +15,7 @@ namespace blink {
 
 class LocalFrame;
 enum class FrameDetachType;
+class IntRect;
 
 class CORE_EXPORT FrameClient : public GarbageCollected<FrameClient> {
  public:

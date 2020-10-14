@@ -104,11 +104,16 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase,
   void SetCursorVisibilityState(bool is_visible) override;
 
   void MouseCaptureLost() override;
-  void SetRemoteViewportIntersection(const ViewportIntersectionState&) override;
+  void SetRemoteViewportIntersection(
+      const mojom::blink::ViewportIntersectionState& intersection_state)
+      override;
   void SetIsInertForSubFrame(bool) override;
   void SetInheritedEffectiveTouchActionForSubFrame(TouchAction) override;
   void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
                                                bool subtree_throttled) override;
+
+  void SetViewportIntersection(
+      mojom::blink::ViewportIntersectionStatePtr intersection_state) override;
 
   // WebFrameWidget implementation.
   void DidDetachLocalFrameTree() override;

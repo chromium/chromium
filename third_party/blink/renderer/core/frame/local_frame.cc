@@ -1847,7 +1847,7 @@ void LocalFrame::WasHidden() {
 
   // Frame was already occluded, nothing more to do.
   if (intersection_state_.occlusion_state ==
-      FrameOcclusionState::kPossiblyOccluded) {
+      mojom::blink::FrameOcclusionState::kPossiblyOccluded) {
     return;
   }
 
@@ -1882,7 +1882,7 @@ bool LocalFrame::ClipsContent() const {
 }
 
 void LocalFrame::SetViewportIntersectionFromParent(
-    const ViewportIntersectionState& intersection_state) {
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
   DCHECK(IsLocalRoot());
   // Notify the render frame observers when the main frame intersection changes.
   if (intersection_state_.main_frame_intersection !=
@@ -1950,12 +1950,12 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
   SetOpenerDoNotNotify(opener_frame);
 }
 
-FrameOcclusionState LocalFrame::GetOcclusionState() const {
+mojom::blink::FrameOcclusionState LocalFrame::GetOcclusionState() const {
   if (hidden_)
-    return FrameOcclusionState::kPossiblyOccluded;
+    return mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   // TODO(dcheng): Get rid of this branch for the main frame.
   if (IsMainFrame())
-    return FrameOcclusionState::kGuaranteedNotOccluded;
+    return mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded;
   if (IsLocalRoot())
     return intersection_state_.occlusion_state;
   return LocalFrameRoot().GetOcclusionState();

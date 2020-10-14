@@ -78,8 +78,6 @@ bool CrossProcessFrameConnector::OnMessageReceived(const IPC::Message& msg) {
   IPC_BEGIN_MESSAGE_MAP(CrossProcessFrameConnector, msg)
     IPC_MESSAGE_HANDLER(FrameHostMsg_SynchronizeVisualProperties,
                         OnSynchronizeVisualProperties)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_UpdateViewportIntersection,
-                        OnUpdateViewportIntersection)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -317,11 +315,11 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
   SynchronizeVisualProperties(visual_properties);
 }
 
-void CrossProcessFrameConnector::OnUpdateViewportIntersection(
-    const blink::ViewportIntersectionState& intersection_state) {
+void CrossProcessFrameConnector::UpdateViewportIntersection(
+    const blink::mojom::ViewportIntersectionState& intersection_state) {
   intersection_state_ = intersection_state;
   if (view_)
-    view_->UpdateViewportIntersection(intersection_state);
+    view_->UpdateViewportIntersection(intersection_state_);
 
   if (IsVisible()) {
     // Record metrics if a crashed subframe became visible as a result of this

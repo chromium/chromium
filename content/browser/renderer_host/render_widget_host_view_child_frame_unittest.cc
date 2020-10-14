@@ -29,6 +29,7 @@
 #include "content/common/widget_messages.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_render_widget_host_delegate.h"
@@ -40,7 +41,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 
@@ -63,10 +63,11 @@ class MockFrameConnectorDelegate : public FrameConnectorDelegate {
     last_surface_info_ = surface_info;
   }
 
-  void SetViewportIntersection(const blink::WebRect& viewport_intersection,
-                               const blink::WebRect& main_frame_intersection,
-                               const blink::WebRect& compositor_visible_rect,
-                               blink::FrameOcclusionState occlusion_state) {
+  void SetViewportIntersection(
+      const blink::WebRect& viewport_intersection,
+      const blink::WebRect& main_frame_intersection,
+      const blink::WebRect& compositor_visible_rect,
+      blink::mojom::FrameOcclusionState occlusion_state) {
     intersection_state_.viewport_intersection = viewport_intersection;
     intersection_state_.main_frame_intersection = main_frame_intersection;
     intersection_state_.compositor_visible_rect = compositor_visible_rect;
@@ -214,8 +215,9 @@ TEST_F(RenderWidgetHostViewChildFrameTest, VisibilityTest) {
 TEST_F(RenderWidgetHostViewChildFrameTest, ViewportIntersectionUpdated) {
   blink::WebRect intersection_rect(5, 5, 100, 80);
   blink::WebRect main_frame_intersection(5, 10, 200, 200);
-  blink::FrameOcclusionState occlusion_state =
-      blink::FrameOcclusionState::kPossiblyOccluded;
+  blink::mojom::FrameOcclusionState occlusion_state =
+      blink::mojom::FrameOcclusionState::kPossiblyOccluded;
+
   test_frame_connector_->SetViewportIntersection(
       intersection_rect, main_frame_intersection, intersection_rect,
       occlusion_state);
@@ -224,23 +226,29 @@ TEST_F(RenderWidgetHostViewChildFrameTest, ViewportIntersectionUpdated) {
       static_cast<MockRenderProcessHost*>(widget_host_->GetProcess());
   process->Init();
 
+  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
+  auto blink_frame_widget_host_receiver =
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+  mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
+  auto blink_frame_widget_receiver =
+      blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
+  widget_host_->BindFrameWidgetInterfaces(
+      std::move(blink_frame_widget_host_receiver), blink_frame_widget.Unbind());
+  FakeFrameWidget fake_frame_widget(std::move(blink_frame_widget_receiver));
+
   widget_host_->Init();
 
-  const IPC::Message* intersection_update =
-      process->sink().GetUniqueMessageMatching(
-          WidgetMsg_SetViewportIntersection::ID);
-  ASSERT_TRUE(intersection_update);
-  std::tuple<blink::ViewportIntersectionState> intersection_state;
+  base::RunLoop().RunUntilIdle();
 
-  WidgetMsg_SetViewportIntersection::Read(intersection_update,
-                                          &intersection_state);
-  EXPECT_EQ(intersection_rect,
-            std::get<0>(intersection_state).viewport_intersection);
-  EXPECT_EQ(main_frame_intersection,
-            std::get<0>(intersection_state).main_frame_intersection);
-  EXPECT_EQ(intersection_rect,
-            std::get<0>(intersection_state).compositor_visible_rect);
-  EXPECT_EQ(occlusion_state, std::get<0>(intersection_state).occlusion_state);
+  auto& intersection_state = fake_frame_widget.GetIntersectionState();
+  EXPECT_EQ(gfx::Rect(intersection_rect),
+            intersection_state->viewport_intersection);
+  EXPECT_EQ(gfx::Rect(main_frame_intersection),
+            intersection_state->main_frame_intersection);
+  EXPECT_EQ(gfx::Rect(intersection_rect),
+            intersection_state->compositor_visible_rect);
+  EXPECT_EQ(static_cast<blink::mojom::FrameOcclusionState>(occlusion_state),
+            intersection_state->occlusion_state);
 }
 
 class RenderWidgetHostViewChildFrameZoomForDSFTest

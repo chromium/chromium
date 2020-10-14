@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
@@ -52,7 +53,7 @@
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
+#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/renderer/core/clipboard/raw_system_clipboard.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -419,25 +420,27 @@ class CORE_EXPORT LocalFrame final
   // Called on a view for a LocalFrame with a RemoteFrame parent. This makes
   // viewport intersection and occlusion/obscuration available that accounts for
   // remote ancestor frames and their respective scroll positions, clips, etc.
-  void SetViewportIntersectionFromParent(const ViewportIntersectionState&);
+  void SetViewportIntersectionFromParent(
+      const mojom::blink::ViewportIntersectionState& intersection_state);
 
   IntSize GetMainFrameViewportSize() const override;
   IntPoint GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;
 
-  // See viewport_intersection_state.h for more info on these methods.
+  // See viewport_intersection_state.mojom for more info on these
+  // methods.
   IntRect RemoteViewportIntersection() const {
-    return intersection_state_.viewport_intersection;
+    return IntRect(intersection_state_.viewport_intersection);
   }
   IntRect RemoteMainFrameIntersection() const {
-    return intersection_state_.main_frame_intersection;
+    return IntRect(intersection_state_.main_frame_intersection);
   }
   gfx::Transform RemoteMainFrameTransform() const {
     return intersection_state_.main_frame_transform;
   }
 
-  FrameOcclusionState GetOcclusionState() const;
+  mojom::blink::FrameOcclusionState GetOcclusionState() const;
 
   bool NeedsOcclusionTracking() const;
 
@@ -865,7 +868,7 @@ class CORE_EXPORT LocalFrame final
       text_input_host_{nullptr};
 #endif
 
-  ViewportIntersectionState intersection_state_;
+  mojom::blink::ViewportIntersectionState intersection_state_;
 
   // Per-frame URLLoader factory.
   std::unique_ptr<WebURLLoaderFactory> url_loader_factory_;

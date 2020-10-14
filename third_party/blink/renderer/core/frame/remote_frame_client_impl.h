@@ -43,8 +43,7 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
       const std::vector<gfx::Rect>& root_widget_window_segments) override;
   void DidChangeVisibleViewportSize(
       const gfx::Size& visible_viewport_size) override;
-  void UpdateRemoteViewportIntersection(
-      const ViewportIntersectionState& intersection_state) override;
+  void SynchronizeVisualProperties() override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
   viz::FrameSinkId GetFrameSinkId() override;
   void WasEvicted() override;

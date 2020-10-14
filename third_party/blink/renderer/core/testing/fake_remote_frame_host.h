@@ -46,6 +46,9 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
   void PrintCrossProcessSubframe(const gfx::Rect& rect,
                                  int document_cookie) override;
   void Detach() override;
+  void UpdateViewportIntersection(
+      blink::mojom::blink::ViewportIntersectionStatePtr intersection_state)
+      override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

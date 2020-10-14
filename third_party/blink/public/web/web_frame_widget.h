@@ -37,7 +37,6 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
 #include "third_party/blink/public/web/web_swap_result.h"
@@ -127,13 +126,6 @@ class WebFrameWidget : public WebWidget {
   // Notifies the WebFrameWidget that the system drag and drop operation has
   // ended.
   virtual void DragSourceSystemDragEnded() = 0;
-
-  // Constrains the viewport intersection for use by IntersectionObserver,
-  // and indicates whether the frame may be painted over or obscured in the
-  // parent. This is needed for out-of-process iframes to know if they are
-  // clipped or obscured by ancestor frames in another process.
-  virtual void SetRemoteViewportIntersection(const ViewportIntersectionState&) {
-  }
 
   // Sets the inherited effective touch action on an out-of-process iframe.
   virtual void SetInheritedEffectiveTouchAction(WebTouchAction) {}

@@ -306,13 +306,13 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   params.screen_type = mobile ? blink::mojom::EmulatedScreenType::kMobile
                               : blink::mojom::EmulatedScreenType::kDesktop;
   params.screen_size =
-      blink::WebSize(screen_width.fromMaybe(0), screen_height.fromMaybe(0));
+      gfx::Size(screen_width.fromMaybe(0), screen_height.fromMaybe(0));
   if (position_x.isJust() && position_y.isJust()) {
     params.view_position =
         gfx::Point(position_x.fromMaybe(0), position_y.fromMaybe(0));
   }
   params.device_scale_factor = device_scale_factor;
-  params.view_size = blink::WebSize(width, height);
+  params.view_size = gfx::Size(width, height);
   params.scale = scale.fromMaybe(1);
   params.screen_orientation_type = orientationType;
   params.screen_orientation_angle = orientationAngle;

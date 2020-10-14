@@ -679,6 +679,12 @@ void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
       params->user_gesture, params->impression);
 }
 
+void RenderFrameProxyHost::UpdateViewportIntersection(
+    blink::mojom::ViewportIntersectionStatePtr intersection_state) {
+  cross_process_frame_connector_->UpdateViewportIntersection(
+      *intersection_state);
+}
+
 void RenderFrameProxyHost::DidChangeOpener(
     const base::Optional<base::UnguessableToken>& opener_frame_token) {
   frame_tree_node_->render_manager()->DidChangeOpener(

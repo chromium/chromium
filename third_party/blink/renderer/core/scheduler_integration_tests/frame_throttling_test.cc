@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -1665,12 +1666,13 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
       "<iframe id=child-frame sandbox src=child-iframe.html></iframe>");
   child_frame_resource.Complete("");
 
-  ViewportIntersectionState intersection;
-  intersection.main_frame_intersection = WebRect(0, 0, 100, 100);
-  intersection.main_frame_viewport_size = WebSize(100, 100);
-  intersection.viewport_intersection = WebRect(0, 0, 100, 100);
+  mojom::blink::ViewportIntersectionState intersection;
+  intersection.main_frame_intersection = gfx::Rect(0, 0, 100, 100);
+  intersection.main_frame_viewport_size = gfx::Size(100, 100);
+  intersection.viewport_intersection = gfx::Rect(0, 0, 100, 100);
   LocalFrameRoot().FrameWidget()->Resize(gfx::Size(300, 200));
-  LocalFrameRoot().FrameWidget()->SetRemoteViewportIntersection(intersection);
+  static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
+      ->SetRemoteViewportIntersection(intersection);
 
   auto* root_frame = LocalFrameRoot().GetFrame();
   auto* frame_document =
@@ -1696,7 +1698,7 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   EXPECT_EQ(root_frame->RemoteViewportIntersection(), IntRect(0, 0, 100, 100));
   EXPECT_TRUE(root_frame->View()->CanThrottleRenderingForPropagation());
   EXPECT_EQ(root_frame->GetOcclusionState(),
-            FrameOcclusionState::kPossiblyOccluded);
+            mojom::FrameOcclusionState::kPossiblyOccluded);
   EXPECT_TRUE(frame_view->CanThrottleRendering());
   EXPECT_TRUE(child_view->CanThrottleRendering());
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
@@ -1710,12 +1712,13 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
 
   // Show the frame without any other change.
   LocalFrameRoot().WasShown();
-  LocalFrameRoot().FrameWidget()->SetRemoteViewportIntersection(intersection);
+  static_cast<WebFrameWidgetBase*>(LocalFrameRoot().FrameWidget())
+      ->SetRemoteViewportIntersection(intersection);
   CompositeFrame();
   EXPECT_EQ(root_frame->RemoteViewportIntersection(), IntRect(0, 0, 100, 100));
   EXPECT_FALSE(root_frame->View()->CanThrottleRenderingForPropagation());
   EXPECT_NE(root_frame->GetOcclusionState(),
-            FrameOcclusionState::kPossiblyOccluded);
+            mojom::FrameOcclusionState::kPossiblyOccluded);
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   // The child frame's throtting status is not updated because the parent
   // document has pending visual update.

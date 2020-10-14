@@ -139,6 +139,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   }
 
   void UpdateRenderThrottlingStatus(bool is_throttled, bool subtree_throttled);
+  void UpdateViewportIntersection(
+      const blink::mojom::ViewportIntersectionState& intersection_state);
 
   // These enums back crashed frame histograms - see MaybeLogCrash() and
   // MaybeLogShownCrash() below.  Please do not modify or remove existing enum
@@ -190,8 +192,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // Handlers for messages received from the parent frame.
   void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties);
-  void OnUpdateViewportIntersection(
-      const blink::ViewportIntersectionState& viewport_intersection);
 
   // Gets the current RenderFrameHost for the
   // |frame_proxy_in_parent_renderer_|'s (i.e., the child frame's)

@@ -177,6 +177,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void PrintCrossProcessSubframe(const gfx::Rect& rect,
                                  int document_cookie) override;
   void Detach() override;
+  void UpdateViewportIntersection(
+      blink::mojom::ViewportIntersectionStatePtr intersection_state) override;
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
@@ -211,6 +213,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // The interceptor needs access to frame_host_receiver_for_testing().
   friend class RouteMessageEventInterceptor;
   friend class OpenURLInterceptor;
+  friend class UpdateViewportIntersectionMessageFilter;
 
   // Helper to retrieve the |AgentSchedulingGroup| this proxy host is associated
   // with.

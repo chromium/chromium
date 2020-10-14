@@ -36,6 +36,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -423,12 +424,12 @@ void RenderWidgetHostViewChildFrame::UnregisterFrameSinkId() {
 }
 
 void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
-    const blink::ViewportIntersectionState& intersection_state) {
+    const blink::mojom::ViewportIntersectionState& intersection_state) {
   if (host()) {
     host()->SetIntersectsViewport(
         !intersection_state.viewport_intersection.IsEmpty());
-    host()->Send(new WidgetMsg_SetViewportIntersection(host()->GetRoutingID(),
-                                                       intersection_state));
+    host()->GetAssociatedFrameWidget()->SetViewportIntersection(
+        intersection_state.Clone());
   }
 }
 
@@ -626,7 +627,7 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
        ToRoundedSize(last_stable_screen_rect_.size())) ||
       (std::abs(last_stable_screen_rect_.x() - screen_rect.x()) +
            std::abs(last_stable_screen_rect_.y() - screen_rect.y()) >
-       blink::kMaxChildFrameScreenRectMovement)) {
+       blink::mojom::kMaxChildFrameScreenRectMovement)) {
     last_stable_screen_rect_ = screen_rect;
     screen_rect_stable_since_ = base::TimeTicks::Now();
   }
@@ -634,8 +635,8 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
 
 bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(
     const blink::WebInputEvent& event) {
-  if (event.TimeStamp() -
-          base::TimeDelta::FromMilliseconds(blink::kMinScreenRectStableTimeMs) <
+  if (event.TimeStamp() - base::TimeDelta::FromMilliseconds(
+                              blink::mojom::kMinScreenRectStableTimeMs) <
       screen_rect_stable_since_) {
     return true;
   }

@@ -98,12 +98,14 @@ bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
 }
 
 void RemoteFrameView::SetViewportIntersection(
-    const ViewportIntersectionState& intersection_state) {
-  ViewportIntersectionState new_state(intersection_state);
-  new_state.compositor_visible_rect = WebRect(compositing_rect_);
-  if (new_state != last_intersection_state_) {
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
+  mojom::blink::ViewportIntersectionState new_state(intersection_state);
+  new_state.compositor_visible_rect = gfx::Rect(compositing_rect_);
+  if (!last_intersection_state_.Equals(new_state)) {
     last_intersection_state_ = new_state;
-    remote_frame_->Client()->UpdateRemoteViewportIntersection(new_state);
+    remote_frame_->Client()->SynchronizeVisualProperties();
+    remote_frame_->GetRemoteFrameHostRemote().UpdateViewportIntersection(
+        new_state.Clone());
   } else if (needs_frame_rect_propagation_) {
     PropagateFrameRects();
   }

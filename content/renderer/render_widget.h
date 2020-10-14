@@ -45,7 +45,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/web/web_page_popup.h"
@@ -298,8 +297,6 @@ class CONTENT_EXPORT RenderWidget
   void OnClose();
   void OnRequestSetBoundsAck();
 
-  void OnSetViewportIntersection(
-      const blink::ViewportIntersectionState& intersection_state);
   void OnDragTargetDragEnter(
       const std::vector<DropData::Metadata>& drop_meta_data,
       const gfx::PointF& client_pt,

@@ -327,8 +327,6 @@ bool RenderWidget::OnMessageReceived(const IPC::Message& message) {
   IPC_BEGIN_MESSAGE_MAP(RenderWidget, message)
     IPC_MESSAGE_HANDLER(WidgetMsg_Close, OnClose)
     IPC_MESSAGE_HANDLER(WidgetMsg_SetBounds_ACK, OnRequestSetBoundsAck)
-    IPC_MESSAGE_HANDLER(WidgetMsg_SetViewportIntersection,
-                        OnSetViewportIntersection)
     IPC_MESSAGE_HANDLER(DragMsg_TargetDragEnter, OnDragTargetDragEnter)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -622,13 +620,6 @@ void RenderWidget::ImeFinishComposingTextForPepper(bool keep_selection) {
   DCHECK(plugin);
   plugin->render_frame()->OnImeFinishComposingText(keep_selection);
 #endif
-}
-
-void RenderWidget::OnSetViewportIntersection(
-    const blink::ViewportIntersectionState& intersection_state) {
-  if (auto* frame_widget = GetFrameWidget()) {
-    frame_widget->SetRemoteViewportIntersection(intersection_state);
-  }
 }
 
 void RenderWidget::OnDragTargetDragEnter(

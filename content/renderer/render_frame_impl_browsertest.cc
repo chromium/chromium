@@ -52,6 +52,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -442,21 +443,11 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
 
 TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
   RenderFrameTestObserver observer(frame());
-  blink::WebRect viewport_intersection(0, 11, 200, 89);
-  blink::WebRect mainframe_intersection(0, 0, 200, 140);
-  blink::FrameOcclusionState occlusion_state =
-      blink::FrameOcclusionState::kUnknown;
-  gfx::Transform transform;
-  transform.Translate(100, 100);
-
-  WidgetMsg_SetViewportIntersection set_viewport_intersection_message(
-      0, {viewport_intersection, mainframe_intersection, blink::WebRect(),
-          occlusion_state, blink::WebSize(), gfx::Point(), transform});
-  frame_widget()->OnMessageReceived(set_viewport_intersection_message);
+  gfx::Rect mainframe_intersection(0, 0, 200, 140);
+  frame()->OnMainFrameIntersectionChanged(mainframe_intersection);
   // Setting a new frame intersection in a local frame triggers the render frame
   // observer call.
-  EXPECT_EQ(observer.last_intersection_rect(),
-            blink::WebRect(100, 100, 200, 140));
+  EXPECT_EQ(observer.last_intersection_rect(), blink::WebRect(0, 0, 200, 140));
 }
 
 // Used to annotate the source of an interface request.

@@ -8,7 +8,8 @@ namespace content {
 
 FakeFrameWidget::FakeFrameWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> frame_widget)
-    : receiver_(this, std::move(frame_widget)) {}
+    : receiver_(this, std::move(frame_widget)),
+      intersection_state_(blink::mojom::ViewportIntersectionState::New()) {}
 
 FakeFrameWidget::~FakeFrameWidget() = default;
 
@@ -33,6 +34,16 @@ base::Optional<bool> FakeFrameWidget::GetActive() const {
 
 void FakeFrameWidget::SetActive(bool active) {
   active_ = active;
+}
+
+const blink::mojom::ViewportIntersectionStatePtr&
+FakeFrameWidget::GetIntersectionState() const {
+  return intersection_state_;
+}
+
+void FakeFrameWidget::SetViewportIntersection(
+    blink::mojom::ViewportIntersectionStatePtr intersection_state) {
+  intersection_state_ = std::move(intersection_state);
 }
 
 }  // namespace content

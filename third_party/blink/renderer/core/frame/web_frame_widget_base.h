@@ -398,6 +398,8 @@ class CORE_EXPORT WebFrameWidgetBase
       bool subtree_throttled) override {}
   void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override;
+  void SetViewportIntersection(
+      mojom::blink::ViewportIntersectionStatePtr intersection_state) override {}
 
   // Sets the inert bit on an out-of-process iframe, causing it to ignore
   // input.
@@ -568,6 +570,13 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetWindowSegments(const std::vector<gfx::Rect>& window_segments);
   viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
                                          gfx::PointF* local_point);
+
+  // Constrains the viewport intersection for use by IntersectionObserver,
+  // and indicates whether the frame may be painted over or obscured in the
+  // parent. This is needed for out-of-process iframes to know if they are
+  // clipped or obscured by ancestor frames in another process.
+  virtual void SetRemoteViewportIntersection(
+      const mojom::blink::ViewportIntersectionState& intersection_state) {}
 
  protected:
   enum DragAction { kDragEnter, kDragOver };

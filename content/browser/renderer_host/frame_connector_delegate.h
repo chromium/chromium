@@ -14,9 +14,9 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -164,7 +164,7 @@ class CONTENT_EXPORT FrameConnectorDelegate {
   virtual void UnlockMouse() {}
 
   // Returns the state of the frame's intersection with the top-level viewport.
-  const blink::ViewportIntersectionState& intersection_state() const {
+  const blink::mojom::ViewportIntersectionState& intersection_state() const {
     return intersection_state_;
   }
 
@@ -237,14 +237,14 @@ class CONTENT_EXPORT FrameConnectorDelegate {
  protected:
   explicit FrameConnectorDelegate(bool use_zoom_for_device_scale_factor);
 
-  virtual ~FrameConnectorDelegate() {}
+  virtual ~FrameConnectorDelegate();
 
   // The RenderWidgetHostView for the frame. Initially NULL.
   RenderWidgetHostViewChildFrame* view_ = nullptr;
 
   // This is here rather than in the implementation class so that
   // intersection_state() can return a reference.
-  blink::ViewportIntersectionState intersection_state_;
+  blink::mojom::ViewportIntersectionState intersection_state_;
 
   blink::ScreenInfo screen_info_;
   gfx::Size local_frame_size_in_dip_;

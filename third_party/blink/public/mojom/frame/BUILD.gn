@@ -29,10 +29,12 @@ mojom_component("frame") {
     "tree_scope_type.mojom",
     "user_activation_notification_type.mojom",
     "user_activation_update_types.mojom",
+    "viewport_intersection_state.mojom",
   ]
 
   public_deps = [
     "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 

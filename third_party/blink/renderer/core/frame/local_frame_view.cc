@@ -3820,7 +3820,7 @@ void LocalFrameView::NotifyFrameRectsChangedIfNeeded() {
 }
 
 void LocalFrameView::SetViewportIntersection(
-    const ViewportIntersectionState& intersection_state) {
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
   // The viewport intersection of the main frame is not tracked.
   DCHECK(!GetFrame().IsMainFrame());
 

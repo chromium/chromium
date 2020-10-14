@@ -13,7 +13,6 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/public/web/web_remote_frame.h"
 
 namespace blink {
+
 struct ScreenInfo;
 class WebURLRequest;
 struct WebRect;
@@ -49,8 +49,7 @@ class WebRemoteFrameClient {
   virtual void FrameRectsChanged(const WebRect& local_frame_rect,
                                  const WebRect& screen_space_rect) {}
 
-  virtual void UpdateRemoteViewportIntersection(
-      const ViewportIntersectionState& intersection_state) {}
+  virtual void SynchronizeVisualProperties() {}
 
   // Returns an AssociatedInterfaceProvider the frame can use to request
   // associated interfaces from the browser.

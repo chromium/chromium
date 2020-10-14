@@ -138,9 +138,8 @@ void RemoteFrameClientImpl::DidChangeVisibleViewportSize(
   web_frame_->Client()->DidChangeVisibleViewportSize(visible_viewport_size);
 }
 
-void RemoteFrameClientImpl::UpdateRemoteViewportIntersection(
-    const ViewportIntersectionState& intersection_state) {
-  web_frame_->Client()->UpdateRemoteViewportIntersection(intersection_state);
+void RemoteFrameClientImpl::SynchronizeVisualProperties() {
+  web_frame_->Client()->SynchronizeVisualProperties();
 }
 
 AssociatedInterfaceProvider*

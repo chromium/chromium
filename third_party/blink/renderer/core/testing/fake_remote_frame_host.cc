@@ -51,6 +51,9 @@ void FakeRemoteFrameHost::PrintCrossProcessSubframe(const gfx::Rect& rect,
 
 void FakeRemoteFrameHost::Detach() {}
 
+void FakeRemoteFrameHost::UpdateViewportIntersection(
+    blink::mojom::blink::ViewportIntersectionStatePtr intersection_state) {}
+
 void FakeRemoteFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrameHost>(

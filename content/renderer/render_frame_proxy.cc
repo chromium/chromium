@@ -692,20 +692,6 @@ void RenderFrameProxy::FrameRectsChanged(
   SynchronizeVisualProperties();
 }
 
-void RenderFrameProxy::UpdateRemoteViewportIntersection(
-    const blink::ViewportIntersectionState& intersection_state) {
-  DCHECK(ancestor_render_widget_);
-  // TODO(szager): compositor_viewport is propagated twice, via
-  // ViewportIntersectionState and also via FrameVisualProperties. It should
-  // only go through FrameVisualProperties.
-  if (pending_visual_properties_.compositor_viewport !=
-      gfx::Rect(intersection_state.compositor_visible_rect)) {
-    SynchronizeVisualProperties();
-  }
-  Send(new FrameHostMsg_UpdateViewportIntersection(routing_id_,
-                                                   intersection_state));
-}
-
 base::UnguessableToken RenderFrameProxy::GetDevToolsFrameToken() {
   return devtools_frame_token_;
 }

@@ -132,7 +132,7 @@ LayoutView* LocalRootView(const LayoutObject& object) {
 //   https://w3c.github.io/IntersectionObserver/v2/#calculate-visibility-algo
 bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
   if (target->GetDocument().GetFrame()->LocalFrameRoot().GetOcclusionState() !=
-      FrameOcclusionState::kGuaranteedNotOccluded) {
+      mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded) {
     return false;
   }
   if (target->HasDistortingVisualEffects())

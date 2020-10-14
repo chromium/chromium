@@ -152,4 +152,6 @@ FrameConnectorDelegate::FrameConnectorDelegate(
     bool use_zoom_for_device_scale_factor)
     : use_zoom_for_device_scale_factor_(use_zoom_for_device_scale_factor) {}
 
+FrameConnectorDelegate::~FrameConnectorDelegate() = default;
+
 }  // namespace content

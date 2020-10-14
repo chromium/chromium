@@ -77,6 +77,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame_messages.h"
+#include "content/common/frame_proxy.mojom-test-utils.h"
 #include "content/common/input/actions_parser.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
 #include "content/common/input_messages.h"
@@ -630,37 +631,42 @@ void GenerateTapDownGesture(RenderWidgetHost* rwh) {
   rwh->ForwardGestureEvent(gesture_tap_down);
 }
 
-// Class to monitor incoming FrameHostMsg_UpdateViewportIntersection messages.
-class UpdateViewportIntersectionMessageFilter
-    : public content::BrowserMessageFilter {
- public:
-  // If no routing_id is specified, filter will match all routing id's.
-  explicit UpdateViewportIntersectionMessageFilter(
-      int routing_id = MSG_ROUTING_NONE)
-      : content::BrowserMessageFilter(FrameMsgStart),
-        routing_id_(routing_id),
-        msg_received_(false) {}
+}  // namespace
 
-  bool OnMessageReceived(const IPC::Message& message) override {
-    if (routing_id_ == MSG_ROUTING_NONE ||
-        message.routing_id() == routing_id_) {
-      IPC_BEGIN_MESSAGE_MAP(UpdateViewportIntersectionMessageFilter, message)
-        IPC_MESSAGE_HANDLER(FrameHostMsg_UpdateViewportIntersection,
-                            OnUpdateViewportIntersection)
-      IPC_END_MESSAGE_MAP()
-    }
-    return false;
+// Class to monitor incoming UpdateViewportIntersection messages.
+class UpdateViewportIntersectionMessageFilter
+    : public blink::mojom::RemoteFrameHostInterceptorForTesting {
+ public:
+  explicit UpdateViewportIntersectionMessageFilter(
+      content::RenderFrameProxyHost* rfph)
+      : intersection_state_(blink::mojom::ViewportIntersectionState::New()),
+        render_frame_proxy_host_(rfph) {
+    render_frame_proxy_host_->frame_host_receiver_for_testing()
+        .SwapImplForTesting(this);
   }
 
-  const blink::ViewportIntersectionState& GetIntersectionState() const {
+  const blink::mojom::ViewportIntersectionStatePtr& GetIntersectionState()
+      const {
     return intersection_state_;
+  }
+
+  RenderFrameProxyHost* GetForwardingInterface() override {
+    return render_frame_proxy_host_;
+  }
+
+  void UpdateViewportIntersection(
+      blink::mojom::ViewportIntersectionStatePtr intersection_state) override {
+    intersection_state_ = std::move(intersection_state);
+    msg_received_ = true;
+    if (run_loop_)
+      run_loop_->Quit();
   }
 
   bool MessageReceived() const { return msg_received_; }
 
   void Clear() {
     msg_received_ = false;
-    intersection_state_ = blink::ViewportIntersectionState();
+    intersection_state_ = blink::mojom::ViewportIntersectionState::New();
   }
 
   void Wait() {
@@ -679,23 +685,11 @@ class UpdateViewportIntersectionMessageFilter
   void set_run_loop(base::RunLoop* run_loop) { run_loop_ = run_loop; }
 
  private:
-  ~UpdateViewportIntersectionMessageFilter() override {}
-
-  void OnUpdateViewportIntersection(
-      const blink::ViewportIntersectionState& intersection_state) {
-    intersection_state_ = intersection_state;
-    msg_received_ = true;
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-  const int routing_id_;
   base::RunLoop* run_loop_ = nullptr;
   bool msg_received_;
-  blink::ViewportIntersectionState intersection_state_;
-  DISALLOW_COPY_AND_ASSIGN(UpdateViewportIntersectionMessageFilter);
+  blink::mojom::ViewportIntersectionStatePtr intersection_state_;
+  content::RenderFrameProxyHost* render_frame_proxy_host_;
 };
-
-}  // namespace
 
 //
 // SitePerProcessBrowserTestBase
@@ -12220,10 +12214,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> child2_filter =
-      new UpdateViewportIntersectionMessageFilter();
-  root->child_at(2)->current_frame_host()->GetProcess()->AddFilter(
-      child2_filter.get());
+  RenderFrameProxyHost* child2_proxy =
+      root->child_at(2)->render_manager()->GetProxyToParent();
+  auto child2_filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child2_proxy);
 
   // Force lifecycle update in root and child2 to make sure child2 has sent
   // viewport intersection into to grand child before child2 becomes throttled.
@@ -12267,10 +12261,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // This will catch b sending viewport intersection information to c.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  root->child_at(0)->current_frame_host()->GetProcess()->AddFilter(
-      filter.get());
+  RenderFrameProxyHost* iframe_c_proxy =
+      root->child_at(0)->child_at(0)->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(iframe_c_proxy);
 
   // Use EvalJsAfterLifecycleUpdate to force animation frames in `a` and `b` to
   // ensure that the viewport intersection for initial layout state has been
@@ -12314,7 +12308,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       &screen_info);
   // Convert from CSS to physical pixels
   expected.Scale(screen_info.device_scale_factor);
-  gfx::Transform actual = filter->GetIntersectionState().main_frame_transform;
+  gfx::Transform actual = filter->GetIntersectionState()->main_frame_transform;
   gfx::Point viewport_offset;
   EXPECT_TRUE(actual.TransformPointReverse(&viewport_offset));
   viewport_offset = gfx::Point(-viewport_offset.x(), -viewport_offset.y());
@@ -12465,9 +12459,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                             ->GetFrameTree()
                             ->root();
 
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  root->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  FrameTreeNode* child = root->child_at(0);
+  RenderFrameProxyHost* child_proxy =
+      child->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child_proxy);
 
   // Force a lifecycle update and wait for it to finish; by the time this call
   // returns, the viewport intersection IPC should already have been received
@@ -12479,7 +12475,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(eval_result.error.empty());
   int div_offset_top = eval_result.ExtractInt();
   gfx::Rect compositing_rect =
-      filter->GetIntersectionState().compositor_visible_rect;
+      filter->GetIntersectionState()->compositor_visible_rect;
 
   float device_scale_factor = 1.0f;
   if (IsUseZoomForDSFEnabled())
@@ -12538,10 +12534,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
-  FrameTreeNode* child = root->child_at(0);
+  FrameTreeNode* child_b = root->child_at(0);
 
   NavigateFrameToURL(
-      child,
+      child_b,
       embedded_test_server()->GetURL(
           "bar.com", "/frame_tree/page_with_large_scrollable_frame.html"));
 
@@ -12556,9 +12552,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // This adds the filter to the immediate child iframe. It verifies that the
   // child sets the nested iframe's compositing rect correctly.
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  child->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  FrameTreeNode* child_c = child_b->child_at(0);
+  RenderFrameProxyHost* child_c_proxy =
+      child_c->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child_c_proxy);
 
   // Scroll the child frame so that it is partially clipped. This will cause the
   // top 10 pixels of the child frame to be clipped. Applying the scale factor
@@ -12575,14 +12573,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // and handled by the filter. Extract the page offset of the leaf iframe
   // within the middle document.
   EvalJsResult child_eval_result = EvalJsAfterLifecycleUpdate(
-      child->current_frame_host(),
+      child_b->current_frame_host(),
       "document.getElementsByTagName('div')[0].scrollTo(0, 5000);",
       "document.getElementsByTagName('div')[0].getBoundingClientRect().top;");
   ASSERT_TRUE(child_eval_result.error.empty());
   int child_div_offset_top = child_eval_result.ExtractInt();
 
   gfx::Rect compositing_rect =
-      filter->GetIntersectionState().compositor_visible_rect;
+      filter->GetIntersectionState()->compositor_visible_rect;
 
   float scale_factor = 1.0f;
   if (IsUseZoomForDSFEnabled())
@@ -12594,7 +12592,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // main frame. The containing frame is clipped by 50 pixels at the top, due
   // to the scroll offset of the main frame, so we subtract that from the full
   // height of the containing frame.
-  int view_height = (child->current_frame_host()
+  int view_height = (child_b->current_frame_host()
                          ->GetRenderWidgetHost()
                          ->GetView()
                          ->GetViewBounds()
@@ -12636,9 +12634,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                             ->GetFrameTree()
                             ->root();
 
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  root->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  FrameTreeNode* child = root->child_at(0);
+  RenderFrameProxyHost* child_proxy =
+      child->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child_proxy);
 
   // Force a lifecycle update and wait for it to finish. Changing the width of
   // the iframe should cause the parent renderer to propagate a new
@@ -12650,7 +12650,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "document.querySelector('iframe').style.width = '250px'", "");
   ASSERT_TRUE(filter->MessageReceived());
   gfx::Rect compositing_rect =
-      filter->GetIntersectionState().compositor_visible_rect;
+      filter->GetIntersectionState()->compositor_visible_rect;
 
   float scale_factor = 1.0f;
   if (IsUseZoomForDSFEnabled())
@@ -12683,9 +12683,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "baz.com", "/site_isolation/page-with-select.html"));
   NavigateFrameToURL(child_node, site_url);
 
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  root->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  RenderFrameProxyHost* root_proxy = root->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(root_proxy);
 
   // Position the select element so that it is out of the viewport, then scroll
   // it into view.
@@ -12853,9 +12853,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // This will intercept messages sent from B to C, describing C's viewport
   // intersection.
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  child_node->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  RenderFrameProxyHost* child_proxy =
+      child_node->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child_proxy);
 
   // Run requestAnimationFrame in A and B to make sure initial layout has
   // completed and initial IPCs sent.
@@ -12869,12 +12870,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Scroll the child frame out of view, causing it to become throttled.
   ASSERT_TRUE(ExecJs(root->current_frame_host(), "window.scrollTo(0, 5000)"));
   filter->Wait();
-  EXPECT_TRUE(filter->GetIntersectionState().viewport_intersection.IsEmpty());
+  EXPECT_TRUE(filter->GetIntersectionState()->viewport_intersection.IsEmpty());
 
   // Scroll the frame back into view.
   ASSERT_TRUE(ExecJs(root->current_frame_host(), "window.scrollTo(0, 0)"));
   filter->Wait();
-  EXPECT_FALSE(filter->GetIntersectionState().viewport_intersection.IsEmpty());
+  EXPECT_FALSE(filter->GetIntersectionState()->viewport_intersection.IsEmpty());
 }
 
 // Test to verify that the main frame document intersection
@@ -12887,10 +12888,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  FrameTreeNode* child_node = root->child_at(0);
+  FrameTreeNode* child_node_b = root->child_at(0);
   GURL site_url(embedded_test_server()->GetURL(
       "bar.com", "/frame_tree/scrollable_page_with_positioned_frame.html"));
-  NavigateFrameToURL(child_node, site_url);
+  NavigateFrameToURL(child_node_b, site_url);
 
   EXPECT_EQ(
       " Site A ------------ proxies for B C\n"
@@ -12901,31 +12902,34 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "      C = http://baz.com/",
       DepictFrameTree(root));
 
-  scoped_refptr<UpdateViewportIntersectionMessageFilter> filter =
-      new UpdateViewportIntersectionMessageFilter();
-  child_node->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  FrameTreeNode* child_node_c = child_node_b->child_at(0);
+  RenderFrameProxyHost* child_proxy_c =
+      child_node_c->render_manager()->GetProxyToParent();
+  auto filter =
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(child_proxy_c);
 
   // Run requestAnimationFrame in A and B to make sure initial layout has
   // completed and initial IPC's sent.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "")
                   .error.empty());
   ASSERT_TRUE(
-      EvalJsAfterLifecycleUpdate(child_node->current_frame_host(), "", "")
+      EvalJsAfterLifecycleUpdate(child_node_b->current_frame_host(), "", "")
           .error.empty());
   filter->Clear();
 
   // Scroll the child frame out of view, causing it to become throttled.
   ASSERT_TRUE(
-      ExecJs(child_node->current_frame_host(), "window.scrollTo(0, 5000)"));
+      ExecJs(child_node_b->current_frame_host(), "window.scrollTo(0, 5000)"));
   filter->Wait();
-  EXPECT_TRUE(filter->GetIntersectionState().main_frame_intersection.IsEmpty());
+  EXPECT_TRUE(
+      filter->GetIntersectionState()->main_frame_intersection.IsEmpty());
 
   // Scroll the frame back into view.
   ASSERT_TRUE(
-      ExecJs(child_node->current_frame_host(), "window.scrollTo(0, 0)"));
+      ExecJs(child_node_b->current_frame_host(), "window.scrollTo(0, 0)"));
   filter->Wait();
   EXPECT_FALSE(
-      filter->GetIntersectionState().main_frame_intersection.IsEmpty());
+      filter->GetIntersectionState()->main_frame_intersection.IsEmpty());
 }
 
 namespace {
@@ -15713,19 +15717,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
 
   // This will intercept messages sent from B1 to C1, describing C1's viewport
   // intersection.
+  RenderFrameProxyHost* c1_proxy =
+      c1_node->render_manager()->GetProxyToParent();
   auto b1_to_c1_message_filter =
-      base::MakeRefCounted<UpdateViewportIntersectionMessageFilter>(
-          c1_node->render_manager()->GetProxyToParent()->GetRoutingID());
-  b1_node->current_frame_host()->GetProcess()->AddFilter(
-      b1_to_c1_message_filter.get());
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(c1_proxy);
 
   // This will intercept messages sent from B2 to C2, describing C2's viewport
   // intersection.
+  RenderFrameProxyHost* c2_proxy =
+      c2_node->render_manager()->GetProxyToParent();
   auto b2_to_c2_message_filter =
-      base::MakeRefCounted<UpdateViewportIntersectionMessageFilter>(
-          c2_node->render_manager()->GetProxyToParent()->GetRoutingID());
-  b2_node->current_frame_host()->GetProcess()->AddFilter(
-      b2_to_c2_message_filter.get());
+      std::make_unique<UpdateViewportIntersectionMessageFilter>(c2_proxy);
 
   // Running requestAnimationFrame will ensure that any pending IPC's have been
   // sent by the renderer and received by the browser.
@@ -15745,41 +15747,39 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
   // main_frame_scroll_offset, and then verify that each of them propagates
   // their own value of main_frame_scroll_offset to C1 and C2, respectively.
   // The IPC code mimics messages that A would send to B1 and B2.
-  blink::ViewportIntersectionState b1_intersection_state =
-      b1_node->render_manager()
-          ->GetProxyToParent()
-          ->cross_process_frame_connector()
-          ->intersection_state();
+  auto b1_intersection_state = b1_node->render_manager()
+                                   ->GetProxyToParent()
+                                   ->cross_process_frame_connector()
+                                   ->intersection_state();
+
   b1_intersection_state.main_frame_scroll_offset.Offset(10, 0);
   // A change in main_frame_scroll_offset by itself will not cause B1 to be
   // marked dirty, so we also modify viewport_intersection.
-  b1_intersection_state.viewport_intersection.y += 7;
-  b1_intersection_state.viewport_intersection.height -= 7;
-  {
-    FrameHostMsg_UpdateViewportIntersection message(MSG_ROUTING_NONE,
-                                                    b1_intersection_state);
-    b1_node->render_manager()
-        ->GetProxyToParent()
-        ->cross_process_frame_connector()
-        ->OnMessageReceived(message);
-  }
+  b1_intersection_state.viewport_intersection.set_y(
+      b1_intersection_state.viewport_intersection.y() + 7);
+  b1_intersection_state.viewport_intersection.set_height(
+      b1_intersection_state.viewport_intersection.height() - 7);
 
-  blink::ViewportIntersectionState b2_intersection_state =
-      b2_node->render_manager()
-          ->GetProxyToParent()
-          ->cross_process_frame_connector()
-          ->intersection_state();
+  b1_node->render_manager()
+      ->GetProxyToParent()
+      ->cross_process_frame_connector()
+      ->UpdateViewportIntersection(b1_intersection_state);
+
+  auto b2_intersection_state = b2_node->render_manager()
+                                   ->GetProxyToParent()
+                                   ->cross_process_frame_connector()
+                                   ->intersection_state();
+
   b2_intersection_state.main_frame_scroll_offset.Offset(20, 0);
-  b2_intersection_state.viewport_intersection.y += 7;
-  b2_intersection_state.viewport_intersection.height -= 7;
-  {
-    FrameHostMsg_UpdateViewportIntersection message(MSG_ROUTING_NONE,
-                                                    b2_intersection_state);
-    b2_node->render_manager()
-        ->GetProxyToParent()
-        ->cross_process_frame_connector()
-        ->OnMessageReceived(message);
-  }
+  b2_intersection_state.viewport_intersection.set_y(
+      b2_intersection_state.viewport_intersection.y() + 7);
+  b2_intersection_state.viewport_intersection.set_height(
+      b2_intersection_state.viewport_intersection.height() - 7);
+
+  b2_node->render_manager()
+      ->GetProxyToParent()
+      ->cross_process_frame_connector()
+      ->UpdateViewportIntersection(b2_intersection_state);
 
   // Once IPC's have been flushed to the C frames, we should see conflicting
   // values for main_frame_scroll_offset.
@@ -15788,10 +15788,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
   ASSERT_TRUE(b1_to_c1_message_filter->MessageReceived());
   ASSERT_TRUE(b2_to_c2_message_filter->MessageReceived());
   EXPECT_EQ(
-      b1_to_c1_message_filter->GetIntersectionState().main_frame_scroll_offset,
+      b1_to_c1_message_filter->GetIntersectionState()->main_frame_scroll_offset,
       gfx::Point(10, 0));
   EXPECT_EQ(
-      b2_to_c2_message_filter->GetIntersectionState().main_frame_scroll_offset,
+      b2_to_c2_message_filter->GetIntersectionState()->main_frame_scroll_offset,
       gfx::Point(20, 0));
   b1_to_c1_message_filter->Clear();
   b2_to_c2_message_filter->Clear();
@@ -15812,10 +15812,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
       &screen_info);
   float expected_y = screen_info.device_scale_factor * 5.0;
   EXPECT_NEAR(b1_to_c1_message_filter->GetIntersectionState()
-                  .main_frame_scroll_offset.y(),
+                  ->main_frame_scroll_offset.y(),
               expected_y, 1.f);
   EXPECT_NEAR(b2_to_c2_message_filter->GetIntersectionState()
-                  .main_frame_scroll_offset.y(),
+                  ->main_frame_scroll_offset.y(),
               expected_y, 1.f);
 }
 

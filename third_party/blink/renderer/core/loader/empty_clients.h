@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_spell_check_panel_host_client.h"
@@ -405,8 +406,7 @@ class CORE_EXPORT EmptyRemoteFrameClient : public RemoteFrameClient {
   unsigned BackForwardLength() override { return 0; }
   void FrameRectsChanged(const IntRect& local_frame_rect,
                          const IntRect& transformed_frame_rect) override {}
-  void UpdateRemoteViewportIntersection(
-      const ViewportIntersectionState& intersection_state) override {}
+  void SynchronizeVisualProperties() override {}
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
     return AssociatedInterfaceProvider::GetEmptyAssociatedInterfaceProvider();
   }

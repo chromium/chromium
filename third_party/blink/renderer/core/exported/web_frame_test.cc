@@ -65,6 +65,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
@@ -7332,6 +7333,51 @@ TEST_F(WebFrameTest, NavigateToSame) {
   EXPECT_TRUE(client.FrameLoadTypeReloadSeen());
 }
 
+class TestMainFrameIntersectionChanged
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  TestMainFrameIntersectionChanged() = default;
+  ~TestMainFrameIntersectionChanged() override = default;
+
+  // frame_test_helpers::TestWebFrameClient:
+  void OnMainFrameIntersectionChanged(
+      const WebRect& intersection_rect) override {
+    main_frame_intersection_ = intersection_rect;
+  }
+
+  WebRect MainFrameIntersection() const { return main_frame_intersection_; }
+
+ private:
+  WebRect main_frame_intersection_;
+};
+
+TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
+  TestMainFrameIntersectionChanged client;
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeRemote();
+
+  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
+      *helper.RemoteMainFrame(), "frameName", WebFrameOwnerProperties(),
+      nullptr, &client);
+
+  WebFrameWidget* widget = local_frame->FrameWidget();
+  ASSERT_TRUE(widget);
+
+  gfx::Rect viewport_intersection(0, 11, 200, 89);
+  gfx::Rect mainframe_intersection(0, 0, 200, 140);
+  blink::mojom::FrameOcclusionState occlusion_state =
+      blink::mojom::FrameOcclusionState::kUnknown;
+  gfx::Transform transform;
+  transform.Translate(100, 100);
+
+  auto intersection_state = blink::mojom::blink::ViewportIntersectionState(
+      viewport_intersection, mainframe_intersection, gfx::Rect(),
+      occlusion_state, gfx::Size(), gfx::Point(), transform);
+  static_cast<WebFrameWidgetBase*>(widget)->SetRemoteViewportIntersection(
+      intersection_state);
+  EXPECT_EQ(client.MainFrameIntersection(), blink::WebRect(100, 100, 200, 140));
+}
+
 class TestSameDocumentWithImageWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
@@ -10638,21 +10684,24 @@ TEST_F(WebFrameTest, MaxFrames) {
   EXPECT_FALSE(iframe->ContentFrame());
 }
 
-class ViewportIntersectionCatcher
-    : public frame_test_helpers::TestWebRemoteFrameClient {
+class TestViewportIntersection : public FakeRemoteFrameHost {
  public:
-  void UpdateRemoteViewportIntersection(
-      const ViewportIntersectionState& state) override {
-    intersection_state_ = state;
-    frame_test_helpers::TestWebRemoteFrameClient::
-        UpdateRemoteViewportIntersection(state);
-  }
-  const ViewportIntersectionState& GetState() const {
+  TestViewportIntersection() = default;
+  ~TestViewportIntersection() override = default;
+
+  const mojom::blink::ViewportIntersectionStatePtr& GetIntersectionState()
+      const {
     return intersection_state_;
   }
 
+  // FakeRemoteFrameHost:
+  void UpdateViewportIntersection(
+      mojom::blink::ViewportIntersectionStatePtr intersection_state) override {
+    intersection_state_ = std::move(intersection_state);
+  }
+
  private:
-  ViewportIntersectionState intersection_state_;
+  mojom::blink::ViewportIntersectionStatePtr intersection_state_;
 };
 
 TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
@@ -10672,22 +10721,26 @@ TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
 </style>
 <iframe></iframe>
   )HTML");
-  ViewportIntersectionCatcher intersection_catcher;
+  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
+  TestViewportIntersection remote_frame_host;
+  remote_frame_host.Init(remote_frame_client.GetRemoteAssociatedInterfaces());
   WebRemoteFrameImpl* remote_frame =
-      frame_test_helpers::CreateRemote(&intersection_catcher);
+      frame_test_helpers::CreateRemote(&remote_frame_client);
   web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
   web_view->MainFrameImpl()->GetFrame()->View()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
   web_view->MainFrameImpl()->GetFrame()->View()->RunPostLifecycleSteps();
-  ASSERT_TRUE(!intersection_catcher.GetState().viewport_intersection.IsEmpty());
-  EXPECT_TRUE(
-      IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
-          .Contains(intersection_catcher.GetState().viewport_intersection));
-  ASSERT_TRUE(
-      !intersection_catcher.GetState().main_frame_intersection.IsEmpty());
-  EXPECT_TRUE(
-      IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
-          .Contains(intersection_catcher.GetState().main_frame_intersection));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(!remote_frame_host.GetIntersectionState()
+                   ->viewport_intersection.IsEmpty());
+  EXPECT_TRUE(IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
+                  .Contains(IntRect(remote_frame_host.GetIntersectionState()
+                                        ->viewport_intersection)));
+  ASSERT_TRUE(!remote_frame_host.GetIntersectionState()
+                   ->main_frame_intersection.IsEmpty());
+  EXPECT_TRUE(IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
+                  .Contains(IntRect(remote_frame_host.GetIntersectionState()
+                                        ->main_frame_intersection)));
   remote_frame->Detach();
 }
 
@@ -13407,27 +13460,6 @@ TEST_F(WebFrameSimTest, PageOrientation) {
   frame->PrintEnd();
 }
 
-class RemoteFrameIntersectionClient
-    : public frame_test_helpers::TestWebRemoteFrameClient {
- public:
-  RemoteFrameIntersectionClient() = default;
-  ~RemoteFrameIntersectionClient() override = default;
-
-  void UpdateRemoteViewportIntersection(
-      const ViewportIntersectionState& intersection_state) override {
-    intersection_state_ = intersection_state;
-    frame_test_helpers::TestWebRemoteFrameClient::
-        UpdateRemoteViewportIntersection(intersection_state);
-  }
-
-  const ViewportIntersectionState& GetIntersectionState() const {
-    return intersection_state_;
-  }
-
- private:
-  ViewportIntersectionState intersection_state_;
-};
-
 TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -13435,19 +13467,24 @@ TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
       <!DOCTYPE html>
       <iframe id="iframe" style="position:absolute;top:7px;left:13.5px;border:none"></iframe>
   )HTML");
-  RemoteFrameIntersectionClient client;
-  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote(&client);
+  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
+  TestViewportIntersection remote_frame_host;
+  remote_frame_host.Init(remote_frame_client.GetRemoteAssociatedInterfaces());
+  WebRemoteFrame* remote_frame =
+      frame_test_helpers::CreateRemote(&remote_frame_client);
   MainFrame().FirstChild()->Swap(remote_frame);
   Compositor().BeginFrame();
   RunPendingTasks();
-  EXPECT_TRUE(client.GetIntersectionState()
-                  .main_frame_transform.IsIdentityOrIntegerTranslation());
-  EXPECT_EQ(
-      client.GetIntersectionState().main_frame_transform.matrix().get(0, 3),
-      14.f);
-  EXPECT_EQ(
-      client.GetIntersectionState().main_frame_transform.matrix().get(1, 3),
-      7.f);
+  EXPECT_TRUE(remote_frame_host.GetIntersectionState()
+                  ->main_frame_transform.IsIdentityOrIntegerTranslation());
+  EXPECT_EQ(remote_frame_host.GetIntersectionState()
+                ->main_frame_transform.matrix()
+                .get(0, 3),
+            14.f);
+  EXPECT_EQ(remote_frame_host.GetIntersectionState()
+                ->main_frame_transform.matrix()
+                .get(1, 3),
+            7.f);
   MainFrame().FirstChild()->Detach();
 }
 
@@ -13507,13 +13544,14 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   ASSERT_TRUE(widget);
   gfx::Transform viewport_transform;
   viewport_transform.Translate(7, -11);
-  WebRect viewport_intersection(0, 11, 200, 89);
-  WebRect mainframe_intersection(0, 0, 200, 140);
-  FrameOcclusionState occlusion_state = FrameOcclusionState::kUnknown;
+  gfx::Rect viewport_intersection(0, 11, 200, 89);
+  gfx::Rect mainframe_intersection(0, 0, 200, 140);
+  blink::mojom::FrameOcclusionState occlusion_state =
+      blink::mojom::FrameOcclusionState::kUnknown;
 
-  widget->SetRemoteViewportIntersection(
+  static_cast<WebFrameWidgetBase*>(widget)->SetRemoteViewportIntersection(
       {viewport_intersection, mainframe_intersection, viewport_intersection,
-       occlusion_state, WebSize(), gfx::Point(), viewport_transform});
+       occlusion_state, gfx::Size(), gfx::Point(), viewport_transform});
 
   // The viewport intersection should be applied by the layout geometry mapping
   // code when these flags are used.

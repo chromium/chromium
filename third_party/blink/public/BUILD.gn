@@ -155,7 +155,6 @@ source_set("blink_headers") {
     "platform/task_type.h",
     "platform/url_conversion.h",
     "platform/user_metrics_action.h",
-    "platform/viewport_intersection_state.h",
     "platform/weak_wrapper_resource_load_info_notifier.h",
     "platform/web_audio_bus.h",
     "platform/web_audio_device.h",

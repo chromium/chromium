@@ -16,7 +16,7 @@
 #include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
-#include "third_party/blink/public/platform/viewport_intersection_state.h"
+#include "third_party/blink/public/platform/web_float_rect.h"
 #include "ui/base/ime/text_input_action.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ui_base_types.h"
@@ -27,11 +27,6 @@
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
 #define IPC_MESSAGE_START WidgetMsgStart
-
-IPC_STRUCT_TRAITS_BEGIN(blink::WebSize)
-  IPC_STRUCT_TRAITS_MEMBER(width)
-  IPC_STRUCT_TRAITS_MEMBER(height)
-IPC_STRUCT_TRAITS_END()
 
 //
 // Browser -> Renderer Messages.
@@ -52,12 +47,6 @@ IPC_MESSAGE_ROUTED1(WidgetMsg_SetActive, bool /* active */)
 // temporary cache of the widget position while these asynchronous operations
 // are in progress.
 IPC_MESSAGE_ROUTED0(WidgetMsg_SetBounds_ACK)
-
-// Sent by a parent frame to notify its child about the state of the child's
-// intersection with the parent's viewport, primarily for use by the
-// IntersectionObserver API. Also see FrameHostMsg_UpdateViewportIntersection.
-IPC_MESSAGE_ROUTED1(WidgetMsg_SetViewportIntersection,
-                    blink::ViewportIntersectionState /* intersection_state */)
 
 //
 // Renderer -> Browser Messages.
