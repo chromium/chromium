@@ -1184,14 +1184,6 @@ try_.chromium_linux_builder(
     executable = "recipe:tricium_metrics",
 )
 
-# TODO(crbug/1024915): Remove this once coverage is enabled on mac by default
-try_.chromium_mac_builder(
-    name = "mac-coverage-rel",
-    builderless = False,
-    use_clang_coverage = True,
-    goma_jobs = goma.jobs.J150,
-)
-
 try_.chromium_mac_builder(
     name = "mac-osxbeta-rel",
     os = os.MAC_DEFAULT,
