@@ -932,9 +932,6 @@ void GCMClientImpl::Register(
         senders.append(",");
       senders.append(*iter);
     }
-    UMA_HISTOGRAM_COUNTS_1M("GCM.RegistrationSenderIdCount",
-                            gcm_registration_info->sender_ids.size());
-
     request_handler.reset(new GCMRegistrationRequestHandler(senders));
     source_to_record = senders;
   }
