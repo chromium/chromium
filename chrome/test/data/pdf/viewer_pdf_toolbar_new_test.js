@@ -105,6 +105,8 @@ const tests = [
 
   function testZoomButtons() {
     const toolbar = createToolbar();
+    toolbar.zoomBounds = {min: 25, max: 500};
+    toolbar.viewportZoom = 1;
 
     let zoomInCount = 0;
     let zoomOutCount = 0;
@@ -112,6 +114,8 @@ const tests = [
     toolbar.addEventListener('zoom-out', () => zoomOutCount++);
 
     const zoomButtons = getCrIconButtons(toolbar, 'zoom-controls');
+    chrome.test.assertFalse(zoomButtons[0].disabled);
+    chrome.test.assertFalse(zoomButtons[1].disabled);
 
     // Zoom out
     chrome.test.assertEq('pdf:remove', zoomButtons[0].ironIcon);
@@ -119,11 +123,22 @@ const tests = [
     chrome.test.assertEq(0, zoomInCount);
     chrome.test.assertEq(1, zoomOutCount);
 
+    // Set zoom to min. Zoom out is disabled.
+    toolbar.viewportZoom = .25;
+    chrome.test.assertTrue(zoomButtons[0].disabled);
+    chrome.test.assertFalse(zoomButtons[1].disabled);
+
     // Zoom in
     chrome.test.assertEq('pdf:add', zoomButtons[1].ironIcon);
     zoomButtons[1].click();
     chrome.test.assertEq(1, zoomInCount);
     chrome.test.assertEq(1, zoomOutCount);
+
+    // Set zoom to max. Zoom in is disabled.
+    toolbar.zoomBounds = {min: 25, max: 500};
+    toolbar.viewportZoom = 5;
+    chrome.test.assertFalse(zoomButtons[0].disabled);
+    chrome.test.assertTrue(zoomButtons[1].disabled);
 
     chrome.test.succeed();
   },

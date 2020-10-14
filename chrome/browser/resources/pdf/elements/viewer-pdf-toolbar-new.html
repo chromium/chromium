@@ -186,6 +186,7 @@
     </viewer-page-selector>
     <span id="zoom-controls">
       <cr-icon-button iron-icon="pdf:remove" title="$i18n{tooltipZoomOut}"
+          disabled="[[isAtMinimumZoom_(zoomBounds.min, viewportZoomPercent_)]]"
           aria-label="$i18n{tooltipZoomOut}" on-click="onZoomOutClick_">
       </cr-icon-button>
       <input type="text" value="100%"
@@ -194,6 +195,7 @@
           on-blur="onZoomChange_">
       </input>
       <cr-icon-button iron-icon="pdf:add" title="$i18n{tooltipZoomIn}"
+          disabled="[[isAtMaximumZoom_(zoomBounds.max, viewportZoomPercent_)]]"
           aria-label="$i18n{tooltipZoomIn}" on-click="onZoomInClick_">
       </cr-icon-button>
     </span>

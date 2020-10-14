@@ -72,10 +72,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       pdfFormSaveEnabled: Boolean,
       printingEnabled: Boolean,
       rotated: Boolean,
-      viewportZoom: {
-        type: Number,
-        observer: 'viewportZoomChanged_',
-      },
+      viewportZoom: Number,
       /** @type {!{min: number, max: number}} */
       zoomBounds: Object,
 
@@ -93,6 +90,13 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       fitToButtonIcon_: {
         type: String,
         computed: 'computeFitToButtonIcon_(fittingType_)',
+      },
+
+      /** @private */
+      viewportZoomPercent_: {
+        type: Number,
+        computed: 'computeViewportZoomPercent_(viewportZoom)',
+        observer: 'viewportZoomPercentChanged_',
       },
 
       // <if expr="chromeos">
@@ -156,6 +160,14 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   }
 
   /**
+   * @return {number}
+   * @private
+   */
+  computeViewportZoomPercent_() {
+    return Math.round(100 * this.viewportZoom);
+  }
+
+  /**
    * @param {string} fitToPageTooltip
    * @param {string} fitToWidthTooltip
    * @return {string} The appropriate tooltip for the current state
@@ -172,9 +184,8 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   }
 
   /** @private */
-  viewportZoomChanged_() {
-    const zoom = Math.round(this.viewportZoom * 100);
-    this.getZoomInput_().value = `${zoom}%`;
+  viewportZoomPercentChanged_() {
+    this.getZoomInput_().value = `${this.viewportZoomPercent_}%`;
   }
 
   // <if expr="chromeos">
@@ -300,8 +311,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       return;
     }
 
-    const zoom = Math.round(this.viewportZoom * 100);
-    const zoomString = `${zoom}%`;
+    const zoomString = `${this.viewportZoomPercent_}%`;
     input.value = zoomString;
   }
 
@@ -349,6 +359,24 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
    */
   onMoreOpenChanged_(e) {
     this.moreMenuOpen_ = e.detail.value;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isAtMinimumZoom_() {
+    return this.zoomBounds !== undefined &&
+        this.viewportZoomPercent_ === this.zoomBounds.min;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isAtMaximumZoom_() {
+    return this.zoomBounds !== undefined &&
+        this.viewportZoomPercent_ === this.zoomBounds.max;
   }
 
   // <if expr="chromeos">
