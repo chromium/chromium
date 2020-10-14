@@ -11481,7 +11481,7 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for SMSReceiver API.
   </summary>
-  <metric name="Outcome" enum="SMSReceiverOutcome">
+  <metric name="Outcome" enum="WebOTPServiceOutcome">
     <summary>
       Records the result of a call to the SmsReceiver API.
     </summary>
