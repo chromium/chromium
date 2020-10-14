@@ -64,7 +64,13 @@ void FetchHistogramsFromChildProcesses() {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 }
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, SuccessfulLoadUMA, {
+// TODO(crbug.com/1138451): Flaky on Win-32
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_SuccessfulLoadUMA DISABLED_SuccessfulLoadUMA
+#else
+#define MAYBE_SuccessfulLoadUMA SuccessfulLoadUMA
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_SuccessfulLoadUMA, {
   base::HistogramTester histograms;
   // Load a NaCl module to generate UMA data.
   RunLoadTest(FILE_PATH_LITERAL("nacl_load_test.html"));
