@@ -411,7 +411,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructDataPacket(
       uint64_t packet_number,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return client_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kIncludeVersion, !kFin, data);
   }
@@ -420,7 +420,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return client_maker_.MakeAckAndDataPacket(
         packet_number, !kIncludeVersion, client_data_stream_id1_,
         largest_received, smallest_received, !kFin, data);
@@ -446,14 +446,14 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
       uint64_t packet_number,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kIncludeVersion, !kFin, data);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataFinPacket(
       uint64_t packet_number,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
                                         !kIncludeVersion, kFin, data);
   }

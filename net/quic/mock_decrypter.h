@@ -27,24 +27,24 @@ class MockDecrypter : public quic::QuicDecrypter {
   ~MockDecrypter() override {}
 
   // QuicDecrypter implementation
-  bool SetKey(quiche::QuicheStringPiece key) override;
-  bool SetNoncePrefix(quiche::QuicheStringPiece nonce_prefix) override;
-  bool SetHeaderProtectionKey(quiche::QuicheStringPiece key) override;
-  bool SetIV(quiche::QuicheStringPiece iv) override;
-  bool SetPreliminaryKey(quiche::QuicheStringPiece key) override;
+  bool SetKey(absl::string_view key) override;
+  bool SetNoncePrefix(absl::string_view nonce_prefix) override;
+  bool SetHeaderProtectionKey(absl::string_view key) override;
+  bool SetIV(absl::string_view iv) override;
+  bool SetPreliminaryKey(absl::string_view key) override;
   bool SetDiversificationNonce(
       const quic::DiversificationNonce& nonce) override;
   bool DecryptPacket(uint64_t packet_number,
-                     quiche::QuicheStringPiece associated_data,
-                     quiche::QuicheStringPiece ciphertext,
+                     absl::string_view associated_data,
+                     absl::string_view ciphertext,
                      char* output,
                      size_t* output_length,
                      size_t max_output_length) override;
   size_t GetKeySize() const override;
   size_t GetNoncePrefixSize() const override;
   size_t GetIVSize() const override;
-  quiche::QuicheStringPiece GetKey() const override;
-  quiche::QuicheStringPiece GetNoncePrefix() const override;
+  absl::string_view GetKey() const override;
+  absl::string_view GetNoncePrefix() const override;
   std::string GenerateHeaderProtectionMask(
       quic::QuicDataReader* sample_reader) override;
 

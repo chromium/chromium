@@ -10,12 +10,8 @@
 
 namespace quiche {
 
-using QuicheStringPieceImpl = absl::string_view;
-
-using QuicheStringPieceHashImpl = absl::Hash<absl::string_view>;
-
-inline size_t QuicheHashStringPairImpl(QuicheStringPieceImpl a,
-                                       QuicheStringPieceImpl b) {
+inline size_t QuicheHashStringPairImpl(absl::string_view a,
+                                       absl::string_view b) {
   auto pair = std::make_pair(a, b);
   return absl::Hash<decltype(pair)>()(pair);
 }

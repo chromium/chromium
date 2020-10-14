@@ -556,7 +556,7 @@ size_t QuicChromiumClientStream::WriteHeaders(
   return len;
 }
 
-bool QuicChromiumClientStream::WriteStreamData(quiche::QuicheStringPiece data,
+bool QuicChromiumClientStream::WriteStreamData(absl::string_view data,
                                                bool fin) {
   // Must not be called when data is buffered.
   DCHECK(!HasBufferedData());
@@ -574,7 +574,7 @@ bool QuicChromiumClientStream::WritevStreamData(
   // Writes the data, or buffers it.
   for (size_t i = 0; i < buffers.size(); ++i) {
     bool is_fin = fin && (i == buffers.size() - 1);
-    quiche::QuicheStringPiece string_data(buffers[i]->data(), lengths[i]);
+    absl::string_view string_data(buffers[i]->data(), lengths[i]);
     WriteOrBufferBody(string_data, is_fin);
   }
   return !HasBufferedData();  // Was all data written?

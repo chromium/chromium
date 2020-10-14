@@ -9,14 +9,11 @@
 
 namespace quic {
 
-void QuicSaveTestOutputImpl(quiche::QuicheStringPiece filename,
-                            quiche::QuicheStringPiece data);
+void QuicSaveTestOutputImpl(absl::string_view filename, absl::string_view data);
 
-bool QuicLoadTestOutputImpl(quiche::QuicheStringPiece filename,
-                            std::string* data);
+bool QuicLoadTestOutputImpl(absl::string_view filename, std::string* data);
 
-void QuicRecordTraceImpl(quiche::QuicheStringPiece identifier,
-                         quiche::QuicheStringPiece data);
+void QuicRecordTraceImpl(absl::string_view identifier, absl::string_view data);
 
 }  // namespace quic
 

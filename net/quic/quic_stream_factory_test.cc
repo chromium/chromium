@@ -849,7 +849,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, stream_id,
                                         should_include_version, fin, data);
   }

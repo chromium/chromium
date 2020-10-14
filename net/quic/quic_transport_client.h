@@ -127,7 +127,7 @@ class NET_EXPORT QuicTransportClient
   void OnSessionReady() override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
-  void OnDatagramReceived(quiche::QuicheStringPiece datagram) override;
+  void OnDatagramReceived(absl::string_view datagram) override;
   void OnCanCreateNewOutgoingBidirectionalStream() override;
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
 

@@ -28,8 +28,8 @@ class QUIC_EXPORT_PRIVATE QuicMemSliceSpanImpl {
 
   ~QuicMemSliceSpanImpl();
 
-  quiche::QuicheStringPiece GetData(size_t index) {
-    return quiche::QuicheStringPiece(buffers_[index]->data(), lengths_[index]);
+  absl::string_view GetData(size_t index) {
+    return absl::string_view(buffers_[index]->data(), lengths_[index]);
   }
 
   template <typename ConsumeFunction>

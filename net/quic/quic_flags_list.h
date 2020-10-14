@@ -444,9 +444,6 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_do_not_clip_received_error_code,
           false)
 
-// If true, check for NULL before sending a fallback config.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_check_fallback_null, true)
-
 // If true, HTTP/3 sesions will report error and close connection upon receiving
 // HTTP/2 only frames.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_reject_spdy_frames, false)
@@ -474,3 +471,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_fast_huffman_encoder, false)
 
 // When true, QUIC+TLS versions will support key updates.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_key_update_supported, false)
+
+// If true, address is validated by successfully processing a HANDSHAKE or 1-RTT
+// packet.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_address_validation, false)

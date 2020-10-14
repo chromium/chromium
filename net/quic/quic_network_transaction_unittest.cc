@@ -518,7 +518,7 @@ class QuicNetworkTransactionTest
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, stream_id,
                                         should_include_version, fin, data);
   }
@@ -528,7 +528,7 @@ class QuicNetworkTransactionTest
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return client_maker_->MakeDataPacket(packet_number, stream_id,
                                          should_include_version, fin, data);
   }
@@ -540,7 +540,7 @@ class QuicNetworkTransactionTest
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return client_maker_->MakeAckAndDataPacket(packet_number, include_version,
                                                stream_id, largest_received,
                                                smallest_received, fin, data);
@@ -9684,10 +9684,9 @@ TEST_P(QuicNetworkTransactionTest, IncorrectHttp3GoAway) {
       quic::QuicUtils::GetFirstUnidirectionalStreamId(
           version_.transport_version, quic::Perspective::IS_SERVER);
   mock_quic_data.AddRead(
-      ASYNC,
-      ConstructServerDataPacket(
-          read_packet_number++, control_stream_id, false, false,
-          quiche::QuicheStringPiece(goaway_buffer.get(), goaway_length)));
+      ASYNC, ConstructServerDataPacket(
+                 read_packet_number++, control_stream_id, false, false,
+                 absl::string_view(goaway_buffer.get(), goaway_length)));
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientAckAndConnectionClosePacket(
@@ -9761,10 +9760,9 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
       quic::QuicUtils::GetFirstUnidirectionalStreamId(
           version_.transport_version, quic::Perspective::IS_SERVER);
   mock_quic_data1.AddRead(
-      ASYNC,
-      ConstructServerDataPacket(
-          read_packet_number1++, control_stream_id, false, false,
-          quiche::QuicheStringPiece(goaway_buffer.get(), goaway_length)));
+      ASYNC, ConstructServerDataPacket(
+                 read_packet_number1++, control_stream_id, false, false,
+                 absl::string_view(goaway_buffer.get(), goaway_length)));
   mock_quic_data1.AddWrite(
       ASYNC, ConstructClientAckPacket(write_packet_number1++, 2, 1));
 

@@ -105,13 +105,13 @@ class QuicTestPacketMaker {
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
-      quiche::QuicheStringPiece data);
+      absl::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
       bool include_version,
       quic::QuicStreamId data_stream_id,
-      quiche::QuicheStringPiece data,
+      absl::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code);
 
@@ -119,7 +119,7 @@ class QuicTestPacketMaker {
       uint64_t num,
       bool include_version,
       quic::QuicStreamId data_stream_id,
-      quiche::QuicheStringPiece data,
+      absl::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       uint64_t largest_received,
@@ -164,7 +164,7 @@ class QuicTestPacketMaker {
       uint64_t num,
       bool include_version,
       quic::QuicStreamId data_stream_id,
-      quiche::QuicheStringPiece data,
+      absl::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       quic::QuicErrorCode quic_error,
@@ -175,7 +175,7 @@ class QuicTestPacketMaker {
       uint64_t num,
       bool include_version,
       quic::QuicStreamId data_stream_id,
-      quiche::QuicheStringPiece data,
+      absl::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -219,7 +219,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data);
+      absl::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDataPacket(
       uint64_t packet_number,
@@ -228,7 +228,7 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      quiche::QuicheStringPiece data);
+      absl::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeRequestHeadersAndMultipleDataFramesPacket(
@@ -385,12 +385,12 @@ class QuicTestPacketMaker {
   // Use and increase stream's current offset.
   void AddQuicStreamFrame(quic::QuicStreamId stream_id,
                           bool fin,
-                          quiche::QuicheStringPiece data);
+                          absl::string_view data);
   // Use |offset| and do not change stream's current offset.
   void AddQuicStreamFrameWithOffset(quic::QuicStreamId stream_id,
                                     bool fin,
                                     quic::QuicStreamOffset offset,
-                                    quiche::QuicheStringPiece data);
+                                    absl::string_view data);
   void AddQuicAckFrame(uint64_t largest_received, uint64_t smallest_received);
   void AddQuicAckFrame(uint64_t first_received,
                        uint64_t largest_received,

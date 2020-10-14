@@ -607,7 +607,7 @@ class BidirectionalStreamQuicImplTest
       uint64_t packet_number,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     std::unique_ptr<quic::QuicReceivedPacket> packet(
         server_maker_.MakeDataPacket(packet_number, stream_id_,
                                      should_include_version, fin, data));
@@ -619,7 +619,7 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientDataPacket(
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return client_maker_.MakeDataPacket(++packet_number_, stream_id_,
                                         should_include_version, fin, data);
   }
@@ -750,7 +750,7 @@ class BidirectionalStreamQuicImplTest
       uint64_t largest_received,
       uint64_t smallest_received,
       bool fin,
-      quiche::QuicheStringPiece data,
+      absl::string_view data,
       QuicTestPacketMaker* maker) {
     std::unique_ptr<quic::QuicReceivedPacket> packet(
         maker->MakeAckAndDataPacket(packet_number, should_include_version,

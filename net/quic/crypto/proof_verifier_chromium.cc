@@ -68,7 +68,7 @@ class ProofVerifierChromium::Job {
       const uint16_t port,
       const std::string& server_config,
       quic::QuicTransportVersion quic_version,
-      quiche::QuicheStringPiece chlo_hash,
+      absl::string_view chlo_hash,
       const std::vector<std::string>& certs,
       const std::string& cert_sct,
       const std::string& signature,
@@ -119,7 +119,7 @@ class ProofVerifierChromium::Job {
 
   bool VerifySignature(const std::string& signed_data,
                        quic::QuicTransportVersion quic_version,
-                       quiche::QuicheStringPiece chlo_hash,
+                       absl::string_view chlo_hash,
                        const std::string& signature,
                        const std::string& cert);
 
@@ -211,7 +211,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyProof(
     const uint16_t port,
     const string& server_config,
     quic::QuicTransportVersion quic_version,
-    quiche::QuicheStringPiece chlo_hash,
+    absl::string_view chlo_hash,
     const std::vector<string>& certs,
     const std::string& cert_sct,
     const string& signature,
@@ -548,7 +548,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
 bool ProofVerifierChromium::Job::VerifySignature(
     const string& signed_data,
     quic::QuicTransportVersion quic_version,
-    quiche::QuicheStringPiece chlo_hash,
+    absl::string_view chlo_hash,
     const string& signature,
     const string& cert) {
   size_t size_bits;
@@ -624,7 +624,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::VerifyProof(
     const uint16_t port,
     const std::string& server_config,
     quic::QuicTransportVersion quic_version,
-    quiche::QuicheStringPiece chlo_hash,
+    absl::string_view chlo_hash,
     const std::vector<std::string>& certs,
     const std::string& cert_sct,
     const std::string& signature,

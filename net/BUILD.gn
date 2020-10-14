@@ -949,7 +949,6 @@ component("net") {
       "quiche/common/platform/impl/quiche_export_impl.h",
       "quiche/common/platform/impl/quiche_logging_impl.h",
       "quiche/common/platform/impl/quiche_map_util_impl.h",
-      "quiche/common/platform/impl/quiche_optional_impl.h",
       "quiche/common/platform/impl/quiche_ptr_util_impl.h",
       "quiche/common/platform/impl/quiche_str_cat_impl.h",
       "quiche/common/platform/impl/quiche_string_piece_impl.h",

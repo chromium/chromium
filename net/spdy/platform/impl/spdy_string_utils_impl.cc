@@ -8,7 +8,7 @@
 
 namespace spdy {
 
-bool SpdyHexDecodeToUInt32Impl(quiche::QuicheStringPiece data, uint32_t* out) {
+bool SpdyHexDecodeToUInt32Impl(absl::string_view data, uint32_t* out) {
   if (data.empty() || data.size() > 8u)
     return false;
   // Pad with leading zeros.

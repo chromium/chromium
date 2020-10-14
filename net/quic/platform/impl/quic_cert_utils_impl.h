@@ -13,9 +13,8 @@ namespace quic {
 
 class QuicCertUtilsImpl {
  public:
-  static bool ExtractSubjectNameFromDERCert(
-      quiche::QuicheStringPiece cert,
-      quiche::QuicheStringPiece* subject_out) {
+  static bool ExtractSubjectNameFromDERCert(absl::string_view cert,
+                                            absl::string_view* subject_out) {
     base::StringPiece out;
     bool result = net::asn1::ExtractSubjectFromDERCert(
         base::StringViewToStringPiece(cert), &out);

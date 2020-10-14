@@ -60,14 +60,14 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                quic::QuicSpdyStream*(quic::PendingStream* pending));
   MOCK_METHOD0(CreateOutgoingBidirectionalStream, QuicChromiumClientStream*());
   MOCK_METHOD0(CreateOutgoingUnidirectionalStream, QuicChromiumClientStream*());
-  MOCK_METHOD6(WritevData,
-               quic::QuicConsumedData(
-                   quic::QuicStreamId id,
-                   size_t write_length,
-                   quic::QuicStreamOffset offset,
-                   quic::StreamSendingState state,
-                   quic::TransmissionType type,
-                   quiche::QuicheOptional<quic::EncryptionLevel> level));
+  MOCK_METHOD6(
+      WritevData,
+      quic::QuicConsumedData(quic::QuicStreamId id,
+                             size_t write_length,
+                             quic::QuicStreamOffset offset,
+                             quic::StreamSendingState state,
+                             quic::TransmissionType type,
+                             absl::optional<quic::EncryptionLevel> level));
   MOCK_METHOD4(SendRstStream,
                void(quic::QuicStreamId stream_id,
                     quic::QuicRstStreamErrorCode error,
@@ -76,7 +76,7 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
 
   MOCK_METHOD2(OnStreamHeaders,
                void(quic::QuicStreamId stream_id,
-                    quiche::QuicheStringPiece headers_data));
+                    absl::string_view headers_data));
   MOCK_METHOD2(OnStreamHeadersPriority,
                void(quic::QuicStreamId stream_id,
                     const spdy::SpdyStreamPrecedence& precedence));
@@ -84,7 +84,7 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                void(quic::QuicStreamId stream_id, bool fin, size_t frame_len));
   MOCK_METHOD2(OnPromiseHeaders,
                void(quic::QuicStreamId stream_id,
-                    quiche::QuicheStringPiece headers_data));
+                    absl::string_view headers_data));
   MOCK_METHOD3(OnPromiseHeadersComplete,
                void(quic::QuicStreamId stream_id,
                     quic::QuicStreamId promised_stream_id,
@@ -216,13 +216,13 @@ class QuicChromiumClientStreamTest
         "JBCScs_ejbKaqBDoB7ZGxTvqlrB__2ZmnHHjCr8RgMRtKNtIeuZAo ";
   }
 
-  void ReadData(quiche::QuicheStringPiece expected_data) {
+  void ReadData(absl::string_view expected_data) {
     scoped_refptr<IOBuffer> buffer =
         base::MakeRefCounted<IOBuffer>(expected_data.length() + 1);
     EXPECT_EQ(static_cast<int>(expected_data.length()),
               stream_->Read(buffer.get(), expected_data.length() + 1));
-    EXPECT_EQ(expected_data, quiche::QuicheStringPiece(buffer->data(),
-                                                       expected_data.length()));
+    EXPECT_EQ(expected_data,
+              absl::string_view(buffer->data(), expected_data.length()));
   }
 
   quic::QuicHeaderList ProcessHeaders(const spdy::SpdyHeaderBlock& headers) {
@@ -312,7 +312,7 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
   quic::QuicStreamFrame frame2(
       quic::test::GetNthClientInitiatedBidirectionalStreamId(
           version_.transport_version, 0),
-      true, offset, quiche::QuicheStringPiece());
+      true, offset, absl::string_view());
   stream_->OnStreamFrame(frame2);
   EXPECT_TRUE(handle_->fin_received());
   handle_->OnFinRead();
@@ -417,7 +417,7 @@ TEST_P(QuicChromiumClientStreamTest, OnFinRead) {
   quic::QuicStreamFrame frame2(
       quic::test::GetNthClientInitiatedBidirectionalStreamId(
           version_.transport_version, 0),
-      true, offset, quiche::QuicheStringPiece());
+      true, offset, absl::string_view());
   stream_->OnStreamFrame(frame2);
 }
 
@@ -448,8 +448,8 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailable) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(quiche::QuicheStringPiece(data),
-            quiche::QuicheStringPiece(buffer->data(), data_len));
+  EXPECT_EQ(absl::string_view(data),
+            absl::string_view(buffer->data(), data_len));
 }
 
 TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
@@ -483,8 +483,8 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
       /*offset=*/offset, data));
 
   EXPECT_EQ(data_len, callback.WaitForResult());
-  EXPECT_EQ(quiche::QuicheStringPiece(data),
-            quiche::QuicheStringPiece(buffer->data(), data_len));
+  EXPECT_EQ(absl::string_view(data),
+            absl::string_view(buffer->data(), data_len));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -581,8 +581,8 @@ TEST_P(QuicChromiumClientStreamTest, OnTrailers) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(quiche::QuicheStringPiece(data),
-            quiche::QuicheStringPiece(buffer->data(), data_len));
+  EXPECT_EQ(absl::string_view(data),
+            absl::string_view(buffer->data(), data_len));
 
   spdy::SpdyHeaderBlock trailers;
   trailers["bar"] = "foo";
@@ -637,8 +637,8 @@ TEST_P(QuicChromiumClientStreamTest, MarkTrailersConsumedWhenNotifyDelegate) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(quiche::QuicheStringPiece(data),
-            quiche::QuicheStringPiece(buffer->data(), data_len));
+  EXPECT_EQ(absl::string_view(data),
+            absl::string_view(buffer->data(), data_len));
 
   // Read again, and it will be pending.
   EXPECT_THAT(
@@ -700,8 +700,8 @@ TEST_P(QuicChromiumClientStreamTest, ReadAfterTrailersReceivedButNotDelivered) {
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(2 * data_len);
   EXPECT_EQ(data_len,
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
-  EXPECT_EQ(quiche::QuicheStringPiece(data),
-            quiche::QuicheStringPiece(buffer->data(), data_len));
+  EXPECT_EQ(absl::string_view(data),
+            absl::string_view(buffer->data(), data_len));
 
   // Deliver trailers. Delegate notification is posted asynchronously.
   spdy::SpdyHeaderBlock trailers;
@@ -939,8 +939,8 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
   int data_len = base::size(data) - 1;
   scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<IOBuffer>(data_len + 1);
   ASSERT_EQ(data_len, stream2->Read(buffer.get(), data_len + 1));
-  EXPECT_EQ(quiche::QuicheStringPiece(data),
-            quiche::QuicheStringPiece(buffer->data(), data_len));
+  EXPECT_EQ(absl::string_view(data),
+            absl::string_view(buffer->data(), data_len));
 }
 
 // Regression test for https://crbug.com/1043531.

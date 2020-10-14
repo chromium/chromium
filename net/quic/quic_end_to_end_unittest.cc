@@ -170,10 +170,10 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
 
   // Adds an entry to the cache used by the QUIC server to serve
   // responses.
-  void AddToCache(quiche::QuicheStringPiece path,
+  void AddToCache(absl::string_view path,
                   int response_code,
-                  quiche::QuicheStringPiece response_detail,
-                  quiche::QuicheStringPiece body) {
+                  absl::string_view response_detail,
+                  absl::string_view body) {
     memory_cache_backend_.AddSimpleResponse("test.example.com", path,
                                             response_code, body);
   }

@@ -27,7 +27,6 @@ source_set("quiche") {
       "src/common/platform/api/quiche_endian.h",
       "src/common/platform/api/quiche_export.h",
       "src/common/platform/api/quiche_logging.h",
-      "src/common/platform/api/quiche_optional.h",
       "src/common/platform/api/quiche_ptr_util.h",
       "src/common/platform/api/quiche_str_cat.h",
       "src/common/platform/api/quiche_string_piece.h",

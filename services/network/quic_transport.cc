@@ -207,8 +207,8 @@ class QuicTransport::Stream final {
       }
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
-      bool send_result = outgoing_->Write(quiche::QuicheStringPiece(
-          reinterpret_cast<const char*>(data), available));
+      bool send_result = outgoing_->Write(
+          absl::string_view(reinterpret_cast<const char*>(data), available));
       if (!send_result) {
         // TODO(yhirano): Handle this failure.
         readable_->EndReadData(0);

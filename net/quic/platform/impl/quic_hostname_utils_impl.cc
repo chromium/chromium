@@ -12,7 +12,7 @@
 namespace quic {
 
 // static
-bool QuicHostnameUtilsImpl::IsValidSNI(quiche::QuicheStringPiece sni) {
+bool QuicHostnameUtilsImpl::IsValidSNI(absl::string_view sni) {
   // TODO(rtenneti): Support RFC2396 hostname.
   // NOTE: Microsoft does NOT enforce this spec, so if we throw away hostnames
   // based on the above spec, we may be losing some hostnames that windows
@@ -28,7 +28,7 @@ bool QuicHostnameUtilsImpl::IsValidSNI(quiche::QuicheStringPiece sni) {
 
 // static
 std::string QuicHostnameUtilsImpl::NormalizeHostname(
-    quiche::QuicheStringPiece hostname) {
+    absl::string_view hostname) {
   url::CanonHostInfo host_info;
   std::string host(net::CanonicalizeHost(
       base::StringPiece(hostname.data(), hostname.size()), &host_info));

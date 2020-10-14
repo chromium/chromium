@@ -47,7 +47,6 @@ using quic::QuicSpdyClientSessionBase;
 using quic::QuicTagVector;
 using quic::QuicTime;
 using quic::TransportParameters;
-using quiche::QuicheStringPiece;
 using std::string;
 
 namespace net {

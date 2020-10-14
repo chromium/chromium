@@ -52,7 +52,7 @@ class HpackFuzzUtil {
 
   // Returns true if the next header block was set at |out|. Returns
   // false if no input header blocks remain.
-  static bool NextHeaderBlock(Input* input, quiche::QuicheStringPiece* out);
+  static bool NextHeaderBlock(Input* input, absl::string_view* out);
 
   // Returns the serialized header block length prefix for a block of
   // |block_size| bytes.
@@ -73,9 +73,8 @@ class HpackFuzzUtil {
   // Runs |input_block| through |first_stage| and, iff that succeeds,
   // |second_stage| and |third_stage| as well. Returns whether all stages
   // processed the input without error.
-  static bool RunHeaderBlockThroughFuzzerStages(
-      FuzzerContext* context,
-      quiche::QuicheStringPiece input_block);
+  static bool RunHeaderBlockThroughFuzzerStages(FuzzerContext* context,
+                                                absl::string_view input_block);
 
   // Flips random bits within |buffer|. The total number of flips is
   // |flip_per_thousand| bits for every 1,024 bytes of |buffer_length|,

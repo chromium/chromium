@@ -382,8 +382,7 @@ void QuicTransportClient::OnIncomingUnidirectionalStreamAvailable() {
   visitor_->OnIncomingUnidirectionalStreamAvailable();
 }
 
-void QuicTransportClient::OnDatagramReceived(
-    quiche::QuicheStringPiece datagram) {
+void QuicTransportClient::OnDatagramReceived(absl::string_view datagram) {
   visitor_->OnDatagramReceived(base::StringViewToStringPiece(datagram));
 }
 

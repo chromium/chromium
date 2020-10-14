@@ -85,7 +85,7 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
       const uint16_t port,
       const std::string& server_config,
       quic::QuicTransportVersion quic_version,
-      quiche::QuicheStringPiece chlo_hash,
+      absl::string_view chlo_hash,
       const std::vector<std::string>& certs,
       const std::string& cert_sct,
       const std::string& signature,

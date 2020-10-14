@@ -41,15 +41,15 @@ inline std::string Http2HexEncodeImpl(const void* bytes, size_t size) {
   return base::HexEncode(bytes, size);
 }
 
-inline std::string Http2HexDecodeImpl(quiche::QuicheStringPiece data) {
+inline std::string Http2HexDecodeImpl(absl::string_view data) {
   return quiche::QuicheTextUtils::HexDecode(data);
 }
 
-inline std::string Http2HexDumpImpl(quiche::QuicheStringPiece data) {
+inline std::string Http2HexDumpImpl(absl::string_view data) {
   return quiche::QuicheTextUtils::HexDump(data);
 }
 
-inline std::string Http2HexEscapeImpl(quiche::QuicheStringPiece data) {
+inline std::string Http2HexEscapeImpl(absl::string_view data) {
   return net::EscapeQueryParamValue(base::StringViewToStringPiece(data), false);
 }
 

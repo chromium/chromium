@@ -1687,7 +1687,7 @@ void QuicChromiumClientSession::OnCryptoHandshakeMessageReceived(
     UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.RejectLength",
                                 message.GetSerialized().length(), 1000, 10000,
                                 50);
-    quiche::QuicheStringPiece proof;
+    absl::string_view proof;
     UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.RejectHasProof",
                           message.GetStringPiece(quic::kPROF, &proof));
   }

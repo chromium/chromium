@@ -267,7 +267,7 @@ QuicTestPacketMaker::MakeRstAndDataPacket(
     quic::QuicStreamId rst_stream_id,
     quic::QuicRstStreamErrorCode rst_error_code,
     quic::QuicStreamId data_stream_id,
-    quiche::QuicheStringPiece data) {
+    absl::string_view data) {
   InitializeHeader(num, include_version);
 
   AddQuicRstStreamFrame(rst_stream_id, rst_error_code);
@@ -286,7 +286,7 @@ QuicTestPacketMaker::MakeDataAndRstPacket(
     uint64_t num,
     bool include_version,
     quic::QuicStreamId data_stream_id,
-    quiche::QuicheStringPiece data,
+    absl::string_view data,
     quic::QuicStreamId rst_stream_id,
     quic::QuicRstStreamErrorCode rst_error_code) {
   InitializeHeader(num, include_version);
@@ -306,7 +306,7 @@ QuicTestPacketMaker::MakeDataRstAndAckPacket(
     uint64_t num,
     bool include_version,
     quic::QuicStreamId data_stream_id,
-    quiche::QuicheStringPiece data,
+    absl::string_view data,
     quic::QuicStreamId rst_stream_id,
     quic::QuicRstStreamErrorCode rst_error_code,
     uint64_t largest_received,
@@ -415,7 +415,7 @@ QuicTestPacketMaker::MakeDataRstAndConnectionClosePacket(
     uint64_t num,
     bool include_version,
     quic::QuicStreamId data_stream_id,
-    quiche::QuicheStringPiece data,
+    absl::string_view data,
     quic::QuicStreamId rst_stream_id,
     quic::QuicRstStreamErrorCode error_code,
     quic::QuicErrorCode quic_error,
@@ -439,7 +439,7 @@ QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
     uint64_t num,
     bool include_version,
     quic::QuicStreamId data_stream_id,
-    quiche::QuicheStringPiece data,
+    absl::string_view data,
     quic::QuicStreamId rst_stream_id,
     quic::QuicRstStreamErrorCode error_code,
     uint64_t largest_received,
@@ -520,7 +520,7 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeDataPacket(
     quic::QuicStreamId stream_id,
     bool should_include_version,
     bool fin,
-    quiche::QuicheStringPiece data) {
+    absl::string_view data) {
   InitializeHeader(packet_number, should_include_version);
   AddQuicStreamFrame(stream_id, fin, data);
   return BuildPacket();
@@ -533,7 +533,7 @@ QuicTestPacketMaker::MakeAckAndDataPacket(uint64_t packet_number,
                                           uint64_t largest_received,
                                           uint64_t smallest_received,
                                           bool fin,
-                                          quiche::QuicheStringPiece data) {
+                                          absl::string_view data) {
   InitializeHeader(packet_number, include_version);
 
   AddQuicAckFrame(largest_received, smallest_received);
@@ -580,14 +580,12 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
   if (spdy_headers_frame_length) {
     *spdy_headers_frame_length = spdy_frame.size();
   }
-  AddQuicStreamFrame(
-      GetHeadersStreamId(), false,
-      quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+  AddQuicStreamFrame(GetHeadersStreamId(), false,
+                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
   for (size_t i = 0; i < data_writes.size(); ++i) {
     bool is_fin = fin && (i == data_writes.size() - 1);
-    AddQuicStreamFrame(stream_id, is_fin,
-                       quiche::QuicheStringPiece(data_writes[i]));
+    AddQuicStreamFrame(stream_id, is_fin, absl::string_view(data_writes[i]));
   }
 
   return BuildPacket();
@@ -625,9 +623,8 @@ QuicTestPacketMaker::MakeRequestHeadersPacket(
       stream_id, fin, priority, std::move(headers), parent_stream_id);
   if (spdy_headers_frame_length)
     *spdy_headers_frame_length = spdy_frame.size();
-  AddQuicStreamFrame(
-      GetHeadersStreamId(), false,
-      quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+  AddQuicStreamFrame(GetHeadersStreamId(), false,
+                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
   return BuildPacket();
 }
@@ -665,9 +662,8 @@ QuicTestPacketMaker::MakeRequestHeadersAndRstPacket(
   if (spdy_headers_frame_length) {
     *spdy_headers_frame_length = spdy_frame.size();
   }
-  AddQuicStreamFrame(
-      GetHeadersStreamId(), false,
-      quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+  AddQuicStreamFrame(GetHeadersStreamId(), false,
+                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
   AddQuicRstStreamFrame(stream_id, error_code);
 
@@ -714,9 +710,8 @@ QuicTestPacketMaker::MakePushPromisePacket(
   if (spdy_headers_frame_length) {
     *spdy_headers_frame_length = spdy_frame.size();
   }
-  AddQuicStreamFrame(
-      GetHeadersStreamId(), false,
-      quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+  AddQuicStreamFrame(GetHeadersStreamId(), false,
+                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
   return BuildPacket();
 }
@@ -748,9 +743,8 @@ QuicTestPacketMaker::MakeResponseHeadersPacket(
   if (spdy_headers_frame_length) {
     *spdy_headers_frame_length = spdy_frame.size();
   }
-  AddQuicStreamFrame(
-      GetHeadersStreamId(), false,
-      quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+  AddQuicStreamFrame(GetHeadersStreamId(), false,
+                     absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
   return BuildPacket();
 }
@@ -767,9 +761,8 @@ QuicTestPacketMaker::MakeInitialSettingsPacket(uint64_t packet_number) {
                               quic::kDefaultMaximumBlockedStreams);
     spdy::SpdySerializedFrame spdy_frame(
         spdy_request_framer_.SerializeFrame(settings_frame));
-    AddQuicStreamFrame(
-        GetHeadersStreamId(), false,
-        quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+    AddQuicStreamFrame(GetHeadersStreamId(), false,
+                       absl::string_view(spdy_frame.data(), spdy_frame.size()));
     return BuildPacket();
   }
 
@@ -797,9 +790,8 @@ QuicTestPacketMaker::MakePriorityPacket(uint64_t packet_number,
                                         exclusive);
     spdy::SpdySerializedFrame spdy_frame(
         spdy_request_framer_.SerializeFrame(priority_frame));
-    AddQuicStreamFrame(
-        GetHeadersStreamId(), false,
-        quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+    AddQuicStreamFrame(GetHeadersStreamId(), false,
+                       absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
     return BuildPacket();
   }
@@ -835,9 +827,8 @@ QuicTestPacketMaker::MakeAckAndPriorityPacket(
                                         exclusive);
     spdy::SpdySerializedFrame spdy_frame(
         spdy_request_framer_.SerializeFrame(priority_frame));
-    AddQuicStreamFrame(
-        GetHeadersStreamId(), false,
-        quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
+    AddQuicStreamFrame(GetHeadersStreamId(), false,
+                       absl::string_view(spdy_frame.data(), spdy_frame.size()));
 
     return BuildPacket();
   }
@@ -1106,7 +1097,7 @@ void QuicTestPacketMaker::AddQuicStreamsBlockedFrame(
 
 void QuicTestPacketMaker::AddQuicStreamFrame(quic::QuicStreamId stream_id,
                                              bool fin,
-                                             quiche::QuicheStringPiece data) {
+                                             absl::string_view data) {
   AddQuicStreamFrameWithOffset(stream_id, fin, stream_offsets_[stream_id],
                                data);
   stream_offsets_[stream_id] += data.length();
@@ -1116,10 +1107,10 @@ void QuicTestPacketMaker::AddQuicStreamFrameWithOffset(
     quic::QuicStreamId stream_id,
     bool fin,
     quic::QuicStreamOffset offset,
-    quiche::QuicheStringPiece data) {
+    absl::string_view data) {
   // Save the stream data so that callers can use temporary objects for data.
   saved_stream_data_.push_back(std::make_unique<std::string>(data));
-  quiche::QuicheStringPiece saved_data = *saved_stream_data_.back();
+  absl::string_view saved_data = *saved_stream_data_.back();
 
   quic::QuicStreamFrame stream_frame(stream_id, fin, offset, saved_data);
   frames_.push_back(quic::QuicFrame(stream_frame));

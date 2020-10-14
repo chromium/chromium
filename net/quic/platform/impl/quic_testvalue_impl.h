@@ -10,7 +10,7 @@
 namespace quic {
 
 template <class T>
-void AdjustTestValueImpl(quiche::QuicheStringPiece label, T* var) {}
+void AdjustTestValueImpl(absl::string_view label, T* var) {}
 
 }  // namespace quic
 

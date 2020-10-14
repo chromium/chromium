@@ -465,7 +465,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       uint64_t packet_number,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return client_maker_.MakeDataPacket(packet_number, stream_id_,
                                         should_include_version, fin, data);
   }
@@ -474,7 +474,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       uint64_t packet_number,
       bool should_include_version,
       bool fin,
-      quiche::QuicheStringPiece data) {
+      absl::string_view data) {
     return server_maker_.MakeDataPacket(packet_number, stream_id_,
                                         should_include_version, fin, data);
   }

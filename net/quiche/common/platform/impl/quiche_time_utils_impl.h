@@ -8,11 +8,11 @@
 #include <cstdint>
 
 #include "net/base/net_export.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quiche {
 
-NET_EXPORT_PRIVATE QuicheOptional<int64_t> QuicheUtcDateTimeToUnixSecondsImpl(
+NET_EXPORT_PRIVATE absl::optional<int64_t> QuicheUtcDateTimeToUnixSecondsImpl(
     int year,
     int month,
     int day,
