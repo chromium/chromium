@@ -97,6 +97,20 @@ public class ActivityTabStartupMetricsTracker {
         mShouldTrackStartupMetrics = true;
     }
 
+    /**
+     * Cancels tracking the startup metrics.
+     * Must only be called on the UI thread.
+     */
+    public void cancelTrackingStartupMetrics() {
+        if (!mShouldTrackStartupMetrics) return;
+
+        // Ensure we haven't tried to record metrics already.
+        assert mFirstCommitTimeMs == 0;
+
+        mHistogramSuffix = null;
+        mShouldTrackStartupMetrics = false;
+    }
+
     public void destroy() {
         mShouldTrackStartupMetrics = false;
         if (mTabModelSelectorTabObserver != null) {
