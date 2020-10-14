@@ -316,6 +316,13 @@
       ],
     },
   },
+  'ios_restart_device': {
+    '$mixin_append': {
+      'args': [
+        '--restart',
+      ],
+    },
+  },
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },

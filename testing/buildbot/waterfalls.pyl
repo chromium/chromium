@@ -1647,6 +1647,8 @@
           'url_unittests'
         ],
         'mixins': [
+          'ios_restart_device',
+          'limited_capacity_bot',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',

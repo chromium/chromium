@@ -41984,6 +41984,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42014,6 +42015,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42026,6 +42028,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42056,6 +42059,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42068,6 +42072,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42098,6 +42103,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42110,6 +42116,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42140,6 +42147,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42152,6 +42160,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42182,6 +42191,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42194,6 +42204,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42224,6 +42235,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42236,6 +42248,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42266,6 +42279,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42278,6 +42292,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42308,6 +42323,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42320,6 +42336,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42350,6 +42367,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42362,6 +42380,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42392,6 +42411,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42404,6 +42424,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42434,6 +42455,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42446,6 +42468,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42476,6 +42499,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42488,6 +42512,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42518,6 +42543,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42530,6 +42556,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42560,6 +42587,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42572,6 +42600,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42602,6 +42631,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42614,6 +42644,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42644,6 +42675,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42656,6 +42688,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42686,6 +42719,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
@@ -42698,6 +42732,7 @@
       },
       {
         "args": [
+          "--restart",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -42728,6 +42763,7 @@
               "os": "Mac-10.15"
             }
           ],
+          "expiration": 21600,
           "named_caches": [
             {
               "name": "xcode_ios_12a7209",
