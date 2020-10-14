@@ -266,7 +266,8 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
 
   if (event_data->event_type() ==
       gallium::castos::OnAccessibilityEventRequest_EventType_CONTENT_CHANGED) {
-    current_tree_serializer_->InvalidateSubtree(GetFromId(event.id));
+    current_tree_serializer_->InvalidateSubtree(
+        GetFromId(event_data->source_id()));
   }
 
   if (event_data->event_type() !=
@@ -294,8 +295,8 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     HandleRoutes(&event_bundle.events);
 
     event_bundle.updates.emplace_back();
-    current_tree_serializer_->SerializeChanges(GetFromId(event.id),
-                                               &event_bundle.updates.back());
+    current_tree_serializer_->SerializeChanges(
+        GetFromId(event_data->source_id()), &event_bundle.updates.back());
 
     HandleLiveRegions(&event_bundle.events);
 
