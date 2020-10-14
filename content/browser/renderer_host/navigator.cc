@@ -138,8 +138,8 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
   // this method should take this into account.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   SiteInfo site_info = site_instance->DeriveSiteInfo(url_info);
-  bool should_lock_process = site_info.ShouldLockProcessToSite(
-      site_instance->GetIsolationContext(), site_instance->IsGuest());
+  bool should_lock_process =
+      site_info.ShouldLockProcessToSite(site_instance->GetIsolationContext());
 
   // If the |render_frame_host| has any WebUI bindings, disallow URLs that are
   // not allowed in a WebUI renderer process.

@@ -339,26 +339,20 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // its SiteInstance site URL, and its process would be locked to
   // |site_info.lock_url()|. Site and lock urls may differ in cases where
   // an effective URL is not the actual site that the process is locked to,
-  // which happens for hosted apps. |is_guest| should be set to true if the call
-  // is being made for a <webview> guest SiteInstance.
-  // TODO(wjmaclean): move is_guest into SiteInfo at some point.
+  // which happens for hosted apps.
   static bool IsSuitableHost(RenderProcessHost* host,
                              const IsolationContext& isolation_context,
-                             const SiteInfo& site_info,
-                             bool is_guest);
+                             const SiteInfo& site_info);
 
   // Returns an existing RenderProcessHost for |site_info| in
   // |isolation_context|, if one exists.  Otherwise a new RenderProcessHost
   // should be created and registered using RegisterProcessHostForSite(). This
   // should only be used for process-per-site mode, which can be enabled
   // globally with a command line flag or per-site, as determined by
-  // SiteInstanceImpl::ShouldUseProcessPerSite. |is_guest| should be set to
-  // true if the call is being made for a <webview> guest SiteInstance.
-  // TODO(wjmaclean): Move is_guest into SiteInfo at some point.
+  // SiteInstanceImpl::ShouldUseProcessPerSite.
   static RenderProcessHost* GetSoleProcessHostForSite(
       const IsolationContext& isolation_context,
-      const SiteInfo& site_info,
-      const bool is_guest);
+      const SiteInfo& site_info);
 
   // Registers the given |process| to be used for all sites identified by
   // |site_instance| within its BrowserContext. This should only be used for

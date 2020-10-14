@@ -54,6 +54,7 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo CreateForErrorPage();
   static SiteInfo CreateForDefaultSiteInstance(
       const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+  static SiteInfo CreateForGuest(const GURL& guest_site_url);
 
   // The SiteInfo constructor should take in all values needed for comparing two
   // SiteInfos, to help ensure all creation sites are updated accordingly when
@@ -62,7 +63,8 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
            bool is_origin_keyed,
-           const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+           const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+           bool is_guest = false);
   SiteInfo();
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -120,6 +122,8 @@ class CONTENT_EXPORT SiteInfo {
     return coop_coep_cross_origin_isolated_info_;
   }
 
+  bool is_guest() const { return is_guest_; }
+
   // Returns false if the site_url() is empty.
   bool is_empty() const { return site_url().possibly_invalid_spec().empty(); }
 
@@ -153,11 +157,7 @@ class CONTENT_EXPORT SiteInfo {
   // be reused for different extensions.  Most of these special cases should
   // eventually be removed, and this function should become equivalent to
   // RequiresDedicatedProcess().
-  //
-  // |is_guest| should be set to true if the call is being made for a <webview>
-  // guest SiteInstance(i.e. SiteInstance::IsGuest() returns true).
-  bool ShouldLockProcessToSite(const IsolationContext& isolation_context,
-                               const bool is_guest) const;
+  bool ShouldLockProcessToSite(const IsolationContext& isolation_context) const;
 
  private:
   static auto MakeTie(const SiteInfo& site_info);
@@ -179,6 +179,9 @@ class CONTENT_EXPORT SiteInfo {
   // process allocation decisions.
   CoopCoepCrossOriginIsolatedInfo coop_coep_cross_origin_isolated_info_ =
       CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+
+  // Indicates this SiteInfo is for a <webview> guest.
+  bool is_guest_ = false;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
@@ -751,10 +754,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   // Whether the SiteInstance was created for a service worker.
   bool is_for_service_worker_;
-
-  // Whether the SiteInstance was created for a <webview> guest.
-  // TODO(734722): Move this into the SecurityPrincipal once it is available.
-  bool is_guest_;
 
   // How |this| was last assigned to a renderer process.
   SiteInstanceProcessAssignment process_assignment_;

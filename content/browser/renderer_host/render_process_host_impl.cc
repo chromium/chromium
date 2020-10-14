@@ -861,7 +861,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       if (!host->MayReuseHost() ||
           !RenderProcessHostImpl::IsSuitableHost(
               host, site_instance->GetIsolationContext(),
-              site_instance->GetSiteInfo(), site_instance->IsGuest())) {
+              site_instance->GetSiteInfo())) {
         continue;
       }
 
@@ -1067,10 +1067,9 @@ class UnmatchedServiceWorkerProcessTracker
     // |site_instance|, for example if it was used for a ServiceWorker for a
     // nonexistent extension URL.  See https://crbug.com/782349 and
     // https://crbug.com/780661.
-    if (!host->MayReuseHost() ||
-        !RenderProcessHostImpl::IsSuitableHost(
-            host, site_instance->GetIsolationContext(),
-            site_instance->GetSiteInfo(), site_instance->IsGuest()))
+    if (!host->MayReuseHost() || !RenderProcessHostImpl::IsSuitableHost(
+                                     host, site_instance->GetIsolationContext(),
+                                     site_instance->GetSiteInfo()))
       return nullptr;
 
     site_process_set_.erase(site_process_pair);
@@ -4095,8 +4094,7 @@ void RenderProcessHostImpl::FilterURL(RenderProcessHost* rph,
 bool RenderProcessHostImpl::IsSuitableHost(
     RenderProcessHost* host,
     const IsolationContext& isolation_context,
-    const SiteInfo& site_info,
-    const bool is_guest) {
+    const SiteInfo& site_info) {
   BrowserContext* browser_context =
       isolation_context.browser_or_resource_context().ToBrowserContext();
   DCHECK(browser_context);
@@ -4113,9 +4111,9 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // and non-guest storage gets mixed. In the future, we might consider
   // enabling the sharing of guests, in this case this check should be removed
   // and InSameStoragePartition should handle the possible sharing. Also
-  // deny any attempt where a guest request tries to use a |host| that is not
+  // deny any attempt where a guest SiteInfo tries to use a |host| that is not
   // explicitly created for guests.
-  if (host->IsForGuestsOnly() || is_guest)
+  if (host->IsForGuestsOnly() || site_info.is_guest())
     return false;
 
   // Check whether the given host and the intended site_url will be using the
@@ -4151,7 +4149,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
       // destination that doesn't require a dedicated process, even for the
       // same site. This can happen with dynamic isolated origins (see
       // https://crbug.com/950453).
-      if (!site_info.ShouldLockProcessToSite(isolation_context, is_guest))
+      if (!site_info.ShouldLockProcessToSite(isolation_context))
         return false;
 
       // If the destination requires a different process lock, this process
@@ -4169,7 +4167,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
       }
 
       if (!host->IsUnused() &&
-          site_info.ShouldLockProcessToSite(isolation_context, is_guest)) {
+          site_info.ShouldLockProcessToSite(isolation_context)) {
         // If this process has been used to host any other content, it cannot
         // be reused if the destination site requires a dedicated process and
         // should use a process locked to just that site.
@@ -4277,7 +4275,7 @@ RenderProcessHost* RenderProcessHostImpl::GetExistingProcessHost(
     if (iter.GetCurrentValue()->MayReuseHost() &&
         RenderProcessHostImpl::IsSuitableHost(
             iter.GetCurrentValue(), site_instance->GetIsolationContext(),
-            site_instance->GetSiteInfo(), site_instance->IsGuest())) {
+            site_instance->GetSiteInfo())) {
       // The spare is always considered before process reuse.
       DCHECK_NE(iter.GetCurrentValue(),
                 SpareRenderProcessHostManager::GetInstance()
@@ -4323,7 +4321,7 @@ RenderProcessHost* RenderProcessHostImpl::GetUnusedProcessHostForServiceWorker(
         iter.GetCurrentValue()->IsUnused() &&
         RenderProcessHostImpl::IsSuitableHost(
             iter.GetCurrentValue(), site_instance->GetIsolationContext(),
-            site_instance->GetSiteInfo(), site_instance->IsGuest())) {
+            site_instance->GetSiteInfo())) {
       return host;
     }
     iter.Advance();
@@ -4358,8 +4356,7 @@ bool RenderProcessHostImpl::ShouldUseProcessPerSite(
 // static
 RenderProcessHost* RenderProcessHostImpl::GetSoleProcessHostForSite(
     const IsolationContext& isolation_context,
-    const SiteInfo& site_info,
-    const bool is_guest) {
+    const SiteInfo& site_info) {
   // Look up the map of site to process for the given browser_context.
   SiteProcessMap* map = GetSiteProcessMapForBrowserContext(
       isolation_context.browser_or_resource_context().ToBrowserContext());
@@ -4369,7 +4366,7 @@ RenderProcessHost* RenderProcessHostImpl::GetSoleProcessHostForSite(
   // Note that IsSuitableHost expects a SiteInfo rather than the full |url|.
   RenderProcessHost* host = map->FindProcess(site_info);
   if (host && (!host->MayReuseHost() ||
-               !IsSuitableHost(host, isolation_context, site_info, is_guest))) {
+               !IsSuitableHost(host, isolation_context, site_info))) {
     // The registered process does not have an appropriate set of bindings for
     // the url.  Remove it from the map so we can register a better one.
     RecordAction(
@@ -4413,9 +4410,8 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // First, attempt to reuse an existing RenderProcessHost if necessary.
   switch (process_reuse_policy) {
     case SiteInstanceImpl::ProcessReusePolicy::PROCESS_PER_SITE:
-      render_process_host =
-          GetSoleProcessHostForSite(site_instance->GetIsolationContext(),
-                                    site_info, site_instance->IsGuest());
+      render_process_host = GetSoleProcessHostForSite(
+          site_instance->GetIsolationContext(), site_info);
       break;
     case SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE:
       render_process_host =
@@ -4497,8 +4493,8 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // site.
   if (render_process_host &&
       !RenderProcessHostImpl::IsSuitableHost(
-          render_process_host, site_instance->GetIsolationContext(), site_info,
-          site_instance->IsGuest())) {
+          render_process_host, site_instance->GetIsolationContext(),
+          site_info)) {
     base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                    site_info.GetDebugString());
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(

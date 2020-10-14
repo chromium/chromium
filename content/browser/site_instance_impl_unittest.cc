@@ -1089,7 +1089,7 @@ TEST_F(SiteInstanceTest, NoProcessPerSiteForEmptySite) {
   host.reset(instance->GetProcess());
 
   EXPECT_FALSE(RenderProcessHostImpl::GetSoleProcessHostForSite(
-      instance->GetIsolationContext(), SiteInfo(), false));
+      instance->GetIsolationContext(), SiteInfo()));
 
   DrainMessageLoop();
 }

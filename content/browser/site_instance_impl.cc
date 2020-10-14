@@ -66,7 +66,8 @@ SiteInfo SiteInfo::CreateForErrorPage() {
   return SiteInfo(GURL(content::kUnreachableWebDataURL),
                   GURL(content::kUnreachableWebDataURL),
                   false /* is_origin_keyed */,
-                  CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+                  CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+                  false /* is_guest */);
 }
 
 // static
@@ -74,7 +75,18 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
     const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
   return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
                   SiteInstanceImpl::GetDefaultSiteURL(),
-                  false /* is_origin_keyed */, cross_origin_isolated_info);
+                  false /* is_origin_keyed */, cross_origin_isolated_info,
+                  false /* is_guest */);
+}
+
+// static
+SiteInfo SiteInfo::CreateForGuest(const GURL& guest_site_url) {
+  // Setting site and lock directly without the site URL conversions we
+  // do for user provided URLs. Callers expect GetSiteURL() to return the
+  // value they provide in |guest_site_url|.
+  return SiteInfo(guest_site_url, guest_site_url, false /* is_origin_keyed */,
+                  CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+                  true /* is_guest */);
 }
 
 SiteInfo::SiteInfo() = default;
@@ -86,18 +98,21 @@ SiteInfo::SiteInfo(
     const GURL& site_url,
     const GURL& process_lock_url,
     bool is_origin_keyed,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info)
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+    bool is_guest)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       is_origin_keyed_(is_origin_keyed),
-      coop_coep_cross_origin_isolated_info_(cross_origin_isolated_info) {}
+      coop_coep_cross_origin_isolated_info_(cross_origin_isolated_info),
+      is_guest_(is_guest) {}
 
 // static
 auto SiteInfo::MakeTie(const SiteInfo& site_info) {
   return std::tie(site_info.site_url_.possibly_invalid_spec(),
                   site_info.process_lock_url_.possibly_invalid_spec(),
                   site_info.is_origin_keyed_,
-                  site_info.coop_coep_cross_origin_isolated_info_);
+                  site_info.coop_coep_cross_origin_isolated_info_,
+                  site_info.is_guest_);
 }
 
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
@@ -182,8 +197,7 @@ bool SiteInfo::RequiresDedicatedProcess(
 }
 
 bool SiteInfo::ShouldLockProcessToSite(
-    const IsolationContext& isolation_context,
-    const bool is_guest) const {
+    const IsolationContext& isolation_context) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* browser_context =
       isolation_context.browser_or_resource_context().ToBrowserContext();
@@ -206,7 +220,7 @@ bool SiteInfo::ShouldLockProcessToSite(
   // and StoragePartition information in SiteInfo instead of packing this info
   // into the guest site URL. Once we have these capabilities we won't need to
   // restrict guests to a single SiteInstance.
-  if (is_guest)
+  if (is_guest_)
     return false;
 
   // Most WebUI processes should be locked on all platforms.  The only exception
@@ -238,7 +252,6 @@ SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
       has_site_(false),
       process_reuse_policy_(ProcessReusePolicy::DEFAULT),
       is_for_service_worker_(false),
-      is_guest_(false),
       process_assignment_(SiteInstanceProcessAssignment::UNKNOWN) {
   DCHECK(browsing_instance);
 }
@@ -333,19 +346,14 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
     const GURL& guest_site_url) {
   DCHECK(browser_context);
   DCHECK_NE(guest_site_url, GetDefaultSiteURL());
+
+  auto guest_site_info = SiteInfo::CreateForGuest(guest_site_url);
   scoped_refptr<SiteInstanceImpl> site_instance =
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
           browser_context,
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated())));
+          guest_site_info.coop_coep_cross_origin_isolated_info())));
 
-  site_instance->is_guest_ = true;
-
-  // Setting site and lock directly without the site URL conversions we
-  // do for user provided URLs. Callers expect GetSiteURL() to return the
-  // value they provide in |guest_site_url|.
-  site_instance->SetSiteInfoInternal(
-      SiteInfo(guest_site_url, guest_site_url, false /* is_origin_keyed */,
-               site_instance->GetCoopCoepCrossOriginIsolatedInfo()));
+  site_instance->SetSiteInfoInternal(guest_site_info);
 
   return site_instance;
 }
@@ -447,7 +455,7 @@ bool SiteInstanceImpl::HasProcess() {
       RenderProcessHostImpl::ShouldUseProcessPerSite(browser_context,
                                                      site_info_) &&
       RenderProcessHostImpl::GetSoleProcessHostForSite(GetIsolationContext(),
-                                                       site_info_, IsGuest())) {
+                                                       site_info_)) {
     return true;
   }
 
@@ -521,7 +529,7 @@ void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
   // different from this SiteInstance's site.
   if (!current_process->MayReuseHost() ||
       !RenderProcessHostImpl::IsSuitableHost(
-          current_process, GetIsolationContext(), site_info_, IsGuest())) {
+          current_process, GetIsolationContext(), site_info_)) {
     return;
   }
 
@@ -783,14 +791,14 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
       return true;
     }
 
-    // Otherwise, there's no process, the site URLs don't match, and at least
+    // Otherwise, there's no process, the SiteInfos don't match, and at least
     // one of them requires a dedicated process, so it is not safe to use this
     // SiteInstance.
     return false;
   }
 
   return RenderProcessHostImpl::IsSuitableHost(
-      GetProcess(), GetIsolationContext(), site_info, IsGuest());
+      GetProcess(), GetIsolationContext(), site_info);
 }
 
 bool SiteInstanceImpl::RequiresDedicatedProcess() {
@@ -896,7 +904,7 @@ bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
 }
 
 bool SiteInstanceImpl::IsGuest() {
-  return is_guest_;
+  return site_info_.is_guest();
 }
 
 std::string SiteInstanceImpl::GetPartitionDomain(
@@ -1448,7 +1456,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   // preassigned site.
   process_->SetIsUsed();
 
-  if (site_info_.ShouldLockProcessToSite(GetIsolationContext(), IsGuest())) {
+  if (site_info_.ShouldLockProcessToSite(GetIsolationContext())) {
     // Sanity check that this won't try to assign an origin lock to a <webview>
     // process, which can't be locked.
     CHECK(!process_->IsForGuestsOnly());

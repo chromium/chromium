@@ -1712,9 +1712,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
 
         // A process that's not locked to any site can only access data from
         // origins that do not require a locked process.
-        bool should_lock_target = site_info.ShouldLockProcessToSite(
-            isolation_context, /* is_guest= */ false);
-        if (!should_lock_target)
+        if (!site_info.ShouldLockProcessToSite(isolation_context))
           return true;
         failure_reason = " citadel_enforcement";
 #endif

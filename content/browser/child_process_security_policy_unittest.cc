@@ -88,7 +88,7 @@ void LockProcessIfNeeded(int process_id,
           CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   if (site_instance->RequiresDedicatedProcess() &&
       site_instance->GetSiteInfo().ShouldLockProcessToSite(
-          site_instance->GetIsolationContext(), site_instance->IsGuest())) {
+          site_instance->GetIsolationContext())) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
         site_instance->GetIsolationContext(), process_id,
         site_instance->GetProcessLock());
