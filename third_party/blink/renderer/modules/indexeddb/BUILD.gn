@@ -87,3 +87,41 @@ blink_modules_sources("indexeddb") {
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "idb_factory_test.cc",
+    "idb_key_path_test.cc",
+    "idb_request_test.cc",
+    "idb_test_helper.cc",
+    "idb_transaction_test.cc",
+    "idb_value_wrapping_test.cc",
+    "indexed_db_blink_mojom_traits_test.cc",
+    "mock_web_idb_callbacks.cc",
+    "mock_web_idb_callbacks.h",
+    "mock_web_idb_database.cc",
+    "mock_web_idb_database.h",
+    "mock_web_idb_transaction.cc",
+    "mock_web_idb_transaction.h",
+    "web_idb_cursor_impl_unittest.cc",
+    "web_idb_transaction_impl_unittest.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+}
