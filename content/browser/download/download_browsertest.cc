@@ -2914,14 +2914,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, CancelResumingDownload) {
   EXPECT_TRUE(EnsureNoPendingDownloads());
 }
 
-// Flaky on ASAN. crbug.com/838403
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_RemoveResumedDownload DISABLED_RemoveResumedDownload
-#else
-#define MAYBE_RemoveResumedDownload RemoveResumedDownload
-#endif  // defined(ADDRESS_SANITIZER)
-
-IN_PROC_BROWSER_TEST_F(DownloadContentTest, MAYBE_RemoveResumedDownload) {
+IN_PROC_BROWSER_TEST_F(DownloadContentTest, RemoveResumedDownload) {
   SetupErrorInjectionDownloads();
   TestDownloadHttpResponse::Parameters parameters =
       TestDownloadHttpResponse::Parameters::WithSingleInterruption(
