@@ -13,6 +13,7 @@
 #include "base/atomicops.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -165,21 +166,6 @@ bool FinancialPing::FormRequest(Product product,
 }
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-// The pointer to URLRequestContextGetter used by FinancialPing::PingServer().
-// It is atomic pointer because it can be accessed and modified by multiple
-// threads.
-AtomicWord g_URLLoaderFactory;
-
-bool FinancialPing::SetURLLoaderFactory(
-    network::mojom::URLLoaderFactory* factory) {
-  base::subtle::Release_Store(&g_URLLoaderFactory,
-                              reinterpret_cast<AtomicWord>(factory));
-  return true;
-}
-
-// Signal to stop the ShutdownCheck() task.
-AtomicWord g_cancelShutdownCheck;
-
 namespace {
 
 // A waitable event used to detect when either:
@@ -250,22 +236,32 @@ bool send_financial_ping_interrupted_for_test = false;
 }  // namespace
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-void ShutdownCheck(scoped_refptr<RefCountedWaitableEvent> event) {
-  if (base::subtle::Acquire_Load(&g_cancelShutdownCheck))
-    return;
 
-  if (!base::subtle::Acquire_Load(&g_URLLoaderFactory)) {
+// The signal for the current ping request. It can be used to cancel the request
+// in case of a shutdown.
+scoped_refptr<RefCountedWaitableEvent>& GetPingResultEvent() {
+  static base::NoDestructor<scoped_refptr<RefCountedWaitableEvent>>
+      g_pingResultEvent;
+  return *g_pingResultEvent;
+}
+
+// The pointer to URLRequestContextGetter used by FinancialPing::PingServer().
+// It is atomic pointer because it can be accessed and modified by multiple
+// threads.
+AtomicWord g_URLLoaderFactory;
+
+bool FinancialPing::SetURLLoaderFactory(
+    network::mojom::URLLoaderFactory* factory) {
+  base::subtle::Release_Store(&g_URLLoaderFactory,
+                              reinterpret_cast<AtomicWord>(factory));
+  scoped_refptr<RefCountedWaitableEvent> event = GetPingResultEvent();
+  if (!factory && event) {
     send_financial_ping_interrupted_for_test = true;
     event->SignalShutdown();
-    return;
   }
-  // How frequently the financial ping thread should check
-  // the shutdown condition?
-  const base::TimeDelta kInterval = base::TimeDelta::FromMilliseconds(500);
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ShutdownCheck, event), kInterval);
+  return true;
 }
+
 #endif
 
 void PingRlzServer(std::string url,
@@ -389,11 +385,8 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
   // Use a waitable event to cause this function to block, to match the
   // wininet implementation.
   auto event = base::MakeRefCounted<RefCountedWaitableEvent>();
-
-  base::subtle::Release_Store(&g_cancelShutdownCheck, 0);
-
-  base::ThreadPool::PostTask(FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                             base::BindOnce(&ShutdownCheck, event));
+  scoped_refptr<RefCountedWaitableEvent>& event_ref = GetPingResultEvent();
+  event_ref = event;
 
   // PingRlzServer must be run in a separate sequence so that the TimedWait()
   // call below does not block the URL fetch response from being handled by
@@ -411,8 +404,7 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
     is_signaled = event->TimedWait(base::TimeDelta::FromMinutes(5));
   }
 
-  base::subtle::Release_Store(&g_cancelShutdownCheck, 1);
-
+  event_ref.reset();
   if (!is_signaled)
     return PING_FAILURE;
 
