@@ -13,6 +13,7 @@
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/performance_manager_owned.h"
+#include "content/public/browser/render_process_host.h"
 
 namespace performance_manager {
 
@@ -99,6 +100,17 @@ PerformanceManager::GetProcessNodeForRenderProcessHost(
   if (!user_data)
     return nullptr;
   return user_data->process_node()->GetWeakPtr();
+}
+
+// static
+base::WeakPtr<ProcessNode>
+PerformanceManager::GetProcessNodeForRenderProcessHostId(
+    RenderProcessHostId id) {
+  DCHECK(id);
+  auto* rph = content::RenderProcessHost::FromID(id.value());
+  if (!rph)
+    return nullptr;
+  return GetProcessNodeForRenderProcessHost(rph);
 }
 
 // static

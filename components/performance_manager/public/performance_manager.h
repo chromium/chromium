@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
+#include "components/performance_manager/public/render_process_host_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -95,6 +96,16 @@ class PerformanceManager {
   // can be used in a CallOnGraph callback).
   static base::WeakPtr<ProcessNode> GetProcessNodeForRenderProcessHost(
       content::RenderProcessHost* rph);
+
+  // Returns a WeakPtr to the ProcessNode associated with a given
+  // RenderProcessHostId (which must be valid), or a null WeakPtr if there's no
+  // ProcessNode for this ID. (There may be no RenderProcessHost for this ID,
+  // or it may be during a brief window after the RPH is created but before the
+  // ProcessNode is added.) Valid to call from the main thread only, the
+  // returned WeakPtr should only be dereferenced on the PM sequence (e.g. it
+  // can be used in a CallOnGraph callback).
+  static base::WeakPtr<ProcessNode> GetProcessNodeForRenderProcessHostId(
+      RenderProcessHostId id);
 
   // Adds / removes an observer that is notified of PerformanceManager events
   // that happen on the main thread. Can only be called on the main thread.

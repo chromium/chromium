@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -312,6 +314,23 @@ class V8DetailedMemoryRequestAnySeqTest
     : public PerformanceManagerTestHarness,
       public V8DetailedMemoryDecoratorTestBase {
  public:
+  void SetUp() override {
+    PerformanceManagerTestHarness::SetUp();
+
+    // Precondition: CallOnGraph must run on a different sequence. Note that
+    // all tasks passed to CallOnGraph will only run when run_loop.Run() is
+    // called.
+    ASSERT_TRUE(GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          EXPECT_FALSE(
+              this->GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner()
       override {
     return task_environment()->GetMainThreadTaskRunner();
@@ -1626,16 +1645,6 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, InvalidParameters) {
 }
 
 TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
-  // Precondition: CallOnGraph must run on a different sequence.  Note that all
-  // tasks passed to CallOnGraph will only run when run_loop.Run() is called
-  // below.
-  ASSERT_TRUE(GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([this] {
-        EXPECT_FALSE(
-            this->GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
-      }));
-
   // Set the active contents and simulate a navigation, which adds nodes to the
   // graph.
   SetContents(CreateTestWebContents());
@@ -1696,7 +1705,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
   EXPECT_CALL(observer,
               OnV8MemoryMeasurementAvailable(process_id, expected_process_data,
                                              expected_frame_data))
-      .WillOnce([this, &run_loop, &process_id, &expected_frame_data]() {
+      .WillOnce([&]() {
         run_loop.Quit();
         ASSERT_TRUE(
             this->GetMainThreadTaskRunner()->RunsTasksInCurrentSequence())
@@ -1745,6 +1754,86 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
   base::RunLoop run_loop2;
   PerformanceManager::CallOnGraph(FROM_HERE, run_loop2.QuitClosure());
   run_loop2.Run();
+}
+
+TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  SetContents(CreateTestWebContents());
+
+  // Set up a page at a.com with a subframe at b.com. These should be in
+  // different processes.
+  const GURL kUrlA("http://a.com/");
+  const GURL kUrlB("http://b.com/");
+  content::RenderFrameHost* main_frame =
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(
+          web_contents(), GURL("http://a.com"));
+  content::RenderFrameHost* child_frame =
+      content::RenderFrameHostTester::For(main_frame)->AppendChild("frame1");
+  child_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://b.com"), child_frame);
+
+  const RenderProcessHostId process_id1(main_frame->GetProcess()->GetID());
+  const RenderProcessHostId process_id2(child_frame->GetProcess()->GetID());
+  ASSERT_NE(process_id1, process_id2);
+
+  V8DetailedMemoryProcessData expected_process_data1;
+  expected_process_data1.set_unassociated_v8_bytes_used(1U);
+  V8DetailedMemoryProcessData expected_process_data2;
+  expected_process_data2.set_unassociated_v8_bytes_used(2U);
+
+  MockV8DetailedMemoryReporter mock_reporter1;
+  MockV8DetailedMemoryReporter mock_reporter2;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1U;
+    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), process_id1);
+
+    data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 2U;
+    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), process_id2);
+  }
+
+  // Create one request that measures both processes, and one request that
+  // measures only one.
+  V8DetailedMemoryRequestAnySeq all_process_request(
+      V8DetailedMemoryDecoratorTest::kMinTimeBetweenRequests);
+  MockV8DetailedMemoryObserverAnySeq all_process_observer;
+  all_process_request.AddObserver(&all_process_observer);
+
+  V8DetailedMemoryRequestAnySeq single_process_request(
+      V8DetailedMemoryDecoratorTest::kMinTimeBetweenRequests,
+      MeasurementMode::kBounded, process_id1);
+  MockV8DetailedMemoryObserverAnySeq single_process_observer;
+  single_process_request.AddObserver(&single_process_observer);
+
+  // When a measurement is available the all process observer should be invoked
+  // for both processes, and the single process observer only for process 1.
+  EXPECT_CALL(
+      all_process_observer,
+      OnV8MemoryMeasurementAvailable(process_id1, expected_process_data1, _));
+  EXPECT_CALL(
+      all_process_observer,
+      OnV8MemoryMeasurementAvailable(process_id2, expected_process_data2, _));
+  EXPECT_CALL(
+      single_process_observer,
+      OnV8MemoryMeasurementAvailable(process_id1, expected_process_data1, _));
+
+  // Now execute all the above tasks.
+  task_environment()->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+  Mock::VerifyAndClearExpectations(&all_process_observer);
+  Mock::VerifyAndClearExpectations(&single_process_observer);
+
+  // Must remove the observer before destroying the request to avoid a DCHECK
+  // from ObserverList.
+  all_process_request.RemoveObserver(&all_process_observer);
+  single_process_request.RemoveObserver(&single_process_observer);
+
+  // Execute the above tasks and exit.
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace v8_memory

@@ -592,15 +592,18 @@ V8DetailedMemoryRequest::V8DetailedMemoryRequest(
     util::PassKey<V8DetailedMemoryRequestAnySeq>,
     const base::TimeDelta& min_time_between_requests,
     MeasurementMode mode,
+    base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
     base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request)
     : V8DetailedMemoryRequest(min_time_between_requests, mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   off_sequence_request_ = std::move(off_sequence_request);
   off_sequence_request_sequence_ = base::SequencedTaskRunnerHandle::Get();
-  // Unretained is safe since |this| will be destroyed on the graph sequence.
+  // Unretained is safe since |this| will be destroyed on the graph sequence
+  // from an async task posted after this.
   PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(&V8DetailedMemoryRequest::StartMeasurement,
-                                base::Unretained(this)));
+      FROM_HERE,
+      base::BindOnce(&V8DetailedMemoryRequest::StartMeasurementFromOffSequence,
+                     base::Unretained(this), std::move(process_to_measure)));
 }
 
 V8DetailedMemoryRequest::V8DetailedMemoryRequest(
@@ -698,6 +701,22 @@ void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
   // the function.
   for (V8DetailedMemoryObserver& observer : observers_)
     observer.OnV8MemoryMeasurementAvailable(process_node, process_data);
+}
+
+void V8DetailedMemoryRequest::StartMeasurementFromOffSequence(
+    base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
+    Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!process_to_measure) {
+    // No process was given so measure all renderers in the graph.
+    StartMeasurement(graph);
+  } else if (!process_to_measure.value()) {
+    // V8DetailedMemoryRequestAnySeq was called with a process ID that wasn't
+    // found in the graph, or has already been destroyed. Do nothing.
+  } else {
+    DCHECK_EQ(graph, process_to_measure.value()->GetGraph());
+    StartMeasurementForProcess(process_to_measure.value().get());
+  }
 }
 
 void V8DetailedMemoryRequest::StartMeasurementImpl(
@@ -1069,16 +1088,28 @@ void V8DetailedMemoryDecorator::MeasurementRequestQueue::Validate() {
 
 V8DetailedMemoryRequestAnySeq::V8DetailedMemoryRequestAnySeq(
     const base::TimeDelta& min_time_between_requests,
-    MeasurementMode mode) {
-  // |request_| must be initialized in the constructor body so that
-  // |weak_factory_| is completely constructed.
-  //
-  // Can't use make_unique since this calls the private any-sequence
-  // constructor. After construction the V8DetailedMemoryRequest must only be
-  // accessed on the graph sequence.
-  request_ = base::WrapUnique(new V8DetailedMemoryRequest(
-      util::PassKey<V8DetailedMemoryRequestAnySeq>(), min_time_between_requests,
-      mode, weak_factory_.GetWeakPtr()));
+    MeasurementMode mode,
+    base::Optional<RenderProcessHostId> process_to_measure) {
+  base::Optional<base::WeakPtr<ProcessNode>> process_node;
+  if (process_to_measure) {
+    // GetProcessNodeForRenderProcessHostId must be called from the UI thread.
+    auto ui_task_runner = content::GetUIThreadTaskRunner({});
+    if (!ui_task_runner->RunsTasksInCurrentSequence()) {
+      ui_task_runner->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(
+              &PerformanceManager::GetProcessNodeForRenderProcessHostId,
+              process_to_measure.value()),
+          base::BindOnce(
+              &V8DetailedMemoryRequestAnySeq::InitializeWrappedRequest,
+              weak_factory_.GetWeakPtr(), min_time_between_requests, mode));
+      return;
+    }
+    process_node = PerformanceManager::GetProcessNodeForRenderProcessHostId(
+        process_to_measure.value());
+  }
+  InitializeWrappedRequest(min_time_between_requests, mode,
+                           std::move(process_node));
 }
 
 V8DetailedMemoryRequestAnySeq::~V8DetailedMemoryRequestAnySeq() {
@@ -1119,6 +1150,19 @@ void V8DetailedMemoryRequestAnySeq::NotifyObserversOnMeasurementAvailable(
   for (V8DetailedMemoryObserverAnySeq& observer : observers_)
     observer.OnV8MemoryMeasurementAvailable(render_process_host_id,
                                             process_data, frame_data);
+}
+
+void V8DetailedMemoryRequestAnySeq::InitializeWrappedRequest(
+    const base::TimeDelta& min_time_between_requests,
+    MeasurementMode mode,
+    base::Optional<base::WeakPtr<ProcessNode>> process_to_measure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Can't use make_unique since this calls the private any-sequence
+  // constructor. After construction the V8DetailedMemoryRequest must only be
+  // accessed on the graph sequence.
+  request_ = base::WrapUnique(new V8DetailedMemoryRequest(
+      util::PassKey<V8DetailedMemoryRequestAnySeq>(), min_time_between_requests,
+      mode, std::move(process_to_measure), weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace v8_memory

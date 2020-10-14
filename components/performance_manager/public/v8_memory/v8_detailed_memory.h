@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -232,8 +233,8 @@ class V8DetailedMemoryDecorator
   // Implementation details below this point.
 
   // V8DetailedMemoryRequest objects register themselves with the decorator.
-  // If |process_node| is null, the request will be sent to every process,
-  // otherwise it will be sent only to |process_node|.
+  // If |process_node| is null, the request will be sent to every renderer
+  // process, otherwise it will be sent only to |process_node|.
   void AddMeasurementRequest(util::PassKey<V8DetailedMemoryRequest>,
                              V8DetailedMemoryRequest* request,
                              const ProcessNode* process_node = nullptr);
@@ -411,11 +412,14 @@ class V8DetailedMemoryRequest {
   // Private constructor for V8DetailedMemoryRequestAnySeq. Saves
   // |off_sequence_request| as a pointer to the off-sequence object that
   // triggered the request and starts measurements with frequency
-  // |min_time_between_requests|.
+  // |min_time_between_requests|. If |process_to_measure| is nullopt, the
+  // request will be sent to every renderer process, otherwise it will be sent
+  // only to |process_to_measure|.
   V8DetailedMemoryRequest(
       util::PassKey<V8DetailedMemoryRequestAnySeq>,
       const base::TimeDelta& min_time_between_requests,
       MeasurementMode mode,
+      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
       base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request);
 
   // Private constructor for V8DetailedMemoryRequestOneShot. Sets
@@ -437,6 +441,9 @@ class V8DetailedMemoryRequest {
       const ProcessNode* process_node) const;
 
  private:
+  void StartMeasurementFromOffSequence(
+      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure,
+      Graph* graph);
   void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
 
   base::TimeDelta min_time_between_requests_;
@@ -534,9 +541,16 @@ class V8DetailedMemoryRequestAnySeq {
  public:
   using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
 
+  // Creates a memory measurement request that will be sent repeatedly with at
+  // least |min_time_between_requests| between each measurement. The request
+  // will be sent to the process with ID |process_to_measure|, which must be a
+  // renderer process, or to all renderer processes if |process_to_measure| is
+  // nullopt. The process will perform the measurement during a GC as determined
+  // by |mode|.
   explicit V8DetailedMemoryRequestAnySeq(
       const base::TimeDelta& min_time_between_requests,
-      MeasurementMode mode = MeasurementMode::kDefault);
+      MeasurementMode mode = MeasurementMode::kDefault,
+      base::Optional<RenderProcessHostId> process_to_measure = base::nullopt);
   ~V8DetailedMemoryRequestAnySeq();
 
   V8DetailedMemoryRequestAnySeq(const V8DetailedMemoryRequestAnySeq&) = delete;
@@ -564,6 +578,11 @@ class V8DetailedMemoryRequestAnySeq {
       const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) const;
 
  private:
+  void InitializeWrappedRequest(
+      const base::TimeDelta& min_time_between_requests,
+      MeasurementMode mode,
+      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure);
+
   std::unique_ptr<V8DetailedMemoryRequest> request_;
   base::ObserverList<V8DetailedMemoryObserverAnySeq, /*check_empty=*/true>
       observers_;
