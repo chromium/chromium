@@ -15,5 +15,8 @@ mojom_component("mojom") {
     "lifecycle.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
 }
