@@ -67,6 +67,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   }
 
   source->SetDefaultResource(default_resource);
+  source->AddResourcePath("d3.min.js", IDR_D3_SRC_D3_MIN_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
 }
