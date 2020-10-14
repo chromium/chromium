@@ -264,24 +264,23 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   if (paused_)
     return;
 
-  if (!(video_frame->format() == media::PIXEL_FORMAT_I420 ||
-        video_frame->format() == media::PIXEL_FORMAT_ARGB ||
-        video_frame->format() == media::PIXEL_FORMAT_ABGR ||
-        video_frame->format() == media::PIXEL_FORMAT_I420A ||
-        video_frame->format() == media::PIXEL_FORMAT_NV12 ||
-        video_frame->format() == media::PIXEL_FORMAT_XRGB)) {
-    NOTREACHED() << media::VideoPixelFormatToString(video_frame->format());
-    return;
-  }
+  const bool is_format_supported =
+      video_frame->format() == media::PIXEL_FORMAT_I420 ||
+      video_frame->format() == media::PIXEL_FORMAT_ARGB ||
+      video_frame->format() == media::PIXEL_FORMAT_ABGR ||
+      video_frame->format() == media::PIXEL_FORMAT_I420A ||
+      video_frame->format() == media::PIXEL_FORMAT_NV12 ||
+      video_frame->format() == media::PIXEL_FORMAT_XRGB;
 
   if (num_frames_in_encode_->count() > kMaxNumberOfFramesInEncode) {
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
     return;
   }
 
-  if (video_frame->HasTextures() &&
-      video_frame->storage_type() !=
-          media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (!is_format_supported ||
+      (video_frame->HasTextures() &&
+       video_frame->storage_type() !=
+           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
     PostCrossThreadTask(
         *main_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(&Encoder::RetrieveFrameOnMainThread,
@@ -333,14 +332,11 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnMainThread(
   } else {
     // Accelerated decoders produce ARGB/ABGR texture-backed frames (see
     // https://crbug.com/585242), fetch them using a PaintCanvasVideoRenderer.
-    // Additionally, Macintosh accelerated decoders can produce XRGB content
+    // Additionally, macOS accelerated decoders can produce XRGB content
     // and are treated the same way.
     //
-    // TODO(crbug/1023390): Add browsertest for these.
-    DCHECK(video_frame->HasTextures());
-    DCHECK(video_frame->format() == media::PIXEL_FORMAT_ARGB ||
-           video_frame->format() == media::PIXEL_FORMAT_ABGR ||
-           video_frame->format() == media::PIXEL_FORMAT_XRGB);
+    // This path is also used for less common formats like I422, I444, and
+    // high bit depth pixel formats.
 
     const gfx::Size& old_visible_size = video_frame->visible_rect().size();
     gfx::Size new_visible_size = old_visible_size;
@@ -353,13 +349,16 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnMainThread(
                                old_visible_size.width());
     }
 
-    frame = media::VideoFrame::CreateFrame(
-        media::PIXEL_FORMAT_I420, new_visible_size, gfx::Rect(new_visible_size),
-        new_visible_size, video_frame->timestamp());
+    const bool is_opaque = media::IsOpaque(video_frame->format());
+
+    frame = frame_pool_.CreateFrame(
+        is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
+        new_visible_size, gfx::Rect(new_visible_size), new_visible_size,
+        video_frame->timestamp());
 
     const SkImageInfo info = SkImageInfo::MakeN32(
         frame->visible_rect().width(), frame->visible_rect().height(),
-        kOpaque_SkAlphaType);
+        is_opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType);
 
     // Create |surface_| if it doesn't exist or incoming resolution has changed.
     if (!canvas_ || canvas_->imageInfo().width() != info.width() ||
@@ -399,6 +398,14 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnMainThread(
                               source_pixel_format) != 0) {
       DLOG(ERROR) << "Error converting frame to I420";
       return;
+    }
+    if (!is_opaque) {
+      // Alpha has the same alignment for both ABGR and ARGB.
+      libyuv::ARGBExtractAlpha(static_cast<uint8_t*>(pixmap.writable_addr()),
+                               static_cast<int>(pixmap.rowBytes()) /* stride */,
+                               frame->visible_data(media::VideoFrame::kAPlane),
+                               frame->stride(media::VideoFrame::kAPlane),
+                               pixmap.width(), pixmap.height());
     }
   }
 
@@ -448,7 +455,7 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
   auto* gmb = frame->GetGpuMemoryBuffer();
   if (!gmb->Map())
     return frame;
-  scoped_refptr<media::VideoFrame> i420_frame = media::VideoFrame::CreateFrame(
+  scoped_refptr<media::VideoFrame> i420_frame = frame_pool_.CreateFrame(
       media::VideoPixelFormat::PIXEL_FORMAT_I420, frame->coded_size(),
       frame->visible_rect(), frame->natural_size(), frame->timestamp());
   auto ret = libyuv::NV12ToI420(

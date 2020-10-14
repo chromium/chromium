@@ -946,6 +946,12 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
                         provider.get());
 }
 
+scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrame() {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return compositor_->GetCurrentFrame();
+}
+
 bool WebMediaPlayerMS::WouldTaintOrigin() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return false;

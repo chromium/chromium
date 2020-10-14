@@ -1345,14 +1345,10 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl:paint");
 
-  // We can't copy from protected frames.
-  if (cdm_context_ref_)
-    return;
-
   scoped_refptr<VideoFrame> video_frame = GetCurrentFrameFromCompositor();
 
   gfx::Rect gfx_rect(rect);
-  if (video_frame.get() && video_frame->HasTextures()) {
+  if (video_frame && video_frame->HasTextures()) {
     if (!raster_context_provider_)
       return;  // Unable to get/create a shared main thread context.
     if (!raster_context_provider_->GrContext())
@@ -1371,6 +1367,10 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
       video_frame, canvas, gfx::RectF(gfx_rect), flags,
       pipeline_metadata_.video_decoder_config.video_transformation(),
       raster_context_provider_.get());
+}
+
+scoped_refptr<VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
+  return GetCurrentFrameFromCompositor();
 }
 
 bool WebMediaPlayerImpl::WouldTaintOrigin() const {
@@ -1437,14 +1437,11 @@ bool WebMediaPlayerImpl::CopyVideoTextureToPlatformTexture(
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl:copyVideoTextureToPlatformTexture");
 
-  // We can't copy from protected frames.
-  if (cdm_context_ref_)
-    return false;
-
   scoped_refptr<VideoFrame> video_frame = GetCurrentFrameFromCompositor();
-  if (!video_frame.get() || !video_frame->HasTextures()) {
+  if (!video_frame || !video_frame->HasTextures()) {
     return false;
   }
+
   if (out_metadata) {
     // WebGL last-uploaded-frame-metadata API is enabled.
     // https://crbug.com/639174
@@ -2967,6 +2964,10 @@ scoped_refptr<VideoFrame> WebMediaPlayerImpl::GetCurrentFrameFromCompositor()
     const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl::GetCurrentFrameFromCompositor");
+
+  // We can't copy from protected frames.
+  if (cdm_context_ref_)
+    return nullptr;
 
   // Can be null.
   scoped_refptr<VideoFrame> video_frame =

@@ -15,6 +15,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "media/base/limits.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -87,11 +88,17 @@ class MockWebMediaPlayer : public WebMediaPlayer {
              cc::PaintFlags&,
              int already_uploaded_id,
              VideoFrameUploadMetadata* out_metadata) override {
+    return;
+  }
+
+  scoped_refptr<media::VideoFrame> GetCurrentFrame() override {
     // We could fill in |canvas| with a meaningful pattern in ARGB and verify
     // that is correctly captured (as I420) by HTMLVideoElementCapturerSource
     // but I don't think that'll be easy/useful/robust, so just let go here.
-    return;
+    return is_video_opaque_ ? media::VideoFrame::CreateBlackFrame(size_)
+                            : media::VideoFrame::CreateTransparentFrame(size_);
   }
+
   bool IsOpaque() const override { return is_video_opaque_; }
   bool HasAvailableVideoFrame() const override { return true; }
 

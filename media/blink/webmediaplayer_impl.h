@@ -149,6 +149,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
              cc::PaintFlags& flags,
              int already_uploaded_id,
              VideoFrameUploadMetadata* out_metadata) override;
+  scoped_refptr<VideoFrame> GetCurrentFrame() override;
 
   // True if the loaded media has a playable video/audio track.
   bool HasVideo() const override;

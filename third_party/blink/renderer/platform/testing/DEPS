@@ -19,7 +19,7 @@ include_rules = [
     "+cc",
     "+mojo/core/embedder",
     "+services/network/public",
-    '+testing',
+    "+testing",
 
     "+third_party/blink/renderer/platform/context_lifecycle_notifier.h",
     "+third_party/blink/renderer/platform/context_lifecycle_observer.h",
@@ -50,10 +50,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-    'blink_fuzzer_test_support\.cc': [
+    "blink_fuzzer_test_support\.cc": [
         "+content/public/test/blink_test_environment.h",
     ],
-    'testing_platform_support_with_mock_scheduler\.cc': [
+    "empty_web_media_player\.cc": [
+        "+media/base/video_frame.h",
+    ],
+    "testing_platform_support_with_mock_scheduler\.cc": [
         "+base/task/sequence_manager/test/sequence_manager_for_test.h",
     ],
     "video_frame_utils\.cc": [

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -52,6 +53,10 @@ namespace gpu {
 namespace gles2 {
 class GLES2Interface;
 }
+}
+
+namespace media {
+class VideoFrame;
 }
 
 namespace blink {
@@ -262,6 +267,12 @@ class WebMediaPlayer {
                      cc::PaintFlags&,
                      int already_uploaded_id = -1,
                      VideoFrameUploadMetadata* out_metadata = nullptr) = 0;
+
+  // Similar to Paint(), but just returns the frame directly instead of trying
+  // to upload or convert it. Note: This may kick off a process to update the
+  // current frame for a future call in some cases. Returns nullptr if no frame
+  // is available.
+  virtual scoped_refptr<media::VideoFrame> GetCurrentFrame() = 0;
 
   // Do a GPU-GPU texture copy of the current video frame to |texture|,
   // reallocating |texture| at the appropriate size with given internal

@@ -128,6 +128,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
              cc::PaintFlags& flags,
              int already_uploaded_id,
              VideoFrameUploadMetadata* out_metadata) override;
+  scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer();
   void ResetCanvasCache();
 

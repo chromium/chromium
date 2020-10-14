@@ -9,9 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/paint/skia_paint_canvas.h"
 #include "media/base/limits.h"
-#include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -20,10 +18,9 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/libyuv/include/libyuv.h"
 
 namespace {
-const float kMinFramesPerSecond = 1.0;
+constexpr float kMinFramesPerSecond = 1.0;
 }  // anonymous namespace
 
 namespace blink {
@@ -50,7 +47,6 @@ HtmlVideoElementCapturerSource::HtmlVideoElementCapturerSource(
     : web_media_player_(player),
       io_task_runner_(io_task_runner),
       task_runner_(task_runner),
-      is_opaque_(player->IsOpaque()),
       capture_frame_rate_(0.0) {
   DCHECK(web_media_player_);
 }
@@ -125,79 +121,18 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   if (start_capture_time_.is_null())
     start_capture_time_ = current_time;
 
-  if (!canvas_ || is_opaque_ != web_media_player_->IsOpaque()) {
-    // TODO(crbug.com/964494): Avoid the explicit conversion to gfx::Size here.
-    // TODO(sandersd): Implement support for size changes rather than scaling.
-    if (!canvas_)
-      natural_size_ = gfx::Size(web_media_player_->NaturalSize());
-    is_opaque_ = web_media_player_->IsOpaque();
-    if (!bitmap_.tryAllocPixels(SkImageInfo::MakeN32(
-            natural_size_.width(), natural_size_.height(),
-            is_opaque_ ? kOpaque_SkAlphaType : kPremul_SkAlphaType))) {
-      running_callback_.Run(false);
-      return;
-    }
-    canvas_ = std::make_unique<cc::SkiaPaintCanvas>(bitmap_);
-  }
-
-  cc::PaintFlags flags;
-  flags.setBlendMode(SkBlendMode::kSrc);
-  flags.setFilterQuality(kLow_SkFilterQuality);
-  // TODO(crbug.com/964494): Avoid the explicit conversion to blink::WebRect
-  // here.
-  web_media_player_->Paint(canvas_.get(),
-                           blink::WebRect(gfx::Rect(natural_size_)), flags);
-  DCHECK_NE(kUnknown_SkColorType, canvas_->imageInfo().colorType());
-
-  DCHECK_NE(kUnknown_SkColorType, bitmap_.colorType());
-  DCHECK(!bitmap_.drawsNothing());
-  DCHECK(bitmap_.getPixels());
-  if (bitmap_.colorType() != kN32_SkColorType) {
-    DLOG(ERROR) << "Only supported color type is kN32_SkColorType (ARGB/ABGR)";
-    return;
-  }
-
-  scoped_refptr<media::VideoFrame> frame = frame_pool_.CreateFrame(
-      is_opaque_ ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
-      natural_size_, gfx::Rect(natural_size_), natural_size_,
-      current_time - start_capture_time_);
-
-#if SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
-  const uint32_t source_pixel_format = libyuv::FOURCC_ABGR;
-#else
-  const uint32_t source_pixel_format = libyuv::FOURCC_ARGB;
-#endif
-
-  if (frame &&
-      libyuv::ConvertToI420(
-          static_cast<uint8_t*>(bitmap_.getPixels()), bitmap_.computeByteSize(),
-          frame->visible_data(media::VideoFrame::kYPlane),
-          frame->stride(media::VideoFrame::kYPlane),
-          frame->visible_data(media::VideoFrame::kUPlane),
-          frame->stride(media::VideoFrame::kUPlane),
-          frame->visible_data(media::VideoFrame::kVPlane),
-          frame->stride(media::VideoFrame::kVPlane), 0 /* crop_x */,
-          0 /* crop_y */, frame->visible_rect().size().width(),
-          frame->visible_rect().size().height(), bitmap_.info().width(),
-          bitmap_.info().height(), libyuv::kRotate0,
-          source_pixel_format) == 0) {
-    if (!is_opaque_) {
-      // OK to use ARGB...() because alpha has the same alignment for both ABGR
-      // and ARGB.
-      libyuv::ARGBExtractAlpha(
-          static_cast<uint8_t*>(bitmap_.getPixels()),
-          static_cast<int>(bitmap_.rowBytes()) /* stride */,
-          frame->visible_data(media::VideoFrame::kAPlane),
-          frame->stride(media::VideoFrame::kAPlane), bitmap_.info().width(),
-          bitmap_.info().height());
-    }  // Success!
+  if (auto frame = web_media_player_->GetCurrentFrame()) {
+    auto new_frame = media::VideoFrame::WrapVideoFrame(
+        frame, frame->format(), frame->visible_rect(), frame->natural_size());
+    new_frame->set_timestamp(current_time - start_capture_time_);
 
     // Post with CrossThreadBind here, instead of CrossThreadBindOnce,
     // otherwise the |new_frame_callback_| ivar can be nulled out
     // unintentionally.
     PostCrossThreadTask(
         *io_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(new_frame_callback_, frame, current_time));
+        CrossThreadBindOnce(new_frame_callback_, std::move(new_frame),
+                            current_time));
   }
 
   // Calculate the time in the future where the next frame should be created.

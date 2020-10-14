@@ -14,6 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/video_frame_pool.h"
 #include "media/muxers/webm_muxer.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -196,7 +197,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // Used mainly by the software encoders since I420 is the only supported
     // pixel format.  The function is best-effort.  If for any reason the
     // conversion fails, the original |frame| will be returned.
-    static scoped_refptr<media::VideoFrame> ConvertToI420ForSoftwareEncoder(
+    scoped_refptr<media::VideoFrame> ConvertToI420ForSoftwareEncoder(
         scoped_refptr<media::VideoFrame> frame);
 
     // Used to shutdown properly on the same thread we were created.
@@ -232,6 +233,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     std::unique_ptr<media::PaintCanvasVideoRenderer> video_renderer_;
     SkBitmap bitmap_;
     std::unique_ptr<cc::PaintCanvas> canvas_;
+
+    media::VideoFramePool frame_pool_;
 
     DISALLOW_COPY_AND_ASSIGN(Encoder);
   };

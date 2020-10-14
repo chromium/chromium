@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_time_range.h"
 
@@ -32,6 +33,10 @@ gfx::Size EmptyWebMediaPlayer::VisibleSize() const {
 
 WebString EmptyWebMediaPlayer::GetErrorMessage() const {
   return WebString();
+}
+
+scoped_refptr<media::VideoFrame> EmptyWebMediaPlayer::GetCurrentFrame() {
+  return nullptr;
 }
 
 }  // namespace blink

@@ -9,21 +9,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/capture/video_capturer_source.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }
-
-namespace cc {
-class PaintCanvas;
-}  // namespace cc
 
 namespace blink {
 
@@ -61,16 +54,11 @@ class MODULES_EXPORT HtmlVideoElementCapturerSource final
   // it into a format suitable for MediaStreams.
   void sendNewFrame();
 
-  media::VideoFramePool frame_pool_;
-  SkBitmap bitmap_;
-  std::unique_ptr<cc::PaintCanvas> canvas_;
   gfx::Size natural_size_;
 
   const base::WeakPtr<blink::WebMediaPlayer> web_media_player_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  bool is_opaque_;
 
   // These three configuration items are passed on StartCapture();
   RunningCallback running_callback_;
