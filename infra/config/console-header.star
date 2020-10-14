@@ -91,8 +91,8 @@ HEADER = _header(
             url = "https://rota-ng.appspot.com/legacy/sheriff_gpu.json",
         ),
         _oncall(
-            name = "Angle",
-            url = "https://rota-ng.appspot.com/legacy/sheriff_angle.json",
+            name = "ANGLE",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:angle-wrangler",
         ),
         _oncall(
             name = "Perf",
