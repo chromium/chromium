@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
@@ -18,6 +19,14 @@
 
 namespace borealis {
 namespace {
+
+MATCHER(IsSuccessResult, "") {
+  return arg.Ok();
+}
+
+MATCHER(IsFailureResult, "") {
+  return !arg.Ok();
+}
 
 class MockTask : public BorealisTask {
  public:
@@ -55,19 +64,13 @@ class BorealisContextManagerImplForTesting : public BorealisContextManagerImpl {
   bool success_ = true;
 };
 
-void CallbackForTesting(base::OnceCallback<void(bool)> callback_expectation,
-                        const BorealisContext& context) {
-  std::move(callback_expectation).Run(context.borealis_running());
-}
-
-class CallbackForTestingExpectation {
+class ResultCallbackHandler {
  public:
-  base::OnceCallback<void(bool)> GetCallback() {
-    return base::BindOnce(&CallbackForTestingExpectation::Callback,
+  BorealisContextManager::ResultCallback GetCallback() {
+    return base::BindOnce(&ResultCallbackHandler::Callback,
                           base::Unretained(this));
   }
-
-  MOCK_METHOD(void, Callback, (bool), ());
+  MOCK_METHOD(void, Callback, (BorealisContextManager::Result), ());
 };
 
 class BorealisContextManagerTest : public testing::Test {
@@ -108,83 +111,68 @@ TEST_F(BorealisContextManagerTest, GetTasksReturnsCorrectTaskList) {
 }
 
 TEST_F(BorealisContextManagerTest, StartupSucceedsForSuccessfulTask) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  base::OnceCallback<void(const BorealisContext&)> callback =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(/*expected_success=*/true));
-  context_manager.StartBorealis(std::move(callback));
+  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupSucceedsForSuccessfulGroupOfTasks) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  base::OnceCallback<void(const BorealisContext&)> callback =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/3, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(/*expected_success=*/true));
-  context_manager.StartBorealis(std::move(callback));
+  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupFailsForUnsuccessfulTask) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  base::OnceCallback<void(const BorealisContext&)> callback =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/false);
-  EXPECT_CALL(callback_expectation, Callback(/*expected_success=*/false));
-  context_manager.StartBorealis(std::move(callback));
+  EXPECT_CALL(callback_expectation, Callback(IsFailureResult()));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupFailsForUnsuccessfulGroupOfTasks) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  base::OnceCallback<void(const BorealisContext&)> callback =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
-
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/3, /*success=*/false);
-  EXPECT_CALL(callback_expectation, Callback(/*expected_success=*/false));
-  context_manager.StartBorealis(std::move(callback));
+  EXPECT_CALL(callback_expectation, Callback(IsFailureResult()));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, MultipleSuccessfulStartupsAllCallbacksRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  base::OnceCallback<void(const BorealisContext&)> callback_one =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
-  base::OnceCallback<void(const BorealisContext&)> callback_two =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
+  testing::StrictMock<ResultCallbackHandler> callback_expectation_1;
+  testing::StrictMock<ResultCallbackHandler> callback_expectation_2;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(/*expected_success=*/true))
-      .Times(2);
-  context_manager.StartBorealis(std::move(callback_one));
-  context_manager.StartBorealis(std::move(callback_two));
+  EXPECT_CALL(callback_expectation_1, Callback(IsSuccessResult()));
+  EXPECT_CALL(callback_expectation_2, Callback(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation_1.GetCallback());
+  context_manager.StartBorealis(callback_expectation_2.GetCallback());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest,
        MultipleUnsuccessfulStartupsAllCallbacksRan) {
-  testing::StrictMock<CallbackForTestingExpectation> callback_expectation;
-  base::OnceCallback<void(const BorealisContext&)> callback_one =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
-  base::OnceCallback<void(const BorealisContext&)> callback_two =
-      base::BindOnce(CallbackForTesting, callback_expectation.GetCallback());
+  testing::StrictMock<ResultCallbackHandler> callback_expectation_1;
+  testing::StrictMock<ResultCallbackHandler> callback_expectation_2;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/false);
-  EXPECT_CALL(callback_expectation, Callback(/*expected_success=*/false))
-      .Times(2);
-  context_manager.StartBorealis(std::move(callback_one));
-  context_manager.StartBorealis(std::move(callback_two));
+  EXPECT_CALL(callback_expectation_1, Callback(IsFailureResult()));
+  EXPECT_CALL(callback_expectation_2, Callback(IsFailureResult()));
+  context_manager.StartBorealis(callback_expectation_1.GetCallback());
+  context_manager.StartBorealis(callback_expectation_2.GetCallback());
   task_environment_.RunUntilIdle();
 }
 

@@ -836,6 +836,7 @@ source_set("chromeos") {
     "boot_times_recorder.h",
     "borealis/borealis_context.cc",
     "borealis/borealis_context.h",
+    "borealis/borealis_context_manager.cc",
     "borealis/borealis_context_manager.h",
     "borealis/borealis_context_manager_factory.cc",
     "borealis/borealis_context_manager_factory.h",

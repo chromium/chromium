@@ -9,13 +9,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
-#include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace borealis {
 
-using BorealisContextCallback =
-    base::OnceCallback<void(const BorealisContext&)>;
+class BorealisTask;
 
 // The Borealis Context Manager is a keyed service responsible for managing
 // the Borealis VM startup flow and guaranteeing its state to other processes.
@@ -28,22 +26,28 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   ~BorealisContextManagerImpl() override;
 
   // BorealisContextManager:
-  void StartBorealis(BorealisContextCallback callback) override;
+  void StartBorealis(ResultCallback callback) override;
 
   // Public due to testing.
   virtual base::queue<std::unique_ptr<BorealisTask>> GetTasks();
 
  private:
-  void AddCallback(BorealisContextCallback callback);
+  void AddCallback(ResultCallback callback);
   void NextTask(bool should_continue);
   void OnQueueComplete();
+
+  // Returns the result of the startup (i.e. the context if it succeeds, or an
+  // error if it doesn't).
+  BorealisContextManager::Result GetResult();
 
   bool is_borealis_running_ = false;
   bool is_borealis_starting_ = false;
 
   Profile* profile_ = nullptr;
+  BorealisContextManager::Status startup_status_ = kSuccess;
+  std::string startup_error_;
   BorealisContext context_;
-  base::queue<BorealisContextCallback> callback_queue_;
+  base::queue<ResultCallback> callback_queue_;
   base::queue<std::unique_ptr<BorealisTask>> task_queue_;
   std::unique_ptr<BorealisTask> current_task_;
 
