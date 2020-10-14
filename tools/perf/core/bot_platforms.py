@@ -347,6 +347,10 @@ _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _load_library_perf_tests(),
     _performance_browser_tests(),
 ])
+_MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('blink_perf.css')
+])
+
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
@@ -470,6 +474,12 @@ MAC_LOW_END = PerfPlatform(
     26,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
+MAC_ARM_DTK = PerfPlatform(
+    'mac-arm_dtk-perf',
+    'Mac ARM DTK',
+    _MAC_ARM_DTK_BENCHMARK_CONFIGS,
+    1,
+    'mac')
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
