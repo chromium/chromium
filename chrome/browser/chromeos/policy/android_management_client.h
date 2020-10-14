@@ -48,7 +48,7 @@ class AndroidManagementClient {
   };
 
   // A callback which receives Result status of an operation.
-  using StatusCallback = base::Callback<void(Result)>;
+  using StatusCallback = base::OnceCallback<void(Result)>;
 
   AndroidManagementClient(
       DeviceManagementService* service,
@@ -60,7 +60,7 @@ class AndroidManagementClient {
   // Starts sending of check Android management request to DM server, issues
   // access token if necessary. |callback| is called on check Android
   // management completion.
-  void StartCheckAndroidManagement(const StatusCallback& callback);
+  void StartCheckAndroidManagement(StatusCallback callback);
 
   // |access_token| is owned by caller and must exist before
   // StartCheckAndroidManagement is called for testing.

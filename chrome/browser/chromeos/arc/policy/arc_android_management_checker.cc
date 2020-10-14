@@ -122,8 +122,8 @@ void ArcAndroidManagementChecker::StartCheckInternal() {
 
   VLOG(2) << "Start android management check.";
   android_management_client_.StartCheckAndroidManagement(
-      base::Bind(&ArcAndroidManagementChecker::OnAndroidManagementChecked,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ArcAndroidManagementChecker::OnAndroidManagementChecked,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcAndroidManagementChecker::OnAndroidManagementChecked(
