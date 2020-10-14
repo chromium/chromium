@@ -10740,8 +10740,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 // 2) same-document
 // 3) to a http URL with port 0.
 // This is the scenario behind https://crbug.com/1065532.
+// TODO(crbug.com/1138540): Flaky on Chrome OS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_SameDocumentNavigationToHttpPortZero \
+  DISABLED_SameDocumentNavigationToHttpPortZero
+#else
+#define MAYBE_SameDocumentNavigationToHttpPortZero \
+  SameDocumentNavigationToHttpPortZero
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       SameDocumentNavigationToHttpPortZero) {
+                       MAYBE_SameDocumentNavigationToHttpPortZero) {
   // TODO(https://crbug.com/1100745): Remove this when test passes.
   if (ShouldCreateNewHostForSameSiteSubframe())
     return;
