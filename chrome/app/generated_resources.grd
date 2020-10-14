@@ -7845,6 +7845,10 @@ the Bookmarks menu.">
             Split vertical
           </message>
         </if>
+        <message name="IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN"
+                 desc="Text for the button that toggles open app automatically at OS Login. (In sentence case.)">
+          Start app when you sign in
+        </message>
       </if>
 
       <if expr="use_titlecase">
@@ -7918,6 +7922,10 @@ the Bookmarks menu.">
             Split Vertical
           </message>
         </if>
+        <message name="IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN"
+                 desc="Text for the button that toggles open app automatically at OS Login. (In title case.)">
+          Start App When You Sign In
+        </message>
       </if>
 
       <!--  Sync Confirmation section of the tab modal signin flow -->

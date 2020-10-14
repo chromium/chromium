@@ -492,6 +492,9 @@ void NTPResourceCache::CreateNewTabHTML() {
   load_time_data.SetString(
       "page_switcher_same_title",
       GetLocalizedString(IDS_NEW_TAB_PAGE_SWITCHER_SAME_TITLE));
+  load_time_data.SetString(
+      "runonoslogin", GetLocalizedString(IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN));
+
   // On Mac OS X 10.7+, horizontal scrolling can be treated as a back or
   // forward gesture. Pass through a flag that indicates whether or not that
   // feature is enabled.

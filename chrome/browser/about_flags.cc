@@ -3230,7 +3230,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDesktopPWAsMigrationUserDisplayModeCleanUp)},
     {"enable-desktop-pwas-run-on-os-login",
      flag_descriptions::kDesktopPWAsRunOnOsLoginName,
-     flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsDesktop,
+     flag_descriptions::kDesktopPWAsRunOnOsLoginDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,

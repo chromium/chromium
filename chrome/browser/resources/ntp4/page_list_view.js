@@ -33,6 +33,7 @@
  *            launch_container: number,
  *            launch_type: number,
  *            mayChangeLaunchType: boolean,
+ *            mayChangeRunOnOsLoginMode: boolean,
  *            mayCreateShortcuts: boolean,
  *            mayDisable: boolean,
  *            name: string,
@@ -40,6 +41,7 @@
  *            optionsUrl: string,
  *            packagedApp: boolean,
  *            page_index: number,
+ *            runOnOsLoginMode: string,
  *            title: string,
  *            url: string,
  *            version: string}}

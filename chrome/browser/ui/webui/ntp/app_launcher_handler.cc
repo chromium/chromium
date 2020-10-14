@@ -128,6 +128,11 @@ const char kPackagedAppKey[] = "packagedApp";
 const int kWebAppIconLargeNonDefault = 128;
 const int kWebAppIconSmallNonDefault = 16;
 
+// These Run on OS Login mode strings need to be in sync with
+// chrome/browser/resources/ntp4/apps_page.js:RUN_ON_OS_LOGIN_MODE enum.
+const char kRunOnOsLoginModeNone[] = "run_on_os_login_mode_none";
+const char kRunOnOsLoginModeWindowed[] = "run_on_os_login_mode_windowed";
+
 // The Youtube app is incorrectly harded to be a 'bookmark app'. However, it is
 // a platform app. This helper method special cases that, and should be used
 // instead of extension->from_bookmark().
@@ -273,6 +278,18 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
     sorting->SetAppLaunchOrdinal(app_id, app_launch_ordinal);
   }
   value->SetString("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
+
+  // Run on OS Login can be changed only for locally installed web apps
+  value->SetBoolean(
+      "mayChangeRunOnOsLoginMode",
+      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
+          is_locally_installed);
+  std::string runOnOsLoginModeString =
+      (registrar.GetAppRunOnOsLoginMode(app_id) ==
+       web_app::RunOnOsLoginMode::kUndefined)
+          ? kRunOnOsLoginModeNone
+          : kRunOnOsLoginModeWindowed;
+  value->SetString("runOnOsLoginMode", runOnOsLoginModeString);
 }
 
 void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
@@ -381,6 +398,9 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
     sorting->SetAppLaunchOrdinal(extension->id(), app_launch_ordinal);
   }
   value->SetString("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
+
+  // Run on OS Login is not implemented for extension/bookmark apps.
+  value->SetBoolean("mayChangeRunOnOsLoginMode", false);
 }
 
 // static
@@ -444,6 +464,10 @@ void AppLauncherHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "pageSelected",
       base::BindRepeating(&AppLauncherHandler::HandlePageSelected,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "runOnOsLogin",
+      base::BindRepeating(&AppLauncherHandler::HandleRunOnOsLogin,
                           base::Unretained(this)));
 }
 
@@ -1128,6 +1152,45 @@ void AppLauncherHandler::HandlePageSelected(const base::ListValue* args) {
 
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   prefs->SetInteger(prefs::kNtpShownPage, APPS_PAGE_ID | index);
+}
+
+void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin))
+    return;
+
+  std::string app_id;
+  std::string mode_string;
+  web_app::RunOnOsLoginMode mode;
+
+  CHECK(args->GetString(0, &app_id));
+  CHECK(args->GetString(1, &mode_string));
+
+  if (mode_string == kRunOnOsLoginModeNone) {
+    mode = web_app::RunOnOsLoginMode::kUndefined;
+  } else if (mode_string == kRunOnOsLoginModeWindowed) {
+    mode = web_app::RunOnOsLoginMode::kWindowed;
+  } else {
+    // Specified mode is not supported.
+    return;
+  }
+
+  if (!web_app_provider_->registrar().IsInstalled(app_id))
+    return;
+
+  web_app_provider_->registry_controller().SetAppRunOnOsLoginMode(app_id, mode);
+
+  if (mode == web_app::RunOnOsLoginMode::kUndefined) {
+    web_app::OsHooksResults os_hooks;
+    os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    web_app_provider_->os_integration_manager().UninstallOsHooks(
+        app_id, os_hooks, base::DoNothing());
+  } else {
+    web_app::InstallOsHooksOptions install_options;
+    install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    web_app_provider_->os_integration_manager().InstallOsHooks(
+        app_id, base::DoNothing(), /*web_application_info=*/nullptr,
+        std::move(install_options));
+  }
 }
 
 void AppLauncherHandler::OnFaviconForAppInstallFromLink(

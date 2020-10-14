@@ -26,6 +26,13 @@ cr.define('ntp', function() {
   };
   const DRAG_SOURCE_LIMIT = DRAG_SOURCE.OUTSIDE_NTP + 1;
 
+  // Run on OS Login available modes
+  const RUN_ON_OS_LOGIN_MODE = {
+    NONE: 'run_on_os_login_mode_none',
+    WINDOWED: 'run_on_os_login_mode_windowed',
+    MINIMIZED: 'run_on_os_login_mode_minimized'
+  };
+
   // The fraction of the app tile size that the icon uses.
   const APP_IMG_SIZE_FRACTION = 4 / 5;
 
@@ -72,6 +79,10 @@ cr.define('ntp', function() {
         launchTypeButton.addEventListener(
             'activate', self.onLaunchTypeChanged_.bind(self));
       });
+
+      this.runOnOsLogin_ = this.appendMenuItem_('runonoslogin');
+      this.runOnOsLogin_.addEventListener(
+          'activate', this.onRunOnOsLoginModeChanged_.bind(this));
 
       this.launchTypeMenuSeparator_ = cr.ui.MenuItem.createSeparator();
       menu.appendChild(this.launchTypeMenuSeparator_);
@@ -189,6 +200,12 @@ cr.define('ntp', function() {
 
       this.installLocallySeparator_.hidden = this.installLocally_.hidden =
           app.appData.isLocallyInstalled;
+
+      this.runOnOsLogin_.hidden = !app.appData.mayChangeRunOnOsLoginMode;
+      if (app.appData.mayChangeRunOnOsLoginMode) {
+        this.runOnOsLogin_.checked =
+            app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NONE;
+      }
     },
 
     /** @private */
@@ -249,6 +266,23 @@ cr.define('ntp', function() {
     /** @private */
     onShowAppInfo_() {
       chrome.send('showAppInfo', [this.app_.appData.id]);
+    },
+
+    /** @private */
+    onRunOnOsLoginModeChanged_(e) {
+      const pressed = e.currentTarget;
+      const app = this.app_;
+      let mode = RUN_ON_OS_LOGIN_MODE.NONE;
+
+      if (pressed == this.runOnOsLogin_ && !pressed.checked) {
+        mode = RUN_ON_OS_LOGIN_MODE.WINDOWED;
+      }
+
+      chrome.send('runOnOsLogin', [app.appData.id, mode]);
+
+      // Manually update the launch type. We will only get
+      // appsPrefChangeCallback calls after changes to other NTP instances.
+      app.appData.runOnOsLoginMode = mode;
     }
   };
 

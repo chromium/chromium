@@ -159,6 +159,9 @@ class AppLauncherHandler
   // Handles "pageSelected" message with |args| containing [page_index].
   void HandlePageSelected(const base::ListValue* args);
 
+  // Handles "runOnOsLogin" message with |args| containing [app_id, mode]
+  void HandleRunOnOsLogin(const base::ListValue* args);
+
  private:
   struct AppInstallInfo {
     AppInstallInfo();
