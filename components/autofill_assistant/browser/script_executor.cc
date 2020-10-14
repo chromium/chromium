@@ -313,7 +313,9 @@ std::string ScriptExecutor::GetBubbleMessage() {
 }
 
 void ScriptExecutor::FindElement(const Selector& selector,
-                                 ElementFinder::Callback callback) {
+                                 ElementFinder::Callback callback) const {
+  DCHECK(!selector.empty());
+  VLOG(3) << __func__ << " " << selector;
   delegate_->GetWebController()->FindElement(selector, /* strict_mode= */ true,
                                              std::move(callback));
 }
@@ -592,15 +594,12 @@ void ScriptExecutor::GetStringAttribute(
                                                     std::move(callback));
 }
 
-void ScriptExecutor::SetFieldValue(
+void ScriptExecutor::SetValueAttribute(
     const std::string& value,
-    KeyboardValueFillStrategy fill_strategy,
-    int key_press_delay_in_millisecond,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SetFieldValue(element, value, fill_strategy,
-                                               key_press_delay_in_millisecond,
-                                               std::move(callback));
+  delegate_->GetWebController()->SetValueAttribute(element, value,
+                                                   std::move(callback));
 }
 
 void ScriptExecutor::SetAttribute(
@@ -610,6 +609,12 @@ void ScriptExecutor::SetAttribute(
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->SetAttribute(element, attributes, value,
                                               std::move(callback));
+}
+
+void ScriptExecutor::SelectFieldValue(
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  delegate_->GetWebController()->SelectFieldValue(element, std::move(callback));
 }
 
 void ScriptExecutor::SendKeyboardInput(
@@ -799,7 +804,7 @@ void ScriptExecutor::SetOverlayBehavior(
   delegate_->SetOverlayBehavior(overlay_behavior);
 }
 
-base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() {
+base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

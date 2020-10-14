@@ -165,26 +165,26 @@ void SetFormFieldValueAction::InternalProcessAction(
 void SetFormFieldValueAction::OnWaitForElement(
     const ClientStatus& element_status) {
   if (!element_status.ok()) {
-    EndAction(ClientStatus(element_status.proto_status()));
+    EndAction(element_status);
     return;
   }
-  // Start with first value, then call OnSetFieldValue() recursively until done.
-  OnSetFieldValue(/* next = */ 0, OkClientStatus());
+  SetFieldValueSequentially(/* field_index = */ 0, OkClientStatus());
 }
 
-void SetFormFieldValueAction::OnSetFieldValue(int next,
-                                              const ClientStatus& status) {
-  // If something went wrong or we are out of values: finish
-  if (!status.ok() || next >= proto_.set_form_value().value_size()) {
+void SetFormFieldValueAction::SetFieldValueSequentially(
+    int field_index,
+    const ClientStatus& status) {
+  // If something went wrong or we are out of values: finish.
+  if (!status.ok() || field_index >= proto_.set_form_value().value_size()) {
     EndAction(status);
     return;
   }
 
   int delay_in_millisecond = proto_.set_form_value().delay_in_millisecond();
-  auto next_field_callback = base::BindOnce(
-      &SetFormFieldValueAction::OnSetFieldValue, weak_ptr_factory_.GetWeakPtr(),
-      /* next = */ next + 1);
-  const auto& field_input = field_inputs_[next];
+  auto next_field_callback =
+      base::BindOnce(&SetFormFieldValueAction::SetFieldValueSequentially,
+                     weak_ptr_factory_.GetWeakPtr(), field_index + 1);
+  const auto& field_input = field_inputs_[field_index];
   if (field_input.keyboard_input) {
     action_delegate_util::SendKeyboardInput(
         delegate_, selector_, *field_input.keyboard_input, delay_in_millisecond,
@@ -199,30 +199,46 @@ void SetFormFieldValueAction::OnSetFieldValue(int next,
             *delegate_->GetUserData()->selected_login_,
             base::BindOnce(&SetFormFieldValueAction::OnGetStoredPassword,
                            weak_ptr_factory_.GetWeakPtr(),
-                           /* field_index = */ next));
+                           std::move(next_field_callback)));
         break;
     }
   } else {
     auto fill_strategy = proto_.set_form_value().fill_strategy();
-    if (IsSimulatingKeyPresses(fill_strategy)) {
-      action_delegate_util::SetFieldValue(
-          delegate_, selector_, field_input.value, fill_strategy,
-          delay_in_millisecond, std::move(next_field_callback));
-    } else {
-      action_delegate_util::SetFieldValue(
-          delegate_, selector_, field_input.value, fill_strategy,
-          delay_in_millisecond,
-          base::BindOnce(
-              &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
-              weak_ptr_factory_.GetWeakPtr(),
-              /* field_index = */ next,
-              /* requested_value = */ field_input.value));
-    }
+    action_delegate_util::SetFieldValue(
+        delegate_, selector_, field_input.value, fill_strategy,
+        delay_in_millisecond,
+        IsSimulatingKeyPresses(fill_strategy)
+            ? std::move(next_field_callback)
+            : base::BindOnce(
+                  &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  std::move(next_field_callback),
+                  /* requested_value = */ field_input.value));
   }
 }
 
+void SetFormFieldValueAction::OnGetStoredPassword(
+    base::OnceCallback<void(const ClientStatus&)> next_field_callback,
+    bool success,
+    std::string password) {
+  if (!success) {
+    EndAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE));
+    return;
+  }
+  auto fill_strategy = proto_.set_form_value().fill_strategy();
+  action_delegate_util::SetFieldValue(
+      delegate_, selector_, password, fill_strategy,
+      proto_.set_form_value().delay_in_millisecond(),
+      IsSimulatingKeyPresses(fill_strategy)
+          ? std::move(next_field_callback)
+          : base::BindOnce(
+                &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
+                weak_ptr_factory_.GetWeakPtr(), std::move(next_field_callback),
+                /* requested_value = */ password));
+}
+
 void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(
-    int field_index,
+    base::OnceCallback<void(const ClientStatus&)> next_field_callback,
     const std::string& requested_value,
     const ClientStatus& status) {
   if (!status.ok()) {
@@ -230,19 +246,20 @@ void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(
     return;
   }
   delegate_->GetFieldValue(
-      selector_, base::BindOnce(&SetFormFieldValueAction::OnGetFieldValue,
-                                weak_ptr_factory_.GetWeakPtr(), field_index,
-                                requested_value));
+      selector_,
+      base::BindOnce(&SetFormFieldValueAction::OnGetFieldValue,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(next_field_callback), requested_value));
 }
 
 void SetFormFieldValueAction::OnGetFieldValue(
-    int field_index,
+    base::OnceCallback<void(const ClientStatus&)> next_field_callback,
     const std::string& requested_value,
     const ClientStatus& element_status,
     const std::string& actual_value) {
   // Move to next value if |GetFieldValue| failed.
   if (!element_status.ok()) {
-    OnSetFieldValue(field_index + 1, OkClientStatus());
+    std::move(next_field_callback).Run(OkClientStatus());
     return;
   }
 
@@ -250,48 +267,20 @@ void SetFormFieldValueAction::OnGetFieldValue(
   // simulation fallback.
   if (!requested_value.empty() && actual_value.empty()) {
     // Report a key press simulation fallback has happened.
-    auto result = SetFormFieldValueProto::Result();
-    result.set_fallback_to_simulate_key_presses(true);
-    *processed_action_proto_->mutable_set_form_field_value_result() = result;
+    processed_action_proto_->mutable_set_form_field_value_result()
+        ->set_fallback_to_simulate_key_presses(true);
 
     // Run |SetFieldValue| with keyboard simulation on and move on to next value
     // afterwards.
     action_delegate_util::SetFieldValue(
         delegate_, selector_, requested_value, SIMULATE_KEY_PRESSES,
         proto_.set_form_value().delay_in_millisecond(),
-        base::BindOnce(&SetFormFieldValueAction::OnSetFieldValue,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       /* next = */ field_index + 1));
+        std::move(next_field_callback));
     return;
   }
 
   // Move to next value in all other cases.
-  OnSetFieldValue(field_index + 1, OkClientStatus());
-}
-
-void SetFormFieldValueAction::OnGetStoredPassword(int field_index,
-                                                  bool success,
-                                                  std::string password) {
-  if (!success) {
-    EndAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE));
-    return;
-  }
-  auto fill_strategy = proto_.set_form_value().fill_strategy();
-  int delay_in_millisecond = proto_.set_form_value().delay_in_millisecond();
-  if (IsSimulatingKeyPresses(fill_strategy)) {
-    action_delegate_util::SetFieldValue(
-        delegate_, selector_, password, fill_strategy, delay_in_millisecond,
-        base::BindOnce(&SetFormFieldValueAction::OnSetFieldValue,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       /* next = */ field_index + 1));
-  } else {
-    action_delegate_util::SetFieldValue(
-        delegate_, selector_, password, fill_strategy, delay_in_millisecond,
-        base::BindOnce(
-            &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
-            weak_ptr_factory_.GetWeakPtr(),
-            /* next = */ field_index, /* requested_value = */ password));
-  }
+  std::move(next_field_callback).Run(OkClientStatus());
 }
 
 void SetFormFieldValueAction::FailAction(const ClientStatus& status,

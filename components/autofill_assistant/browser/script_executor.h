@@ -123,7 +123,7 @@ class ScriptExecutor : public ActionDelegate,
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() override;
   void FindElement(const Selector& selector,
-                   ElementFinder::Callback callback) override;
+                   ElementFinder::Callback callback) const override;
   void WaitForDocumentToBecomeInteractive(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
@@ -190,15 +190,16 @@ class ScriptExecutor : public ActionDelegate,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) override;
-  void SetFieldValue(
+  void SetValueAttribute(
       const std::string& value,
-      KeyboardValueFillStrategy fill_strategy,
-      int key_press_delay_in_millisecond,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SetAttribute(
       const std::vector<std::string>& attributes,
       const std::string& value,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override;
+  void SelectFieldValue(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SendKeyboardInput(
@@ -269,7 +270,7 @@ class ScriptExecutor : public ActionDelegate,
   void ClearGenericUi() override;
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
-  base::WeakPtr<ActionDelegate> GetWeakPtr() override;
+  base::WeakPtr<ActionDelegate> GetWeakPtr() const override;
 
  private:
   // Helper for WaitForElementVisible that keeps track of the state required to

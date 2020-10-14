@@ -574,12 +574,71 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
     EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
     ASSERT_TRUE(element_result != nullptr);
-    web_controller_->SetFieldValue(
-        *element_result, value, fill_strategy,
-        /* key_press_delay_in_millisecond= */ 0,
+    PerformSetFieldValue(
+        value, fill_strategy, *element_result,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
                        std::move(done_callback), result_output));
+  }
+
+  void PerformSetFieldValue(
+      const std::string& value,
+      KeyboardValueFillStrategy fill_strategy,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) {
+    if (value.empty()) {
+      web_controller_->SetValueAttribute(element, value, std::move(callback));
+      return;
+    }
+
+    switch (fill_strategy) {
+      case SET_VALUE:
+        web_controller_->SetValueAttribute(element, value, std::move(callback));
+        return;
+      case SIMULATE_KEY_PRESSES:
+        web_controller_->SetValueAttribute(
+            element, /* value= */ "",
+            base::BindOnce(
+                &WebControllerBrowserTest::OnSetValueAttributeForSetFieldValue,
+                base::Unretained(this), value, element, std::move(callback)));
+        return;
+      case SIMULATE_KEY_PRESSES_SELECT_VALUE:
+        web_controller_->SelectFieldValue(
+            element,
+            base::BindOnce(
+                &WebControllerBrowserTest::OnSelectFieldValueForSetFieldValue,
+                base::Unretained(this), value, element, std::move(callback)));
+        return;
+      case UNSPECIFIED_KEYBAORD_STRATEGY:
+        std::move(callback).Run(ClientStatus(INVALID_ACTION));
+    }
+  }
+
+  void OnSetValueAttributeForSetFieldValue(
+      const std::string& value,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& status) {
+    if (!status.ok()) {
+      std::move(callback).Run(status);
+      return;
+    }
+    PerformSendKeyboardInput(UTF8ToUnicode(value), /* delay_in_milli= */ 0,
+                             element, std::move(callback));
+  }
+
+  void OnSelectFieldValueForSetFieldValue(
+      const std::string& value,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& status) {
+    if (!status.ok()) {
+      std::move(callback).Run(status);
+      return;
+    }
+    web_controller_->SendKeyboardInput(element, UTF8ToUnicode(value),
+                                       /* delay_in_milli= */ 0,
+                                       std::move(callback));
   }
 
   ClientStatus SendKeyboardInput(const Selector& selector,
@@ -1601,9 +1660,9 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetAndSetFieldValue) {
   expected_values.clear();
   expected_values.emplace_back("helloworld2");
   GetFieldsValue(selectors, expected_values);
-  EXPECT_EQ(ACTION_APPLIED,
-            SetFieldValue(a_selector, /* value= */ "", SIMULATE_KEY_PRESSES)
-                .proto_status());
+  EXPECT_EQ(
+      ACTION_APPLIED,
+      SetFieldValue(a_selector, /* value= */ "", SET_VALUE).proto_status());
   expected_values.clear();
   expected_values.emplace_back("");
   GetFieldsValue(selectors, expected_values);
@@ -1614,11 +1673,24 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetAndSetFieldValue) {
   expected_values.clear();
   expected_values.emplace_back("helloworld3");
   GetFieldsValue(selectors, expected_values);
-  EXPECT_EQ(ACTION_APPLIED, SetFieldValue(a_selector, /* value= */ "",
+  EXPECT_EQ(ACTION_APPLIED,
+            SetFieldValue(a_selector, "new value", SIMULATE_KEY_PRESSES)
+                .proto_status());
+  expected_values.clear();
+  expected_values.emplace_back("new value");
+  GetFieldsValue(selectors, expected_values);
+
+  selectors.clear();
+  a_selector = Selector({"#input4"});
+  selectors.emplace_back(a_selector);
+  expected_values.clear();
+  expected_values.emplace_back("helloworld4");
+  GetFieldsValue(selectors, expected_values);
+  EXPECT_EQ(ACTION_APPLIED, SetFieldValue(a_selector, "new value",
                                           SIMULATE_KEY_PRESSES_SELECT_VALUE)
                                 .proto_status());
   expected_values.clear();
-  expected_values.emplace_back("");
+  expected_values.emplace_back("new value");
   GetFieldsValue(selectors, expected_values);
 
   selectors.clear();
@@ -1627,7 +1699,6 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetAndSetFieldValue) {
   expected_values.clear();
   expected_values.emplace_back("");
   GetFieldsValue(selectors, expected_values);
-
   EXPECT_EQ(ELEMENT_RESOLUTION_FAILED,
             SetFieldValue(a_selector, "foobar", SET_VALUE).proto_status());
 }

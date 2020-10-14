@@ -319,9 +319,9 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
     return;
   }
 
-  action_delegate_->SetFieldValue(
-      value, required_field.fill_strategy, required_field.delay_in_millisecond,
-      *element,
+  action_delegate_util::PerformSetFieldValue(
+      action_delegate_, value, required_field.fill_strategy,
+      required_field.delay_in_millisecond, *element,
       base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                      weak_ptr_factory_.GetWeakPtr(), required_fields_index,
                      std::move(element)));

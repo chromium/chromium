@@ -66,8 +66,8 @@ class MockActionDelegate : public ActionDelegate {
 
   MOCK_METHOD0(GetBubbleMessage, std::string());
 
-  MOCK_METHOD2(FindElement,
-               void(const Selector& selector, ElementFinder::Callback));
+  MOCK_CONST_METHOD2(FindElement,
+                     void(const Selector& selector, ElementFinder::Callback));
 
   MOCK_METHOD3(ClickOrTapElement,
                void(ClickType click_type,
@@ -195,32 +195,19 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
 
-  void SetFieldValue(const std::string& value,
-                     KeyboardValueFillStrategy fill_strategy,
-                     int key_press_delay_in_millisecond,
-                     const ElementFinder::Result& element,
-                     base::OnceCallback<void(const ClientStatus&)> callback) {
-    OnSetFieldValue(value, element, callback);
-    OnSetFieldValue(value,
-                    fill_strategy == SIMULATE_KEY_PRESSES ||
-                        fill_strategy == SIMULATE_KEY_PRESSES_SELECT_VALUE,
-                    key_press_delay_in_millisecond, element, callback);
-  }
-  MOCK_METHOD3(OnSetFieldValue,
+  MOCK_METHOD3(SetValueAttribute,
                void(const std::string& value,
                     const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
-  MOCK_METHOD5(OnSetFieldValue,
-               void(const std::string& value,
-                    bool simulate_key_presses,
-                    int delay_in_millisecond,
-                    const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
+                    base::OnceCallback<void(const ClientStatus&)> callback));
 
   MOCK_METHOD4(SetAttribute,
                void(const std::vector<std::string>& attribute,
                     const std::string& value,
                     const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+
+  MOCK_METHOD2(SelectFieldValue,
+               void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
   void SendKeyboardInput(
@@ -346,7 +333,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(SetOverlayBehavior,
                void(ConfigureUiStateProto::OverlayBehavior));
 
-  base::WeakPtr<ActionDelegate> GetWeakPtr() override {
+  base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 

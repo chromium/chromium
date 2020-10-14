@@ -28,18 +28,17 @@ using ElementActionGetCallback = base::OnceCallback<void(
 // immediately executes the |done| callback. If the resolution succeeds, it
 // executes the |perform| callback with the element and the |done| callback as
 // arguments, while retaining the element.
-void FindElementAndPerform(
-    /* const */ ActionDelegate* delegate,
-    const Selector& selector,
-    ElementActionCallback perform,
-    base::OnceCallback<void(const ClientStatus&)> done);
+void FindElementAndPerform(const ActionDelegate* delegate,
+                           const Selector& selector,
+                           ElementActionCallback perform,
+                           base::OnceCallback<void(const ClientStatus&)> done);
 
 // Finds the element given by the selector. If the resolution fails, it
 // immediately executes the |done| callback. If the resolution succeeds, it
 // executes the |perform_actions| callbacks in sequence with the element and
 // the |done| callback as arguments, while retaining the element.
 void FindElementAndPerformAll(
-    /* const */ ActionDelegate* delegate,
+    const ActionDelegate* delegate,
     const Selector& selector,
     std::unique_ptr<ElementActionVector> perform_actions,
     base::OnceCallback<void(const ClientStatus&)> done);
@@ -50,29 +49,46 @@ void FindElementAndPerformAll(
 // the element and the |done| callback as arguments, while retaining the
 // element.
 void FindElementAndGetProperty(
-    /* const */ ActionDelegate* delegate,
+    const ActionDelegate* delegate,
     const Selector& selector,
     ElementActionGetCallback<std::string> perform_and_get,
     base::OnceCallback<void(const ClientStatus&, const std::string&)> done);
 
-void ClickOrTapElement(
-    /* const */ ActionDelegate* delegate,
-    const Selector& selector,
+void ClickOrTapElement(const ActionDelegate* delegate,
+                       const Selector& selector,
+                       ClickType click_type,
+                       base::OnceCallback<void(const ClientStatus&)> callback);
+void PerformClickOrTapElement(
+    const ActionDelegate* delegate,
     ClickType click_type,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
-void SendKeyboardInput(/* const */ ActionDelegate* delegate,
+void SendKeyboardInput(const ActionDelegate* delegate,
                        const Selector& selector,
                        const std::vector<UChar32> codepoints,
                        int delay_in_millis,
                        base::OnceCallback<void(const ClientStatus&)> callback);
+void PerformSendKeyboardInput(
+    const ActionDelegate* delegate,
+    const std::vector<UChar32> codepoints,
+    int delay_in_millis,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback);
 
-void SetFieldValue(/* const */ ActionDelegate* delegate,
+void SetFieldValue(const ActionDelegate* delegate,
                    const Selector& selector,
                    const std::string& value,
                    KeyboardValueFillStrategy fill_strategy,
                    int key_press_delay_in_millisecond,
                    base::OnceCallback<void(const ClientStatus&)> callback);
+void PerformSetFieldValue(
+    const ActionDelegate* delegate,
+    const std::string& value,
+    KeyboardValueFillStrategy fill_strategy,
+    int key_press_delay_in_millisecond,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback);
 
 }  // namespace action_delegate_util
 }  // namespace autofill_assistant

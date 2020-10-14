@@ -54,28 +54,30 @@ class SetFormFieldValueActionTest : public testing::Test {
             RunOnceCallback<0>(&user_data_, /* field_change = */ nullptr));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
         .WillByDefault(Return(&mock_website_login_manager_));
-    ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, OnSetFieldValue(_, _, _, _, _))
-        .WillByDefault(RunOnceCallback<4>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, FindElement(_, _))
-        .WillByDefault(WithArgs<1>([&](auto&& callback) {
-          auto element_result = std::make_unique<ElementFinder::Result>();
-          std::move(callback).Run(OkClientStatus(), std::move(element_result));
-        }));
-    ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
-
     ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
                 WebsiteLoginManager::Login(GURL(kFakeUrl), kFakeUsername)}));
     ON_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
         .WillByDefault(RunOnceCallback<1>(true, kFakePassword));
+    ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
+    test_util::MockFindAnyElement(mock_action_delegate_);
+    ON_CALL(mock_action_delegate_, SetValueAttribute(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, SelectFieldValue(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, OnSendKeyboardInput(_, _, _, _))
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
+
     user_data_.selected_login_ =
         base::make_optional<WebsiteLoginManager::Login>(GURL(kFakeUrl),
                                                         kFakeUsername);
@@ -144,11 +146,11 @@ TEST_F(SetFormFieldValueActionTest, Username) {
   ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kFakeUsername));
   EXPECT_CALL(mock_action_delegate_,
-              OnSetFieldValue(kFakeUsername, _, _,
-                              EqualsElement(test_util::MockFindElement(
-                                  mock_action_delegate_, fake_selector_)),
-                              _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              SetValueAttribute(kFakeUsername,
+                                EqualsElement(test_util::MockFindElement(
+                                    mock_action_delegate_, fake_selector_)),
+                                _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   EXPECT_CALL(
       callback_,
@@ -163,16 +165,26 @@ TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
   ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
   EXPECT_CALL(mock_action_delegate_,
-              OnSetFieldValue(kFakePassword, _, _,
-                              EqualsElement(test_util::MockFindElement(
-                                  mock_action_delegate_, fake_selector_)),
-                              _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              SetValueAttribute(kFakePassword,
+                                EqualsElement(test_util::MockFindElement(
+                                    mock_action_delegate_, fake_selector_)),
+                                _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, PasswordIsClearedFromMemory) {
+  auto* value = set_form_field_proto_->add_value();
+  value->set_use_password(true);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+  ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
+  action.ProcessAction(callback_.Get());
+  EXPECT_TRUE(action.field_inputs_.empty());
 }
 
 TEST_F(SetFormFieldValueActionTest, Keycode) {
@@ -250,11 +262,76 @@ TEST_F(SetFormFieldValueActionTest, Text) {
   ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "SomeText𠜎"));
   EXPECT_CALL(mock_action_delegate_,
-              OnSetFieldValue("SomeText𠜎", _, _,
-                              EqualsElement(test_util::MockFindElement(
-                                  mock_action_delegate_, fake_selector_)),
-                              _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              SetValueAttribute("SomeText𠜎",
+                                EqualsElement(test_util::MockFindElement(
+                                    mock_action_delegate_, fake_selector_)),
+                                _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, TextWithKeystrokeHasExpectedCallChain) {
+  InSequence sequence;
+
+  auto* value = set_form_field_proto_->add_value();
+  std::string keyboard_input = "SomeQuery";
+  value->set_text(keyboard_input);
+  set_form_field_proto_->set_fill_strategy(SIMULATE_KEY_PRESSES);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  auto expected_element =
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+  EXPECT_CALL(mock_action_delegate_,
+              SetValueAttribute("", EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
+                                         EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              ScrollIntoView(EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              OnSendKeyboardInput(UTF8ToUnicode(keyboard_input), _,
+                                  EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest,
+       TextWithKeystrokeAndSelectHasExpectedCallChain) {
+  InSequence sequence;
+
+  auto* value = set_form_field_proto_->add_value();
+  std::string keyboard_input = "SomeQuery";
+  value->set_text(keyboard_input);
+  set_form_field_proto_->set_fill_strategy(SIMULATE_KEY_PRESSES_SELECT_VALUE);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  auto expected_element =
+      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+  EXPECT_CALL(mock_action_delegate_,
+              SelectFieldValue(EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              OnSendKeyboardInput(UTF8ToUnicode(keyboard_input), _,
+                                  EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
 
   EXPECT_CALL(
       callback_,
@@ -270,10 +347,9 @@ TEST_F(SetFormFieldValueActionTest, MultipleValuesAndSimulateKeypress) {
   set_form_field_proto_->set_fill_strategy(SIMULATE_KEY_PRESSES);
 
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
-  EXPECT_CALL(
-      mock_action_delegate_,
-      OnSetFieldValue("SomeText", /* simulate_key_presses = */ true, _, _, _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              OnSendKeyboardInput(UTF8ToUnicode("SomeText"), _, _, _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   // The second entry, a deprecated keycode is transformed into a
   // field_input.keyboard_input.
   EXPECT_CALL(mock_action_delegate_,
@@ -296,11 +372,11 @@ TEST_F(SetFormFieldValueActionTest, ClientMemoryKey) {
   ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "SomeText𠜎"));
   EXPECT_CALL(mock_action_delegate_,
-              OnSetFieldValue("SomeText𠜎", _, _,
-                              EqualsElement(test_util::MockFindElement(
-                                  mock_action_delegate_, fake_selector_)),
-                              _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              SetValueAttribute("SomeText𠜎",
+                                EqualsElement(test_util::MockFindElement(
+                                    mock_action_delegate_, fake_selector_)),
+                                _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   EXPECT_CALL(
       callback_,
@@ -318,8 +394,7 @@ TEST_F(SetFormFieldValueActionTest, ClientMemoryKeyFailsIfNotInClientMemory) {
   action.ProcessAction(callback_.Get());
 }
 
-// Test that automatic fallback to simulate keystrokes works.
-TEST_F(SetFormFieldValueActionTest, Fallback) {
+TEST_F(SetFormFieldValueActionTest, FallbackToSimulateKeystrokes) {
   auto* value = set_form_field_proto_->add_value();
   value->set_text("123");
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
@@ -329,17 +404,21 @@ TEST_F(SetFormFieldValueActionTest, Fallback) {
   {
     InSequence seq;
     EXPECT_CALL(mock_action_delegate_,
-                OnSetFieldValue("123",
-                                /* simulate_key_presses = */ false, _,
-                                EqualsElement(test_util::MockFindElement(
-                                    mock_action_delegate_, fake_selector_)),
-                                _));
+                SetValueAttribute("123",
+                                  EqualsElement(test_util::MockFindElement(
+                                      mock_action_delegate_, fake_selector_)),
+                                  _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+    auto expected_element =
+        test_util::MockFindElement(mock_action_delegate_, fake_selector_);
     EXPECT_CALL(mock_action_delegate_,
-                OnSetFieldValue("123",
-                                /* simulate_key_presses = */ true, _,
-                                EqualsElement(test_util::MockFindElement(
-                                    mock_action_delegate_, fake_selector_)),
-                                _));
+                SetValueAttribute("", EqualsElement(expected_element), _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+    EXPECT_CALL(mock_action_delegate_,
+                OnSendKeyboardInput(UTF8ToUnicode("123"), _,
+                                    EqualsElement(expected_element), _))
+        .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   }
 
   EXPECT_CALL(callback_,
@@ -349,18 +428,103 @@ TEST_F(SetFormFieldValueActionTest, Fallback) {
                            Property(&SetFormFieldValueProto::Result::
                                         fallback_to_simulate_key_presses,
                                     true))))));
-
   action.ProcessAction(callback_.Get());
 }
 
-TEST_F(SetFormFieldValueActionTest, PasswordIsClearedFromMemory) {
+TEST_F(SetFormFieldValueActionTest, FallbackForPassword) {
   auto* value = set_form_field_proto_->add_value();
   value->set_use_password(true);
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
   ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
+  {
+    InSequence seq;
+    EXPECT_CALL(mock_action_delegate_,
+                SetValueAttribute(kFakePassword,
+                                  EqualsElement(test_util::MockFindElement(
+                                      mock_action_delegate_, fake_selector_)),
+                                  _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+    auto expected_element =
+        test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+    EXPECT_CALL(mock_action_delegate_,
+                SetValueAttribute("", EqualsElement(expected_element), _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+    EXPECT_CALL(mock_action_delegate_,
+                OnSendKeyboardInput(UTF8ToUnicode(kFakePassword), _,
+                                    EqualsElement(expected_element), _))
+        .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+  }
+
+  EXPECT_CALL(callback_,
+              Run(Pointee(AllOf(
+                  Property(&ProcessedActionProto::status, ACTION_APPLIED),
+                  Property(&ProcessedActionProto::set_form_field_value_result,
+                           Property(&SetFormFieldValueProto::Result::
+                                        fallback_to_simulate_key_presses,
+                                    true))))));
   action.ProcessAction(callback_.Get());
-  EXPECT_TRUE(action.field_inputs_.empty());
+}
+
+TEST_F(SetFormFieldValueActionTest, FallbackForMultipleValues) {
+  auto* value = set_form_field_proto_->add_value();
+  value->set_text("SomeText");
+  auto* enter = set_form_field_proto_->add_value();
+  enter->set_text("SomeOtherText");
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), ""));
+  {
+    InSequence seq;
+
+    // First value.
+    EXPECT_CALL(mock_action_delegate_,
+                SetValueAttribute("SomeText",
+                                  EqualsElement(test_util::MockFindElement(
+                                      mock_action_delegate_, fake_selector_)),
+                                  _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+    auto expected_element_1 =
+        test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+    EXPECT_CALL(mock_action_delegate_,
+                SetValueAttribute("", EqualsElement(expected_element_1), _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+    EXPECT_CALL(mock_action_delegate_,
+                OnSendKeyboardInput(UTF8ToUnicode("SomeText"), _,
+                                    EqualsElement(expected_element_1), _))
+        .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+
+    // Second value.
+    EXPECT_CALL(mock_action_delegate_,
+                SetValueAttribute("SomeOtherText",
+                                  EqualsElement(test_util::MockFindElement(
+                                      mock_action_delegate_, fake_selector_)),
+                                  _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+
+    auto expected_element_2 =
+        test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+    EXPECT_CALL(mock_action_delegate_,
+                SetValueAttribute("", EqualsElement(expected_element_2), _))
+        .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+    EXPECT_CALL(mock_action_delegate_,
+                OnSendKeyboardInput(UTF8ToUnicode("SomeOtherText"), _,
+                                    EqualsElement(expected_element_2), _))
+        .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+  }
+
+  EXPECT_CALL(callback_,
+              Run(Pointee(AllOf(
+                  Property(&ProcessedActionProto::status, ACTION_APPLIED),
+                  Property(&ProcessedActionProto::set_form_field_value_result,
+                           Property(&SetFormFieldValueProto::Result::
+                                        fallback_to_simulate_key_presses,
+                                    true))))));
+  action.ProcessAction(callback_.Get());
 }
 
 TEST_F(SetFormFieldValueActionTest, EmptyProfileValueFails) {
@@ -427,11 +591,11 @@ TEST_F(SetFormFieldValueActionTest, SetFieldFromProfileValue) {
   ON_CALL(mock_action_delegate_, OnGetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
   EXPECT_CALL(mock_action_delegate_,
-              OnSetFieldValue("John", _, _,
-                              EqualsElement(test_util::MockFindElement(
-                                  mock_action_delegate_, fake_selector_)),
-                              _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              SetValueAttribute("John",
+                                EqualsElement(test_util::MockFindElement(
+                                    mock_action_delegate_, fake_selector_)),
+                                _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
 
   EXPECT_CALL(
       callback_,

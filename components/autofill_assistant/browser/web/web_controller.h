@@ -160,21 +160,23 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
-  // Set the |value| of field |element| and return the result through
-  // |callback|. The strategy used to fill the value is defined by
-  // |fill_strategy|, see the proto for further explanation.
-  virtual void SetFieldValue(
+  // Set the value attribute of an |element| to the specified |value| and
+  // trigger an onchange event.
+  virtual void SetValueAttribute(
       const ElementFinder::Result& element,
       const std::string& value,
-      KeyboardValueFillStrategy fill_strategy,
-      int key_press_delay_in_millisecond,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Set the |value| of all the |attributes| of the |element|.
+  // Set the nested |attributes| of an |element| to the specified |value|.
   virtual void SetAttribute(
       const ElementFinder::Result& element,
       const std::vector<std::string>& attributes,
       const std::string& value,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Select the current value in a text |element|.
+  virtual void SelectFieldValue(
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Sets the keyboard focus to |element| and inputs |codepoints|, one
@@ -374,44 +376,6 @@ class WebController {
           callback,
       const ClientStatus& status,
       std::unique_ptr<ElementFinder::Result> element_result);
-  void OnClearFieldForSetFieldValue(
-      const ElementFinder::Result& element,
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& clear_status);
-  void OnWaitForDocumentToBecomeInteractiveForSetFieldValue(
-      const ElementFinder::Result& element,
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& wait_status);
-  void OnScrollIntoViewForSetFieldValue(
-      const ElementFinder::Result& element,
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& scroll_status);
-  void OnClickOrTapElementForSetFieldValue(
-      const ElementFinder::Result& element,
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& click_status);
-  void SelectFieldValueForReplace(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnSelectFieldValueForReplace(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnFieldValueSelectedSetFieldValue(
-      const ElementFinder::Result& element,
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& select_status);
   void DispatchKeyboardTextDownEvent(
       const std::string& node_frame_id,
       const std::vector<UChar32>& codepoints,
@@ -424,10 +388,6 @@ class WebController {
       const std::vector<UChar32>& codepoints,
       size_t index,
       int delay_in_milli,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-  void SetValueAttribute(
-      const ElementFinder::Result& element,
-      const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback);
   void OnFindElementForPosition(
       base::OnceCallback<void(bool, const RectF&)> callback,

@@ -98,7 +98,7 @@ class ActionDelegate {
 
   // Find an element specified by |selector| on the web page.
   virtual void FindElement(const Selector&,
-                           ElementFinder::Callback callback) = 0;
+                           ElementFinder::Callback callback) const = 0;
 
   // Click or tap the |element|.
   virtual void ClickOrTapElement(
@@ -240,21 +240,22 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
 
-  // Set the |value| of field |element| and return the result through
-  // |callback|. If |simulate_key_presses| is true, the value will be set by
-  // clicking the field and then simulating key presses, otherwise the `value`
-  // attribute will be set directly.
-  virtual void SetFieldValue(
+  // Set the value attribute of an |element| to the specified |value| and
+  // trigger an onchange event.
+  virtual void SetValueAttribute(
       const std::string& value,
-      KeyboardValueFillStrategy fill_strategy,
-      int key_press_delay_in_millisecond,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Set the |value| of all the |attributes| of the |element|.
+  // Set the nested |attributes| of an |element| to the specified |value|.
   virtual void SetAttribute(
       const std::vector<std::string>& attributes,
       const std::string& value,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
+
+  // Select the current value in a text |element|.
+  virtual void SelectFieldValue(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
@@ -439,7 +440,7 @@ class ActionDelegate {
   virtual void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) = 0;
 
-  virtual base::WeakPtr<ActionDelegate> GetWeakPtr() = 0;
+  virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
  protected:
   ActionDelegate() = default;
