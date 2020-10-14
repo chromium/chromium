@@ -546,7 +546,7 @@ class ImageBuffer {
    * @private
    * @param {!PiexWasmPreviewImageMetadata} preview
    * @param {!Uint8Array} view
-   * return {!Uint8Array}
+   * @return {!Uint8Array}
    */
   createImageDataArray_(view, preview) {
     const jpeg = view.byteLength > 2 && view[0] === 0xff && view[1] === 0xd8;
