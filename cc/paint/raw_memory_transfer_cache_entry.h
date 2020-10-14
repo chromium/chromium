@@ -15,7 +15,7 @@ namespace cc {
 // Client/ServiceRawMemoryTransferCacheEntry implement a transfer cache entry
 // backed by raw memory, with no conversion during serialization or
 // deserialization.
-class CC_PAINT_EXPORT ClientRawMemoryTransferCacheEntry
+class CC_PAINT_EXPORT ClientRawMemoryTransferCacheEntry final
     : public ClientTransferCacheEntryBase<TransferCacheEntryType::kRawMemory> {
  public:
   explicit ClientRawMemoryTransferCacheEntry(std::vector<uint8_t> data);
@@ -30,7 +30,7 @@ class CC_PAINT_EXPORT ClientRawMemoryTransferCacheEntry
   static base::AtomicSequenceNumber s_next_id_;
 };
 
-class CC_PAINT_EXPORT ServiceRawMemoryTransferCacheEntry
+class CC_PAINT_EXPORT ServiceRawMemoryTransferCacheEntry final
     : public ServiceTransferCacheEntryBase<TransferCacheEntryType::kRawMemory> {
  public:
   ServiceRawMemoryTransferCacheEntry();

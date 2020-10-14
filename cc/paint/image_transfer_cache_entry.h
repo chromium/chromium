@@ -42,7 +42,7 @@ CC_PAINT_EXPORT size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format);
 // Client/ServiceImageTransferCacheEntry implement a transfer cache entry
 // for transferring image data. On the client side, this is a CPU SkPixmap,
 // on the service side the image is uploaded and is a GPU SkImage.
-class CC_PAINT_EXPORT ClientImageTransferCacheEntry
+class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
     : public ClientTransferCacheEntryBase<TransferCacheEntryType::kImage> {
  public:
   explicit ClientImageTransferCacheEntry(const SkPixmap* pixmap,
@@ -90,7 +90,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry
   void ValidateYUVDataBeforeSerializing() const;
 };
 
-class CC_PAINT_EXPORT ServiceImageTransferCacheEntry
+class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
     : public ServiceTransferCacheEntryBase<TransferCacheEntryType::kImage> {
  public:
   ServiceImageTransferCacheEntry();

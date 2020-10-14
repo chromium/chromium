@@ -77,7 +77,7 @@ struct StagingBuffer {
   uint64_t content_id = 0;
 };
 
-class CC_EXPORT StagingBufferPool
+class CC_EXPORT StagingBufferPool final
     : public base::trace_event::MemoryDumpProvider {
  public:
   StagingBufferPool(scoped_refptr<base::SequencedTaskRunner> task_runner,
