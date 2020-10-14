@@ -266,7 +266,23 @@ int SandboxFileStreamWriter::Flush(net::CompletionOnceCallback callback) {
   if (!file_writer_)
     return net::OK;
 
-  return file_writer_->Flush(std::move(callback));
+  has_pending_operation_ = true;
+  int result = file_writer_->Flush(
+      base::BindOnce(&SandboxFileStreamWriter::DidFlush,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  if (result != net::ERR_IO_PENDING)
+    has_pending_operation_ = false;
+  return result;
+}
+
+void SandboxFileStreamWriter::DidFlush(net::CompletionOnceCallback callback,
+                                       int result) {
+  DCHECK(has_pending_operation_);
+
+  if (CancelIfRequested())
+    return;
+  has_pending_operation_ = false;
+  std::move(callback).Run(result);
 }
 
 }  // namespace storage

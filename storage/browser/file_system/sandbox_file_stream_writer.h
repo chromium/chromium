@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
 
   void DidWrite(int write_response);
 
+  void DidFlush(net::CompletionOnceCallback callback, int result);
+
   // Stops the in-flight operation, calls |cancel_callback_| and returns true
   // if there's a pending cancel request.
   bool CancelIfRequested();
