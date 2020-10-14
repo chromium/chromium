@@ -15,7 +15,6 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine_impl/commit_contribution.h"
-#include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
@@ -43,7 +42,6 @@ class CommitContributionImpl : public CommitContribution {
       base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
       Cryptographer* cryptographer,
       PassphraseType passphrase_type,
-      DataTypeDebugInfoEmitter* debug_info_emitter,
       bool only_commit_specifics);
   ~CommitContributionImpl() override;
 
@@ -98,8 +96,6 @@ class CommitContributionImpl : public CommitContribution {
   // A flag used to ensure this object's contract is respected.  Helps to check
   // that CleanUp() is called before the object is destructed.
   bool cleaned_up_;
-
-  DataTypeDebugInfoEmitter* debug_info_emitter_;
 
   // Don't send any metadata to server, only specifics. This is needed for
   // commit only types to save bandwidth.

@@ -165,8 +165,6 @@ TEST(CommitContributionImplTest,
                      &request_data->specifics_hash);
   request_data->entity = std::move(data);
 
-  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS);
-
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::FromSingleKeyForTesting("dummy");
 
@@ -177,7 +175,6 @@ TEST(CommitContributionImplTest,
       /*on_commit_response_callback=*/base::NullCallback(),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
       cryptographer.get(), PassphraseType::kImplicitPassphrase,
-      &debug_info_emitter,
       /*only_commit_specifics=*/false);
 
   sync_pb::ClientToServerMessage msg;
@@ -231,8 +228,6 @@ TEST(CommitContributionImplTest,
                      &request_data->specifics_hash);
   request_data->entity = std::move(data);
 
-  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS);
-
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::FromSingleKeyForTesting("dummy");
 
@@ -243,7 +238,6 @@ TEST(CommitContributionImplTest,
       /*on_commit_response_callback=*/base::NullCallback(),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
       cryptographer.get(), PassphraseType::kCustomPassphrase,
-      &debug_info_emitter,
       /*only_commit_specifics=*/false);
 
   sync_pb::ClientToServerMessage msg;
@@ -276,8 +270,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
 
-  DataTypeDebugInfoEmitter debug_info_emitter(PASSWORDS);
-
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
 
@@ -298,7 +290,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
       std::move(on_commit_response_callback),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
       cryptographer.get(), PassphraseType::kCustomPassphrase,
-      &debug_info_emitter,
       /*only_commit_specifics=*/false);
 
   sync_pb::ClientToServerMessage msg;
@@ -332,8 +323,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
 }
 
 TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
-  DataTypeDebugInfoEmitter debug_info_emitter(BOOKMARKS);
-
   base::MockOnceCallback<void(SyncCommitError commit_error)>
       on_commit_failure_callback;
   EXPECT_CALL(on_commit_failure_callback, Run(SyncCommitError::kNetworkError));
@@ -342,7 +331,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
       BOOKMARKS, sync_pb::DataTypeContext(), CommitRequestDataList(),
       /*on_commit_response_callback=*/base::NullCallback(),
       on_commit_failure_callback.Get(), /*cryptographer=*/nullptr,
-      PassphraseType::kKeystorePassphrase, &debug_info_emitter,
+      PassphraseType::kKeystorePassphrase,
       /*only_commit_specifics=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);

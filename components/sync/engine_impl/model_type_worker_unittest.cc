@@ -19,7 +19,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/engine_impl/commit_contribution.h"
-#include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
+#include "components/sync/engine_impl/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine_impl/cycle/status_controller.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori.h"
@@ -90,15 +90,6 @@ sync_pb::EntitySpecifics EncryptPasswordSpecifics(
   return encrypted_specifics;
 }
 
-void VerifyCommitCount(const DataTypeDebugInfoEmitter* emitter,
-                       int expected_creation_count,
-                       int expected_deletion_count) {
-  EXPECT_EQ(expected_creation_count,
-            emitter->GetCommitCounters().num_creation_commits_attempted);
-  EXPECT_EQ(expected_deletion_count,
-            emitter->GetCommitCounters().num_deletion_commits_attempted);
-}
-
 }  // namespace
 
 // Tests the ModelTypeWorker.
@@ -147,8 +138,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
         update_encryption_filter_index_(0),
         mock_type_processor_(nullptr),
         mock_server_(std::make_unique<SingleTypeMockServer>(model_type)),
-        is_processor_disconnected_(false),
-        emitter_(std::make_unique<DataTypeDebugInfoEmitter>(model_type)) {}
+        is_processor_disconnected_(false) {}
 
   ~ModelTypeWorkerTest() override {}
 
@@ -182,9 +172,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
     nudge_handler()->ClearCounters();
   }
 
-  void InitializeCommitOnly() {
-    mock_server_ = std::make_unique<SingleTypeMockServer>(USER_EVENTS);
-    emitter_ = std::make_unique<DataTypeDebugInfoEmitter>(USER_EVENTS);
+  void InitializeCommitOnly(ModelType model_type) {
+    mock_server_ = std::make_unique<SingleTypeMockServer>(model_type);
 
     // Don't set progress marker, commit only types don't use them.
     ModelTypeState initial_state;
@@ -211,7 +200,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
     worker_ = std::make_unique<ModelTypeWorker>(
         type, state, !state.initial_sync_done(), std::move(cryptographer_copy),
         PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
-        std::move(processor), emitter_.get(), &cancelation_signal_);
+        std::move(processor), &cancelation_signal_);
   }
 
   void InitializeCryptographer() {
@@ -467,7 +456,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
   MockModelTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
   SingleTypeMockServer* server() { return mock_server_.get(); }
-  DataTypeDebugInfoEmitter* emitter() { return emitter_.get(); }
   MockNudgeHandler* nudge_handler() { return &mock_nudge_handler_; }
   StatusController* status_controller() { return &status_controller_; }
 
@@ -505,8 +493,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   bool is_processor_disconnected_;
 
-  std::unique_ptr<DataTypeDebugInfoEmitter> emitter_;
-
   StatusController status_controller_;
 };
 
@@ -519,14 +505,19 @@ class ModelTypeWorkerTest : public ::testing::Test {
 // values. It makes sense to have one or two tests that are this thorough, but
 // we shouldn't be this verbose in all tests.
 TEST_F(ModelTypeWorkerTest, SimpleCommit) {
+  base::HistogramTester histogram_tester;
   NormalInitialize();
 
   EXPECT_EQ(0, nudge_handler()->GetNumCommitNudges());
   EXPECT_EQ(nullptr, worker()->GetContribution(INT_MAX));
   EXPECT_EQ(0U, server()->GetNumCommitMessages());
   EXPECT_EQ(0U, processor()->GetNumCommitResponses());
-  VerifyCommitCount(emitter(), /*expected_creation_count=*/0,
-                    /*expected_deletion_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalCreation, 0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalDeletion, 0);
 
   worker()->NudgeForCommit();
   EXPECT_EQ(1, nudge_handler()->GetNumCommitNudges());
@@ -551,8 +542,12 @@ TEST_F(ModelTypeWorkerTest, SimpleCommit) {
   EXPECT_FALSE(entity.deleted());
   EXPECT_EQ(kValue1, entity.specifics().preference().value());
 
-  VerifyCommitCount(emitter(), /*expected_creation_count=*/1,
-                    /*expected_deletion_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalCreation, 1);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalDeletion, 0);
 
   // Exhaustively verify the commit response returned to the model thread.
   ASSERT_EQ(0U, processor()->GetNumCommitFailures());
@@ -573,17 +568,26 @@ TEST_F(ModelTypeWorkerTest, SimpleCommit) {
 }
 
 TEST_F(ModelTypeWorkerTest, SimpleDelete) {
+  base::HistogramTester histogram_tester;
   NormalInitialize();
 
   // We can't delete an entity that was never committed.
   // Step 1 is to create and commit a new entity.
-  VerifyCommitCount(emitter(), /*expected_creation_count=*/0,
-                    /*expected_deletion_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalCreation, 0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalDeletion, 0);
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
   DoSuccessfulCommit();
 
-  VerifyCommitCount(emitter(), /*expected_creation_count=*/1,
-                    /*expected_deletion_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalCreation, 1);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalDeletion, 0);
 
   ASSERT_TRUE(processor()->HasCommitResponse(kHash1));
   const CommitResponseData& initial_commit_response =
@@ -594,8 +598,12 @@ TEST_F(ModelTypeWorkerTest, SimpleDelete) {
   processor()->SetCommitRequest(GenerateDeleteRequest(kTag1));
   DoSuccessfulCommit();
 
-  VerifyCommitCount(emitter(), /*expected_creation_count=*/1,
-                    /*expected_deletion_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalCreation, 1);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kLocalDeletion, 1);
 
   // Verify the SyncEntity sent in the commit message.
   ASSERT_EQ(2U, server()->GetNumCommitMessages());
@@ -684,9 +692,12 @@ TEST_F(ModelTypeWorkerTest, TwoNewItemsCommittedSeparately) {
 
 // Test normal update receipt code path.
 TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
+  base::HistogramTester histogram_tester;
   NormalInitialize();
 
-  EXPECT_EQ(0, emitter()->GetUpdateCounters().num_non_initial_updates_received);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kRemoteNonInitialUpdate, 0);
 
   const ClientTagHash tag_hash = GenerateTagHash(kTag1);
 
@@ -711,7 +722,9 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
   EXPECT_EQ(kTag1, entity.specifics.preference().name());
   EXPECT_EQ(kValue1, entity.specifics.preference().value());
 
-  EXPECT_EQ(1, emitter()->GetUpdateCounters().num_non_initial_updates_received);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      ModelTypeEntityChange::kRemoteNonInitialUpdate, 1);
 }
 
 TEST_F(ModelTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {
@@ -1338,7 +1351,9 @@ TEST_F(ModelTypeWorkerTest, RecreateDeletedEntity) {
 }
 
 TEST_F(ModelTypeWorkerTest, CommitOnly) {
-  InitializeCommitOnly();
+  base::HistogramTester histogram_tester;
+  ModelType model_type = USER_EVENTS;
+  InitializeCommitOnly(model_type);
 
   int id = 123456789;
   EntitySpecifics specifics;
@@ -1361,8 +1376,12 @@ TEST_F(ModelTypeWorkerTest, CommitOnly) {
   EXPECT_TRUE(entity.specifics().has_user_event());
   EXPECT_EQ(id, entity.specifics().user_event().event_time_usec());
 
-  VerifyCommitCount(emitter(), /*expected_creation_count=*/1,
-                    /*expected_deletion_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(model_type),
+      ModelTypeEntityChange::kLocalCreation, 1);
+  histogram_tester.ExpectBucketCount(
+      GetEntityChangeHistogramNameForTest(model_type),
+      ModelTypeEntityChange::kLocalDeletion, 0);
 
   ASSERT_EQ(1U, processor()->GetNumCommitResponses());
   EXPECT_EQ(1U, processor()->GetNthCommitResponse(0).size());

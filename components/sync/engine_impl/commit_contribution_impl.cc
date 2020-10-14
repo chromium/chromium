@@ -12,6 +12,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
+#include "components/sync/engine_impl/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine_impl/model_type_worker.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
@@ -27,7 +28,6 @@ CommitContributionImpl::CommitContributionImpl(
     base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
     Cryptographer* cryptographer,
     PassphraseType passphrase_type,
-    DataTypeDebugInfoEmitter* debug_info_emitter,
     bool only_commit_specifics)
     : type_(type),
       on_commit_response_callback_(std::move(on_commit_response_callback)),
@@ -38,7 +38,6 @@ CommitContributionImpl::CommitContributionImpl(
       context_(context),
       commit_requests_(std::move(commit_requests)),
       cleaned_up_(false),
-      debug_info_emitter_(debug_info_emitter),
       only_commit_specifics_(only_commit_specifics) {}
 
 CommitContributionImpl::~CommitContributionImpl() {
@@ -52,7 +51,6 @@ void CommitContributionImpl::AddToCommitMessage(
 
   commit_message->mutable_entries()->Reserve(commit_message->entries_size() +
                                              commit_requests_.size());
-  CommitCounters* counters = debug_info_emitter_->GetMutableCommitCounters();
 
   for (const auto& commit_request : commit_requests_) {
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
@@ -72,13 +70,12 @@ void CommitContributionImpl::AddToCommitMessage(
     CHECK(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
 
-    // Update the relevant counter based on the type of the commit request.
     if (commit_request->entity->is_deleted()) {
-      counters->num_deletion_commits_attempted++;
+      RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalDeletion);
     } else if (commit_request->base_version <= 0) {
-      counters->num_creation_commits_attempted++;
+      RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalCreation);
     } else {
-      counters->num_update_commits_attempted++;
+      RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalUpdate);
     }
   }
 
@@ -190,9 +187,8 @@ void CommitContributionImpl::ProcessCommitFailure(
 }
 
 void CommitContributionImpl::CleanUp() {
+  // TODO(crbug.com/1137896): Remove this method, is has no use anymore.
   cleaned_up_ = true;
-
-  debug_info_emitter_->EmitCommitCountersUpdate();
 }
 
 size_t CommitContributionImpl::GetNumEntries() const {

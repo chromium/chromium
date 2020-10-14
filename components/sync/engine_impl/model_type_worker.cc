@@ -30,6 +30,7 @@
 #include "components/sync/engine_impl/bookmark_update_preprocessing.h"
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/commit_contribution_impl.h"
+#include "components/sync/engine_impl/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
 namespace syncer {
@@ -73,10 +74,8 @@ ModelTypeWorker::ModelTypeWorker(
     PassphraseType passphrase_type,
     NudgeHandler* nudge_handler,
     std::unique_ptr<ModelTypeProcessor> model_type_processor,
-    DataTypeDebugInfoEmitter* debug_info_emitter,
     CancelationSignal* cancelation_signal)
     : type_(type),
-      debug_info_emitter_(debug_info_emitter),
       model_type_state_(initial_state),
       model_type_processor_(std::move(model_type_processor)),
       cryptographer_(std::move(cryptographer)),
@@ -188,21 +187,21 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
   *model_type_state_.mutable_type_context() = mutated_context;
   *model_type_state_.mutable_progress_marker() = progress_marker;
 
-  UpdateCounters* counters = debug_info_emitter_->GetMutableUpdateCounters();
-
-  if (!from_uss_migrator) {
-    if (is_initial_sync) {
-      counters->num_initial_updates_received += applicable_updates.size();
-    } else {
-      counters->num_non_initial_updates_received += applicable_updates.size();
-    }
-  }
-
   for (const sync_pb::SyncEntity* update_entity : applicable_updates) {
+    // TODO(crbug.com/1137896): The USS migrator doesn't exist anymore, remove
+    // this parameter.
+    if (!from_uss_migrator) {
+      RecordEntityChangeMetrics(
+          type_, is_initial_sync
+                     ? ModelTypeEntityChange::kRemoteInitialUpdate
+                     : ModelTypeEntityChange::kRemoteNonInitialUpdate);
+    }
+
     if (update_entity->deleted()) {
       status->increment_num_tombstone_updates_downloaded_by(1);
       if (!is_initial_sync) {
-        ++counters->num_non_initial_tombstone_updates_received;
+        RecordEntityChangeMetrics(type_,
+                                  ModelTypeEntityChange::kRemoteDeletion);
       }
     }
 
@@ -227,7 +226,6 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
     }
   }
 
-  debug_info_emitter_->EmitUpdateCountersUpdate();
   return SyncerError(SyncerError::SYNCER_OK);
 }
 
@@ -425,7 +423,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      cryptographer_.get(), passphrase_type_, debug_info_emitter_,
+      cryptographer_.get(), passphrase_type_,
       CommitOnlyTypes().Has(GetModelType()));
 }
 

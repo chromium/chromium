@@ -10,10 +10,6 @@
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"
 
-namespace base {
-class HistogramBase;
-}
-
 namespace syncer {
 
 // A class to maintain counts related to sync commit requests and responses.
@@ -50,6 +46,7 @@ struct UpdateCounters {
 // is delegated to the UpdateHandler and CommitContributors. For the Stats
 // counters, the emitter will let sub class to fetch all the required
 // information on demand.
+// TODO(crbug.com/1137896): This class is unused, remove it.
 class DataTypeDebugInfoEmitter {
  public:
   explicit DataTypeDebugInfoEmitter(ModelType type);
@@ -84,10 +81,6 @@ class DataTypeDebugInfoEmitter {
   // counters and the counts here.
   CommitCounters emitted_commit_counters_;
   UpdateCounters emitted_update_counters_;
-
-  // The histogram to record to; cached for efficiency because many histogram
-  // entries are recorded in this object during run-time.
-  base::HistogramBase* const histogram_;
 
   DISALLOW_COPY_AND_ASSIGN(DataTypeDebugInfoEmitter);
 };

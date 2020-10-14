@@ -23,7 +23,6 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine_impl/commit_contributor.h"
-#include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/engine_impl/nudge_handler.h"
 #include "components/sync/engine_impl/update_handler.h"
 #include "components/sync/nigori/cryptographer.h"
@@ -67,7 +66,6 @@ class ModelTypeWorker : public UpdateHandler,
                   PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
                   std::unique_ptr<ModelTypeProcessor> model_type_processor,
-                  DataTypeDebugInfoEmitter* debug_info_emitter,
                   CancelationSignal* cancelation_signal);
   ~ModelTypeWorker() override;
 
@@ -210,7 +208,6 @@ class ModelTypeWorker : public UpdateHandler,
   void OnFullCommitFailure(SyncCommitError commit_error);
 
   ModelType type_;
-  DataTypeDebugInfoEmitter* debug_info_emitter_;
 
   // State that applies to the entire model type.
   sync_pb::ModelTypeState model_type_state_;
