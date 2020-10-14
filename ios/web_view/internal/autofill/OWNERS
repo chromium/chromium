@@ -7,5 +7,3 @@ mahmadi@chromium.org
 per-file BUILD.gn=*
 
 # COMPONENT: Mobile>iOSWebView
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS

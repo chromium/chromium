@@ -4,6 +4,4 @@ eugenebut@chromium.org
 # structural changes, use usual OWNERS rules.
 per-file BUILD.gn=*
 
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS
 # COMPONENT: Test

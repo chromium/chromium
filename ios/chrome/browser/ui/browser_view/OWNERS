@@ -7,6 +7,3 @@ per-file browser_coordinator.*=edchin@chromium.org
 # of the above OWNERs.
 per-file browser_view_controller*=edchin@chromium.org
 per-file browser_view_controller*=gambard@chromium.org
-
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS

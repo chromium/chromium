@@ -1,5 +1,2 @@
 per-file *.grd=*
 per-file *.xtb=*
-
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS

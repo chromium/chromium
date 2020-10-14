@@ -3,6 +3,3 @@ michaeldo@chromium.org
 
 per-file ntp_tiles_internals_ui.*=file://components/ntp_tiles/OWNERS
 per-file popular_sites_internals_ui.*=file://components/ntp_tiles/OWNERS
-
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS

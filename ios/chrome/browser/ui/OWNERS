@@ -7,6 +7,3 @@ gambard@chromium.org
 
 # Only for adding and removing flags.
 per-file ui_feature_flags.*=*
-
-# TEAM: ios-directory-owners@chromium.org
-# OS: iOS
