@@ -1503,6 +1503,21 @@ group("unit_tests_data") {
   ]
 }
 
+copy("form_controls_pickers_js") {
+  testonly = true
+
+  sources = [ "html/forms/resources/color_picker.js" ]
+
+  outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+}
+
+group("js_files_for_form_controls_web_tests") {
+  testonly = true
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "*" ]
+  data_deps = [ ":form_controls_pickers_js" ]
+}
+
 source_set("perf_tests") {
   testonly = true
   sources = [ "layout/visual_rect_mapping_perftest.cc" ]
