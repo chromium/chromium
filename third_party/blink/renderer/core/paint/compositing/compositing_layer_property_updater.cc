@@ -44,6 +44,12 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
          object.GetDocument().Printing() ||
          !object.CanBeCompositedForDirectReasons());
 
+  // TODO(chrishtr): this should never happen, but does in practice and
+  // we haven't been able to find all of the cases where it happens yet.
+  // Once we find more of them, try to remove this.
+  if (!fragment_data.HasLocalBorderBoxProperties())
+    return;
+
   PhysicalOffset layout_snapped_paint_offset =
       fragment_data.PaintOffset() - paint_layer->SubpixelAccumulation();
   IntPoint snapped_paint_offset = RoundedIntPoint(layout_snapped_paint_offset);
