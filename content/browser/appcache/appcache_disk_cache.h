@@ -112,18 +112,21 @@ class CONTENT_EXPORT AppCacheDiskCache {
     DOOM
   };
   struct PendingCall {
-    PendingCall();
     PendingCall(PendingCallType call_type,
                 int64_t key,
                 AppCacheDiskCacheEntry** entry,
                 net::CompletionOnceCallback callback);
-    PendingCall(PendingCall&& other);
+
+    PendingCall(const PendingCall&) = delete;
+    PendingCall& operator=(const PendingCall&) = delete;
+    PendingCall(PendingCall&&);
+    PendingCall& operator=(PendingCall&&) = delete;
 
     ~PendingCall();
 
-    PendingCallType call_type;
-    int64_t key;
-    AppCacheDiskCacheEntry** entry;
+    const PendingCallType call_type;
+    const int64_t key;
+    AppCacheDiskCacheEntry** const entry;
     net::CompletionOnceCallback callback;
   };
 

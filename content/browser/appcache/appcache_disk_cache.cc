@@ -252,8 +252,7 @@ net::Error AppCacheDiskCache::CreateEntry(
     return net::ERR_ABORTED;
 
   if (is_initializing_or_waiting_to_initialize()) {
-    pending_calls_.push_back(
-        PendingCall(CREATE, key, entry, std::move(callback)));
+    pending_calls_.emplace_back(CREATE, key, entry, std::move(callback));
     return net::ERR_IO_PENDING;
   }
 
@@ -273,8 +272,7 @@ net::Error AppCacheDiskCache::OpenEntry(int64_t key,
     return net::ERR_ABORTED;
 
   if (is_initializing_or_waiting_to_initialize()) {
-    pending_calls_.push_back(
-        PendingCall(OPEN, key, entry, std::move(callback)));
+    pending_calls_.emplace_back(OPEN, key, entry, std::move(callback));
     return net::ERR_IO_PENDING;
   }
 
@@ -292,8 +290,7 @@ net::Error AppCacheDiskCache::DoomEntry(int64_t key,
     return net::ERR_ABORTED;
 
   if (is_initializing_or_waiting_to_initialize()) {
-    pending_calls_.push_back(
-        PendingCall(DOOM, key, nullptr, std::move(callback)));
+    pending_calls_.emplace_back(DOOM, key, nullptr, std::move(callback));
     return net::ERR_IO_PENDING;
   }
 
@@ -313,9 +310,6 @@ AppCacheDiskCache::AppCacheDiskCache(bool use_simple_cache)
       is_disabled_(false),
       is_waiting_to_initialize_(false) {}
 
-AppCacheDiskCache::PendingCall::PendingCall()
-    : call_type(CREATE), key(0), entry(nullptr) {}
-
 AppCacheDiskCache::PendingCall::PendingCall(
     PendingCallType call_type,
     int64_t key,
@@ -326,7 +320,7 @@ AppCacheDiskCache::PendingCall::PendingCall(
       entry(entry),
       callback(std::move(callback)) {}
 
-AppCacheDiskCache::PendingCall::PendingCall(PendingCall&& other) = default;
+AppCacheDiskCache::PendingCall::PendingCall(PendingCall&&) = default;
 
 AppCacheDiskCache::PendingCall::~PendingCall() = default;
 
