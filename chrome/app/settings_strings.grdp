@@ -392,8 +392,7 @@
     Weak passwords
   </message>
   <message name="IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION" desc="Information about why weak passwords are a security issue and what user should do to fix the problem. Has a link.">
-    Weak passwords are easy to guess. Make sure you're creating strong passwords.
-    <ph name="BEGIN_LINK">&lt;br/&gt;&lt;a target='_blank' href='$1'&gt;</ph>See more security tips.<ph name="END_LINK">&lt;/a&gt;</ph>
+    Weak passwords are easy to guess. Make sure you're creating strong passwords. <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>See more security tips.<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_CHANGE_PASSWORD_BUTTON" desc="Button inside password check section which opens url for changing leaked password.">
     Change password

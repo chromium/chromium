@@ -196,6 +196,9 @@ extern const char kPageInfoHelpCenterURL[];
 // Help URL for the bulk password check.
 extern const char kPasswordCheckLearnMoreURL[];
 
+// Help URL for password generation.
+extern const char kPasswordGenerationLearnMoreURL[];
+
 extern const char kPasswordManagerLearnMoreURL[];
 
 // Help URL for the Payment methods page of the Google Pay site.

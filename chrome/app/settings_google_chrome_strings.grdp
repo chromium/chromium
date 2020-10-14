@@ -71,7 +71,10 @@
     To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_SIGNED_OUT_USER_HAS_COMPROMISED_CREDENTIALS_LABEL" desc="Label which is shown at the bottom of the compromised password section if user is signed out and has compromised credentials.">
-    To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;br/&gt;&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.
+    To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>sign in to Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION_GENERATION" desc="Information about why weak passwords are a security issue and what syncing user should do to fix the problem. Has a link.">
+    Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>create and remember strong passwords for you<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_COMPROMISED_EDIT_DISCLAIMER_DESCRIPTION" desc="A description for the dialog which tells the user to edit password in Chrome if it was changed already.">
     If so, please edit your saved password in Chrome so it matches your new password.

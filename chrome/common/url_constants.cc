@@ -209,6 +209,9 @@ const char kPasswordCheckLearnMoreURL[] =
     "?p=settings_password#leak_detection_privacy";
 #endif
 
+const char kPasswordGenerationLearnMoreURL[] =
+    "https://support.google.com/chrome/answer/7570435";
+
 const char kPasswordManagerLearnMoreURL[] =
 #if defined(OS_CHROMEOS)
     "https://support.google.com/chromebook/?p=settings_password";

@@ -1053,6 +1053,11 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kSeeMoreSecurityTipsURL)));
+  html_source->AddString(
+      "weakPasswordsDescriptionGeneration",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_WEAK_PASSWORDS_DESCRIPTION_GENERATION,
+          base::ASCIIToUTF16(chrome::kPasswordGenerationLearnMoreURL)));
   html_source->AddString("signedOutUserLabel",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_SIGNED_OUT_USER_LABEL,
