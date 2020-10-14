@@ -83,13 +83,9 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
     client_.Bind(std::move(client));
   }
   void Cancel() override { cancel_count_++; }
-  void Abandon() override { abandon_count_++; }
 
   // Returns the number of times |Cancel| was called.
   size_t CancelCount() const { return cancel_count_; }
-
-  // Returns the number of times |Abandon| was called.
-  size_t AbandonCount() const { return abandon_count_; }
 
   const KURL& Url() const { return attributes_->url; }
   mojom::blink::PrerenderRelType RelType() const {
@@ -122,7 +118,6 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
   mojo::Receiver<mojom::blink::PrerenderProcessor> receiver_{this};
 
   size_t cancel_count_ = 0;
-  size_t abandon_count_ = 0;
 };
 
 class PrerenderTest : public testing::Test {
@@ -242,7 +237,6 @@ TEST_F(PrerenderTest, SinglePrerender) {
   EXPECT_EQ(mojom::blink::PrerenderRelType::kPrerender, processor.RelType());
 
   EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   EXPECT_FALSE(IsUseCounted(WebFeature::kWebkitPrerenderStartEventFired));
   processor.NotifyDidStartPrerender();
@@ -277,33 +271,10 @@ TEST_F(PrerenderTest, CancelPrerender) {
   MockPrerenderProcessor& processor = *processors()[0];
 
   EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   ExecuteScript("removePrerender()");
 
   EXPECT_EQ(1u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
-}
-
-TEST_F(PrerenderTest, AbandonPrerender) {
-  Initialize("http://www.foo.com/", "prerender/single_prerender.html");
-  ASSERT_EQ(processors().size(), 1u);
-  MockPrerenderProcessor& processor = *processors()[0];
-
-  EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
-
-  NavigateAway();
-
-  EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
-
-  // Check that the prerender does not emit an extra cancel when
-  // garbage-collecting everything.
-  Close();
-
-  EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 }
 
 TEST_F(PrerenderTest, TwoPrerenders) {
@@ -316,9 +287,7 @@ TEST_F(PrerenderTest, TwoPrerenders) {
   EXPECT_EQ(KURL("http://second-prerender.com/"), second_processor.Url());
 
   EXPECT_EQ(0u, first_processor.CancelCount());
-  EXPECT_EQ(0u, first_processor.AbandonCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-  EXPECT_EQ(0u, second_processor.AbandonCount());
 
   first_processor.NotifyDidStartPrerender();
   EXPECT_EQ(1u, ConsoleLength());
@@ -337,23 +306,17 @@ TEST_F(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
   MockPrerenderProcessor& second_processor = *processors()[1];
 
   EXPECT_EQ(0u, first_processor.CancelCount());
-  EXPECT_EQ(0u, first_processor.AbandonCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-  EXPECT_EQ(0u, second_processor.AbandonCount());
 
   ExecuteScript("removeFirstPrerender()");
 
   EXPECT_EQ(1u, first_processor.CancelCount());
-  EXPECT_EQ(0u, first_processor.AbandonCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-  EXPECT_EQ(0u, second_processor.AbandonCount());
 
   NavigateAway();
 
   EXPECT_EQ(1u, first_processor.CancelCount());
-  EXPECT_EQ(0u, first_processor.AbandonCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-  EXPECT_EQ(0u, second_processor.AbandonCount());
 }
 
 TEST_F(PrerenderTest, TwoPrerendersAddingThird) {
@@ -364,9 +327,7 @@ TEST_F(PrerenderTest, TwoPrerendersAddingThird) {
   MockPrerenderProcessor& second_processor = *processors()[1];
 
   EXPECT_EQ(0u, first_processor.CancelCount());
-  EXPECT_EQ(0u, first_processor.AbandonCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-  EXPECT_EQ(0u, second_processor.AbandonCount());
 
   ExecuteScript("addThirdPrerender()");
 
@@ -374,11 +335,8 @@ TEST_F(PrerenderTest, TwoPrerendersAddingThird) {
   MockPrerenderProcessor& third_processor = *processors()[2];
 
   EXPECT_EQ(0u, first_processor.CancelCount());
-  EXPECT_EQ(0u, first_processor.AbandonCount());
   EXPECT_EQ(0u, second_processor.CancelCount());
-  EXPECT_EQ(0u, second_processor.AbandonCount());
   EXPECT_EQ(0u, third_processor.CancelCount());
-  EXPECT_EQ(0u, third_processor.AbandonCount());
 }
 
 TEST_F(PrerenderTest, ShortLivedClient) {
@@ -387,7 +345,6 @@ TEST_F(PrerenderTest, ShortLivedClient) {
   MockPrerenderProcessor& processor = *processors()[0];
 
   EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   NavigateAway();
   Close();
@@ -402,7 +359,6 @@ TEST_F(PrerenderTest, FastRemoveElement) {
   MockPrerenderProcessor& processor = *processors()[0];
 
   EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   // Race removing & starting the prerender against each other, as if the
   // element was removed very quickly.
@@ -411,7 +367,6 @@ TEST_F(PrerenderTest, FastRemoveElement) {
 
   // Removing the element should cancel prerendering.
   EXPECT_EQ(1u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   // The page should be totally disconnected from the Prerender at this point,
   // so the console should not have updated.
@@ -426,7 +381,6 @@ TEST_F(PrerenderTest, MutateTarget) {
   EXPECT_EQ(KURL("http://prerender.com/"), processor.Url());
 
   EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   // Change the href of this prerender, make sure this is treated as a remove
   // and add.
@@ -437,9 +391,7 @@ TEST_F(PrerenderTest, MutateTarget) {
   EXPECT_EQ(KURL("http://mutated.com/"), mutated_processor.Url());
 
   EXPECT_EQ(1u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
   EXPECT_EQ(0u, mutated_processor.CancelCount());
-  EXPECT_EQ(0u, mutated_processor.AbandonCount());
 }
 
 TEST_F(PrerenderTest, MutateRel) {
@@ -450,13 +402,11 @@ TEST_F(PrerenderTest, MutateRel) {
   EXPECT_EQ(KURL("http://prerender.com/"), processor.Url());
 
   EXPECT_EQ(0u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 
   // Change the rel of this prerender, make sure this is treated as a remove.
   ExecuteScript("mutateRel()");
 
   EXPECT_EQ(1u, processor.CancelCount());
-  EXPECT_EQ(0u, processor.AbandonCount());
 }
 
 }  // namespace blink

@@ -79,14 +79,6 @@ void PrerenderProcessorImpl::Cancel() {
     link_manager->OnCancelPrerender(*prerender_id_);
 }
 
-void PrerenderProcessorImpl::Abandon() {
-  if (!prerender_id_)
-    return;
-  auto* link_manager = GetPrerenderLinkManager();
-  if (link_manager)
-    link_manager->OnAbandonPrerender(*prerender_id_);
-}
-
 PrerenderLinkManager* PrerenderProcessorImpl::GetPrerenderLinkManager() {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);

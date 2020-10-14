@@ -53,12 +53,16 @@ class PrerenderClient;
 // instantiated per prerender request, for example, when a new <link
 // rel=prerender> element is added, when the element's href is changed etc.
 //
-// TODO(https://crbug.com/1126305): Rename this to PrerenderProcessorHandle.
+// When you no longer need the prerendering page (e.g., when the
+// <link rel=prerender> element is removed), you can ask the browser process to
+// cancel the running prerender by Cancel(). If mojo connections are reset
+// without Cancel() call, the browser process considers this prerendering
+// request to be abandoned and may still use the prerendered page if a
+// navigation occurs to that URL shortly after.
+//
+// TODO(https://crbug.com/1126305): Rename this to PrerenderProcessorClient.
 class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
-                              public ExecutionContextLifecycleObserver,
                               public mojom::blink::PrerenderProcessorClient {
-  USING_PRE_FINALIZER(PrerenderHandle, Dispose);
-
  public:
   static PrerenderHandle* Create(
       Document&,
@@ -75,13 +79,11 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
       HeapMojoRemote<mojom::blink::PrerenderProcessor>,
       mojo::PendingReceiver<mojom::blink::PrerenderProcessorClient>);
   ~PrerenderHandle() override;
-  void Dispose();
 
+  // Asks the browser process to cancel the running prerender.
   void Cancel();
-  const KURL& Url() const;
 
-  // ExecutionContextLifecycleObserver:
-  void ContextDestroyed() override;
+  const KURL& Url() const;
 
   // mojom::blink::PrerenderProcessorClient:
   void OnPrerenderStart() override;
@@ -89,13 +91,11 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
   void OnPrerenderDomContentLoaded() override;
   void OnPrerenderStop() override;
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
 
  private:
-  void Detach();
-
-  KURL url_;
-  WeakMember<PrerenderClient> client_;
+  const KURL url_;
+  const WeakMember<PrerenderClient> client_;
   HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor_;
   HeapMojoReceiver<mojom::blink::PrerenderProcessorClient, PrerenderHandle>
       receiver_;

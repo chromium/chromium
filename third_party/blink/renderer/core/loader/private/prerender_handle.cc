@@ -89,8 +89,7 @@ PrerenderHandle::PrerenderHandle(
     const KURL& url,
     HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_processor,
     mojo::PendingReceiver<mojom::blink::PrerenderProcessorClient> receiver)
-    : ExecutionContextLifecycleObserver(context),
-      url_(url),
+    : url_(url),
       client_(client),
       remote_processor_(std::move(remote_processor)),
       receiver_(this, context) {
@@ -100,35 +99,15 @@ PrerenderHandle::PrerenderHandle(
 
 PrerenderHandle::~PrerenderHandle() = default;
 
-void PrerenderHandle::Dispose() {
-  // TODO(https://crbug.com/1130360): This condition is never satisfied and
-  // Abandon() is not called. See the issue for details. We should fix this.
-  if (remote_processor_.is_bound() &&
-      !GetExecutionContext()->IsContextDestroyed())
-    remote_processor_->Abandon();
-  Detach();
-}
-
 void PrerenderHandle::Cancel() {
-  // Avoid both abandoning and canceling the same prerender. In the abandon
-  // case, the LinkLoader cancels the PrerenderHandle as the Document is
-  // destroyed, even through the ExecutionContextLifecycleObserver has already
-  // abandoned it.
   if (remote_processor_.is_bound())
     remote_processor_->Cancel();
-  Detach();
+  remote_processor_.reset();
+  receiver_.reset();
 }
 
 const KURL& PrerenderHandle::Url() const {
   return url_;
-}
-
-void PrerenderHandle::ContextDestroyed() {
-  // A PrerenderHandle is not removed from LifecycleNotifier::m_observers until
-  // the next GC runs. Thus contextDestroyed() can be called for a
-  // PrerenderHandle that is already cancelled (and thus detached). In that
-  // case, we should not detach the PrerenderHandle again.
-  Dispose();
 }
 
 void PrerenderHandle::OnPrerenderStart() {
@@ -155,12 +134,6 @@ void PrerenderHandle::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(remote_processor_);
   visitor->Trace(receiver_);
-  ExecutionContextLifecycleObserver::Trace(visitor);
-}
-
-void PrerenderHandle::Detach() {
-  remote_processor_.reset();
-  receiver_.reset();
 }
 
 }  // namespace blink

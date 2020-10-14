@@ -34,7 +34,6 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
              mojo::PendingRemote<blink::mojom::PrerenderProcessorClient> client)
       override;
   void Cancel() override;
-  void Abandon() override;
 
  private:
   PrerenderLinkManager* GetPrerenderLinkManager();

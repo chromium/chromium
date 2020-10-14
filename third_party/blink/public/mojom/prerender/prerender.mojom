@@ -58,14 +58,4 @@ interface PrerenderProcessor {
   // etc. This must be called after Start(). This does not trigger
   // OnPrerenderStop() on PrerenderProcessorClient.
   Cancel();
-
-  // Abandons the ongoing prerendering. This is supposed to be called when the
-  // page navigates away or gets suspended. This is a weaker signal than
-  // Cancel(), since the requester hasn't indicated that the prerender isn't
-  // wanted, and we may end up using it after, for example, a short redirect
-  // chain. This must be called after Start().
-  //
-  // TODO(https://crbug.com/1130360): The actual behavior doesn't match this
-  // comment due to the issue. Fix the behavior or update this comment.
-  Abandon();
 };

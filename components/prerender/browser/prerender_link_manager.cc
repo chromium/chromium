@@ -125,9 +125,8 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
       std::move(attributes), initiator_origin, std::move(processor_client),
       manager_->GetCurrentTimeTicks(), prerender_contents);
 
-  // Observe disconnect of the client and treat as equivalent to explicit
-  // abandonment. Similar to above, the raw pointer to |this| is safe because
-  // |prerender| is owned by |this|.
+  // Observe disconnect of the client to abandon the running prerender. The raw
+  // pointer to |this| is safe because |prerender| is owned by |this|.
   prerender->remote_processor_client.set_disconnect_handler(
       base::BindOnce(&PrerenderLinkManager::OnAbandonPrerender,
                      base::Unretained(this), prerender->prerender_id));
