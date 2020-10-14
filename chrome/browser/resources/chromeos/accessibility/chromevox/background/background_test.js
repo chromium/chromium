@@ -3160,3 +3160,60 @@ TEST_F('ChromeVoxBackgroundTest', 'ContainerButtons', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'FocusOnWebAreaIgnoresEvents', function() {
+  const site = `
+    <div role="application" tabindex=0 aria-label="container">
+      <select>
+        <option>apple</option>
+        <option>grape</option>
+        <option>pear</option>
+      </select>
+    </div>
+    <p>go</p>
+    <script>
+      let counter = 0;
+      document.body.getElementsByTagName('p')[0].addEventListener('click',
+          e => {
+            document.body.getElementsByTagName('select')[0].selectedIndex =
+                ++counter % 3;
+          });
+    </script>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    const application = root.find({role: RoleType.APPLICATION});
+    const popUpButton = root.find({role: RoleType.POP_UP_BUTTON});
+    const p = root.find({role: RoleType.PARAGRAPH});
+
+    // Move focus to the select, which honors value changes through
+    // FocusAutomationHandler.
+    popUpButton.focus();
+    await TestUtils.waitForSpeech('apple');
+
+    // Clicking the paragraph programmatically changes the select value.
+    p.doDefault();
+    await TestUtils.waitForSpeech('grape');
+    assertEquals(
+        RoleType.POP_UP_BUTTON,
+        ChromeVoxState.instance.currentRange.start.node.role);
+
+    // Now, move focus to the application which is a parent of the select.
+    application.focus();
+    await TestUtils.waitForSpeech('container');
+
+    // Hook into the speak call, to see what comes next.
+    let nextSpeech;
+    ChromeVox.tts.speak = textString => {
+      nextSpeech = textString;
+    };
+
+    // Trigger another value update for the select.
+    p.doDefault();
+
+    // This comes when the select's value changes.
+    await TestUtils.waitForEvent(application, EventType.VALUE_CHANGED);
+
+    // Nothing should have been spoken.
+    assertEquals(undefined, nextSpeech);
+  });
+});

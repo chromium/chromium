@@ -36,6 +36,13 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
    */
   onFocus(evt) {
     this.removeAllListeners();
+
+    // Events on roots and web views can be very noisy due to bubling. Ignore
+    // these.
+    if (evt.target.root == evt.target || evt.target.role == RoleType.WEB_VIEW) {
+      return;
+    }
+
     this.previousActiveDescendant_ = evt.target.activeDescendant;
     this.node_ = evt.target;
     this.addListener_(
@@ -95,6 +102,11 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
   onValueChanged_(evt) {
     if (evt.target.role != RoleType.POP_UP_BUTTON ||
         evt.target.state.editable) {
+      return;
+    }
+
+    // Focus might be on a container above the popup button.
+    if (this.node_ != evt.target) {
       return;
     }
 
