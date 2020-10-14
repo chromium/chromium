@@ -1454,8 +1454,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.HttpAuthPromptType" enum="HttpAuthPromptType"
-    expires_after="M80">
+    expires_after="M90">
   <owner>meacer@chromium.org</owner>
+  <owner>src/chrome/browser/ui/login/OWNERS</owner>
   <summary>Type of the HTTP auth prompt displayed.</summary>
 </histogram>
 
