@@ -286,9 +286,7 @@ void OutputProtectionImpl::QueryStatusCallbackAggregator(
                           ConvertProtection(aggregate_protection_mask));
 }
 
-void OutputProtectionImpl::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t changed_metrics) {
+void OutputProtectionImpl::HandleDisplayChange() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   display_id_list_ = GetDisplayIdsFromSnapshots(delegate_->cached_displays());
   if (desired_protection_mask_) {
@@ -297,6 +295,20 @@ void OutputProtectionImpl::OnDisplayMetricsChanged(
     EnableProtection(ConvertProtection(desired_protection_mask_),
                      base::DoNothing());
   }
+}
+
+void OutputProtectionImpl::OnDisplayAdded(const display::Display& display) {
+  HandleDisplayChange();
+}
+
+void OutputProtectionImpl::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  HandleDisplayChange();
+}
+
+void OutputProtectionImpl::OnDisplayRemoved(const display::Display& display) {
+  HandleDisplayChange();
 }
 
 }  // namespace chromeos
