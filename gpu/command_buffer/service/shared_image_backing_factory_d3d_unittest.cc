@@ -178,8 +178,11 @@ TEST_F(SharedImageBackingFactoryD3DTestSwapChain, CreateAndPresentSwapChain) {
   auto backings = shared_image_factory_->CreateSwapChain(
       front_buffer_mailbox, back_buffer_mailbox, format, size, color_space,
       surface_origin, alpha_type, usage);
-  EXPECT_TRUE(backings.front_buffer);
-  EXPECT_TRUE(backings.back_buffer);
+  ASSERT_TRUE(backings.front_buffer);
+  EXPECT_TRUE(backings.front_buffer->IsCleared());
+
+  ASSERT_TRUE(backings.back_buffer);
+  EXPECT_TRUE(backings.back_buffer->IsCleared());
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> back_factory_ref =
       shared_image_manager_.Register(std::move(backings.back_buffer),
@@ -188,19 +191,16 @@ TEST_F(SharedImageBackingFactoryD3DTestSwapChain, CreateAndPresentSwapChain) {
       shared_image_manager_.Register(std::move(backings.front_buffer),
                                      memory_type_tracker_.get());
 
-  GLuint back_texture_id, front_texture_id = 0u;
-  gl::GLImageD3D *back_image, *front_image = 0u;
-
   auto back_texture = shared_image_representation_factory_
                           ->ProduceGLTexturePassthrough(back_buffer_mailbox)
                           ->GetTexturePassthrough();
   ASSERT_TRUE(back_texture);
   EXPECT_EQ(back_texture->target(), static_cast<unsigned>(GL_TEXTURE_2D));
 
-  back_texture_id = back_texture->service_id();
+  GLuint back_texture_id = back_texture->service_id();
   EXPECT_NE(back_texture_id, 0u);
 
-  back_image = gl::GLImageD3D::FromGLImage(
+  auto* back_image = gl::GLImageD3D::FromGLImage(
       back_texture->GetLevelImage(GL_TEXTURE_2D, 0));
 
   auto front_texture = shared_image_representation_factory_
@@ -209,10 +209,10 @@ TEST_F(SharedImageBackingFactoryD3DTestSwapChain, CreateAndPresentSwapChain) {
   ASSERT_TRUE(front_texture);
   EXPECT_EQ(front_texture->target(), static_cast<unsigned>(GL_TEXTURE_2D));
 
-  front_texture_id = front_texture->service_id();
+  GLuint front_texture_id = front_texture->service_id();
   EXPECT_NE(front_texture_id, 0u);
 
-  front_image = gl::GLImageD3D::FromGLImage(
+  auto* front_image = gl::GLImageD3D::FromGLImage(
       front_texture->GetLevelImage(GL_TEXTURE_2D, 0));
 
   ASSERT_TRUE(back_image);
@@ -906,6 +906,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageFromHandle) {
   EXPECT_EQ(backing->surface_origin(), surface_origin);
   EXPECT_EQ(backing->alpha_type(), alpha_type);
   EXPECT_EQ(backing->mailbox(), mailbox);
+  EXPECT_TRUE(backing->IsCleared());
 
   SharedImageBackingD3D* backing_d3d =
       static_cast<SharedImageBackingD3D*>(backing.get());

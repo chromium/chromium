@@ -269,6 +269,7 @@ SharedImageBackingFactoryD3D::CreateSwapChain(
       nullptr /* d3d11_texture */, base::win::ScopedHandle());
   if (!back_buffer_backing)
     return {nullptr, nullptr};
+  back_buffer_backing->SetCleared();
 
   auto front_buffer_backing = MakeBacking(
       front_buffer_mailbox, format, size, color_space, surface_origin,
@@ -276,6 +277,7 @@ SharedImageBackingFactoryD3D::CreateSwapChain(
       nullptr /* d3d11_texture */, base::win::ScopedHandle());
   if (!front_buffer_backing)
     return {nullptr, nullptr};
+  front_buffer_backing->SetCleared();
 
   return {std::move(front_buffer_backing), std::move(back_buffer_backing)};
 }
@@ -420,10 +422,14 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     return nullptr;
   }
 
-  return MakeBacking(mailbox, viz::GetResourceFormat(format), size, color_space,
-                     surface_origin, alpha_type, usage, /*swap_chain=*/nullptr,
-                     /*buffer_index=*/0, std::move(d3d11_texture),
-                     std::move(handle.dxgi_handle));
+  auto backing =
+      MakeBacking(mailbox, viz::GetResourceFormat(format), size, color_space,
+                  surface_origin, alpha_type, usage, /*swap_chain=*/nullptr,
+                  /*buffer_index=*/0, std::move(d3d11_texture),
+                  std::move(handle.dxgi_handle));
+  if (backing)
+    backing->SetCleared();
+  return backing;
 }
 
 // Returns true if the specified GpuMemoryBufferType can be imported using
