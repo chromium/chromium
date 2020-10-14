@@ -99,7 +99,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
   if (service_worker_container_info) {
     service_worker_provider_context_ =
         base::MakeRefCounted<ServiceWorkerProviderContext>(
-            blink::mojom::ServiceWorkerContainerType::kForDedicatedWorker,
+            blink::mojom::ServiceWorkerContainerType::kForSharedWorker,
             std::move(service_worker_container_info->client_receiver),
             std::move(service_worker_container_info->host_remote),
             std::move(controller_info), subresource_loader_factory_bundle_);
