@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/profiles/badged_profile_photo.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -37,36 +36,58 @@
 
 namespace {
 
-constexpr int kImageSize = BadgedProfilePhoto::kImageSize;
+constexpr int kImageSize = 48;
 
-// An image source that represents a circle of the given size, color and style.
-class CircleImageSource : public gfx::CanvasImageSource {
+// An image source that adds a circular border and an optional circular
+// background to the given image.
+class BackgroundBorderAdderImageSource : public gfx::CanvasImageSource {
  public:
-  CircleImageSource(int size, SkColor color, cc::PaintFlags::Style style)
-      : gfx::CanvasImageSource(gfx::Size(size, size)),
-        color_(color),
-        style_(style) {}
-  ~CircleImageSource() override = default;
+  BackgroundBorderAdderImageSource(const gfx::ImageSkia& image,
+                                   bool add_background,
+                                   base::Optional<SkColor> background_color,
+                                   SkColor border_color,
+                                   int radius)
+      : gfx::CanvasImageSource(gfx::Size(radius, radius)),
+        image_(image),
+        add_background_(add_background),
+        background_color_(background_color),
+        border_color_(border_color) {}
+  ~BackgroundBorderAdderImageSource() override = default;
 
   void Draw(gfx::Canvas* canvas) override;
 
  private:
-  const SkColor color_;
-  const cc::PaintFlags::Style style_;
+  const gfx::ImageSkia image_;
+  const bool add_background_;
+  const base::Optional<SkColor> background_color_;
+  const SkColor border_color_;
 };
 
-void CircleImageSource::Draw(gfx::Canvas* canvas) {
+void BackgroundBorderAdderImageSource::Draw(gfx::Canvas* canvas) {
   constexpr int kBorderThickness = 1;
   float radius = size().width() / 2.0f;
-  cc::PaintFlags flags;
-  flags.setStyle(style_);
-  flags.setAntiAlias(true);
-  flags.setColor(color_);
   float half_thickness = kBorderThickness / 2.0f;
   gfx::SizeF size_f(size());
   gfx::RectF bounds(size_f);
   bounds.Inset(half_thickness, half_thickness);
-  canvas->DrawRoundRect(bounds, radius, flags);
+  // Draw the background
+  if (add_background_) {
+    DCHECK(background_color_);
+    cc::PaintFlags background_flags;
+    background_flags.setStyle(cc::PaintFlags::kFill_Style);
+    background_flags.setAntiAlias(true);
+    background_flags.setColor(background_color_.value());
+    canvas->DrawRoundRect(bounds, radius, background_flags);
+  }
+  // Draw the image
+  canvas->DrawImageInt(image_, (size().width() - image_.width()) / 2,
+                       (size().height() - image_.height()) / 2);
+  // Draw the border
+  cc::PaintFlags border_flags;
+  border_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  border_flags.setAntiAlias(true);
+  border_flags.setColor(border_color_);
+  canvas->DrawRoundRect(bounds, radius, border_flags);
 }
 
 // A class represting an image with a badge. By default, the image is the globe
@@ -130,35 +151,32 @@ gfx::ImageSkia ImageWithBadge::GetBadge() {
 }
 
 void ImageWithBadge::Render() {
+  constexpr int kBadgePadding = 6;
+  const SkColor kBackgroundColor = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_BubbleBackground);
+  // Make the border color a softer version of the icon color.
+  const SkColor kBorderColor =
+      SkColorSetA(GetNativeTheme()->GetSystemColor(
+                      ui::NativeTheme::kColorId_DefaultIconColor),
+                  96);
+
   gfx::Image rounded_badge = profiles::GetSizedAvatarIcon(
       gfx::Image(GetBadge()),
       /*is_rectangle=*/true, /*width=*/gfx::kFaviconSize,
       /*height=*/gfx::kFaviconSize, profiles::SHAPE_CIRCLE);
 
-  gfx::ImageSkia badge_background =
-      gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-          gfx::kFaviconSize,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_BubbleBackground),
-          cc::PaintFlags::kFill_Style);
-
-  gfx::ImageSkia rounded_badge_with_background =
-      gfx::ImageSkiaOperations::CreateSuperimposedImage(
-          badge_background, *rounded_badge.ToImageSkia());
-
-  gfx::ImageSkia main_image_border =
-      gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-          kImageSize,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_DefaultIconColor),
-          cc::PaintFlags::kStroke_Style);
+  gfx::ImageSkia rounded_badge_with_background_and_border =
+      gfx::CanvasImageSource::MakeImageSkia<BackgroundBorderAdderImageSource>(
+          *rounded_badge.ToImageSkia(), /*add_background=*/true,
+          kBackgroundColor, kBorderColor, gfx::kFaviconSize + kBadgePadding);
 
   gfx::ImageSkia main_image_with_border =
-      gfx::ImageSkiaOperations::CreateSuperimposedImage(GetMainImage(),
-                                                        main_image_border);
+      gfx::CanvasImageSource::MakeImageSkia<BackgroundBorderAdderImageSource>(
+          GetMainImage(), /*add_background=*/false,
+          /*background_color=*/base::nullopt, kBorderColor, kImageSize);
 
   gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
-      main_image_with_border, rounded_badge_with_background);
+      main_image_with_border, rounded_badge_with_background_and_border);
   SetImage(badged_image);
 }
 
