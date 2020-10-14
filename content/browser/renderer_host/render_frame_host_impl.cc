@@ -773,10 +773,6 @@ const char* LifecycleStateToString(RenderFrameHostImpl::LifecycleState state) {
 
 }  // namespace
 
-bool ShouldCreateNewHostForCrashedFrame() {
-  return GetRenderDocumentLevel() >= RenderDocumentLevel::kCrashedFrame;
-}
-
 class RenderFrameHostImpl::DroppedInterfaceRequestLogger
     : public blink::mojom::BrowserInterfaceBroker {
  public:

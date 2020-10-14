@@ -960,6 +960,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderViewHost* render_view_host,
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       int proxy_routing_id) override;
+  void ReattachOuterDelegateIfNeeded() override;
   void CreateRenderWidgetHostViewForRenderManager(
       RenderViewHost* render_view_host) override;
   void BeforeUnloadFiredFromRenderManager(

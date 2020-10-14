@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
@@ -604,6 +605,12 @@ void NavigationSimulatorImpl::Commit() {
   if (previous_rfh->GetSiteInstance() == render_frame_host_->GetSiteInstance())
     drop_unload_ack_ = true;
 
+  // If the frame is not alive we do not displatch Unload ACK. CommitPending()
+  // may be called immediately and delete the old RenderFrameHost, so we need to
+  // record that now while we can still access the object.
+  if (!previous_rfh->IsRenderFrameLive())
+    drop_unload_ack_ = true;
+
   if (same_document_) {
     interface_provider_receiver_.reset();
     browser_interface_broker_receiver_.reset();
@@ -615,7 +622,8 @@ void NavigationSimulatorImpl::Commit() {
       request_, std::move(params), std::move(interface_provider_receiver_),
       std::move(browser_interface_broker_receiver_), same_document_);
 
-  SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(previous_rfh);
+  if (previous_rfh)
+    SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(previous_rfh);
 
   loading_scenario_ =
       TestRenderFrameHost::LoadingScenario::NewDocumentNavigation;
@@ -744,6 +752,12 @@ void NavigationSimulatorImpl::CommitErrorPage() {
   // in the same SiteInstance. This has already been dispatched during the
   // navigation in the renderer process.
   if (previous_rfh->GetSiteInstance() == render_frame_host_->GetSiteInstance())
+    drop_unload_ack_ = true;
+
+  // If the frame is not alive we do not displatch Unload ACK. CommitPending()
+  // may be called immediately and delete the old RenderFrameHost, so we need to
+  // record that now while we can still access the object.
+  if (!previous_rfh->IsRenderFrameLive())
     drop_unload_ack_ = true;
 
   auto params = BuildDidCommitProvisionalLoadParams(
@@ -1051,6 +1065,13 @@ void NavigationSimulatorImpl::DidFinishNavigation(
           navigation_handle->GetPreviousRenderFrameHostId());
       CHECK(previous_rfh) << "Previous RenderFrameHost should not be destroyed "
                              "without a Unload_ACK";
+
+      // If the frame is not alive we do not displatch Unload ACK.
+      // CommitPending() may be called immediately and delete the old
+      // RenderFrameHost, so we need to record that now while we can still
+      // access the object.
+      if (!previous_rfh->IsRenderFrameLive())
+        drop_unload_ack_ = true;
       SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(previous_rfh);
       state_ = FINISHED;
     }

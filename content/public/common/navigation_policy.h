@@ -88,6 +88,16 @@ struct CONTENT_EXPORT NavigationDownloadPolicy {
   bool blocking_downloads_in_sandbox_enabled = false;
 };
 
+// True if feature-flags indicate that we should replace crashed RFHs with new
+// instances rather than reusing them. See http://crbug.com/981339.
+CONTENT_EXPORT bool ShouldCreateNewHostForCrashedFrame();
+
+// If this is false we continue the old behaviour of doing an early call to
+// RenderFrameHostManager::CommitPending when we are replacing an inactive
+// frame (crashed or just newly created but never live).
+// TODO(https://crbug.com/1072817): Stop allowing this.
+CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_COMMON_NAVIGATION_POLICY_H_

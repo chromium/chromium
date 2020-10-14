@@ -161,6 +161,10 @@ class CONTENT_EXPORT RenderFrameHostManager
     // if the delegate does not have an outer WebContents.
     virtual int GetOuterDelegateFrameTreeNodeId() = 0;
 
+    // If the delegate is an inner WebContents, reattach it to the outer
+    // WebContents.
+    virtual void ReattachOuterDelegateIfNeeded() = 0;
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -265,9 +269,13 @@ class CONTENT_EXPORT RenderFrameHostManager
       const base::Optional<base::UnguessableToken>& opener_frame_token,
       SiteInstance* source_site_instance);
 
-  // Creates and initializes a RenderFrameHost.
+  // Creates and initializes a RenderFrameHost. If |for_early_commit| is true
+  // then this RenderFrameHost and its RenderFrame will be prepared knowing that
+  // it will be committed immediately. If false the it will be committed later,
+  // following the usual navigation path.
   std::unique_ptr<RenderFrameHostImpl> CreateSpeculativeRenderFrame(
-      SiteInstance* instance);
+      SiteInstance* instance,
+      bool for_early_commit);
 
   // Helper method to create and initialize a RenderFrameProxyHost.
   void CreateRenderFrameProxy(SiteInstance* instance);
@@ -754,8 +762,12 @@ class CONTENT_EXPORT RenderFrameHostManager
   // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for
   // the new RFH's opener chain if we are staying in the same BrowsingInstance;
   // (2) Create proxies for the new RFH's SiteInstance in its own frame tree.
+  // |recovering_without_early_commit| is true if we are reviving a crashed
+  // render frame by creating a proxy and committing later rather than doing an
+  // immediate commit.
   void CreateProxiesForNewRenderFrameHost(SiteInstance* old_instance,
-                                          SiteInstance* new_instance);
+                                          SiteInstance* new_instance,
+                                          bool recovering_without_early_commit);
 
   // Traverse the opener chain and populate |opener_frame_trees| with
   // all FrameTrees accessible by following frame openers of nodes in the
@@ -801,10 +813,13 @@ class CONTENT_EXPORT RenderFrameHostManager
       bool renderer_initiated_creation);
 
   // Create and initialize a speculative RenderFrameHost for an ongoing
-  // navigation. It might be destroyed and re-created later if the navigation
-  // is redirected to a different SiteInstance.
+  // navigation. It might be destroyed and re-created later if the navigation is
+  // redirected to a different SiteInstance. |recovering_without_early_commit|
+  // is true if we are reviving a crashed render frame by creating a proxy and
+  // committing later rather than doing an immediate commit.
   bool CreateSpeculativeRenderFrameHost(SiteInstance* old_instance,
-                                        SiteInstance* new_instance);
+                                        SiteInstance* new_instance,
+                                        bool recovering_without_early_commit);
 
   // Initialization for RenderFrameHost uses the same sequence as InitRenderView
   // above.

@@ -3333,11 +3333,13 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     page_visibility = PageVisibilityState::kHiddenButPainting;
   else
     page_visibility = PageVisibilityState::kHidden;
-  // If there are entities in Picture-in-Picture mode, don't activate
-  // the "disable rendering" optimization.
+  // If there are entities in Picture-in-Picture mode, don't activate the
+  // "disable rendering" optimization. A crashed frame might be covered by a sad
+  // tab. See docs on SadTabHelper exactly when it is or isn't. Either way,
+  // don't make it visible.
   const bool view_is_visible =
-      page_visibility != PageVisibilityState::kHidden ||
-      HasPictureInPictureVideo();
+      !IsCrashed() && (page_visibility != PageVisibilityState::kHidden ||
+                       HasPictureInPictureVideo());
 
   if (page_visibility != PageVisibilityState::kHidden) {
     // We cannot show a page or capture video unless there is a valid renderer
@@ -7910,6 +7912,11 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
   rwh_view->SetSize(GetSizeForMainFrame());
 }
 
+void WebContentsImpl::ReattachOuterDelegateIfNeeded() {
+  if (node_.outer_web_contents())
+    ReattachToOuterWebContentsFrame();
+}
+
 bool WebContentsImpl::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
@@ -7937,8 +7944,8 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
         text_autosizer_page_info_.Clone());
   }
 
-  if (proxy_routing_id == MSG_ROUTING_NONE && node_.outer_web_contents())
-    ReattachToOuterWebContentsFrame();
+  if (proxy_routing_id == MSG_ROUTING_NONE)
+    ReattachOuterDelegateIfNeeded();
 
   SetHistoryOffsetAndLengthForView(render_view_host,
                                    controller_.GetLastCommittedEntryIndex(),

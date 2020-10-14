@@ -310,11 +310,17 @@ void FrameTree::CreateProxiesForSiteInstance(FrameTreeNode* source,
     SiteInstance* current_instance = current_host->GetSiteInstance();
     if (current_instance != site_instance) {
       if (node == source && !current_host->IsRenderFrameLive()) {
-        // There's no need to create a proxy at |source| when the current
-        // RenderFrameHost isn't live, as in that case, the pending
+        // We don't create a proxy at |source| when the current RenderFrameHost
+        // isn't live.  This is because either (1) the speculative
         // RenderFrameHost will be committed immediately, and the proxy
-        // destroyed right away, in GetFrameHostForNavigation.  This makes the
-        // race described above not possible.
+        // destroyed right away, in GetFrameHostForNavigation, which makes the
+        // races above impossible, or (2) the early commit will be skipped due
+        // to ShouldSkipEarlyCommitPendingForCrashedFrame, in which case the
+        // proxy for |source| *is* needed, but it will be created later in
+        // CreateProxiesForNewRenderFrameHost.
+        //
+        // TODO(fergal): Consider creating a proxy for |source| here rather than
+        // in CreateProxiesForNewRenderFrameHost for case (2) above.
         continue;
       }
 

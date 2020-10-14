@@ -746,6 +746,10 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   }
 
   bool notify_webui_of_rf_creation = false;
+  // We only do this if the policy allows it and are recovering a crashed frame.
+  bool recovering_without_early_commit =
+      ShouldSkipEarlyCommitPendingForCrashedFrame() &&
+      render_frame_host_->must_be_replaced();
   if (use_current_rfh) {
     // GetFrameHostForNavigation will be called more than once during a
     // navigation (currently twice, on request and when it's about to commit in
@@ -815,8 +819,9 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       // SiteInstance differs from the one for the current URL, a new one needs
       // to be created.
       CleanUpNavigation();
-      bool success = CreateSpeculativeRenderFrameHost(current_site_instance,
-                                                      dest_site_instance.get());
+      bool success = CreateSpeculativeRenderFrameHost(
+          current_site_instance, dest_site_instance.get(),
+          recovering_without_early_commit);
       DCHECK(success);
     }
     DCHECK(speculative_render_frame_host_);
@@ -834,25 +839,22 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
 
     navigation_rfh = speculative_render_frame_host_.get();
 
-    // Ensure that if the current RenderFrameHost is crashed, the following code
-    // path will always be used.
-    if (render_frame_host_->must_be_replaced())
+    if (!render_frame_host_->IsRenderFrameLive() &&
+        !recovering_without_early_commit) {
+      // We should only do this if the current RFH is not live.
       DCHECK(!render_frame_host_->IsRenderFrameLive());
-
-    // Check if our current RFH is live.
-    if (!render_frame_host_->IsRenderFrameLive()) {
       // The current RFH is not live. There's no reason to sit around with a
       // sad tab or a newly created RFH while we wait for the navigation to
-      // complete. Just switch to the speculative RFH now and go back to normal.
-      // (Note that we don't care about on{before}unload handlers if the current
-      // RFH isn't live.)
+      // complete. Just switch to the speculative RFH now and go back to
+      // normal. (Note that we don't care about on{before}unload handlers if
+      // the current RFH isn't live.)
       //
-      // If the corresponding RenderFrame is currently associated with a proxy,
-      // send a SwapIn message to ensure that the RenderFrame swaps into the
-      // frame tree and replaces that proxy on the renderer side.  Normally
-      // this happens at navigation commit time, but in this case this must be
-      // done earlier to keep browser and renderer state in sync.  This is
-      // important to do before CommitPending(), which destroys the
+      // If the corresponding RenderFrame is currently associated with a
+      // proxy, send a SwapIn message to ensure that the RenderFrame swaps
+      // into the frame tree and replaces that proxy on the renderer side.
+      // Normally this happens at navigation commit time, but in this case
+      // this must be done earlier to keep browser and renderer state in sync.
+      // This is important to do before CommitPending(), which destroys the
       // corresponding proxy. See https://crbug.com/487872.
       // TODO(https://crbug.com/1072817): Make this logic more robust to
       // consider the case for failed navigations after CommitPending.
@@ -866,11 +868,10 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   DCHECK(navigation_rfh &&
          (navigation_rfh == render_frame_host_.get() ||
           navigation_rfh == speculative_render_frame_host_.get()));
-  DCHECK(!render_frame_host_->must_be_replaced());
   DCHECK(!navigation_rfh->must_be_replaced());
 
-  // If the RenderFrame that needs to navigate is not live (its process was just
-  // created), initialize it.
+  // If the RenderFrame that needs to navigate is not live (its process was
+  // just created), initialize it.
   if (!navigation_rfh->IsRenderFrameLive()) {
     if (!ReinitializeRenderFrame(navigation_rfh))
       return nullptr;
@@ -940,6 +941,16 @@ void RenderFrameHostManager::CleanUpNavigation() {
   if (speculative_render_frame_host_) {
     bool was_loading = speculative_render_frame_host_->is_loading();
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost());
+    // If we were navigating away from a crashed main frame then we will have
+    // set the RVH's main frame routing ID to MSG_ROUTING_NONE. We need to set
+    // it back to the crashed frame to avoid having a situation where it's
+    // pointing to nothing even though there is no pending commit.
+    if (ShouldSkipEarlyCommitPendingForCrashedFrame() &&
+        frame_tree_node_->IsMainFrame() &&
+        !render_frame_host_->IsRenderFrameLive()) {
+      render_frame_host_->render_view_host()->SetMainFrameRoutingId(
+          render_frame_host_->GetRoutingID());
+    }
     if (was_loading)
       frame_tree_node_->DidStopLoading();
   }
@@ -2149,7 +2160,8 @@ bool RenderFrameHostManager::IsCandidateSameSite(
 
 void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     SiteInstance* old_instance,
-    SiteInstance* new_instance) {
+    SiteInstance* new_instance,
+    bool recovering_without_early_commit) {
   // Only create opener proxies if they are in the same BrowsingInstance.
   if (new_instance->IsRelatedSiteInstance(old_instance)) {
     CreateOpenerProxies(new_instance, frame_tree_node_);
@@ -2163,6 +2175,20 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     // BrowsingInstance before we allow them to interact (e.g., postMessage).
     frame_tree_node_->frame_tree()->CreateProxiesForSiteInstance(
         frame_tree_node_, new_instance);
+  }
+
+  // When navigating same-site and recovering from a crash, create a proxy
+  // in the new process. This will be swapped for a frame if we commit.
+  // TODO(https://crbug.com/1072817): Consider handling this case in
+  // FrameTree::CreateProxiesForSiteInstance.
+  if (recovering_without_early_commit &&
+      render_frame_host_->GetSiteInstance() == new_instance) {
+    if (frame_tree_node_->IsMainFrame()) {
+      frame_tree_node_->frame_tree()
+          ->GetRenderViewHost(new_instance)
+          ->SetMainFrameRoutingId(MSG_ROUTING_NONE);
+    }
+    CreateRenderFrameProxy(new_instance);
   }
 }
 
@@ -2254,7 +2280,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
 
 bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     SiteInstance* old_instance,
-    SiteInstance* new_instance) {
+    SiteInstance* new_instance,
+    bool recovering_without_early_commit) {
   CHECK(new_instance);
   // This DCHECK is going to be fully removed as part of RenderDocument [1].
   //
@@ -2278,9 +2305,11 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   if (!new_instance->GetProcess()->Init())
     return false;
 
-  CreateProxiesForNewRenderFrameHost(old_instance, new_instance);
+  CreateProxiesForNewRenderFrameHost(old_instance, new_instance,
+                                     recovering_without_early_commit);
 
-  speculative_render_frame_host_ = CreateSpeculativeRenderFrame(new_instance);
+  speculative_render_frame_host_ = CreateSpeculativeRenderFrame(
+      new_instance, recovering_without_early_commit);
 
   // If RenderViewHost was created along with the speculative RenderFrameHost,
   // ensure that RenderViewCreated is fired for it.  It is important to do this
@@ -2296,7 +2325,9 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
 }
 
 std::unique_ptr<RenderFrameHostImpl>
-RenderFrameHostManager::CreateSpeculativeRenderFrame(SiteInstance* instance) {
+RenderFrameHostManager::CreateSpeculativeRenderFrame(
+    SiteInstance* instance,
+    bool recovering_without_early_commit) {
   CHECK(instance);
   // This DCHECK is going to be fully removed as part of RenderDocument [1].
   //
@@ -2341,9 +2372,16 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(SiteInstance* instance) {
 
     // If we are reusing the RenderViewHost and it doesn't already have a
     // RenderWidgetHostView, we need to create one if this is the main frame.
-    if (!render_view_host->GetWidget()->GetView())
+    if (!render_view_host->GetWidget()->GetView()) {
       delegate_->CreateRenderWidgetHostViewForRenderManager(render_view_host);
-
+      // If we are recovering a crashed frame in the same SiteInstance and we
+      // are not skipping early commit then we will create a proxy and that will
+      // prevent the regular outer delegate reattach path in
+      // CreateRenderViewForRenderManager() from working.
+      if (recovering_without_early_commit &&
+          render_frame_host_->GetSiteInstance() == instance)
+        delegate_->ReattachOuterDelegateIfNeeded();
+    }
     // And since we are reusing the RenderViewHost make sure it is hidden, like
     // a new RenderViewHost would be, until navigation commits.
     render_view_host->GetWidget()->GetView()->Hide();
@@ -2361,10 +2399,21 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(SiteInstance* instance) {
 }
 
 void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
-  // A RenderFrameProxyHost should never be created in the same SiteInstance as
-  // the current RFH.
   CHECK(instance);
-  CHECK_NE(instance, render_frame_host_->GetSiteInstance());
+  // If we are creating a proxy to recover from a crash and skipping the early
+  // CommitPending then it could be in the same SiteInstance. In all other
+  // cases we should be creating it in a different one.
+  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
+    // TODO(fergal): We cannot put a CHECK in the else of this if because we do
+    // not have enough information about who is calling this. If we knew it was
+    // navigating then we could CHECK_EQ and CHECK_NE otherwise.
+    if (!render_frame_host_->must_be_replaced())
+      CHECK_NE(instance, render_frame_host_->GetSiteInstance());
+  } else {
+    // If policy allows early commit, a RenderFrameProxyHost should never be
+    // created in the same SiteInstance as the current RFH.
+    CHECK_NE(instance, render_frame_host_->GetSiteInstance());
+  }
 
   // If a proxy already exists and is alive, nothing needs to be done.
   RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(instance);
@@ -3303,7 +3352,8 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   DCHECK(!speculative_render_frame_host_);
   if (!CreateSpeculativeRenderFrameHost(
           current_frame_host()->GetSiteInstance(),
-          current_frame_host()->GetParent()->GetSiteInstance())) {
+          current_frame_host()->GetParent()->GetSiteInstance(),
+          /*for_early_commit=*/false)) {
     NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
     return;
   }

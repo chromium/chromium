@@ -50,6 +50,7 @@
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_delete_intention.h"
@@ -228,10 +229,6 @@ struct PendingNavigation;
 struct RenderFrameHostOrProxy;
 struct ResourceTimingInfo;
 struct SubresourceLoaderParams;
-
-// True if feature-flags indicate that we should replace crashed RFHs with new
-// instances rather than reusing them. See http://crbug.com/981339.
-CONTENT_EXPORT bool ShouldCreateNewHostForCrashedFrame();
 
 // To be called when a RenderFrameHostImpl receives an event.
 // Provides the host, the event fired, and which node id the event was for.

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/common/chrome_features.h"
@@ -52,6 +53,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/navigation_policy.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -101,6 +103,10 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
   }
+
+ protected:
+  void ExpectHideAndRestoreSadTabWhenNavigationCancels(bool cross_site);
+  void ExpectHideSadTabWhenNavigationCompletes(bool cross_site);
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
@@ -1515,6 +1521,117 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       test_ukm_recorder()->GetEntriesByName(Entry::kEntryName);
   EXPECT_EQ(1u, ukm_entries.size());
   test_ukm_recorder()->ExpectEntrySourceHasUrl(ukm_entries[0], skippable_url);
+}
+
+// Ensure that starting a navigation out of a sad tab hides the sad tab right
+// away, without waiting for the navigation to commit and restores it again
+// after cancelling.
+void ChromeNavigationBrowserTest::
+    ExpectHideAndRestoreSadTabWhenNavigationCancels(bool cross_site) {
+  // This test only applies when this policy is in place.
+  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+    return;
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(contents);
+
+  GURL url_start(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_hung =
+      embedded_test_server()->GetURL(cross_site ? "b.com" : "a.com", "/hung");
+  GURL url_succeed = embedded_test_server()->GetURL(
+      cross_site ? "b.com" : "a.com", "/title2.html");
+  ui_test_utils::NavigateToURL(browser(), url_start);
+
+  // No sad tab should be visible after a successful navigation.
+  ASSERT_FALSE(sad_tab_helper->sad_tab());
+
+  // Kill the renderer process.
+  content::RenderProcessHost* process = contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(-1);
+  crash_observer.Wait();
+
+  // Make sure the sad tab is shown.
+  ASSERT_TRUE(sad_tab_helper->sad_tab());
+
+  // Start a navigation that will never finish and wait for request start.
+  content::TestNavigationManager manager(contents, url_hung);
+  contents->GetController().LoadURL(url_hung, content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  // Ensure that the sad tab is hidden at this point.
+  ASSERT_FALSE(sad_tab_helper->sad_tab());
+
+  // Cancel the pending navigation and ensure that the sad tab returns.
+  chrome::Stop(browser());
+  EXPECT_TRUE(sad_tab_helper->sad_tab());
+  // Ensure that the omnibox URL is the crashed one.
+  OmniboxView* omnibox_view =
+      browser()->window()->GetLocationBar()->GetOmniboxView();
+  std::string omnibox_text = base::UTF16ToASCII(omnibox_view->GetText());
+  EXPECT_EQ(omnibox_text, url_start.spec());
+
+  // Make sure the sad tab goes away when we commit successfully.
+  ui_test_utils::NavigateToURL(browser(), url_succeed);
+  EXPECT_FALSE(sad_tab_helper->sad_tab());
+}
+
+// Ensure that starting a navigation out of a sad tab hides the sad tab right
+// away, without waiting for the navigation to commit and restores it again
+// after cancelling.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       RestoreSadTabWhenNavigationCancels_CrossSite) {
+  ExpectHideAndRestoreSadTabWhenNavigationCancels(/*cross_site=*/true);
+}
+
+// Same-site version of above.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       RestoreSadTabWhenNavigationCancels_SameSite) {
+  ExpectHideAndRestoreSadTabWhenNavigationCancels(/*cross_site=*/false);
+}
+
+// Ensure that completing a navigation from a sad tab will clear the sad tab.
+void ChromeNavigationBrowserTest::ExpectHideSadTabWhenNavigationCompletes(
+    bool cross_site) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(contents);
+
+  GURL url_start(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_succeed = embedded_test_server()->GetURL(
+      cross_site ? "b.com" : "a.com", "/title2.html");
+  ui_test_utils::NavigateToURL(browser(), url_start);
+
+  // No sad tab should be visible after a successful navigation.
+  ASSERT_FALSE(sad_tab_helper->sad_tab());
+
+  // Kill the renderer process.
+  content::RenderProcessHost* process = contents->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(-1);
+  crash_observer.Wait();
+
+  // Make sure the sad tab is shown.
+  ASSERT_TRUE(sad_tab_helper->sad_tab());
+
+  // Make sure the sad tab goes away when we commit successfully.
+  ui_test_utils::NavigateToURL(browser(), url_succeed);
+  EXPECT_FALSE(sad_tab_helper->sad_tab());
+}
+
+// Ensure that completing a navigation from a sad tab will clear the sad tab.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       ClearSadTabWhenNavigationCompletes_CrossSite) {
+  ExpectHideSadTabWhenNavigationCompletes(/*cross_site=*/true);
+}
+
+// Same-site version of above.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       ClearSadTabWhenNavigationCompletes_SameSite) {
+  ExpectHideSadTabWhenNavigationCompletes(/*cross_site=*/false);
 }
 
 // TODO(csharrison): These tests should become tentative WPT, once the feature
