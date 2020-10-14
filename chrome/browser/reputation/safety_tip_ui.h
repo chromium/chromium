@@ -18,7 +18,8 @@ class GURL;
 // Represents the different user interactions with a Safety Tip dialog.
 //
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with SafetyTipStatus.
+// numeric values should never be reused. Keep in sync with
+// SafetyTipInteraction in enums.xml.
 enum class SafetyTipInteraction {
   // The user dismissed the safety tip. Every time the user dismisses the
   // dialog, a histogram will be recorded once with this value, and again with a

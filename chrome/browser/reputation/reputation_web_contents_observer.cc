@@ -198,8 +198,16 @@ ReputationWebContentsObserver::~ReputationWebContentsObserver() = default;
 void ReputationWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() ||
-      navigation_handle->IsSameDocument() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+    MaybeCallReputationCheckCallback(false);
+    return;
+  }
+
+  // Same doc navigations keep the same status as their predecessor. Update last
+  // navigation entry so that GetSafetyTipInfoForVisibleNavigation() works.
+  if (navigation_handle->IsSameDocument()) {
+    last_safety_tip_navigation_entry_id_ =
+        web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID();
     MaybeCallReputationCheckCallback(false);
     return;
   }
