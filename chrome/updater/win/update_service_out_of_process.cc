@@ -345,7 +345,7 @@ void UpdateServiceOutOfProcess::UpdateAllOnSTA(StateChangeCallback state_update,
   HRESULT hr = CreateUpdater(updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run(static_cast<Result>(hr));
+    std::move(callback).Run(Result::kServiceFailed);
     return;
   }
 
@@ -366,8 +366,8 @@ void UpdateServiceOutOfProcess::UpdateAllOnSTA(StateChangeCallback state_update,
     // state of the update server is. The observer may or may not post any
     // callback. Disconnecting the observer resolves this ambiguity and
     // transfers the ownership of the callback back to the owner of the
-    // observer.]
-    observer->Disconnect().Run(static_cast<Result>(hr));
+    // observer.
+    observer->Disconnect().Run(Result::kServiceFailed);
     return;
   }
 }
@@ -381,7 +381,7 @@ void UpdateServiceOutOfProcess::UpdateOnSTA(const std::string& app_id,
   HRESULT hr = CreateUpdater(updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
-    std::move(callback).Run(static_cast<Result>(hr));
+    std::move(callback).Run(Result::kServiceFailed);
     return;
   }
 
@@ -392,7 +392,7 @@ void UpdateServiceOutOfProcess::UpdateOnSTA(const std::string& app_id,
     DVLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
 
     // See the comment in the implementation of |UpdateAllOnSTA|.
-    observer->Disconnect().Run(static_cast<Result>(hr));
+    observer->Disconnect().Run(Result::kServiceFailed);
     return;
   }
 }
