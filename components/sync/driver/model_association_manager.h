@@ -21,23 +21,13 @@ namespace syncer {
 
 struct ConfigureContext;
 
-// TODO(crbug.com/1102837): Association was a Directory concept, this class
-// should disappear or be refactored.
-//
-// |ModelAssociationManager| does the heavy lifting for doing the actual model
-// association. It instructs DataTypeControllers to load models, start
-// associating and stopping. Since the operations are async it uses an
-// interface to inform DataTypeManager the results of the operations.
-// This class is owned by DataTypeManager.
-// |ModelAssociationManager| association functions are async. The results of
-// those operations are passed back via this interface.
+// Interface for ModelAssociationManager to pass the results of async operations
+// back to DataTypeManager.
 class ModelAssociationManagerDelegate {
  public:
-  // Called when all desired types are ready to be configured with
-  // ModelTypeConfigurer. Data type is ready when its progress marker is
-  // available to configurer. Directory data types are always ready, their
-  // progress markers are read from directory. USS data type controllers need to
-  // load model and read data type context first.
+  // Called when all desired types are loaded, i.e. are ready to be configured
+  // with ModelTypeConfigurer. A data type is ready when its progress marker is
+  // available, which is the case once the local model has been loaded.
   // This function is called at most once after each call to
   // ModelAssociationManager::Initialize().
   virtual void OnAllDataTypesReadyForConfigure() = 0;
@@ -47,8 +37,8 @@ class ModelAssociationManagerDelegate {
   virtual void OnSingleDataTypeAssociationDone(ModelType type) = 0;
 
   // Called when the ModelAssociationManager has decided it must stop |type|,
-  // likely because it is no longer a desired data type or sync is shutting
-  // down.
+  // likely because it is no longer a desired data type, sync is shutting down,
+  // or some error occurred during loading.
   virtual void OnSingleDataTypeWillStop(ModelType type,
                                         const SyncError& error) = 0;
 
@@ -56,9 +46,15 @@ class ModelAssociationManagerDelegate {
   // association for all desired types and has nothing left to do.
   virtual void OnModelAssociationDone(
       const DataTypeManager::ConfigureResult& result) = 0;
-  virtual ~ModelAssociationManagerDelegate() {}
+
+  virtual ~ModelAssociationManagerDelegate() = default;
 };
 
+// |ModelAssociationManager| instructs DataTypeControllers to load models and
+// to stop (DataTypeManager is responsible for activating/deactivating data
+// types). Since the operations are async it uses an interface to inform
+// DataTypeManager of the results of the operations.
+// This class is owned by DataTypeManager.
 // TODO(crbug.com/1102837): Association was a Directory concept, this class
 // should disappear or be refactored.
 class ModelAssociationManager {
@@ -78,14 +74,13 @@ class ModelAssociationManager {
                           ModelAssociationManagerDelegate* delegate);
   virtual ~ModelAssociationManager();
 
-  // Initializes the state to do the model association in future. This
-  // should be called before communicating with sync server. A subsequent call
-  // of Initialize is only allowed if the ModelAssociationManager has invoked
-  // |OnModelAssociationDone| on the |ModelAssociationManagerDelegate|. After
-  // this call, there should be several calls to StartAssociationAsync()
-  // to associate subset of |desired_types| which must be a subset of
-  // |preferred_types|.
-  // |preferred_types| contains types selected by user.
+  // Stops any data types that are *not* in |desired_types|, then kicks off
+  // loading of all |desired_types|. A subsequent Initialize() call is only
+  // allowed after the ModelAssociationManager has invoked
+  // OnModelAssociationDone() on the delegate. After this call, there should be
+  // several calls to StartAssociationAsync() to associate subsets of
+  // |desired_types|, which itself must be a subset of |preferred_types|.
+  // |preferred_types| contains all types selected by the user.
   void Initialize(ModelTypeSet desired_types,
                   ModelTypeSet preferred_types,
                   const ConfigureContext& context);
@@ -110,10 +105,10 @@ class ModelAssociationManager {
 
  private:
   // Start loading non-running types that are in |desired_types_|.
-  void LoadEnabledTypes();
+  void LoadDesiredTypes();
 
-  // Callback that will be invoked when the models finish loading. This callback
-  // will be passed to |LoadModels| function.
+  // Callback that will be invoked when the model for |type| finishes loading.
+  // This callback is passed to |LoadModels| function.
   void ModelLoadCallback(ModelType type, const SyncError& error);
 
   void MarkDataTypeAssociationDone(ModelType type);
@@ -129,12 +124,16 @@ class ModelAssociationManager {
                         DataTypeController* dtc,
                         DataTypeController::StopCallback callback);
 
-  // Calls delegate's OnAllDataTypesReadyForConfigure when all datatypes from
-  // desired_types_ are ready for configure. Ensures that for every call to
-  // Initialize callback is called at most once.
-  // Datatype is ready if either it doesn't require LoadModels before configure
-  // or LoadModels successfully finished.
+  // Calls delegate's OnAllDataTypesReadyForConfigure if all datatypes from
+  // |desired_types_| are loaded. Ensures that OnAllDataTypesReadyForConfigure
+  // is called at most once for every call to Initialize().
   void NotifyDelegateIfReadyForConfigure();
+
+  // Set of all registered controllers.
+  const DataTypeController::TypeMap* const controllers_;
+
+  // The delegate in charge of handling model association results.
+  ModelAssociationManagerDelegate* const delegate_;
 
   State state_;
 
@@ -143,11 +142,12 @@ class ModelAssociationManager {
   // Data types that are enabled.
   ModelTypeSet desired_types_;
 
-  // Data types that are requested to associate.
+  // Data types that are requested to associate. Non-empty iff |state_| is
+  // ASSOCIATING.
   ModelTypeSet requested_types_;
 
-  // Data types currently being associated, including types waiting for model
-  // load.
+  // Data types currently being associated, including types still waiting for
+  // model load. Non-empty iff |state_| is ASSOCIATING.
   ModelTypeSet associating_types_;
 
   // Data types that are loaded, i.e. ready to associate.
@@ -157,13 +157,8 @@ class ModelAssociationManager {
   // reconfiguration if not disabled.
   ModelTypeSet associated_types_;
 
-  // Set of all registered controllers.
-  const DataTypeController::TypeMap* controllers_;
-
-  // The processor in charge of handling model association results.
-  ModelAssociationManagerDelegate* delegate_;
-
-  // Timer to track and limit how long a datatype takes to model associate.
+  // Timer to track and limit how long a data type still takes to load after
+  // StartAssociationAsync is called.
   base::OneShotTimer timer_;
 
   DataTypeManager::ConfigureStatus configure_status_;

@@ -7,8 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
-#include <functional>
+#include <map>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -16,10 +15,7 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
-#include "base/trace_event/trace_event.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/sync_stop_metadata_fate.h"
 
 namespace syncer {
 
@@ -62,9 +58,9 @@ const int64_t kAssociationTimeOutInSeconds = 600;
 ModelAssociationManager::ModelAssociationManager(
     const DataTypeController::TypeMap* controllers,
     ModelAssociationManagerDelegate* processor)
-    : state_(IDLE),
-      controllers_(controllers),
+    : controllers_(controllers),
       delegate_(processor),
+      state_(IDLE),
       configure_status_(DataTypeManager::UNKNOWN),
       notified_about_ready_for_configure_(false) {}
 
@@ -90,7 +86,7 @@ void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
   for (ModelType type : desired_types) {
     auto dtc_iter = controllers_->find(type);
     if (dtc_iter != controllers_->end()) {
-      DataTypeController* dtc = dtc_iter->second.get();
+      const DataTypeController* dtc = dtc_iter->second.get();
       // Controllers in a FAILED state should have been filtered out by the
       // DataTypeManager.
       DCHECK_NE(dtc->state(), DataTypeController::FAILED);
@@ -132,12 +128,12 @@ void ModelAssociationManager::Initialize(ModelTypeSet desired_types,
     }
   }
 
-  // Run LoadEnabledTypes() only after all relevant types are stopped.
+  // Run LoadDesiredTypes() only after all relevant types are stopped.
   // TODO(mastiz): Add test coverage to this waiting logic, including the
   // case where the datatype is STOPPING when this function is called.
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       types_to_stop.size(),
-      base::BindOnce(&ModelAssociationManager::LoadEnabledTypes,
+      base::BindOnce(&ModelAssociationManager::LoadDesiredTypes,
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (const auto& dtc_and_reason : types_to_stop) {
@@ -183,7 +179,7 @@ void ModelAssociationManager::StopDatatypeImpl(
   dtc->Stop(shutdown_reason, std::move(callback));
 }
 
-void ModelAssociationManager::LoadEnabledTypes() {
+void ModelAssociationManager::LoadDesiredTypes() {
   // Load in kStartOrder.
   for (ModelType type : kStartOrder) {
     if (!desired_types_.Has(type))
@@ -235,14 +231,8 @@ void ModelAssociationManager::StartAssociationAsync(
 
   // Associate types that are already loaded in specified order.
   for (ModelType type : kStartOrder) {
-    if (!associating_types_.Has(type) || !loaded_types_.Has(type))
-      continue;
-
-    DataTypeController* dtc = controllers_->find(type)->second.get();
-    TRACE_EVENT_ASYNC_BEGIN1("sync", "ModelAssociation", dtc, "DataType",
-                             ModelTypeToString(type));
-
-    MarkDataTypeAssociationDone(type);
+    if (associating_types_.Has(type) && loaded_types_.Has(type))
+      MarkDataTypeAssociationDone(type);
   }
 }
 
@@ -269,7 +259,6 @@ void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
   if (state_ == ASSOCIATING) {
     if (configure_status_ == DataTypeManager::OK)
       configure_status_ = DataTypeManager::ABORTED;
-    DVLOG(1) << "ModelAssociationManager: Calling OnModelAssociationDone";
     ModelAssociationDone(IDLE);
   } else {
     DCHECK(associating_types_.Empty());
@@ -301,12 +290,12 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
   loaded_types_.Put(type);
   NotifyDelegateIfReadyForConfigure();
   if (associating_types_.Has(type)) {
-    DataTypeController* dtc = controllers_->find(type)->second.get();
+    const DataTypeController* dtc = controllers_->find(type)->second.get();
     // If initial sync was done for this datatype then
     // NotifyDelegateIfReadyForConfigure possibly already triggered model
     // association and StartAssociating was already called for this type. To
     // ensure StartAssociating is called only once only make a call if state is
-    // MODEL_LOADED.
+    // MODEL_LOADED (i.e. not RUNNING yet).
     // TODO(pavely): Add test for this scenario in DataTypeManagerImpl
     // unittests.
     // TODO(crbug.com/647505): The above sounds quite broken (will
@@ -320,41 +309,25 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
 }
 
 void ModelAssociationManager::MarkDataTypeAssociationDone(ModelType type) {
+  DCHECK_EQ(state_, ASSOCIATING);
   DCHECK(desired_types_.Has(type));
   DCHECK(associating_types_.Has(type));
   DCHECK(loaded_types_.Has(type));
   DCHECK(!associated_types_.Has(type));
 
   associated_types_.Put(type);
+  associating_types_.Remove(type);
 
-  // TODO(crbug.com/647505): Should we check this *before* adding the type to
-  // |associated_types_|?
-  if (state_ != ASSOCIATING)
-    return;
-
-  TRACE_EVENT_ASYNC_END1("sync", "ModelAssociation",
-                         controllers_->find(type)->second.get(), "DataType",
-                         ModelTypeToString(type));
-
-  // Track the merge results if we succeeded or an association failure
-  // occurred.
   if (ProtocolTypes().Has(type))
     delegate_->OnSingleDataTypeAssociationDone(type);
-
-  associating_types_.Remove(type);
 
   if (associating_types_.Empty())
     ModelAssociationDone(INITIALIZED);
 }
 
 void ModelAssociationManager::ModelAssociationDone(State new_state) {
-  DCHECK_NE(IDLE, state_);
-
-  if (state_ == INITIALIZED) {
-    // No associations are currently happening. Just reset the state.
-    state_ = new_state;
-    return;
-  }
+  DCHECK_EQ(ASSOCIATING, state_);
+  DCHECK_NE(ASSOCIATING, new_state);
 
   DVLOG(1) << "Model association complete for "
            << ModelTypeSetToString(requested_types_);
@@ -395,11 +368,9 @@ void ModelAssociationManager::NotifyDelegateIfReadyForConfigure() {
   if (notified_about_ready_for_configure_)
     return;
 
-  for (ModelType type : desired_types_) {
-    if (!loaded_types_.Has(type)) {
-      // At least one type is not ready.
-      return;
-    }
+  if (!loaded_types_.HasAll(desired_types_)) {
+    // At least one type is not ready.
+    return;
   }
 
   notified_about_ready_for_configure_ = true;
