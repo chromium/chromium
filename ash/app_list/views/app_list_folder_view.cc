@@ -428,8 +428,6 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
     // preferred bounds is calculated correctly.
     folder_view_->contents_container()->layer()->SetTransform(gfx::Transform());
     folder_view_->RecordAnimationSmoothness();
-
-    folder_view_->NotifyAccessibilityLocationChanges();
   }
 
  private:
@@ -691,17 +689,6 @@ void AppListFolderView::RecordAnimationSmoothness() {
 void AppListFolderView::OnTabletModeChanged(bool started) {
   folder_header_view()->set_tablet_mode(started);
   page_switcher_->set_is_tablet_mode(started);
-}
-
-void AppListFolderView::NotifyAccessibilityLocationChanges() {
-  contents_container_->NotifyAccessibilityEvent(
-      ax::mojom::Event::kLocationChanged, true);
-  items_grid_view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                             true);
-  folder_header_view_->NotifyAccessibilityEvent(
-      ax::mojom::Event::kLocationChanged, true);
-  page_switcher_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                           true);
 }
 
 void AppListFolderView::CalculateIdealBounds() {

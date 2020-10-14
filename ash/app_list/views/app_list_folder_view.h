@@ -116,10 +116,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
-  // When transform in |contents_view_| is updated, notify accessibility to show
-  // ChromeVox focus in correct locations.
-  void NotifyAccessibilityLocationChanges();
-
  private:
   void CalculateIdealBounds();
 

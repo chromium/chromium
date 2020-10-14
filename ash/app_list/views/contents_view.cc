@@ -70,27 +70,6 @@ float GetOpacityForProgress(float progress,
       1.0f);
 }
 
-// Notifies assistive technology that all schedules animations have completed on
-// this view and that a location change event has occurred. This should be used
-// for notifying a11y to update view locations after transformation animations.
-// This object will delete itself after running OnImplicitAnimationsCompleted.
-class AccessibilityAnimationObserver : public ui::ImplicitAnimationObserver {
- public:
-  explicit AccessibilityAnimationObserver(views::View* view) : view_(view) {}
-  ~AccessibilityAnimationObserver() override = default;
-
-  // ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsCompleted() override {
-    view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged, true);
-    delete this;
-  }
-
- private:
-  views::View* const view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityAnimationObserver);
-};
-
 }  // namespace
 
 ContentsView::ContentsView(AppListView* app_list_view)
@@ -784,12 +763,10 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
 
   // Animates layer's vertical position (using transform animation).
   // |layer| - The layer to transform.
-  // |view| - Optional, the view to which the layer belongs (if the layer is a
-  // view layer).
   // |y_offset| - The initial vertical offset - the layer's vertical offset will
   //              be animated to 0.
   auto animate_transform = [](base::TimeDelta duration, float y_offset,
-                              ui::Layer* layer, views::View* view) {
+                              ui::Layer* layer) {
     gfx::Transform transform;
     transform.Translate(0, y_offset);
     layer->SetTransform(transform);
@@ -800,10 +777,6 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
     settings->SetTransitionDuration(duration);
     settings->SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
-    // Observer will delete itself after animation completes.
-    if (view)
-      settings->AddObserver(new AccessibilityAnimationObserver(view));
-
     layer->SetTransform(gfx::Transform());
   };
 
@@ -853,7 +826,7 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
   // For search box, animate the search_box view layer instead of the widget
   // layer to avoid conflict with pagination model transitions (which update the
   // search box widget layer transform as the transition progresses).
-  animate_transform(duration, y_offset, search_box->layer(), search_box);
+  animate_transform(duration, y_offset, search_box->layer());
 
   // Update app list page bounds to their target values. This assumes that
   // potential in-progress pagination transition does not directly animate page
@@ -877,7 +850,7 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
     View* host_view = child_window->GetProperty(views::kHostViewKey);
     if (!host_view)
       continue;
-    animate_transform(duration, y_offset, child_window->layer(), nullptr);
+    animate_transform(duration, y_offset, child_window->layer());
   }
 
   last_target_view_state_ = target_view_state;
@@ -889,7 +862,7 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
   animate_transform(
       duration,
       expand_arrow_view()->CalculateOffsetFromCurrentAppListProgress(progress),
-      expand_arrow_view()->layer(), expand_arrow_view());
+      expand_arrow_view()->layer());
 }
 
 void ContentsView::SetExpandArrowViewVisibility(bool show) {

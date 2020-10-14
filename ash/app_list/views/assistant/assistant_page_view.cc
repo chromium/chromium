@@ -354,8 +354,8 @@ void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,
   if (needs_layout())
     Layout();
 
-  animator.Run(default_offset, layer(), this);
-  animator.Run(default_offset, view_shadow_->shadow()->shadow_layer(), nullptr);
+  animator.Run(default_offset, layer());
+  animator.Run(default_offset, view_shadow_->shadow()->shadow_layer());
 }
 
 void AssistantPageView::UpdatePageOpacityForState(AppListState state,

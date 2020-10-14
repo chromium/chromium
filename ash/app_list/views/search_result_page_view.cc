@@ -475,12 +475,12 @@ void SearchResultPageView::AnimateYPosition(AppListViewState target_view_state,
   if (needs_layout())
     Layout();
 
-  animator.Run(default_offset, layer(), this);
-  animator.Run(default_offset, view_shadow_->shadow()->shadow_layer(), nullptr);
+  animator.Run(default_offset, layer());
+  animator.Run(default_offset, view_shadow_->shadow()->shadow_layer());
   if (anchored_dialog_) {
     const float offset =
         anchored_dialog_->AdjustVerticalTransformOffset(default_offset);
-    animator.Run(offset, anchored_dialog_->widget()->GetLayer(), nullptr);
+    animator.Run(offset, anchored_dialog_->widget()->GetLayer());
   }
 }
 

@@ -223,16 +223,15 @@ void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
   const int offset = current_suggestion_chip_y - target_suggestion_chip_y;
 
   suggestion_chip_container_view_->SetY(target_suggestion_chip_y);
-  animator.Run(offset, suggestion_chip_container_view_->layer(),
-               suggestion_chip_container_view_);
+  animator.Run(offset, suggestion_chip_container_view_->layer());
 
   apps_grid_view_->SetY(suggestion_chip_container_view_->y() +
                         chip_grid_y_distance_);
-  animator.Run(offset, apps_grid_view_->layer(), apps_grid_view_);
+  animator.Run(offset, apps_grid_view_->layer());
 
   page_switcher_->SetY(suggestion_chip_container_view_->y() +
                        chip_grid_y_distance_);
-  animator.Run(offset, page_switcher_->layer(), page_switcher_);
+  animator.Run(offset, page_switcher_->layer());
 }
 
 void AppsContainerView::OnTabletModeChanged(bool started) {

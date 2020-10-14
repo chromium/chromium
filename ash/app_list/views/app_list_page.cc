@@ -62,7 +62,7 @@ void AppListPage::AnimateOpacity(float current_progress,
 void AppListPage::AnimateYPosition(AppListViewState target_view_state,
                                    const TransformAnimator& animator,
                                    float default_offset) {
-  animator.Run(default_offset, layer(), this);
+  animator.Run(default_offset, layer());
 }
 
 gfx::Rect AppListPage::GetAboveContentsOffscreenBounds(

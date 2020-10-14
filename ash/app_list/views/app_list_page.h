@@ -123,14 +123,11 @@ class APP_LIST_EXPORT AppListPage : public views::View {
   // Called when the app list view state changes to |target_view_state| to
   // animate the app list page vertical offset from the app list view top.
   // |animator| - The callback that runs the transform animation to update the
-  // page's vertical position. (The layer is required argument, while view is
-  // optional, and should be used with layers associated with views - the
-  // animator will send out a11y position change notification for the view when
-  // the animation finishes).
+  // page's vertical position.
   // |default_offset| - the default transform offset that can be passed to
   //     |animator| to follow the search box position animation.
-  using TransformAnimator = base::RepeatingCallback<
-      void(float offset, ui::Layer* layer, views::View* view)>;
+  using TransformAnimator =
+      base::RepeatingCallback<void(float offset, ui::Layer* layer)>;
   virtual void AnimateYPosition(AppListViewState target_view_state,
                                 const TransformAnimator& animator,
                                 float default_offset);
