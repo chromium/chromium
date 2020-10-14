@@ -5,11 +5,13 @@
 #import "ios/web/navigation/crw_text_fragments_handler.h"
 
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/text_fragments_utils.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -29,10 +31,17 @@ using ::testing::ReturnRefOfCopy;
 namespace {
 
 const char kValidFragmentsURL[] =
-    "https://chromium.org/#idFrag:~:text=text%201&text=text%202";
+    "https://chromium.org#idFrag:~:text=text%201&text=text%202";
 const char kScriptForValidFragmentsURL[] =
     "__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
     "1\"},{\"textStart\":\"text 2\"}], true)";
+
+const char kSingleFragmentURL[] = "https://chromium.org#:~:text=text";
+const char kTwoFragmentsURL[] =
+    "https://chromium.org#:~:text=text&text=other%20text";
+
+const char kSearchEngineURL[] = "https://google.com";
+const char kNonSearchEngineURL[] = "https://notasearchengine.com";
 
 }  // namespace
 
@@ -107,6 +116,21 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
         .WillOnce(ReturnRefOfCopy(last_url));
   }
 
+  Referrer GetSearchEngineReferrer() {
+    return Referrer(GURL(kSearchEngineURL), web::ReferrerPolicyDefault);
+  }
+
+  Referrer GetNonSearchEngineReferrer() {
+    return Referrer(GURL(kNonSearchEngineURL), web::ReferrerPolicyDefault);
+  }
+
+  void CreateHandlerAndProcessTextFragments() {
+    CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+    [handler processTextFragmentsWithContext:&context_
+                                    referrer:GetSearchEngineReferrer()];
+  }
+
   web::FakeNavigationContext context_;
   MockWebStateImpl* web_state_;
   base::test::ScopedFeatureList feature_list_;
@@ -116,6 +140,7 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
 // Tests that the handler will execute JavaScript if highlighting is allowed and
 // fragments are present.
 TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptSuccess) {
+  base::HistogramTester histogram_tester;
   SetLastURL(GURL(kValidFragmentsURL));
 
   CRWTextFragmentsHandler* handler = CreateDefaultHandler();
@@ -125,7 +150,8 @@ TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptSuccess) {
       base::UTF8ToUTF16(kScriptForValidFragmentsURL);
   EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
 
   // Verify that a command callback was added with the right prefix.
   EXPECT_NE(web::WebState::ScriptCommandCallback(),
@@ -144,7 +170,8 @@ TEST_F(CRWTextFragmentsHandlerTest, FeatureDisabledFragmentsDisallowed) {
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
 
   // Verify that no callback was set when the flag is disabled.
   EXPECT_EQ(web::WebState::ScriptCommandCallback(),
@@ -162,7 +189,8 @@ TEST_F(CRWTextFragmentsHandlerTest, HasOpenerFragmentsDisallowed) {
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
 }
 
 // Tests that the handler will not execute JavaScript if the WebState has no
@@ -176,7 +204,8 @@ TEST_F(CRWTextFragmentsHandlerTest, NoGestureFragmentsDisallowed) {
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
 }
 
 // Tests that the handler will not execute JavaScript if we navigated on the
@@ -190,7 +219,8 @@ TEST_F(CRWTextFragmentsHandlerTest, SameDocumentFragmentsDisallowed) {
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
 }
 
 // Tests that the handler will not execute JavaScript if there are no
@@ -205,7 +235,8 @@ TEST_F(CRWTextFragmentsHandlerTest, NoFragmentsNoJavaScript) {
 
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
 }
 
 // Tests that any timing issue which would call the handle after it got closed
@@ -224,5 +255,204 @@ TEST_F(CRWTextFragmentsHandlerTest, PostCloseInvokeDoesNotCrash) {
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
 
-  [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+}
+
+// Tests that no metrics are recoded for an URL that doesn't contain text
+// fragments.
+TEST_F(CRWTextFragmentsHandlerTest, NoMetricsRecordedIfNoFragmentPresent) {
+  base::HistogramTester histogram_tester;
+
+  // Set a URL without text fragments.
+  SetLastURL(GURL("https://www.chromium.org/"));
+
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  // Make sure no metrics were logged.
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 0);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 0);
+}
+
+// Tests that no metrics are recoded for an URL that doesn't contain text
+// fragments, even if it contains a fragment id
+TEST_F(CRWTextFragmentsHandlerTest,
+       NoMetricsRecordedIfNoFragmentPresentWithFragmentId) {
+  base::HistogramTester histogram_tester;
+
+  // Set a URL without text fragments, but with an id fragment.
+  SetLastURL(GURL("https://www.chromium.org/#FragmentID"));
+
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  // Make sure no metrics were logged.
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 0);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.SelectorCount", 0);
+}
+
+// Tests that the LinkSource metric is recorded properly when the link comes
+// from a search engine.
+TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricSearchEngine) {
+  base::HistogramTester histogram_tester;
+  SetLastURL(GURL(kValidFragmentsURL));
+
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 1,
+                                      1);
+}
+
+// Tests that the LinkSource metric is recorded properly when the link doesn't
+// come from a search engine.
+TEST_F(CRWTextFragmentsHandlerTest, LinkSourceMetricNonSearchEngine) {
+  base::HistogramTester histogram_tester;
+  SetLastURL(GURL(kValidFragmentsURL));
+
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetNonSearchEngineReferrer()];
+
+  histogram_tester.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                      1);
+}
+
+// Tests that the SelectorCount metric is recorded properly when a single
+// selector is present.
+TEST_F(CRWTextFragmentsHandlerTest, SelectorCountMetricSingleSelector) {
+  base::HistogramTester histogram_tester;
+  SetLastURL(GURL(kSingleFragmentURL));
+
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  histogram_tester.ExpectUniqueSample("TextFragmentAnchor.SelectorCount", 1, 1);
+}
+
+// Tests that the SelectorCount metric is recorded properly when two selectors
+// are present.
+TEST_F(CRWTextFragmentsHandlerTest, SelectorCountMetricTwoSelectors) {
+  base::HistogramTester histogram_tester;
+  SetLastURL(GURL(kTwoFragmentsURL));
+
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  histogram_tester.ExpectUniqueSample("TextFragmentAnchor.SelectorCount", 2, 1);
+}
+
+// Tests that the AmbiguousMatch and MatchRate success metrics are recorded
+// properly in a variety of cases.
+TEST_F(CRWTextFragmentsHandlerTest,
+       DidReceiveJavaScriptResponseSuccessMetrics) {
+  SetLastURL(GURL(kTwoFragmentsURL));
+  CRWTextFragmentsHandler* handler = CreateDefaultHandler();
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  web::WebState::ScriptCommandCallback parse_function =
+      web_state_->last_callback();
+  web::FakeWebFrame fake_main_frame(/*frame_id=*/"", /*is_main_frame=*/true,
+                                    GURL());
+
+  // 100% rate case.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::DictionaryValue js_response = base::DictionaryValue();
+    js_response.SetKey("command", base::Value("textFragments.response"));
+    js_response.SetDoublePath("result.fragmentsCount", 2);
+    js_response.SetDoublePath("result.successCount", 2);
+
+    parse_function.Run(js_response, GURL("https://text.com"),
+                       /*interacted=*/true, &fake_main_frame);
+
+    histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 0,
+                                        1);
+    histogram_tester.ExpectUniqueSample("TextFragmentAnchor.MatchRate", 100, 1);
+  }
+
+  // 50% rate case.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::DictionaryValue js_response = base::DictionaryValue();
+    js_response.SetKey("command", base::Value("textFragments.response"));
+    js_response.SetDoublePath("result.fragmentsCount", 6);
+    js_response.SetDoublePath("result.successCount", 3);
+
+    parse_function.Run(js_response, GURL("https://text.com"),
+                       /*interacted=*/true, &fake_main_frame);
+
+    histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
+                                        1);
+    histogram_tester.ExpectUniqueSample("TextFragmentAnchor.MatchRate", 50, 1);
+  }
+
+  // 0% rate case.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::DictionaryValue js_response = base::DictionaryValue();
+    js_response.SetKey("command", base::Value("textFragments.response"));
+    js_response.SetDoublePath("result.fragmentsCount", 2);
+    js_response.SetDoublePath("result.successCount", 0);
+
+    parse_function.Run(js_response, GURL("https://text.com"),
+                       /*interacted=*/true, &fake_main_frame);
+
+    histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
+                                        1);
+    histogram_tester.ExpectUniqueSample("TextFragmentAnchor.MatchRate", 0, 1);
+  }
+
+  // Invalid values case - negative numbers.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::DictionaryValue js_response = base::DictionaryValue();
+    js_response.SetKey("command", base::Value("textFragments.response"));
+    js_response.SetDoublePath("result.fragmentsCount", -3);
+    js_response.SetDoublePath("result.successCount", 4);
+
+    parse_function.Run(js_response, GURL("https://text.com"),
+                       /*interacted=*/true, &fake_main_frame);
+
+    histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
+    histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
+  }
+
+  // Invalid values case - not numbers.
+  {
+    base::HistogramTester histogram_tester;
+
+    base::DictionaryValue js_response = base::DictionaryValue();
+    js_response.SetKey("command", base::Value("textFragments.response"));
+    js_response.SetStringPath("result.fragmentsCount", "a weird value");
+    js_response.SetDoublePath("result.successCount", 4);
+
+    parse_function.Run(js_response, GURL("https://text.com"),
+                       /*interacted=*/true, &fake_main_frame);
+
+    histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
+    histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
+  }
 }

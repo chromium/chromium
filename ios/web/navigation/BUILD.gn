@@ -17,6 +17,7 @@ source_set("navigation") {
     ":core",
     ":navigation_manager_util",
     "//base",
+    "//components/shared_highlighting/core/common",
     "//ios/net",
     "//ios/web:core",
     "//ios/web/common",
