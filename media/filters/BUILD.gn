@@ -140,14 +140,6 @@ source_set("filters") {
     deps += [ "//third_party/libvpx" ]
   }
 
-  if (enable_libaom) {
-    sources += [
-      "aom_video_decoder.cc",
-      "aom_video_decoder.h",
-    ]
-    deps += [ "//third_party/libaom" ]
-  }
-
   if (enable_dav1d_decoder) {
     sources += [
       "dav1d_video_decoder.cc",
@@ -381,10 +373,6 @@ source_set("unit_tests") {
 
   if (media_use_libvpx) {
     sources += [ "vpx_video_decoder_unittest.cc" ]
-  }
-
-  if (enable_libaom) {
-    sources += [ "aom_video_decoder_unittest.cc" ]
   }
 
   if (enable_dav1d_decoder) {

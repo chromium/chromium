@@ -30,10 +30,6 @@
 #include "media/filters/fuchsia/fuchsia_video_decoder.h"
 #endif
 
-#if BUILDFLAG(ENABLE_LIBAOM)
-#include "media/filters/aom_video_decoder.h"
-#endif
-
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
 #include "media/filters/dav1d_video_decoder.h"
 #endif
@@ -161,8 +157,6 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
     video_decoders->push_back(
         std::make_unique<OffloadingDav1dVideoDecoder>(media_log));
-#elif BUILDFLAG(ENABLE_LIBAOM)
-    video_decoders->push_back(std::make_unique<AomVideoDecoder>(media_log));
 #endif
   }
 

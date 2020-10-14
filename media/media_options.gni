@@ -102,7 +102,7 @@ declare_args() {
 
 declare_args() {
   enable_av1_decoder =
-      enable_dav1d_decoder || enable_libaom || enable_libgav1_decoder
+      enable_dav1d_decoder || enable_libgav1_decoder
 }
 
 # enable_hls_sample_aes can only be true if enable_mse_mpeg2ts_stream_parser is.

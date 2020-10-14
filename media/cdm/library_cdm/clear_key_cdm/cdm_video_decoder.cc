@@ -34,10 +34,6 @@
 #include "media/filters/vpx_video_decoder.h"
 #endif
 
-#if BUILDFLAG(ENABLE_LIBAOM)
-#include "media/filters/aom_video_decoder.h"
-#endif
-
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
 #include "media/filters/dav1d_video_decoder.h"
 #endif
@@ -321,9 +317,6 @@ std::unique_ptr<CdmVideoDecoder> CreateVideoDecoder(
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
     if (config.codec == cdm::kCodecAv1)
       video_decoder.reset(new Dav1dVideoDecoder(null_media_log.get()));
-#elif BUILDFLAG(ENABLE_LIBAOM)
-    if (config.codec == cdm::kCodecAv1)
-      video_decoder.reset(new AomVideoDecoder(null_media_log.get()));
 #endif
   }
 
