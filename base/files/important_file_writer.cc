@@ -186,10 +186,8 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
                                                   StringPiece data,
                                                   StringPiece histogram_suffix,
                                                   bool from_instance) {
-#if defined(OS_WIN)
   if (!from_instance)
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
-#endif
 
 #if defined(OS_WIN) && DCHECK_IS_ON()
   // In https://crbug.com/920174, we have cases where CreateTemporaryFileInDir
@@ -311,9 +309,7 @@ ImportantFileWriter::ImportantFileWriter(
       commit_interval_(interval),
       histogram_suffix_(histogram_suffix ? histogram_suffix : "") {
   DCHECK(task_runner_);
-#if defined(OS_WIN)
   ImportantFileWriterCleaner::AddDirectory(path.DirName());
-#endif
 }
 
 ImportantFileWriter::~ImportantFileWriter() {

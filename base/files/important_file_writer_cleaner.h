@@ -77,6 +77,10 @@ class BASE_EXPORT ImportantFileWriterCleaner {
   // main thread task runner.
   void UninitializeForTesting();
 
+  // Returns the upper-bound time. Files with modification times older than this
+  // are assumed to have been orphaned by a previous instance of the process.
+  base::Time GetUpperBoundTimeForTest() const;
+
  private:
   friend class NoDestructor<ImportantFileWriterCleaner>;
 

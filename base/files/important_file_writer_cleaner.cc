@@ -17,8 +17,27 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace base {
+
+namespace {
+
+base::Time GetUpperBoundTime() {
+#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_FUCHSIA)
+  // If process creation time is not available then use instance creation
+  // time as the upper-bound for old files. Modification times may be
+  // rounded-down to coarse-grained increments, e.g. FAT has 2s granularity,
+  // so it is necessary to set the upper-bound earlier than Now() by at least
+  // that margin to account for modification times being rounded-down.
+  return Time::Now() - TimeDelta::FromSeconds(2);
+#else
+  return Process::Current().CreationTime() - TimeDelta::FromSeconds(2);
+#endif
+}
+
+}  // namespace
 
 // static
 ImportantFileWriterCleaner& ImportantFileWriterCleaner::GetInstance() {
@@ -97,8 +116,12 @@ void ImportantFileWriterCleaner::UninitializeForTesting() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
+base::Time ImportantFileWriterCleaner::GetUpperBoundTimeForTest() const {
+  return upper_bound_time_;
+}
+
 ImportantFileWriterCleaner::ImportantFileWriterCleaner()
-    : upper_bound_time_(Process::Current().CreationTime()) {
+    : upper_bound_time_(GetUpperBoundTime()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

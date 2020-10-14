@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
-#include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind_test_util.h"
@@ -27,6 +26,12 @@ using ::testing::ElementsAre;
 namespace base {
 
 class ImportantFileWriterCleanerTest : public ::testing::Test {
+ public:
+  ImportantFileWriterCleanerTest()
+      : old_file_time_(ImportantFileWriterCleaner::GetInstance()
+                           .GetUpperBoundTimeForTest() -
+                       TimeDelta::FromMilliseconds(1)) {}
+
  protected:
   // Initializes and Starts the global cleaner at construction and Stops it
   // at destruction. ("Lifetime" refers to its activity rather than existence.)
@@ -72,11 +77,9 @@ class ImportantFileWriterCleanerTest : public ::testing::Test {
   }
 
   void CreateOldFile(const FilePath& path) {
-    const Time old_time =
-        Process::Current().CreationTime() - TimeDelta::FromSeconds(1);
     File file(path, File::FLAG_CREATE | File::FLAG_WRITE);
     ASSERT_TRUE(file.IsValid());
-    ASSERT_TRUE(file.SetTimes(Time::Now(), old_time));
+    ASSERT_TRUE(file.SetTimes(Time::Now(), old_file_time_));
   }
 
   ScopedTempDir temp_dir_;
@@ -84,6 +87,7 @@ class ImportantFileWriterCleanerTest : public ::testing::Test {
   HistogramTester histogram_tester_;
 
  private:
+  const Time old_file_time_;
   FilePath dir_1_;
   FilePath dir_2_;
   FilePath dir_1_file_new_;
