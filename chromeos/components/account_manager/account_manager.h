@@ -250,6 +250,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   void HasDummyGaiaToken(const AccountKey& account_key,
                          base::OnceCallback<void(bool)> callback) const;
 
+  // Calls the |callback| with a list of pairs of |account_key| and boolean
+  // which is set to true if the token stored against |account_key| is a dummy
+  // Gaia token, for all accounts stored in AccountManager. See
+  // |HasDummyGaiaToken|.
+  void CheckDummyGaiaTokenForAllAccounts(
+      base::OnceCallback<void(const std::vector<std::pair<Account, bool>>&)>
+          callback) const;
+
  private:
   enum InitializationState {
     kNotStarted,   // Initialize has not been called

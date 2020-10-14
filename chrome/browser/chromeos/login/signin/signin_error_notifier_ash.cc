@@ -65,10 +65,11 @@ void HandleDeviceAccountReauthNotificationClick(
 }
 
 bool AreAllAccountsMigrated(
-    const chromeos::AccountManager* const account_manager,
-    const std::vector<chromeos::AccountManager::Account>& accounts) {
-  for (const auto& account : accounts) {
-    if (account_manager->HasDummyGaiaTokenSync(account.key)) {
+    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+        account_dummy_token_list) {
+  for (const auto& account : account_dummy_token_list) {
+    if (account.second) {
+      // Account has a dummy Gaia token.
       return false;
     }
   }
@@ -77,13 +78,12 @@ bool AreAllAccountsMigrated(
 
 // Returns true if the child user has migrated at least one of their
 // secondary edu accounts to ARC++.
-bool IsSecondaryEduAccountMigratedForChildUser(
-    Profile* profile,
-    const std::vector<chromeos::AccountManager::Account>& accounts) {
+bool IsSecondaryEduAccountMigratedForChildUser(Profile* profile,
+                                               int accounts_size) {
   // If the profile is not a child then there is no migration required.
   // If the profile is child but has only one account on device, then there is
   // no migration required; i.e. there is no secondary edu account to migrate.
-  if (!profile->IsChild() || accounts.size() < 2) {
+  if (!profile->IsChild() || accounts_size < 2) {
     return true;
   }
 
@@ -251,12 +251,14 @@ void SigninErrorNotifier::HandleDeviceAccountError() {
 
 void SigninErrorNotifier::HandleSecondaryAccountError(
     const CoreAccountId& account_id) {
-  account_manager_->GetAccounts(base::BindOnce(
-      &SigninErrorNotifier::OnGetAccounts, weak_factory_.GetWeakPtr()));
+  account_manager_->CheckDummyGaiaTokenForAllAccounts(
+      base::BindOnce(&SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void SigninErrorNotifier::OnGetAccounts(
-    const std::vector<chromeos::AccountManager::Account>& accounts) {
+void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
+    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+        account_dummy_token_list) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kProfileSigninNotificationId);
@@ -267,8 +269,9 @@ void SigninErrorNotifier::OnGetAccounts(
       multi_user_util::GetAccountIdFromProfile(profile_).GetUserEmail();
 
   const bool are_all_accounts_migrated =
-      AreAllAccountsMigrated(account_manager_, accounts) &&
-      IsSecondaryEduAccountMigratedForChildUser(profile_, accounts);
+      AreAllAccountsMigrated(account_dummy_token_list) &&
+      IsSecondaryEduAccountMigratedForChildUser(
+          profile_, account_dummy_token_list.size());
 
   const base::string16 message_title =
       are_all_accounts_migrated

@@ -54,9 +54,11 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // for the Secondary Account which received an error.
   void HandleSecondaryAccountError(const CoreAccountId& account_id);
 
-  // |chromeos::AccountManager::GetAccounts| callback handler.
-  void OnGetAccounts(
-      const std::vector<chromeos::AccountManager::Account>& accounts);
+  // |chromeos::AccountManager::CheckDummyGaiaTokenForAllAccounts| callback
+  // handler.
+  void OnCheckDummyGaiaTokenForAllAccounts(
+      const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+          account_dummy_token_list);
 
   void OnTokenHandleCheck(const AccountId& account_id,
                           TokenHandleUtil::TokenHandleStatus status);

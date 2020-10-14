@@ -657,6 +657,25 @@ void AccountManager::HasDummyGaiaToken(
                           it->second.token == kInvalidToken);
 }
 
+void AccountManager::CheckDummyGaiaTokenForAllAccounts(
+    base::OnceCallback<void(const std::vector<std::pair<Account, bool>>&)>
+        callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(anastasiian): Remove this DCHECK and call |RunOnInitialization|
+  // instead.
+  DCHECK_EQ(init_state_, InitializationState::kInitialized);
+
+  std::vector<std::pair<Account, bool>> accounts_list;
+  accounts_list.reserve(accounts_.size());
+
+  for (const auto& key_val : accounts_) {
+    accounts_list.emplace_back(Account{key_val.first, key_val.second.raw_email},
+                               key_val.second.token == kInvalidToken);
+  }
+
+  std::move(callback).Run(accounts_list);
+}
+
 void AccountManager::MaybeRevokeTokenOnServer(const AccountKey& account_key,
                                               const std::string& old_token) {
   if ((account_key.account_type ==
