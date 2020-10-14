@@ -41,6 +41,9 @@ namespace chromeos {
 // SessionManagerClient is used to communicate with the session manager.
 class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
  public:
+  static constexpr base::ObserverListPolicy kObserverListPolicy =
+      base::ObserverListPolicy::EXISTING_ONLY;
+
   // The result type received from session manager on request to retrieve the
   // policy. Used to define the buckets for an enumerated UMA histogram.
   // Hence,

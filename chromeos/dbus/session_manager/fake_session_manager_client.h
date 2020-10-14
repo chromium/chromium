@@ -288,7 +288,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // requested restarted arguments.
   base::Optional<std::vector<std::string>> restart_job_argv_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::Unchecked observers_{
+      SessionManagerClient::kObserverListPolicy};
   SessionManagerClient::ActiveSessionsMap user_sessions_;
   std::vector<std::string> server_backed_state_keys_;
 
