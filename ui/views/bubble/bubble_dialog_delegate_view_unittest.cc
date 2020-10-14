@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_base.h"
@@ -409,10 +410,10 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
     frame_view->ResetViewShownTimeStampForTesting();
     Button* close_button = frame_view->close_;
     ASSERT_TRUE(close_button);
-    frame_view->ButtonPressed(
-        close_button,
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE));
+    test::ButtonTestApi(close_button)
+        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                    gfx::Point(), ui::EventTimeForNow(),
+                                    ui::EF_NONE, ui::EF_NONE));
     EXPECT_TRUE(bubble_widget->IsClosed());
   }
 }

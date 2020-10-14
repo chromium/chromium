@@ -23,6 +23,7 @@
 #include "ui/views/bubble/footnote_container_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metrics.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
@@ -1242,18 +1243,18 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksClose) {
   bubble->Show();
 
   BubbleFrameView* frame = delegate.GetBubbleFrameView();
-  frame->ButtonPressed(
-      frame->close_,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE));
+  test::ButtonTestApi(frame->close_)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_NONE, ui::EF_NONE));
   EXPECT_FALSE(bubble->IsClosed());
 
-  frame->ButtonPressed(
-      frame->close_,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow() + base::TimeDelta::FromMilliseconds(
-                                                 GetDoubleClickInterval()),
-                     ui::EF_NONE, ui::EF_NONE));
+  test::ButtonTestApi(frame->close_)
+      .NotifyClick(ui::MouseEvent(
+          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+          ui::EventTimeForNow() +
+              base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+          ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsClosed());
 }
 
@@ -1267,18 +1268,18 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
   bubble->Show();
 
   BubbleFrameView* frame = delegate.GetBubbleFrameView();
-  frame->ButtonPressed(
-      frame->minimize_,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE));
+  test::ButtonTestApi(frame->minimize_)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_NONE, ui::EF_NONE));
   EXPECT_FALSE(bubble->IsClosed());
 
-  frame->ButtonPressed(
-      frame->minimize_,
-      ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow() + base::TimeDelta::FromMilliseconds(
-                                                 GetDoubleClickInterval()),
-                     ui::EF_NONE, ui::EF_NONE));
+  test::ButtonTestApi(frame->minimize_)
+      .NotifyClick(ui::MouseEvent(
+          ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+          ui::EventTimeForNow() +
+              base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+          ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(bubble->IsMinimized());
 }
 

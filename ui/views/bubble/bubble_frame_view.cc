@@ -91,7 +91,14 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   default_title_->SetVisible(false);
   AddChildView(default_title_);
 
-  auto close = CreateCloseButton(this);
+  auto close = CreateCloseButton(base::BindRepeating(
+      [](BubbleFrameView* view, const ui::Event& event) {
+        if (view->input_protector_.IsPossiblyUnintendedInteraction(event))
+          return;
+        view->GetWidget()->CloseWithReason(
+            Widget::ClosedReason::kCloseButtonClicked);
+      },
+      this));
   close->SetVisible(false);
 #if defined(OS_WIN)
   // Windows will automatically create a tooltip for the close button based on
@@ -102,7 +109,13 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
 #endif
   close_ = AddChildView(std::move(close));
 
-  auto minimize = CreateMinimizeButton(this);
+  auto minimize = CreateMinimizeButton(base::BindRepeating(
+      [](BubbleFrameView* view, const ui::Event& event) {
+        if (view->input_protector_.IsPossiblyUnintendedInteraction(event))
+          return;
+        view->GetWidget()->Minimize();
+      },
+      this));
   minimize->SetVisible(false);
 #if defined(OS_WIN)
   minimize->SetTooltipText(base::string16());
@@ -531,17 +544,6 @@ void BubbleFrameView::PaintChildren(const PaintInfo& paint_info) {
       paint_info.paint_recording_scale_x(),
       paint_info.paint_recording_scale_y(), &paint_cache);
   OnPaintBorder(recorder.canvas());
-}
-
-void BubbleFrameView::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (input_protector_.IsPossiblyUnintendedInteraction(event))
-    return;
-
-  if (sender == close_) {
-    GetWidget()->CloseWithReason(Widget::ClosedReason::kCloseButtonClicked);
-  } else if (sender == minimize_) {
-    GetWidget()->Minimize();
-  }
 }
 
 void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {

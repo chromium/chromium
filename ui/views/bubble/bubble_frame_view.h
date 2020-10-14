@@ -30,8 +30,7 @@ class FootnoteContainerView;
 class ImageView;
 
 // The non-client frame view of bubble-styled widgets.
-class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
-                                     public ButtonListener {
+class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
  public:
   enum class PreferredArrowAdjustment { kMirror, kOffset };
 
@@ -87,9 +86,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Use SetBubbleBorder() not SetBorder().
   void SetBubbleBorder(std::unique_ptr<BubbleBorder> border);
