@@ -6,7 +6,6 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://diagnostics/data_point.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
 

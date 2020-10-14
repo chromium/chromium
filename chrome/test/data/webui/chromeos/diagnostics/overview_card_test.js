@@ -9,7 +9,6 @@ import 'chrome://diagnostics/overview_card.js';
 import {fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('OverviewCardTest', () => {
