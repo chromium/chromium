@@ -75,7 +75,7 @@ cr.define('multidevice_setup', () => {
             startSetupPageElement.$.deviceDropdown.querySelectorAll('option');
         for (option of optionNodeList.values()) {
           if (option.textContent.trim() === optionText) {
-            MockInteractions.tap(option);
+            option.click();
             return;
           }
         }

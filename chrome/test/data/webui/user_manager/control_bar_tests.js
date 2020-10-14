@@ -54,13 +54,13 @@ cr.define('user_manager.control_bar_tests', function() {
           });
 
           // Simulate clicking 'Create Profile'.
-          MockInteractions.tap(controlBarElement.$.addUser);
+          controlBarElement.$.addUser.click();
         });
       });
 
       test('Can launch guest profile', function() {
         // Simulate clicking 'Browse as guest'.
-        MockInteractions.tap(controlBarElement.$.launchGuest);
+        controlBarElement.$.launchGuest.click();
         return browserProxy.whenCalled('launchGuestUser');
       });
     });
@@ -93,7 +93,7 @@ cr.define('user_manager.control_bar_tests', function() {
 
       test('Cannot create profile', function() {
         // Simulate clicking 'Create Profile'.
-        MockInteractions.tap(controlBarElement.$.addUser);
+        controlBarElement.$.addUser.click();
 
         return browserProxy.whenCalled('areAllProfilesLocked').then(function() {
           // Make sure DOM is up to date.
@@ -106,7 +106,7 @@ cr.define('user_manager.control_bar_tests', function() {
 
       test('Cannot launch guest profile', function() {
         // Simulate clicking 'Browse as guest'.
-        MockInteractions.tap(controlBarElement.$.launchGuest);
+        controlBarElement.$.launchGuest.click();
 
         return browserProxy.whenCalled('areAllProfilesLocked').then(function() {
           // Make sure DOM is up to date.
@@ -129,14 +129,14 @@ cr.define('user_manager.control_bar_tests', function() {
           });
 
           // Simulate clicking 'Create Profile'.
-          MockInteractions.tap(controlBarElement.$.addUser);
+          controlBarElement.$.addUser.click();
         });
       });
 
       test('Can launch guest profile with force sign in', function() {
         controlBarElement.isForceSigninEnabled_ = true;
         Polymer.dom.flush();
-        MockInteractions.tap(controlBarElement.$.launchGuest);
+        controlBarElement.$.launchGuest.click();
         return browserProxy.whenCalled('launchGuestUser');
       });
     });

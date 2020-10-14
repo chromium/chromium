@@ -30,7 +30,7 @@ suite('SettingsCheckbox', function() {
     document.body.appendChild(testElement);
   });
 
-  test('value changes on tap', function() {
+  test('value changes on click', function() {
     assertTrue(testElement.checked);
 
     testElement.$.checkbox.click();

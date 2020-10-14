@@ -58,9 +58,9 @@ PageTest.Switch = function() {
     }
 
     function clickDrawerBtn(btnIndex) {
-      MockInteractions.tap($('nav-menu-btn'));
+      $('nav-menu-btn').click();
       const infoBtn = document.getElementsByClassName('drawer-item')[btnIndex];
-      MockInteractions.tap(infoBtn);
+      infoBtn.click();
     }
 
     function goPage(hash, btnIndex) {

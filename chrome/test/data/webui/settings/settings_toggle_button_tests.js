@@ -34,7 +34,7 @@ suite('SettingsToggleButton', () => {
     document.body.appendChild(testElement);
   });
 
-  test('value changes on tap', () => {
+  test('value changes on click', () => {
     assertTrue(testElement.checked);
     assertTrue(testElement.pref.value);
 

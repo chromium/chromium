@@ -5,7 +5,7 @@
 import {HIDE_FOCUS_RING_ATTRIBUTE, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {keyDownOn, pressAndReleaseKeyOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {down, keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TestStore} from 'chrome://test/bookmarks/test_store.js';
 import {createFolder, normalizeIterable, replaceBody} from 'chrome://test/bookmarks/test_util.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
@@ -85,7 +85,7 @@ suite('<bookmarks-app>', function() {
 
     assertEquals(null, getFocusAttribute());
 
-    tap(item);
+    down(item);
     assertEquals('', getFocusAttribute());
 
     keyDownOn(item, 16, [], 'Shift');

@@ -4,7 +4,7 @@
 
 import {Command, CommandManager, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {pressAndReleaseKeyOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
 import {TestStore} from 'chrome://test/bookmarks/test_store.js';
@@ -322,7 +322,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(dialog.open);
 
     // Pressing 'cancel' should not open the window.
-    tap(dialog.querySelector('.cancel-button'));
+    dialog.querySelector('.cancel-button').click();
     assertFalse(dialog.open);
     assertEquals(null, lastCreate);
 
@@ -330,7 +330,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(dialog.open);
 
     // Pressing 'yes' will open all the URLs.
-    tap(dialog.querySelector('.action-button'));
+    dialog.querySelector('.action-button').click();
     assertFalse(dialog.open);
     assertEquals(20, lastCreate.url.length);
   });
@@ -394,13 +394,13 @@ suite('<bookmarks-command-manager>', function() {
     commandManager.root.querySelectorAll('.dropdown-item').forEach(element => {
       commandItem[element.getAttribute('command')] = element;
     });
-    tap(commandItem[Command.EDIT]);
+    commandItem[Command.EDIT].click();
     testCommandManager.assertLastCommand(null);
   });
 
   test('keyboard shortcuts are disabled while a dialog is open', function() {
     assertFalse(DialogFocusManager.getInstance().hasOpenDialog());
-    let items = new Set(['12']);
+    const items = new Set(['12']);
     store.data.selection.items = items;
     store.notifyObservers();
 
@@ -590,8 +590,8 @@ suite('<bookmarks-item> CommandManager integration', function() {
   });
 
   test('copy/cut/paste for folder nodes independent of selection', function() {
-    let bmpCopyFunction = chrome.bookmarkManagerPrivate.copy;
-    let bmpCutFunction = chrome.bookmarkManagerPrivate.cut;
+    const bmpCopyFunction = chrome.bookmarkManagerPrivate.copy;
+    const bmpCutFunction = chrome.bookmarkManagerPrivate.cut;
 
     let lastCut;
     let lastCopy;

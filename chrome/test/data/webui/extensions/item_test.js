@@ -6,7 +6,6 @@
 
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isChildVisible} from '../test_util.m.js';
@@ -177,14 +176,14 @@ suite(extension_item_tests.suiteName, function() {
       currentPage = newPage;
     });
 
-    tap(item.$$('#detailsButton'));
+    item.$$('#detailsButton').click();
     expectDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: item.data.id});
 
     // Reset current page and test inspect-view navigation.
     navigation.navigateTo({page: Page.LIST});
     currentPage = null;
-    tap(item.$$('#inspect-views a[is="action-link"]:nth-of-type(2)'));
+    item.$$('#inspect-views a[is="action-link"]:nth-of-type(2)').click();
     expectDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: item.data.id});
 
@@ -239,7 +238,7 @@ suite(extension_item_tests.suiteName, function() {
           });
         };
 
-        tap(item.$$('#dev-reload-button'));
+        item.$$('#dev-reload-button').click();
         return proxyDelegate.whenCalled('reloadItem')
             .then(function(id) {
               expectEquals(item.data.id, id);
@@ -248,7 +247,7 @@ suite(extension_item_tests.suiteName, function() {
             .then(function() {
               proxyDelegate.resetResolver('reloadItem');
               proxyDelegate.setForceReloadItemError(true);
-              tap(item.$$('#dev-reload-button'));
+              item.$$('#dev-reload-button').click();
               return proxyDelegate.whenCalled('reloadItem');
             })
             .then(function(id) {

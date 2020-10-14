@@ -5,7 +5,6 @@
 /** @fileoverview Suite of tests for extension-sidebar. */
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {eventToPromise} from '../test_util.m.js';
@@ -72,14 +71,14 @@ suite(extension_sidebar_tests.suiteName, function() {
           currentPage = newPage;
         });
 
-        tap(sidebar.$$('#sections-shortcuts'));
+        sidebar.$$('#sections-shortcuts').click();
         expectDeepEquals(currentPage, {page: Page.SHORTCUTS});
 
-        tap(sidebar.$$('#sections-extensions'));
+        sidebar.$$('#sections-extensions').click();
         expectDeepEquals(currentPage, {page: Page.LIST});
 
         // Clicking on the link for the current page should close the dialog.
         sidebar.addEventListener('close-drawer', () => done());
-        tap(sidebar.$$('#sections-extensions'));
+        sidebar.$$('#sections-extensions').click();
       });
 });

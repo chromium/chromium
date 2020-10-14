@@ -20,17 +20,17 @@ LineChartTest.Menu = function() {
     assertEquals(menu.buttons_.length, 3);
 
     const buttons = menu.buttons_;
-    MockInteractions.tap(buttons[0]);
+    buttons[0].click();
     assertFalse(data1.isVisible());
-    MockInteractions.tap(buttons[2]);
+    buttons[2].click();
     assertFalse(data3.isVisible());
-    MockInteractions.tap(buttons[0]);
+    buttons[0].click();
     assertTrue(data1.isVisible());
 
     assertFalse(menu.buttonOuterDiv_.hasAttribute('hidden'));
-    MockInteractions.tap(menu.handleDiv_);
+    menu.handleDiv_.click();
     assertTrue(menu.buttonOuterDiv_.hasAttribute('hidden'));
-    MockInteractions.tap(menu.handleDiv_);
+    menu.handleDiv_.click();
     assertFalse(menu.buttonOuterDiv_.hasAttribute('hidden'));
 
     menu.removeDataSeries(data1);
