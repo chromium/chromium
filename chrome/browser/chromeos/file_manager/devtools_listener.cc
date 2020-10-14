@@ -29,10 +29,10 @@ base::span<const uint8_t> StringToSpan(const std::string& str) {
   return base::as_bytes(base::make_span(str));
 }
 
-std::string EncodedURL(const std::string& url) {
-  url::RawCanonOutputT<char> canonical_url;
-  url::EncodeURIComponent(url.c_str(), url.size(), &canonical_url);
-  return std::string(canonical_url.data(), canonical_url.length());
+std::string EncodeURIComponent(const std::string& component) {
+  url::RawCanonOutputT<char> encoded;
+  url::EncodeURIComponent(component.c_str(), component.size(), &encoded);
+  return std::string(encoded.data(), encoded.length());
 }
 
 }  // namespace
@@ -151,7 +151,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   }
 
   const std::string url = host->GetURL().spec();
-  CHECK(result->SetString("encodedHostURL", EncodedURL(url)));
+  CHECK(result->SetString("encodedHostURL", EncodeURIComponent(url)));
   CHECK(result->SetString("hostTitle", host->GetTitle()));
   CHECK(result->SetString("hostType", host->GetType()));
   CHECK(result->SetString("hostTest", test));
@@ -213,7 +213,7 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
 
     base::DictionaryValue* script = nullptr;
     CHECK(script_[i]->GetDictionary("params", &script));
-    CHECK(script->SetString("encodedURL", EncodedURL(url)));
+    CHECK(script->SetString("encodedURL", EncodeURIComponent(url)));
     CHECK(script->SetString("hash", hash));
     CHECK(script->SetString("text", text));
     CHECK(script->SetString("url", url));
