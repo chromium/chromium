@@ -76,6 +76,14 @@ void WebContentsObserverProxy::RenderFrameCreated(
       render_frame_host->GetRoutingID());
 }
 
+void WebContentsObserverProxy::RenderFrameDeleted(
+    RenderFrameHost* render_frame_host) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_renderFrameDeleted(
+      env, java_observer_, render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID());
+}
+
 void WebContentsObserverProxy::RenderViewReady() {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_renderViewReady(env, java_observer_);

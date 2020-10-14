@@ -33,6 +33,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
 
  private:
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderViewReady() override;
   void RenderProcessGone(base::TerminationStatus termination_status) override;
   void DidStartLoading() override;

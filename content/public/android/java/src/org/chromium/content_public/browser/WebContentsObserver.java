@@ -39,6 +39,15 @@ public abstract class WebContentsObserver {
     public void renderFrameCreated(int renderProcessId, int renderFrameId) {}
 
     /**
+     * Called when a RenderFrame for renderFrameHost is deleted in the
+     * renderer process.
+     * To avoid creating a RenderFrameHost object without necessity, only process id and frame id
+     * are passed. Call WebContents#getRenderFrameHostFromId() to get the RenderFrameHostImpl object
+     * if needed.
+     */
+    public void renderFrameDeleted(int renderProcessId, int renderFrameId) {}
+
+    /**
      * Called when the RenderView of the current RenderViewHost is ready, e.g. because we recreated
      * it after a crash.
      */

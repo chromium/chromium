@@ -73,6 +73,14 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    public void renderFrameDeleted(int renderProcessId, int renderFrameId) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().renderFrameDeleted(renderProcessId, renderFrameId);
+        }
+    }
+
+    @Override
+    @CalledByNative
     public void renderViewReady() {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().renderViewReady();

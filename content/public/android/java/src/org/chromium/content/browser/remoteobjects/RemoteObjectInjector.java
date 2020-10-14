@@ -71,6 +71,18 @@ public final class RemoteObjectInjector extends WebContentsObserver {
         }
     }
 
+    @Override
+    public void renderFrameDeleted(int renderProcessId, int renderFrameId) {
+        WebContents webContents = mWebContents.get();
+        if (webContents == null) return;
+
+        RenderFrameHost frameHost =
+                webContents.getRenderFrameHostFromId(renderProcessId, renderFrameId);
+        if (frameHost == null) return;
+
+        mRemoteObjectGatewayHelpers.remove(frameHost);
+    }
+
     public void addInterface(
             Object object, String name, Class<? extends Annotation> requiredAnnotation) {
         WebContents webContents = mWebContents.get();
