@@ -675,6 +675,10 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
                                     const String& container_src,
                                     const String& container_id,
                                     const String& container_name) {
+  if (!HasObserverFor(PerformanceEntry::kLongTask))
+    return;
+
+  UseCounter::Count(GetExecutionContext(), WebFeature::kLongTaskObserver);
   auto* entry = MakeGarbageCollected<PerformanceLongTaskTiming>(
       MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(end_time), name, container_type,
