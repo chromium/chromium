@@ -49,7 +49,6 @@
 #include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 #endif
 
-using signin::RevokeTokenAction;
 using signin_metrics::AccountReconcilorState;
 
 namespace {
@@ -465,7 +464,6 @@ struct ForceDiceMigrationTestTableParam {
   const char* gaia_api_calls;
   const char* tokens_after_reconcile;
   const char* cookies_after_reconcile;
-  RevokeTokenAction revoke_token_action;
 };
 
 // Pretty prints a AccountReconcilorTestTableParam. Used by gtest.
@@ -1045,8 +1043,6 @@ TEST_P(AccountReconcilorTestTable, TableRowTest) {
   // nothing on the second call.
   CheckReconcileIdempotent(kDiceParams, GetParam(), /*multilogin=*/false);
   RunReconcile();
-  histogram_tester()->ExpectTotalCount("ForceDiceMigration.RevokeTokenAction",
-                                       0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1072,34 +1068,34 @@ class AccountReconcilorTestForceDiceMigration
 
 // clang-format off
 const std::vector<ForceDiceMigrationTestTableParam> kForceDiceParams = {
-    {"*A",   "AB",   "XA", "*A",    "A"   , RevokeTokenAction::kNone},
-    {"*AxB", "AB",   "XA", "*A",    "A"   , RevokeTokenAction::kNone},
-    {"AxB",  "AB",   "XA", "A",     "A"   , RevokeTokenAction::kNone},
-    {"xAxB", "AB",   "X",  "",      ""    , RevokeTokenAction::kNone},
-    {"*A",   "",     "",   "*xA",   ""    , RevokeTokenAction::kInvalidatePrimaryAccountToken},
-    {"*A",   "B",    "X",  "*xA",   ""    , RevokeTokenAction::kInvalidatePrimaryAccountToken},
-    {"*AB",  "B",    "",   "*xAB",  "B"   , RevokeTokenAction::kInvalidatePrimaryAccountToken},
-    {"*AxB", "B",    "X",  "*xA",   ""    , RevokeTokenAction::kInvalidatePrimaryAccountToken},
-    {"*ABC", "CB",   "",   "*xABC", "CB"  , RevokeTokenAction::kInvalidatePrimaryAccountToken},
-    {"*AB",  "A",    "",   "*A",    "A"   , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"AB",   "A",    "",   "A",     "A"   , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"AB",   "",     "",   "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAB",  "",     "",   "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAB",  "A",    "X",  "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAB",  "xA",   "",   "",      "xA"  , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAB",  "B",    "",   "B",     "B"   , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"AxB",  "B",    "X",  "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"AxB",  "",     "",   "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAxB", "",     "",   "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"B",    "xA",   "",   "",      "xA"  , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"AB",   "xAB",  "",   "B",     "xAB" , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAB",  "xAC",  "X",  "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"xAB",  "AxC",  "X",  "",      ""    , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"AB",   "BC",   "XB", "B",     "B"   , RevokeTokenAction::kRevokeSecondaryAccountsTokens},
-    {"*AB",  "",     "",   "*xA",   ""    , RevokeTokenAction::kRevokeTokensForPrimaryAndSecondaryAccounts},
-    {"*xAB", "",     "",   "*xA",   ""    , RevokeTokenAction::kRevokeTokensForPrimaryAndSecondaryAccounts},
-    {"*AxB", "",     "",   "*xA",   ""    , RevokeTokenAction::kRevokeTokensForPrimaryAndSecondaryAccounts},
-    {"*AB",  "xBxA", "",   "*xA",   "xBxA", RevokeTokenAction::kRevokeTokensForPrimaryAndSecondaryAccounts}
+    {"*A",   "AB",   "XA", "*A",    "A"   },
+    {"*AxB", "AB",   "XA", "*A",    "A"   },
+    {"AxB",  "AB",   "XA", "A",     "A"   },
+    {"xAxB", "AB",   "X",  "",      ""    },
+    {"*A",   "",     "",   "*xA",   ""    },
+    {"*A",   "B",    "X",  "*xA",   ""    },
+    {"*AB",  "B",    "",   "*xAB",  "B"   },
+    {"*AxB", "B",    "X",  "*xA",   ""    },
+    {"*ABC", "CB",   "",   "*xABC", "CB"  },
+    {"*AB",  "A",    "",   "*A",    "A"   },
+    {"AB",   "A",    "",   "A",     "A"   },
+    {"AB",   "",     "",   "",      ""    },
+    {"xAB",  "",     "",   "",      ""    },
+    {"xAB",  "A",    "X",  "",      ""    },
+    {"xAB",  "xA",   "",   "",      "xA"  },
+    {"xAB",  "B",    "",   "B",     "B"   },
+    {"AxB",  "B",    "X",  "",      ""    },
+    {"AxB",  "",     "",   "",      ""    },
+    {"xAxB", "",     "",   "",      ""    },
+    {"B",    "xA",   "",   "",      "xA"  },
+    {"AB",   "xAB",  "",   "B",     "xAB" },
+    {"xAB",  "xAC",  "X",  "",      ""    },
+    {"xAB",  "AxC",  "X",  "",      ""    },
+    {"AB",   "BC",   "XB", "B",     "B"   },
+    {"*AB",  "",     "",   "*xA",   ""    },
+    {"*xAB", "",     "",   "*xA",   ""    },
+    {"*AxB", "",     "",   "*xA",   ""    },
+    {"*AB",  "xBxA", "",   "*xA",   "xBxA"}
   };
 // clang-format on
 
@@ -1112,8 +1108,6 @@ TEST_P(AccountReconcilorTestForceDiceMigration, TableRowTest) {
   EXPECT_TRUE(test_signin_client()->is_dice_migration_completed());
   EXPECT_FALSE(
       GetMockReconcilor()->delegate_->ShouldRevokeTokensNotInCookies());
-  histogram_tester()->ExpectUniqueSample("ForceDiceMigration.RevokeTokenAction",
-                                         GetParam().revoke_token_action, 1);
 }
 
 // Check that the result state of the reconcile is in a final state (reconcile

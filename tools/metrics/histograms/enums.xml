@@ -63315,6 +63315,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="RevokeTokenAction">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <int value="0" label="None"/>
   <int value="1" label="Invalidate token for primary account"/>
   <int value="2" label="Revoke token for secondary accounts"/>

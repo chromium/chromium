@@ -41,8 +41,7 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
   // Returns true if in force migration to dice state.
   bool ShouldRevokeTokensNotInCookies() const override;
   // Disables force dice migration and sets dice migration as completed.
-  void OnRevokeTokensNotInCookiesCompleted(
-      RevokeTokenAction revoke_token_action) override;
+  void OnRevokeTokensNotInCookiesCompleted() override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
   bool ShouldRevokeTokensOnCookieDeleted() override;
   bool ShouldRevokeTokensBeforeMultilogin(

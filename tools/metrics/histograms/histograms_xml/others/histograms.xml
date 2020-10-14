@@ -5341,6 +5341,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ForceDiceMigration.RevokeTokenAction" enum="RevokeTokenAction"
     expires_after="2020-10-04">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>msalama@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>

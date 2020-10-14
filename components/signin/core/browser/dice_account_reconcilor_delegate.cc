@@ -305,12 +305,9 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensNotInCookies() const {
   return !migration_completed_;
 }
 
-void DiceAccountReconcilorDelegate::OnRevokeTokensNotInCookiesCompleted(
-    RevokeTokenAction revoke_token_action) {
+void DiceAccountReconcilorDelegate::OnRevokeTokensNotInCookiesCompleted() {
   migration_completed_ = true;
   signin_client_->SetDiceMigrationCompleted();
-  UMA_HISTOGRAM_ENUMERATION("ForceDiceMigration.RevokeTokenAction",
-                            revoke_token_action);
 }
 
 bool DiceAccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted() {
