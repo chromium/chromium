@@ -109,12 +109,16 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
 
 }  // namespace
 
+// OverlayNames ----------------------------------------------------------------
+const char* OverlayNames::OVERLAY_HIGHLIGHT = "highlight";
+const char* OverlayNames::OVERLAY_HIGHLIGHT_GRID = "highlightGrid";
+const char* OverlayNames::OVERLAY_SOURCE_ORDER = "sourceOrder";
+const char* OverlayNames::OVERLAY_DISTANCES = "distances";
+const char* OverlayNames::OVERLAY_VIEWPORT_SIZE = "viewportSize";
+const char* OverlayNames::OVERLAY_SCREENSHOT = "screenshot";
+const char* OverlayNames::OVERLAY_PAUSED = "paused";
+
 // InspectTool -----------------------------------------------------------------
-
-int InspectTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_HIGHLIGHT_JS;
-}
-
 bool InspectTool::HandleInputEvent(LocalFrameView* frame_view,
                                    const WebInputEvent& input_event,
                                    bool* swallow_next_mouse_up) {
@@ -215,11 +219,10 @@ Hinge::Hinge(FloatQuad quad,
       outline_color_(outline_color),
       overlay_(overlay) {}
 
-// static
-int Hinge::GetDataResourceId() {
+String Hinge::GetOverlayName() {
   // TODO (soxia): In the future, we should make the hinge working properly
   // with tools using different resources.
-  return IDR_INSPECT_TOOL_HIGHLIGHT_JS;
+  return OverlayNames::OVERLAY_HIGHLIGHT;
 }
 
 void Hinge::Trace(Visitor* visitor) const {
@@ -453,7 +456,6 @@ Response InspectorOverlayAgent::disable() {
   resize_timer_.Stop();
   resize_timer_active_ = false;
   frame_overlay_.reset();
-  frame_resource_name_ = 0;
   persistent_tool_ = nullptr;
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
@@ -665,11 +667,14 @@ Response InspectorOverlayAgent::setShowHinge(
 
   DCHECK(frame_impl_->GetFrameView() && GetFrame());
 
-  LoadFrameForTool(Hinge::GetDataResourceId());
-  EnsureEnableFrameOverlay();
   FloatQuad quad(FloatRect(x, y, width, height));
   hinge_ =
       MakeGarbageCollected<Hinge>(quad, content_color, outline_color, this);
+
+  LoadOverlayPageResource();
+  EvaluateInOverlay("setOverlay", hinge_->GetOverlayName());
+  EnsureEnableFrameOverlay();
+
   ScheduleUpdate();
 
   return Response::Success();
@@ -1034,19 +1039,9 @@ float InspectorOverlayAgent::WindowToViewportScale() const {
                                                                     1.0f);
 }
 
-void InspectorOverlayAgent::LoadFrameForTool(int data_resource_id) {
-  if (frame_resource_name_ == data_resource_id)
+void InspectorOverlayAgent::LoadOverlayPageResource() {
+  if (overlay_page_)
     return;
-
-  frame_resource_name_ = data_resource_id;
-
-  if (overlay_page_) {
-    overlay_page_->WillBeDestroyed();
-    overlay_page_.Clear();
-    overlay_chrome_client_.Clear();
-    overlay_host_->ClearDelegate();
-    overlay_host_.Clear();
-  }
 
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
 
@@ -1100,7 +1095,7 @@ void InspectorOverlayAgent::LoadFrameForTool(int data_resource_id) {
   data->Append(UncompressResourceAsBinary(IDR_INSPECT_COMMON_CSS));
   data->Append("</style>", static_cast<size_t>(8));
   data->Append("<script>", static_cast<size_t>(8));
-  data->Append(UncompressResourceAsBinary(frame_resource_name_));
+  data->Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
   data->Append("</script>", static_cast<size_t>(9));
 
   frame->ForceSynchronousDocumentInstall("text/html", data);
@@ -1381,7 +1376,8 @@ Response InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
   inspect_tool_ = inspect_tool;
   // If the tool supports persistent overlays, the resources of the persistent
   // tool will be included into the JS resource.
-  LoadFrameForTool(inspect_tool->GetDataResourceId());
+  LoadOverlayPageResource();
+  EvaluateInOverlay("setOverlay", inspect_tool->GetOverlayName());
   EnsureEnableFrameOverlay();
   ScheduleUpdate();
   return Response::Success();

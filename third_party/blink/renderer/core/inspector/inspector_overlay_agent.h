@@ -76,13 +76,25 @@ class GridHighlightTool;
 
 using OverlayFrontend = protocol::Overlay::Metainfo::FrontendClass;
 
+// Overlay names returned by GetOverlayName().
+class OverlayNames {
+ public:
+  static const char* OVERLAY_HIGHLIGHT;
+  static const char* OVERLAY_HIGHLIGHT_GRID;
+  static const char* OVERLAY_SOURCE_ORDER;
+  static const char* OVERLAY_DISTANCES;
+  static const char* OVERLAY_VIEWPORT_SIZE;
+  static const char* OVERLAY_SCREENSHOT;
+  static const char* OVERLAY_PAUSED;
+};
+
 class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
  public:
   InspectTool(InspectorOverlayAgent* overlay, OverlayFrontend* frontend)
       : overlay_(overlay), frontend_(frontend) {}
   virtual ~InspectTool() = default;
 
-  virtual int GetDataResourceId();
+  virtual String GetOverlayName() = 0;
   virtual bool HandleInputEvent(LocalFrameView* frame_view,
                                 const WebInputEvent& input_event,
                                 bool* swallow_next_mouse_up);
@@ -115,7 +127,7 @@ class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {
         Color outline_color,
         InspectorOverlayAgent* overlay);
   ~Hinge() = default;
-  static int GetDataResourceId();
+  String GetOverlayName();
   void Draw(float scale);
   void Trace(Visitor* visitor) const;
 
@@ -253,7 +265,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   // Set or clear a mode tool, or add a highlight tool
   protocol::Response SetInspectTool(InspectTool* inspect_tool);
   void ClearInspectTool();
-  void LoadFrameForTool(int data_resource_id);
+  void LoadOverlayPageResource();
   void EnsureEnableFrameOverlay();
   void DisableFrameOverlay();
   InspectorSourceOrderConfig SourceOrderConfigFromInspectorObject(
@@ -266,7 +278,6 @@ class CORE_EXPORT InspectorOverlayAgent final
   Member<WebLocalFrameImpl> frame_impl_;
   Member<InspectedFrames> inspected_frames_;
   Member<Page> overlay_page_;
-  int frame_resource_name_;
   Member<InspectorOverlayChromeClient> overlay_chrome_client_;
   Member<InspectorOverlayHost> overlay_host_;
   bool resize_timer_active_;

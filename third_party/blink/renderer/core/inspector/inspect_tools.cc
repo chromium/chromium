@@ -118,6 +118,10 @@ SearchingForNodeTool::SearchingForNodeTool(InspectorOverlayAgent* overlay,
   }
 }
 
+String SearchingForNodeTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_HIGHLIGHT;
+}
+
 void SearchingForNodeTool::Trace(Visitor* visitor) const {
   InspectTool::Trace(visitor);
   visitor->Trace(dom_agent_);
@@ -275,6 +279,10 @@ QuadHighlightTool::QuadHighlightTool(InspectorOverlayAgent* overlay,
       color_(color),
       outline_color_(outline_color) {}
 
+String QuadHighlightTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_HIGHLIGHT;
+}
+
 bool QuadHighlightTool::ForwardEventsToOverlay() {
   return false;
 }
@@ -308,6 +316,10 @@ NodeHighlightTool::NodeHighlightTool(
     node_ = node;
   }
   contrast_info_ = FetchContrast(node_);
+}
+
+String NodeHighlightTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_HIGHLIGHT;
 }
 
 bool NodeHighlightTool::ForwardEventsToOverlay() {
@@ -387,9 +399,8 @@ NodeHighlightTool::GetNodeInspectorHighlightAsJson(
 }
 
 // GridHighlightTool -----------------------------------------------------------
-
-int GridHighlightTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_HIGHLIGHT_GRID_JS;
+String GridHighlightTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_HIGHLIGHT_GRID;
 }
 
 void GridHighlightTool::AddGridConfig(
@@ -457,6 +468,10 @@ SourceOrderTool::SourceOrderTool(
   }
 }
 
+String SourceOrderTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_SOURCE_ORDER;
+}
+
 void SourceOrderTool::Draw(float scale) {
   DrawParentNode();
 
@@ -501,10 +516,6 @@ bool SourceOrderTool::HideOnMouseMove() {
   return false;
 }
 
-int SourceOrderTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_SOURCE_ORDER_JS;
-}
-
 std::unique_ptr<protocol::DictionaryValue>
 SourceOrderTool::GetNodeInspectorSourceOrderHighlightAsJson() const {
   InspectorSourceOrderHighlight highlight(
@@ -519,8 +530,8 @@ void SourceOrderTool::Trace(Visitor* visitor) const {
 
 // NearbyDistanceTool ----------------------------------------------------------
 
-int NearbyDistanceTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_DISTANCES_JS;
+String NearbyDistanceTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_DISTANCES;
 }
 
 bool NearbyDistanceTool::HandleMouseDown(const WebMouseEvent& event,
@@ -590,8 +601,8 @@ void ShowViewSizeTool::Draw(float scale) {
   overlay_->EvaluateInOverlay("drawViewSize", "");
 }
 
-int ShowViewSizeTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_VIEWPORT_SIZE_JS;
+String ShowViewSizeTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_VIEWPORT_SIZE;
 }
 
 bool ShowViewSizeTool::ForwardEventsToOverlay() {
@@ -609,8 +620,8 @@ ScreenshotTool::ScreenshotTool(InspectorOverlayAgent* overlay,
   client.SetCursorOverridden(true);
 }
 
-int ScreenshotTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_SCREENSHOT_JS;
+String ScreenshotTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_SCREENSHOT;
 }
 
 void ScreenshotTool::Dispatch(const String& message) {
@@ -686,8 +697,8 @@ void ScreenshotTool::Dispatch(const String& message) {
 
 // PausedInDebuggerTool --------------------------------------------------------
 
-int PausedInDebuggerTool::GetDataResourceId() {
-  return IDR_INSPECT_TOOL_PAUSED_JS;
+String PausedInDebuggerTool::GetOverlayName() {
+  return OverlayNames::OVERLAY_PAUSED;
 }
 
 void PausedInDebuggerTool::Draw(float scale) {
