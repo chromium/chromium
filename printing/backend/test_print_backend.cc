@@ -17,12 +17,11 @@ TestPrintBackend::TestPrintBackend() : PrintBackend(/*locale=*/std::string()) {}
 TestPrintBackend::~TestPrintBackend() = default;
 
 bool TestPrintBackend::EnumeratePrinters(PrinterList* printer_list) {
-  if (printer_list_.empty())
-    return false;
-
-  printer_list->insert(printer_list->end(), printer_list_.begin(),
-                       printer_list_.end());
-  return true;
+  // TODO(crbug.com/809738) There was never a call to provide a list of
+  // printers for the environment, so this would always be empty.
+  // This needs to be updated as part of a larger cleanup to make
+  // TestPrintBackend have consistent behavior across its APIs.
+  return false;
 }
 
 std::string TestPrintBackend::GetDefaultPrinterName() {
@@ -65,11 +64,6 @@ std::string TestPrintBackend::GetPrinterDriverInfo(
 
 bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {
   return base::Contains(valid_printers_, printer_name);
-}
-
-void TestPrintBackend::PopulatePrinterList(const PrinterList& printer_list) {
-  printer_list_.insert(printer_list_.end(), printer_list.begin(),
-                       printer_list.end());
 }
 
 void TestPrintBackend::SetDefaultPrinterName(const std::string& printer_name) {

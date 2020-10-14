@@ -33,10 +33,6 @@ class TestPrintBackend : public PrintBackend {
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 
-  // Methods for test setup.
-  // Add printers to the list returned by EnumeratePrinters.
-  void PopulatePrinterList(const PrinterList& printer_list);
-
   // Set a default printer.  The default is the empty string.
   void SetDefaultPrinterName(const std::string& printer_name);
 
@@ -50,7 +46,6 @@ class TestPrintBackend : public PrintBackend {
 
  private:
   std::string default_printer_name_;
-  PrinterList printer_list_;
   std::map<std::string, std::unique_ptr<PrinterSemanticCapsAndDefaults>>
       valid_printers_;
 };
