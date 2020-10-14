@@ -3702,6 +3702,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AllowAggressiveThrottlingWithWebSocket",
                         "IntensiveWakeUpThrottling"
                     ]
                 }
