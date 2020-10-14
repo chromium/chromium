@@ -74,7 +74,8 @@ GRD_END_TEMPLATE = '    </includes>\n'\
 
 # Generates an <include .... /> row for the given file.
 def _generate_include_row(grd_prefix, filename, pathname):
-  name_suffix = filename.upper().replace('/', '_').replace('.', '_')
+  name_suffix = filename.upper().replace('/', '_').replace('.', '_'). \
+          replace('-', '_')
   name = 'IDR_%s_%s' % (grd_prefix.upper(), name_suffix)
   extension = os.path.splitext(filename)[1]
   type = 'chrome_html' if extension == '.html' or extension == '.js' \
