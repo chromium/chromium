@@ -3646,11 +3646,19 @@ void TabStrip::UpdateNewTabButtonBorder() {
   const int extra_vertical_space = GetLayoutConstant(TAB_HEIGHT) -
                                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
                                    NewTabButton::kButtonSize.height();
+
+  // Extend the border of the tab controls such that it extends to the top of
+  // the tabstrip bounds. This is essential to ensure they targetable on the
+  // edge of the screen when in fullscreen mode and ensures the buttons abide by
+  // the correct Fitt's Law behavior (https://crbug.com/1136557).
+  const gfx::Insets button_insets(extra_vertical_space / 2, 0, 0, 0);
+  new_tab_button_->SetBorder(views::CreateEmptyBorder(button_insets));
+  if (tab_search_button_)
+    tab_search_button_->SetBorder(views::CreateEmptyBorder(button_insets));
+
   constexpr int kHorizontalInset = 8;
-  // TODO(tluk): Investigate whether this should apply to the |new_tab_button_|
-  // or the |tab_controls_container_|.
-  tab_controls_container_->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      extra_vertical_space / 2, kHorizontalInset, 0, kHorizontalInset)));
+  tab_controls_container_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(0, kHorizontalInset, 0, kHorizontalInset)));
 }
 
 void TabStrip::OnTabSlotAnimationProgressed(TabSlotView* view) {
