@@ -1487,8 +1487,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledReuploadRemoteBookmarks,
     ShouldReuploadFullTitleAfterRestartOnIncrementalChange) {
-  ASSERT_TRUE(SetupClients());
-
   // Check that the full title was not uploaded to the server yet.
   ASSERT_EQ(
       1u,
@@ -1500,6 +1498,7 @@ IN_PROC_BROWSER_TEST_F(
                    .bookmark()
                    .has_full_title());
 
+  ASSERT_TRUE(SetupClients());
 #if defined(OS_CHROMEOS)
   // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
   // to get a non-empty refresh token on startup.
