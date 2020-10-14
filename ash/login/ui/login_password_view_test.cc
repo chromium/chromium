@@ -14,6 +14,7 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -188,6 +189,25 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitViaButton) {
 
   ASSERT_TRUE(password_.has_value());
   EXPECT_EQ(base::ASCIIToUTF16("abc1"), *password_);
+}
+
+// Verifies that pressing 'Return' on the password field triggers an
+// unlock attempt by calling OnSubmit with an empty password.
+TEST_F(LoginPasswordViewTest, PressingReturnTriggersUnlockWithEmptyPassword) {
+  LoginPasswordView::TestApi test_api(view_);
+
+  // Hitting enter on an empty password should not submit an empty password
+  // when not allowed to.
+  view_->SetEnabledOnEmptyPassword(false);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  ASSERT_FALSE(password_.has_value());
+
+  // When allowed, hitting enter should submit an empty password.
+  view_->SetEnabledOnEmptyPassword(true);
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  ASSERT_TRUE(password_.has_value());
+  EXPECT_EQ(base::ASCIIToUTF16(""), *password_);
 }
 
 // Verifies that text is not cleared after submitting a password.

@@ -1214,6 +1214,8 @@ void LoginAuthUserView::SetAuthMethods(uint32_t auth_methods,
   password_view_->layer()->SetOpacity(current_state.has_password ? 1 : 0);
 
   pin_input_view_->UpdateLength(auth_metadata_.autosubmit_pin_length);
+  pin_input_view_->SetAuthenticateWithEmptyPinOnReturnKey(
+      HasAuthMethod(AUTH_TAP));
   pin_input_view_->SetVisible(current_state.has_pin_input);
 
   pin_password_toggle_->SetVisible(current_state.has_toggle);
