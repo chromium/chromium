@@ -52,8 +52,10 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void UpdateSelection(LocalFrame* selection_frame,
                        const EphemeralRangeInFlatTree& selection_range);
 
-  // Extend the selection from start and end to contain full words.
-  void CompleteSelection();
+  // Adjust the selection start/end to a valid position. That includes skipping
+  // non text start/end nodes and extending selection from start and end to
+  // contain full words.
+  void AdjustSelection();
 
   // blink::mojom::blink::TextFragmentSelectorProducer interface
   // Generates selector for current selection.

@@ -677,6 +677,81 @@ TEST_F(TextFragmentSelectorGeneratorTest,
                             "paragraph%20text%20that%20is%20longer");
 }
 
+// Check the case when selections starts with an non text node.
+TEST_F(TextFragmentSelectorGeneratorTest, StartswithImage) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <img id="img">
+    <p id='first'>First paragraph text that is longer  than 20 chars</p>
+  )HTML");
+  Node* img = GetDocument().getElementById("img");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(img, 0);
+  const auto& end = Position(first_paragraph, 5);
+  ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "page-,First,-paragraph");
+}
+
+// Check the case when selections ends with an non text node.
+TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <img id="img">
+    </img>
+  )HTML");
+  Node* img = GetDocument().getElementById("img");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& start = Position(first_paragraph, 44);
+  const auto& end = Position(img, 0);
+  ASSERT_EQ("chars\n\n", PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "20-,chars");
+}
+
+// Check the case when selections starts at the end of the previous block.
+TEST_F(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id='first'>First paragraph     </p>
+    <p id='second'>Second paragraph</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  const auto& start = Position(first_paragraph, 18);
+  const auto& end = Position(second_paragraph, 6);
+  ASSERT_EQ("\nSecond", PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "paragraph-,Second,-paragraph");
+}
+
+// Check the case when selections starts at the end of the previous block.
+TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p id='first'>First paragraph</p>
+    <p id='second'>     Second paragraph</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(second_paragraph, 2);
+  ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
+
+  GenerateAndVerifySelector(start, end, "First%20paragraph,-Second");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
