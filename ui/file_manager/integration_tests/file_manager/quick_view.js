@@ -529,9 +529,39 @@
     // Open a DocumentsProvider file in Quick View.
     await openQuickView(appId, ENTRIES.hello.nameText);
 
-    // crbug.com/1131298 The text file content is not displayed. The <webview>
-    // instead shows a "site cannot be reached" error.
-    return IGNORE_APP_ERRORS;
+    /**
+     * The text <webview> resides in the #quick-view shadow DOM, as a child of
+     * the #dialog element.
+     */
+    const webView = ['#quick-view', '#dialog[open] webview.text-content'];
+
+    // Wait for the Quick View <webview> to load and display its content.
+    const caller = getCaller();
+    function checkWebViewTextLoaded(elements) {
+      let haveElements = Array.isArray(elements) && elements.length === 1;
+      if (haveElements) {
+        haveElements = elements[0].styles.display.includes('block');
+      }
+      if (!haveElements || !elements[0].attributes.src) {
+        return pending(caller, 'Waiting for <webview> to load.');
+      }
+      return;
+    }
+    await repeatUntil(async () => {
+      return checkWebViewTextLoaded(await remoteCall.callRemoteTestUtil(
+          'deepQueryAllElements', appId, [webView, ['display']]));
+    });
+
+    // Wait until the <webview> displays the file's content.
+    await repeatUntil(async () => {
+      const getTextContent = 'window.document.body.textContent';
+      const text = await remoteCall.callRemoteTestUtil(
+          'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
+      // Check: the content of text file should be shown.
+      if (!text || !text[0].includes('I like chocolate and chips.')) {
+        return pending(caller, 'Waiting for <webview> content.');
+      }
+    });
   };
 
   /**

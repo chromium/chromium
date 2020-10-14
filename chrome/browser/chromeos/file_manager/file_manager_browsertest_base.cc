@@ -15,6 +15,7 @@
 #include "base/bind_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
@@ -108,6 +109,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/url_util.h"
 
 using ::testing::_;
 
@@ -1278,16 +1280,26 @@ class DocumentsProviderTestVolume : public TestVolume {
   ~DocumentsProviderTestVolume() override = default;
 
   virtual void CreateEntry(const AddEntriesMessage::TestEntryInfo& entry) {
-    // Register a document to the fake FileSystemInstance.
+    // Create and add an entry Document to the fake arc::FileSystemInstance.
     arc::FakeFileSystemInstance::Document document(
         authority_, entry.name_text, root_document_id_, entry.name_text,
         GetMimeType(entry), GetFileSize(entry),
         entry.last_modified_time.ToJavaTime(), entry.capabilities.can_delete,
         entry.capabilities.can_rename, entry.capabilities.can_add_children);
     file_system_instance_->AddDocument(document);
+
+    if (entry.type != AddEntriesMessage::FILE)
+      return;
+
+    std::string canonical_url = base::StrCat(
+        {"content://", authority_, "/document/", EncodeURI(entry.name_text)});
+    file_system_instance_->AddFile(arc::FakeFileSystemInstance::File(
+        canonical_url, GetTestFileContent(entry.source_file_name),
+        GetMimeType(entry), arc::FakeFileSystemInstance::File::Seekable::NO));
   }
 
   virtual bool Mount(Profile* profile) {
+    // Register the volume root document.
     RegisterRoot();
 
     // Tell VolumeManager that a new DocumentsProvider volume is added.
@@ -1303,12 +1315,10 @@ class DocumentsProviderTestVolume : public TestVolume {
   const std::string root_document_id_;
   const bool read_only_;
 
-  // Register a root document of this volume.
   void RegisterRoot() {
-    arc::FakeFileSystemInstance::Document document(
-        authority_, root_document_id_, "", "", arc::kAndroidDirectoryMimeType,
-        0, 0);
-    file_system_instance_->AddDocument(document);
+    const auto* root_mime_type = arc::kAndroidDirectoryMimeType;
+    file_system_instance_->AddDocument(arc::FakeFileSystemInstance::Document(
+        authority_, root_document_id_, "", "", root_mime_type, 0, 0));
   }
 
  private:
@@ -1327,6 +1337,21 @@ class DocumentsProviderTestVolume : public TestVolume {
     return entry.type == AddEntriesMessage::FILE
                ? entry.mime_type
                : arc::kAndroidDirectoryMimeType;
+  }
+
+  std::string GetTestFileContent(const std::string& test_file_name) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string contents;
+    base::FilePath path = TestVolume::GetTestDataFilePath(test_file_name);
+    CHECK(base::ReadFileToString(path, &contents))
+        << "failed reading test data file " << test_file_name;
+    return contents;
+  }
+
+  std::string EncodeURI(const std::string& component) {
+    url::RawCanonOutputT<char> encoded;
+    url::EncodeURIComponent(component.c_str(), component.size(), &encoded);
+    return std::string(encoded.data(), encoded.length());
   }
 
   DISALLOW_COPY_AND_ASSIGN(DocumentsProviderTestVolume);
@@ -1751,9 +1776,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
                                 base::Unretained(this)));
 
     if (arc::IsArcAvailable()) {
-      // When ARC is marked as available, we create fake FileSystemInstance and
-      // register it so that ARC-related services can work without real ARC
-      // container.
+      // When ARC is available, create and register a fake FileSystemInstance
+      // so ARC-related services work without a real ARC container.
       arc_file_system_instance_ =
           std::make_unique<arc::FakeFileSystemInstance>();
       arc::ArcServiceManager::Get()
