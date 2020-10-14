@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_session_event.h"
-#include "third_party/blink/renderer/modules/xr/xr_session_viewport_scaler.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
@@ -1584,24 +1583,6 @@ void XRSession::UpdatePresentationFrameState(
   // Don't process any outstanding frames once the session is ended.
   if (ended_)
     return;
-
-  if (supports_viewport_scaling_) {
-    float gpu_load = frame_data->rendering_time_ratio;
-    base::Optional<double> scale = base::nullopt;
-    if (gpu_load > 0.0f) {
-      if (!viewport_scaler_) {
-        // Lazily create an instance of the viewport scaler on first use.
-        viewport_scaler_ = std::make_unique<XRSessionViewportScaler>();
-      }
-
-      viewport_scaler_->UpdateRenderingTimeRatio(gpu_load);
-      scale = viewport_scaler_->Scale();
-      DVLOG(3) << __func__ << ": gpu_load=" << gpu_load << " scale=" << *scale;
-    }
-    for (XRViewData* view : views_) {
-      view->SetRecommendedViewportScale(scale);
-    }
-  }
 
   mojo_from_viewer_ = getPoseMatrix(frame_pose);
   DVLOG(2) << __func__ << " : mojo_from_viewer_ valid? "

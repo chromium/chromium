@@ -157,7 +157,7 @@ XRRigidTransform* XRView::transform() const {
 }
 
 base::Optional<double> XRView::recommendedViewportScale() const {
-  return view_data_->recommendedViewportScale();
+  return base::nullopt;
 }
 
 void XRView::requestViewportScale(base::Optional<double> scale) {
@@ -173,7 +173,7 @@ void XRView::Trace(Visitor* visitor) const {
 }
 
 base::Optional<double> XRViewData::recommendedViewportScale() const {
-  return recommended_viewport_scale_;
+  return base::nullopt;
 }
 
 void XRViewData::requestViewportScale(base::Optional<double> scale) {

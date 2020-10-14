@@ -264,8 +264,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   device::SlidingTimeDeltaAverage average_process_time_;
   device::SlidingTimeDeltaAverage average_render_time_;
 
-  float rendering_time_ratio_ = 0.0f;
-
   FPSMeter fps_meter_;
 
   mojo::Receiver<mojom::XRFrameDataProvider> frame_data_receiver_{this};

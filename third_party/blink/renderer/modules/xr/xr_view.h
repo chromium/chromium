@@ -89,9 +89,6 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   }
 
   base::Optional<double> recommendedViewportScale() const;
-  void SetRecommendedViewportScale(base::Optional<double> scale) {
-    recommended_viewport_scale_ = scale;
-  }
 
   void requestViewportScale(base::Optional<double> scale);
 
@@ -114,7 +111,6 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   TransformationMatrix inv_projection_;
   TransformationMatrix head_from_eye_;
   bool inv_projection_dirty_ = true;
-  base::Optional<double> recommended_viewport_scale_ = base::nullopt;
   double requested_viewport_scale_ = 1.0;
   double current_viewport_scale_ = 1.0;
   bool viewport_modifiable_ = false;

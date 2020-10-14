@@ -209,8 +209,6 @@ XRViewport* XRWebGLLayer::getViewport(XRView* view) {
     view_data->SetCurrentViewportScale(view_data->RequestedViewportScale());
     viewports_dirty_ = true;
   }
-  TRACE_COUNTER1("xr", "XR viewport scale (%)",
-                 view_data->CurrentViewportScale() * 100);
   view_data->SetViewportModifiable(false);
 
   return GetViewportForEye(view->EyeValue());
