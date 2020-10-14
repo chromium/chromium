@@ -29,10 +29,11 @@ void NotificationDisplayQueue::OnBlockingStateChanged() {
   MaybeDisplayQueuedNotifications();
 }
 
-bool NotificationDisplayQueue::ShouldEnqueueNotifications(
-    NotificationHandler::Type notification_type) const {
+bool NotificationDisplayQueue::ShouldEnqueueNotification(
+    NotificationHandler::Type notification_type,
+    const message_center::Notification& notification) const {
   return IsWebNotification(notification_type) &&
-         IsAnyNotificationBlockerActive();
+         IsAnyNotificationBlockerActive(notification);
 }
 
 void NotificationDisplayQueue::EnqueueNotification(
@@ -87,25 +88,32 @@ void NotificationDisplayQueue::AddNotificationBlocker(
 }
 
 void NotificationDisplayQueue::MaybeDisplayQueuedNotifications() {
-  if (IsAnyNotificationBlockerActive())
-    return;
+  auto show_begin = std::stable_partition(
+      queued_notifications_.begin(), queued_notifications_.end(),
+      [&](const QueuedNotification& queued) {
+        return IsAnyNotificationBlockerActive(queued.notification);
+      });
 
-  std::vector<QueuedNotification> queued_notifications =
-      std::move(queued_notifications_);
-  queued_notifications_.clear();
+  std::vector<QueuedNotification> notifications;
+  notifications.insert(notifications.end(), std::make_move_iterator(show_begin),
+                       std::make_move_iterator(queued_notifications_.end()));
 
-  for (QueuedNotification& queued : queued_notifications) {
+  queued_notifications_.erase(show_begin, queued_notifications_.end());
+
+  for (QueuedNotification& queued : notifications) {
     notification_display_service_->Display(queued.notification_type,
                                            queued.notification,
                                            std::move(queued.metadata));
   }
 }
 
-bool NotificationDisplayQueue::IsAnyNotificationBlockerActive() const {
-  return std::any_of(blockers_.begin(), blockers_.end(),
-                     [](const std::unique_ptr<NotificationBlocker>& blocker) {
-                       return blocker->ShouldBlockNotifications();
-                     });
+bool NotificationDisplayQueue::IsAnyNotificationBlockerActive(
+    const message_center::Notification& notification) const {
+  return std::any_of(
+      blockers_.begin(), blockers_.end(),
+      [&notification](const std::unique_ptr<NotificationBlocker>& blocker) {
+        return blocker->ShouldBlockNotification(notification);
+      });
 }
 
 NotificationDisplayQueue::QueuedNotification::QueuedNotification(

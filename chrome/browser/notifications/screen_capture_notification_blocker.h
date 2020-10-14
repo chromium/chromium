@@ -32,7 +32,8 @@ class ScreenCaptureNotificationBlocker
   ~ScreenCaptureNotificationBlocker() override;
 
   // NotificationBlocker:
-  bool ShouldBlockNotifications() override;
+  bool ShouldBlockNotification(
+      const message_center::Notification& notification) override;
 
   // MediaStreamCaptureIndicator::Observer:
   void OnIsCapturingDisplayChanged(content::WebContents* web_contents,
@@ -46,8 +47,8 @@ class ScreenCaptureNotificationBlocker
                  MediaStreamCaptureIndicator::Observer>
       observer_{this};
 
-  // Storing raw pointers here is fine because we never access them. We're only
-  // interested in the current set of WebContents that captures a display.
+  // Storing raw pointers here is fine because MediaStreamCaptureIndicator
+  // notifies us before the WebContents is destroyed.
   base::flat_set<content::WebContents*> capturing_web_contents_;
 };
 

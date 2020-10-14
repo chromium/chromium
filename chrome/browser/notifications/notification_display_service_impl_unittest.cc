@@ -36,7 +36,10 @@ class FakeNotificationBlocker : public NotificationBlocker {
   ~FakeNotificationBlocker() override = default;
 
   // NotificationDisplayQueue::NotificationBlocker:
-  bool ShouldBlockNotifications() override { return should_block_; }
+  bool ShouldBlockNotification(
+      const message_center::Notification& notification) override {
+    return should_block_;
+  }
 
   void SetShouldBlockNotifications(bool should_block) {
     should_block_ = should_block;

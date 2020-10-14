@@ -24,6 +24,7 @@
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -788,13 +789,26 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
 IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
                        MAYBE_ShouldQueueDuringScreenPresent) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  // Start second server so we can test screen recording on secure connections.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
   AllowAllOrigins();
   ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  const int notification_tab = browser()->tab_strip_model()->active_index();
 
   // We should see displayed notifications by default.
   std::string result = CreateSimpleNotification(browser(), /*wait=*/false);
   EXPECT_NE("-1", result);
   ASSERT_EQ(1, GetNotificationCount());
+
+  // Open a new tab to a diffent origin from the one that shows notifications.
+  chrome::NewTab(browser());
+  ui_test_utils::NavigateToURL(
+      browser(),
+      https_server.GetURL("/notifications/notification_tester.html"));
+  const int screen_cast_tab = browser()->tab_strip_model()->active_index();
 
   // Start a screen cast session.
   content::WebContents* web_contents = GetActiveWebContents(browser());
@@ -803,11 +817,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   ASSERT_EQ("success", result);
 
   // Showing a notification during the screen cast session should not show it.
+  browser()->tab_strip_model()->ActivateTabAt(notification_tab);
   result = CreateSimpleNotification(browser(), /*wait=*/false);
   EXPECT_NE("-1", result);
   ASSERT_EQ(1, GetNotificationCount());
 
   // Stop the screen cast session.
+  browser()->tab_strip_model()->ActivateTabAt(screen_cast_tab);
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       web_contents, "stopScreenCast();", &result));
   ASSERT_EQ("success", result);

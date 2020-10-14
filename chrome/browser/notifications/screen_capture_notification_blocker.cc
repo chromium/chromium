@@ -4,7 +4,13 @@
 
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 
+#include <algorithm>
+
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 ScreenCaptureNotificationBlocker::ScreenCaptureNotificationBlocker() {
   observer_.Add(MediaCaptureDevicesDispatcher::GetInstance()
@@ -14,8 +20,19 @@ ScreenCaptureNotificationBlocker::ScreenCaptureNotificationBlocker() {
 
 ScreenCaptureNotificationBlocker::~ScreenCaptureNotificationBlocker() = default;
 
-bool ScreenCaptureNotificationBlocker::ShouldBlockNotifications() {
-  return !capturing_web_contents_.empty();
+bool ScreenCaptureNotificationBlocker::ShouldBlockNotification(
+    const message_center::Notification& notification) {
+  // Don't block if no WebContents currently captures the screen.
+  if (capturing_web_contents_.empty())
+    return false;
+
+  // Otherwise block all notifications that belong to non-capturing origins.
+  return std::none_of(
+      capturing_web_contents_.begin(), capturing_web_contents_.end(),
+      [&notification](content::WebContents* web_contents) {
+        return url::IsSameOriginWith(notification.origin_url(),
+                                     web_contents->GetLastCommittedURL());
+      });
 }
 
 void ScreenCaptureNotificationBlocker::OnIsCapturingDisplayChanged(

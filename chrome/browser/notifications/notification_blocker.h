@@ -7,6 +7,10 @@
 
 #include "base/observer_list.h"
 
+namespace message_center {
+class Notification;
+}  // namespace message_center
+
 // Represents a notification blocker that prevents notifications from being
 // displayed during certain times. These blockers work across all platforms and
 // typically contain logic that the various OSs don't provide us with. The
@@ -27,8 +31,9 @@ class NotificationBlocker {
   virtual ~NotificationBlocker();
 
   // Implementations should return true if this blocker wants to block
-  // notifications right now.
-  virtual bool ShouldBlockNotifications() = 0;
+  // |notification| right now.
+  virtual bool ShouldBlockNotification(
+      const message_center::Notification& notification) = 0;
 
   // Observer methods.
   void AddObserver(Observer* observer);

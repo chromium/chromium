@@ -37,11 +37,12 @@ class NotificationDisplayQueue : public NotificationBlocker::Observer {
   // NotificationBlocker::Observer:
   void OnBlockingStateChanged() override;
 
-  // Returns if we should currently queue up |notification_type| notifications.
-  // This is the case if at least one NotificationBlocker is active and
-  // |notification_type| is a Web Notification.
-  bool ShouldEnqueueNotifications(
-      NotificationHandler::Type notification_type) const;
+  // Returns if we should currently queue up |notification|. This is the case if
+  // at least one NotificationBlocker is active and |notification_type| is a Web
+  // Notification.
+  bool ShouldEnqueueNotification(
+      NotificationHandler::Type notification_type,
+      const message_center::Notification& notification) const;
 
   // Enqueue the passed |notification| to be shown once no blocker is active
   // anymore. If there is already a notification with the same id queued, it
@@ -69,8 +70,9 @@ class NotificationDisplayQueue : public NotificationBlocker::Observer {
   // free all queued notifications if no blocker is active anymore.
   void MaybeDisplayQueuedNotifications();
 
-  // Checks if any notification blocker is currently active.
-  bool IsAnyNotificationBlockerActive() const;
+  // Checks if any notification blocker is currently active for |notification|.
+  bool IsAnyNotificationBlockerActive(
+      const message_center::Notification& notification) const;
 
   // Represents a queued notification.
   struct QueuedNotification {
