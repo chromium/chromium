@@ -39,7 +39,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
             SigninActivityLauncher signinLauncher) {
         new SafetyCheckCoordinator(
                 settingsFragment, updatesClient, settingsLauncher, signinLauncher);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHANGE_IN_SETTINGS)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             // Triggers pre-fetching the list of password change scripts.
             PasswordScriptsFetcherBridge.prewarmCache();
         }

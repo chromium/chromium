@@ -95,7 +95,7 @@ constexpr char kDefaultChangePasswordScriptsListUrl[] =
     "https://www.gstatic.com/chrome/duplex/change_password_scripts.json";
 
 constexpr base::FeatureParam<std::string> kScriptsListUrlParam{
-    &features::kPasswordChangeInSettings, "scripts_list_url",
+    &features::kPasswordScriptsFetching, "custom_list_url",
     kDefaultChangePasswordScriptsListUrl};
 
 PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(

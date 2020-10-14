@@ -36,7 +36,7 @@ public class PasswordManagerLauncher {
             RecordHistogram.recordEnumeratedHistogram(
                     "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing", referrer,
                     ManagePasswordsReferrer.MAX_VALUE + 1);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHANGE_IN_SETTINGS)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
                 PasswordScriptsFetcherBridge.prewarmCache();
             }
         }
