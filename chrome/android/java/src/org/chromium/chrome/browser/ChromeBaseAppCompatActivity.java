@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -34,21 +35,20 @@ public class ChromeBaseAppCompatActivity
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         mNightModeStateProvider = createNightModeStateProvider();
-
-        Configuration config = new Configuration();
-        // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so
-        // that applyOverrideConfiguration() does not interpret it as an overridden value.
-        // https://crbug.com/834191
-        config.fontScale = 0;
-        if (applyOverrides(newBase, config)) applyOverrideConfiguration(config);
+        AppLocaleUtils.maybeInstallActivitySplitCompat(this);
     }
 
-    @Override
-    public Context createConfigurationContext(Configuration overrideConfiguration) {
-        Context newContext = super.createConfigurationContext(overrideConfiguration);
-        // If the activity locale will be overridden enable using language splits.
-        AppLocaleUtils.maybeInstallActivitySplitCompat(newContext);
-        return newContext;
+    /**
+     * Update a context's configuration to match new a configuration.
+     * Because of an Android bug with {@link Context#createConfigurationContext} this method uses
+     * the deprecated method {@link Resources#updateConfiguration}. (crbug.com/1075390#c20).
+     * @param base Context to update configuration on.
+     * @param config Configuration to update context with.
+     */
+    private void updateConfiguration(Context base, Configuration config) {
+        // TODO(crbug.com/1136096): Use #createConfigurationContext once that method is fixed.
+        Resources resources = base.getResources();
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
     @Override
@@ -56,6 +56,13 @@ public class ChromeBaseAppCompatActivity
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
         super.onCreate(savedInstanceState);
+
+        Configuration config = new Configuration(getResources().getConfiguration());
+        // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so
+        // that applyOverrideConfiguration() does not interpret it as an overridden value.
+        // https://crbug.com/834191
+        config.fontScale = 0;
+        if (applyOverrides(this, config)) updateConfiguration(this, config);
     }
 
     @Override
