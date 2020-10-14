@@ -216,6 +216,10 @@ void SafetyTipPageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
+      // Do not modify action_taken_.  This may correspond to the
+      // WebContentsObserver functions below, in which case a more explicit
+      // action_taken_ is set. Otherwise, keep default of kNoAction.
+      break;
     case views::Widget::ClosedReason::kLostFocus:
       // We require that the user explicitly interact with the bubble, so do
       // nothing in these cases.
@@ -251,11 +255,49 @@ void SafetyTipPageInfoBubbleView::OpenHelpCenter() {
   OpenHelpCenterFromSafetyTip(web_contents());
 }
 
+void SafetyTipPageInfoBubbleView::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host != web_contents()->GetMainFrame()) {
+    return;
+  }
+
+  if (action_taken_ == SafetyTipInteraction::kNoAction) {
+    action_taken_ = SafetyTipInteraction::kCloseTab;
+  }
+
+  // There's no great ClosedReason for this, so we use kUnspecified to signal
+  // that a more specific action_taken_ may have already been set.
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
+void SafetyTipPageInfoBubbleView::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::HIDDEN) {
+    return;
+  }
+
+  if (action_taken_ == SafetyTipInteraction::kNoAction) {
+    action_taken_ = SafetyTipInteraction::kSwitchTab;
+  }
+
+  // There's no great ClosedReason for this, so we use kUnspecified to signal
+  // that a more specific action_taken_ may have already been set.
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
 void SafetyTipPageInfoBubbleView::DidStartNavigation(
     content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame() && !handle->IsSameDocument()) {
-    GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  if (!handle->IsInMainFrame() || handle->IsSameDocument()) {
+    return;
   }
+
+  if (action_taken_ == SafetyTipInteraction::kNoAction) {
+    action_taken_ = SafetyTipInteraction::kStartNewNavigation;
+  }
+
+  // There's no great ClosedReason for this, so we use kUnspecified to signal
+  // that a more specific action_taken_ may have already been set.
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
 void SafetyTipPageInfoBubbleView::DidChangeVisibleSecurityState() {

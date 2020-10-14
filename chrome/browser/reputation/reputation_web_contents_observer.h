@@ -44,6 +44,9 @@ class ReputationWebContentsObserver
   // check finishes.
   void RegisterReputationCheckCallbackForTesting(base::OnceClosure callback);
 
+  // Allows tests to register a callback called when the warning closes.
+  void RegisterSafetyTipCloseCallbackForTesting(base::OnceClosure callback);
+
   // Allows tests to see whether a reputation check has already completed since
   // construction or last reset, and selectively register a callback if not.
   bool reputation_check_pending_for_testing() {
@@ -102,6 +105,8 @@ class ReputationWebContentsObserver
   base::OnceClosure reputation_check_callback_for_testing_;
   // Whether or not heuristics have yet been checked yet.
   bool reputation_check_pending_for_testing_;
+
+  base::OnceClosure safety_tip_close_callback_for_testing_;
 
   base::WeakPtrFactory<ReputationWebContentsObserver> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();

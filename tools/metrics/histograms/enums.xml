@@ -63714,6 +63714,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="User dismissed the Safety Tip with the ignore button"/>
   <int value="6" label="User opened help center"/>
   <int value="7" label="No Safety Tip was shown"/>
+  <int value="8" label="User closed the tab"/>
+  <int value="9" label="User switched to a different tab"/>
+  <int value="10" label="User navigated away"/>
 </enum>
 
 <enum name="SafetyTipStatus">

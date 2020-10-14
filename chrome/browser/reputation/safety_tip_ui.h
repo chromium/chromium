@@ -37,7 +37,13 @@ enum class SafetyTipInteraction {
   kLearnMore = 6,
   // No safety tip was shown to the user.
   kNotShown = 7,
-  kMaxValue = kNotShown,
+  // The user did not interact with the UI directly, but it did result in the
+  // bubble closing.
+  kCloseTab = 8,
+  kSwitchTab = 9,
+  kStartNewNavigation = 10,
+
+  kMaxValue = kStartNewNavigation,
 };
 
 // Shows Safety Tip UI using the specified information if it is not already
