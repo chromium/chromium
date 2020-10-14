@@ -151,13 +151,6 @@ XrResult CreateInstance(XrInstance* instance) {
     extensions.push_back(kExtHPMixedRealityControllerExtensionName);
   }
 
-  const bool handInteractionExtensionSupported =
-      extension_enumeration.ExtensionSupported(
-          XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
-  if (handInteractionExtensionSupported) {
-    extensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
-  }
-
   instance_create_info.enabledExtensionCount =
       static_cast<uint32_t>(extensions.size());
   instance_create_info.enabledExtensionNames = extensions.data();
