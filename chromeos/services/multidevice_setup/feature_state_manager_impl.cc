@@ -28,7 +28,6 @@ namespace {
 
 constexpr std::array<mojom::Feature, 3> kPhoneHubSubFeatures{
     mojom::Feature::kPhoneHubNotifications,
-    mojom::Feature::kPhoneHubNotificationBadge,
     mojom::Feature::kPhoneHubTaskContinuation};
 
 base::flat_map<mojom::Feature, std::string>
@@ -42,8 +41,6 @@ GenerateFeatureToEnabledPrefNameMap() {
       {mojom::Feature::kPhoneHub, kPhoneHubEnabledPrefName},
       {mojom::Feature::kPhoneHubNotifications,
        kPhoneHubNotificationsEnabledPrefName},
-      {mojom::Feature::kPhoneHubNotificationBadge,
-       kPhoneHubNotificationBadgeEnabledPrefName},
       {mojom::Feature::kPhoneHubTaskContinuation,
        kPhoneHubTaskContinuationEnabledPrefName}};
 }
@@ -56,9 +53,6 @@ GenerateFeatureToAllowedPrefNameMap() {
       {mojom::Feature::kSmartLock, kSmartLockAllowedPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubAllowedPrefName},
       {mojom::Feature::kPhoneHubNotifications,
-       kPhoneHubNotificationsAllowedPrefName},
-      // Note: Shares "allowed" preference with kPhoneHubNotifications.
-      {mojom::Feature::kPhoneHubNotificationBadge,
        kPhoneHubNotificationsAllowedPrefName},
       {mojom::Feature::kPhoneHubTaskContinuation,
        kPhoneHubTaskContinuationAllowedPrefName},
@@ -81,8 +75,6 @@ GenerateInitialDefaultCachedStateMap() {
       {mojom::Feature::kPhoneHub,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
       {mojom::Feature::kPhoneHubNotifications,
-       mojom::FeatureState::kUnavailableNoVerifiedHost},
-      {mojom::Feature::kPhoneHubNotificationBadge,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
       {mojom::Feature::kPhoneHubTaskContinuation,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
@@ -172,14 +164,6 @@ void ProcessSuiteEdgeCases(
       }
     }
   }
-
-  // If the Phone Hub notifications feature is disabled, the notification badge
-  // feature is unavailable.
-  if (feature_states_map[mojom::Feature::kPhoneHubNotifications] ==
-      mojom::FeatureState::kDisabledByUser) {
-    feature_states_map[mojom::Feature::kPhoneHubNotificationBadge] =
-        mojom::FeatureState::kUnavailableTopLevelFeatureDisabled;
-  }
 }
 
 bool HasFeatureStateChanged(
@@ -237,13 +221,6 @@ void LogFeatureStates(
     UMA_HISTOGRAM_ENUMERATION(
         "PhoneHub.MultiDeviceFeatureState.NotificationsFeature",
         new_states.find(mojom::Feature::kPhoneHubNotifications)->second);
-  }
-
-  if (HasFeatureStateChanged(previous_states, new_states,
-                             mojom::Feature::kPhoneHubNotificationBadge)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.NotificationBadgeFeature",
-        new_states.find(mojom::Feature::kPhoneHubNotificationBadge)->second);
   }
 
   if (HasFeatureStateChanged(previous_states, new_states,
@@ -324,12 +301,6 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
 
   // Also listen for changes to each of the "allowed" feature names.
   for (const auto& map_entry : feature_to_allowed_pref_name_map_) {
-    // Phone Hub notification badge doesn't have its own policy since it
-    // piggybacks off of the notification policy. Don't attempt to register
-    // for change updates to that same preference twice.
-    if (map_entry.first == mojom::Feature::kPhoneHubNotificationBadge)
-      continue;
-
     registrar_.Add(
         map_entry.second,
         base::BindRepeating(&FeatureStateManagerImpl::OnPrefValueChanged,
@@ -472,8 +443,6 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
            multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubNotifications,
            multidevice::SoftwareFeature::kPhoneHubClient},
-          {mojom::Feature::kPhoneHubNotificationBadge,
-           multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubTaskContinuation,
            multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kWifiSync,
@@ -523,8 +492,6 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
           {mojom::Feature::kPhoneHub,
            multidevice::SoftwareFeature::kPhoneHubHost},
           {mojom::Feature::kPhoneHubNotifications,
-           multidevice::SoftwareFeature::kPhoneHubHost},
-          {mojom::Feature::kPhoneHubNotificationBadge,
            multidevice::SoftwareFeature::kPhoneHubHost},
           {mojom::Feature::kPhoneHubTaskContinuation,
            multidevice::SoftwareFeature::kPhoneHubHost},

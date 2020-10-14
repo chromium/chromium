@@ -54289,7 +54289,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="208" label="Nearby Share: On/Off"/>
   <int value="209" label="Phone Hub: On/Off"/>
   <int value="210" label="Phone Hub Notifications: On/Off"/>
-  <int value="211" label="Phone Hub Notification Badge: On/Off"/>
+  <int value="211" label="Phone Hub Notification Badge: On/Off (Deprecated)"/>
   <int value="212" label="Phone Hub Task Continuation: On/Off"/>
   <int value="213" label="Wifi Sync: On/Off"/>
   <int value="300" label="Add Account"/>

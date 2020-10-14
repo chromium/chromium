@@ -42,9 +42,8 @@ cr.define('settings', function() {
     SMART_LOCK: 3,
     PHONE_HUB: 4,
     PHONE_HUB_NOTIFICATIONS: 5,
-    PHONE_HUB_NOTIFICATION_BADGE: 6,
-    PHONE_HUB_TASK_CONTINUATION: 7,
-    WIFI_SYNC: 8,
+    PHONE_HUB_TASK_CONTINUATION: 6,
+    WIFI_SYNC: 7,
   };
 
   /**
@@ -88,7 +87,6 @@ cr.define('settings', function() {
    *   smartLockState: !settings.MultiDeviceFeatureState,
    *   phoneHubState: !settings.MultiDeviceFeatureState,
    *   phoneHubNotificationsState: !settings.MultiDeviceFeatureState,
-   *   phoneHubNotificationBadgeState: !settings.MultiDeviceFeatureState,
    *   phoneHubTaskContinuationState: !settings.MultiDeviceFeatureState,
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,

@@ -249,10 +249,7 @@
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
     Phone Hub notifications
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATION_BADGE" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications badge settings, with a toggle to enable/disable the feature. Phone Hub Notifications Badge mirrors notifications count currently being shown on connected device.">
-    Phone Hub notifications badge
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications badge settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
     Phone Hub task continuation
   </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync V2 settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone">

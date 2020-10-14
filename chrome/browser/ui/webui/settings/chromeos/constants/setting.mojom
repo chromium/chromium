@@ -55,7 +55,8 @@ enum Setting {
   kNearbyShareOnOff = 208,
   kPhoneHubOnOff = 209,
   kPhoneHubNotificationsOnOff = 210,
-  kPhoneHubNotificationBadgeOnOff = 211,
+  // Note: Value 211 was for deprecated kPhoneHubNotificationBadgeOnOff.
+  // Do not reuse.
   kPhoneHubTaskContinuationOnOff = 212,
   kWifiSyncOnOff = 213,
 

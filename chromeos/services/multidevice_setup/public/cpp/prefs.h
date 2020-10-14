@@ -22,7 +22,6 @@ extern const char kMessagesAllowedPrefName[];
 extern const char kSmartLockAllowedPrefName[];
 extern const char kSmartLockSigninAllowedPrefName[];
 extern const char kPhoneHubAllowedPrefName[];
-// Note: Notification pref is shared with the notification badge feature.
 extern const char kPhoneHubNotificationsAllowedPrefName[];
 extern const char kPhoneHubTaskContinuationAllowedPrefName[];
 extern const char kWifiSyncAllowedPrefName[];
@@ -36,7 +35,6 @@ extern const char kMessagesEnabledPrefName[];
 extern const char kSmartLockEnabledPrefName[];
 extern const char kPhoneHubEnabledPrefName[];
 extern const char kPhoneHubNotificationsEnabledPrefName[];
-extern const char kPhoneHubNotificationBadgeEnabledPrefName[];
 extern const char kPhoneHubTaskContinuationEnabledPrefName[];
 
 // The old pref which controlled if Smart Lock was enabled, prior to the

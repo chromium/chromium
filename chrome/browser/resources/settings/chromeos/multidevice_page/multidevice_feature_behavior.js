@@ -110,8 +110,6 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18n('multidevicePhoneHubItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.i18n('multidevicePhoneHubNotificationsItemTitle');
-      case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE:
-        return this.i18n('multidevicePhoneHubNotificationBadgeItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return this.i18n('multidevicePhoneHubTaskContinuationItemTitle');
       case settings.MultiDeviceFeature.WIFI_SYNC:
@@ -138,7 +136,6 @@ const MultiDeviceFeatureBehaviorImpl = {
       // TODO(https://crbug.com/1106937): Use real Phone Hub asset.
       case settings.MultiDeviceFeature.PHONE_HUB:
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
-      case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE:
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return 'os-settings:multidevice-better-together-suite';
       // TODO(cvandermerwe): Use real Wifi Sync asset.
@@ -167,9 +164,6 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18nAdvanced('multidevicePhoneHubItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.i18nAdvanced('multidevicePhoneHubNotificationsItemSummary');
-      case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE:
-        return this.i18nAdvanced(
-            'multidevicePhoneHubNotificationBadgeItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return this.i18nAdvanced(
             'multidevicePhoneHubTaskContinuationItemSummary');
@@ -205,8 +199,6 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.pageContentData.phoneHubState;
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.pageContentData.phoneHubNotificationsState;
-      case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE:
-        return this.pageContentData.phoneHubNotificationBadgeState;
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return this.pageContentData.phoneHubTaskContinuationState;
       case settings.MultiDeviceFeature.WIFI_SYNC:

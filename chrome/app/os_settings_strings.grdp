@@ -2275,9 +2275,6 @@
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Notifications section on the settings page.">
     Notifications
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATION_BADGE_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Notifications Badge section on the settings page.">
-    Notifications Badge
-  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Task Continuation section on the settings page.">
     Task Continuation
   </message>
@@ -2286,9 +2283,6 @@
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
     View your phones notifications on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATION_BADGE_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Notification Badge' setting. This feature shows an indicator in the Chrome OS shelf when notifications are mirrored from a connected Android phone.">
-    Indicator in shelf when new notifications come in
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
     View your active Chrome tabs in Phone Hub

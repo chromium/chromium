@@ -130,16 +130,6 @@
         </template>
         <template is="dom-if"
             if="[[isFeatureSupported(
-                MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE, pageContentData)]]"
-            restamp>
-          <settings-multidevice-feature-item id="phoneHubNotificationBadgeItem"
-              feature="[[MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE]]"
-              page-content-data="[[pageContentData]]"
-              deep-link-focus-id$="[[Setting.kPhoneHubNotificationBadgeOnOff]]">
-          </settings-multidevice-feature-item>
-        </template>
-        <template is="dom-if"
-            if="[[isFeatureSupported(
                 MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION, pageContentData)]]"
             restamp>
           <settings-multidevice-feature-item id="phoneHubTaskContinuationItem"

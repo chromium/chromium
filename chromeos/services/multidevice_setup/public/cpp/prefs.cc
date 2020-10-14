@@ -37,8 +37,6 @@ const char kSmartLockEnabledDeprecatedPrefName[] = "easy_unlock.enabled";
 const char kPhoneHubEnabledPrefName[] = "phone_hub.enabled";
 const char kPhoneHubNotificationsEnabledPrefName[] =
     "phone_hub_notifications.enabled";
-const char kPhoneHubNotificationBadgeEnabledPrefName[] =
-    "phone_hub_notification_badge.enabled";
 const char kPhoneHubTaskContinuationEnabledPrefName[] =
     "phone_hub_task_continuation.enabled";
 
@@ -59,8 +57,6 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kSmartLockEnabledPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubEnabledPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubNotificationsEnabledPrefName, true);
-  registry->RegisterBooleanPref(kPhoneHubNotificationBadgeEnabledPrefName,
-                                true);
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationEnabledPrefName, true);
 }
 
@@ -103,9 +99,6 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
              pref_service->GetBoolean(kPhoneHubAllowedPrefName);
 
     case mojom::Feature::kPhoneHubNotifications:
-      FALLTHROUGH;
-    // Note: Uses the same "allowed" pref for notification usage in general.
-    case mojom::Feature::kPhoneHubNotificationBadge:
       return features::IsPhoneHubEnabled() &&
              pref_service->GetBoolean(kPhoneHubNotificationsAllowedPrefName);
 

@@ -468,7 +468,6 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, SmartLock) {
 TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
       mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
-      mojom::Feature::kPhoneHubNotificationBadge,
       mojom::Feature::kPhoneHubTaskContinuation};
 
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
@@ -507,13 +506,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   VerifyFeatureStateChange(4u /* expected_index */, mojom::Feature::kPhoneHub,
                            mojom::FeatureState::kUnavailableSuiteDisabled);
 
-  // Disabling Phone Hub notifications implicitly makes the notification badge
-  // unavailable.
   test_pref_service()->SetBoolean(kPhoneHubNotificationsEnabledPrefName, false);
   VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
                      mojom::Feature::kPhoneHubNotifications);
-  VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
-                     mojom::Feature::kPhoneHubNotificationBadge);
   VerifyFeatureStateChange(5u /* expected_index */,
                            mojom::Feature::kPhoneHubNotifications,
                            mojom::FeatureState::kDisabledByUser);
@@ -527,19 +522,13 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
                      mojom::Feature::kPhoneHubNotifications);
   VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
-                     mojom::Feature::kPhoneHubNotificationBadge);
-  VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
                      mojom::Feature::kPhoneHubTaskContinuation);
   VerifyFeatureStateChange(7u /* expected_index */, mojom::Feature::kPhoneHub,
                            mojom::FeatureState::kDisabledByUser);
 
-  // Prohibiting Phone Hub notifications implicitly prohibits the notification
-  // badge.
   test_pref_service()->SetBoolean(kPhoneHubNotificationsAllowedPrefName, false);
   VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
                      mojom::Feature::kPhoneHubNotifications);
-  VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
-                     mojom::Feature::kPhoneHubNotificationBadge);
   VerifyFeatureStateChange(8u /* expected_index */,
                            mojom::Feature::kPhoneHubNotifications,
                            mojom::FeatureState::kProhibitedByPolicy);

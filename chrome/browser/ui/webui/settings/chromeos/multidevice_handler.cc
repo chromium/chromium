@@ -38,8 +38,6 @@ const char kPageContentDataMessagesStateKey[] = "messagesState";
 const char kPageContentDataPhoneHubStateKey[] = "phoneHubState";
 const char kPageContentDataPhoneHubNotificationsStateKey[] =
     "phoneHubNotificationsState";
-const char kPageContentDataPhoneHubNotificationBadgeStateKey[] =
-    "phoneHubNotificationBadgeState";
 const char kPageContentDataPhoneHubTaskContinuationStateKey[] =
     "phoneHubTaskContinuationState";
 const char kPageContentDataWifiSyncStateKey[] = "wifiSyncState";
@@ -448,11 +446,6 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kPhoneHubNotifications]));
-  page_content_dictionary->SetInteger(
-      kPageContentDataPhoneHubNotificationBadgeStateKey,
-      static_cast<int32_t>(
-          feature_states
-              [multidevice_setup::mojom::Feature::kPhoneHubNotificationBadge]));
   page_content_dictionary->SetInteger(
       kPageContentDataPhoneHubTaskContinuationStateKey,
       static_cast<int32_t>(

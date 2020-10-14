@@ -67,10 +67,6 @@ suite('Multidevice', function() {
                   settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
-          phoneHubNotificationBadgeState: supportedFeatures.includes(
-                  settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE) ?
-              settings.MultiDeviceFeatureState.ENABLED_BY_USER :
-              settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
           phoneHubTaskContinuationState: supportedFeatures.includes(
                   settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
@@ -143,9 +139,6 @@ suite('Multidevice', function() {
           !!multideviceSubpage.$$('#phoneHubNotificationsItem'),
           mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
-          !!multideviceSubpage.$$('#phoneHubNotificationBadgeItem'),
-          mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
-      assertEquals(
           !!multideviceSubpage.$$('#phoneHubTaskContinuationItem'),
           mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
       assertEquals(
@@ -162,7 +155,6 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#messagesItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationBadgeItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
 
@@ -171,7 +163,6 @@ suite('Multidevice', function() {
           settings.MultiDeviceFeature.MESSAGES,
           settings.MultiDeviceFeature.PHONE_HUB,
           settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
-          settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE,
           settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
           settings.MultiDeviceFeature.WIFI_SYNC,
         ]);
@@ -180,7 +171,6 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#messagesItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationBadgeItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
 
@@ -190,7 +180,6 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#messagesItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationBadgeItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
 
@@ -200,7 +189,6 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#messagesItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
-        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationBadgeItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
       });

@@ -46,17 +46,17 @@ enum HostStatus {
   kHostVerified = 4
 };
 
-// Individual multi-device features types.
+// Individual multi-device features types. Enums should remain in sync with
+// those in c/b/r/s/chromeos/multidevice_page/multidevice_constants.js
 enum Feature {
-  kBetterTogetherSuite,
-  kInstantTethering,
-  kMessages,
-  kSmartLock,
-  kPhoneHub,
-  kPhoneHubNotifications,
-  kPhoneHubNotificationBadge,
-  kPhoneHubTaskContinuation,
-  kWifiSync
+  kBetterTogetherSuite = 0,
+  kInstantTethering = 1,
+  kMessages = 2,
+  kSmartLock = 3,
+  kPhoneHub = 4,
+  kPhoneHubNotifications = 5,
+  kPhoneHubTaskContinuation = 6,
+  kWifiSync = 7
 };
 
 // This enum is tied directly to a UMA enum defined in

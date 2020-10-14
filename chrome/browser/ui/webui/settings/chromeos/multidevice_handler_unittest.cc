@@ -63,8 +63,6 @@ GenerateDefaultFeatureStatesMap() {
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kPhoneHubNotifications,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
-      {multidevice_setup::mojom::Feature::kPhoneHubNotificationBadge,
-       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kWifiSync,
@@ -120,13 +118,6 @@ void VerifyPageContentDict(
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubNotifications);
   EXPECT_EQ(static_cast<int>(it->second), phone_hub_notifications_state);
-
-  int phone_hub_notification_badge_state;
-  EXPECT_TRUE(page_content_dict->GetInteger(
-      "phoneHubNotificationBadgeState", &phone_hub_notification_badge_state));
-  it = feature_states_map.find(
-      multidevice_setup::mojom::Feature::kPhoneHubNotificationBadge);
-  EXPECT_EQ(static_cast<int>(it->second), phone_hub_notification_badge_state);
 
   int phone_hub_task_continuation_state;
   EXPECT_TRUE(page_content_dict->GetInteger(
