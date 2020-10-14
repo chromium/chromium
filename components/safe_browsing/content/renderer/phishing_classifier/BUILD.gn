@@ -10,22 +10,63 @@ source_set("phishing_classifier") {
     sources = [
       "features.cc",
       "features.h",
+      "murmurhash3_util.cc",
+      "murmurhash3_util.h",
+      "phishing_classifier.cc",
+      "phishing_classifier.h",
+      "phishing_classifier_delegate.cc",
+      "phishing_classifier_delegate.h",
+      "phishing_dom_feature_extractor.cc",
+      "phishing_dom_feature_extractor.h",
+      "phishing_term_feature_extractor.cc",
+      "phishing_term_feature_extractor.h",
+      "phishing_url_feature_extractor.cc",
+      "phishing_url_feature_extractor.h",
+      "scorer.cc",
+      "scorer.h",
     ]
     deps = [
+      "//cc/paint",
+      "//components/paint_preview/common",
+      "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/renderer",
+      "//components/safe_browsing/core:client_model_proto",
+      "//components/safe_browsing/core:csd_proto",
       "//components/safe_browsing/core/common",
+      "//content/public/renderer",
+      "//crypto",
+      "//skia",
+      "//third_party/blink/public:blink_headers",
+      "//third_party/smhasher:murmurhash3",
+      "//ui/base",
+      "//ui/gfx/geometry:geometry",
+      "//url",
+      "//v8",
     ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "features_unittest.cc" ]
+  sources = [
+    "features_unittest.cc",
+    "murmurhash3_util_unittest.cc",
+    "phishing_term_feature_extractor_unittest.cc",
+    "phishing_url_feature_extractor_unittest.cc",
+    "scorer_unittest.cc",
+  ]
   deps = [
     ":phishing_classifier",
     "//base:base",
+    "//base/test:test_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
+    "//components/safe_browsing/core:client_model_proto",
+    "//components/safe_browsing/core:csd_proto",
+    "//crypto",
+    "//skia",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
 

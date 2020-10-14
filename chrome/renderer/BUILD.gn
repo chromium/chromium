@@ -244,31 +244,8 @@ static_library("renderer") {
   }
 
   if (safe_browsing_mode != 0) {
-    sources += [
-      "safe_browsing/murmurhash3_util.cc",
-      "safe_browsing/murmurhash3_util.h",
-      "safe_browsing/phishing_classifier.cc",
-      "safe_browsing/phishing_classifier.h",
-      "safe_browsing/phishing_classifier_delegate.cc",
-      "safe_browsing/phishing_classifier_delegate.h",
-      "safe_browsing/phishing_dom_feature_extractor.cc",
-      "safe_browsing/phishing_dom_feature_extractor.h",
-      "safe_browsing/phishing_term_feature_extractor.cc",
-      "safe_browsing/phishing_term_feature_extractor.h",
-      "safe_browsing/phishing_url_feature_extractor.cc",
-      "safe_browsing/phishing_url_feature_extractor.h",
-      "safe_browsing/scorer.cc",
-      "safe_browsing/scorer.h",
-    ]
-    deps += [
-      "//chrome/common/safe_browsing:proto",
-      "//components/safe_browsing/content/renderer",
-      "//components/safe_browsing/content/renderer/phishing_classifier",
-      "//components/safe_browsing/core:client_model_proto",
-      "//components/safe_browsing/core:csd_proto",
-      "//components/safe_browsing/core/common",
-      "//third_party/smhasher:murmurhash3",
-    ]
+    deps +=
+        [ "//components/safe_browsing/content/renderer/phishing_classifier" ]
   }
 
   if (enable_extensions) {

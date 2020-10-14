@@ -11,8 +11,8 @@
 //
 // See features.h for a list of features that are currently used.
 
-#ifndef CHROME_RENDERER_SAFE_BROWSING_SCORER_H_
-#define CHROME_RENDERER_SAFE_BROWSING_SCORER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -109,4 +109,4 @@ class Scorer {
 };
 }  // namespace safe_browsing
 
-#endif  // CHROME_RENDERER_SAFE_BROWSING_SCORER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_

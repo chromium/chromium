@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/phishing_term_feature_extractor.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 
 #include <list>
 #include <map>
@@ -21,8 +21,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/renderer/safe_browsing/murmurhash3_util.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 #include "crypto/sha2.h"
 
 namespace safe_browsing {
@@ -68,8 +68,7 @@ struct PhishingTermFeatureExtractor::ExtractionState {
   int num_iterations;
 
   ExtractionState(const base::string16& text, base::TimeTicks start_time_ticks)
-      : start_time(start_time_ticks),
-        num_iterations(0) {
+      : start_time(start_time_ticks), num_iterations(0) {
     std::unique_ptr<base::i18n::BreakIterator> i(new base::i18n::BreakIterator(
         text, base::i18n::BreakIterator::BREAK_WORD));
 
@@ -187,8 +186,7 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
   RunCallback(true);
 }
 
-void PhishingTermFeatureExtractor::HandleWord(
-    const base::StringPiece16& word) {
+void PhishingTermFeatureExtractor::HandleWord(const base::StringPiece16& word) {
   // First, extract shingle hashes.
   const std::string& word_lower = base::UTF16ToUTF8(base::i18n::ToLower(word));
   state_->current_shingle.append(word_lower + " ");
@@ -219,8 +217,7 @@ void PhishingTermFeatureExtractor::HandleWord(
 
   // Find all of the n-grams that we need to check and compute their SHA-256
   // hashes.
-  std::map<std::string /* hash */, std::string /* plaintext */>
-      hashes_to_check;
+  std::map<std::string /* hash */, std::string /* plaintext */> hashes_to_check;
   hashes_to_check[crypto::SHA256HashString(word_lower)] = word_lower;
 
   // Combine the new word with the previous words to find additional n-grams.

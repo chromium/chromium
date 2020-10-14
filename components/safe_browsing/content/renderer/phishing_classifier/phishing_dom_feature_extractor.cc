@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/phishing_dom_feature_extractor.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 
 #include <utility>
 
@@ -231,8 +231,7 @@ void PhishingDOMFeatureExtractor::ExtractFeaturesWithTimeout() {
   RunCallback(true);
 }
 
-void PhishingDOMFeatureExtractor::HandleLink(
-    const blink::WebElement& element) {
+void PhishingDOMFeatureExtractor::HandleLink(const blink::WebElement& element) {
   // Count the number of times we link to a different host.
   if (!element.HasAttribute("href"))
     return;
@@ -260,8 +259,7 @@ void PhishingDOMFeatureExtractor::HandleLink(
   ++page_feature_state_->total_links;
 }
 
-void PhishingDOMFeatureExtractor::HandleForm(
-    const blink::WebElement& element) {
+void PhishingDOMFeatureExtractor::HandleForm(const blink::WebElement& element) {
   // Increment the number of forms on this page.
   ++page_feature_state_->num_forms;
 
@@ -415,8 +413,8 @@ void PhishingDOMFeatureExtractor::InsertFeatures() {
   if (page_feature_state_->total_links > 0) {
     // Add a feature for the fraction of times the page links to an external
     // domain vs. an internal domain.
-    double link_freq = static_cast<double>(
-        page_feature_state_->external_links) /
+    double link_freq =
+        static_cast<double>(page_feature_state_->external_links) /
         page_feature_state_->total_links;
     features_->AddRealFeature(features::kPageExternalLinksFreq, link_freq);
 
@@ -426,8 +424,9 @@ void PhishingDOMFeatureExtractor::InsertFeatures() {
     }
 
     // Fraction of links that use https.
-    double secure_freq = static_cast<double>(
-        page_feature_state_->secure_links) / page_feature_state_->total_links;
+    double secure_freq =
+        static_cast<double>(page_feature_state_->secure_links) /
+        page_feature_state_->total_links;
     features_->AddRealFeature(features::kPageSecureLinksFreq, secure_freq);
   }
 
@@ -450,8 +449,8 @@ void PhishingDOMFeatureExtractor::InsertFeatures() {
 
   // Record fraction of form actions that point to a different domain.
   if (page_feature_state_->total_actions > 0) {
-    double action_freq = static_cast<double>(
-        page_feature_state_->action_other_domain) /
+    double action_freq =
+        static_cast<double>(page_feature_state_->action_other_domain) /
         page_feature_state_->total_actions;
     features_->AddRealFeature(features::kPageActionOtherDomainFreq,
                               action_freq);
@@ -464,8 +463,8 @@ void PhishingDOMFeatureExtractor::InsertFeatures() {
 
   // Record how many image src attributes point to a different domain.
   if (page_feature_state_->total_imgs > 0) {
-    double img_freq = static_cast<double>(
-        page_feature_state_->img_other_domain) /
+    double img_freq =
+        static_cast<double>(page_feature_state_->img_other_domain) /
         page_feature_state_->total_imgs;
     features_->AddRealFeature(features::kPageImgOtherDomainFreq, img_freq);
   }

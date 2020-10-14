@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/scorer.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 
 #include <math.h>
 
@@ -15,7 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/safe_browsing/content/password_protection/visual_utils.h"
+#include "components/safe_browsing/content/password_protection/visual_utils.h"  // nogncheck crbug.com/1138547
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -29,8 +29,8 @@ namespace {
 // Enum used to keep stats about the status of the Scorer creation.
 enum ScorerCreationStatus {
   SCORER_SUCCESS,
-  SCORER_FAIL_MODEL_OPEN_FAIL,  // Not used anymore
-  SCORER_FAIL_MODEL_FILE_EMPTY,  // Not used anymore
+  SCORER_FAIL_MODEL_OPEN_FAIL,       // Not used anymore
+  SCORER_FAIL_MODEL_FILE_EMPTY,      // Not used anymore
   SCORER_FAIL_MODEL_FILE_TOO_LARGE,  // Not used anymore
   SCORER_FAIL_MODEL_PARSE_ERROR,
   SCORER_FAIL_MODEL_MISSING_FIELDS,
@@ -38,8 +38,7 @@ enum ScorerCreationStatus {
 };
 
 void RecordScorerCreationStatus(ScorerCreationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ScorerCreationStatus",
-                            status,
+  UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.ScorerCreationStatus", status,
                             SCORER_STATUS_MAX);
 }
 
@@ -85,7 +84,7 @@ static double LogOdds2Prob(double log_odds) {
     return 1.0;
   }
   double odds = exp(log_odds);
-  return odds/(odds+1.0);
+  return odds / (odds + 1.0);
 }
 
 Scorer::Scorer() {}

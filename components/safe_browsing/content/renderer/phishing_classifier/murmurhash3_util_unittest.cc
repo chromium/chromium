@@ -4,7 +4,7 @@
 //
 // Unit test to verify basic operation of murmurhash3.
 
-#include "chrome/renderer/safe_browsing/murmurhash3_util.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 
 #include <string>
 #include "testing/gtest/include/gtest/gtest.h"

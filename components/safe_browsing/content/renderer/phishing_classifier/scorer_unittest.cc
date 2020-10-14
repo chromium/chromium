@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/scorer.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 
 #include <stdint.h>
 
@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/threading/thread.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
@@ -27,6 +28,8 @@ namespace safe_browsing {
 class PhishingScorerTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
+
     // Setup a simple model.  Note that the scorer does not care about
     // how features are encoded so we use readable strings here to make
     // the test simpler to follow.
@@ -94,8 +97,15 @@ class PhishingScorerTest : public ::testing::Test {
     ASSERT_TRUE(bitmap_.tryAllocPixels(bitmap_info));
   }
 
+  void TearDown() override {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
+  }
+
   ClientSideModel model_;
   SkBitmap bitmap_;
+
+  // A DiscardableMemoryAllocator is needed for certain Skia operations.
+  base::TestDiscardableMemoryAllocator test_allocator_;
 };
 
 TEST_F(PhishingScorerTest, HasValidModel) {

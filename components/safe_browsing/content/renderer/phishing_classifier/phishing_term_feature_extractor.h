@@ -13,8 +13,8 @@
 //
 // There is one PhishingTermFeatureExtractor per RenderView.
 
-#ifndef CHROME_RENDERER_SAFE_BROWSING_PHISHING_TERM_FEATURE_EXTRACTOR_H_
-#define CHROME_RENDERER_SAFE_BROWSING_PHISHING_TERM_FEATURE_EXTRACTOR_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_TERM_FEATURE_EXTRACTOR_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_TERM_FEATURE_EXTRACTOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -149,7 +149,7 @@ class PhishingTermFeatureExtractor {
 
   // The output parameters from the most recent call to ExtractFeatures().
   const base::string16* page_text_;  // The caller keeps ownership of this.
-  FeatureMap* features_;  // The caller keeps ownership of this.
+  FeatureMap* features_;             // The caller keeps ownership of this.
   std::set<uint32_t>* shingle_hashes_;
   DoneCallback done_callback_;
 
@@ -165,4 +165,4 @@ class PhishingTermFeatureExtractor {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_RENDERER_SAFE_BROWSING_PHISHING_TERM_FEATURE_EXTRACTOR_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_PHISHING_TERM_FEATURE_EXTRACTOR_H_

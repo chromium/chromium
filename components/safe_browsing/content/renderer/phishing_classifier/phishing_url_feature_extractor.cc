@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/phishing_url_feature_extractor.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_url_feature_extractor.h"
 
 #include <algorithm>
 #include <string>
@@ -48,7 +48,8 @@ bool PhishingUrlFeatureExtractor::ExtractFeatures(const GURL& url,
       return false;
     }
     DCHECK_LT(registry_length, host.size()) << "Non-zero registry length, but "
-        "host is only a TLD: " << host;
+                                               "host is only a TLD: "
+                                            << host;
     size_t tld_start = host.size() - registry_length;
     if (!features->AddBooleanFeature(features::kUrlTldToken +
                                      host.substr(tld_start)))

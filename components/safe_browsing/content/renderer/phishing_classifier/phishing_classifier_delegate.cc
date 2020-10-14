@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/phishing_classifier_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
 
 #include <memory>
 #include <set>
@@ -14,10 +14,10 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "chrome/renderer/safe_browsing/phishing_classifier.h"
-#include "chrome/renderer/safe_browsing/scorer.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-forward.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
@@ -195,8 +195,7 @@ void PhishingClassifierDelegate::CancelPendingClassification(
     CancelClassificationReason reason) {
   if (is_classifying_) {
     UMA_HISTOGRAM_ENUMERATION("SBClientPhishing.CancelClassificationReason",
-                              reason,
-                              CANCEL_CLASSIFICATION_MAX);
+                              reason, CANCEL_CLASSIFICATION_MAX);
     is_classifying_ = false;
   }
   if (classifier_->is_ready()) {

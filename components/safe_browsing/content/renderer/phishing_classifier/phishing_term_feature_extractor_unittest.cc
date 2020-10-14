@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/renderer/safe_browsing/phishing_term_feature_extractor.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -23,8 +23,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/renderer/safe_browsing/murmurhash3_util.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/test_utils.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -155,8 +155,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
 
   page_text = ASCIIToUTF16("one one");
   expected_features.Clear();
-  expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("one"));
+  expected_features.AddBooleanFeature(features::kPageTerm + std::string("one"));
   expected_features.AddBooleanFeature(features::kPageTerm +
                                       std::string("one one"));
   expected_shingle_hashes.clear();
@@ -172,12 +171,12 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   expected_features.AddBooleanFeature(features::kPageTerm +
                                       std::string("multi word test"));
   expected_shingle_hashes.clear();
-  expected_shingle_hashes.insert(MurmurHash3String("bla bla multi word ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("bla multi word test ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("multi word test bla ",
-                                                   kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("bla bla multi word ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("bla multi word test ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("multi word test bla ", kMurmurHash3Seed));
 
   features.Clear();
   shingle_hashes.clear();
@@ -190,12 +189,12 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   page_text = ASCIIToUTF16("bla bla test word multi bla");
   expected_features.Clear();
   expected_shingle_hashes.clear();
-  expected_shingle_hashes.insert(MurmurHash3String("bla bla test word ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("bla test word multi ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("test word multi bla ",
-                                                   kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("bla bla test word ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("bla test word multi ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("test word multi bla ", kMurmurHash3Seed));
 
   features.Clear();
   shingle_hashes.clear();
@@ -204,8 +203,9 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
   // Test various separators.
-  page_text = ASCIIToUTF16("Capitalization plus non-space\n"
-                           "separator... punctuation!");
+  page_text = ASCIIToUTF16(
+      "Capitalization plus non-space\n"
+      "separator... punctuation!");
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm +
                                       std::string("capitalization"));
@@ -218,8 +218,8 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   expected_shingle_hashes.clear();
   expected_shingle_hashes.insert(
       MurmurHash3String("capitalization plus non space ", kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("plus non space separator ",
-                                                   kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("plus non space separator ", kMurmurHash3Seed));
   expected_shingle_hashes.insert(
       MurmurHash3String("non space separator punctuation ", kMurmurHash3Seed));
 
@@ -233,14 +233,14 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   page_text = ASCIIToUTF16("This page has way too many words.");
   expected_features.Clear();
   expected_shingle_hashes.clear();
-  expected_shingle_hashes.insert(MurmurHash3String("this page has way ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("page has way too ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("has way too many ",
-                                                   kMurmurHash3Seed));
-  expected_shingle_hashes.insert(MurmurHash3String("way too many words ",
-                                                   kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("this page has way ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("page has way too ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("has way too many ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("way too many words ", kMurmurHash3Seed));
   auto it = expected_shingle_hashes.end();
   expected_shingle_hashes.erase(--it);
 
@@ -267,18 +267,19 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
 
   // Chinese translation of the phrase "hello goodbye hello goodbye". This tests
   // that we can correctly separate terms in languages that don't use spaces.
-  page_text =
-      base::UTF8ToUTF16("\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81"
-                        "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81");
+  page_text = base::UTF8ToUTF16(
+      "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81"
+      "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81");
   expected_features.Clear();
-  expected_features.AddBooleanFeature(
-      features::kPageTerm + std::string("\xe4\xbd\xa0\xe5\xa5\xbd"));
-  expected_features.AddBooleanFeature(
-      features::kPageTerm + std::string("\xe5\x86\x8d\xe8\xa7\x81"));
+  expected_features.AddBooleanFeature(features::kPageTerm +
+                                      std::string("\xe4\xbd\xa0\xe5\xa5\xbd"));
+  expected_features.AddBooleanFeature(features::kPageTerm +
+                                      std::string("\xe5\x86\x8d\xe8\xa7\x81"));
   expected_shingle_hashes.clear();
-  expected_shingle_hashes.insert(MurmurHash3String(
-      "\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 "
-      "\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 ", kMurmurHash3Seed));
+  expected_shingle_hashes.insert(
+      MurmurHash3String("\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 "
+                        "\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 ",
+                        kMurmurHash3Seed));
 
   features.Clear();
   shingle_hashes.clear();
@@ -331,10 +332,8 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
-  expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("one"));
-  expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("two"));
+  expected_features.AddBooleanFeature(features::kPageTerm + std::string("one"));
+  expected_features.AddBooleanFeature(features::kPageTerm + std::string("two"));
   std::set<uint32_t> expected_shingle_hashes;
   expected_shingle_hashes.insert(
       MurmurHash3String("one 0 1 2 ", kMurmurHash3Seed));
