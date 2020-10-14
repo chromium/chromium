@@ -1829,11 +1829,104 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
   // from ObserverList.
   all_process_request.RemoveObserver(&all_process_observer);
   single_process_request.RemoveObserver(&single_process_observer);
+}
 
-  // Execute the above tasks and exit.
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+TEST_F(V8DetailedMemoryRequestAnySeqTest, OneShot) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  SetContents(CreateTestWebContents());
+
+  // Set up a page at a.com with a subframe at b.com. These should be in
+  // different processes. We will create one request that measures both
+  // processes, and a one-shot request that measures only one.
+  const GURL kUrlA("http://a.com/");
+  const GURL kUrlB("http://b.com/");
+  content::RenderFrameHost* main_frame =
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(
+          web_contents(), GURL("http://a.com"));
+  content::RenderFrameHost* child_frame =
+      content::RenderFrameHostTester::For(main_frame)->AppendChild("frame1");
+  child_frame = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://b.com"), child_frame);
+
+  const RenderProcessHostId process_id1(main_frame->GetProcess()->GetID());
+  const RenderProcessHostId process_id2(child_frame->GetProcess()->GetID());
+  ASSERT_NE(process_id1, process_id2);
+
+  // Set the all process request to only send once within the test.
+  V8DetailedMemoryRequestAnySeq all_process_request(
+      V8DetailedMemoryDecoratorTest::kMinTimeBetweenRequests * 100);
+
+  // Create a mock reporter for each process and expect a query and reply on
+  // each.
+  MockV8DetailedMemoryReporter mock_reporter1;
+
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 1ULL;
+    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), process_id1);
+  }
+
+  MockV8DetailedMemoryReporter mock_reporter2;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 2ULL;
+    ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), process_id2);
+  }
+
+  task_environment()->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  // Create a one-shot request for process1 and expect the callback to be
+  // called only for that process.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 3ULL;
+    ExpectQueryAndReply(&mock_reporter1, std::move(data));
+  }
+
+  uint64_t unassociated_v8_bytes_used = 0;
+  V8DetailedMemoryRequestOneShotAnySeq process1_request(
+      process_id1,
+      base::BindLambdaForTesting(
+          [&](RenderProcessHostId process_id,
+              const V8DetailedMemoryProcessData& process_data,
+              const V8DetailedMemoryRequestOneShotAnySeq::FrameDataMap&
+                  frame_data) {
+            EXPECT_EQ(process_id, process_id1);
+            unassociated_v8_bytes_used =
+                process_data.unassociated_v8_bytes_used();
+          }));
+  task_environment()->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+  EXPECT_EQ(unassociated_v8_bytes_used, 3ULL);
+
+  // Create another request, but delete it before the result arrives.
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->unassociated_bytes_used = 4ULL;
+    ExpectQueryAndDelayReply(&mock_reporter1, base::TimeDelta::FromSeconds(10),
+                             std::move(data));
+  }
+
+  auto doomed_request = std::make_unique<V8DetailedMemoryRequestOneShotAnySeq>(
+      process_id1,
+      base::BindOnce(
+          [](RenderProcessHostId process_id,
+             const V8DetailedMemoryProcessData& process_data,
+             const V8DetailedMemoryRequestOneShotAnySeq::FrameDataMap&
+                 frame_data) {
+            FAIL() << "Callback called after request deleted.";
+          }));
+
+  // Verify that requests are sent but reply is not received.
+  task_environment()->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(&mock_reporter1);
+  Mock::VerifyAndClearExpectations(&mock_reporter2);
+
+  doomed_request.reset();
+  task_environment()->RunUntilIdle();
 }
 
 }  // namespace v8_memory
