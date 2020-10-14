@@ -59,6 +59,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -108,6 +109,8 @@ const char kPassword[] = "test_password";
 const char kHash[] = "test_hash";
 
 const char kPublicSessionUserEmail[] = "public_session_user@localhost";
+const char kPublicSessionSecondUserEmail[] =
+    "public_session_second_user@localhost";
 const int kAutoLoginNoDelay = 0;
 const int kAutoLoginShortDelay = 1;
 const int kAutoLoginLongDelay = 10000;
@@ -141,6 +144,10 @@ base::FilePath GetKerberosCredentialsCachePath() {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_HOME, &path));
   return path.Append("kerberos").Append("krb5cc");
+}
+
+arc::data_snapshotd::ArcDataSnapshotdManager* arc_data_snapshotd_manager() {
+  return arc::data_snapshotd::ArcDataSnapshotdManager::Get();
 }
 
 }  // namespace
@@ -327,6 +334,12 @@ class ExistingUserControllerPublicSessionTest
 
   void SetUpOnMainThread() override {
     ExistingUserControllerTest::SetUpOnMainThread();
+
+    // By default ArcDataSnapshotdManager does not influence an auto login
+    // flow.
+    EXPECT_TRUE(arc_data_snapshotd_manager());
+    EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
+    EXPECT_FALSE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
 
     // Wait for the public session user to be created.
     if (!user_manager::UserManager::Get()->IsKnownUser(
@@ -704,6 +717,98 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   // Check that when the timer fires, auto-login fails with an error.
   ExpectLoginFailure();
   FireAutoLogin();
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
+                       ArcDataSnapshotdAutoLogin) {
+  arc_data_snapshotd_manager()->set_state_for_testing(
+      arc::data_snapshotd::ArcDataSnapshotdManager::State::kBlockedUi);
+  EXPECT_FALSE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
+  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
+
+  ConfigureAutoLogin();
+  existing_user_controller()->OnSigninScreenReady();
+
+  // Do not start an auto-login public account session when in blocked UI mode.
+  EXPECT_TRUE(auto_login_account_id().is_valid());
+  EXPECT_EQ(public_session_account_id_, auto_login_account_id());
+  EXPECT_EQ(0, auto_login_delay());
+  EXPECT_FALSE(auto_login_timer());
+
+  // Allow to launch public account session (MGS).
+  arc_data_snapshotd_manager()->set_state_for_testing(
+      arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsToLaunch);
+  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
+  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
+
+  // Set up mocks to check login success.
+  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                           public_session_account_id_);
+  user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
+  ExpectSuccessfulLogin(user_context);
+  existing_user_controller()->OnSigninScreenReady();
+
+  // Start auto-login and wait for login tasks to complete.
+  content::RunAllPendingInMessageLoop();
+
+  arc_data_snapshotd_manager()->OnSessionStateChanged();
+
+  EXPECT_TRUE(auto_login_account_id().is_valid());
+  EXPECT_EQ(0, auto_login_delay());
+  EXPECT_TRUE(auto_login_timer());
+  EXPECT_EQ(arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsLaunched,
+            arc_data_snapshotd_manager()->state());
+}
+
+class ExistingUserControllerSecondPublicSessionTest
+    : public ExistingUserControllerPublicSessionTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ExistingUserControllerPublicSessionTest::SetUpInProcessBrowserTestFixture();
+    AddSecondPublicSessionAccount();
+  }
+
+ private:
+  void AddSecondPublicSessionAccount() {
+    // Setup the device policy.
+    em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
+    em::DeviceLocalAccountInfoProto* account =
+        proto.mutable_device_local_accounts()->add_account();
+    account->set_account_id(kPublicSessionSecondUserEmail);
+    account->set_type(
+        em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
+    RefreshDevicePolicy();
+
+    // Setup the device local account policy.
+    policy::UserPolicyBuilder device_local_account_policy;
+    device_local_account_policy.policy_data().set_username(
+        kPublicSessionSecondUserEmail);
+    device_local_account_policy.policy_data().set_policy_type(
+        policy::dm_protocol::kChromePublicAccountPolicyType);
+    device_local_account_policy.policy_data().set_settings_entity_id(
+        kPublicSessionSecondUserEmail);
+    device_local_account_policy.Build();
+    session_manager_client()->set_device_local_account_policy(
+        kPublicSessionSecondUserEmail, device_local_account_policy.GetBlob());
+  }
+};
+// Test that if two public session accounts are configured for the device, auto
+// login is not happening.
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerSecondPublicSessionTest,
+                       ArcDataSnapshotdTwoAccounts) {
+  // Allow to launch public account session (MGS).
+  arc_data_snapshotd_manager()->set_state_for_testing(
+      arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsToLaunch);
+  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
+  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
+
+  ConfigureAutoLogin();
+  existing_user_controller()->OnSigninScreenReady();
+
+  // Do not configure auto login if more than one public session is configured.
+  EXPECT_FALSE(auto_login_account_id().is_valid());
+  EXPECT_EQ(0, auto_login_delay());
+  EXPECT_FALSE(auto_login_timer());
 }
 
 class ExistingUserControllerActiveDirectoryTest

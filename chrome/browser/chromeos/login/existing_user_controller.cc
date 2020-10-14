@@ -94,6 +94,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -343,6 +344,42 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
   const base::Time now = base::DefaultClock::GetInstance()->Now();
   // Time left to the next forced online signin.
   return offline_signin_limit - (now - last_online_signin);
+}
+
+// Returns account ID of a public session account if it is unique, otherwise
+// returns invalid account ID.
+AccountId GetArcDataSnapshotAutoLoginAccountId(
+    const std::vector<policy::DeviceLocalAccount>& device_local_accounts) {
+  AccountId auto_login_account_id = EmptyAccountId();
+  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
+           device_local_accounts.begin();
+       it != device_local_accounts.end(); ++it) {
+    if (it->type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
+      // Do not perform ARC data snapshot auto-login if more than one public
+      // session account is configured.
+      if (auto_login_account_id.is_valid())
+        return EmptyAccountId();
+      auto_login_account_id = AccountId::FromUserEmail(it->user_id);
+      VLOG(2) << "PublicSession autologin found: " << it->user_id;
+    }
+  }
+  return auto_login_account_id;
+}
+
+// Returns account ID if a corresponding to |auto_login_account_id| device local
+// account exists, otherwise returns invalid account ID.
+AccountId GetPublicSessionAutoLoginAccountId(
+    const std::vector<policy::DeviceLocalAccount>& device_local_accounts,
+    const std::string& auto_login_account_id) {
+  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
+           device_local_accounts.begin();
+       it != device_local_accounts.end(); ++it) {
+    if (it->account_id == auto_login_account_id) {
+      VLOG(2) << "PublicSession autologin found: " << it->user_id;
+      return AccountId::FromUserEmail(it->user_id);
+    }
+  }
+  return EmptyAccountId();
 }
 
 class AutoLaunchNotificationDelegate
@@ -1555,16 +1592,17 @@ void ExistingUserController::ConfigureAutoLogin() {
       policy::GetDeviceLocalAccounts(cros_settings_);
   const bool show_update_required_screen = IsUpdateRequiredDeadlineReached();
 
-  public_session_auto_login_account_id_ = EmptyAccountId();
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    if (it->account_id == auto_login_account_id) {
-      public_session_auto_login_account_id_ =
-          AccountId::FromUserEmail(it->user_id);
-      VLOG(2) << "PublicSession autologin found: " << it->user_id;
-      break;
-    }
+  auto* data_snapshotd_manager =
+      arc::data_snapshotd::ArcDataSnapshotdManager::Get();
+  bool is_arc_data_snapshot_autologin =
+      (data_snapshotd_manager &&
+       data_snapshotd_manager->IsAutoLoginConfigured());
+  if (is_arc_data_snapshot_autologin) {
+    public_session_auto_login_account_id_ =
+        GetArcDataSnapshotAutoLoginAccountId(device_local_accounts);
+  } else {
+    public_session_auto_login_account_id_ = GetPublicSessionAutoLoginAccountId(
+        device_local_accounts, auto_login_account_id);
   }
 
   const user_manager::User* public_session_user =
@@ -1576,7 +1614,8 @@ void ExistingUserController::ConfigureAutoLogin() {
     public_session_auto_login_account_id_ = EmptyAccountId();
   }
 
-  if (!cros_settings_->GetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+  if (is_arc_data_snapshot_autologin ||
+      !cros_settings_->GetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
                                   &auto_login_delay_)) {
     auto_login_delay_ = 0;
   }
@@ -1653,6 +1692,20 @@ void ExistingUserController::StartAutoLoginTimer() {
 
   if (auto_login_timer_ && auto_login_timer_->IsRunning()) {
     StopAutoLoginTimer();
+  }
+
+  // Block auto-login flow until ArcDataSnapshotdManager is ready to enter an
+  // auto-login session.
+  // ArcDataSnapshotdManager stores a reset auto-login callback to fire it once
+  // it is ready.
+  auto* data_snapshotd_manager =
+      arc::data_snapshotd::ArcDataSnapshotdManager::Get();
+  if (data_snapshotd_manager && !data_snapshotd_manager->IsAutoLoginAllowed() &&
+      data_snapshotd_manager->IsAutoLoginConfigured()) {
+    data_snapshotd_manager->set_reset_autologin_callback(
+        base::BindOnce(&ExistingUserController::ResetAutoLoginTimer,
+                       weak_factory_.GetWeakPtr()));
+    return;
   }
 
   // Start the auto-login timer.
