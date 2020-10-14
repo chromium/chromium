@@ -1394,7 +1394,7 @@ _KNOWN_ROBOTS = set(
   ) | set('%s@developer.gserviceaccount.com' % s for s in ('3su6n15k.default',)
   ) | set('%s@chops-service-accounts.iam.gserviceaccount.com' % s
           for s in ('bling-autoroll-builder', 'v8-ci-autoroll-builder',
-                    'wpt-autoroller',)
+                    'wpt-autoroller', 'chrome-weblayer-builder')
   ) | set('%s@skia-public.iam.gserviceaccount.com' % s
           for s in ('chromium-autoroll', 'chromium-release-autoroll')
   ) | set('%s@skia-corp.google.com.iam.gserviceaccount.com' % s
