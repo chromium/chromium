@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 
 namespace blink {
@@ -275,17 +276,17 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
 
 NGConstraintSpace NGGridLayoutAlgorithm::BuildSpaceForGridItem(
     const NGBlockNode node) const {
-  NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
-                                         node.Style().GetWritingMode(),
-                                         node.CreatesNewFormattingContext());
-
-  space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
-  space_builder.SetIsPaintedAtomically(true);
-  space_builder.SetAvailableSize(ChildAvailableSize());
-  space_builder.SetPercentageResolutionSize(child_percentage_size_);
-  space_builder.SetTextDirection(node.Style().Direction());
-  space_builder.SetIsShrinkToFit(node.Style().LogicalWidth().IsAuto());
-  return space_builder.ToConstraintSpace();
+  const auto& style = node.Style();
+  NGConstraintSpaceBuilder builder(ConstraintSpace(), style.GetWritingMode(),
+                                   /* is_new_fc */ true);
+  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), node, &builder);
+  builder.SetCacheSlot(NGCacheSlot::kMeasure);
+  builder.SetIsPaintedAtomically(true);
+  builder.SetAvailableSize(ChildAvailableSize());
+  builder.SetPercentageResolutionSize(child_percentage_size_);
+  builder.SetTextDirection(style.Direction());
+  builder.SetIsShrinkToFit(style.LogicalWidth().IsAuto());
+  return builder.ToConstraintSpace();
 }
 
 void NGGridLayoutAlgorithm::SetSpecifiedTracks() {
@@ -504,18 +505,18 @@ void NGGridLayoutAlgorithm::PlaceGridItems() {
 
       // Layout child nodes based on constraint space from grid row/column
       // definitions and the inline and block offsets being accumulated.
-      NGConstraintSpaceBuilder space_builder(
-          ConstraintSpace(), child_node.Style().GetWritingMode(),
-          /* is_new_fc */ true);
-      space_builder.SetIsPaintedAtomically(true);
-      space_builder.SetAvailableSize(
+      const auto& child_style = child_node.Style();
+      NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                       child_style.GetWritingMode(),
+                                       /* is_new_fc */ true);
+      SetOrthogonalFallbackInlineSizeIfNeeded(Style(), child_node, &builder);
+      builder.SetIsPaintedAtomically(true);
+      builder.SetAvailableSize(LogicalSize(column_base_size, row_base_size));
+      builder.SetPercentageResolutionSize(
           LogicalSize(column_base_size, row_base_size));
-      space_builder.SetPercentageResolutionSize(
-          LogicalSize(column_base_size, row_base_size));
-      space_builder.SetTextDirection(child_node.Style().Direction());
-      space_builder.SetIsShrinkToFit(
-          child_node.Style().LogicalWidth().IsAuto());
-      NGConstraintSpace constraint_space = space_builder.ToConstraintSpace();
+      builder.SetTextDirection(child_style.Direction());
+      builder.SetIsShrinkToFit(child_style.LogicalWidth().IsAuto());
+      NGConstraintSpace constraint_space = builder.ToConstraintSpace();
       scoped_refptr<const NGLayoutResult> result =
           child_node.Layout(constraint_space);
 
