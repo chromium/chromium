@@ -18,37 +18,22 @@
 #endif
 
 namespace {
-// Returns matcher that looks for text in UILabel, UITextView, and UITextField
-// objects, checking if their displayed strings contain the provided |text|.
-id<GREYMatcher> ContainsText(NSString* text) {
-  GREYMatchesBlock matches = ^BOOL(id element) {
-    return [[element text] containsString:text];
-  };
-  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
-    [description appendText:[NSString stringWithFormat:@"hasText('%@')", text]];
-  };
-  id<GREYMatcher> matcher =
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                           descriptionBlock:describe];
-  return grey_allOf(grey_anyOf(grey_kindOfClassName(@"UILabel"),
-                               grey_kindOfClassName(@"UITextField"),
-                               grey_kindOfClassName(@"UITextView"), nil),
-                    matcher, nil);
-}
-
 // A matcher for the main title of the Sad Tab in 'reload' mode.
 id<GREYMatcher> reloadSadTabTitleText() {
-  return ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_MESSAGE));
+  return chrome_test_util::ContainsPartialText(
+      l10n_util::GetNSString(IDS_SAD_TAB_MESSAGE));
 }
 
 // A matcher for the main title of the Sad Tab in 'feedback' mode.
 id<GREYMatcher> feedbackSadTabTitleContainsText() {
-  return ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_TRY));
+  return chrome_test_util::ContainsPartialText(
+      l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_TRY));
 }
 
 // A matcher for a help string suggesting the user use Incognito Mode.
 id<GREYMatcher> incognitoHelpContainsText() {
-  return ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_INCOGNITO));
+  return chrome_test_util::ContainsPartialText(
+      l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_INCOGNITO));
 }
 }  // namespace
 

@@ -6,9 +6,12 @@ source_set("navigation") {
   deps = [
     "//ios/web/common:user_agent",
     "//ios/web/public/deprecated:deprecated_navigation_util",
+    "//ios/web/public/ui",
     "//ui/base",
     "//url",
   ]
+
+  public_deps = [ ":referrer" ]
 
   sources = [
     "browser_url_rewriter.h",
@@ -21,6 +24,14 @@ source_set("navigation") {
     "web_state_policy_decider.h",
     "web_state_policy_decider_bridge.h",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("referrer") {
+  deps = [ "//url" ]
+
+  sources = [ "referrer.h" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("ui") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
 
   sources = [ "page_display_state.mm" ]
 

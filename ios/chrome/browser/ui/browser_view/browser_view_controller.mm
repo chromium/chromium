@@ -249,6 +249,11 @@ UIColor* StatusBarBackgroundColor() {
   return UIColor.blackColor;
 }
 
+// Maximum length for a context menu title formed from a URL.
+const NSUInteger kContextMenuMaxURLTitleLength = 100;
+// Character to append to context menut titles that are truncated.
+NSString* const kContextMenuEllipsis = @"…";
+
 // Duration of the toolbar animation.
 const NSTimeInterval kLegacyFullscreenControllerToolbarAnimationDuration = 0.3;
 
@@ -3130,10 +3135,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   DCHECK(self.browserState);
 
+  // Truncate context meny titles that originate from URLs, leaving text titles
+  // untruncated.
+  NSString* menuTitle = params.menu_title;
+  if (params.menu_title_origin != web::ContextMenuTitleOrigin::kImageTitle &&
+      menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+    menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+        stringByAppendingString:kContextMenuEllipsis];
+  }
+
   _contextMenuCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:self.browser
-                           title:params.menu_title
+                           title:menuTitle
                          message:nil
                             rect:CGRectMake(params.location.x,
                                             params.location.y, 1.0, 1.0)

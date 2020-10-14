@@ -5,7 +5,8 @@
 source_set("ui") {
   deps = [
     "//base",
-    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation:referrer",
+    "//url",
   ]
 
   sources = [

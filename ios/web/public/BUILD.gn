@@ -11,6 +11,7 @@ source_set("public") {
     "//ios/web/public/favicon",
     "//ios/web/public/navigation",
     "//ios/web/public/thread",
+    "//ios/web/public/ui",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

@@ -42,11 +42,6 @@ extern NSString* const kContextMenuElementInnerText;
 // only).
 extern NSString* const kContextMenuElementAlt;
 
-// The maximum character length for the context menu title.
-// Value was chosen for no particular reason; Usually results in a 2-3 line
-// title.
-extern const unsigned int kContextMenuMaxTitleLength;
-
 }  // namespace web
 
 #endif  // IOS_WEB_WEB_STATE_CONTEXT_MENU_CONSTANTS_H_

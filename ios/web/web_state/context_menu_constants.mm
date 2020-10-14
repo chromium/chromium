@@ -17,6 +17,5 @@ NSString* const kContextMenuElementTitle = @"title";
 NSString* const kContextMenuElementReferrerPolicy = @"referrerPolicy";
 NSString* const kContextMenuElementInnerText = @"innerText";
 NSString* const kContextMenuElementAlt = @"alt";
-const unsigned int kContextMenuMaxTitleLength = 101;
 
 }  // namespace web

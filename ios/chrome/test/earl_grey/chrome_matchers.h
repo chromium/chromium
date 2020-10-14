@@ -47,6 +47,11 @@ id<GREYMatcher> StaticTextWithAccessibilityLabelId(int message_id);
 // accessibility trait UIAccessibilityTraitStaticText.
 id<GREYMatcher> StaticTextWithAccessibilityLabel(NSString* label);
 
+// Matcher for a text element (label, field, etc) whose text contains |text| as
+// a substring. (contrast with grey_text() which tests for a complete string
+// match).
+id<GREYMatcher> ContainsPartialText(NSString* text);
+
 // Matcher for element with accessibility label corresponding to |message_id|
 // and accessibility trait UIAccessibilityTraitHeader.
 id<GREYMatcher> HeaderWithAccessibilityLabelId(int message_id);

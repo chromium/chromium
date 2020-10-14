@@ -12,6 +12,14 @@
 
 namespace web {
 
+// Enum for identifying how the menu title was constructed.
+enum class ContextMenuTitleOrigin {
+  kUnknown = 0,
+  kURL = 1,           // the menu title is a URL (href or image src).
+  kImageTitle = 2,    // the menu title is an image's title text
+  kImageAltText = 3,  // the menu title is an image's alt text and src
+};
+
 // Wraps information needed to show a context menu.
 struct ContextMenuParams {
  public:
@@ -24,6 +32,9 @@ struct ContextMenuParams {
 
   // The title of the menu.
   NSString* menu_title;
+
+  // How the menu title was constructed.
+  ContextMenuTitleOrigin menu_title_origin;
 
   // The URL of the link that encloses the node the context menu was invoked on.
   GURL link_url;

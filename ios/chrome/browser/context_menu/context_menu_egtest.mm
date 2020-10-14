@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #import "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
@@ -71,6 +72,41 @@ const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
 
+// Template HTML, URLs, and link and title values for title truncation tests.
+// (Use NSString for easier format printing and matching).
+// Template params:
+//    [0] NSString - link href.
+//    [1] char[]   - link element ID.
+//    [2] NSString - image title
+//    [3] char[]   - image element ID.
+NSString* const kTruncationTestPageTemplateHtml =
+    @"<html><body><p style='margin-bottom:50px'>Short title test.</p>"
+     "<p><a style='margin-left:150px' href='%@' id='%s'>LINK</a></p>"
+     "<img src='chromium_logo.png' title='%@' id='%s'/>"
+     "</body></html>";
+
+const char kShortTruncationPageUrl[] = "/shortTruncation";
+
+const char kLongTruncationPageUrl[] = "/longTruncation";
+
+NSString* const kShortLinkHref = @"/destination";
+
+NSString* const kShortImgTitile = @"Chromium logo with a short title";
+
+// Long titles should be > 100 chars to test truncation.
+NSString* const kLongLinkHref =
+    @"/destination?linkspam=10%E4%BB%A3%E5%B7%A5%E5%AD%A6%E3%81%AF%E6%9C%AA%E6"
+     "%9D%A5%E3%81%AE%E8%A3%BD%E5%93%81%E3%81%A8%E3%82%B3%E3%83%9F%E3%83%A5%E3"
+     "%83%8B%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%82%92%E7%94%9F%E3"
+     "%81%BF%E5%87%BA%E3%81%99%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%AA%E3%81%A7%E3"
+     "%81%99%E3%80&padding=qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbn";
+
+NSString* const kLongImgTitle =
+    @"Chromium logo with a long title, well in excess of one hundred "
+     "characters, so formulated as to thest the very limits of the context "
+     "menu layout system, and to ensure that all users can enjoy the full "
+     "majesty of image titles, however sesquipedalian they may be!";
+
 // Matcher for the open image button in the context menu.
 id<GREYMatcher> OpenImageButton() {
   return ButtonWithAccessibilityLabelId(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
@@ -94,6 +130,18 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     http_response->set_content(kInitialPageHtml);
   } else if (request.relative_url == kDestinationPageUrl) {
     http_response->set_content(kDestinationHtml);
+  } else if (request.relative_url == kShortTruncationPageUrl) {
+    NSString* content = [NSString
+        stringWithFormat:kTruncationTestPageTemplateHtml, kShortLinkHref,
+                         kInitialPageDestinationLinkId, kShortImgTitile,
+                         kLogoPageChromiumImageId];
+    http_response->set_content(base::SysNSStringToUTF8(content));
+  } else if (request.relative_url == kLongTruncationPageUrl) {
+    NSString* content =
+        [NSString stringWithFormat:kTruncationTestPageTemplateHtml,
+                                   kLongLinkHref, kInitialPageDestinationLinkId,
+                                   kLongImgTitle, kLogoPageChromiumImageId];
+    http_response->set_content(base::SysNSStringToUTF8(content));
   } else {
     return nullptr;
   }
@@ -101,7 +149,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Long press on |element_id| to trigger context menu.
+// Long presses on |element_id| to trigger context menu.
 void LongPressElement(const char* element_id) {
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
@@ -109,7 +157,14 @@ void LongPressElement(const char* element_id) {
                         true /* menu should appear */)];
 }
 
-//  Tap on |context_menu_item_button| context menu item.
+// Taps on the web view to dismiss the context menu without using anything on
+// it.
+void ClearContextMenu() {
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+}
+
+// Taps on |context_menu_item_button| context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       assertWithMatcher:grey_notNil()];
@@ -243,6 +298,47 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   // Verify url.
   [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests context menu title truncation cases.
+- (void)testContextMenuTtitleTruncation {
+  const GURL shortTtileURL = self.testServer->GetURL(kShortTruncationPageUrl);
+  [ChromeEarlGrey loadURL:shortTtileURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  LongPressElement(kLogoPageChromiumImageId);
+  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitile)]
+      assertWithMatcher:grey_notNil()];
+  ClearContextMenu();
+
+  LongPressElement(kInitialPageDestinationLinkId);
+  // Links get prefixed with the hostname, so check for partial text match
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          kShortLinkHref)]
+      assertWithMatcher:grey_notNil()];
+  ClearContextMenu();
+
+  const GURL longTtileURL = self.testServer->GetURL(kLongTruncationPageUrl);
+  [ChromeEarlGrey loadURL:longTtileURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  LongPressElement(kLogoPageChromiumImageId);
+  [[EarlGrey selectElementWithMatcher:grey_text(kLongImgTitle)]
+      assertWithMatcher:grey_notNil()];
+  ClearContextMenu();
+
+  LongPressElement(kInitialPageDestinationLinkId);
+  // Expect the link to be truncated, so the matcher for the full text of the
+  // link returns nil.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          kLongLinkHref)]
+      assertWithMatcher:grey_nil()];
+  // But expect that some of the link is visible in the title.
+  NSString* startOfTitle = [kLongLinkHref substringToIndex:30];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+                                          startOfTitle)]
+      assertWithMatcher:grey_notNil()];
+  ClearContextMenu();
 }
 
 // Tests that system touches are cancelled when the context menu is shown.

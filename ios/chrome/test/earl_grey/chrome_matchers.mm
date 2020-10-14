@@ -49,6 +49,24 @@ id<GREYMatcher> StaticTextWithAccessibilityLabel(NSString* label) {
   return [ChromeMatchersAppInterface staticTextWithAccessibilityLabel:label];
 }
 
+id<GREYMatcher> ContainsPartialText(NSString* text) {
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    return [[element text] containsString:text];
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description
+        appendText:[NSString
+                       stringWithFormat:@"containsPartialText('%@')", text]];
+  };
+  id<GREYMatcher> matcher =
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe];
+  return grey_allOf(grey_anyOf(grey_kindOfClassName(@"UILabel"),
+                               grey_kindOfClassName(@"UITextField"),
+                               grey_kindOfClassName(@"UITextView"), nil),
+                    matcher, nil);
+}
+
 id<GREYMatcher> HeaderWithAccessibilityLabelId(int message_id) {
   return [ChromeMatchersAppInterface headerWithAccessibilityLabelID:message_id];
 }
