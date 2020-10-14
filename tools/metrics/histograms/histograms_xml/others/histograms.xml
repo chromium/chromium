@@ -3725,8 +3725,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DisplayManager.InternalDisplayZoomPercentage" units="%"
-    expires_after="M85">
-  <owner>malaykeshav@chromium.org</owner>
+    expires_after="2021-07-15">
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     The zoom percentage that the user has set on the internal display and is
     actively using. This is emitted when the zoom factor has been updated in
@@ -3735,9 +3736,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DisplayManager.MirroringDisplayCountRanges"
-    enum="MultiDisplayModeDisplayCountRanges" expires_after="2020-06-30">
+    enum="MultiDisplayModeDisplayCountRanges" expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
-  <owner>baileyberro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     The number of displays connected to the device that are in software or
     hardware mirror mode. This is emitted once when the normal or mixed mirror
@@ -3747,9 +3748,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DisplayManager.MirrorModeTypes" enum="DisplayMirrorModeTypes"
-    expires_after="2020-06-30">
+    expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
-  <owner>baileyberro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     The types of mirror mode in which the displays connected to the device are
     in. This is emitted once when the normal or mixed mirror mode is enabled
@@ -3781,9 +3782,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DisplayManager.UpdateDisplayConfigurationTask.ExecutionTime"
-    units="ms" expires_after="2021-03-04">
+    units="ms" expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
-  <owner>nohle@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the execution time to update the display configuration. Emitted when
     the update-display-configuration task finishes, successfully or not.
@@ -3791,9 +3792,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DisplayManager.UpdateDisplayConfigurationTask.Success"
-    enum="BooleanSuccess" expires_after="2021-03-04">
+    enum="BooleanSuccess" expires_after="2021-07-15">
   <owner>zentaro@chromium.org</owner>
-  <owner>nohle@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
   <summary>
     Records whether or not the display configuration was successfully updated.
     Emitted when the update-display-configuration task finishes, successfully or
