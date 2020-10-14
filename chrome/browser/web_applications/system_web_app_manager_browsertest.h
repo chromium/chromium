@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
