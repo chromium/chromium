@@ -62,7 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
     ~Delegate() override {}
     virtual void AllowlistCheckFailed(const std::string& email) = 0;
     virtual void PolicyLoadFailed() = 0;
-    virtual void SetAuthFlowOffline(bool offline) = 0;
   };
 
   LoginPerformer(scoped_refptr<base::SequencedTaskRunner> task_runner,

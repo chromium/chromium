@@ -129,7 +129,6 @@ class ErrorScreen : public BaseScreen,
   void OnPasswordChangeDetected(const UserContext& user_context) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
-  void SetAuthFlowOffline(bool offline) override;
 
   // NetworkConnectionObserver overrides:
   void ConnectToNetworkRequested(const std::string& service_path) override;

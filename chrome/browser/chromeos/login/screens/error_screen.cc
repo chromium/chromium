@@ -314,10 +314,6 @@ void ErrorScreen::PolicyLoadFailed() {
   LOG(FATAL);
 }
 
-void ErrorScreen::SetAuthFlowOffline(bool offline) {
-  LOG(FATAL);
-}
-
 void ErrorScreen::DefaultHideCallback() {
   if (parent_screen_ != OobeScreen::SCREEN_UNKNOWN && view_)
     view_->ShowOobeScreen(parent_screen_);

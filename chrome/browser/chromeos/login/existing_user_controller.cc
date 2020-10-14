@@ -1045,9 +1045,6 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
       else
         ShowError(IDS_LOGIN_ERROR_AUTHENTICATING, error);
     }
-    if (auth_flow_offline_)
-      UMA_HISTOGRAM_BOOLEAN("Login.OfflineFailure.IsKnownUser", is_known_user);
-
     GetLoginDisplay()->ClearAndEnablePassword();
     StartAutoLoginTimer();
   }
@@ -1409,10 +1406,6 @@ void ExistingUserController::PolicyLoadFailed() {
   PerformLoginFinishedActions(false /* don't start auto login timer */);
   ClearActiveDirectoryState();
   ClearRecordedNames();
-}
-
-void ExistingUserController::SetAuthFlowOffline(bool offline) {
-  auth_flow_offline_ = offline;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

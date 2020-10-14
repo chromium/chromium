@@ -59,7 +59,6 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   void OnAuthFailure(const AuthFailure& error) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
-  void SetAuthFlowOffline(bool offline) override;
   void OnOldEncryptionDetected(const UserContext& user_context,
                                bool has_incomplete_migration) override;
 

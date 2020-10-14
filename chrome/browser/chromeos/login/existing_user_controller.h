@@ -178,7 +178,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
                                bool has_incomplete_migration) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
-  void SetAuthFlowOffline(bool offline) override;
 
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
@@ -387,9 +386,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Initialized with |kExternal| as more restricted mode.
   LoginPerformer::AuthorizationMode auth_mode_ =
       LoginPerformer::AuthorizationMode::kExternal;
-
-  // Indicates use of local (not GAIA) authentication.
-  bool auth_flow_offline_ = false;
 
   // Timer when the signin screen was first displayed. Used to measure the time
   // from showing the screen until a successful login is performed.

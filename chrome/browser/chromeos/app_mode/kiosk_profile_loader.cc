@@ -210,10 +210,6 @@ void KioskProfileLoader::PolicyLoadFailed() {
   ReportLaunchResult(KioskAppLaunchError::POLICY_LOAD_FAILED);
 }
 
-void KioskProfileLoader::SetAuthFlowOffline(bool offline) {
-  NOTREACHED();
-}
-
 void KioskProfileLoader::OnOldEncryptionDetected(
     const UserContext& user_context,
     bool has_incomplete_migration) {

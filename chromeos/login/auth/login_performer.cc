@@ -56,15 +56,13 @@ void LoginPerformer::OnAuthFailure(const AuthFailure& failure) {
 
   last_login_failure_ = failure;
   if (delegate_) {
-    delegate_->SetAuthFlowOffline(user_context_.GetAuthFlow() ==
-                                  UserContext::AUTH_FLOW_OFFLINE);
     delegate_->OnAuthFailure(failure);
     return;
-  } else {
-    // COULD_NOT_MOUNT_CRYPTOHOME, COULD_NOT_MOUNT_TMPFS:
-    // happens during offline auth only.
-    NOTREACHED();
   }
+
+  // COULD_NOT_MOUNT_CRYPTOHOME, COULD_NOT_MOUNT_TMPFS:
+  // happens during offline auth only.
+  NOTREACHED();
 }
 
 void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
