@@ -161,14 +161,6 @@ void PaintLayerCompositor::UpdateInputsIfNeededRecursiveInternal(
   Lifecycle().AdvanceTo(DocumentLifecycle::kCompositingInputsClean);
 
 #if DCHECK_IS_ON()
-  if (!layout_view_->GetDocument()
-           .GetSettings()
-           ->GetAcceleratedCompositingEnabled()) {
-    DCHECK(!layout_view_->GetDocument()
-                .GetSettings()
-                ->GetAcceleratedCompositingEnabled());
-  }
-
   CompositingInputsUpdater::AssertNeedsCompositingInputsUpdateBitsCleared(
       RootLayer());
 #endif
@@ -303,12 +295,8 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
   CompositingUpdateType update_type = pending_update_type_;
   pending_update_type_ = kCompositingUpdateNone;
 
-  if (!layout_view_->GetDocument()
-           .GetSettings()
-           ->GetAcceleratedCompositingEnabled() ||
-      update_type == kCompositingUpdateNone) {
+  if (update_type == kCompositingUpdateNone)
     return;
-  }
 
   PaintLayer* update_root = RootLayer();
 

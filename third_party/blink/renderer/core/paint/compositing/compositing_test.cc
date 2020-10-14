@@ -99,16 +99,28 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
         layer->transform_tree_index());
   }
 
- private:
   PaintArtifactCompositor* paint_artifact_compositor() {
     return GetLocalFrameView()->GetPaintArtifactCompositor();
   }
 
+ private:
   frame_test_helpers::TestWebWidgetClient web_widget_client_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CompositingTest);
+
+TEST_P(CompositingTest, DisableAndEnableAcceleratedCompositing) {
+  auto* settings = GetLocalFrameView()->GetFrame().GetSettings();
+  size_t num_layers = RootCcLayer()->children().size();
+  EXPECT_GT(num_layers, 1u);
+  settings->SetAcceleratedCompositingEnabled(false);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(paint_artifact_compositor());
+  settings->SetAcceleratedCompositingEnabled(true);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(num_layers, RootCcLayer()->children().size());
+}
 
 TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(),

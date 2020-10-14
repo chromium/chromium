@@ -3027,8 +3027,13 @@ const cc::Layer* LocalFrameView::RootCcLayer() const {
 
 void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   TRACE_EVENT0("blink", "LocalFrameView::pushPaintArtifactToCompositor");
-  if (!frame_->GetSettings()->GetAcceleratedCompositingEnabled())
+  if (!frame_->GetSettings()->GetAcceleratedCompositingEnabled()) {
+    if (paint_artifact_compositor_) {
+      paint_artifact_compositor_->WillBeRemovedFromFrame();
+      paint_artifact_compositor_ = nullptr;
+    }
     return;
+  }
 
   Page* page = GetFrame().GetPage();
   if (!page)
