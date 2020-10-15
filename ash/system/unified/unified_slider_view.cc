@@ -26,6 +26,56 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
+// Custom the slider to use different colors.
+class SystemSlider : public views::Slider {
+ public:
+  explicit SystemSlider(views::SliderListener* listener = nullptr)
+      : views::Slider(listener) {}
+  SystemSlider(const SystemSlider&) = delete;
+  SystemSlider& operator=(const SystemSlider&) = delete;
+  ~SystemSlider() override {}
+
+ private:
+  // views::Slider:
+  SkColor GetThumbColor() const override {
+    using Type = AshColorProvider::ContentLayerType;
+    return AshColorProvider::Get()->GetContentLayerColor(
+        (style() == RenderingStyle::kMinimalStyle) ? Type::kSliderColorInactive
+                                                   : Type::kSliderColorActive);
+  }
+
+  // views::Slider:
+  SkColor GetTroughColor() const override {
+    return AshColorProvider::Get()->GetSecondToneColor(GetThumbColor());
+  }
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::Slider::OnThemeChanged();
+    SchedulePaint();
+  }
+};
+
+// A slider that ignores inputs.
+class ReadOnlySlider : public SystemSlider {
+ public:
+  ReadOnlySlider() : SystemSlider() {}
+  ReadOnlySlider(const ReadOnlySlider&) = delete;
+  ReadOnlySlider& operator=(const ReadOnlySlider&) = delete;
+  ~ReadOnlySlider() override {}
+
+ private:
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override { return false; }
+  bool OnMouseDragged(const ui::MouseEvent& event) override { return false; }
+  void OnMouseReleased(const ui::MouseEvent& event) override {}
+  bool OnKeyPressed(const ui::KeyEvent& event) override { return false; }
+  const char* GetClassName() const override { return "ReadOnlySlider"; }
+
+  // ui::EventHandler:
+  void OnGestureEvent(ui::GestureEvent* event) override {}
+};
+
 std::unique_ptr<views::Slider> CreateSlider(UnifiedSliderListener* listener,
                                             bool readonly) {
   return readonly ? std::make_unique<ReadOnlySlider>()
@@ -33,47 +83,6 @@ std::unique_ptr<views::Slider> CreateSlider(UnifiedSliderListener* listener,
 }
 
 }  // namespace
-
-SystemSlider::SystemSlider(views::SliderListener* listener)
-    : views::Slider(listener) {}
-
-SkColor SystemSlider::GetThumbColor() const {
-  using Type = AshColorProvider::ContentLayerType;
-  return AshColorProvider::Get()->GetContentLayerColor(
-      (style() == RenderingStyle::kMinimalStyle) ? Type::kSliderColorInactive
-                                                 : Type::kSliderColorActive);
-}
-
-SkColor SystemSlider::GetTroughColor() const {
-  return AshColorProvider::Get()->GetSecondToneColor(GetThumbColor());
-}
-
-void SystemSlider::OnThemeChanged() {
-  views::Slider::OnThemeChanged();
-  SchedulePaint();
-}
-
-ReadOnlySlider::ReadOnlySlider() : SystemSlider() {}
-
-bool ReadOnlySlider::OnMousePressed(const ui::MouseEvent& event) {
-  return false;
-}
-
-bool ReadOnlySlider::OnMouseDragged(const ui::MouseEvent& event) {
-  return false;
-}
-
-void ReadOnlySlider::OnMouseReleased(const ui::MouseEvent& event) {}
-
-bool ReadOnlySlider::OnKeyPressed(const ui::KeyEvent& event) {
-  return false;
-}
-
-const char* ReadOnlySlider::GetClassName() const {
-  return "ReadOnlySlider";
-}
-
-void ReadOnlySlider::OnGestureEvent(ui::GestureEvent* event) {}
 
 UnifiedSliderButton::UnifiedSliderButton(views::ButtonListener* listener,
                                          const gfx::VectorIcon& icon,

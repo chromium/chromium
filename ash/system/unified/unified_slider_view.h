@@ -23,38 +23,6 @@ class UnifiedSliderListener : public views::ButtonListener,
   ~UnifiedSliderListener() override = default;
 };
 
-// Custom slider for the system menu to use different color scheme.
-class SystemSlider : public views::Slider {
- public:
-  explicit SystemSlider(views::SliderListener* listener = nullptr);
-
- private:
-  // views::Slider:
-  SkColor GetThumbColor() const override;
-  SkColor GetTroughColor() const override;
-  void OnThemeChanged() override;
-};
-
-// A slider that ignores inputs.
-// TODO(tetsui): Move to anonymous namespace.
-class ReadOnlySlider : public SystemSlider {
- public:
-  ReadOnlySlider();
-
- private:
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
-
-  // ui::EventHandler:
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySlider);
-};
-
 // A button used in a slider row of UnifiedSystemTray. The button is togglable.
 class UnifiedSliderButton : public views::ImageButton {
  public:
