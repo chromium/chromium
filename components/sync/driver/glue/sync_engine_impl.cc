@@ -11,8 +11,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
@@ -43,10 +41,9 @@ SyncEngineImpl::SyncEngineImpl(
     invalidation::InvalidationService* invalidator,
     SyncInvalidationsService* sync_invalidations_service,
     const base::WeakPtr<SyncPrefs>& sync_prefs,
-    const base::FilePath& sync_data_folder)
-    : sync_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+    const base::FilePath& sync_data_folder,
+    scoped_refptr<base::SequencedTaskRunner> sync_task_runner)
+    : sync_task_runner_(std::move(sync_task_runner)),
       name_(name),
       sync_prefs_(sync_prefs),
       invalidator_(invalidator),

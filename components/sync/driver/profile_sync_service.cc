@@ -18,8 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -28,7 +26,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_base_switches.h"
@@ -634,12 +631,8 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
       // certain codepaths such as the user being signed out). To avoid that,
       // SyncPrefs is used to determine whether it's worth it.
       if (!sync_prefs_.GetCacheGuid().empty()) {
-        base::ThreadPool::PostTask(
-            FROM_HERE,
-            {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-            base::BindOnce(&DeleteLegacyDirectoryFilesAndNigoriStorage,
-                           sync_client_->GetSyncDataPath()));
+        sync_client_->GetSyncApiComponentFactory()
+            ->DeleteLegacyDirectoryFilesAndNigoriStorage();
       }
       sync_prefs_.ClearLocalSyncTransportData();
     }

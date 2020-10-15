@@ -38,6 +38,7 @@ class SyncApiComponentFactoryMock : public SyncApiComponentFactory {
                    invalidation::InvalidationService* invalidator,
                    syncer::SyncInvalidationsService* sync_invalidations_service,
                    const base::WeakPtr<SyncPrefs>& sync_prefs));
+  MOCK_METHOD0(DeleteLegacyDirectoryFilesAndNigoriStorage, void());
 };
 
 }  // namespace syncer

@@ -51,10 +51,9 @@ namespace browser_sync {
 // to handle these scenarios gracefully.
 class BrowserSyncClient : public syncer::SyncClient {
  public:
-  BrowserSyncClient();
-  ~BrowserSyncClient() override;
+  BrowserSyncClient() = default;
+  ~BrowserSyncClient() override = default;
 
-  base::FilePath GetSyncDataPath() final;
   virtual syncer::ModelTypeStoreService* GetModelTypeStoreService() = 0;
 
   // Returns a weak pointer to the ModelTypeControllerDelegate specified by

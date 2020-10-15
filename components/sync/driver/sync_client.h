@@ -48,8 +48,6 @@ class SyncClient {
 
   virtual signin::IdentityManager* GetIdentityManager() = 0;
 
-  virtual base::FilePath GetSyncDataPath() = 0;
-
   // Returns the path to the folder used for storing the local sync database.
   // It is only used when sync is running against a local backend.
   virtual base::FilePath GetLocalSyncBackendFolder() = 0;

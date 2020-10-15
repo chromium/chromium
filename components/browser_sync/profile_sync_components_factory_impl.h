@@ -83,6 +83,7 @@ class ProfileSyncComponentsFactoryImpl
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service,
       const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) override;
+  void DeleteLegacyDirectoryFilesAndNigoriStorage() override;
 
  private:
   // Factory function for ModelTypeController instances for models living on
@@ -120,6 +121,8 @@ class ProfileSyncComponentsFactoryImpl
   const char* history_disabled_pref_;
   const scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   const scoped_refptr<base::SequencedTaskRunner> db_thread_;
+  const scoped_refptr<base::SequencedTaskRunner>
+      engines_and_directory_deletion_thread_;
   const scoped_refptr<autofill::AutofillWebDataService>
       web_data_service_on_disk_;
   const scoped_refptr<autofill::AutofillWebDataService>

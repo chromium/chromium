@@ -6,7 +6,6 @@ import("//build/config/features.gni")
 
 static_library("browser_sync") {
   sources = [
-    "browser_sync_client.cc",
     "browser_sync_client.h",
     "browser_sync_switches.cc",
     "browser_sync_switches.h",

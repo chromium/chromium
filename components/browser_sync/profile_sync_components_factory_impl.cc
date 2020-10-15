@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
@@ -27,6 +29,7 @@
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/data_type_manager_impl.h"
@@ -135,6 +138,10 @@ ProfileSyncComponentsFactoryImpl::ProfileSyncComponentsFactoryImpl(
       history_disabled_pref_(history_disabled_pref),
       ui_thread_(ui_thread),
       db_thread_(db_thread),
+      engines_and_directory_deletion_thread_(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+               base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       web_data_service_on_disk_(web_data_service_on_disk),
       web_data_service_in_memory_(web_data_service_in_memory),
       profile_password_store_(profile_password_store),
@@ -398,7 +405,17 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
     const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) {
   return std::make_unique<syncer::SyncEngineImpl>(
       name, invalidator, sync_invalidation_service, sync_prefs,
-      sync_client_->GetModelTypeStoreService()->GetSyncDataPath());
+      sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
+      engines_and_directory_deletion_thread_);
+}
+
+void ProfileSyncComponentsFactoryImpl::
+    DeleteLegacyDirectoryFilesAndNigoriStorage() {
+  engines_and_directory_deletion_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &syncer::DeleteLegacyDirectoryFilesAndNigoriStorage,
+          sync_client_->GetModelTypeStoreService()->GetSyncDataPath()));
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>

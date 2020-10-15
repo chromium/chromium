@@ -52,6 +52,14 @@ class SyncApiComponentFactory {
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service,
       const base::WeakPtr<SyncPrefs>& sync_prefs) = 0;
+
+  // Deletes the directory database files from the sync data folder to cleanup
+  // all files. The main purpose is to delete the legacy Directory files
+  // (sqlite) but it also currently deletes the files corresponding to the
+  // modern NigoriStorageImpl.
+  // Upon calling this, the deletion is guaranteed to finish before a new engine
+  // returned by |CreateSyncEngine()| can do any proper work.
+  virtual void DeleteLegacyDirectoryFilesAndNigoriStorage() = 0;
 };
 
 }  // namespace syncer

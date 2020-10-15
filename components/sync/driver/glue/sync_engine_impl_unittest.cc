@@ -17,6 +17,8 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -182,10 +184,14 @@ class SyncEngineImplTest : public testing::Test {
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     ON_CALL(invalidator_, UpdateInterestedTopics(_, _))
         .WillByDefault(testing::Return(true));
+    auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     backend_ = std::make_unique<SyncEngineImpl>(
         "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
         sync_prefs_->AsWeakPtr(),
-        temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)));
+        temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
+        sync_task_runner);
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
