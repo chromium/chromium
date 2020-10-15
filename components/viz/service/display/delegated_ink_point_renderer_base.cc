@@ -14,6 +14,16 @@ DelegatedInkPointRendererBase::~DelegatedInkPointRendererBase() = default;
 
 void DelegatedInkPointRendererBase::InitMessagePipeline(
     mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver) {
+  // The remote end of this pipeline exists on a per-tab basis, so if tab A
+  // is using the feature and then tab B starts trying to use it, a new
+  // PendingReceiver will arrive here while |receiver_| is still bound to the
+  // remote in tab A. In this case, just reset |receiver_| so that tab A's
+  // remote is unbound and bind the new receiver to use the feature in tab B.
+  if (receiver_.is_bound()) {
+    receiver_.reset();
+    metadata_.reset();
+    points_.clear();
+  }
   receiver_.Bind(std::move(receiver));
 }
 
