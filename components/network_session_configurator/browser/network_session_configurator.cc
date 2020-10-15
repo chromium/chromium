@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -19,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -458,9 +460,10 @@ size_t GetQuicMaxPacketLength(const VariationParameters& quic_trial_params) {
 
 quic::ParsedQuicVersionVector GetQuicVersions(
     const VariationParameters& quic_trial_params) {
+  std::string trial_versions_str =
+      GetVariationParam(quic_trial_params, "quic_version");
   quic::ParsedQuicVersionVector trial_versions =
-      quic::ParseQuicVersionVectorString(
-          GetVariationParam(quic_trial_params, "quic_version"));
+      quic::ParseQuicVersionVectorString(trial_versions_str);
   const bool obsolete_versions_allowed = base::LowerCaseEqualsASCII(
       GetVariationParam(quic_trial_params, "obsolete_versions_allowed"),
       "true");
@@ -468,11 +471,39 @@ quic::ParsedQuicVersionVector GetQuicVersions(
     quic::ParsedQuicVersionVector filtered_versions;
     quic::ParsedQuicVersionVector obsolete_versions =
         net::ObsoleteQuicVersions();
+    bool found_obsolete_version = false;
     for (const quic::ParsedQuicVersion& version : trial_versions) {
       if (std::find(obsolete_versions.begin(), obsolete_versions.end(),
                     version) == obsolete_versions.end()) {
         filtered_versions.push_back(version);
+      } else {
+        found_obsolete_version = true;
       }
+    }
+    if (found_obsolete_version) {
+      UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.FinchObsoleteVersion", true);
+      // OQV prefix stands for Obsolete QUIC Version.
+      static base::debug::CrashKeyString* quic_versions_key =
+          base::debug::AllocateCrashKeyString(
+              "OQV_quic_versions", base::debug::CrashKeySize::Size32);
+      base::debug::ScopedCrashKeyString quic_versions_scoped_key(
+          quic_versions_key, trial_versions_str);
+      static base::debug::CrashKeyString* time_key =
+          base::debug::AllocateCrashKeyString(
+              "OQV_time", base::debug::CrashKeySize::Size32);
+      uint64_t seconds_since_epoch =
+          static_cast<uint64_t>(base::Time::Now().ToDoubleT());
+      seconds_since_epoch = (seconds_since_epoch / 3600) *
+                            3600;  // Only provide granularity of 1h.
+      std::string time_string = base::NumberToString(seconds_since_epoch);
+      base::debug::ScopedCrashKeyString time_scoped_key(time_key, time_string);
+      static base::debug::CrashKeyString* finch_seed_key =
+          base::debug::AllocateCrashKeyString(
+              "OQV_finch_seed", base::debug::CrashKeySize::Size32);
+      std::string finch_seed = variations::GetSeedVersion();
+      base::debug::ScopedCrashKeyString finch_scoped_key(finch_seed_key,
+                                                         finch_seed);
+      base::debug::DumpWithoutCrashing();
     }
     trial_versions = filtered_versions;
   }
