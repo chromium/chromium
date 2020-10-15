@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "chromeos/lacros/get_feedback_data_callback.h"
+
 namespace chromeos {
 
 // Interface to inject Chrome dependent behavior into LacrosChromeServiceImpl
@@ -23,6 +25,9 @@ class LacrosChromeServiceDelegate {
   // {browser version} {channel}
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
   virtual std::string GetChromeVersion() = 0;
+
+  // Gets lacros feedback data.
+  virtual void GetFeedbackData(GetFeedbackDataCallback callback) = 0;
 };
 
 }  // namespace chromeos

@@ -54,6 +54,7 @@ class TestLacrosChromeService : public crosapi::mojom::LacrosChromeService {
   }
 
   void NewWindow(NewWindowCallback callback) override {}
+  void GetFeedbackData(GetFeedbackDataCallback callback) override {}
 
   bool init_is_called() { return init_is_called_; }
 

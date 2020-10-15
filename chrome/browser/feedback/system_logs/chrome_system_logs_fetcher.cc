@@ -15,8 +15,10 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
 #if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/system_logs/command_line_log_source.h"
+#include "chrome/browser/chromeos/system_logs/crosapi_system_log_source.h"
 #include "chrome/browser/chromeos/system_logs/dbus_log_source.h"
 #include "chrome/browser/chromeos/system_logs/debug_daemon_log_source.h"
 #include "chrome/browser/chromeos/system_logs/device_event_log_source.h"
@@ -64,6 +66,14 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   fetcher->AddSource(std::make_unique<NetworkHealthSource>(scrub_data));
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
+
+  // Add CrosapiSystemLogSource to get lacros system information log data
+  // if Lacros is running and the crosapi version supports the Lacros remote
+  // data source.
+  if (crosapi::BrowserManager::Get()->IsRunning() &&
+      crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
+    fetcher->AddSource(std::make_unique<CrosapiSystemLogSource>());
+  }
 #endif
 
 #if BUILDFLAG(IS_LACROS)

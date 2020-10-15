@@ -11,6 +11,7 @@ import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "mojo/public/mojom/base/token.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
 
 // LacrosInfo is a set of parameters passed to ash from lacros-chrome
@@ -173,4 +174,12 @@ interface LacrosChromeService {
   // Opens a new window in lacros-chrome with, currently, the last used profile.
   // The callback is called on the command execution.
   NewWindow@1() => ();
+
+  // Returns lacros feedback data used for generating feedback report in
+  // a dictionary object, each entry representing a log entry in the feedback
+  // report, for example, "Lacros crash_report_ids: xxx",
+  // "Lacros extensions: xxx", "Lacros mem_usage: xxx", etc.
+  [MinVersion=6]
+  GetFeedbackData@3() => (
+      mojo_base.mojom.DictionaryValue feedback_info);
 };

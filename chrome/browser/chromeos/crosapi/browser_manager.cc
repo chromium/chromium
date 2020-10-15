@@ -56,6 +56,10 @@ namespace {
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
+// The min version of LacrosChromeService mojo interface that supports
+// GetFeedbackData API.
+uint32_t kGetFeedbackDataMinVersion = 6;
+
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
 }
@@ -149,7 +153,8 @@ BrowserManager::BrowserManager(
   // Wait to query the flag until the user has entered the session. Enterprise
   // devices restart Chrome during login to apply flags. We don't want to run
   // the flag-off cleanup logic until we know we have the final flag state.
-  session_manager::SessionManager::Get()->AddObserver(this);
+  if (session_manager::SessionManager::Get())
+    session_manager::SessionManager::Get()->AddObserver(this);
 
   std::string socket_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -164,7 +169,8 @@ BrowserManager::BrowserManager(
 BrowserManager::~BrowserManager() {
   // Unregister, just in case the manager is destroyed before
   // OnUserSessionStarted() is called.
-  session_manager::SessionManager::Get()->RemoveObserver(this);
+  if (session_manager::SessionManager::Get())
+    session_manager::SessionManager::Get()->RemoveObserver(this);
 
   // Try to kill the lacros-chrome binary.
   if (lacros_process_.IsValid())
@@ -177,6 +183,10 @@ BrowserManager::~BrowserManager() {
 bool BrowserManager::IsReady() const {
   return state_ != State::NOT_INITIALIZED && state_ != State::LOADING &&
          state_ != State::UNAVAILABLE;
+}
+
+bool BrowserManager::IsRunning() const {
+  return state_ == State::RUNNING;
 }
 
 void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
@@ -211,6 +221,24 @@ void BrowserManager::NewWindow() {
 
   DCHECK(lacros_chrome_service_.is_connected());
   lacros_chrome_service_->NewWindow(base::DoNothing());
+}
+
+bool BrowserManager::GetFeedbackDataSupported() const {
+  return lacros_chrome_service_version_ >= kGetFeedbackDataMinVersion;
+}
+
+void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
+  DCHECK(lacros_chrome_service_.is_connected());
+  DCHECK(GetFeedbackDataSupported());
+  lacros_chrome_service_->GetFeedbackData(std::move(callback));
+}
+
+void BrowserManager::AddObserver(BrowserManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void BrowserManager::Start() {
@@ -305,6 +333,10 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
       base::BindOnce(&BrowserManager::OnAshChromeServiceReceiverReceived,
                      weak_factory_.GetWeakPtr()));
 
+  lacros_chrome_service_.QueryVersion(
+      base::BindOnce(&BrowserManager::OnLacrosChromeServiceVersionReady,
+                     weak_factory_.GetWeakPtr()));
+
   // Create the lacros-chrome subprocess.
   base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
   // If lacros_process_ already exists, because it does not call waitpid(2),
@@ -346,6 +378,8 @@ void BrowserManager::OnMojoDisconnected() {
       base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_)),
       base::BindOnce(&BrowserManager::OnLacrosChromeTerminated,
                      weak_factory_.GetWeakPtr()));
+
+  NotifyMojoDisconnected();
 }
 
 void BrowserManager::OnLacrosChromeTerminated() {
@@ -401,6 +435,15 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path) {
   if (state_ == State::STOPPED && GetLaunchOnLoginPref()) {
     Start();
   }
+}
+
+void BrowserManager::NotifyMojoDisconnected() {
+  for (auto& observer : observers_)
+    observer.OnMojoDisconnected();
+}
+
+void BrowserManager::OnLacrosChromeServiceVersionReady(uint32_t version) {
+  lacros_chrome_service_version_ = version;
 }
 
 }  // namespace crosapi

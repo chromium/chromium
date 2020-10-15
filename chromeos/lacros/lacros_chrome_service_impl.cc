@@ -75,6 +75,13 @@ class LacrosChromeServiceNeverBlockingState
         std::move(callback));
   }
 
+  void GetFeedbackData(GetFeedbackDataCallback callback) override {
+    owner_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LacrosChromeServiceImpl::GetFeedbackDataAffineSequence,
+                       owner_, std::move(callback)));
+  }
+
   // Unlike most of other methods of this class, this is called on the
   // affined thread. Specifically, it is intended to be called before starting
   // the message pumping of the affined thread to pass the initialization
@@ -386,6 +393,12 @@ void LacrosChromeServiceImpl::BindScreenManagerReceiver(
 void LacrosChromeServiceImpl::NewWindowAffineSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
   delegate_->NewWindow();
+}
+
+void LacrosChromeServiceImpl::GetFeedbackDataAffineSequence(
+    GetFeedbackDataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  delegate_->GetFeedbackData(std::move(callback));
 }
 
 int LacrosChromeServiceImpl::AshChromeServiceVersion() {

@@ -19,6 +19,7 @@
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "chromeos/lacros/get_feedback_data_callback.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -179,6 +180,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // Creates a new window on the affine sequence.
   void NewWindowAffineSequence();
+
+  // Gets feedback data on the affine sequence.
+  void GetFeedbackDataAffineSequence(GetFeedbackDataCallback callback);
 
   // Returns ash's version of the AshChromeService mojo interface version. This
   // determines which interface methods are available. This is safe to call from

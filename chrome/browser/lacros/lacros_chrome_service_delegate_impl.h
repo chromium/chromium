@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_LACROS_LACROS_CHROME_SERVICE_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_LACROS_LACROS_CHROME_SERVICE_DELEGATE_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "components/feedback/system_logs/system_logs_source.h"
 
 // Chrome implementation of LacrosChromeServiceDelegate.
 class LacrosChromeServiceDelegateImpl
@@ -21,6 +23,14 @@ class LacrosChromeServiceDelegateImpl
   // chromeos::LacrosChromeServiceDelegate:
   void NewWindow() override;
   std::string GetChromeVersion() override;
+  void GetFeedbackData(GetFeedbackDataCallback callback) override;
+
+ private:
+  void OnSystemInformationReady(
+      std::unique_ptr<system_logs::SystemLogsResponse> sys_info);
+
+  GetFeedbackDataCallback get_feedback_data_callback_;
+  base::WeakPtrFactory<LacrosChromeServiceDelegateImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_CHROME_SERVICE_DELEGATE_IMPL_H_
