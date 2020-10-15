@@ -49,9 +49,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -865,16 +863,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void updateMicButtonState() {}
 
         @Override
-        public void onTabLoadingNTP(NewTabPage ntp) {}
-
-        @Override
         public void setProfileSupplier(ObservableSupplier<Profile> profileSupplier) {}
-
-        @Override
-        public void setUnfocusedWidth(int unfocusedWidth) {}
-
-        @Override
-        public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {}
 
         // Implements FakeBoxDelegate.
         @Override
@@ -888,9 +877,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText,
                 @LocationBar.OmniboxFocusReason int reason) {}
-
-        @Override
-        public void setUrlFocusChangeFraction(float fraction) {}
 
         @Override
         public boolean isCurrentPage(NativePage nativePage) {

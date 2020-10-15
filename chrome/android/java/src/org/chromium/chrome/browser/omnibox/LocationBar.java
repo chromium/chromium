@@ -15,7 +15,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -66,33 +65,20 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
         int NUM_ENTRIES = 14;
     }
 
-    /**
-     * Handle all necessary tasks that can be delayed until initialization completes.
-     */
+    /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
 
-    /**
-     * Handles native dependent initialization for this class.
-     */
+    /** Handles native dependent initialization for this class. */
     void onNativeLibraryReady();
 
-    /**
-     * Triggered when the current tab has changed to a {@link NewTabPage}.
-     */
-    void onTabLoadingNTP(NewTabPage ntp);
+    /** Triggered when the current tab has changed to a {@link NewTabPage}. */
+    default void onTabLoadingNTP(NewTabPage ntp){};
 
     /**
      * Call to force the UI to update the state of various buttons based on whether or not the
      * current tab is incognito.
      */
     void updateVisualsForState();
-
-    /**
-     * Updates progress of current the URL focus change animation.
-     *
-     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
-     */
-    void setUrlFocusChangeFraction(float fraction);
 
     /**
      * Sets the displayed URL to be the URL of the page currently showing.
@@ -103,40 +89,32 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
      */
     void setUrlToPageUrl();
 
-    /**
-     * Sets the displayed title to the page title.
-     */
+    /** Sets the displayed title to the page title. */
     void setTitleToPageTitle();
 
     /**
      * Sets whether the location bar should have a layout showing a title.
+     *
      * @param showTitle Whether the title should be shown.
      */
     void setShowTitle(boolean showTitle);
 
     /**
      * Update the visuals based on a loading state change.
+     *
      * @param updateUrl Whether to update the URL as a result of the this call.
      */
     void updateLoadingState(boolean updateUrl);
 
-    /**
-     * Sets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state.
-     */
+    /** Sets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
     void setToolbarDataProvider(ToolbarDataProvider model);
 
-    /**
-     * Sets the {@link OverviewModeBehavior}.
-     */
-    void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior);
-
-    /**
-     * Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state.
-     */
+    /** Gets the {@link ToolbarDataProvider} to be used for accessing {@link Toolbar} state. */
     ToolbarDataProvider getToolbarDataProvider();
 
     /**
      * Initialize controls that will act as hooks to various functions.
+     *
      * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
      * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
      * @param activityTabProvider An {@link ActivityTabProvider} to access the activity's current
@@ -155,14 +133,12 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
     /**
      * Triggers the cursor to be visible in the UrlBar without triggering any of the focus animation
      * logic.
-     * <p>
-     * Only applies to devices with a hardware keyboard attached.
+     *
+     * <p>Only applies to devices with a hardware keyboard attached.
      */
     void showUrlBarCursorWithoutFocusAnimations();
 
-    /**
-     * Selects all of the editable text in the UrlBar.
-     */
+    /** Selects all of the editable text in the {@link UrlBar}. */
     void selectAll();
 
     /**
@@ -171,14 +147,10 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
      */
     void revertChanges();
 
-    /**
-     * Updates the security icon displayed in the LocationBar.
-     */
+    /** Updates the security icon displayed in the LocationBar. */
     void updateStatusIcon();
 
-    /**
-     * @return The {@link ViewGroup} that this container holds.
-     */
+    /** Returns {@link ViewGroup} that this container holds. */
     View getContainerView();
 
     /**
@@ -189,34 +161,16 @@ public interface LocationBar extends UrlBarDelegate, FakeboxDelegate, Destroyabl
      */
     View getSecurityIconView();
 
-    /**
-     * Updates the state of the mic button if there is one.
-     */
+    /** Updates the state of the mic button if there is one. */
     void updateMicButtonState();
 
-    /**
-     * Sets the callback to be used by default for text editing action bar.
-     * @param callback The callback to use.
-     */
+    /** Sets the callback to be used by default for text editing action bar. */
     void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback);
-
-    /**
-     * Called to set the width of the location bar when the url bar is not focused.
-     *
-     * Immediately after the animation to transition the URL bar from focused to unfocused finishes,
-     * the layout width returned from #getMeasuredWidth() can differ from the final unfocused width
-     * (e.g. this value) until the next layout pass is complete.
-     *
-     * This value may be used to determine whether optional child views should be visible in the
-     * unfocused location bar.
-     *
-     * @param unfocusedWidth The unfocused location bar width.
-     */
-    void setUnfocusedWidth(int unfocusedWidth);
 
     /**
      * Sets the (observable) supplier of the active profile. This supplier will notify observers of
      * changes to the active profile, e.g. when selecting an incognito tab model.
+     *
      * @param profileSupplier The supplier of the active profile.
      */
     void setProfileSupplier(ObservableSupplier<Profile> profileSupplier);

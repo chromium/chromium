@@ -73,30 +73,6 @@ public final class LocationBarCoordinator implements LocationBar {
         }
     }
 
-    /**
-     * Returns the {@link LocationBarCoordinatorPhone} for this coordinator.
-     *
-     * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
-     *         type.
-     */
-    @NonNull
-    public LocationBarCoordinatorPhone getPhoneCoordinator() {
-        assert mSubCoordinator != null;
-        return (LocationBarCoordinatorPhone) mSubCoordinator;
-    }
-
-    /**
-     * Returns the {@link LocationBarCoordinatorTablet} for this coordinator.
-     *
-     * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
-     *         type.
-     */
-    @NonNull
-    public LocationBarCoordinatorTablet getTabletCoordinator() {
-        assert mSubCoordinator != null;
-        return (LocationBarCoordinatorTablet) mSubCoordinator;
-    }
-
     @Override
     public void destroy() {
         if (mSubCoordinator != null) {
@@ -130,11 +106,6 @@ public final class LocationBarCoordinator implements LocationBar {
     }
 
     @Override
-    public void setUrlFocusChangeFraction(float fraction) {
-        mLocationBarLayout.setUrlFocusChangeFraction(fraction);
-    }
-
-    @Override
     public void setUrlToPageUrl() {
         mLocationBarLayout.setUrlToPageUrl();
     }
@@ -157,11 +128,6 @@ public final class LocationBarCoordinator implements LocationBar {
     @Override
     public void setToolbarDataProvider(ToolbarDataProvider dataProvider) {
         mLocationBarLayout.setToolbarDataProvider(dataProvider);
-    }
-
-    @Override
-    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        mLocationBarLayout.setOverviewModeBehavior(overviewModeBehavior);
     }
 
     @Override
@@ -217,11 +183,6 @@ public final class LocationBarCoordinator implements LocationBar {
     @Override
     public void setDefaultTextEditActionModeCallback(ToolbarActionModeCallback callback) {
         mLocationBarLayout.setDefaultTextEditActionModeCallback(callback);
-    }
-
-    @Override
-    public void setUnfocusedWidth(int unfocusedWidth) {
-        mLocationBarLayout.setUnfocusedWidth(unfocusedWidth);
     }
 
     @Override
@@ -293,5 +254,59 @@ public final class LocationBarCoordinator implements LocationBar {
     @Override
     public void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {
         mLocationBarLayout.removeUrlFocusChangeListener(listener);
+    }
+
+    /**
+     * Returns the {@link LocationBarCoordinatorPhone} for this coordinator.
+     *
+     * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
+     *         type.
+     */
+    @NonNull
+    public LocationBarCoordinatorPhone getPhoneCoordinator() {
+        assert mSubCoordinator != null;
+        return (LocationBarCoordinatorPhone) mSubCoordinator;
+    }
+
+    /**
+     * Returns the {@link LocationBarCoordinatorTablet} for this coordinator.
+     *
+     * @throws ClassCastException if this coordinator holds a {@link SubCoordinator} of a different
+     *         type.
+     */
+    @NonNull
+    public LocationBarCoordinatorTablet getTabletCoordinator() {
+        assert mSubCoordinator != null;
+        return (LocationBarCoordinatorTablet) mSubCoordinator;
+    }
+
+    /** Sets the {@link OverviewModeBehavior}. */
+    public void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
+        mLocationBarLayout.setOverviewModeBehavior(overviewModeBehavior);
+    }
+
+    /**
+     * Updates progress of current the URL focus change animation.
+     *
+     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
+     */
+    public void setUrlFocusChangeFraction(float fraction) {
+        mLocationBarLayout.setUrlFocusChangeFraction(fraction);
+    }
+
+    /**
+     * Called to set the width of the location bar when the url bar is not focused.
+     *
+     * <p>Immediately after the animation to transition the URL bar from focused to unfocused
+     * finishes, the layout width returned from #getMeasuredWidth() can differ from the final
+     * unfocused width (e.g. this value) until the next layout pass is complete.
+     *
+     * <p>This value may be used to determine whether optional child views should be visible in the
+     * unfocused location bar.
+     *
+     * @param unfocusedWidth The unfocused location bar width.
+     */
+    public void setUnfocusedWidth(int unfocusedWidth) {
+        mLocationBarLayout.setUnfocusedWidth(unfocusedWidth);
     }
 }

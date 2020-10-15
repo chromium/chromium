@@ -92,6 +92,120 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     /**
+     * Updates progress of current the URL focus change animation.
+     *
+     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
+     */
+    @Override
+    public void setUrlFocusChangeFraction(float fraction) {
+        super.setUrlFocusChangeFraction(fraction);
+
+        if (fraction > 0f) {
+            mUrlActionContainer.setVisibility(VISIBLE);
+        } else if (fraction == 0f && !isUrlFocusChangeInProgress()) {
+            // If a URL focus change is in progress, then it will handle setting the visibility
+            // correctly after it completes.  If done here, it would cause the URL to jump due
+            // to a badly timed layout call.
+            mUrlActionContainer.setVisibility(GONE);
+        }
+
+        updateButtonVisibility();
+        mStatusCoordinator.setUrlFocusChangePercent(fraction);
+    }
+
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (hasFocus) {
+            // Remove the focus of this view once the URL field has taken focus as this view no
+            // longer needs it.
+            setFocusable(false);
+            setFocusableInTouchMode(false);
+        }
+        setUrlFocusChangeInProgress(true);
+        updateShouldAnimateIconChanges();
+        super.onUrlFocusChange(hasFocus);
+    }
+
+    @Override
+    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        boolean needsCanvasRestore = false;
+        if (child == mUrlBar && mUrlActionContainer.getVisibility() == VISIBLE) {
+            canvas.save();
+
+            // Clip the URL bar contents to ensure they do not draw under the URL actions during
+            // focus animations.  Based on the RTL state of the location bar, the url actions
+            // container can be on the left or right side, so clip accordingly.
+            if (mUrlBar.getLeft() < mUrlActionContainer.getLeft()) {
+                canvas.clipRect(0, 0, (int) mUrlActionContainer.getX(), getBottom());
+            } else {
+                canvas.clipRect(mUrlActionContainer.getX() + mUrlActionContainer.getWidth(), 0,
+                        getWidth(), getBottom());
+            }
+            needsCanvasRestore = true;
+        }
+        boolean retVal = super.drawChild(canvas, child, drawingTime);
+        if (needsCanvasRestore) {
+            canvas.restore();
+        }
+        return retVal;
+    }
+
+    @Override
+    public void finishUrlFocusChange(boolean hasFocus) {
+        super.finishUrlFocusChange(hasFocus);
+        if (!hasFocus) {
+            mUrlActionContainer.setVisibility(GONE);
+        }
+        mStatusCoordinator.onUrlAnimationFinished(hasFocus);
+    }
+
+    @Override
+    protected void updateButtonVisibility() {
+        super.updateButtonVisibility();
+        updateMicButtonVisibility();
+    }
+
+    @Override
+    public void updateShouldAnimateIconChanges() {
+        notifyShouldAnimateIconChanges(isUrlBarFocused() || isUrlFocusChangeInProgress());
+    }
+
+    @Override
+    public void setShowIconsWhenUrlFocused(boolean showIcon) {
+        super.setShowIconsWhenUrlFocused(showIcon);
+        mFirstVisibleFocusedView = showIcon ? mStatusView : mUrlBar;
+        mStatusCoordinator.setShowIconsWhenUrlFocused(showIcon);
+    }
+
+    @Override
+    public void updateVisualsForState() {
+        super.updateVisualsForState();
+        boolean isIncognito = getToolbarDataProvider().isIncognito();
+        setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
+        updateStatusVisibility();
+    }
+
+    @Override
+    public void onTabLoadingNTP(NewTabPage ntp) {
+        super.onTabLoadingNTP(ntp);
+        updateStatusVisibility();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        try (TraceEvent e = TraceEvent.scoped("LocationBarPhone.onMeasure")) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        try (TraceEvent e = TraceEvent.scoped("LocationBarPhone.onLayout")) {
+            super.onLayout(changed, left, top, right, bottom);
+        }
+    }
+
+    /**
      * @return Width of child views before the first view that would be visible when location bar is
      *         focused. The first visible, focused view should be either url bar or status icon.
      */
@@ -124,6 +238,17 @@ class LocationBarPhone extends LocationBarLayout {
             animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
             animators.add(animator);
         }
+    }
+
+    /**
+     * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
+     *
+     * <p>TODO(1133482): Hide this View interaction if possible.
+     *
+     * @see View#getLayoutParams()
+     */
+    public FrameLayout.LayoutParams getFrameLayoutParams() {
+        return (FrameLayout.LayoutParams) getLayoutParams();
     }
 
     /**
@@ -210,127 +335,9 @@ class LocationBarPhone extends LocationBarLayout {
         return isRtl ? -translation : translation;
     }
 
-    /**
-     * Updates progress of current the URL focus change animation.
-     *
-     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
-     */
-    @Override
-    public void setUrlFocusChangeFraction(float fraction) {
-        super.setUrlFocusChangeFraction(fraction);
-
-        if (fraction > 0f) {
-            mUrlActionContainer.setVisibility(VISIBLE);
-        } else if (fraction == 0f && !isUrlFocusChangeInProgress()) {
-            // If a URL focus change is in progress, then it will handle setting the visibility
-            // correctly after it completes.  If done here, it would cause the URL to jump due
-            // to a badly timed layout call.
-            mUrlActionContainer.setVisibility(GONE);
-        }
-
-        updateButtonVisibility();
-        mStatusCoordinator.setUrlFocusChangePercent(fraction);
-    }
-
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        if (hasFocus) {
-            // Remove the focus of this view once the URL field has taken focus as this view no
-            // longer needs it.
-            setFocusable(false);
-            setFocusableInTouchMode(false);
-        }
-        setUrlFocusChangeInProgress(true);
-        updateShouldAnimateIconChanges();
-        super.onUrlFocusChange(hasFocus);
-    }
-
-    @Override
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        boolean needsCanvasRestore = false;
-        if (child == mUrlBar && mUrlActionContainer.getVisibility() == VISIBLE) {
-            canvas.save();
-
-            // Clip the URL bar contents to ensure they do not draw under the URL actions during
-            // focus animations.  Based on the RTL state of the location bar, the url actions
-            // container can be on the left or right side, so clip accordingly.
-            if (mUrlBar.getLeft() < mUrlActionContainer.getLeft()) {
-                canvas.clipRect(0, 0, (int) mUrlActionContainer.getX(), getBottom());
-            } else {
-                canvas.clipRect(mUrlActionContainer.getX() + mUrlActionContainer.getWidth(), 0,
-                        getWidth(), getBottom());
-            }
-            needsCanvasRestore = true;
-        }
-        boolean retVal = super.drawChild(canvas, child, drawingTime);
-        if (needsCanvasRestore) {
-            canvas.restore();
-        }
-        return retVal;
-    }
-
-    @Override
-    public void finishUrlFocusChange(boolean hasFocus) {
-        super.finishUrlFocusChange(hasFocus);
-        if (!hasFocus) {
-            mUrlActionContainer.setVisibility(GONE);
-        }
-        mStatusCoordinator.onUrlAnimationFinished(hasFocus);
-    }
-
-    public FrameLayout.LayoutParams getFrameLayoutParams() {
-        return (FrameLayout.LayoutParams) getLayoutParams();
-    }
-
-    @Override
-    protected void updateButtonVisibility() {
-        super.updateButtonVisibility();
-        updateMicButtonVisibility();
-    }
-
-    @Override
-    public void updateShouldAnimateIconChanges() {
-        notifyShouldAnimateIconChanges(isUrlBarFocused() || isUrlFocusChangeInProgress());
-    }
-
-    @Override
-    public void setShowIconsWhenUrlFocused(boolean showIcon) {
-        super.setShowIconsWhenUrlFocused(showIcon);
-        mFirstVisibleFocusedView = showIcon ? mStatusView : mUrlBar;
-        mStatusCoordinator.setShowIconsWhenUrlFocused(showIcon);
-    }
-
     private int getAdditionalOffsetForNTP() {
         return getResources().getDimensionPixelSize(R.dimen.sei_search_box_lateral_padding)
                 - getResources().getDimensionPixelSize(R.dimen.sei_location_bar_lateral_padding);
-    }
-
-    @Override
-    public void updateVisualsForState() {
-        super.updateVisualsForState();
-        boolean isIncognito = getToolbarDataProvider().isIncognito();
-        setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito));
-        updateStatusVisibility();
-    }
-
-    @Override
-    public void onTabLoadingNTP(NewTabPage ntp) {
-        super.onTabLoadingNTP(ntp);
-        updateStatusVisibility();
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        try (TraceEvent e = TraceEvent.scoped("LocationBarPhone.onMeasure")) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        try (TraceEvent e = TraceEvent.scoped("LocationBarPhone.onLayout")) {
-            super.onLayout(changed, left, top, right, bottom);
-        }
     }
 
     /** Update the status visibility according to the current state held in LocationBar. */

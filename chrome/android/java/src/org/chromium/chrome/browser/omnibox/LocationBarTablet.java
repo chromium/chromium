@@ -141,11 +141,6 @@ class LocationBarTablet extends LocationBarLayout {
         return selectedTarget.onTouchEvent(event);
     }
 
-    // Returns amount by which to adjust to move value inside the given range.
-    private static float distanceToRange(float min, float max, float value) {
-        return value < min ? (min - value) : value > max ? (max - value) : 0;
-    }
-
     @Override
     public void handleUrlFocusAnimation(final boolean hasFocus) {
         super.handleUrlFocusAnimation(hasFocus);
@@ -181,15 +176,6 @@ class LocationBarTablet extends LocationBarLayout {
         });
         setUrlFocusChangeInProgress(true);
         mUrlFocusChangeAnimator.start();
-    }
-
-    /**
-     * @param shouldShowButtons Whether buttons should be displayed in the URL bar when it's not
-     *                          focused.
-     */
-    public void setShouldShowButtonsWhenUnfocused(boolean shouldShowButtons) {
-        mShouldShowButtonsWhenUnfocused = shouldShowButtons;
-        updateButtonVisibility();
     }
 
     /**
@@ -260,6 +246,15 @@ class LocationBarTablet extends LocationBarLayout {
         if (mAnimatingWidthChange) {
             setWidthChangeAnimationFraction(mWidthChangeFraction);
         }
+    }
+
+    /**
+     * @param shouldShowButtons Whether buttons should be displayed in the URL bar when it's not
+     *                          focused.
+     */
+    public void setShouldShowButtonsWhenUnfocused(boolean shouldShowButtons) {
+        mShouldShowButtonsWhenUnfocused = shouldShowButtons;
+        updateButtonVisibility();
     }
 
     /**
@@ -401,6 +396,11 @@ class LocationBarTablet extends LocationBarLayout {
         }
 
         return animators;
+    }
+
+    /** Returns amount by which to adjust to move value inside the given range. */
+    private static float distanceToRange(float min, float max, float value) {
+        return value < min ? (min - value) : value > max ? (max - value) : 0;
     }
 
     /**
