@@ -372,6 +372,12 @@
       <structure name="IDR_OS_SETTINGS_DETAILED_BUILD_INFO_HTML"
                  file="chromeos/os_about_page/detailed_build_info.html"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_EDIT_HOSTNAME_DIALOG_HTML"
+                 file="chromeos/os_about_page/edit_hostname_dialog.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_EDIT_HOSTNAME_DIALOG_JS"
+                 file="chromeos/os_about_page/edit_hostname_dialog.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_UPDATE_WARNING_DIALOG_HTML"
                  file="chromeos/os_about_page/update_warning_dialog.html"
                  compress="false" type="chrome_html" />

@@ -1,0 +1,50 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-selector/iron-selector.html">
+<link rel="import" href="../../about_page/about_page_browser_proxy.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="edit-hostname-dialog">
+  <template>
+    <style include="settings-shared">
+      cr-input {
+        --cr-input-error-display: none;
+      }
+
+      #input-subtext {
+        display: flex;
+      }
+
+      #input-subtext span:last-child {
+        margin-inline-start: auto;
+      }
+    </style>
+    <cr-dialog id="dialog" show-on-attach>
+      <div slot="title">$i18n{aboutEditDeviceName}</div>
+      <div slot="body">
+        <div>$i18n{aboutDeviceNameInfo}</div>
+        <cr-input></cr-input>
+        <div id="input-subtext">
+          <span>$i18n{aboutDeviceNameConstraints}</span>
+          <span>1/15</span>
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onDoneTap_">
+          $i18n{done}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="edit_hostname_dialog.js"></script>
+</dom-module>

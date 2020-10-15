@@ -219,6 +219,12 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutChannelDialogDev", IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_DEV},
     {"aboutChannelDialogStable", IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_STABLE},
 
+    // About page, edit device name dialog.
+    {"aboutEditDeviceName", IDS_SETTINGS_ABOUT_PAGE_EDIT_DEVICE_NAME},
+    {"aboutDeviceNameInfo", IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO},
+    {"aboutDeviceNameConstraints",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS},
+
     // About page, update warning dialog.
     {"aboutUpdateWarningMessage",
      IDS_SETTINGS_ABOUT_PAGE_UPDATE_WARNING_MESSAGE},

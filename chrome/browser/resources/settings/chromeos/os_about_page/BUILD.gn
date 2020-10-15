@@ -9,6 +9,7 @@ js_type_check("closure_compile") {
   deps = [
     ":channel_switcher_dialog",
     ":detailed_build_info",
+    ":edit_hostname_dialog",
     ":os_about_page",
   ]
 }
@@ -33,6 +34,8 @@ js_library("os_about_page") {
 
 js_library("detailed_build_info") {
   deps = [
+    ":channel_switcher_dialog",
+    ":edit_hostname_dialog",
     "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
@@ -52,11 +55,19 @@ js_library("channel_switcher_dialog") {
   ]
 }
 
+js_library("edit_hostname_dialog") {
+  deps = [
+    "../../about_page:about_page_browser_proxy",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}
+
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":channel_switcher_dialog.m",
     ":detailed_build_info.m",
+    ":edit_hostname_dialog.m",
     ":os_about_page.m",
     ":update_warning_dialog.m",
   ]
@@ -76,6 +87,8 @@ js_library("channel_switcher_dialog.m") {
 js_library("detailed_build_info.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/detailed_build_info.m.js" ]
   deps = [
+    ":channel_switcher_dialog.m",
+    ":edit_hostname_dialog.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
@@ -85,6 +98,17 @@ js_library("detailed_build_info.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":detailed_build_info_module" ]
+}
+
+js_library("edit_hostname_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/edit_hostname_dialog.m.js" ]
+  deps = [
+    "../../about_page:about_page_browser_proxy.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":edit_hostname_dialog_module" ]
 }
 
 js_library("os_about_page.m") {
@@ -122,6 +146,7 @@ group("polymer3_elements") {
   public_deps = [
     ":channel_switcher_dialog_module",
     ":detailed_build_info_module",
+    ":edit_hostname_dialog_module",
     ":os_about_page_module",
     ":update_warning_dialog_module",
   ]
@@ -139,6 +164,15 @@ polymer_modulizer("channel_switcher_dialog") {
 polymer_modulizer("detailed_build_info") {
   js_file = "detailed_build_info.js"
   html_file = "detailed_build_info.html"
+  html_type = "dom-module"
+  migrated_imports = settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("edit_hostname_dialog") {
+  js_file = "edit_hostname_dialog.js"
+  html_file = "edit_hostname_dialog.html"
   html_type = "dom-module"
   migrated_imports = settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
