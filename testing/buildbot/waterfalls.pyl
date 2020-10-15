@@ -1596,7 +1596,7 @@
           'isolated_scripts': 'win_specific_isolated_scripts',
         },
         'additional_compile_targets': [
-          'all',
+          'chrome_official_builder',
         ],
       },
       'ToTWinThinLTO64': {
@@ -1608,7 +1608,7 @@
           'isolated_scripts': 'win_specific_isolated_scripts',
         },
         'additional_compile_targets': [
-          'all',
+          'chrome_official_builder',
         ],
       },
       'ToTiOS': {

@@ -38600,7 +38600,7 @@
   },
   "ToTWinOfficial": {
     "additional_compile_targets": [
-      "all"
+      "chrome_official_builder"
     ],
     "gtest_tests": [
       {
@@ -39873,7 +39873,7 @@
   },
   "ToTWinThinLTO64": {
     "additional_compile_targets": [
-      "all"
+      "chrome_official_builder"
     ],
     "gtest_tests": [
       {
