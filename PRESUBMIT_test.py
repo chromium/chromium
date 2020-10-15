@@ -2595,6 +2595,11 @@ class NoProductionJavaCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
       MockFile('dir/java/src/foo.java', ['FooForTests() {']),
       MockFile('dir/java/src/bar.java', ['// FooForTest();']),
       MockFile('dir/java/src/bar2.java', ['x = 1; // FooForTest();']),
+      MockFile('dir/java/src/bar3.java', ['@VisibleForTesting']),
+      MockFile('dir/java/src/bar4.java', ['@VisibleForTesting()']),
+      MockFile('dir/java/src/bar5.java', [
+        '@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)'
+      ]),
       MockFile('dir/javatests/src/baz.java', ['FooForTest(', 'y', ');']),
       MockFile('dir/junit/src/baz.java', ['FooForTest(', 'y', ');']),
       MockFile('dir/junit/src/javadoc.java', [

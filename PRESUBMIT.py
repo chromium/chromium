@@ -1493,7 +1493,7 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
   # Describes an occurrence of "ForTest*" inside a // comment.
   comment_re = input_api.re.compile(r'//.*%s' % name_pattern)
   # Describes @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-  annotation_re = input_api.re.compile(r'@VisibleForTesting\(otherwise')
+  annotation_re = input_api.re.compile(r'@VisibleForTesting\(')
   # Catch calls.
   inclusion_re = input_api.re.compile(r'(%s)\s*\(' % name_pattern)
   # Ignore definitions. (Comments are ignored separately.)
