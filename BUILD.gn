@@ -443,6 +443,7 @@ group("gn_all") {
       "//chromeos:chromeos_unittests",
       "//chromeos/components:chromeos_components_unittests",
       "//chromeos/components/proximity_auth:proximity_auth_unittests",
+      "//components/exo/wayland:wayland_client_compatibility_tests",
       "//components/session_manager/core",
       "//ui/chromeos:ui_chromeos_unittests",
     ]

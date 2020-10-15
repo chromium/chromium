@@ -470,6 +470,8 @@ test("wayland_client_perftests") {
     "clients/test/run_all_client_perftests.cc",
     "clients/test/wayland_client_test.cc",
     "clients/test/wayland_client_test.h",
+    "clients/test/wayland_client_test_server.cc",
+    "clients/test/wayland_client_test_server.h",
   ]
 
   deps = [
@@ -505,6 +507,43 @@ test("wayland_client_perftests") {
 
     deps += [ "//ash:test_support" ]
   }
+}
+
+test("wayland_client_compatibility_tests") {
+  testonly = true
+
+  sources = [
+    "clients/test/wayland_client_test.cc",
+    "clients/test/wayland_client_test.h",
+    "clients/test/wayland_client_test_server.cc",
+    "clients/test/wayland_client_test_server.h",
+    "compatibility_test/client_compatibility_test.cc",
+    "compatibility_test/client_compatibility_test.h",
+    "compatibility_test/client_compatibility_test_server.cc",
+    "compatibility_test/wayland_client_event_receiver_version_fixtures.h",
+    "compatibility_test/wayland_client_event_recorder.cc",
+    "compatibility_test/wayland_client_event_recorder.h",
+    "compatibility_test/wayland_client_registry.cc",
+    "compatibility_test/wayland_client_registry.h",
+  ]
+
+  deps = [
+    ":wayland",
+    ":wayland_client_test_helper",
+    "//base",
+    "//base/test:test_support",
+    "//components/exo/wayland/compatibility_test",
+    "//components/exo/wayland/compatibility_test:generated_client_helper_headers",
+    "//components/viz/test:test_support",
+    "//mojo/core/embedder:embedder",
+    "//ui/gl:test_support",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//ash:test_support" ]
+  }
+
+  data_deps = []
 }
 
 if (ozone_platform_drm) {
