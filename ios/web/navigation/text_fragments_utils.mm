@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/navigation/text_fragment_utils.h"
+#import "ios/web/navigation/text_fragments_utils.h"
 
 #include <cstring.h>
 
@@ -31,40 +31,6 @@ base::Value DecodeStringToValue(const std::string& str) {
 }  // namespace
 
 namespace web {
-
-bool AreTextFragmentsAllowed(NavigationContext* context) {
-  if (!base::FeatureList::IsEnabled(features::kScrollToTextIOS))
-    return false;
-
-  WebState* web_state = context->GetWebState();
-  if (web_state->HasOpener()) {
-    // TODO(crbug.com/1099268): Loosen this restriction if the opener has the
-    // same domain.
-    return false;
-  }
-
-  return context->HasUserGesture() && !context->IsSameDocument();
-}
-
-void HandleTextFragments(WebState* state) {
-  base::Value parsed_fragments =
-      internal::ParseTextFragments(state->GetLastCommittedURL());
-
-  if (parsed_fragments.type() == base::Value::Type::NONE)
-    return;
-
-  std::string fragment_param;
-  base::JSONWriter::Write(parsed_fragments, &fragment_param);
-
-  std::string script = base::ReplaceStringPlaceholders(
-      "__gCrWeb.textFragments.handleTextFragments($1, $2)",
-      {fragment_param, /* scroll = */ "true"},
-      /* offsets= */ nullptr);
-
-  state->ExecuteJavaScript(base::UTF8ToUTF16(script));
-}
-
-namespace internal {
 
 base::Value ParseTextFragments(const GURL& url) {
   if (!url.has_ref())
@@ -171,5 +137,4 @@ base::Value TextFragmentToValue(std::string fragment) {
   return dict;
 }
 
-}  // namespace internal
 }  // namespace web
