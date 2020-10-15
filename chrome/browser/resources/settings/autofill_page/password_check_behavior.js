@@ -25,6 +25,11 @@ export const PasswordCheckBehavior = {
     compromisedPasswordsCount: String,
 
     /**
+     * The number of weak passwords as a formatted string.
+     */
+    weakPasswordsCount: String,
+
+    /**
      * The number of insecure passwords as a formatted string.
      */
     insecurePasswordsCount: String,
@@ -101,33 +106,15 @@ export const PasswordCheckBehavior = {
       this.status = status;
       this.isInitialStatus = false;
     };
+
     this.leakedCredentialsListener_ = compromisedCredentials => {
       this.updateCompromisedPasswordList(compromisedCredentials);
-
-      PluralStringProxyImpl.getInstance()
-          .getPluralString('compromisedPasswords', this.leakedPasswords.length)
-          .then(count => {
-            this.compromisedPasswordsCount = count;
-          });
-      PluralStringProxyImpl.getInstance()
-          .getPluralString(
-              'insecurePasswords',
-              this.leakedPasswords.length + this.weakPasswords.length)
-          .then(count => {
-            this.insecurePasswordsCount = count;
-          });
+      this.fetchPluralizedStrings_();
     };
 
     this.weakCredentialsListener_ = weakCredentials => {
       this.weakPasswords = weakCredentials;
-
-      PluralStringProxyImpl.getInstance()
-          .getPluralString(
-              'insecurePasswords',
-              this.leakedPasswords.length + this.weakPasswords.length)
-          .then(count => {
-            this.insecurePasswordsCount = count;
-          });
+      this.fetchPluralizedStrings_();
     };
 
     this.passwordManager = PasswordManagerImpl.getInstance();
@@ -157,6 +144,26 @@ export const PasswordCheckBehavior = {
     this.passwordManager.removeWeakCredentialsListener(
         assert(this.weakCredentialsListener_));
     this.weakCredentialsListener_ = null;
+  },
+
+  /**
+   * Helper that fetches pluralized strings corresponding to the number of
+   * compromised, weak and insecure credentials.
+   * @private
+   */
+  fetchPluralizedStrings_() {
+    const proxy = PluralStringProxyImpl.getInstance();
+    const compromised = this.leakedPasswords.length;
+    const weak = this.weakPasswords.length;
+
+    proxy.getPluralString('compromisedPasswords', compromised)
+        .then(count => this.compromisedPasswordsCount = count);
+
+    proxy.getPluralString('weakPasswords', weak)
+        .then(count => this.weakPasswordsCount = count);
+
+    proxy.getPluralString('insecurePasswords', compromised + weak)
+        .then(count => this.insecurePasswordsCount = count);
   },
 
   /**
