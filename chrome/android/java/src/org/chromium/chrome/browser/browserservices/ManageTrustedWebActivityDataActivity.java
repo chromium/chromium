@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.webapk.lib.common.WebApkConstants;
 
 /**
  * Launched by Trusted Web Activity apps when the user clears data.
@@ -29,14 +28,11 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        String urlToLaunchSettingsFor = getIntent().getData().toString();
-        boolean isWebApk = getIntent().getBooleanExtra(WebApkConstants.EXTRA_IS_WEBAPK, false);
-        launchSettings(urlToLaunchSettingsFor, isWebApk);
+        launchSettings();
         finish();
     }
 
-    private void launchSettings(@Nullable String urlToLaunchSettingsFor, boolean isWebApk) {
+    private void launchSettings() {
         String packageName = getClientPackageName();
         if (packageName == null) {
             logNoPackageName();
@@ -45,13 +41,7 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
         }
         new TrustedWebActivityUmaRecorder(ChromeBrowserInitializer.getInstance())
                 .recordOpenedSettingsViaManageSpace();
-
-        if (isWebApk) {
-            TrustedWebActivitySettingsLauncher.launchForWebApkPackageName(
-                    this, packageName, urlToLaunchSettingsFor);
-        } else {
-            TrustedWebActivitySettingsLauncher.launchForPackageName(this, packageName);
-        }
+        TrustedWebActivitySettingsLauncher.launchForPackageName(this, packageName);
     }
 
     @Nullable
