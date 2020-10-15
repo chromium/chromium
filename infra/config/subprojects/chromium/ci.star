@@ -2292,6 +2292,26 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "android-marshmallow-arm64-16-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|android",
+        short_name = "16",
+    ),
+    builderless = False,
+    cores = None,
+)
+
+ci.fyi_builder(
+    name = "android-marshmallow-arm64-32-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|android",
+        short_name = "32",
+    ),
+    builderless = False,
+    cores = None,
+)
+
+ci.fyi_builder(
     name = "chromeos-amd64-generic-lacros-rel",
     console_view_entry = ci.console_view_entry(
         category = "chromeos",
@@ -2553,6 +2573,36 @@ ci.fyi_builder(
     goma_backend = goma.backend.RBE_PROD,
 )
 
+ci.fyi_builder(
+    name = "linux-8-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|linux",
+        short_name = "8",
+    ),
+    builderless = False,
+    cores = None,
+)
+
+ci.fyi_builder(
+    name = "linux-16-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|linux",
+        short_name = "16",
+    ),
+    builderless = False,
+    cores = None,
+)
+
+ci.fyi_builder(
+    name = "linux-32-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|linux",
+        short_name = "32",
+    ),
+    builderless = False,
+    cores = None,
+)
+
 # This is launching & collecting entirely isolated tests.
 # OS shouldn't matter.
 ci.fyi_builder(
@@ -2709,6 +2759,36 @@ ci.fyi_builder(
     os = os.WINDOWS_DEFAULT,
     schedule = "with 3h interval",
     triggered_by = [],
+)
+
+ci.fyi_windows_builder(
+    name = "win-8-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|win",
+        short_name = "8",
+    ),
+    builderless = False,
+    cores = None,
+)
+
+ci.fyi_windows_builder(
+    name = "win-16-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|win",
+        short_name = "16",
+    ),
+    builderless = False,
+    cores = None,
+)
+
+ci.fyi_windows_builder(
+    name = "win-32-core",
+    console_view_entry = ci.console_view_entry(
+        category = "experimental|win",
+        short_name = "32",
+    ),
+    builderless = False,
+    cores = None,
 )
 
 ci.fyi_celab_builder(

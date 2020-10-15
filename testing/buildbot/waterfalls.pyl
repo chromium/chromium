@@ -2200,6 +2200,16 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      'android-marshmallow-arm64-16-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'android-marshmallow-arm64-32-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'chromeos-amd64-generic-lacros-rel': {
         'additional_compile_targets': [
           'chrome',
@@ -2385,6 +2395,21 @@
         'test_suites': {
           'isolated_scripts': 'ios14_sdk_simulator_tests'
         },
+      },
+      'linux-16-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'linux-32-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'linux-8-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
       'linux-annotator-rel': {
         'test_suites': {
@@ -2761,6 +2786,21 @@
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
+      },
+      'win-16-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'win-32-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'win-8-core': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
       'win-annotator-rel': {
         'test_suites': {

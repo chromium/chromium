@@ -14075,6 +14075,16 @@
       }
     ]
   },
+  "android-marshmallow-arm64-16-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "android-marshmallow-arm64-32-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "chromeos-amd64-generic-lacros-rel": {
     "additional_compile_targets": [
       "chrome"
@@ -39978,6 +39988,21 @@
       }
     ]
   },
+  "linux-16-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "linux-32-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "linux-8-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "linux-annotator-rel": {
     "scripts": [
       {
@@ -57555,6 +57580,21 @@
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
+    ]
+  },
+  "win-16-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "win-32-core": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "win-8-core": {
+    "additional_compile_targets": [
+      "all"
     ]
   },
   "win-annotator-rel": {
