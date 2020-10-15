@@ -8,10 +8,8 @@
     "exclusions": [
       ".*isolate",
       ".vpython",
-      "build/.*gyp[i]?",
       "build/check_gn_headers.py",
       "build/check_gn_headers_whitelist.txt",
-      "build/cipd/android/android.ensure",
       "build/fuchsia/.*py",
       "build/get_landmines.py",
       "build/gn_helpers.py",
