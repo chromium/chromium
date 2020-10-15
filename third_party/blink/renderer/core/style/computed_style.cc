@@ -928,10 +928,6 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
                                                                         other))
     diff.SetNeedsRecomputeVisualOverflow();
 
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesBackdropFilter(*this,
-                                                                         other))
-    diff.SetBackdropFilterChanged();
-
   if (!diff.NeedsPaintInvalidation() &&
       ComputedStyleBase::UpdatePropertySpecificDifferencesTextDecorationOrColor(
           *this, other)) {
@@ -961,7 +957,8 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       ContainsPaint() != other.ContainsPaint() ||
       IsOverflowVisibleAlongBothAxes() !=
           other.IsOverflowVisibleAlongBothAxes() ||
-      WillChangeProperties() != other.WillChangeProperties()) {
+      WillChangeProperties() != other.WillChangeProperties() ||
+      !BackdropFilterDataEquivalent(other)) {
     diff.SetCompositingReasonsChanged();
   }
 }

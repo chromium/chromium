@@ -23,16 +23,15 @@ class StyleDifference {
     kOpacityChanged = 1 << 1,
     kZIndexChanged = 1 << 2,
     kFilterChanged = 1 << 3,
-    kBackdropFilterChanged = 1 << 4,
-    kCSSClipChanged = 1 << 5,
+    kCSSClipChanged = 1 << 4,
     // The object needs to issue paint invalidations if it is affected by text
     // decorations or properties dependent on color (e.g., border or outline).
     // TextDecoration changes must also invalidate ink overflow.
-    kTextDecorationOrColorChanged = 1 << 6,
-    kBlendModeChanged = 1 << 7,
-    kMaskChanged = 1 << 8,
+    kTextDecorationOrColorChanged = 1 << 5,
+    kBlendModeChanged = 1 << 6,
+    kMaskChanged = 1 << 7,
     // Whether background-color changed alpha to or from 1.
-    kHasAlphaChanged = 1 << 9,
+    kHasAlphaChanged = 1 << 8,
     // If you add a value here, be sure to update kPropertyDifferenceCount.
   };
 
@@ -68,6 +67,7 @@ class StyleDifference {
   bool HasAtMostPropertySpecificDifferences(
       unsigned property_differences) const {
     return !needs_paint_invalidation_ && !layout_type_ &&
+           !compositing_reasons_changed_ &&
            !(property_specific_differences_ & ~property_differences);
   }
 
@@ -124,13 +124,6 @@ class StyleDifference {
   }
   void SetFilterChanged() { property_specific_differences_ |= kFilterChanged; }
 
-  bool BackdropFilterChanged() const {
-    return property_specific_differences_ & kBackdropFilterChanged;
-  }
-  void SetBackdropFilterChanged() {
-    property_specific_differences_ |= kBackdropFilterChanged;
-  }
-
   bool CssClipChanged() const {
     return property_specific_differences_ & kCSSClipChanged;
   }
@@ -176,7 +169,7 @@ class StyleDifference {
   void SetCompositingReasonsChanged() { compositing_reasons_changed_ = true; }
 
  private:
-  static constexpr int kPropertyDifferenceCount = 10;
+  static constexpr int kPropertyDifferenceCount = 9;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);

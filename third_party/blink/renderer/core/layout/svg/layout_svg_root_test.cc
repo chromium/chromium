@@ -186,6 +186,14 @@ TEST_P(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(root.HasDescendantCompositingReasons());
 
+  GetDocument().getElementById("rect")->setAttribute(
+      "style", "backdrop-filter: invert(100%)");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(root.HasDescendantCompositingReasons());
+  GetDocument().getElementById("rect")->removeAttribute("style");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(root.HasDescendantCompositingReasons());
+
   GetDocument().getElementById("text")->setAttribute("style",
                                                      "will-change: transform");
   UpdateAllLifecyclePhasesForTest();
@@ -196,6 +204,14 @@ TEST_P(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
 
   GetDocument().getElementById("tspan")->setAttribute("style",
                                                       "will-change: transform");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(root.HasDescendantCompositingReasons());
+  GetDocument().getElementById("tspan")->removeAttribute("style");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(root.HasDescendantCompositingReasons());
+
+  GetDocument().getElementById("tspan")->setAttribute(
+      "style", "backdrop-filter: invert(100%)");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(root.HasDescendantCompositingReasons());
   GetDocument().getElementById("tspan")->removeAttribute("style");

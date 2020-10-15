@@ -49,7 +49,6 @@ TEST(StyleDifferenceTest, StreamOutputSetAllProperties) {
   diff.SetOpacityChanged();
   diff.SetZIndexChanged();
   diff.SetFilterChanged();
-  diff.SetBackdropFilterChanged();
   diff.SetCSSClipChanged();
   diff.SetTextDecorationOrColorChanged();
   diff.SetBlendModeChanged();
@@ -59,7 +58,7 @@ TEST(StyleDifferenceTest, StreamOutputSetAllProperties) {
       "reshape=0, paintInvalidation=0, "
       "recomputeVisualOverflow=0, visualRectUpdate=0, "
       "propertySpecificDifferences=TransformChanged|OpacityChanged|"
-      "ZIndexChanged|FilterChanged|BackdropFilterChanged|CSSClipChanged|"
+      "ZIndexChanged|FilterChanged|CSSClipChanged|"
       "TextDecorationOrColorChanged|BlendModeChanged, "
       "scrollAnchorDisablingPropertyChanged=0}",
       string_stream.str());

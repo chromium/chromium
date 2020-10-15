@@ -402,15 +402,6 @@
         ]
     },
     {
-        name: "UpdatePropertySpecificDifferencesBackdropFilter",
-        predicates_to_test: [
-          {
-            predicate: "a.BackdropFilterDataEquivalent(b)",
-            field_dependencies: ["backdrop-filter"]
-          },
-        ]
-    },
-    {
         name: "UpdatePropertySpecificDifferencesTextDecorationOrColor",
         fields_to_diff: ["color", "-internal-visited-color", "text-decoration-line",
                 "text-decoration-style", "text-decoration-color",

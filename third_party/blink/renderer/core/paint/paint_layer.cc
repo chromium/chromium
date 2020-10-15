@@ -3235,11 +3235,8 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   // to recompute the bit once scrollbars have been updated.
   UpdateSelfPaintingLayer();
 
-  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
-
-  if (diff.CompositingReasonsChanged()) {
-    SetNeedsCompositingInputsUpdate();
-  } else if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+  if (!diff.CompositingReasonsChanged() &&
+      !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // For querying stale GetCompositingState().
     DisableCompositingQueryAsserts disable;
 
@@ -3263,14 +3260,17 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     SetNeedsCompositingInputsUpdate();
   }
 
+  // See also |LayoutObject::SetStyle| which handles these invalidations if a
+  // PaintLayer is not present.
   if (diff.TransformChanged() || diff.OpacityChanged() ||
-      diff.ZIndexChanged() || diff.FilterChanged() ||
-      diff.BackdropFilterChanged() || diff.CssClipChanged() ||
-      diff.BlendModeChanged() || diff.MaskChanged()) {
+      diff.ZIndexChanged() || diff.FilterChanged() || diff.CssClipChanged() ||
+      diff.BlendModeChanged() || diff.MaskChanged() ||
+      diff.CompositingReasonsChanged()) {
     GetLayoutObject().SetNeedsPaintPropertyUpdate();
     SetNeedsCompositingInputsUpdate();
   }
 
+  const ComputedStyle& new_style = GetLayoutObject().StyleRef();
   // HasNonContainedAbsolutePositionDescendant depends on position changes.
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
