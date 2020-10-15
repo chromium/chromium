@@ -593,6 +593,26 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrollingVerticalRl) {
                          "window.scrollX"));
 }
 
+// Before invoking print preview, page scale is changed to a different value.
+// Test that when print preview is ready, in other words when printing is
+// finished, the page scale factor gets reset to initial scale.
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, ResetPageScaleAfterPrintPreview) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  contents->SetPageScale(1.5);
+
+  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+
+  double contents_page_scale_after_print =
+      content::EvalJs(contents, "window.visualViewport.scale").ExtractDouble();
+
+  constexpr double kContentsInitialScale = 1.0;
+  EXPECT_EQ(kContentsInitialScale, contents_page_scale_after_print);
+}
+
 // Printing frame content for the main frame of a generic webpage.
 // This test passes when the printed result is sent back and checked in
 // TestPrintRenderFrame::OnDidPrintFrameContent().
