@@ -35,7 +35,7 @@ enum class PromisesAllowed {
 class APISignature {
  public:
   APISignature(const base::Value& specification_list,
-               bool api_supports_promises,
+               const base::Value* returns_async,
                BindingAccessChecker* access_checker);
   explicit APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature);
   APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature,

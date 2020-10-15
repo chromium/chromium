@@ -1697,6 +1697,18 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
               'name': 'strResult',
               'type': 'string'
             }
+          },
+          {
+            'name': 'callbackOptional',
+            'parameters': [{
+              'name': 'int',
+              'type': 'integer'
+            }],
+            "returns_async": {
+              'name': 'strResult',
+              'optional': true,
+              'type': 'string'
+            }
           }])";
   SetFunctions(kFunctions);
 
@@ -1766,7 +1778,7 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
                               context->Global(), context, "callbackResult"));
   }
   // If the context doesn't support promises, there should be an error if a
-  // callback isn't supplied.
+  // required callback isn't supplied.
   context_allows_promises = false;
   {
     constexpr char kPromiseFunctionCall[] =
@@ -1784,7 +1796,8 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
     RunFunctionAndExpectError(promise_api_call, context, base::size(args), args,
                               expected_error);
   }
-  // Test that callbacks still work when the context doesn't support promises.
+  // Test that required callbacks still work when the context doesn't support
+  // promises.
   {
     constexpr char kFunctionCall[] =
         R"((function(api) {
@@ -1804,6 +1817,24 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
 
     EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
                               context->Global(), context, "callbackResult"));
+  }
+  // If a returns_async field is marked as optional, then a context which
+  // doesn't support promises should be able to leave it off of the call.
+  {
+    constexpr char kCallbackOptionalFunctionCall[] =
+        R"((function(api) {
+             this.callbackOptionalResult = api.callbackOptional(3);
+           }))";
+    v8::Local<v8::Function> promise_api_call =
+        FunctionFromString(context, kCallbackOptionalFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object};
+    RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
+
+    ASSERT_TRUE(last_request());
+
+    v8::Local<v8::Value> api_result = GetPropertyFromObject(
+        context->Global(), context, "callbackOptionalResult");
+    ASSERT_TRUE(api_result->IsNullOrUndefined());
   }
 }
 

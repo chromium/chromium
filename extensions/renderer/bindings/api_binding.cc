@@ -78,9 +78,8 @@ SignaturePair GetAPISignatureFromDictionary(
       dict->FindKeyOfType("returns_async", base::Value::Type::DICTIONARY);
 
   SignaturePair result;
-  bool supports_promises = returns_async != nullptr;
-  result.method_signature = std::make_unique<APISignature>(
-      *params, supports_promises, access_checker);
+  result.method_signature =
+      std::make_unique<APISignature>(*params, returns_async, access_checker);
   // If response validation is enabled, parse the callback signature. Otherwise,
   // there's no reason to, so don't bother.
   if (result.method_signature->has_callback() &&
@@ -92,7 +91,7 @@ SignaturePair GetAPISignatureFromDictionary(
                             "parameters", base::Value::Type::LIST);
     if (callback_params) {
       result.callback_signature = std::make_unique<APISignature>(
-          *callback_params, false /*api_supports_promises*/,
+          *callback_params, nullptr /*returns_async*/,
           nullptr /*access_checker*/);
     }
   }
