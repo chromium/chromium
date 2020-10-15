@@ -59,7 +59,25 @@ declare_args() {
 
   # TODO(crbug.com/1015730): remove this flag because ios_use_goma_rbe covers.
   ios_enable_relative_sdk_path = ios_use_goma_rbe
+
+  # Configure the environment for which to build. Could be either "device",
+  # "simulator" or "catalyst". If unspecified, then it will be assumed to be
+  # "simulator" if the target_cpu if "x68" or "x64", "device" otherwise. The
+  # default is only there for compatibility reason and will be removed (see
+  # crbug.com/1138425 for more details).
+  target_environment = ""
 }
+
+if (target_environment == "") {
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    target_environment = "simulator"
+  } else {
+    target_environment = "device"
+  }
+}
+
+assert(target_environment == "simulator" || target_environment == "device" ||
+       target_environment == "catalyst")
 
 # Official builds may not use goma.
 assert(!(use_goma && is_chrome_branded && is_official_build &&
@@ -69,7 +87,7 @@ assert(!(use_goma && is_chrome_branded && is_official_build &&
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
 
-use_ios_simulator = current_cpu == "x86" || current_cpu == "x64"
+use_ios_simulator = target_environment == "simulator"
 
 # If codesigning is enabled, use must configure either a codesigning identity
 # or a filter to automatically select the codesigning identity.
