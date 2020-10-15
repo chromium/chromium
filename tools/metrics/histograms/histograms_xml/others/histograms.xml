@@ -10078,6 +10078,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PreferredApps.FileIOAction" enum="PreferredAppsFileIOAction"
+    expires_after="M89">
+  <obsolete>
+    This was used by mistake, add the entry to avoid anyone accidently using
+    this name. Obsolete in 10/2020. Replaced by Apps.PreferredApps.FileIOAction.
+  </obsolete>
+  <owner>dominickn@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Recorded at the time a read/write operation happens for preferred app to
+    indicate whether the I/O succeeded or not.
+  </summary>
+</histogram>
+
+<histogram name="PreferredApps.UpdateAction" enum="PreferredAppsUpdateAction"
+    expires_after="M89">
+  <obsolete>
+    This was used by mistake, add the entry to avoid anyone accidently using
+    this name. Obsolete in 10/2020. Replaced by Apps.PreferredApps.UpdateAction.
+  </obsolete>
+  <owner>dominickn@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Recorded at the time a update operation happens for preferred apps to
+    indicate the type of update action.
+  </summary>
+</histogram>
+
 <histogram name="PrefetchedSignedExchangeCache.BodySize" units="bytes"
     expires_after="2021-03-28">
   <owner>horo@chromium.org</owner>

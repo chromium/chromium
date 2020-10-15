@@ -1645,13 +1645,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.PreferredApps.EntryCount" units="entries"
+    expires_after="M90">
+  <owner>dominickn@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Records the number of entries in the preferred apps list that was stored on
+    the disk. The preferred apps list is a vector that identifies the preferred
+    app for an intent filter. This value is recorded every time on user login
+    and we read the stored data from the disk.
+  </summary>
+</histogram>
+
 <histogram name="Apps.PreferredApps.FileIOAction"
     enum="PreferredAppsFileIOAction" expires_after="M89">
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>
     Recorded at the time a read/write operation happens for preferred app to
-    indicate whether the I/O succeeded or not.
+    indicate whether the I/O succeeded or not. This was briefly logged under
+    PreferredApps.FileIOAction in milestone 85.
   </summary>
 </histogram>
 
@@ -1661,7 +1674,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mxcai@chromium.org</owner>
   <summary>
     Recorded at the time a update operation happens for preferred apps to
-    indicate the type of update action.
+    indicate the type of update action. This was briefly logged under
+    PreferredApps.UpdateAction in milestone 85.
   </summary>
 </histogram>
 

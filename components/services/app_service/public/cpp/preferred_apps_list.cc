@@ -139,4 +139,8 @@ base::Optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
   return best_match_app_id;
 }
 
+size_t PreferredAppsList::GetEntrySize() {
+  return preferred_apps_.size();
+}
+
 }  // namespace apps
