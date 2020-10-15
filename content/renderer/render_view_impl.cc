@@ -899,10 +899,6 @@ bool RenderViewImpl::CanUpdateLayout() {
   return true;
 }
 
-const std::string& RenderViewImpl::GetAcceptLanguages() {
-  return renderer_preferences_.accept_languages;
-}
-
 blink::WebString RenderViewImpl::AcceptLanguages() {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
 }
@@ -940,10 +936,6 @@ void RenderViewImpl::SetBlinkPreferences(
 
 blink::WebView* RenderViewImpl::GetWebView() {
   return webview_;
-}
-
-bool RenderViewImpl::GetContentStateImmediately() {
-  return send_content_state_immediately_;
 }
 
 void RenderViewImpl::OnSetRendererPrefs(
@@ -997,11 +989,6 @@ void RenderViewImpl::OnSetRendererPrefs(
 void RenderViewImpl::OnMoveOrResizeStarted() {
   if (GetWebView())
     GetWebView()->CancelPagePopup();
-}
-
-void RenderViewImpl::SetPageFrozen(bool frozen) {
-  if (GetWebView())
-    GetWebView()->SetPageFrozen(frozen);
 }
 
 #if defined(OS_ANDROID)

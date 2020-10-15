@@ -7,9 +7,6 @@
 
 #include <stddef.h>
 
-#include <string>
-
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_sender.h"
@@ -75,14 +72,6 @@ class CONTENT_EXPORT RenderView : public IPC::Sender {
 
   // Returns the associated WebView. May return NULL when the view is closing.
   virtual blink::WebView* GetWebView() = 0;
-
-  // Whether content state (such as form state, scroll position and page
-  // contents) should be sent to the browser immediately. This is normally
-  // false, but set to true by some tests.
-  virtual bool GetContentStateImmediately() = 0;
-
-  // Returns |renderer_preferences_.accept_languages| value.
-  virtual const std::string& GetAcceptLanguages() = 0;
 
  protected:
   ~RenderView() override {}

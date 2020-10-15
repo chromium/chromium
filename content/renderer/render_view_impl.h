@@ -172,10 +172,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // RenderView is the currently active RenderView of a WebContents.
   unsigned GetLocalSessionHistoryLengthForTesting() const;
 
-  void UpdateBrowserControlsState(BrowserControlsState constraints,
-                                  BrowserControlsState current,
-                                  bool animate);
-
   // Registers a watcher to observe changes in the
   // blink::mojom::RendererPreferences.
   void RegisterRendererPreferenceWatcher(
@@ -229,16 +225,10 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void SetBlinkPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
   blink::WebView* GetWebView() override;
-  bool GetContentStateImmediately() override;
-  const std::string& GetAcceptLanguages() override;
 
   // Please do not add your stuff randomly to the end here. If there is an
   // appropriate section, add it there. If not, there are some random functions
   // nearer to the top you can add it to.
-
-  base::WeakPtr<RenderViewImpl> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
   bool renderer_wide_named_frame_lookup() {
     return renderer_wide_named_frame_lookup_;
@@ -341,28 +331,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   static WindowOpenDisposition NavigationPolicyToDisposition(
       blink::WebNavigationPolicy policy);
 
-  // IPC message handlers ------------------------------------------------------
-  //
-  // The documentation for these functions should be in
-  // content/common/*_messages.h for the message that the function is handling.
-  void OnExecuteEditCommand(const std::string& name, const std::string& value);
-  void OnAllowScriptToClose(bool script_can_close);
-  void OnCancelDownload(int32_t download_id);
-
-  void OnDeterminePageLanguage();
-  void OnDisableScrollbarsForSmallWindows(
-      const gfx::Size& disable_scrollbars_size_limit);
   void OnMoveOrResizeStarted();
-  void OnExitFullscreen();
   void OnSetRendererPrefs(
       const blink::mojom::RendererPreferences& renderer_prefs);
-  void OnSuppressDialogsUntilSwapOut();
-
-  // Page message handlers -----------------------------------------------------
-  void SetPageFrozen(bool frozen);
-
-  // Adding a new message handler? Please add it in alphabetical order above
-  // and put it in the same position in the .cc file.
 
   // Misc private functions ----------------------------------------------------
 
@@ -382,15 +353,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // In OOPIF-enabled modes, this tells each RenderFrame with a pending state
   // update to inform the browser process.
   void SendFrameStateUpdates();
-
-  // RenderFrameImpl accessible state ------------------------------------------
-  // The following section is the set of methods that RenderFrameImpl needs
-  // to access RenderViewImpl state. The set of state variables are page-level
-  // specific, so they don't belong in RenderFrameImpl and should remain in
-  // this object.
-  base::ObserverList<RenderViewObserver>::Unchecked& observers() {
-    return observers_;
-  }
 
 // Platform specific theme preferences if any are updated here.
 #if defined(OS_WIN)
