@@ -4,7 +4,6 @@
 
 #include "third_party/blink/public/platform/web_font.h"
 
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_run.h"
@@ -110,11 +109,11 @@ int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
       run, position, IncludePartialGlyphs, DontBreakGlyphs);
 }
 
-WebFloatRect WebFont::SelectionRectForText(const WebTextRun& run,
-                                           const gfx::PointF& left_baseline,
-                                           int height,
-                                           int from,
-                                           int to) const {
+gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
+                                         const gfx::PointF& left_baseline,
+                                         int height,
+                                         int from,
+                                         int to) const {
   return private_->GetFont().SelectionRectForText(
       run, FloatPoint(left_baseline), height, from, to);
 }
