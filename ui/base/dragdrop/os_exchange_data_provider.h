@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual bool HasFile() const = 0;
   virtual bool HasCustomFormat(const ClipboardFormatType& format) const = 0;
 
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
   virtual void SetFileContents(const base::FilePath& filename,
                                const std::string& file_contents) = 0;
 #endif
