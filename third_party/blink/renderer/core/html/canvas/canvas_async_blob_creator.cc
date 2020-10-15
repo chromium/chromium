@@ -179,6 +179,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       start_time_(start_time),
       static_bitmap_image_loaded_(false),
       callback_(callback),
+      ukm_params_(ukm_params),
       script_promise_resolver_(resolver) {
   DCHECK(image);
   DCHECK(context);
