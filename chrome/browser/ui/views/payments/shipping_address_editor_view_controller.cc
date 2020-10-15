@@ -587,7 +587,7 @@ void ShippingAddressEditorViewController::OnComboboxModelChanged(
   if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_STATE))
     return;
   autofill::RegionComboboxModel* model =
-      static_cast<autofill::RegionComboboxModel*>(combobox->model());
+      static_cast<autofill::RegionComboboxModel*>(combobox->GetModel());
   if (model->IsPendingRegionDataLoad())
     return;
   if (model->failed_to_load_data()) {

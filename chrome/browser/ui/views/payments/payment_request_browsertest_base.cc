@@ -718,7 +718,7 @@ base::string16 PaymentRequestBrowserTestBase::GetComboboxValue(
       static_cast<ValidatingCombobox*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
   DCHECK(combobox);
-  return combobox->model()->GetItemAt(combobox->GetSelectedIndex());
+  return combobox->GetModel()->GetItemAt(combobox->GetSelectedIndex());
 }
 
 void PaymentRequestBrowserTestBase::SetComboboxValue(
@@ -739,7 +739,8 @@ void PaymentRequestBrowserTestBase::SelectBillingAddress(
           EditorViewController::GetInputFieldViewId(kBillingAddressType))));
   ASSERT_NE(address_combobox, nullptr);
   autofill::AddressComboboxModel* address_combobox_model(
-      static_cast<autofill::AddressComboboxModel*>(address_combobox->model()));
+      static_cast<autofill::AddressComboboxModel*>(
+          address_combobox->GetModel()));
   address_combobox->SetSelectedRow(
       address_combobox_model->GetIndexOfIdentifier(billing_address_id));
   address_combobox->OnBlur();

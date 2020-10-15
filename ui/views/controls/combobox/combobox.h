@@ -79,8 +79,7 @@ class VIEWS_EXPORT Combobox : public View,
 
   void SetOwnedModel(std::unique_ptr<ui::ComboboxModel> model);
   void SetModel(ui::ComboboxModel* model);
-
-  ui::ComboboxModel* model() const { return model_; }
+  ui::ComboboxModel* GetModel() const { return model_; }
 
   // Gets/Sets the tooltip text, and the accessible name if it is currently
   // empty.

@@ -109,14 +109,14 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
     views::Combobox* month_combobox = static_cast<views::Combobox*>(
         view_parent->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::CREDIT_CARD_EXP_MONTH)));
-    base::string16 month =
-        month_combobox->model()->GetItemAt(month_combobox->GetSelectedIndex());
+    base::string16 month = month_combobox->GetModel()->GetItemAt(
+        month_combobox->GetSelectedIndex());
 
     views::Combobox* year_combobox = static_cast<views::Combobox*>(
         view_parent->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)));
     base::string16 year =
-        year_combobox->model()->GetItemAt(year_combobox->GetSelectedIndex());
+        year_combobox->GetModel()->GetItemAt(year_combobox->GetSelectedIndex());
 
     bool is_expired = IsCardExpired(month, year, app_locale_);
     month_combobox->SetInvalid(is_expired);
@@ -417,7 +417,8 @@ bool CreditCardEditorViewController::ValidateModelAndSave() {
       return false;
 
     autofill::AddressComboboxModel* model =
-        static_cast<autofill::AddressComboboxModel*>(address_combobox->model());
+        static_cast<autofill::AddressComboboxModel*>(
+            address_combobox->GetModel());
 
     credit_card_to_edit_->set_billing_address_id(
         model->GetItemIdentifierAt(address_combobox->GetSelectedIndex()));
@@ -449,7 +450,7 @@ bool CreditCardEditorViewController::ValidateModelAndSave() {
 
     if (field.second.type == kBillingAddressType) {
       autofill::AddressComboboxModel* model =
-          static_cast<autofill::AddressComboboxModel*>(combobox->model());
+          static_cast<autofill::AddressComboboxModel*>(combobox->GetModel());
 
       credit_card.set_billing_address_id(
           model->GetItemIdentifierAt(combobox->GetSelectedIndex()));
@@ -627,7 +628,8 @@ void CreditCardEditorViewController::AddAndSelectNewBillingAddress(
   views::Combobox* address_combobox = static_cast<views::Combobox*>(
       dialog()->GetViewByID(GetInputFieldViewId(kBillingAddressType)));
   autofill::AddressComboboxModel* model =
-      static_cast<autofill::AddressComboboxModel*>(address_combobox->model());
+      static_cast<autofill::AddressComboboxModel*>(
+          address_combobox->GetModel());
   int index = model->AddNewProfile(profile);
   // SetSelectedIndex doesn't trigger a perform action notification, which is
   // needed to update the valid state.
@@ -738,7 +740,7 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
     // TODO(crbug.com/718905) Find a way to deal with existing incomplete
     // addresses when choosing them as billing addresses.
     autofill::AddressComboboxModel* model =
-        static_cast<autofill::AddressComboboxModel*>(combobox->model());
+        static_cast<autofill::AddressComboboxModel*>(combobox->GetModel());
     if (model->GetItemIdentifierAt(combobox->GetSelectedIndex()).empty()) {
       if (error_message) {
         *error_message =

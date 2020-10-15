@@ -678,7 +678,7 @@ void ContentSettingBubbleContents::ButtonPressed(views::Button* sender,
 void ContentSettingBubbleContents::OnPerformAction(views::Combobox* combobox) {
   DCHECK(content_setting_bubble_model_);
   MediaComboboxModel* model =
-      static_cast<MediaComboboxModel*>(combobox->model());
+      static_cast<MediaComboboxModel*>(combobox->GetModel());
   content_setting_bubble_model_->OnMediaMenuClicked(
       model->type(), model->GetDevices()[combobox->GetSelectedIndex()].id);
 }

@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
   EXPECT_TRUE(billing_address_combobox->GetEnabled());
   autofill::AddressComboboxModel* model =
       static_cast<autofill::AddressComboboxModel*>(
-          billing_address_combobox->model());
+          billing_address_combobox->GetModel());
   EXPECT_EQ(
       billing_profile.guid(),
       model->GetItemIdentifierAt(billing_address_combobox->GetSelectedIndex()));

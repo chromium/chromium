@@ -72,10 +72,10 @@ bool SaveCardOfferBubbleViews::Accept() {
     controller()->OnSaveButton(
         {cardholder_name_textfield_ ? cardholder_name_textfield_->GetText()
                                     : base::string16(),
-         month_input_dropdown_ ? month_input_dropdown_->model()->GetItemAt(
+         month_input_dropdown_ ? month_input_dropdown_->GetModel()->GetItemAt(
                                      month_input_dropdown_->GetSelectedIndex())
                                : base::string16(),
-         year_input_dropdown_ ? year_input_dropdown_->model()->GetItemAt(
+         year_input_dropdown_ ? year_input_dropdown_->GetModel()->GetItemAt(
                                     year_input_dropdown_->GetSelectedIndex())
                               : base::string16()});
   }
@@ -105,10 +105,10 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
     // the same time.
     DCHECK(!cardholder_name_textfield_);
     int month_value = 0, year_value = 0;
-    if (!base::StringToInt(month_input_dropdown_->model()->GetItemAt(
+    if (!base::StringToInt(month_input_dropdown_->GetModel()->GetItemAt(
                                month_input_dropdown_->GetSelectedIndex()),
                            &month_value) ||
-        !base::StringToInt(year_input_dropdown_->model()->GetItemAt(
+        !base::StringToInt(year_input_dropdown_->GetModel()->GetItemAt(
                                year_input_dropdown_->GetSelectedIndex()),
                            &year_value)) {
       return false;

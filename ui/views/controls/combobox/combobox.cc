@@ -287,8 +287,8 @@ void Combobox::SetSelectedIndex(int index) {
 }
 
 bool Combobox::SelectValue(const base::string16& value) {
-  for (int i = 0; i < model()->GetItemCount(); ++i) {
-    if (value == model()->GetItemAt(i)) {
+  for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
+    if (value == GetModel()->GetItemAt(i)) {
       SetSelectedIndex(i);
       return true;
     }
@@ -369,7 +369,7 @@ void Combobox::OnThemeChanged() {
 }
 
 int Combobox::GetRowCount() {
-  return model()->GetItemCount();
+  return GetModel()->GetItemCount();
 }
 
 int Combobox::GetSelectedRow() {
@@ -384,8 +384,8 @@ void Combobox::SetSelectedRow(int row) {
 }
 
 base::string16 Combobox::GetTextForRow(int row) {
-  return model()->IsItemSeparatorAt(row) ? base::string16()
-                                         : model()->GetItemAt(row);
+  return GetModel()->IsItemSeparatorAt(row) ? base::string16()
+                                            : GetModel()->GetItemAt(row);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -425,8 +425,8 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   DCHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
 
   DCHECK_GE(selected_index_, 0);
-  DCHECK_LT(selected_index_, model()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ > model()->GetItemCount())
+  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
+  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount())
     selected_index_ = 0;
 
   bool show_menu = false;
@@ -454,24 +454,24 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
       if (e.IsAltDown())
         show_menu = true;
       else
-        new_index = GetAdjacentIndex(model(), 1, selected_index_);
+        new_index = GetAdjacentIndex(GetModel(), 1, selected_index_);
       break;
 
     // Move to the end of the list.
     case ui::VKEY_END:
     case ui::VKEY_NEXT:  // Page down.
-      new_index = GetAdjacentIndex(model(), -1, model()->GetItemCount());
+      new_index = GetAdjacentIndex(GetModel(), -1, GetModel()->GetItemCount());
       break;
 
     // Move to the beginning of the list.
     case ui::VKEY_HOME:
     case ui::VKEY_PRIOR:  // Page up.
-      new_index = GetAdjacentIndex(model(), 1, -1);
+      new_index = GetAdjacentIndex(GetModel(), 1, -1);
       break;
 
     // Move to the previous item if any.
     case ui::VKEY_UP:
-      new_index = GetAdjacentIndex(model(), -1, selected_index_);
+      new_index = GetAdjacentIndex(GetModel(), -1, selected_index_);
       break;
 
     case ui::VKEY_RETURN:
@@ -486,7 +486,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   if (show_menu) {
     ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
   } else if (new_index != selected_index_ && new_index != kNoSelection) {
-    DCHECK(!model()->IsItemSeparatorAt(new_index));
+    DCHECK(!GetModel()->IsItemSeparatorAt(new_index));
     selected_index_ = new_index;
     OnPerformAction();
   }
@@ -601,7 +601,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   int contents_height = height() - insets.height();
 
   // Draw the icon.
-  ui::ImageModel icon = model()->GetIconAt(selected_index_);
+  ui::ImageModel icon = GetModel()->GetIconAt(selected_index_);
   if (!icon.IsEmpty()) {
     gfx::ImageSkia icon_skia =
         GetImageSkiaFromImageModel(&icon, GetNativeTheme());
@@ -616,10 +616,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   // Draw the text.
   SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
   DCHECK_GE(selected_index_, 0);
-  DCHECK_LT(selected_index_, model()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ > model()->GetItemCount())
+  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
+  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount())
     selected_index_ = 0;
-  base::string16 text = model()->GetItemAt(selected_index_);
+  base::string16 text = GetModel()->GetItemAt(selected_index_);
 
   int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;
 
@@ -689,13 +689,13 @@ gfx::Size Combobox::GetContentSize() const {
   const gfx::FontList& font_list = GetFontList();
   int height = font_list.GetHeight();
   int width = 0;
-  for (int i = 0; i < model()->GetItemCount(); ++i) {
+  for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
     if (model_->IsItemSeparatorAt(i))
       continue;
 
     if (size_to_largest_label_ || i == selected_index_) {
-      int item_width = gfx::GetStringWidth(model()->GetItemAt(i), font_list);
-      ui::ImageModel icon = model()->GetIconAt(i);
+      int item_width = gfx::GetStringWidth(GetModel()->GetItemAt(i), font_list);
+      ui::ImageModel icon = GetModel()->GetIconAt(i);
       if (!icon.IsEmpty()) {
         gfx::ImageSkia icon_skia =
             GetImageSkiaFromImageModel(&icon, GetNativeTheme());
