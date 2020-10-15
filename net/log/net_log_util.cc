@@ -122,6 +122,16 @@ bool RequestCreatedBefore(const URLRequest* request1,
   return request1->net_log().source().id < request2->net_log().source().id;
 }
 
+base::Value GetActiveFieldTrialList() {
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  base::Value field_trial_groups(base::Value::Type::LIST);
+  for (const auto& group : active_groups) {
+    field_trial_groups.Append(group.trial_name + ":" + group.group_name);
+  }
+  return field_trial_groups;
+}
+
 }  // namespace
 
 base::Value GetNetConstants() {
@@ -314,20 +324,9 @@ base::Value GetNetConstants() {
   constants_dict.SetKey("clientInfo",
                         base::Value(base::Value::Type::DICTIONARY));
 
-  // Add a list of active field experiments.
-  {
-    base::FieldTrial::ActiveGroups active_groups;
-    base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
-    auto field_trial_groups = std::make_unique<base::ListValue>();
-    for (base::FieldTrial::ActiveGroups::const_iterator it =
-             active_groups.begin();
-         it != active_groups.end(); ++it) {
-      field_trial_groups->AppendString(it->trial_name + ":" + it->group_name);
-    }
-    constants_dict.SetKey(
-        "activeFieldTrialGroups",
-        base::Value::FromUniquePtrValue(std::move(field_trial_groups)));
-  }
+  // Add a list of field experiments active at the start of the capture.
+  // Additional trials may be enabled later in the browser session.
+  constants_dict.SetKey(kNetInfoFieldTrials, GetActiveFieldTrialList());
 
   return constants_dict;
 }
@@ -469,6 +468,10 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
     net_info_dict.SetKey(kNetInfoReporting, std::move(reporting_dict));
 #endif  // BUILDFLAG(ENABLE_REPORTING)
   }
+
+  // Log currently-active field trials. New trials may have been enabled since
+  // the start of this browser session (crbug.com/1133396).
+  net_info_dict.SetKey(kNetInfoFieldTrials, GetActiveFieldTrialList());
 
   return net_info_dict;
 }
