@@ -43,6 +43,8 @@ class TtsService : public mojom::TtsService,
              SpeakCallback callback) override;
   void Stop() override;
   void SetVolume(float volume) override;
+  void Pause() override;
+  void Resume() override;
 
   // media::AudioRendererSink::RenderCallback:
   int Render(base::TimeDelta delay,
@@ -52,7 +54,8 @@ class TtsService : public mojom::TtsService,
   void OnRenderError() override;
 
   // Handles stopping tts.
-  void StopLocked() EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
+  void StopLocked(bool clear_buffers = true)
+      EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
 
   void ReadMoreFrames(bool is_first_buffer);
 

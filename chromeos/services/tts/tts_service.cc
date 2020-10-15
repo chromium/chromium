@@ -139,6 +139,15 @@ void TtsService::SetVolume(float volume) {
   output_device_->SetVolume(volume);
 }
 
+void TtsService::Pause() {
+  base::AutoLock al(state_lock_);
+  StopLocked(false /* clear_buffers */);
+}
+
+void TtsService::Resume() {
+  output_device_->Play();
+}
+
 int TtsService::Render(base::TimeDelta delay,
                        base::TimeTicks delay_timestamp,
                        int prior_frames_skipped,
@@ -191,12 +200,14 @@ int TtsService::Render(base::TimeDelta delay,
 
 void TtsService::OnRenderError() {}
 
-void TtsService::StopLocked() {
+void TtsService::StopLocked(bool clear_buffers) {
   if (!is_playing_)
     return;
 
   output_device_->Pause();
-  buffers_.clear();
+  if (clear_buffers)
+    buffers_.clear();
+
   is_playing_ = false;
 }
 

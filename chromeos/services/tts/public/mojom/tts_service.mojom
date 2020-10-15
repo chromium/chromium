@@ -58,6 +58,12 @@ interface TtsStream {
 
   // Sets the volume of the tts playback (0.0 to 1.0).
   SetVolume(float volume);
+
+  // Pauses tts playback. Safe to call repeatedly (no-op for subsequent calls).
+  Pause();
+
+  // Resumes tts playback. Safe to call repeatedly (no-op for subsequent calls).
+  Resume();
 };
 
 // Returned to callers of TtsStream.speak(). It receives notable events
