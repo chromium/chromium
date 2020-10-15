@@ -63,17 +63,17 @@ class TestCallbackWaiter {
 
 class AppInstallReportHandlerTest : public testing::Test {
  public:
-  AppInstallReportHandlerTest() = default;
-
-  void SetUp() override {
-    client_.SetDMToken(
-        policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
-  }
+  AppInstallReportHandlerTest()
+      : client_(std::make_unique<policy::MockCloudPolicyClient>()) {}
 
  protected:
-  content::BrowserTaskEnvironment task_envrionment_;
+  void SetUp() override {
+    client_->SetDMToken(
+        policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
+  }
+  content::BrowserTaskEnvironment task_environment_;
 
-  policy::MockCloudPolicyClient client_;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
 class TestRecord : public Record {
@@ -97,7 +97,7 @@ class TestRecord : public Record {
 TEST_F(AppInstallReportHandlerTest, AcceptsValidRecord) {
   TestCallbackWaiter waiter;
   TestRecord test_record;
-  EXPECT_CALL(client_,
+  EXPECT_CALL(*client_,
               UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
       .WillOnce(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
@@ -105,15 +105,15 @@ TEST_F(AppInstallReportHandlerTest, AcceptsValidRecord) {
             waiter.Signal();
           })));
 
-  AppInstallReportHandler handler(&client_);
+  AppInstallReportHandler handler(client_.get());
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
 }
 
 TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
-  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
-  AppInstallReportHandler handler(&client_);
+  EXPECT_CALL(*client_, UploadExtensionInstallReport_(_, _)).Times(0);
+  AppInstallReportHandler handler(client_.get());
 
   TestRecord test_record;
   test_record.set_destination(Destination::MEET_DEVICE_TELEMETRY);
@@ -124,8 +124,8 @@ TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
 }
 
 TEST_F(AppInstallReportHandlerTest, DeniesInvalidData) {
-  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
-  AppInstallReportHandler handler(&client_);
+  EXPECT_CALL(*client_, UploadExtensionInstallReport_(_, _)).Times(0);
+  AppInstallReportHandler handler(client_.get());
 
   TestRecord test_record;
   test_record.set_data("BAD_DATA");
@@ -138,7 +138,7 @@ TEST_F(AppInstallReportHandlerTest, ReportsUnsuccessfulCall) {
   TestCallbackWaiter waiter;
 
   TestRecord test_record;
-  EXPECT_CALL(client_,
+  EXPECT_CALL(*client_,
               UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
       .WillOnce(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
@@ -146,7 +146,7 @@ TEST_F(AppInstallReportHandlerTest, ReportsUnsuccessfulCall) {
             waiter.Signal();
           })));
 
-  AppInstallReportHandler handler(&client_);
+  AppInstallReportHandler handler(client_.get());
   Status handle_status = handler.HandleRecord(test_record);
   EXPECT_OK(handle_status);
   waiter.Wait();
@@ -173,7 +173,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsMultipleValidRecords) {
   TestCallbackWaiterWithCounter waiter{kExpectedCallTimes};
 
   TestRecord test_record;
-  EXPECT_CALL(client_,
+  EXPECT_CALL(*client_,
               UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
       .WillRepeatedly(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
@@ -181,7 +181,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsMultipleValidRecords) {
             waiter.Signal();
           })));
 
-  AppInstallReportHandler handler(&client_);
+  AppInstallReportHandler handler(client_.get());
 
   for (int i = 0; i < kExpectedCallTimes; i++) {
     Status handle_status = handler.HandleRecord(test_record);

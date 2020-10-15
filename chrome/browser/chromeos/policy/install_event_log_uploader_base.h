@@ -21,6 +21,17 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
  public:
   // |client| must outlive |this|.
   InstallEventLogUploaderBase(CloudPolicyClient* client, Profile* profile);
+
+  // Will construct a non-CloudPolicyClient::Observer version of
+  // InstallEventLogUploaderBase.
+  // TODO(crbug.com/1078512) This exists to support the move to using
+  // reporting::ReportQueue, which owns its own CloudPolicyClient. Once
+  // ArcInstallEventLogUploader is ready to move to using
+  // reporting::ReportQueue, we can likely do a small refactor removing all
+  // references to CloudPolicyClient from InstallEventLogUploaderBase and its
+  // children.
+  explicit InstallEventLogUploaderBase(Profile* profile);
+
   ~InstallEventLogUploaderBase() override;
 
   // Requests log upload. If there is no pending upload yet, asks the delegate

@@ -34,12 +34,18 @@ using AppInstallReportUploader =
 
 using UploaderLeaderTracker = AppInstallReportHandler::UploaderLeaderTracker;
 
+UploaderLeaderTracker::UploaderLeaderTracker(policy::CloudPolicyClient* client)
+    : client_(client) {}
+
+UploaderLeaderTracker::~UploaderLeaderTracker() = default;
+
 // static
-scoped_refptr<UploaderLeaderTracker> UploaderLeaderTracker::Create() {
-  return base::WrapRefCounted(new UploaderLeaderTracker());
+scoped_refptr<UploaderLeaderTracker> UploaderLeaderTracker::Create(
+    policy::CloudPolicyClient* client) {
+  return base::WrapRefCounted(new UploaderLeaderTracker(client));
 }
 
-StatusOr<AppInstallReportHandler::ReleaseLeaderCallback>
+StatusOr<std::unique_ptr<UploaderLeaderTracker::LeaderLock>>
 UploaderLeaderTracker::RequestLeaderPromotion() {
   if (has_promoted_app_install_event_uploader_) {
     return Status(error::RESOURCE_EXHAUSTED,
@@ -47,26 +53,39 @@ UploaderLeaderTracker::RequestLeaderPromotion() {
   }
 
   has_promoted_app_install_event_uploader_ = true;
-  return base::BindOnce(&UploaderLeaderTracker::ReleaseLeader,
-                        base::Unretained(this));
+
+  return std::make_unique<LeaderLock>(
+      base::BindOnce(&UploaderLeaderTracker::ReleaseLeader,
+                     base::Unretained(this)),
+      client_);
 }
 
 void UploaderLeaderTracker::ReleaseLeader() {
   has_promoted_app_install_event_uploader_ = false;
 }
 
+UploaderLeaderTracker::LeaderLock::LeaderLock(
+    UploaderLeaderTracker::ReleaseLeaderCallback release_cb,
+    policy::CloudPolicyClient* client)
+    : client_(std::move(client)),
+      release_leader_callback_(std::move(release_cb)) {}
+
+UploaderLeaderTracker::LeaderLock::~LeaderLock() {
+  if (release_leader_callback_) {
+    std::move(release_leader_callback_).Run();
+  }
+}
+
 AppInstallReportUploader::AppInstallReportUploader(
     base::Value report,
     scoped_refptr<SharedQueue<base::Value>> report_queue,
     scoped_refptr<UploaderLeaderTracker> leader_tracker,
-    policy::CloudPolicyClient* client,
     ClientCallback client_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<bool>(std::move(client_cb), sequenced_task_runner),
       report_(std::move(report)),
       report_queue_(report_queue),
-      leader_tracker_(leader_tracker),
-      client_(client) {}
+      leader_tracker_(leader_tracker) {}
 
 AppInstallReportUploader::~AppInstallReportUploader() = default;
 
@@ -88,7 +107,7 @@ void AppInstallReportUploader::RequestLeaderPromotion() {
     return;
   }
 
-  release_leader_cb_ = std::move(promo_result.ValueOrDie());
+  leader_lock_ = std::move(promo_result.ValueOrDie());
 
   ScheduleNextPop();
 }
@@ -101,7 +120,7 @@ void AppInstallReportUploader::ScheduleNextPop() {
 void AppInstallReportUploader::OnPopResult(StatusOr<base::Value> pop_result) {
   if (!pop_result.ok()) {
     // There are no more records to process - exit.
-    std::move(release_leader_cb_).Run();
+    leader_lock_.reset();
     Complete();
     return;
   }
@@ -120,7 +139,7 @@ void AppInstallReportUploader::StartUpload(base::Value record) {
                        client->UploadExtensionInstallReport(std::move(record),
                                                             std::move(cb));
                      },
-                     client_, std::move(record), std::move(cb)));
+                     leader_lock_->client(), std::move(record), std::move(cb)));
 }
 
 void AppInstallReportUploader::OnUploadComplete(bool success) {
@@ -139,7 +158,7 @@ AppInstallReportHandler::AppInstallReportHandler(
     policy::CloudPolicyClient* client)
     : RecordHandler(client),
       report_queue_(SharedQueue<base::Value>::Create()),
-      leader_tracker_(UploaderLeaderTracker::Create()),
+      leader_tracker_(UploaderLeaderTracker::Create(client)),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
 AppInstallReportHandler::~AppInstallReportHandler() = default;
@@ -155,8 +174,8 @@ Status AppInstallReportHandler::HandleRecord(Record record) {
   // Start an uploader in case any previous uploader has finished running before
   // this record was posted.
   Start<AppInstallReportUploader>(std::move(report), report_queue_,
-                                  leader_tracker_, GetClient(),
-                                  std::move(client_cb), sequenced_task_runner_);
+                                  leader_tracker_, std::move(client_cb),
+                                  sequenced_task_runner_);
 
   return Status::StatusOK();
 }
@@ -187,13 +206,6 @@ StatusOr<base::Value> AppInstallReportHandler::ConvertRecord(
   }
 
   return std::move(report_result.value());
-}
-
-Status AppInstallReportHandler::ValidateClientState() const {
-  if (!GetClient()->is_registered()) {
-    return Status(error::UNAVAILABLE, "DmServer is currently unavailable");
-  }
-  return Status::StatusOK();
 }
 
 }  // namespace reporting

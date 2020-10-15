@@ -17,15 +17,19 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/install_event_log_util.h"
+#include "chrome/browser/policy/messaging_layer/public/mock_report_queue.h"
+#include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::DoAll;
 using testing::Invoke;
 using testing::Mock;
 using testing::WithArgs;
@@ -39,10 +43,9 @@ namespace {
 constexpr base::TimeDelta kMinRetryBackoff = base::TimeDelta::FromSeconds(10);
 constexpr base::TimeDelta kMaxRetryBackoff = base::TimeDelta::FromDays(1);
 
-static const char kDmToken[] = "token";
 static const char kExtensionId[] = "abcdefghabcdefghabcdefghabcdefgh";
 
-MATCHER_P(MatchValue, expected, "matches base::Value") {
+MATCHER_P(MatchEvents, expected, "contains events") {
   std::string arg_serialized_string;
   JSONStringValueSerializer arg_serializer(&arg_serialized_string);
   if (!arg_serializer.Serialize(arg))
@@ -56,6 +59,57 @@ MATCHER_P(MatchValue, expected, "matches base::Value") {
 
   return arg_serialized_string == expected_serialized_string;
 }
+
+class TestCallbackWaiter {
+ public:
+  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
+
+  virtual void Signal() { run_loop_->Quit(); }
+  virtual void Wait() { run_loop_->Run(); }
+
+ protected:
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
+ public:
+  explicit TestCallbackWaiterWithCounter(size_t counter_limit)
+      : counter_limit_(counter_limit) {
+    DCHECK_GE(counter_limit, 0u);
+  }
+
+  void Signal() override {
+    const size_t old_count = counter_limit_.fetch_sub(1);
+    DCHECK_GE(old_count, 0u);
+    if (old_count > 1) {
+      return;
+    }
+    run_loop_->Quit();
+  }
+
+  void Wait() override {
+    if (counter_limit_ == 0) {
+      return;
+    }
+    run_loop_->Run();
+  }
+
+  void Reset() {
+    counter_limit_ = 0;
+    run_loop_.reset();
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  void WaitAndReset() {
+    Wait();
+    Reset();
+  }
+
+  void IncreaseCounterLimit() { counter_limit_++; }
+
+ private:
+  std::atomic<size_t> counter_limit_;
+};
 
 class MockExtensionInstallEventLogUploaderDelegate
     : public ExtensionInstallEventLogUploader::Delegate {
@@ -78,41 +132,41 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
  protected:
   ExtensionInstallEventLogUploaderTest() = default;
 
+  void SetUp() override { CreateUploader(); }
+
   void TearDown() override {
-    Mock::VerifyAndClearExpectations(&client_);
-    EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
+    Mock::VerifyAndClearExpectations(mock_report_queue_);
+    Mock::VerifyAndClearExpectations(&delegate_);
     uploader_.reset();
-  }
-
-  void RegisterClient() {
-    client_.dm_token_ = kDmToken;
-    client_.NotifyRegistrationStateChanged();
-  }
-
-  void UnregisterClient() {
-    client_.dm_token_.clear();
-    client_.NotifyRegistrationStateChanged();
   }
 
   void CreateUploader() {
     uploader_ = std::make_unique<ExtensionInstallEventLogUploader>(
-        &client_, /*profile=*/nullptr);
+        /*profile=*/nullptr);
     uploader_->SetDelegate(&delegate_);
+
+    auto mock_report_queue = std::make_unique<reporting::MockReportQueue>();
+    mock_report_queue_ = mock_report_queue.get();
+    uploader_->SetReportQueue(std::move(mock_report_queue));
   }
 
   void CompleteSerialize() {
+    waiter_.IncreaseCounterLimit();
     EXPECT_CALL(delegate_, SerializeExtensionLogForUpload_(_))
         .WillOnce(WithArgs<0>(
             Invoke([=](ExtensionInstallEventLogUploader::Delegate::
                            ExtensionLogSerializationCallback& callback) {
               std::move(callback).Run(&log_);
+              waiter_.Signal();
             })));
   }
 
   void CaptureSerialize(ExtensionInstallEventLogUploader::Delegate::
                             ExtensionLogSerializationCallback* callback) {
+    waiter_.IncreaseCounterLimit();
     EXPECT_CALL(delegate_, SerializeExtensionLogForUpload_(_))
-        .WillOnce(MoveArg<0>(callback));
+        .WillOnce(
+            DoAll(MoveArg<0>(callback), Invoke([=]() { waiter_.Signal(); })));
   }
 
   void ClearReportDict() {
@@ -129,24 +183,42 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         ConvertExtensionProtoToValue(&log_, context), std::move(context));
 
-    EXPECT_CALL(client_,
-                UploadExtensionInstallReport_(MatchValue(&value_report_), _))
-        .WillOnce(WithArgs<1>(
-            Invoke([=](CloudPolicyClient::StatusCallback& callback) {
-              std::move(callback).Run(success);
-            })));
+    waiter_.IncreaseCounterLimit();
+
+    EXPECT_CALL(*mock_report_queue_,
+                ValueEnqueue_(MatchEvents(&value_report_), _))
+        .WillOnce(
+            Invoke([=](const base::Value&,
+                       reporting::MockReportQueue::EnqueueCallback callback) {
+              reporting::Status status =
+                  success ? reporting::Status::StatusOK()
+                          : reporting::Status(reporting::error::INTERNAL,
+                                              "Failing for tests");
+              std::move(callback).Run(status);
+              waiter_.Signal();
+
+              // In the real ReportEnqueue::ValueEnqueue call this status return
+              // would indicate the that storage module is unavailable. From
+              // ExtensionInstallEventLogUploader, it follows the same execution
+              // path of failing UploadDone.
+              return reporting::Status::StatusOK();
+            }));
   }
 
-  void CaptureUpload(CloudPolicyClient::StatusCallback* callback) {
+  void CaptureUpload(reporting::MockReportQueue::EnqueueCallback* callback) {
     ClearReportDict();
     base::Value context = reporting::GetContext(/*profile=*/nullptr);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         ConvertExtensionProtoToValue(&log_, context), std::move(context));
 
-    CloudPolicyClient::StatusCallback status_callback;
-    EXPECT_CALL(client_,
-                UploadExtensionInstallReport_(MatchValue(&value_report_), _))
-        .WillOnce(MoveArg<1>(callback));
+    EXPECT_CALL(*mock_report_queue_,
+                ValueEnqueue_(MatchEvents(&value_report_), _))
+        .WillOnce(
+            Invoke([callback](const base::Value&,
+                              reporting::MockReportQueue::EnqueueCallback cb) {
+              *callback = std::move(cb);
+              return reporting::Status::StatusOK();
+            }));
   }
 
   void CompleteSerializeAndUpload(bool success) {
@@ -155,33 +227,55 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   }
 
   void CompleteSerializeAndCaptureUpload(
-      CloudPolicyClient::StatusCallback* callback) {
+      reporting::MockReportQueue::EnqueueCallback* callback) {
     CompleteSerialize();
     CaptureUpload(callback);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  void ExpectExtensionLogUploadSuccess() {
+    waiter_.IncreaseCounterLimit();
+    EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess())
+        .WillOnce(Invoke([=]() { waiter_.Signal(); }));
+  }
+
+  // Setup retry by serializing event, but failing to upload.
+  void SetupForRetry() {
+    CompleteSerializeAndUpload(false /* success */);
+    EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
+    uploader_->RequestUpload();
+    waiter_.WaitAndReset();
+    Mock::VerifyAndClearExpectations(&delegate_);
+    Mock::VerifyAndClearExpectations(mock_report_queue_);
+
+    // A task is enqueued with zero delay and needs to be processed.
+    base::TimeDelta zero_delay = base::TimeDelta::FromSeconds(0);
+
+    // Expect and throwaway task.
+    EXPECT_EQ(task_environment_.NextMainThreadPendingTaskDelay(), zero_delay);
+    task_environment_.FastForwardBy(zero_delay);
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   em::ExtensionInstallReportRequest log_;
   base::Value value_report_{base::Value::Type::DICTIONARY};
 
-  MockCloudPolicyClient client_;
+  reporting::MockReportQueue* mock_report_queue_;
   MockExtensionInstallEventLogUploaderDelegate delegate_;
   std::unique_ptr<ExtensionInstallEventLogUploader> uploader_;
 
   chromeos::system::ScopedFakeStatisticsProvider
       scoped_fake_statistics_provider_;
+  TestCallbackWaiterWithCounter waiter_{0};
 };
 
 // Make a log upload request. Have serialization and log upload succeed. Verify
 // that the delegate is notified of the success.
 TEST_F(ExtensionInstallEventLogUploaderTest, RequestSerializeAndUpload) {
-  RegisterClient();
-  CreateUploader();
-
   CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
+  ExpectExtensionLogUploadSuccess();
   uploader_->RequestUpload();
+  waiter_.Wait();
 }
 
 // Make a log upload request. Have serialization succeed and log upload begin.
@@ -189,21 +283,20 @@ TEST_F(ExtensionInstallEventLogUploaderTest, RequestSerializeAndUpload) {
 // delegate is notified of the first request's success and no serialization is
 // started for the second request.
 TEST_F(ExtensionInstallEventLogUploaderTest, RequestSerializeRequestAndUpload) {
-  RegisterClient();
-  CreateUploader();
-
-  CloudPolicyClient::StatusCallback status_callback;
-  CompleteSerializeAndCaptureUpload(&status_callback);
+  reporting::MockReportQueue::EnqueueCallback upload_callback;
+  CompleteSerializeAndCaptureUpload(&upload_callback);
   uploader_->RequestUpload();
+  waiter_.WaitAndReset();
   Mock::VerifyAndClearExpectations(&delegate_);
 
   EXPECT_CALL(delegate_, SerializeExtensionLogForUpload_(_)).Times(0);
   uploader_->RequestUpload();
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
+  ExpectExtensionLogUploadSuccess();
   EXPECT_CALL(delegate_, SerializeExtensionLogForUpload_(_)).Times(0);
-  std::move(status_callback).Run(true);
+  std::move(upload_callback).Run(reporting::Status::StatusOK());
+  waiter_.Wait();
 }
 
 // Make a log upload request. Have serialization begin. Make a second upload
@@ -211,13 +304,11 @@ TEST_F(ExtensionInstallEventLogUploaderTest, RequestSerializeRequestAndUpload) {
 // Then, have the first request's serialization and upload succeed. Verify that
 // the delegate is notified of the first request's success.
 TEST_F(ExtensionInstallEventLogUploaderTest, RequestRequestSerializeAndUpload) {
-  RegisterClient();
-  CreateUploader();
-
   ExtensionInstallEventLogUploader::Delegate::ExtensionLogSerializationCallback
       serialization_callback;
   CaptureSerialize(&serialization_callback);
   uploader_->RequestUpload();
+  waiter_.WaitAndReset();
   Mock::VerifyAndClearExpectations(&delegate_);
 
   EXPECT_CALL(delegate_, SerializeExtensionLogForUpload_(_)).Times(0);
@@ -225,44 +316,38 @@ TEST_F(ExtensionInstallEventLogUploaderTest, RequestRequestSerializeAndUpload) {
   Mock::VerifyAndClearExpectations(&delegate_);
 
   CompleteUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
+  ExpectExtensionLogUploadSuccess();
   std::move(serialization_callback).Run(&log_);
+  waiter_.Wait();
 }
 
 // Make a log upload request. Have serialization begin. Cancel the request. Have
 // the serialization succeed. Verify that the serialization result is ignored
 // and no upload is started.
 TEST_F(ExtensionInstallEventLogUploaderTest, RequestCancelAndSerialize) {
-  RegisterClient();
-  CreateUploader();
-
   ExtensionInstallEventLogUploader::Delegate::ExtensionLogSerializationCallback
       serialization_callback;
   CaptureSerialize(&serialization_callback);
   uploader_->RequestUpload();
+  waiter_.WaitAndReset();
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
   uploader_->CancelUpload();
-  Mock::VerifyAndClearExpectations(&client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
+  EXPECT_CALL(*mock_report_queue_, ValueEnqueue_(_, _)).Times(0);
   EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
   std::move(serialization_callback).Run(&log_);
 }
 
 // Make a log upload request. Have serialization succeed and log upload begin.
-// Cancel the request. Verify that the upload is canceled in the client.
+// Cancel the request.
 TEST_F(ExtensionInstallEventLogUploaderTest, RequestSerializeAndCancel) {
-  RegisterClient();
-  CreateUploader();
-
-  CloudPolicyClient::StatusCallback status_callback;
-  CompleteSerializeAndCaptureUpload(&status_callback);
+  reporting::MockReportQueue::EnqueueCallback upload_callback;
+  CompleteSerializeAndCaptureUpload(&upload_callback);
   uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
   uploader_->CancelUpload();
 }
 
@@ -274,14 +359,7 @@ TEST_F(ExtensionInstallEventLogUploaderTest, RequestSerializeAndCancel) {
 // serialization succeed but log upload fail again. Verify that the backoff has
 // returned to the minimum.
 TEST_F(ExtensionInstallEventLogUploaderTest, Retry) {
-  RegisterClient();
-  CreateUploader();
-
-  CompleteSerializeAndUpload(false /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
-  uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&delegate_);
-  Mock::VerifyAndClearExpectations(&client_);
+  SetupForRetry();
 
   const base::TimeDelta min_delay = kMinRetryBackoff;
   const base::TimeDelta max_delay = kMaxRetryBackoff;
@@ -289,187 +367,44 @@ TEST_F(ExtensionInstallEventLogUploaderTest, Retry) {
   base::TimeDelta expected_delay = min_delay;
   int max_delay_count = 0;
   while (max_delay_count < 2) {
-    EXPECT_EQ(expected_delay,
-              task_environment_.NextMainThreadPendingTaskDelay());
+    // Make sure next upload attempt is scheduled correctly.
+    EXPECT_EQ(task_environment_.NextMainThreadPendingTaskDelay(),
+              expected_delay);
 
+    // Setup expectations for upload attempt.
     CompleteSerializeAndUpload(false /* success */);
     EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
+
+    // FastForward until upload attempts are complete.
     task_environment_.FastForwardBy(expected_delay);
-    Mock::VerifyAndClearExpectations(&delegate_);
-    Mock::VerifyAndClearExpectations(&client_);
+    waiter_.WaitAndReset();
 
     if (expected_delay == max_delay) {
       ++max_delay_count;
     }
+
     expected_delay = std::min(expected_delay * 2, max_delay);
   }
+  EXPECT_EQ(task_environment_.NextMainThreadPendingTaskDelay(), expected_delay);
 
-  EXPECT_EQ(expected_delay, task_environment_.NextMainThreadPendingTaskDelay());
-
+  // Allow Upload to succeed.
   log_.add_extension_install_reports()->set_extension_id(kExtensionId);
   CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
+  ExpectExtensionLogUploadSuccess();
+
   task_environment_.FastForwardBy(expected_delay);
+  waiter_.WaitAndReset();
   Mock::VerifyAndClearExpectations(&delegate_);
-  Mock::VerifyAndClearExpectations(&client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  CompleteSerializeAndUpload(false /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
-  uploader_->RequestUpload();
-
-  EXPECT_EQ(min_delay, task_environment_.NextMainThreadPendingTaskDelay());
-}
-
-// Create the uploader using a client that is not registered with the server
-// yet. Register the client with the server. Make a log upload request. Have
-// serialization and log upload succeed. Verify that the delegate is notified of
-// the success.
-TEST_F(ExtensionInstallEventLogUploaderTest,
-       RegisterRequestSerializeAndUpload) {
-  CreateUploader();
-  RegisterClient();
-
-  CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
-  uploader_->RequestUpload();
-}
-
-// Create the uploader using a client that is not registered with the server
-// yet. Make a log upload request. Verify that serialization is not started.
-// Then, register the client with the server. Verify that serialization is
-// started. Have serialization and log upload succeed. Verify that the delegate
-// is notified of the success.
-TEST_F(ExtensionInstallEventLogUploaderTest,
-       RequestRegisterSerializeAndUpload) {
-  CreateUploader();
-
-  EXPECT_CALL(delegate_, SerializeExtensionLogForUpload_(_)).Times(0);
-  uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
-  RegisterClient();
-}
-
-// Make a log upload request. Have serialization succeed and log upload begin.
-// Unregister the client from the server. Register the client with the server.
-// Verify that a new serialization is started. Then, have serialization and log
-// upload succeed. Verify that the delegate is notified of the success.
-TEST_F(ExtensionInstallEventLogUploaderTest,
-       RequestSerializeUnregisterRegisterAndUpload) {
-  RegisterClient();
-  CreateUploader();
-
-  CloudPolicyClient::StatusCallback status_callback;
-  CompleteSerializeAndCaptureUpload(&status_callback);
-  uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&delegate_);
-  Mock::VerifyAndClearExpectations(&client_);
-
-  EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
-  UnregisterClient();
-  Mock::VerifyAndClearExpectations(&client_);
-
-  log_.add_extension_install_reports()->set_extension_id(kExtensionId);
-  CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
-  RegisterClient();
-}
-
-// Make a log upload request. Have serialization begin. Unregister the client
-// from the server. Have serialization succeed. Verify that the serialization
-// result is ignored and no upload is started. Then, register the client with
-// the server. Verify that a new serialization is started. Then, have
-// serialization and log upload succeed. Verify that the delegate is notified of
-// the success.
-TEST_F(ExtensionInstallEventLogUploaderTest,
-       RequestUnregisterSerializeRegisterAndUpload) {
-  RegisterClient();
-  CreateUploader();
-
-  ExtensionInstallEventLogUploader::Delegate::ExtensionLogSerializationCallback
-      serialization_callback;
-  CaptureSerialize(&serialization_callback);
-  uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
-  UnregisterClient();
-  Mock::VerifyAndClearExpectations(&client_);
-
-  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
-  std::move(serialization_callback).Run(&log_);
-  Mock::VerifyAndClearExpectations(&delegate_);
-  Mock::VerifyAndClearExpectations(&client_);
-
-  log_.add_extension_install_reports()->set_extension_id(kExtensionId);
-  CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
-  RegisterClient();
-}
-
-// Make a log upload request. Have serialization begin. Unregister the client
-// from the server. Register the client with the server. Verify that a second
-// serialization is requested. Then, have the first serialization succeed.
-// Verify that he serialization result is ignored and no upload is started.
-// Then, have the second serialization succeed. Verify that an upload is
-// started. Then, have the upload succeed. Verify that the delegate is notified
-// of the success.
-TEST_F(ExtensionInstallEventLogUploaderTest,
-       RequestUnregisterRegisterSerializeAndUpload) {
-  RegisterClient();
-  CreateUploader();
-
-  ExtensionInstallEventLogUploader::Delegate::ExtensionLogSerializationCallback
-      serialization_callback_1;
-  CaptureSerialize(&serialization_callback_1);
-  uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
-  UnregisterClient();
-  Mock::VerifyAndClearExpectations(&client_);
-
-  ExtensionInstallEventLogUploader::Delegate::ExtensionLogSerializationCallback
-      serialization_callback_2;
-  CaptureSerialize(&serialization_callback_2);
-  RegisterClient();
-
-  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
-  std::move(serialization_callback_1).Run(&log_);
-  Mock::VerifyAndClearExpectations(&delegate_);
-  Mock::VerifyAndClearExpectations(&client_);
-
-  log_.add_extension_install_reports()->set_extension_id(kExtensionId);
-  CompleteUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
-  std::move(serialization_callback_2).Run(&log_);
-}
-
-// Make a log upload request. Have serialization succeed and log upload begin.
-// Remove the delegate. Verify that the upload is canceled in the client.
-TEST_F(ExtensionInstallEventLogUploaderTest, RequestAndRemoveDelegate) {
-  RegisterClient();
-  CreateUploader();
-
-  CloudPolicyClient::StatusCallback status_callback;
-  CompleteSerializeAndCaptureUpload(&status_callback);
-  uploader_->RequestUpload();
-  Mock::VerifyAndClearExpectations(&client_);
-
-  EXPECT_CALL(client_, CancelExtensionInstallReportUpload());
-  uploader_->SetDelegate(nullptr);
+  // Ensure upload fails and retry delay happens again.
+  SetupForRetry();
+  EXPECT_EQ(task_environment_.NextMainThreadPendingTaskDelay(), min_delay);
 }
 
 // When there is more than one identical event in the log, ensure that only one
 // of those duplicate events is in the created report.
 TEST_F(ExtensionInstallEventLogUploaderTest, DuplicateEvents) {
-  RegisterClient();
-  CreateUploader();
-
   em::ExtensionInstallReport* report = log_.add_extension_install_reports();
   report->set_extension_id(kExtensionId);
 
@@ -488,8 +423,9 @@ TEST_F(ExtensionInstallEventLogUploaderTest, DuplicateEvents) {
   ev3->set_timestamp(1000);
 
   CompleteSerializeAndUpload(true /* success */);
-  EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess());
+  ExpectExtensionLogUploadSuccess();
   uploader_->RequestUpload();
+  waiter_.Wait();
 
   EXPECT_EQ(2u,
             value_report_

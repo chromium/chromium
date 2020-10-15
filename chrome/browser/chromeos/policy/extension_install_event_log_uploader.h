@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_EXTENSION_INSTALL_EVENT_LOG_UPLOADER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_EXTENSION_INSTALL_EVENT_LOG_UPLOADER_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/install_event_log_uploader_base.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
+#include "chrome/browser/policy/messaging_layer/util/status.h"
+#include "chrome/browser/policy/messaging_layer/util/statusor.h"
+#include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
 
 namespace enterprise_management {
 class ExtensionInstallReportRequest;
@@ -16,8 +23,6 @@ class ExtensionInstallReportRequest;
 class Profile;
 
 namespace policy {
-
-class CloudPolicyClient;
 
 // Adapter between the system that captures and stores extension install event
 // logs and the policy system which uploads them to the management server.
@@ -45,8 +50,7 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
     virtual ~Delegate();
   };
 
-  // |client| must outlive |this|.
-  ExtensionInstallEventLogUploader(CloudPolicyClient* client, Profile* profile);
+  explicit ExtensionInstallEventLogUploader(Profile* profile);
   ~ExtensionInstallEventLogUploader() override;
 
   // Sets the delegate. The delegate must either outlive |this| or be explicitly
@@ -54,7 +58,81 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
   // delegate cancels the pending log upload, if any.
   void SetDelegate(Delegate* delegate);
 
+  // Sets the report queue if it is not already set.
+  void SetReportQueue(std::unique_ptr<reporting::ReportQueue> report_queue);
+
+  // Meant to be used in tests for creating the ReportQueueConfiguration.
+  void SetBuildReportQueueConfigurationForTests(const std::string& dm_token);
+
  private:
+  // Ensures that only one ReportQueueBuilder is working at one time.
+  class ReportQueueBuilderLeaderTracker;
+
+  // ReportQueueBuilder builds a ReportQueue and uses |set_report_queue_cb|
+  // to set it in the ExtensionInstallEventLogUploader. ReportQueueBuilder
+  // ensures that only one ReportQueue is built for ExtensionInstallLogUploader.
+  class ReportQueueBuilder : public reporting::TaskRunnerContext<bool> {
+   public:
+    using SetReportQueueCallback =
+        base::OnceCallback<void(std::unique_ptr<reporting::ReportQueue>,
+                                base::OnceCallback<void()>)>;
+
+    using GetReportQueueConfigCallback =
+        base::RepeatingCallback<reporting::StatusOr<
+            std::unique_ptr<reporting::ReportQueueConfiguration>>()>;
+
+    ReportQueueBuilder(
+        SetReportQueueCallback set_report_queue_cb,
+        GetReportQueueConfigCallback get_report_queue_config_cb,
+        scoped_refptr<ReportQueueBuilderLeaderTracker> leader_tracker,
+        base::OnceCallback<void(bool)> completion_cb,
+        scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
+
+   private:
+    ~ReportQueueBuilder() override;
+
+    // |OnStart| requests leadership promotion from the provided
+    // |leader_tracker|. If there is already a leader, |OnStart| will exit.
+    // Otherwise it will call |BuildReportQueue|.
+    void OnStart() override;
+
+    // |BuildReportQueue| will get the |ReportQueueConfiguration| from the
+    // |get_report_queue_config_cb_| and call ReportClient::CreateReportQueue to
+    // generate a ReportQueue. Sets OnReportQueueResult as the completion
+    // callback for |CreateReportQueue|.
+    void BuildReportQueue();
+
+    // |OnReportQueueResult| will evaluate |report_queue_result|. If it is not
+    // an OK status, it exits the builder with a |Complete| call. On an OK
+    // status it |Schedule|s SetReportQueue.
+    void OnReportQueueResult(
+        reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
+            report_queue_result);
+
+    // SetReportQueue will call |set_report_queue_cb_| with the provided
+    // |report_queue|.
+    void SetReportQueue(std::unique_ptr<reporting::ReportQueue> report_queue);
+
+    // |Schedules| |ReleaseLeader|.
+    void Complete();
+
+    // Releases the leader lock if it is held, and then calls |Response|.
+    void ReleaseLeader();
+
+    // Callback for setting the ReportQueue in the calling
+    // |ExtensionInstallEventLogUploader|.
+    SetReportQueueCallback set_report_queue_cb_;
+
+    // Callback for creating the |ReportQueueConfiguration|.
+    GetReportQueueConfigCallback get_report_queue_config_cb_;
+
+    // |leader_tracker_| is used to ensure that only one ReportQueueBuilder is
+    // active at a time.
+    scoped_refptr<ReportQueueBuilderLeaderTracker> leader_tracker_;
+
+    base::OnceCallback<void()> release_leader_cb_;
+  };
+
   // InstallEventLogUploaderBase:
   void CheckDelegateSet() override;
   void PostTaskForStartSerialization() override;
@@ -67,8 +145,30 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
   void OnSerialized(
       const enterprise_management::ExtensionInstallReportRequest* report);
 
+  // Enqueues the report for upload.
+  void EnqueueReport(
+      const enterprise_management::ExtensionInstallReportRequest& report);
+
+  // Handles the status of the report enqueue.
+  void OnEnqueueDone(reporting::Status status);
+
   // The delegate that provides serialized logs to be uploaded.
   Delegate* delegate_ = nullptr;
+
+  // ReportQueueBuilderLeaderTracker for building the ReportQueue, passed to
+  // each ReportQueueBuilder in order to track which is the leader.
+  scoped_refptr<ReportQueueBuilderLeaderTracker> leader_tracker_;
+
+  // SequencedTaskRunenr for building the ReportQueue.
+  scoped_refptr<base::SequencedTaskRunner> report_queue_builder_task_runner_;
+
+  // Callback to generate a ReportQueueConfiguration.
+  base::RepeatingCallback<reporting::StatusOr<
+      std::unique_ptr<reporting::ReportQueueConfiguration>>()>
+      get_report_queue_config_cb_;
+
+  // ReportQueue for uploading events.
+  std::unique_ptr<reporting::ReportQueue> report_queue_;
 
   // Weak pointer factory for invalidating callbacks passed to the delegate and
   // scheduled retries when the upload request is canceled or |this| is

@@ -29,8 +29,14 @@ InstallEventLogUploaderBase::InstallEventLogUploaderBase(
   client_->AddObserver(this);
 }
 
+InstallEventLogUploaderBase::InstallEventLogUploaderBase(Profile* profile)
+    : client_(nullptr),
+      profile_(profile),
+      retry_backoff_ms_(kMinRetryBackoffMs) {}
+
 InstallEventLogUploaderBase::~InstallEventLogUploaderBase() {
-  client_->RemoveObserver(this);
+  if (client_)
+    client_->RemoveObserver(this);
 }
 
 void InstallEventLogUploaderBase::RequestUpload() {
@@ -39,8 +45,12 @@ void InstallEventLogUploaderBase::RequestUpload() {
     return;
 
   upload_requested_ = true;
-  if (client_->is_registered())
+
+  // If the client is set - ensure that it is also registered.
+  // Otherwise start Serialization.
+  if ((client_ && client_->is_registered()) || !client_) {
     StartSerialization();
+  }
 }
 
 void InstallEventLogUploaderBase::CancelUpload() {
@@ -51,6 +61,7 @@ void InstallEventLogUploaderBase::CancelUpload() {
 
 void InstallEventLogUploaderBase::OnRegistrationStateChanged(
     CloudPolicyClient* client) {
+  DCHECK(client_);
   if (!upload_requested_)
     return;
 

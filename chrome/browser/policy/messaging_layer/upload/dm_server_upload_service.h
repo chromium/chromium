@@ -52,7 +52,7 @@ class DmServerUploadService {
   class RecordHandler {
    public:
     explicit RecordHandler(policy::CloudPolicyClient* client);
-    virtual ~RecordHandler();
+    virtual ~RecordHandler() = default;
 
     virtual Status HandleRecord(Record record) = 0;
 
@@ -91,8 +91,8 @@ class DmServerUploadService {
     void IsHandlerVectorEmptyCheck(bool handler_is_empty);
 
     // ProcessRecords verifies that the records provided are parseable and sets
-    // the |Record|s up for handling by the |RecordHandler|s. On completion,
-    // ProcessRecords |Schedule|s |HandleRecords|.
+    // the |Record|s up for handling by the |RecordHandlers|s. On
+    // completion, ProcessRecords |Schedule|s |HandleRecords|.
     void ProcessRecords();
 
     // HandleRecords sends the records to the |record_handlers_|, allowing them
@@ -125,7 +125,7 @@ class DmServerUploadService {
         SequencingInformation sequencing_information);
 
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-    const scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> handlers_;
+    scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> handlers_;
 
     // generation_id_ will be set to the generation of the first record in
     // encrypted_records_.
@@ -173,9 +173,9 @@ class DmServerUploadService {
 
   std::unique_ptr<policy::CloudPolicyClient> client_;
   ReportSuccessfulUploadCallback upload_cb_;
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-
   scoped_refptr<SharedVector<std::unique_ptr<RecordHandler>>> record_handlers_;
+
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 };
 
 }  // namespace reporting

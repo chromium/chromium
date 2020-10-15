@@ -36,16 +36,30 @@ class AppInstallReportHandler : public DmServerUploadService::RecordHandler {
   // and false indicates failure.
   using ClientCallback = base::OnceCallback<void(bool status)>;
 
-  using ReleaseLeaderCallback = base::OnceCallback<void()>;
-  using RequestLeaderPromotionCallback =
-      base::OnceCallback<StatusOr<ReleaseLeaderCallback>()>;
 
   // Tracking the leader needs to outlive |AppInstallReportHandler| so it needs
   // to be wrapped in a scoped_refptr.
   class UploaderLeaderTracker
       : public base::RefCountedThreadSafe<UploaderLeaderTracker> {
    public:
-    static scoped_refptr<UploaderLeaderTracker> Create();
+    using ReleaseLeaderCallback = base::OnceCallback<void()>;
+
+    // Holds the lock on the leader, releases it upon destruction.
+    class LeaderLock {
+     public:
+      LeaderLock(ReleaseLeaderCallback release_cb,
+                 policy::CloudPolicyClient* client);
+      virtual ~LeaderLock();
+
+      policy::CloudPolicyClient* client() { return client_; }
+
+     private:
+      policy::CloudPolicyClient* client_;
+      ReleaseLeaderCallback release_leader_callback_;
+    };
+
+    static scoped_refptr<UploaderLeaderTracker> Create(
+        policy::CloudPolicyClient* cloud_policy_client);
 
     // If there is currently no leader
     // (|has_promoted_app_install_event_uploader_| is false), then the StatusOr
@@ -53,22 +67,28 @@ class AppInstallReportHandler : public DmServerUploadService::RecordHandler {
     // leader an error::RESOURCE_EXHAUSTED is returned (which should be the
     // common case). This will be called on sequence from inside the
     // |AppInstallReportUploader| and so needs no additional protection.
-    StatusOr<ReleaseLeaderCallback> RequestLeaderPromotion();
+    StatusOr<std::unique_ptr<LeaderLock>> RequestLeaderPromotion();
+
+   private:
+    friend class base::RefCountedThreadSafe<UploaderLeaderTracker>;
+
+    explicit UploaderLeaderTracker(policy::CloudPolicyClient* client);
+    virtual ~UploaderLeaderTracker();
 
     // Once a AppInstallEventUploader leader drains the queue of reports, it
     // will release its leadership and return, allowing a new
     // AppInstallEventUploader to take leadership and upload events.
     void ReleaseLeader();
 
-   private:
-    friend class base::RefCountedThreadSafe<UploaderLeaderTracker>;
-    virtual ~UploaderLeaderTracker() = default;
-
-    UploaderLeaderTracker() = default;
+    // CloudPolicyClient allows calls to the reporting server.
+    policy::CloudPolicyClient* client_;
 
     // Flag indicates whether a leader has been promoted.
     bool has_promoted_app_install_event_uploader_{false};
   };
+
+  using RequestLeaderPromotionCallback =
+      base::OnceCallback<StatusOr<UploaderLeaderTracker::LeaderLock>()>;
 
   // AppInstallReportUploader handles enqueuing events on the |report_queue_|,
   // and uploading those events with the |client_|.
@@ -78,7 +98,6 @@ class AppInstallReportHandler : public DmServerUploadService::RecordHandler {
         base::Value report,
         scoped_refptr<SharedQueue<base::Value>> report_queue,
         scoped_refptr<UploaderLeaderTracker> leader_tracker,
-        policy::CloudPolicyClient* client,
         ClientCallback client_cb,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
@@ -127,9 +146,7 @@ class AppInstallReportHandler : public DmServerUploadService::RecordHandler {
     base::Value report_;
     scoped_refptr<SharedQueue<base::Value>> report_queue_;
     scoped_refptr<UploaderLeaderTracker> leader_tracker_;
-    ReleaseLeaderCallback release_leader_cb_;
-
-    policy::CloudPolicyClient* const client_;
+    std::unique_ptr<UploaderLeaderTracker::LeaderLock> leader_lock_;
   };
 
   explicit AppInstallReportHandler(policy::CloudPolicyClient* client);
@@ -149,9 +166,6 @@ class AppInstallReportHandler : public DmServerUploadService::RecordHandler {
 
   // Convert record into base::Value for upload (override for subclass).
   virtual StatusOr<base::Value> ConvertRecord(const Record& record) const;
-
-  // Helper method. Validates CloudPolicyClient state.
-  Status ValidateClientState() const;
 
   scoped_refptr<SharedQueue<base::Value>> report_queue_;
   scoped_refptr<UploaderLeaderTracker> leader_tracker_;

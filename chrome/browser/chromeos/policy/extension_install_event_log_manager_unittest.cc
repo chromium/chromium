@@ -22,12 +22,12 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/extension_install_event_log.h"
 #include "chrome/browser/chromeos/policy/install_event_log_util.h"
+#include "chrome/browser/policy/messaging_layer/public/mock_report_queue.h"
+#include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/arc/arc_prefs.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -38,9 +38,12 @@
 
 using testing::_;
 using testing::AnyNumber;
+using testing::DoAll;
 using testing::Invoke;
+using testing::Matcher;
 using testing::Mock;
 using testing::Pointee;
+using testing::Return;
 
 namespace em = enterprise_management;
 
@@ -59,7 +62,6 @@ constexpr base::TimeDelta kOneMs = base::TimeDelta::FromMilliseconds(1);
 constexpr int kTotalSizeExpeditedUploadThreshold = 2048;
 constexpr int kMaxSizeExpeditedUploadThreshold = 512;
 
-constexpr char kDMToken[] = "token";
 constexpr const char* kExtensionIds[] = {
     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
     "cccccccccccccccccccccccccccccccc", "dddddddddddddddddddddddddddddddd",
@@ -158,7 +160,7 @@ class TestLogTaskRunnerWrapper
 class ExtensionInstallEventLogManagerTest : public testing::Test {
  protected:
   ExtensionInstallEventLogManagerTest()
-      : uploader_(&cloud_policy_client_, /*profile=*/nullptr),
+      : uploader_(/*profile=*/nullptr),
         log_task_runner_(log_task_runner_wrapper_.test_task_runner()),
         log_file_path_(profile_.GetPath().Append(kLogFileName)),
         extension_ids_{std::begin(kExtensionIds), std::end(kExtensionIds)},
@@ -169,8 +171,9 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    cloud_policy_client_.SetDMToken(kDMToken);
-
+    auto mock_report_queue = std::make_unique<reporting::MockReportQueue>();
+    mock_report_queue_ = mock_report_queue.get();
+    uploader_.SetReportQueue(std::move(mock_report_queue));
     event_.set_timestamp(0);
     event_.set_event_type(em::ExtensionInstallReportLogEvent::SUCCESS);
 
@@ -181,9 +184,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   // testing::Test:
   void TearDown() override {
-    Mock::VerifyAndClearExpectations(&cloud_policy_client_);
-    EXPECT_CALL(cloud_policy_client_, CancelExtensionInstallReportUpload())
-        .Times(AnyNumber());
+    Mock::VerifyAndClearExpectations(mock_report_queue_);
     manager_.reset();
     FastForwardUntilNoTasksRemain();
 
@@ -238,17 +239,23 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
   }
 
   void ExpectUploadAndCaptureCallback(
-      CloudPolicyClient::StatusCallback* callback) {
+      reporting::MockReportQueue::EnqueueCallback* callback) {
     ClearEventsDict();
     BuildReport();
 
-    EXPECT_CALL(cloud_policy_client_,
-                UploadExtensionInstallReport_(MatchEvents(&events_value_), _))
-        .WillOnce(MoveArg<1>(callback));
+    EXPECT_CALL(*mock_report_queue_,
+                ValueEnqueue_(MatchEvents(&events_value_), _))
+        .WillOnce(
+            Invoke([callback](const base::Value&,
+                              reporting::MockReportQueue::EnqueueCallback cb) {
+              *callback = std::move(cb);
+              return reporting::Status::StatusOK();
+            }));
   }
 
-  void ReportUploadSuccess(CloudPolicyClient::StatusCallback callback) {
-    std::move(callback).Run(true /* success */);
+  void ReportUploadSuccess(
+      reporting::MockReportQueue::EnqueueCallback callback) {
+    std::move(callback).Run(reporting::Status::StatusOK());
     FlushNonDelayedTasks();
   }
 
@@ -256,11 +263,13 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
     ClearEventsDict();
     BuildReport();
 
-    EXPECT_CALL(cloud_policy_client_,
-                UploadExtensionInstallReport_(MatchEvents(&events_value_), _))
-        .WillOnce(Invoke(
-            [](base::Value&, CloudPolicyClient::StatusCallback& callback) {
-              std::move(callback).Run(true /* success */);
+    EXPECT_CALL(*mock_report_queue_,
+                ValueEnqueue_(MatchEvents(&events_value_), _))
+        .WillOnce(
+            Invoke([](const base::Value&,
+                      reporting::MockReportQueue::EnqueueCallback callback) {
+              std::move(callback).Run(reporting::Status::StatusOK());
+              return reporting::Status::StatusOK();
             }));
   }
 
@@ -304,7 +313,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
   extensions::QuotaService::ScopedDisablePurgeForTesting
       disable_purge_for_testing_;
   TestingProfile profile_;
-  MockCloudPolicyClient cloud_policy_client_;
+  reporting::MockReportQueue* mock_report_queue_;
   ExtensionInstallEventLogUploader uploader_;
   std::unique_ptr<base::ScopedMockTimeMessageLoopTaskRunner>
       scoped_main_task_runner_;
@@ -341,17 +350,18 @@ TEST_F(ExtensionInstallEventLogManagerTest, CreateNonEmpty) {
   events_[kExtensionIds[0]].push_back(event_);
   log.Add(kExtensionIds[0], event_);
   log.Store();
+  EXPECT_TRUE(base::PathExists(log_file_path_));
 
   CreateManager();
-  base::DeleteFile(log_file_path_);
+  ASSERT_TRUE(base::DeleteFile(log_file_path_));
 
   FastForwardTo(kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -376,12 +386,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddBeforeInitialUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -422,12 +432,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, Add) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kUploadInterval - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(offset + kUploadInterval);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -452,12 +462,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddForMultipleExtensions) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kUploadInterval - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(offset + kUploadInterval);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -497,12 +507,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddToTriggerMaxSizeExpedited) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(offset + kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -532,12 +542,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddToTriggerTotalSizeExpedited) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(offset + kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -567,12 +577,12 @@ TEST_F(ExtensionInstallEventLogManagerTest,
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(offset + kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -595,12 +605,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestUploadAddUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  CloudPolicyClient::StatusCallback upload_callback;
+  reporting::MockReportQueue::EnqueueCallback upload_callback;
   ExpectUploadAndCaptureCallback(&upload_callback);
   FastForwardTo(kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
@@ -609,12 +619,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestUploadAddUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(kExpeditedUploadDelay + kUploadInterval - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(kExpeditedUploadDelay + kUploadInterval);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -638,12 +648,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestUploadAddExpeditedUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  CloudPolicyClient::StatusCallback upload_callback;
+  reporting::MockReportQueue::EnqueueCallback upload_callback;
   ExpectUploadAndCaptureCallback(&upload_callback);
   FastForwardTo(kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
@@ -654,12 +664,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestUploadAddExpeditedUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(kExpeditedUploadDelay + kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(kExpeditedUploadDelay + kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -688,13 +698,13 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestExpeditedUploadAddUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kExpeditedUploadDelay - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
-  CloudPolicyClient::StatusCallback upload_callback;
+  reporting::MockReportQueue::EnqueueCallback upload_callback;
   ExpectUploadAndCaptureCallback(&upload_callback);
   FastForwardTo(offset + kExpeditedUploadDelay);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
@@ -703,12 +713,12 @@ TEST_F(ExtensionInstallEventLogManagerTest, RequestExpeditedUploadAddUpload) {
   VerifyAndDeleteLogFile();
 
   FastForwardTo(offset + kExpeditedUploadDelay + kUploadInterval - kOneMs);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   EXPECT_FALSE(base::PathExists(log_file_path_));
 
   ExpectAndCompleteUpload();
   FastForwardTo(offset + kExpeditedUploadDelay + kUploadInterval);
-  Mock::VerifyAndClearExpectations(&cloud_policy_client_);
+  Mock::VerifyAndClearExpectations(mock_report_queue_);
   events_.clear();
   VerifyAndDeleteLogFile();
 
@@ -723,7 +733,6 @@ TEST_F(ExtensionInstallEventLogManagerTest, StoreOnShutdown) {
 
   AddLogEntry(0 /* extension_index */);
 
-  EXPECT_CALL(cloud_policy_client_, CancelExtensionInstallReportUpload());
   manager_.reset();
   FlushNonDelayedTasks();
   VerifyAndDeleteLogFile();
@@ -752,7 +761,6 @@ TEST_F(ExtensionInstallEventLogManagerTest, RunClearRun) {
 
   AddLogEntry(0 /* extension_index */);
 
-  EXPECT_CALL(cloud_policy_client_, CancelExtensionInstallReportUpload());
   manager_.reset();
   FlushNonDelayedTasks();
   VerifyLogFile();

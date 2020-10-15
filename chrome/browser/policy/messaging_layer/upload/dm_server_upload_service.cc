@@ -88,10 +88,9 @@ class CollectorCallback {
 };
 }  // namespace
 
-DmServerUploadService::RecordHandler::RecordHandler(CloudPolicyClient* client)
+DmServerUploadService::RecordHandler::RecordHandler(
+    policy::CloudPolicyClient* client)
     : client_(client) {}
-
-DmServerUploadService::RecordHandler::~RecordHandler() = default;
 
 DmServerUploader::DmServerUploader(
     std::unique_ptr<std::vector<EncryptedRecord>> records,
@@ -349,9 +348,8 @@ DmServerUploadService::DmServerUploadService(
     ReportSuccessfulUploadCallback upload_cb)
     : client_(std::move(client)),
       upload_cb_(upload_cb),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-      record_handlers_(SharedVector<std::unique_ptr<RecordHandler>>::Create()) {
-}
+      record_handlers_(SharedVector<std::unique_ptr<RecordHandler>>::Create()),
+      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
 DmServerUploadService::~DmServerUploadService() {
   if (client_) {

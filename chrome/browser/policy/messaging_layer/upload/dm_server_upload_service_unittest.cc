@@ -116,9 +116,7 @@ class TestCallbackWaiter {
 
 class TestRecordHandler : public DmServerUploadService::RecordHandler {
  public:
-  explicit TestRecordHandler(policy::CloudPolicyClient* client)
-      : RecordHandler(client) {}
-
+  TestRecordHandler() : RecordHandler(/*client=*/nullptr) {}
   ~TestRecordHandler() override = default;
 
   MOCK_METHOD(Status, HandleRecord, (Record));
@@ -132,8 +130,7 @@ class DmServerUploaderTest : public testing::Test {
                       DmServerUploadService::RecordHandler>>::Create()) {}
 
   void SetUp() override {
-    std::unique_ptr<TestRecordHandler> handler_ptr(
-        new TestRecordHandler(&client_));
+    std::unique_ptr<TestRecordHandler> handler_ptr(new TestRecordHandler());
     handler_ = handler_ptr.get();
     handlers_->PushBack(std::move(handler_ptr), base::DoNothing());
     records_ = std::make_unique<std::vector<EncryptedRecord>>();
@@ -153,9 +150,6 @@ class DmServerUploaderTest : public testing::Test {
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
 
   const base::TimeDelta kMaxDelay_ = base::TimeDelta::FromSeconds(1);
-
- private:
-  policy::MockCloudPolicyClient client_;
 };
 
 TEST_F(DmServerUploaderTest, ProcessesRecord) {
