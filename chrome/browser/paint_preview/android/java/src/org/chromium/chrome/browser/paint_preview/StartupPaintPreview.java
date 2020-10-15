@@ -144,7 +144,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     }
 
     private void showUpgradeToast() {
-        if (mTab == null) return;
+        if (mTab == null || mTab.isHidden()) return;
 
         Toast.makeText(mTab.getContext(), R.string.paint_preview_startup_auto_upgrade_toast,
                      Toast.LENGTH_SHORT)
