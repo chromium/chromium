@@ -1852,7 +1852,7 @@ TEST_P(SimpleURLLoaderTest, UploadFileWithRetry) {
     EXPECT_EQ(1, test_helper->download_as_stream_retries());
 }
 
-TEST_P(SimpleURLLoaderTest, UploadNonexistantFile) {
+TEST_P(SimpleURLLoaderTest, UploadNonexistentFile) {
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
       CreateHelperForURL(test_server_.GetURL("/echo"), "POST");
   // Path to a file that doesn't exist.  Start with the test directory just to

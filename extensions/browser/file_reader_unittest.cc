@@ -86,7 +86,7 @@ TEST_F(FileReaderTest, BiggerFile) {
   RunBasicTest("bigfile");
 }
 
-TEST_F(FileReaderTest, NonExistantFile) {
+TEST_F(FileReaderTest, NonExistentFile) {
   base::FilePath path;
   base::PathService::Get(DIR_TEST_DATA, &path);
   std::string extension_id = crx_file::id_util::GenerateId("test");

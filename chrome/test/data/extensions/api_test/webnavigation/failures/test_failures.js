@@ -199,7 +199,7 @@ onload = async function() {
     },
 
     // Navigates to a non-existent page (this test case must be last,
-    // otherwise the non-existant URL breaks tests that follow, since loading
+    // otherwise the non-existent URL breaks tests that follow, since loading
     // those test pages is seen as a non-extension -> extension URL
     // transition, which is forbidden by web_accessible_resources enforcement
     // in manifest version 2.)

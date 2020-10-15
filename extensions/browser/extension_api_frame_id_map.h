@@ -24,7 +24,7 @@ namespace extensions {
 // following characteristics:
 // - The top-level frame has ID 0.
 // - Any child frame has a positive ID.
-// - A non-existant frame has ID -1.
+// - A non-existent frame has ID -1.
 // - They are only guaranteed to be unique within a tab.
 // - The ID does not change during the frame's lifetime and is not re-used after
 //   the frame is removed. The frame may change its current RenderFrameHost over

@@ -107,7 +107,7 @@ function testAppViewWithUndefinedDataShouldSucceed(appToEmbed) {
   var appview = new AppView();
   LOG('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
-  // Step 1: Attempt to connect to a non-existant app (abc123).
+  // Step 1: Attempt to connect to a non-existent app (abc123).
   LOG('Attempting to connect to non-existent app.');
   appview.connect('abc123', undefined, function(success) {
     // Make sure we fail.
