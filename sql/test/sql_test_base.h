@@ -25,6 +25,7 @@ namespace sql {
 class SQLTestBase : public testing::Test {
  public:
   SQLTestBase();
+  explicit SQLTestBase(sql::DatabaseOptions options);
   ~SQLTestBase() override;
 
   enum WriteJunkType {

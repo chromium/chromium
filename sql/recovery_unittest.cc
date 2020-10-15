@@ -29,8 +29,8 @@
 
 namespace {
 
-using sql::test::ExecuteWithResults;
 using sql::test::ExecuteWithResult;
+using sql::test::ExecuteWithResults;
 
 // Dump consistent human-readable representation of the database
 // schema.  For tables or indices, this will contain the sql command
@@ -943,30 +943,33 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   sql::Database::Delete(db_path);
-  sql::Database db;
-  db.set_page_size(initial_page_size);
+  sql::Database db({.page_size = initial_page_size});
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
   ASSERT_TRUE(db.Execute(kInsertSql2));
   ASSERT_EQ(expected_initial_page_size,
             ExecuteWithResult(&db, "PRAGMA page_size"));
-
-  // Recovery will use the page size set in the connection object, which may not
-  // match the file's page size.
-  db.set_page_size(final_page_size);
-  sql::Recovery::RecoverDatabase(&db, db_path);
-
-  // Recovery poisoned the handle, must re-open.
   db.Close();
 
+  // Re-open the database while setting a new |options.page_size| in the object.
+  sql::Database recover_db({.page_size = final_page_size});
+  ASSERT_TRUE(recover_db.Open(db_path));
+  // Recovery will use the page size set in the database object, which may not
+  // match the file's page size.
+  sql::Recovery::RecoverDatabase(&recover_db, db_path);
+
+  // Recovery poisoned the handle, must re-open.
+  recover_db.Close();
+
   // Make sure the page size is read from the file.
-  db.set_page_size(sql::Database::kDefaultPageSize);
-  ASSERT_TRUE(db.Open(db_path));
+  sql::Database recovered_db(
+      {.page_size = sql::DatabaseOptions::kDefaultPageSize});
+  ASSERT_TRUE(recovered_db.Open(db_path));
   ASSERT_EQ(expected_final_page_size,
-            ExecuteWithResult(&db, "PRAGMA page_size"));
+            ExecuteWithResult(&recovered_db, "PRAGMA page_size"));
   EXPECT_EQ("That was a test\nThis is a test",
-            ExecuteWithResults(&db, kSelectSql, "|", "\n"));
+            ExecuteWithResults(&recovered_db, kSelectSql, "|", "\n"));
 }
 
 // Verify that sql::Recovery maintains the page size, and the virtual table
@@ -978,8 +981,8 @@ TEST_F(SQLRecoveryTest, PageSize) {
 
   // Check the default page size first.
   EXPECT_NO_FATAL_FAILURE(TestPageSize(
-      db_path(), sql::Database::kDefaultPageSize, default_page_size,
-      sql::Database::kDefaultPageSize, default_page_size));
+      db_path(), sql::DatabaseOptions::kDefaultPageSize, default_page_size,
+      sql::DatabaseOptions::kDefaultPageSize, default_page_size));
 
   // Sync uses 32k pages.
   EXPECT_NO_FATAL_FAILURE(
@@ -995,7 +998,7 @@ TEST_F(SQLRecoveryTest, PageSize) {
   // page size.  2k has never been the default page size.
   ASSERT_NE("2048", default_page_size);
   EXPECT_NO_FATAL_FAILURE(TestPageSize(db_path(), 2048, "2048",
-                                       sql::Database::kDefaultPageSize,
+                                       sql::DatabaseOptions::kDefaultPageSize,
                                        default_page_size));
 }
 

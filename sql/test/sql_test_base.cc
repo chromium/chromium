@@ -11,6 +11,8 @@ namespace sql {
 
 SQLTestBase::SQLTestBase() = default;
 
+SQLTestBase::SQLTestBase(sql::DatabaseOptions options) : db_(options) {}
+
 SQLTestBase::~SQLTestBase() = default;
 
 base::FilePath SQLTestBase::db_path() {
