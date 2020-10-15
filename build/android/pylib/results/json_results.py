@@ -122,8 +122,7 @@ def GenerateJsonTestResultFormatDict(test_run_results):
   """
 
   tests = {}
-  pass_count = 0
-  fail_count = 0
+  counts = {'PASS': 0, 'FAIL': 0}
 
   for test_run_result in test_run_results:
     if isinstance(test_run_result, list):
@@ -140,12 +139,16 @@ def GenerateJsonTestResultFormatDict(test_run_results):
 
       element['expected'] = 'PASS'
 
-      if r.GetType() == base_test_result.ResultType.PASS:
-        element['actual'] = 'PASS'
-        pass_count += 1
+      result = 'PASS' if r.GetType(
+      ) == base_test_result.ResultType.PASS else 'FAIL'
+
+      if 'actual' in element:
+        element['actual'] += ' ' + result
       else:
-        element['actual'] = 'FAIL'
-        fail_count += 1
+        counts[result] += 1
+        element['actual'] = result
+        if result == 'FAIL':
+          element['is_unexpected'] = True
 
       if r.GetDuration() != 0:
         element['time'] = r.GetDuration()
@@ -153,10 +156,7 @@ def GenerateJsonTestResultFormatDict(test_run_results):
   # Fill in required fields.
   return {
       'interrupted': False,
-      'num_failures_by_type': {
-          'FAIL': fail_count,
-          'PASS': pass_count,
-      },
+      'num_failures_by_type': counts,
       'path_delimiter': '.',
       'seconds_since_epoch': time.time(),
       'tests': tests,

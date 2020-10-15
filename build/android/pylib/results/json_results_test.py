@@ -219,6 +219,10 @@ class JsonResultsTest(unittest.TestCase):
     self.assertEquals(
         'PASS', results_dict['tests']['test']['package']['TestName']['actual'])
 
+    # Note: technically a missing entry counts as zero.
+    self.assertEquals(1, results_dict['num_failures_by_type']['PASS'])
+    self.assertEquals(0, results_dict['num_failures_by_type']['FAIL'])
+
   def testGenerateJsonTestResultFormatDict_failedResult(self):
     result = base_test_result.BaseTestResult('test.package.TestName',
                                              base_test_result.ResultType.FAIL)
@@ -235,6 +239,50 @@ class JsonResultsTest(unittest.TestCase):
         results_dict['tests']['test']['package']['TestName']['expected'])
     self.assertEquals(
         'FAIL', results_dict['tests']['test']['package']['TestName']['actual'])
+    self.assertEquals(
+        True,
+        results_dict['tests']['test']['package']['TestName']['is_unexpected'])
+    self.assertEquals(2, len(results_dict['num_failures_by_type']))
+
+    # Note: technically a missing entry counts as zero.
+    self.assertEquals(0, results_dict['num_failures_by_type']['PASS'])
+    self.assertEquals(1, results_dict['num_failures_by_type']['FAIL'])
+
+  def testGenerateJsonTestResultFormatDict_failedResultWithRetry(self):
+    result_1 = base_test_result.BaseTestResult('test.package.TestName',
+                                               base_test_result.ResultType.FAIL)
+    run_results_1 = base_test_result.TestRunResults()
+    run_results_1.AddResult(result_1)
+
+    # Simulate a second retry with failure.
+    result_2 = base_test_result.BaseTestResult('test.package.TestName',
+                                               base_test_result.ResultType.FAIL)
+    run_results_2 = base_test_result.TestRunResults()
+    run_results_2.AddResult(result_2)
+
+    all_results = [run_results_1, run_results_2]
+
+    results_dict = json_results.GenerateJsonTestResultFormatDict(all_results)
+    self.assertEquals(1, len(results_dict['tests']))
+    self.assertEquals(1, len(results_dict['tests']['test']))
+    self.assertEquals(1, len(results_dict['tests']['test']['package']))
+    self.assertEquals(
+        'PASS',
+        results_dict['tests']['test']['package']['TestName']['expected'])
+    self.assertEquals(
+        'FAIL FAIL',
+        results_dict['tests']['test']['package']['TestName']['actual'])
+    self.assertEquals(
+        True,
+        results_dict['tests']['test']['package']['TestName']['is_unexpected'])
+
+    # Note: technically a missing entry counts as zero.
+    self.assertEquals(2, len(results_dict['num_failures_by_type']))
+    self.assertEquals(0, results_dict['num_failures_by_type']['PASS'])
+
+    # According to the spec: If a test was run more than once, only the first
+    # invocation's result is included in the totals.
+    self.assertEquals(1, results_dict['num_failures_by_type']['FAIL'])
 
 
 if __name__ == '__main__':
