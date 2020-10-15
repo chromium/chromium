@@ -428,7 +428,6 @@
       'ToTLinuxTSan',  # https://crbug.com/368525
       'Mac10.10 Tests',  # https://crbug.com/828031
       'Mac10.13 Tests',  # https://crbug.com/1042757
-      'Mac10.13 Tests Code Coverage',
       'Linux TSan Tests',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
     ],
@@ -1891,7 +1890,6 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
-      'Mac10.13 Tests Code Coverage',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1939,7 +1937,6 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
-      'Mac10.13 Tests Code Coverage',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1957,7 +1954,6 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
-      'Mac10.13 Tests Code Coverage',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1974,7 +1970,6 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
-      'Mac10.13 Tests Code Coverage',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1996,7 +1991,6 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
-      'Mac10.13 Tests Code Coverage',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -2760,7 +2754,6 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
-      'Mac10.13 Tests Code Coverage',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
