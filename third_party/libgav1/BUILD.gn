@@ -39,7 +39,7 @@ config("private_libgav1_config") {
   }
 }
 
-if (enable_libgav1_decoder) {
+if (enable_libgav1_decoder || use_libgav1_parser) {
   # Separate from libgav1 because utils/constants.cc and dsp/constants.cc
   # generate the same object file, constants.o.
   source_set("libgav1_utils") {
@@ -64,6 +64,7 @@ if (enable_libgav1_decoder) {
 
     sources = gav1_dsp_sources
   }
+
   static_library("libgav1") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
