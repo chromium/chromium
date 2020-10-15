@@ -81,6 +81,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   // itself is created, so we do not have time in our tests to grab a handle
   // to |Service| and set this before it is too late.
   static void OverrideS3ServerUriForTesting(const char* uri);
+  static void OverrideDeviceIdForTesting(const char* device_id);
 
   void SetAssistantManagerServiceForTesting(
       std::unique_ptr<AssistantManagerService> assistant_manager_service);

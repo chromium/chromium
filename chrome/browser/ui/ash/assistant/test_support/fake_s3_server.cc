@@ -26,8 +26,13 @@ namespace assistant {
 namespace {
 
 // Folder where the S3 communications are stored when running in replay mode.
-constexpr const char kTestDataFolder[] =
-    "chromeos/assistant/internal/test_data/";
+constexpr char kTestDataFolder[] = "chromeos/assistant/internal/test_data/";
+
+// Fake device id passed to Libassistant. By fixing this we ensure it remains
+// consistent between the current session and the value stored in the stored
+// test data.
+// This must be a 16 characters hex string or it will be rejected.
+constexpr char kDeviceId[] = "11112222333344445555666677778888";
 
 base::FilePath GetExecutableDir() {
   base::FilePath result;
@@ -152,10 +157,12 @@ void FakeS3Server::Setup(FakeS3Mode mode) {
   SetAccessTokenForMode(mode);
   StartS3ServerProcess(mode);
   SetFakeS3ServerURI();
+  SetDeviceId();
 }
 
 void FakeS3Server::Teardown() {
   StopS3ServerProcess();
+  UnsetDeviceId();
   UnsetFakeS3ServerURI();
 }
 
@@ -175,6 +182,14 @@ void FakeS3Server::SetFakeS3ServerURI() {
   // |const char *|.
   fake_s3_server_uri_ = "localhost:" + base::NumberToString(port());
   Service::OverrideS3ServerUriForTesting(fake_s3_server_uri_.c_str());
+}
+
+void FakeS3Server::SetDeviceId() {
+  Service::OverrideDeviceIdForTesting(kDeviceId);
+}
+
+void FakeS3Server::UnsetDeviceId() {
+  Service::OverrideDeviceIdForTesting(nullptr);
 }
 
 void FakeS3Server::UnsetFakeS3ServerURI() {

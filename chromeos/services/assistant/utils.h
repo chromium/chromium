@@ -25,7 +25,8 @@ base::FilePath GetBaseAssistantDir();
 
 // Creates the configuration for libassistant.
 std::string CreateLibAssistantConfig(
-    base::Optional<std::string> s3_server_uri_override = base::nullopt);
+    base::Optional<std::string> s3_server_uri_override,
+    base::Optional<std::string> device_id_override);
 
 }  // namespace assistant
 }  // namespace chromeos

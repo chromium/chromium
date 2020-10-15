@@ -76,6 +76,9 @@ constexpr base::TimeDelta kMaxTokenRefreshDelay =
 
 // Testing override for the URI used to contact the s3 server.
 const char* g_s3_server_uri_override = nullptr;
+// Testing override for the device-id used by Libassistant to identify this
+// device.
+const char* g_device_id_override = nullptr;
 
 AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   using State = AssistantManagerService::State;
@@ -94,6 +97,12 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
 base::Optional<std::string> GetS3ServerUriOverride() {
   if (g_s3_server_uri_override)
     return g_s3_server_uri_override;
+  return base::nullopt;
+}
+
+base::Optional<std::string> GetDeviceIdOverride() {
+  if (g_device_id_override)
+    return g_device_id_override;
   return base::nullopt;
 }
 #endif
@@ -228,6 +237,11 @@ Service::~Service() {
 // static
 void Service::OverrideS3ServerUriForTesting(const char* uri) {
   g_s3_server_uri_override = uri;
+}
+
+// static
+void Service::OverrideDeviceIdForTesting(const char* device_id) {
+  g_device_id_override = device_id;
 }
 
 void Service::SetAssistantManagerServiceForTesting(
@@ -547,7 +561,7 @@ Service::CreateAndReturnAssistantManagerService() {
   DCHECK(pending_url_loader_factory_);
   return std::make_unique<AssistantManagerServiceImpl>(
       context(), std::move(delegate), std::move(pending_url_loader_factory_),
-      GetS3ServerUriOverride());
+      GetS3ServerUriOverride(), GetDeviceIdOverride());
 #else
   return std::make_unique<FakeAssistantManagerServiceImpl>();
 #endif

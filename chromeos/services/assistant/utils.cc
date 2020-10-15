@@ -56,7 +56,8 @@ base::FilePath GetBaseAssistantDir() {
 }
 
 std::string CreateLibAssistantConfig(
-    base::Optional<std::string> s3_server_uri_override) {
+    base::Optional<std::string> s3_server_uri_override,
+    base::Optional<std::string> device_id_override) {
   using Value = base::Value;
   using Type = base::Value::Type;
 
@@ -157,6 +158,9 @@ std::string CreateLibAssistantConfig(
     config.SetStringPath("internal.transport_type", "GRPC");
   else
     config.SetStringPath("internal.transport_type", "HTTP");
+
+  if (device_id_override)
+    config.SetStringPath("internal.cast_device_id", device_id_override.value());
 
   config.SetBoolPath("internal.enable_on_device_assistant_tts_as_text", true);
 

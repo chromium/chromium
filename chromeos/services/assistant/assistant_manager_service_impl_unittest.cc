@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
+#include "base/optional.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -179,7 +180,8 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
     assistant_manager_service_ = std::make_unique<AssistantManagerServiceImpl>(
         service_context_.get(), std::move(delegate),
-        shared_url_loader_factory_->Clone(), s3_server_uri_override);
+        shared_url_loader_factory_->Clone(), s3_server_uri_override,
+        /*device_id_override=*/base::nullopt);
   }
 
   void TearDown() override {

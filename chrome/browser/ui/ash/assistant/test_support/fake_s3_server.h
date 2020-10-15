@@ -56,6 +56,8 @@ class FakeS3Server {
   void SetAccessTokenForMode(FakeS3Mode mode);
   void SetFakeS3ServerURI();
   void UnsetFakeS3ServerURI();
+  void SetDeviceId();
+  void UnsetDeviceId();
   void StartS3ServerProcess(FakeS3Mode mode);
   void StopS3ServerProcess();
   std::string GetTestDataFileName();

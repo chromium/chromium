@@ -111,7 +111,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       std::unique_ptr<AssistantManagerServiceDelegate> delegate,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
-      base::Optional<std::string> s3_server_uri_override);
+      base::Optional<std::string> s3_server_uri_override,
+      base::Optional<std::string> device_id_override);
 
   ~AssistantManagerServiceImpl() override;
 

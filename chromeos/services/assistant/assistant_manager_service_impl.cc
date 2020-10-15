@@ -185,7 +185,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     std::unique_ptr<AssistantManagerServiceDelegate> delegate,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    base::Optional<std::string> s3_server_uri_override)
+    base::Optional<std::string> s3_server_uri_override,
+    base::Optional<std::string> device_id_override)
     : media_session_(std::make_unique<AssistantMediaSession>(this)),
       action_module_(std::make_unique<action::CrosActionModule>(
           this,
@@ -197,7 +198,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       context_(context),
       delegate_(std::move(delegate)),
       background_thread_("background thread"),
-      libassistant_config_(CreateLibAssistantConfig(s3_server_uri_override)),
+      libassistant_config_(
+          CreateLibAssistantConfig(s3_server_uri_override, device_id_override)),
       weak_factory_(this) {
   background_thread_.Start();
 
