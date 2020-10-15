@@ -48,7 +48,8 @@ class ServiceWorkerPaymentAppCreator {
       content::InstalledPaymentAppsFinder::PaymentApps apps,
       ServiceWorkerPaymentAppFinder::InstallablePaymentApps installable_apps,
       const std::string& error_message) {
-    if (!delegate_ || !delegate_->GetSpec()) {
+    if (!delegate_ || !delegate_->GetSpec() || !delegate_->GetWebContents() ||
+        !delegate_->GetInitiatorRenderFrameHost()) {
       FinishAndCleanup();
       return;
     }
@@ -180,14 +181,16 @@ ServiceWorkerPaymentAppFactory::ServiceWorkerPaymentAppFactory()
 ServiceWorkerPaymentAppFactory::~ServiceWorkerPaymentAppFactory() {}
 
 void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
-  DCHECK(delegate->GetWebContents());
+  auto* rfh = delegate->GetInitiatorRenderFrameHost();
+  if (!rfh || !rfh->IsCurrent() || !delegate->GetWebContents())
+    return;  // The frame or page is being unloaded.
+
   auto creator = std::make_unique<ServiceWorkerPaymentAppCreator>(
       /*owner=*/this, delegate);
   ServiceWorkerPaymentAppCreator* creator_raw_pointer = creator.get();
   creators_[creator_raw_pointer] = std::move(creator);
 
-  ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
-      delegate->GetInitiatorRenderFrameHost())
+  ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(rfh)
       ->GetAllPaymentApps(
           delegate->GetFrameSecurityOrigin(),
           delegate->GetPaymentManifestWebDataService(),

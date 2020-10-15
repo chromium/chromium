@@ -18,6 +18,10 @@
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_request_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
@@ -47,14 +51,16 @@ class TestAuthenticator : public content::InternalAuthenticatorImpl {
 
 class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
  public:
-  ChromePaymentRequestTestDelegate(content::WebContents* web_contents,
+  ChromePaymentRequestTestDelegate(content::RenderFrameHost* render_frame_host,
                                    bool is_off_the_record,
                                    bool valid_ssl,
                                    PrefService* prefs,
                                    const std::string& twa_package_name,
                                    bool has_authenticator)
-      : ChromePaymentRequestDelegate(web_contents),
-        web_contents_(web_contents),
+      : ChromePaymentRequestDelegate(render_frame_host),
+        frame_routing_id_(content::GlobalFrameRoutingId(
+            render_frame_host->GetProcess()->GetID(),
+            render_frame_host->GetRoutingID())),
         is_off_the_record_(is_off_the_record),
         valid_ssl_(valid_ssl),
         prefs_(prefs),
@@ -70,12 +76,14 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   std::string GetTwaPackageName() const override { return twa_package_name_; }
   std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
       const override {
-    return std::make_unique<TestAuthenticator>(web_contents_->GetMainFrame(),
-                                               has_authenticator_);
+    auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+    return rfh ? std::make_unique<TestAuthenticator>(rfh->GetMainFrame(),
+                                                     has_authenticator_)
+               : nullptr;
   }
 
  private:
-  content::WebContents* web_contents_;
+  content::GlobalFrameRoutingId frame_routing_id_;
   const bool is_off_the_record_;
   const bool valid_ssl_;
   PrefService* const prefs_;
@@ -240,25 +248,23 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
          base::WeakPtr<ContentPaymentRequestDelegate>* delegate_weakptr,
          mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
          content::RenderFrameHost* render_frame_host) {
-        content::WebContents* web_contents =
-            content::WebContents::FromRenderFrameHost(render_frame_host);
-        DCHECK(web_contents);
+        DCHECK(render_frame_host);
+        DCHECK(render_frame_host->IsCurrent());
         auto delegate = std::make_unique<ChromePaymentRequestTestDelegate>(
-            web_contents, is_off_the_record, valid_ssl, prefs, twa_package_name,
-            has_authenticator);
+            render_frame_host, is_off_the_record, valid_ssl, prefs,
+            twa_package_name, has_authenticator);
         *delegate_weakptr = delegate->GetContentWeakPtr();
         PaymentRequestWebContentsManager* manager =
             PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-                web_contents);
+                content::WebContents::FromRenderFrameHost(render_frame_host));
         if (!twa_payment_app_method_name.empty()) {
           AndroidAppCommunication::GetForBrowserContext(
-              web_contents->GetBrowserContext())
+              render_frame_host->GetBrowserContext())
               ->SetAppForTesting(twa_package_name, twa_payment_app_method_name,
                                  twa_payment_app_response);
         }
-        manager->CreatePaymentRequest(render_frame_host, web_contents,
-                                      std::move(delegate), std::move(receiver),
-                                      observer_for_test);
+        manager->CreatePaymentRequest(render_frame_host, std::move(delegate),
+                                      std::move(receiver), observer_for_test);
       },
       observer_converter_.get(), is_off_the_record_, valid_ssl_, prefs_.get(),
       twa_package_name_, has_authenticator_, twa_payment_app_method_name_,

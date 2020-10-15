@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -103,8 +104,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       base::OnceClosure done_creating_payment_apps_callback);
 
   size_t number_of_pending_factories_;
-  content::WebContents* web_contents_;
-  content::RenderFrameHost* render_frame_host_;
+  content::GlobalFrameRoutingId frame_routing_id_;
   const GURL top_origin_;
   const GURL frame_origin_;
   const url::Origin frame_security_origin_;

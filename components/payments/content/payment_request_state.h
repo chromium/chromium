@@ -21,6 +21,7 @@
 #include "components/payments/content/service_worker_payment_app_factory.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/payments_profile_comparator.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -97,8 +98,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
                               const std::string& error_message)>;
 
   // The `spec` parameter should not be null.
-  PaymentRequestState(content::WebContents* web_contents,
-                      content::RenderFrameHost* initiator_render_frame_host,
+  PaymentRequestState(content::RenderFrameHost* initiator_render_frame_host,
                       const GURL& top_level_origin,
                       const GURL& frame_origin,
                       const url::Origin& frame_security_origin,
@@ -332,8 +332,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool GetCanMakePaymentValue() const;
   bool GetHasEnrolledInstrumentValue() const;
 
-  content::WebContents* web_contents_;
-  content::RenderFrameHost* initiator_render_frame_host_;
+  content::GlobalFrameRoutingId frame_routing_id_;
   const GURL top_origin_;
   const GURL frame_origin_;
   const url::Origin frame_security_origin_;

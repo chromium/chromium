@@ -4,15 +4,21 @@
 
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+
 namespace payments {
 
 TestSecurePaymentConfirmationPaymentRequestDelegate::
     TestSecurePaymentConfirmationPaymentRequestDelegate(
-        content::WebContents* web_contents,
+        content::RenderFrameHost* render_frame_host,
         base::WeakPtr<SecurePaymentConfirmationModel> model,
         SecurePaymentConfirmationDialogView::ObserverForTest* observer)
-    : ChromePaymentRequestDelegate(web_contents),
-      web_contents_(web_contents),
+    : ChromePaymentRequestDelegate(render_frame_host),
+      frame_routing_id_(content::GlobalFrameRoutingId(
+          render_frame_host->GetProcess()->GetID(),
+          render_frame_host->GetRoutingID())),
       model_(model),
       dialog_view_(
           (new SecurePaymentConfirmationDialogView(observer))->GetWeakPtr()) {}
@@ -22,8 +28,12 @@ TestSecurePaymentConfirmationPaymentRequestDelegate::
 
 void TestSecurePaymentConfirmationPaymentRequestDelegate::ShowDialog(
     base::WeakPtr<PaymentRequest> request) {
-  dialog_view_->ShowDialog(web_contents_, model_->GetWeakPtr(),
-                           base::DoNothing(), base::DoNothing());
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (rfh && rfh->IsCurrent()) {
+    dialog_view_->ShowDialog(content::WebContents::FromRenderFrameHost(rfh),
+                             model_->GetWeakPtr(), base::DoNothing(),
+                             base::DoNothing());
+  }
 }
 
 void TestSecurePaymentConfirmationPaymentRequestDelegate::CloseDialog() {

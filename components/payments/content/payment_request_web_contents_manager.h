@@ -53,7 +53,6 @@ class PaymentRequestWebContentsManager
   // and the associated `web_contents`.
   void CreatePaymentRequest(
       content::RenderFrameHost* render_frame_host,
-      content::WebContents* web_contents,
       std::unique_ptr<ContentPaymentRequestDelegate> delegate,
       mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
       PaymentRequest::ObserverForTest* observer_for_testing);

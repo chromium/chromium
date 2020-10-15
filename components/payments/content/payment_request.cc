@@ -73,31 +73,27 @@ mojom::PaymentAddressPtr RedactShippingAddress(
 
 PaymentRequest::PaymentRequest(
     content::RenderFrameHost* render_frame_host,
-    content::WebContents* web_contents,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
     PaymentRequestWebContentsManager* manager,
     PaymentRequestDisplayManager* display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
     ObserverForTest* observer_for_testing)
-    : web_contents_(web_contents),
-      // TODO(crbug.com/1058840): change to WeakPtr<RenderFrameHost> once
-      // RenderFrameHost provides a WeakPtr API.
-      initiator_frame_routing_id_(content::GlobalFrameRoutingId(
+    : initiator_frame_routing_id_(content::GlobalFrameRoutingId(
           render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRoutingID())),
-      log_(web_contents_),
+      log_(web_contents()),
       delegate_(std::move(delegate)),
       manager_(manager),
       display_manager_(display_manager),
       display_handle_(nullptr),
       top_level_origin_(url_formatter::FormatUrlForSecurityDisplay(
-          web_contents_->GetLastCommittedURL())),
+          web_contents()->GetLastCommittedURL())),
       frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
           render_frame_host->GetLastCommittedURL())),
       frame_security_origin_(render_frame_host->GetLastCommittedOrigin()),
       observer_for_testing_(observer_for_testing),
       journey_logger_(delegate_->IsOffTheRecord(),
-                      ukm::GetSourceIdForWebContentsDocument(web_contents)) {
+                      ukm::GetSourceIdForWebContentsDocument(web_contents())) {
   receiver_.Bind(std::move(receiver));
   // OnConnectionTerminated will be called when the Mojo pipe is closed. This
   // will happen as a result of many renderer-side events (both successful and
@@ -108,7 +104,7 @@ PaymentRequest::PaymentRequest(
       &PaymentRequest::OnConnectionTerminated, weak_ptr_factory_.GetWeakPtr()));
 
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
-      web_contents_, weak_ptr_factory_.GetWeakPtr());
+      web_contents(), weak_ptr_factory_.GetWeakPtr());
 }
 
 PaymentRequest::~PaymentRequest() = default;
@@ -176,9 +172,7 @@ void PaymentRequest::Init(
     return;
   }
 
-  // TODO(crbug.com/1058840): change to WeakPtr<RenderFrameHost> once
-  // RenderFrameHost provides a WeakPtr API.
-  content::RenderFrameHost* initiator_frame =
+  auto* initiator_frame =
       content::RenderFrameHost::FromID(initiator_frame_routing_id_);
   if (!initiator_frame) {
     log_.Error(errors::kInvalidInitiatorFrame);
@@ -191,9 +185,8 @@ void PaymentRequest::Init(
       /*observer=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale());
   state_ = std::make_unique<PaymentRequestState>(
-      web_contents_, initiator_frame, top_level_origin_, frame_origin_,
-      frame_security_origin_, spec(),
-      /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
+      initiator_frame, top_level_origin_, frame_origin_, frame_security_origin_,
+      spec(), /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale(), delegate_->GetPersonalDataManager(),
       delegate_.get(), &journey_logger_);
 
@@ -771,8 +764,8 @@ void PaymentRequest::DidStartMainFrameNavigationToDifferentDocument(
 
 void PaymentRequest::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host ==
-         content::RenderFrameHost::FromID(initiator_frame_routing_id_));
+  DCHECK_EQ(render_frame_host,
+            content::RenderFrameHost::FromID(initiator_frame_routing_id_));
   // RenderFrameHost is usually deleted explicitly before PaymentRequest
   // destruction if the user closes the tab or browser window without closing
   // the payment request dialog.
@@ -827,6 +820,13 @@ void PaymentRequest::OnPaymentHandlerOpenWindowCalled() {
       state_->selected_app()->UkmSourceId());
 }
 
+content::WebContents* PaymentRequest::web_contents() {
+  auto* rfh = content::RenderFrameHost::FromID(initiator_frame_routing_id_);
+  return rfh && rfh->IsCurrent()
+             ? content::WebContents::FromRenderFrameHost(rfh)
+             : nullptr;
+}
+
 void PaymentRequest::RecordFirstAbortReason(
     JourneyLogger::AbortReason abort_reason) {
   if (!has_recorded_completion_) {
@@ -848,8 +848,12 @@ void PaymentRequest::CanMakePaymentCallback(bool can_make_payment) {
 
 void PaymentRequest::HasEnrolledInstrumentCallback(
     bool has_enrolled_instrument) {
+  auto* rfh = content::RenderFrameHost::FromID(initiator_frame_routing_id_);
+  if (!rfh)
+    return;
+
   if (!spec_ || CanMakePaymentQueryFactory::GetInstance()
-                    ->GetForContext(web_contents_->GetBrowserContext())
+                    ->GetForContext(rfh->GetBrowserContext())
                     ->CanQuery(top_level_origin_, frame_origin_,
                                spec_->query_for_quota())) {
     RespondToHasEnrolledInstrumentQuery(has_enrolled_instrument,

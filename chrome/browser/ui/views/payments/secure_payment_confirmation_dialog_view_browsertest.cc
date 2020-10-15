@@ -73,7 +73,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     test_delegate_ =
         std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
-            web_contents, model_.GetWeakPtr(), this);
+            web_contents->GetMainFrame(), model_.GetWeakPtr(), this);
 
     ResetEventWaiter(DialogEvent::DIALOG_OPENED);
     test_delegate_->ShowDialog(nullptr);

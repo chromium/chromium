@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_TEST_PAYMENT_REQUEST_DELEGATE_H_
 #define COMPONENTS_PAYMENTS_CORE_TEST_PAYMENT_REQUEST_DELEGATE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/single_thread_task_runner.h"
@@ -22,7 +23,8 @@ namespace payments {
 
 class TestPaymentRequestDelegate : public PaymentRequestDelegate {
  public:
-  explicit TestPaymentRequestDelegate(
+  TestPaymentRequestDelegate(
+      std::unique_ptr<base::SingleThreadTaskExecutor> task_executor,
       autofill::PersonalDataManager* personal_data_manager);
   ~TestPaymentRequestDelegate() override;
 
@@ -52,7 +54,7 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   void CompleteFullCardRequest();
 
  private:
-  base::SingleThreadTaskExecutor main_task_executor_;
+  std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
   autofill::PersonalDataManager* personal_data_manager_;
   std::string locale_;
   const GURL last_committed_url_;

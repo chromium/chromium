@@ -4,14 +4,18 @@
 
 #include "components/payments/core/test_payment_request_delegate.h"
 
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace payments {
 
 TestPaymentRequestDelegate::TestPaymentRequestDelegate(
+    std::unique_ptr<base::SingleThreadTaskExecutor> task_executor,
     autofill::PersonalDataManager* personal_data_manager)
-    : personal_data_manager_(personal_data_manager),
+    : main_task_executor_(std::move(task_executor)),
+      personal_data_manager_(personal_data_manager),
       locale_("en-US"),
       last_committed_url_("https://shop.com"),
       test_shared_loader_factory_(
