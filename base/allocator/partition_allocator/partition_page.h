@@ -229,16 +229,27 @@ ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
   return reinterpret_cast<char*>(pointer_as_uint + SystemPageSize());
 }
 
-ALWAYS_INLINE bool IsWithinSuperPagePayload(bool with_pcscan, void* ptr) {
+ALWAYS_INLINE char* SuperPagePayloadBegin(char* super_page_base,
+                                          bool with_pcscan) {
+  PA_DCHECK(
+      !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
+  return super_page_base + PartitionPageSize() + ReservedTagBitmapSize() +
+         (with_pcscan ? 2 * sizeof(QuarantineBitmap) : 0);
+}
+
+ALWAYS_INLINE char* SuperPagePayloadEnd(char* super_page_base) {
+  PA_DCHECK(
+      !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
+  return super_page_base + kSuperPageSize - PartitionPageSize();
+}
+
+ALWAYS_INLINE bool IsWithinSuperPagePayload(char* ptr, bool with_pcscan) {
   PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
-  const auto ptr_as_uint = reinterpret_cast<uintptr_t>(ptr);
-  const auto super_page_base = ptr_as_uint & kSuperPageBaseMask;
-  const uintptr_t payload_start =
-      super_page_base + PartitionPageSize() + ReservedTagBitmapSize() +
-      (with_pcscan ? 2 * sizeof(QuarantineBitmap) : 0);
-  const uintptr_t payload_end =
-      super_page_base + kSuperPageSize - PartitionPageSize();
-  return ptr_as_uint >= payload_start && ptr_as_uint < payload_end;
+  char* super_page_base = reinterpret_cast<char*>(
+      reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
+  char* payload_start = SuperPagePayloadBegin(super_page_base, with_pcscan);
+  char* payload_end = SuperPagePayloadEnd(super_page_base);
+  return ptr >= payload_start && ptr < payload_end;
 }
 
 // See the comment for |FromPointer|.
@@ -444,6 +455,35 @@ ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
     std::swap(first_bitmap, second_bitmap);
 
   return (pcscan_epoch & 1) ? second_bitmap : first_bitmap;
+}
+
+template <bool thread_safe, typename Callback>
+void IterateActiveAndFullSlotSpans(char* super_page_base,
+                                   bool with_pcscan,
+                                   Callback callback) {
+  PA_DCHECK(
+      !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
+#if DCHECK_IS_ON()
+  auto* extent_entry =
+      reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
+          PartitionSuperPageToMetadataArea(super_page_base));
+  extent_entry->root->lock_.AssertAcquired();
+#endif
+
+  using Page = PartitionPage<thread_safe>;
+  auto* const first_page = Page::FromPointerNoAlignmentCheck(
+      SuperPagePayloadBegin(super_page_base, with_pcscan));
+  auto* const last_page = Page::FromPointerNoAlignmentCheck(
+      SuperPagePayloadEnd(super_page_base) - PartitionPageSize());
+  for (auto* page = first_page;
+       page <= last_page && page->slot_span_metadata.bucket;
+       page += page->slot_span_metadata.bucket->get_pages_per_slot_span()) {
+    auto* slot_span = &page->slot_span_metadata;
+    if (slot_span->is_empty() || slot_span->is_decommitted()) {
+      continue;
+    }
+    callback(slot_span);
+  }
 }
 
 }  // namespace internal

@@ -258,7 +258,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     return ret;
   }
 
-  // Need a new super page. We want to allocate super pages in a continguous
+  // Need a new super page. We want to allocate super pages in a contiguous
   // address region as much as possible. This is important for not causing
   // page table bloat and not fragmenting address spaces in 32 bit
   // architectures.
@@ -296,6 +296,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   char* ret = quarantine_bitmaps + quarantine_bitmaps_size;
   root->next_partition_page = ret + total_size;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
+  PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->pcscan.has_value()));
+  PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
   // The first slot span is accessible. The given committed_size is equal to
   // the system-page-aligned size of the slot span.
@@ -395,14 +397,6 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
               ret < current_extent->super_pages_end);
   }
   return ret;
-}
-
-template <bool thread_safe>
-ALWAYS_INLINE uint16_t PartitionBucket<thread_safe>::get_pages_per_slot_span() {
-  // Rounds up to nearest multiple of NumSystemPagesPerPartitionPage().
-  return (num_system_pages_per_slot_span +
-          (NumSystemPagesPerPartitionPage() - 1)) /
-         NumSystemPagesPerPartitionPage();
 }
 
 template <bool thread_safe>

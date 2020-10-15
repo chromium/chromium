@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/object_bitmap.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -141,8 +142,8 @@ QuarantineBitmap* PCScan<thread_safe>::PCScanTask::FindScannerBitmapForPointer(
   if (it == super_pages_.end() || *it != super_page_base)
     return nullptr;
 
-  if (!IsWithinSuperPagePayload(true /*with pcscan*/,
-                                reinterpret_cast<void*>(maybe_ptr)))
+  if (!IsWithinSuperPagePayload(reinterpret_cast<char*>(maybe_ptr),
+                                true /*with pcscan*/))
     return nullptr;
 
   // We are certain here that |maybe_ptr| points to the super page payload.
@@ -281,8 +282,15 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
 template <bool thread_safe>
 PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
     : pcscan_(pcscan), root_(root) {
+  // Take a snapshot of all allocated non-empty slot spans.
+  static constexpr size_t kScanAreasReservationSlack = 10;
+  const size_t kScanAreasReservationSize = root_.total_size_of_committed_pages /
+                                           PartitionPageSize() /
+                                           kScanAreasReservationSlack;
+  scan_areas_.reserve(kScanAreasReservationSize);
+
   typename Root::ScopedGuard guard(root.lock_);
-  // Take a snapshot of all super pages.
+  // Take a snapshot of all super pages and scannable slot spans.
   // TODO(bikineev): Consider making current_extent lock-free and moving it to
   // the concurrent thread.
   for (auto* super_page_extent = root_.first_extent; super_page_extent;
@@ -290,33 +298,17 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan, Root& root)
     for (char* super_page = super_page_extent->super_page_base;
          super_page != super_page_extent->super_pages_end;
          super_page += kSuperPageSize) {
+      // TODO(bikineev): Consider following freelists instead of slot spans.
+      IterateActiveAndFullSlotSpans<thread_safe>(
+          super_page, true /*with pcscan*/, [this](SlotSpan* slot_span) {
+            auto* payload_begin =
+                static_cast<uintptr_t*>(SlotSpan::ToPointer(slot_span));
+            auto* payload_end =
+                payload_begin +
+                (slot_span->bucket->get_bytes_per_span() / sizeof(uintptr_t));
+            scan_areas_.push_back({payload_begin, payload_end});
+          });
       super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
-    }
-  }
-
-  // Take a snapshot of all active slot spans.
-  static constexpr size_t kScanAreasReservationSlack = 10;
-  const size_t kScanAreasReservationSize = root_.total_size_of_committed_pages /
-                                           PartitionPageSize() /
-                                           kScanAreasReservationSlack;
-  scan_areas_.reserve(kScanAreasReservationSize);
-  {
-    // TODO(bikineev): Scan full slot spans.
-    for (const auto& bucket : root_.buckets) {
-      for (auto* slot_span = bucket.active_slot_spans_head;
-           slot_span && slot_span != slot_span->get_sentinel_slot_span();
-           slot_span = slot_span->next_slot_span) {
-        // The active list may contain false positives, skip them.
-        if (slot_span->is_empty() || slot_span->is_decommitted())
-          continue;
-
-        auto* payload_begin =
-            static_cast<uintptr_t*>(SlotSpan::ToPointer(slot_span));
-        auto* payload_end =
-            payload_begin +
-            (slot_span->bucket->get_bytes_per_span() / sizeof(uintptr_t));
-        scan_areas_.push_back({payload_begin, payload_end});
-      }
     }
   }
 }

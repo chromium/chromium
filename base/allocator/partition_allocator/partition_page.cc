@@ -178,6 +178,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   freelist_head = nullptr;
   num_unprovisioned_slots = 0;
   PA_DCHECK(is_decommitted());
+  PA_DCHECK(bucket);
 }
 
 template <bool thread_safe>

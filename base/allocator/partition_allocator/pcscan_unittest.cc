@@ -173,7 +173,7 @@ void TestDanglingReference(PCScanTest& test,
     // Run PCScan.
     test.RunPCScan();
     // Check that the object is still quarantined since it's referenced by
-    // |from|.
+    // |source|.
     EXPECT_TRUE(test.IsInQuarantine(value));
   }
   {
@@ -235,6 +235,36 @@ TEST_F(PCScanTest, DanglingReferenceSameSlotSpanButDifferentPages) {
   // Create two objects, on different partition pages.
   auto* value = new (full_slot_span.first) ValueList;
   auto* source = new (full_slot_span.last) SourceList;
+  source->next = value;
+
+  TestDanglingReference(*this, source, value);
+}
+
+TEST_F(PCScanTest, DanglingReferenceFromFullPage) {
+  using SourceList = List<64>;
+  using ValueList = SourceList;
+
+  FullSlotSpanAllocation full_slot_span =
+      GetFullSlotSpan(root(), sizeof(SourceList));
+  void* source_addr = full_slot_span.first;
+  // This allocation must go through the slow path and call SetNewActivePage(),
+  // which will flush the full page from the active page list.
+  void* value_addr = root().AllocFlagsNoHooks(0, sizeof(ValueList));
+
+  // Assert that the first and the last objects are in different slot spans but
+  // in the same bucket.
+  SlotSpan* source_slot_span =
+      ThreadSafePartitionRoot::SlotSpan::FromPointerNoAlignmentCheck(
+          source_addr);
+  SlotSpan* value_slot_span =
+      ThreadSafePartitionRoot::SlotSpan::FromPointerNoAlignmentCheck(
+          value_addr);
+  ASSERT_NE(source_slot_span, value_slot_span);
+  ASSERT_EQ(source_slot_span->bucket, value_slot_span->bucket);
+
+  // Create two objects, where |source| is in a full detached page.
+  auto* value = new (value_addr) ValueList;
+  auto* source = new (source_addr) SourceList;
   source->next = value;
 
   TestDanglingReference(*this, source, value);
