@@ -101,9 +101,10 @@ TEST(CpuAffinityTest, MAYBE_SetThreadCpuAffinityMode) {
   } else if (device_model == "Pixel 3a" || device_model == "Pixel 3a XL") {
     expected_little_cores = 6;
     EXPECT_LT(expected_little_cores, expected_total_cores);
-  } else if (device_model == "Nexus 5") {
-    // On our Nexus 5 bots, something else in the system seems to set affinity
-    // for the test process, making these tests flaky (crbug.com/1113964).
+  } else if (device_model == "Nexus 5" || device_model == "Nexus 7") {
+    // On our Nexus 5 and Nexus 7 bots, something else in the system seems to
+    // set affinity for the test process, making these tests flaky
+    // (crbug.com/1113964).
     return;
   }
 
