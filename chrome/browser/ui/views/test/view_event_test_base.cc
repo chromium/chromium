@@ -25,9 +25,9 @@
 #include "ui/views/test/test_desktop_screen_x11.h"
 #endif  // defined(USE_X11)
 
-#if defined(OS_LINUX) && defined(USE_OZONE)
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
-#endif  // defined(OS_LINUX) && defined(USE_OZONE)
+#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_OZONE)
 #endif
 
 namespace {
@@ -102,7 +102,7 @@ ViewEventTestBase::ViewEventTestBase() {
   if (!features::IsUsingOzonePlatform())
     views::test::TestDesktopScreenX11::GetInstance();
 #endif  // defined(USE_X11)
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX) && defined(USE_OZONE)
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_OZONE)
   if (!display::Screen::GetScreen())
     display::Screen::SetScreenInstance(
         views::test::TestDesktopScreenOzone::GetInstance());
