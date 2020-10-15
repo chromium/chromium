@@ -22231,6 +22231,9 @@ Called by update_document_policy_enum.py.-->
   <int value="792" label="IntranetRedirectBehavior"/>
   <int value="793" label="LacrosAllowed"/>
   <int value="794" label="DeviceArcDataSnapshotHours"/>
+  <int value="795" label="PhoneHubAllowed"/>
+  <int value="796" label="PhoneHubNotificationsAllowed"/>
+  <int value="797" label="PhoneHubTaskContinuationAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

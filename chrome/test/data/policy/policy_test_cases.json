@@ -5005,6 +5005,36 @@
     ]
   },
 
+  "PhoneHubAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "PhoneHubAllowed": false },
+        "prefs": { "phone_hub.allowed": {} }
+      }
+    ]
+  },
+
+  "PhoneHubNotificationsAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "PhoneHubNotificationsAllowed": false },
+        "prefs": { "phone_hub_notifications.allowed": {} }
+      }
+    ]
+  },
+
+  "PhoneHubTaskContinuationAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "PhoneHubTaskContinuationAllowed": false },
+        "prefs": { "phone_hub_task_continuation.allowed": {} }
+      }
+    ]
+  },
+
   "NearbyShareAllowed": {
     "os": ["chromeos"],
     "policy_pref_mapping_test": [
