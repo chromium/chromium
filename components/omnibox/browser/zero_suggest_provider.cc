@@ -366,7 +366,8 @@ bool ZeroSuggestProvider::UpdateResults(const std::string& json_data) {
 
   // When running the REMOTE_NO_URL variant, we want to store suggestion
   // responses if non-empty.
-  if (result_type_running_ == REMOTE_NO_URL && !json_data.empty()) {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching) &&
+      result_type_running_ == REMOTE_NO_URL && !json_data.empty()) {
     client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                     json_data);
 
@@ -614,8 +615,10 @@ bool ZeroSuggestProvider::AllowZeroSuggestSuggestions(
 }
 
 void ZeroSuggestProvider::MaybeUseCachedSuggestions() {
-  if (result_type_running_ != REMOTE_NO_URL)
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching) ||
+      result_type_running_ != REMOTE_NO_URL) {
     return;
+  }
 
   std::string json_data =
       client()->GetPrefs()->GetString(omnibox::kZeroSuggestCachedResults);
