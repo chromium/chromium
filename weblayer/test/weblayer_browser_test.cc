@@ -5,6 +5,7 @@
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/base_paths.h"
+#include "content/public/browser/browser_context.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
@@ -65,6 +66,10 @@ void WebLayerBrowserTest::SetShellStartsInIncognitoMode() {
 
 ProfileImpl* WebLayerBrowserTest::GetProfile() {
   return static_cast<TabImpl*>(shell_->tab())->profile();
+}
+
+content::BrowserContext* WebLayerBrowserTest::GetBrowserContext() {
+  return GetProfile()->GetBrowserContext();
 }
 
 }  // namespace weblayer

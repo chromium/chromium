@@ -2,6 +2,7 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/security_interstitials",
   "+content/public/common",
+  "+content/public/browser",
   "+content/public/test",
   "+net/test",
 ]

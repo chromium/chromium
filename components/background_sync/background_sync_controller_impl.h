@@ -33,8 +33,6 @@ namespace url {
 class Origin;
 }  // namespace url
 
-class GURL;
-
 class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
                                      public KeyedService,
                                      public content_settings::Observer {
@@ -118,13 +116,6 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   }
 
  private:
-  // Gets the site engagement penalty for |url|, which is inversely proportional
-  // to the engagement level. The lower the engagement levels with the site,
-  // the less often periodic sync events will be fired.
-  // Returns kEngagementLevelNonePenalty if the engagement level is
-  // blink::mojom::EngagementLevel::NONE.
-  virtual int GetSiteEngagementPenalty(const GURL& url);
-
   // Once we've identified the minimum number of hours between each periodicsync
   // event for an origin, every delay calculated for the origin should be a
   // multiple of the same.

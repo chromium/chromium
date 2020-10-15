@@ -96,6 +96,7 @@ test("weblayer_browsertests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/background_sync",
     "//components/blocked_content",
     "//components/content_settings/core/browser",
     "//components/error_page/content/browser",
@@ -129,6 +130,7 @@ test("weblayer_browsertests") {
 
   sources = [
     "../browser/autofill_browsertest.cc",
+    "../browser/background_sync/background_sync_browsertest.cc",
     "../browser/client_hints_browsertest.cc",
     "../browser/content_settings_browsertest.cc",
     "../browser/cookie_manager_browsertest.cc",

@@ -10,6 +10,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace weblayer {
 class ProfileImpl;
 class Shell;
@@ -32,6 +36,7 @@ class WebLayerBrowserTest : public content::BrowserTestBase {
   Shell* shell() const { return shell_; }
 
   ProfileImpl* GetProfile();
+  content::BrowserContext* GetBrowserContext();
 
  private:
   Shell* shell_ = nullptr;

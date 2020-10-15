@@ -48,6 +48,10 @@ class BackgroundSyncDelegate {
 
   // Gets the site engagement penalty to add to the Periodic Background Sync
   // interval for the origin corresponding to |url|.
+  // The site engagement penalty is inversely proportional to the engagement
+  // level. The lower the engagement levels with the site, the less often
+  // periodic sync events will be fired.
+  // Returns 0 if the engagement level is blink::mojom::EngagementLevel::NONE.
   virtual int GetSiteEngagementPenalty(const GURL& url) = 0;
 
 #if defined(OS_ANDROID)

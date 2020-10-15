@@ -33,7 +33,7 @@ class BASE_EXPORT UkmSourceId {
     // interval; it will not be kept in memory between different reports.
     APP_ID = 2,
     // Source ID for background events that don't have an open tab but the
-    // associated URL is still present in the browser's history. A new source of
+    // associated URL is still present in the browsing history. A new source of
     // this type and associated events are expected to be recorded within the
     // same report interval; it will not be kept in memory between different
     // reports.

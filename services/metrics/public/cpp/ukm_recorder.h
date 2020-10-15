@@ -33,6 +33,10 @@ namespace web_app {
 class DesktopWebAppUkmRecorder;
 }
 
+namespace weblayer {
+class BackgroundSyncDelegateImpl;
+}
+
 namespace ukm {
 
 class DelegatingUkmRecorder;
@@ -96,6 +100,7 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& service_worker_scope);
 
  private:
+  friend weblayer::BackgroundSyncDelegateImpl;
   friend DelegatingUkmRecorder;
   friend TestRecordingHelper;
   friend UkmBackgroundRecorderService;

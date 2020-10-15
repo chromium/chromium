@@ -260,10 +260,6 @@ void BackgroundSyncControllerImpl::CancelBrowserWakeup(
 #endif
 }
 
-int BackgroundSyncControllerImpl::GetSiteEngagementPenalty(const GURL& url) {
-  return delegate_->GetSiteEngagementPenalty(url);
-}
-
 base::TimeDelta BackgroundSyncControllerImpl::SnapToMaxOriginFrequency(
     int64_t min_interval,
     int64_t min_gap_for_origin) {
