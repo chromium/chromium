@@ -1468,6 +1468,12 @@ TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
       controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
 }
 
+// Disable the wallpaper setting for public session since it is ephemeral.
+TEST_F(WallpaperControllerTest, NotShowWallpaperSettingInPublicSession) {
+  SimulateUserLogin("public_session", user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  EXPECT_FALSE(controller_->ShouldShowWallpaperSetting());
+}
+
 TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
   SetBypassDecode();
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);

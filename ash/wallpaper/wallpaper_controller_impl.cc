@@ -1343,9 +1343,12 @@ bool WallpaperControllerImpl::ShouldShowWallpaperSetting() {
   if (!active_user_session)
     return false;
 
+  // Since everything gets wiped at the end of the Public Session (and Managed
+  // Guest Session), users are disallowed to set wallpaper (and other
+  // personalization settings) to avoid unnecessary confusion and surprise when
+  // everything resets.
   user_manager::UserType active_user_type = active_user_session->user_info.type;
   return active_user_type == user_manager::USER_TYPE_REGULAR ||
-         active_user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
          active_user_type == user_manager::USER_TYPE_SUPERVISED ||
          active_user_type == user_manager::USER_TYPE_CHILD;
 }
