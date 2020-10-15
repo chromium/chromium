@@ -71,6 +71,10 @@ class ContextMenuMatcher {
     is_smart_text_selection_enabled_ = enabled;
   }
 
+  const std::map<int, extensions::MenuItem::Id> extension_item_map() {
+    return extension_item_map_;
+  }
+
   bool IsCommandIdChecked(int command_id) const;
   bool IsCommandIdVisible(int command_id) const;
   bool IsCommandIdEnabled(int command_id) const;
@@ -81,7 +85,6 @@ class ContextMenuMatcher {
 
  private:
   friend class ::ExtensionContextMenuBrowserTest;
-  friend class ExtensionContextMenuApiTest;
 
   bool GetRelevantExtensionTopLevelItems(
       const MenuItem::ExtensionKey& extension_key,
