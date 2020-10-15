@@ -33,7 +33,7 @@
             android:singleLine="true"
             android:drawablePadding="4dp"
             android:drawableStart="@drawable/ic_devui_search"
-            android:imeOptions="actionDone|actionSearch"
+            android:imeOptions="actionDone"
             android:drawableTint="?android:textColorPrimary"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
