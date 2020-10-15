@@ -263,4 +263,42 @@ IN_PROC_BROWSER_TEST_F(
       GURL(kSyncedBookmarkURL)));
 }
 
+// ChromeOS doesn't have the concept of sign-out.
+#if !defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
+    SignoutAndSignin) {
+  ASSERT_TRUE(SetupSync());
+
+  // The local device should eventually be committed to the server. The FCM
+  // token should be present in device info.
+  std::string old_token =
+      SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+          ->GetFCMRegistrationToken();
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(), ElementsAre(HasInstanceIdToken(old_token)))
+                  .Wait());
+
+  // Sign out. The FCM token should be cleared.
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_TRUE(SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetFCMRegistrationToken()
+                  .empty());
+
+  // Sign in again.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  std::string new_token =
+      SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+          ->GetFCMRegistrationToken();
+  EXPECT_NE(new_token, old_token);
+  EXPECT_FALSE(new_token.empty());
+  // New device info should eventually be committed to the server (but the old
+  // device info will remain on the server). The FCM token should be present.
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(), ElementsAre(HasInstanceIdToken(old_token),
+                                               HasInstanceIdToken(new_token)))
+                  .Wait());
+}
+#endif  // !OS_CHROMEOS
+
 }  // namespace
