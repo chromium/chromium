@@ -3508,6 +3508,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
 
       <!-- WebAPK/TWA related strings -->
+      <message name="IDS_APP_RUNNING_IN_CHROME_DISCLOSURE" desc="Message on the snackbar that indicates an app may use Chrome data.">
+        This app is running in Chrome
+      </message>
       <message name="IDS_TWA_RUNNING_IN_CHROME" desc="Message on a snackbar indicating that the current Activity may use Chrome data (the rest of the app may not be).">
         Running in Chrome
       </message>

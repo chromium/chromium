@@ -413,7 +413,7 @@ specific_include_rules = {
   "WebappDeferredStartupWithStorageHandler\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "WebappDisclosureController\.java": [
+  "WebappDisclosureSnackbarController\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "AddToHomescreenCoordinator\.java": [

@@ -23,10 +23,7 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class WebappDeferredStartupWithStorageHandler {
-    /**
-     * Interface for deferred startup task callbacks.
-     */
-    public interface Task {
+    interface Task {
         /**
          * Called to run task.
          * @param storage Null if there is no {@link WebappDataStorage} registered for the webapp
