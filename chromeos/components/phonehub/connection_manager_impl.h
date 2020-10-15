@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -48,6 +50,14 @@ class ConnectionManagerImpl
   void SendMessage(const std::string& payload) override;
 
  private:
+  friend class ConnectionManagerImplTest;
+
+  ConnectionManagerImpl(
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
+      device_sync::DeviceSyncClient* device_sync_client,
+      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      std::unique_ptr<base::OneShotTimer> timer);
+
   // chromeos::secure_channel::ConnectionAttempt::Delegate:
   void OnConnectionAttemptFailure(
       chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
@@ -58,6 +68,8 @@ class ConnectionManagerImpl
   // chromeos::secure_channel::ClientChannel::Observer:
   void OnDisconnected() override;
   void OnMessageReceived(const std::string& payload) override;
+
+  void OnConnectionTimeout();
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
 
@@ -70,6 +82,10 @@ class ConnectionManagerImpl
       connection_attempt_;
 
   std::unique_ptr<chromeos::secure_channel::ClientChannel> channel_;
+
+  std::unique_ptr<base::OneShotTimer> timer_;
+
+  base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub
