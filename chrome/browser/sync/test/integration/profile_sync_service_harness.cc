@@ -229,14 +229,14 @@ void ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   DCHECK(cmd_line->HasSwitch(kSyncUrlClearServerDataKey))
       << "Missing switch " << kSyncUrlClearServerDataKey;
-  std::string url =
-      cmd_line->GetSwitchValueASCII(kSyncUrlClearServerDataKey) + "/command/?";
-  url += syncer::MakeSyncQueryString(sync_prefs.GetCacheGuid());
+  GURL base_url(cmd_line->GetSwitchValueASCII(kSyncUrlClearServerDataKey) +
+                "/command/?");
+  GURL url = syncer::AppendSyncQueryString(base_url, sync_prefs.GetCacheGuid());
 
   // Call sync server to clear sync data.
   std::string access_token = service()->GetAccessTokenForTest();
   DCHECK(access_token.size()) << "Access token is not available.";
-  ResetAccount(profile_->GetURLLoaderFactory().get(), access_token, GURL(url),
+  ResetAccount(profile_->GetURLLoaderFactory().get(), access_token, url,
                username_, sync_prefs.GetBirthday());
 }
 

@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "components/sync/engine_impl/net/server_connection_manager.h"
+#include "url/gurl.h"
 
 namespace syncer {
 
@@ -24,34 +25,18 @@ class SyncServerConnectionManager : public ServerConnectionManager {
  public:
   // |factory| and |cancelation_signal| must not be null, and the latter must
   // outlive this object.
-  SyncServerConnectionManager(const std::string& server,
-                              int port,
-                              bool use_ssl,
+  SyncServerConnectionManager(const GURL& sync_request_url,
                               std::unique_ptr<HttpPostProviderFactory> factory,
                               CancelationSignal* cancelation_signal);
   ~SyncServerConnectionManager() override;
 
- protected:
-  HttpResponse PostBufferToPath(const std::string& buffer_in,
-                                const std::string& path,
-                                const std::string& access_token,
-                                std::string* buffer_out) override;
+  HttpResponse PostBuffer(const std::string& buffer_in,
+                          const std::string& access_token,
+                          std::string* buffer_out) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SyncServerConnectionManagerTest, VeryEarlyAbortPost);
-  FRIEND_TEST_ALL_PREFIXES(SyncServerConnectionManagerTest, EarlyAbortPost);
-  FRIEND_TEST_ALL_PREFIXES(SyncServerConnectionManagerTest, AbortPost);
-  FRIEND_TEST_ALL_PREFIXES(SyncServerConnectionManagerTest,
-                           FailPostWithTimedOut);
-
-  // The sync_server_ is the server that requests will be made to.
-  const std::string sync_server_;
-
-  // The sync_server_port_ is the port that HTTP requests will be made on.
-  const int sync_server_port_;
-
-  // Indicates whether or not requests should be made using HTTPS.
-  const bool use_ssl_;
+  // The full URL that requests will be made to.
+  const GURL sync_request_url_;
 
   // A factory creating concrete HttpPostProviders for use whenever we need to
   // issue a POST to sync servers.

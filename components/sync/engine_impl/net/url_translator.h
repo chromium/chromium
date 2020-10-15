@@ -7,16 +7,12 @@
 
 #include <string>
 
+#include "url/gurl.h"
+
 namespace syncer {
 
-// Contains the declaration of a few helper functions used for generating sync
-// URLs.
-
-// This method appends the query string to the sync server path.
-std::string MakeSyncServerPath(const std::string& path,
-                               const std::string& query_string);
-
-std::string MakeSyncQueryString(const std::string& client_id);
+// Appends the appropriate query string to the given sync base URL.
+GURL AppendSyncQueryString(const GURL& base, const std::string& client_id);
 
 }  // namespace syncer
 

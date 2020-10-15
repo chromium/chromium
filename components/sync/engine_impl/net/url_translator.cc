@@ -5,9 +5,7 @@
 #include "components/sync/engine_impl/net/url_translator.h"
 
 #include "build/branding_buildflags.h"
-#include "net/base/escape.h"
-
-using std::string;
+#include "net/base/url_util.h"
 
 namespace syncer {
 
@@ -23,22 +21,10 @@ const char kClientName[] = "Chromium";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }  // namespace
 
-// This method appends the query string to the sync server path.
-string MakeSyncServerPath(const string& path, const string& query_string) {
-  string result = path;
-  result.append("?");
-  result.append(query_string);
+GURL AppendSyncQueryString(const GURL& base, const std::string& client_id) {
+  GURL result = net::AppendQueryParameter(base, kParameterClient, kClientName);
+  result = net::AppendQueryParameter(result, kParameterClientID, client_id);
   return result;
-}
-
-string MakeSyncQueryString(const string& client_id) {
-  string query;
-  query += kParameterClient;
-  query += "=" + net::EscapeUrlEncodedData(kClientName, true);
-  query += "&";
-  query += kParameterClientID;
-  query += "=" + net::EscapeUrlEncodedData(client_id, true);
-  return query;
 }
 
 }  // namespace syncer

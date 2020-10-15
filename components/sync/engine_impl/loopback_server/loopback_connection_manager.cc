@@ -15,9 +15,8 @@ LoopbackConnectionManager::LoopbackConnectionManager(
 
 LoopbackConnectionManager::~LoopbackConnectionManager() = default;
 
-HttpResponse LoopbackConnectionManager::PostBufferToPath(
+HttpResponse LoopbackConnectionManager::PostBuffer(
     const std::string& buffer_in,
-    const std::string& path,
     const std::string& access_token,
     std::string* buffer_out) {
   buffer_out->clear();

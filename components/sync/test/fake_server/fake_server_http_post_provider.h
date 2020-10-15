@@ -30,7 +30,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
 
   // HttpPostProviderInterface implementation.
   void SetExtraRequestHeaders(const char* headers) override;
-  void SetURL(const char* url, int port) override;
+  void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override;
@@ -68,8 +68,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
   std::atomic_bool aborted_;
 
   std::string response_;
-  std::string request_url_;
-  int request_port_;
+  GURL request_url_;
   std::string request_content_;
   std::string request_content_type_;
   std::string extra_request_headers_;

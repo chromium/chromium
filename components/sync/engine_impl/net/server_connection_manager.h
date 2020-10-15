@@ -102,27 +102,19 @@ class ServerConnectionManager {
   void AddListener(ServerConnectionEventListener* listener);
   void RemoveListener(ServerConnectionEventListener* listener);
 
-  inline HttpResponse::ServerConnectionCode server_status() const {
+  HttpResponse::ServerConnectionCode server_status() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return server_response_.server_status;
   }
 
-  inline int net_error_code() const {
+  int net_error_code() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return server_response_.net_error_code;
   }
 
-  inline int http_status_code() const {
+  int http_status_code() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return server_response_.http_status_code;
-  }
-
-  const std::string client_id() const { return client_id_; }
-
-  void set_client_id(const std::string& client_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(client_id_.empty());
-    client_id_.assign(client_id);
   }
 
   // Sets a new access token. If |access_token| is empty, the current token is
@@ -133,29 +125,20 @@ class ServerConnectionManager {
   bool HasInvalidAccessToken() { return access_token_.empty(); }
 
  protected:
-  inline std::string proto_sync_path() const { return proto_sync_path_; }
-
   // Updates |server_response_| and notifies listeners if the server status
   // changed.
   void SetServerResponse(const HttpResponse& server_response);
 
   // Internal PostBuffer base function which subclasses are expected to
   // implement.
-  virtual HttpResponse PostBufferToPath(const std::string& buffer_in,
-                                        const std::string& path,
-                                        const std::string& access_token,
-                                        std::string* buffer_out) = 0;
+  virtual HttpResponse PostBuffer(const std::string& buffer_in,
+                                  const std::string& access_token,
+                                  std::string* buffer_out) = 0;
 
   void ClearAccessToken();
 
  private:
   void NotifyStatusChanged();
-
-  // The unique id of the user's client.
-  std::string client_id_;
-
-  // The paths we post to.
-  std::string proto_sync_path_;
 
   // The access token to use in authenticated requests.
   std::string access_token_;

@@ -66,11 +66,9 @@ void MockConnectionManager::SetMidCommitObserver(
   mid_commit_observer_ = observer;
 }
 
-HttpResponse MockConnectionManager::PostBufferToPath(
-    const std::string& buffer_in,
-    const std::string& path,
-    const std::string& access_token,
-    std::string* buffer_out) {
+HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
+                                               const std::string& access_token,
+                                               std::string* buffer_out) {
   ClientToServerMessage post;
   if (!post.ParseFromString(buffer_in)) {
     ADD_FAILURE();

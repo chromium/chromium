@@ -39,10 +39,9 @@ class MockConnectionManager : public ServerConnectionManager {
   ~MockConnectionManager() override;
 
   // Overridden ServerConnectionManager functions.
-  HttpResponse PostBufferToPath(const std::string& buffer_in,
-                                const std::string& path,
-                                const std::string& access_token,
-                                std::string* buffer_out) override;
+  HttpResponse PostBuffer(const std::string& buffer_in,
+                          const std::string& access_token,
+                          std::string* buffer_out) override;
 
   // Control of commit response.
   // NOTE: Commit callback is invoked only once then reset.

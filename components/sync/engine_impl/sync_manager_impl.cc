@@ -26,6 +26,7 @@
 #include "components/sync/engine_impl/loopback_server/loopback_connection_manager.h"
 #include "components/sync/engine_impl/model_type_connector_proxy.h"
 #include "components/sync/engine_impl/net/sync_server_connection_manager.h"
+#include "components/sync/engine_impl/net/url_translator.h"
 #include "components/sync/engine_impl/sync_scheduler.h"
 #include "components/sync/nigori/cryptographer.h"
 #include "components/sync/nigori/keystore_keys_handler.h"
@@ -53,6 +54,28 @@ sync_pb::SyncEnums::GetUpdatesOrigin GetOriginFromReason(
       NOTREACHED();
   }
   return sync_pb::SyncEnums::UNKNOWN_ORIGIN;
+}
+
+const char kSyncServerSyncPath[] = "/command/";
+
+std::string StripTrailingSlash(const std::string& s) {
+  int stripped_end_pos = s.size();
+  if (s.at(stripped_end_pos - 1) == '/') {
+    stripped_end_pos = stripped_end_pos - 1;
+  }
+
+  return s.substr(0, stripped_end_pos);
+}
+
+GURL MakeConnectionURL(const GURL& sync_server, const std::string& client_id) {
+  DCHECK_EQ(kSyncServerSyncPath[0], '/');
+  std::string full_path =
+      StripTrailingSlash(sync_server.path()) + kSyncServerSyncPath;
+
+  GURL::Replacements path_replacement;
+  path_replacement.SetPathStr(full_path);
+  return AppendSyncQueryString(sync_server.ReplaceComponents(path_replacement),
+                               client_id);
 }
 
 }  // namespace
@@ -159,12 +182,9 @@ void SyncManagerImpl::Init(InitArgs* args) {
         args->local_sync_backend_folder);
   } else {
     connection_manager_ = std::make_unique<SyncServerConnectionManager>(
-        args->service_url.host() + args->service_url.path(),
-        args->service_url.EffectiveIntPort(),
-        args->service_url.SchemeIsCryptographic(),
+        MakeConnectionURL(args->service_url, args->cache_guid),
         std::move(args->post_factory), args->cancelation_signal);
   }
-  connection_manager_->set_client_id(args->cache_guid);
   connection_manager_->AddListener(this);
 
   DVLOG(1) << "Setting sync client ID: " << args->cache_guid;

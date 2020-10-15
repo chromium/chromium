@@ -216,10 +216,9 @@ class DummyConnectionManager : public ServerConnectionManager {
  public:
   DummyConnectionManager() = default;
 
-  HttpResponse PostBufferToPath(const std::string& buffer_in,
-                                const std::string& path,
-                                const std::string& access_token,
-                                std::string* buffer_out) override {
+  HttpResponse PostBuffer(const std::string& buffer_in,
+                          const std::string& access_token,
+                          std::string* buffer_out) override {
     if (send_error_) {
       return HttpResponse::ForIoError();
     }

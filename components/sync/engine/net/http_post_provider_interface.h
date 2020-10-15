@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "url/gurl.h"
 
 namespace syncer {
 
@@ -25,7 +26,7 @@ class HttpPostProviderInterface
   virtual void SetExtraRequestHeaders(const char* headers) = 0;
 
   // Set the URL to POST to.
-  virtual void SetURL(const char* url, int port) = 0;
+  virtual void SetURL(const GURL& url) = 0;
 
   // Set the type, length and content of the POST payload.
   // |content_type| is a null-terminated MIME type specifier.

@@ -48,7 +48,7 @@ class HttpBridge : public HttpPostProviderInterface {
 
   // HttpPostProviderInterface implementation.
   void SetExtraRequestHeaders(const char* headers) override;
-  void SetURL(const char* url, int port) override;
+  void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override;

@@ -51,12 +51,10 @@ void FakeServerHttpPostProvider::SetExtraRequestHeaders(const char* headers) {
   extra_request_headers_.assign(headers);
 }
 
-void FakeServerHttpPostProvider::SetURL(const char* url, int port) {
+void FakeServerHttpPostProvider::SetURL(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(pvalenzuela): Add assertions on these values.
-  request_url_.assign(url);
-  request_port_ = port;
+  request_url_ = url;
 }
 
 void FakeServerHttpPostProvider::SetPostPayload(const char* content_type,

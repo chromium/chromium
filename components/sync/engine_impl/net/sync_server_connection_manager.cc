@@ -20,26 +20,6 @@
 namespace syncer {
 namespace {
 
-std::string StripTrailingSlash(const std::string& s) {
-  int stripped_end_pos = s.size();
-  if (s.at(stripped_end_pos - 1) == '/') {
-    stripped_end_pos = stripped_end_pos - 1;
-  }
-
-  return s.substr(0, stripped_end_pos);
-}
-
-// TODO(crbug.com/951350): Use a GURL instead of string concatenation.
-std::string MakeConnectionURL(const std::string& sync_server,
-                              const std::string& path,
-                              bool use_ssl) {
-  std::string connection_url = (use_ssl ? "https://" : "http://");
-  connection_url += sync_server;
-  connection_url = StripTrailingSlash(connection_url);
-  connection_url += path;
-  return connection_url;
-}
-
 // This provides HTTP Post functionality through the interface provided
 // by the application hosting the syncer backend.
 class Connection : public CancelationObserver {
@@ -49,8 +29,7 @@ class Connection : public CancelationObserver {
              CancelationSignal* cancelation_signal);
   ~Connection() override;
 
-  HttpResponse Init(const std::string& connection_url,
-                    int sync_server_port,
+  HttpResponse Init(const GURL& connection_url,
                     const std::string& access_token,
                     const std::string& payload);
   bool ReadBufferResponse(std::string* buffer_out, HttpResponse* response);
@@ -89,11 +68,10 @@ Connection::Connection(HttpPostProviderFactory* factory,
 
 Connection::~Connection() = default;
 
-HttpResponse Connection::Init(const std::string& connection_url,
-                              int sync_server_port,
+HttpResponse Connection::Init(const GURL& sync_request_url,
                               const std::string& access_token,
                               const std::string& payload) {
-  post_provider_->SetURL(connection_url.c_str(), sync_server_port);
+  post_provider_->SetURL(sync_request_url);
 
   if (!access_token.empty()) {
     std::string headers;
@@ -184,14 +162,10 @@ void Connection::OnSignalReceived() {
 }  // namespace
 
 SyncServerConnectionManager::SyncServerConnectionManager(
-    const std::string& server,
-    int port,
-    bool use_ssl,
+    const GURL& sync_request_url,
     std::unique_ptr<HttpPostProviderFactory> factory,
     CancelationSignal* cancelation_signal)
-    : sync_server_(server),
-      sync_server_port_(port),
-      use_ssl_(use_ssl),
+    : sync_request_url_(sync_request_url),
       post_provider_factory_(std::move(factory)),
       cancelation_signal_(cancelation_signal) {
   DCHECK(post_provider_factory_);
@@ -200,9 +174,8 @@ SyncServerConnectionManager::SyncServerConnectionManager(
 
 SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 
-HttpResponse SyncServerConnectionManager::PostBufferToPath(
+HttpResponse SyncServerConnectionManager::PostBuffer(
     const std::string& buffer_in,
-    const std::string& path,
     const std::string& access_token,
     std::string* buffer_out) {
   if (access_token.empty()) {
@@ -218,12 +191,11 @@ HttpResponse SyncServerConnectionManager::PostBufferToPath(
 
   auto connection = std::make_unique<Connection>(post_provider_factory_.get(),
                                                  cancelation_signal_);
-  std::string connection_url = MakeConnectionURL(sync_server_, path, use_ssl_);
 
-  // Note that |post| may be aborted by now, which will just cause Init to fail
-  // with CONNECTION_UNAVAILABLE.
-  HttpResponse http_response = connection->Init(
-      connection_url, sync_server_port_, access_token, buffer_in);
+  // Note that the post may be aborted by now, which will just cause Init to
+  // fail with CONNECTION_UNAVAILABLE.
+  HttpResponse http_response =
+      connection->Init(sync_request_url_, access_token, buffer_in);
 
   if (http_response.server_status == HttpResponse::SYNC_AUTH_ERROR) {
     ClearAccessToken();

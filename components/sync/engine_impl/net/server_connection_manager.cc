@@ -20,8 +20,6 @@
 namespace syncer {
 namespace {
 
-const char kSyncServerSyncPath[] = "/command/";
-
 #define ENUM_CASE(x)    \
   case HttpResponse::x: \
     return #x;          \
@@ -101,8 +99,7 @@ HttpResponse HttpResponse::ForSuccess() {
 }
 
 ServerConnectionManager::ServerConnectionManager()
-    : proto_sync_path_(kSyncServerSyncPath),
-      server_response_(HttpResponse::Uninitialized()) {}
+    : server_response_(HttpResponse::Uninitialized()) {}
 
 ServerConnectionManager::~ServerConnectionManager() = default;
 
@@ -146,19 +143,17 @@ void ServerConnectionManager::SetServerResponse(
 
 void ServerConnectionManager::NotifyStatusChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : listeners_)
+  for (auto& observer : listeners_) {
     observer.OnServerConnectionEvent(
         ServerConnectionEvent(server_response_.server_status));
+  }
 }
 
 HttpResponse ServerConnectionManager::PostBufferWithCachedAuth(
     const std::string& buffer_in,
     std::string* buffer_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string path =
-      MakeSyncServerPath(proto_sync_path(), MakeSyncQueryString(client_id_));
-  HttpResponse http_response =
-      PostBufferToPath(buffer_in, path, access_token_, buffer_out);
+  HttpResponse http_response = PostBuffer(buffer_in, access_token_, buffer_out);
   SetServerResponse(http_response);
   return http_response;
 }

@@ -29,7 +29,7 @@ class BlockingHttpPost : public HttpPostProviderInterface {
                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
   void SetExtraRequestHeaders(const char* headers) override {}
-  void SetURL(const char* url, int port) override {}
+  void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
@@ -69,11 +69,11 @@ TEST(SyncServerConnectionManagerTest, VeryEarlyAbortPost) {
   CancelationSignal signal;
   signal.Signal();
   SyncServerConnectionManager server(
-      "server", 0, true, std::make_unique<BlockingHttpPostFactory>(), &signal);
+      GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
+      &signal);
 
   std::string buffer_out;
-  HttpResponse http_response =
-      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
@@ -82,13 +82,12 @@ TEST(SyncServerConnectionManagerTest, VeryEarlyAbortPost) {
 TEST(SyncServerConnectionManagerTest, EarlyAbortPost) {
   CancelationSignal signal;
   SyncServerConnectionManager server(
-      "server", 0, true, std::make_unique<BlockingHttpPostFactory>(), &signal);
-
+      GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
+      &signal);
 
   signal.Signal();
   std::string buffer_out;
-  HttpResponse http_response =
-      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
@@ -97,7 +96,8 @@ TEST(SyncServerConnectionManagerTest, EarlyAbortPost) {
 TEST(SyncServerConnectionManagerTest, AbortPost) {
   CancelationSignal signal;
   SyncServerConnectionManager server(
-      "server", 0, true, std::make_unique<BlockingHttpPostFactory>(), &signal);
+      GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),
+      &signal);
 
   base::Thread abort_thread("Test_AbortThread");
   ASSERT_TRUE(abort_thread.Start());
@@ -107,8 +107,7 @@ TEST(SyncServerConnectionManagerTest, AbortPost) {
       TestTimeouts::tiny_timeout());
 
   std::string buffer_out;
-  HttpResponse http_response =
-      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
   abort_thread.Stop();
@@ -122,7 +121,7 @@ class FailingHttpPost : public HttpPostProviderInterface {
       : net_error_code_(net_error_code) {}
 
   void SetExtraRequestHeaders(const char* headers) override {}
-  void SetURL(const char* url, int port) override {}
+  void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
@@ -167,12 +166,11 @@ class FailingHttpPostFactory : public HttpPostProviderFactory {
 TEST(SyncServerConnectionManagerTest, FailPostWithTimedOut) {
   CancelationSignal signal;
   SyncServerConnectionManager server(
-      "server", 0, true,
+      GURL("https://server"),
       std::make_unique<FailingHttpPostFactory>(net::ERR_TIMED_OUT), &signal);
 
   std::string buffer_out;
-  HttpResponse http_response =
-      server.PostBufferToPath("", "/testpath", "testauth", &buffer_out);
+  HttpResponse http_response = server.PostBuffer("", "testauth", &buffer_out);
 
   EXPECT_EQ(HttpResponse::CONNECTION_UNAVAILABLE, http_response.server_status);
 }
