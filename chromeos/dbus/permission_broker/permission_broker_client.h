@@ -80,6 +80,22 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) PermissionBrokerClient {
                                              OpenPathCallback callback,
                                              ErrorCallback error_callback) = 0;
 
+  // ClaimDevicePath requests that the permission broker open
+  // the device node identified by |path| and set of USB interfaces that can be
+  // claimed |allowed_interfaces_mask|, returning the resulting file descriptor.
+  // The interface number 0 corresponds to the LSB of |allowed_interfaces_mask|.
+  // For example, a device which has an ADB interface and other interfaces for
+  // Camera or Storage may be opened purely as an ADB device using a mask that
+  // zeros out the Camera and Storage interface number bit positions.
+  // One of |callback| or |error_callback| is called. |lifeline_fd| is the
+  // read side of a pipe that is is watched by permission broker. When this
+  // pipe closes, any kernel drivers removed from the device are reattached.
+  virtual void ClaimDevicePath(const std::string& path,
+                               uint32_t allowed_interfaces_mask,
+                               int lifeline_fd,
+                               OpenPathCallback callback,
+                               ErrorCallback error_callback) = 0;
+
   // Requests the |port| be opened on the firewall for incoming TCP/IP
   // connections received on |interface| (an empty string indicates all
   // interfaces). One end of an open pipe must be passed as |lifeline_fd| so

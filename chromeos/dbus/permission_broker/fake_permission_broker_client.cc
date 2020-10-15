@@ -93,6 +93,15 @@ void FakePermissionBrokerClient::OpenPathWithDroppedPrivileges(
   OpenPath(path, std::move(callback), std::move(error_callback));
 }
 
+void FakePermissionBrokerClient::ClaimDevicePath(
+    const std::string& path,
+    uint32_t allowed_interfaces_mask,
+    int lifeline_fd,
+    OpenPathCallback callback,
+    ErrorCallback error_callback) {
+  OpenPath(path, std::move(callback), std::move(error_callback));
+}
+
 void FakePermissionBrokerClient::RequestTcpPortAccess(
     uint16_t port,
     const std::string& interface,

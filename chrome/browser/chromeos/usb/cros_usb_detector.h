@@ -113,6 +113,10 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
                              const std::string& guid,
                              base::OnceCallback<void(bool success)> callback);
 
+  // Returns true if device was successfully shared with |vm_name|.
+  bool IsDeviceAlreadySharedWithVm(const std::string& vm_name,
+                                   const std::string& guid);
+
   void AddUsbDeviceObserver(CrosUsbDeviceObserver* observer);
   void RemoveUsbDeviceObserver(CrosUsbDeviceObserver* observer);
   void SignalUsbDeviceObservers();
@@ -159,6 +163,11 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
                                base::OnceCallback<void(bool success)> callback,
                                base::File file);
 
+  void DoVmAttach(const std::string& vm_name,
+                  device::mojom::UsbDeviceInfoPtr device_info,
+                  base::ScopedFD fd,
+                  base::OnceCallback<void(bool success)> callback);
+
   // Callbacks for when the USB device state has been updated.
   void OnUsbDeviceAttachFinished(
       const std::string& vm_name,
@@ -182,6 +191,8 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   bool ShouldShowNotification(const device::mojom::UsbDeviceInfo& device_info,
                               uint32_t allowed_interfaces_mask);
 
+  void RelinquishDeviceClaim(const std::string& guid);
+
   mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient>
       client_receiver_{this};
@@ -194,6 +205,16 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
 
   // A mapping from GUID -> UsbDeviceInfo for each attached USB device
   std::map<std::string, device::mojom::UsbDeviceInfoPtr> available_device_info_;
+
+  // Populated when we open the device path on the host. Acts as a claim on the
+  // device even if the intended VM has not started yet. Removed when the device
+  // is shared successfully with the VM. When an file is closed (here or by the
+  // VM,  PermissionBroker will reattach the previous host drivers (if any).
+  struct DeviceClaim {
+    base::File device_file;
+    base::File lifeline_file;
+  };
+  std::map<std::string, DeviceClaim> devices_claimed_;
 
   std::vector<CrosUsbDeviceInfo> usb_devices_;
 
