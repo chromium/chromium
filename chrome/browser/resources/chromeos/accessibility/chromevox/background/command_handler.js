@@ -1220,6 +1220,10 @@ CommandHandler.onCommand = function(command) {
           const innerCallback = function(currentNode, evt) {
             scrollable.removeEventListener(
                 EventType.SCROLL_POSITION_CHANGED, innerCallback);
+            scrollable.removeEventListener(
+                EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback);
+            scrollable.removeEventListener(
+                EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback);
 
             if (pred || (currentNode && currentNode.root)) {
               // Jump or if there is a valid current range, then move from it
@@ -1243,8 +1247,15 @@ CommandHandler.onCommand = function(command) {
             ChromeVoxState.instance.navigateToRange(
                 cursors.Range.fromNode(sync), false, speechProps);
           }.bind(this, current.start.node);
+          // This is sent by ARC++.
           scrollable.addEventListener(
               EventType.SCROLL_POSITION_CHANGED, innerCallback, true);
+          // These two events are sent by Web and Views via AXEventGenerator.
+          scrollable.addEventListener(
+              EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback,
+              true);
+          scrollable.addEventListener(
+              EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback, true);
         } else {
           ChromeVoxState.instance.navigateToRange(current, false, speechProps);
         }
