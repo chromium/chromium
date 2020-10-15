@@ -9,14 +9,12 @@
 #include "base/strings/string16.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 
 class Browser;
 
 // Bubble that prompts the user to grant or deny a permission request from a
 // website.
-class PermissionPromptBubbleView : public views::ButtonListener,
-                                   public views::BubbleDialogDelegateView {
+class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   PermissionPromptBubbleView(Browser* browser,
                              permissions::PermissionPrompt::Delegate* delegate,
@@ -34,9 +32,6 @@ class PermissionPromptBubbleView : public views::ButtonListener,
   bool ShouldShowCloseButton() const override;
   base::string16 GetAccessibleWindowTitle() const override;
   base::string16 GetWindowTitle() const override;
-
-  // Button Listener
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   void AcceptPermission();
   void DenyPermission();

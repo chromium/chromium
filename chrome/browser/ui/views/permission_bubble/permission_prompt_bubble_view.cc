@@ -100,7 +100,14 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
       ContentSettingsType::PLUGINS) {
     auto* learn_more_button =
         SetExtraView(views::CreateVectorImageButtonWithNativeTheme(
-            this, vector_icons::kHelpOutlineIcon));
+            base::BindRepeating(
+                [](Browser* browser) {
+                  chrome::AddSelectedTabWithURL(
+                      browser, GURL(chrome::kFlashDeprecationLearnMoreURL),
+                      ui::PAGE_TRANSITION_LINK);
+                },
+                base::Unretained(browser)),
+            vector_icons::kHelpOutlineIcon));
     learn_more_button->SetFocusForPlatform();
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
@@ -245,14 +252,6 @@ base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
       template_id, name_or_origin_.name_or_origin,
       visible_requests_[0]->GetMessageTextFragment(),
       visible_requests_[1]->GetMessageTextFragment());
-}
-
-void PermissionPromptBubbleView::ButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  DCHECK_EQ(sender, GetExtraView());
-  chrome::AddSelectedTabWithURL(browser_,
-                                GURL(chrome::kFlashDeprecationLearnMoreURL),
-                                ui::PAGE_TRANSITION_LINK);
 }
 
 PermissionPromptBubbleView::DisplayNameOrOrigin
