@@ -661,10 +661,6 @@ void ContentsView::TransitionChanged() {
   UpdateSearchBoxAnimation(progress, current_state, target_state);
 }
 
-views::View* ContentsView::GetSelectedView() const {
-  return app_list_pages_[GetActivePageIndex()]->GetSelectedView();
-}
-
 void ContentsView::UpdateYPositionAndOpacity() {
   const int current_page = pagination_model_.has_transition()
                                ? pagination_model_.transition().target_page

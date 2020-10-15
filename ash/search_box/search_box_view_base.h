@@ -118,9 +118,6 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
 
   virtual void ClearSearch();
 
-  // Returns selected view in contents view.
-  virtual views::View* GetSelectedViewInContentsView();
-
  protected:
   // Fires query change notification.
   void NotifyQueryChanged();

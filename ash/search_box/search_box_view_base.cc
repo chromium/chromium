@@ -175,19 +175,6 @@ class SearchBoxTextfield : public views::Textfield {
   ~SearchBoxTextfield() override = default;
 
   // Overridden from views::View:
-  void ShowContextMenu(const gfx::Point& p,
-                       ui::MenuSourceType source_type) override {
-    views::View* selected_view =
-        search_box_view_->GetSelectedViewInContentsView();
-    if (source_type != ui::MENU_SOURCE_KEYBOARD || !selected_view) {
-      views::Textfield::ShowContextMenu(p, source_type);
-      return;
-    }
-    selected_view->ShowContextMenu(
-        selected_view->GetKeyboardContextMenuLocation(),
-        ui::MENU_SOURCE_KEYBOARD);
-  }
-
   void OnFocus() override {
     search_box_view_->OnSearchBoxFocusedChanged();
     Textfield::OnFocus();
@@ -449,10 +436,6 @@ void SearchBoxViewBase::ClearSearch() {
   // does not generate ContentsChanged() notification.
   UpdateModel(false);
   NotifyQueryChanged();
-}
-
-views::View* SearchBoxViewBase::GetSelectedViewInContentsView() {
-  return nullptr;
 }
 
 void SearchBoxViewBase::NotifyQueryChanged() {

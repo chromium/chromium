@@ -194,9 +194,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   void TransitionStarted() override;
   void TransitionChanged() override;
 
-  // Returns selected view in active page.
-  views::View* GetSelectedView() const;
-
   // Updates y position and opacity of the items in this view during dragging.
   void UpdateYPositionAndOpacity();
 

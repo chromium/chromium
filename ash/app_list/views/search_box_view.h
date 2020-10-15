@@ -50,7 +50,6 @@ class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Overridden from SearchBoxViewBase:
   void ClearSearch() override;
-  views::View* GetSelectedViewInContentsView() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
   void ModelChanged() override;
   void UpdateKeyboardVisibility() override;

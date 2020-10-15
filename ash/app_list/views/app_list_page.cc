@@ -41,10 +41,6 @@ void AppListPage::UpdatePageBoundsForState(AppListState state,
       GetPageBoundsForState(state, contents_bounds, search_box_bounds));
 }
 
-views::View* AppListPage::GetSelectedView() const {
-  return nullptr;
-}
-
 views::View* AppListPage::GetFirstFocusableView() {
   return nullptr;
 }

@@ -134,12 +134,6 @@ void SearchBoxView::ClearSearch() {
       true, false /*triggered_by_contents_change*/);
 }
 
-views::View* SearchBoxView::GetSelectedViewInContentsView() {
-  if (!contents_view_)
-    return nullptr;
-  return contents_view_->GetSelectedView();
-}
-
 void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
   if (located_event->type() == ui::ET_MOUSEWHEEL) {
     if (!app_list_view_->HandleScroll(
