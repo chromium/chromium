@@ -173,15 +173,6 @@ WebDragData DropMetaDataToWebDragData(
   return result;
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-blink::WebTextInputType ConvertTextInputType(ui::TextInputType type) {
-  // Check the type is in the range representable by ui::TextInputType.
-  DCHECK_LE(type, static_cast<int>(ui::TEXT_INPUT_TYPE_MAX))
-      << "blink::WebTextInputType and ui::TextInputType not synchronized";
-  return static_cast<blink::WebTextInputType>(type);
-}
-#endif
-
 }  // namespace
 
 // RenderWidget ---------------------------------------------------------------
@@ -370,41 +361,6 @@ void RenderWidget::RecordTimeToFirstActivePaint(base::TimeDelta duration) {
   }
 }
 
-bool RenderWidget::CanComposeInline() {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  if (auto* plugin = GetFocusedPepperPluginInsideWidget())
-    return plugin->IsPluginAcceptingCompositionEvents();
-#endif
-  return true;
-}
-
-bool RenderWidget::ShouldDispatchImeEventsToPepper() {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  return GetFocusedPepperPluginInsideWidget();
-#else
-  return false;
-#endif
-}
-
-blink::WebTextInputType RenderWidget::GetPepperTextInputType() {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  return ConvertTextInputType(
-      GetFocusedPepperPluginInsideWidget()->text_input_type());
-#else
-  NOTREACHED();
-  return blink::WebTextInputType::kWebTextInputTypeNone;
-#endif
-}
-
-gfx::Rect RenderWidget::GetPepperCaretBounds() {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  return GetFocusedPepperPluginInsideWidget()->GetCaretBounds();
-#else
-  NOTREACHED();
-  return gfx::Rect();
-#endif
-}
-
 void RenderWidget::UpdateTextInputState() {
   GetWebWidget()->UpdateTextInputState();
 }
@@ -548,40 +504,6 @@ void RenderWidget::SetWindowRect(const gfx::Rect& window_rect) {
     SetPendingWindowRect(window_rect);
   }
 }
-void RenderWidget::ImeSetCompositionForPepper(
-    const blink::WebString& text,
-    const std::vector<ui::ImeTextSpan>& ime_text_spans,
-    const gfx::Range& replacement_range,
-    int selection_start,
-    int selection_end) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  auto* plugin = GetFocusedPepperPluginInsideWidget();
-  DCHECK(plugin);
-  plugin->render_frame()->OnImeSetComposition(text.Utf16(), ime_text_spans,
-                                              selection_start, selection_end);
-#endif
-}
-
-void RenderWidget::ImeCommitTextForPepper(
-    const blink::WebString& text,
-    const std::vector<ui::ImeTextSpan>& ime_text_spans,
-    const gfx::Range& replacement_range,
-    int relative_cursor_pos) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  auto* plugin = GetFocusedPepperPluginInsideWidget();
-  DCHECK(plugin);
-  plugin->render_frame()->OnImeCommitText(text.Utf16(), replacement_range,
-                                          relative_cursor_pos);
-#endif
-}
-
-void RenderWidget::ImeFinishComposingTextForPepper(bool keep_selection) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  auto* plugin = GetFocusedPepperPluginInsideWidget();
-  DCHECK(plugin);
-  plugin->render_frame()->OnImeFinishComposingText(keep_selection);
-#endif
-}
 
 void RenderWidget::OnDragTargetDragEnter(
     const std::vector<DropData::Metadata>& drop_meta_data,
@@ -636,34 +558,6 @@ void RenderWidget::DidNavigate(ukm::SourceId source_id, const GURL& url) {
     render_frame->SetUpSharedMemoryForSmoothness(std::move(shmem));
   }
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-PepperPluginInstanceImpl* RenderWidget::GetFocusedPepperPluginInsideWidget() {
-  blink::WebFrameWidget* frame_widget = GetFrameWidget();
-  if (!frame_widget)
-    return nullptr;
-
-  // Focused pepper instance might not always be in the focused frame. For
-  // instance if a pepper instance and its embedder frame are focused an then
-  // another frame takes focus using javascript, the embedder frame will no
-  // longer be focused while the pepper instance is (the embedder frame's
-  // |focused_pepper_plugin_| is not nullptr). Especially, if the pepper plugin
-  // is fullscreen, clicking into the pepper will not refocus the embedder
-  // frame. This is why we have to traverse the whole frame tree to find the
-  // focused plugin.
-  blink::WebFrame* current_frame = frame_widget->LocalRoot();
-  while (current_frame) {
-    RenderFrameImpl* render_frame =
-        current_frame->IsWebLocalFrame()
-            ? RenderFrameImpl::FromWebFrame(current_frame)
-            : nullptr;
-    if (render_frame && render_frame->focused_pepper_plugin())
-      return render_frame->focused_pepper_plugin();
-    current_frame = current_frame->TraverseNext();
-  }
-  return nullptr;
-}
-#endif
 
 bool RenderWidget::IsFullscreenGrantedForFrame() {
   if (!for_frame())

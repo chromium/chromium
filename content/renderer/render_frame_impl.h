@@ -351,32 +351,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // Informs the render view that a PPAPI plugin has changed selection.
   void PepperSelectionChanged(PepperPluginInstanceImpl* instance);
 
-  bool IsPepperAcceptingCompositionEvents() const;
-
   // Notification that the given plugin has crashed.
   void PluginCrashed(const base::FilePath& plugin_path,
                      base::ProcessId plugin_pid);
-
-  // Simulates IME events for testing purpose.
-  void SimulateImeSetComposition(
-      const base::string16& text,
-      const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      int selection_start,
-      int selection_end);
-  void SimulateImeCommitText(const base::string16& text,
-                             const std::vector<ui::ImeTextSpan>& ime_text_spans,
-                             const gfx::Range& replacement_range);
-
-  // TODO(jam): remove these once the IPC handler moves from RenderView to
-  // RenderFrame.
-  void OnImeSetComposition(const base::string16& text,
-                           const std::vector<ui::ImeTextSpan>& ime_text_spans,
-                           int selection_start,
-                           int selection_end);
-  void OnImeCommitText(const base::string16& text,
-                       const gfx::Range& replacement_range,
-                       int relative_cursor_pos);
-  void OnImeFinishComposingText(bool keep_selection);
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -1088,10 +1065,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Returns the URL being loaded by the |frame_|'s request.
   GURL GetLoadingUrl() const;
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  void HandlePepperImeCommit(const base::string16& text);
-#endif  // ENABLE_PLUGINS
-
   void RegisterMojoInterfaces();
 
   void InitializeBlameContext(RenderFrameImpl* parent_frame);
@@ -1308,10 +1281,6 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::WebHistoryItem current_history_item_;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  // Current text input composition text. Empty if no composition is in
-  // progress.
-  base::string16 pepper_composition_text_;
-
   PluginPowerSaverHelper* plugin_power_saver_helper_;
 #endif
 

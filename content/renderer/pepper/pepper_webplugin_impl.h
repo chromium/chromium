@@ -91,6 +91,23 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   void DidLoseMouseLock() override;
   void DidReceiveMouseLockResult(bool success) override;
 
+  bool CanComposeInline() override;
+  bool ShouldDispatchImeEventsToPlugin() override;
+  blink::WebTextInputType GetPluginTextInputType() override;
+  gfx::Rect GetPluginCaretBounds() override;
+  void ImeSetCompositionForPlugin(
+      const blink::WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int selection_start,
+      int selection_end) override;
+  void ImeCommitTextForPlugin(
+      const blink::WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int relative_cursor_pos) override;
+  void ImeFinishComposingTextForPlugin(bool keep_selection) override;
+
  private:
   friend class base::DeleteHelper<PepperWebPluginImpl>;
 

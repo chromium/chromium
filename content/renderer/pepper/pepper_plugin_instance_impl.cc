@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/callback_helpers.h"
+#include "base/i18n/char_iterator.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -116,6 +117,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -2242,11 +2244,8 @@ bool PepperPluginInstanceImpl::SimulateIMEEvent(
       SimulateImeSetCompositionEvent(input_event);
       break;
     case PP_INPUTEVENT_TYPE_IME_TEXT:
-      if (!render_frame_)
-        return false;
-      render_frame_->SimulateImeCommitText(
-          base::UTF8ToUTF16(input_event.character_text),
-          std::vector<ui::ImeTextSpan>(), gfx::Range());
+      OnImeCommitText(base::UTF8ToUTF16(input_event.character_text),
+                      gfx::Range(), 0);
       break;
     default:
       return false;
@@ -2256,9 +2255,6 @@ bool PepperPluginInstanceImpl::SimulateIMEEvent(
 
 void PepperPluginInstanceImpl::SimulateImeSetCompositionEvent(
     const InputEventData& input_event) {
-  if (!render_frame_)
-    return;
-
   std::vector<size_t> offsets;
   offsets.push_back(input_event.composition_selection_start);
   offsets.push_back(input_event.composition_selection_end);
@@ -2279,8 +2275,7 @@ void PepperPluginInstanceImpl::SimulateImeSetCompositionEvent(
     ime_text_spans.push_back(ime_text_span);
   }
 
-  render_frame_->SimulateImeSetComposition(utf16_text, ime_text_spans,
-                                           offsets[0], offsets[1]);
+  OnImeSetComposition(utf16_text, ime_text_spans, offsets[0], offsets[1]);
 }
 
 PP_Bool PepperPluginInstanceImpl::BindGraphics(PP_Instance instance,
@@ -3175,6 +3170,85 @@ void PepperPluginInstanceImpl::HandleAccessibilityChange() {
       LoadPdfInterface()) {
     plugin_pdf_interface_->EnableAccessibility(pp_instance());
   }
+}
+
+void PepperPluginInstanceImpl::OnImeSetComposition(
+    const base::string16& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    int selection_start,
+    int selection_end) {
+  // When a PPAPI plugin has focus, we bypass blink core editing composition
+  // events.
+  if (!IsPluginAcceptingCompositionEvents()) {
+    composition_text_ = text;
+  } else {
+    // TODO(kinaba) currently all composition events are sent directly to
+    // plugins. Use DOM event mechanism after blink is made aware about
+    // plugins that support composition.
+    // The code below mimics the behavior of blink::Editor::setComposition.
+
+    // Empty -> nonempty: composition started.
+    if (composition_text_.empty() && !text.empty()) {
+      HandleCompositionStart(base::string16());
+    }
+    // Nonempty -> empty: composition canceled.
+    if (!composition_text_.empty() && text.empty()) {
+      HandleCompositionEnd(base::string16());
+    }
+    composition_text_ = text;
+    // Nonempty: composition is ongoing.
+    if (!composition_text_.empty()) {
+      HandleCompositionUpdate(composition_text_, ime_text_spans,
+                              selection_start, selection_end);
+    }
+  }
+}
+
+void PepperPluginInstanceImpl::OnImeCommitText(
+    const base::string16& text,
+    const gfx::Range& replacement_range,
+    int relative_cursor_pos) {
+  HandlePepperImeCommit(text);
+}
+
+void PepperPluginInstanceImpl::OnImeFinishComposingText(bool keep_selection) {
+  const base::string16& text = composition_text_;
+  HandlePepperImeCommit(text);
+}
+
+void PepperPluginInstanceImpl::HandlePepperImeCommit(
+    const base::string16& text) {
+  if (text.empty())
+    return;
+
+  if (!IsPluginAcceptingCompositionEvents()) {
+    // For pepper plugins unable to handle IME events, send the plugin a
+    // sequence of characters instead.
+    base::i18n::UTF16CharIterator iterator(&text);
+    int32_t i = 0;
+    while (iterator.Advance()) {
+      blink::WebKeyboardEvent char_event(blink::WebInputEvent::Type::kChar,
+                                         blink::WebInputEvent::kNoModifiers,
+                                         ui::EventTimeForNow());
+      char_event.windows_key_code = text[i];
+      char_event.native_key_code = text[i];
+
+      const int32_t char_start = i;
+      for (; i < iterator.array_pos(); ++i) {
+        char_event.text[i - char_start] = text[i];
+        char_event.unmodified_text[i - char_start] = text[i];
+      }
+
+      ui::Cursor dummy_cursor_info;
+      HandleInputEvent(char_event, &dummy_cursor_info);
+    }
+  } else {
+    // Mimics the order of events sent by blink.
+    // See blink::Editor::setComposition() for the corresponding code.
+    HandleCompositionEnd(text);
+    HandleTextInput(text);
+  }
+  composition_text_.clear();
 }
 
 }  // namespace content

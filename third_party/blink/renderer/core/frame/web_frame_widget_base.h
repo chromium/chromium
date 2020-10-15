@@ -52,6 +52,7 @@ class PageWidgetEventHandler;
 class PaintWorkletPaintDispatcher;
 class RemoteFrame;
 class WebLocalFrameImpl;
+class WebPlugin;
 class WebViewImpl;
 class WidgetBase;
 class ScreenMetricsEmulator;
@@ -241,6 +242,18 @@ class CORE_EXPORT WebFrameWidgetBase
       bool request_unadjusted_movement,
       mojom::blink::WidgetInputHandlerHost::RequestMouseLockCallback callback)
       override;
+  bool CanComposeInline() override;
+  bool ShouldDispatchImeEventsToPlugin() override;
+  void ImeSetCompositionForPlugin(const String& text,
+                                  const Vector<ui::ImeTextSpan>& ime_text_spans,
+                                  const gfx::Range& replacement_range,
+                                  int selection_start,
+                                  int selection_end) override;
+  void ImeCommitTextForPlugin(const String& text,
+                              const Vector<ui::ImeTextSpan>& ime_text_spans,
+                              const gfx::Range& replacement_range,
+                              int relative_cursor_pos) override;
+  void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
   // WebFrameWidget implementation.
   WebLocalFrame* LocalRoot() const override;
@@ -573,6 +586,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // clipped or obscured by ancestor frames in another process.
   virtual void SetRemoteViewportIntersection(
       const mojom::blink::ViewportIntersectionState& intersection_state) {}
+
+  // Return the focused WebPlugin if there is one.
+  WebPlugin* GetFocusedPluginContainer();
 
  protected:
   enum DragAction { kDragEnter, kDragOver };

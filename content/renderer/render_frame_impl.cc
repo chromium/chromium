@@ -21,7 +21,6 @@
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/guid.h"
-#include "base/i18n/char_iterator.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -2180,12 +2179,6 @@ void RenderFrameImpl::PepperSelectionChanged(
   SyncSelectionIfRequired();
 }
 
-bool RenderFrameImpl::IsPepperAcceptingCompositionEvents() const {
-  if (!focused_pepper_plugin_)
-    return false;
-  return focused_pepper_plugin_->IsPluginAcceptingCompositionEvents();
-}
-
 void RenderFrameImpl::PluginCrashed(const base::FilePath& plugin_path,
                                     base::ProcessId plugin_pid) {
   // TODO(jam): dispatch this IPC in RenderFrameHost and switch to use
@@ -2193,70 +2186,6 @@ void RenderFrameImpl::PluginCrashed(const base::FilePath& plugin_path,
   Send(new FrameHostMsg_PluginCrashed(routing_id_, plugin_path, plugin_pid));
 }
 
-void RenderFrameImpl::SimulateImeSetComposition(
-    const base::string16& text,
-    const std::vector<ui::ImeTextSpan>& ime_text_spans,
-    int selection_start,
-    int selection_end) {
-  if (!GetMainFrameRenderWidget()->ShouldDispatchImeEventsToPepper())
-    return;
-  GetMainFrameRenderWidget()->ImeSetCompositionForPepper(
-      WebString::FromUTF16(text), ime_text_spans, gfx::Range::InvalidRange(),
-      selection_start, selection_end);
-}
-
-void RenderFrameImpl::SimulateImeCommitText(
-    const base::string16& text,
-    const std::vector<ui::ImeTextSpan>& ime_text_spans,
-    const gfx::Range& replacement_range) {
-  if (!GetMainFrameRenderWidget()->ShouldDispatchImeEventsToPepper())
-    return;
-  GetMainFrameRenderWidget()->ImeCommitTextForPepper(
-      WebString::FromUTF16(text), ime_text_spans, replacement_range, 0);
-}
-
-void RenderFrameImpl::OnImeSetComposition(
-    const base::string16& text,
-    const std::vector<ui::ImeTextSpan>& ime_text_spans,
-    int selection_start,
-    int selection_end) {
-  // When a PPAPI plugin has focus, we bypass WebKit.
-  if (!IsPepperAcceptingCompositionEvents()) {
-    pepper_composition_text_ = text;
-  } else {
-    // TODO(kinaba) currently all composition events are sent directly to
-    // plugins. Use DOM event mechanism after WebKit is made aware about
-    // plugins that support composition.
-    // The code below mimics the behavior of WebCore::Editor::setComposition.
-
-    // Empty -> nonempty: composition started.
-    if (pepper_composition_text_.empty() && !text.empty()) {
-      focused_pepper_plugin_->HandleCompositionStart(base::string16());
-    }
-    // Nonempty -> empty: composition canceled.
-    if (!pepper_composition_text_.empty() && text.empty()) {
-      focused_pepper_plugin_->HandleCompositionEnd(base::string16());
-    }
-    pepper_composition_text_ = text;
-    // Nonempty: composition is ongoing.
-    if (!pepper_composition_text_.empty()) {
-      focused_pepper_plugin_->HandleCompositionUpdate(
-          pepper_composition_text_, ime_text_spans, selection_start,
-          selection_end);
-    }
-  }
-}
-
-void RenderFrameImpl::OnImeCommitText(const base::string16& text,
-                                      const gfx::Range& replacement_range,
-                                      int relative_cursor_pos) {
-  HandlePepperImeCommit(text);
-}
-
-void RenderFrameImpl::OnImeFinishComposingText(bool keep_selection) {
-  const base::string16& text = pepper_composition_text_;
-  HandlePepperImeCommit(text);
-}
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void RenderFrameImpl::ScriptedPrint(bool user_initiated) {
@@ -6424,43 +6353,6 @@ media::MediaPermission* RenderFrameImpl::GetMediaPermission() {
     media_permission_dispatcher_.reset(new MediaPermissionDispatcher(this));
   return media_permission_dispatcher_.get();
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-void RenderFrameImpl::HandlePepperImeCommit(const base::string16& text) {
-  if (text.empty())
-    return;
-
-  if (!IsPepperAcceptingCompositionEvents()) {
-    // For pepper plugins unable to handle IME events, send the plugin a
-    // sequence of characters instead.
-    base::i18n::UTF16CharIterator iterator(&text);
-    int32_t i = 0;
-    while (iterator.Advance()) {
-      blink::WebKeyboardEvent char_event(blink::WebInputEvent::Type::kChar,
-                                         blink::WebInputEvent::kNoModifiers,
-                                         ui::EventTimeForNow());
-      char_event.windows_key_code = text[i];
-      char_event.native_key_code = text[i];
-
-      const int32_t char_start = i;
-      for (; i < iterator.array_pos(); ++i) {
-        char_event.text[i - char_start] = text[i];
-        char_event.unmodified_text[i - char_start] = text[i];
-      }
-
-      if (GetLocalRootRenderWidget()->GetWebWidget())
-        GetLocalRootRenderWidget()->GetWebWidget()->HandleInputEvent(
-            blink::WebCoalescedInputEvent(char_event, ui::LatencyInfo()));
-    }
-  } else {
-    // Mimics the order of events sent by WebKit.
-    // See WebCore::Editor::setComposition() for the corresponding code.
-    focused_pepper_plugin_->HandleCompositionEnd(text);
-    focused_pepper_plugin_->HandleTextInput(text);
-  }
-  pepper_composition_text_.clear();
-}
-#endif  // ENABLE_PLUGINS
 
 void RenderFrameImpl::RegisterMojoInterfaces() {
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(

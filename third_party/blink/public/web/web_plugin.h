@@ -262,6 +262,39 @@ class WebPlugin {
   // call.
   virtual void DidReceiveMouseLockResult(bool success) {}
 
+  // Determines whether composition can happen inline.
+  virtual bool CanComposeInline() { return false; }
+
+  // Determines if IME events should be sent to plugin instead of processed to
+  // the currently focused frame.
+  virtual bool ShouldDispatchImeEventsToPlugin() { return false; }
+
+  // Returns the current plugin text input type.
+  virtual WebTextInputType GetPluginTextInputType() {
+    return WebTextInputType::kWebTextInputTypeNone;
+  }
+
+  // Returns the current plugin caret bounds in blink/viewport coordinates.
+  virtual gfx::Rect GetPluginCaretBounds() { return gfx::Rect(); }
+
+  // Set the composition in plugin.
+  virtual void ImeSetCompositionForPlugin(
+      const WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int selection_start,
+      int selection_end) {}
+
+  // Commit the text to plugin.
+  virtual void ImeCommitTextForPlugin(
+      const WebString& text,
+      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int relative_cursor_pos) {}
+
+  // Indicate composition is complete to plugin.
+  virtual void ImeFinishComposingTextForPlugin(bool keep_selection) {}
+
  protected:
   virtual ~WebPlugin() = default;
 };

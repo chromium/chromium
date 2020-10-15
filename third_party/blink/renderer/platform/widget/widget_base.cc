@@ -817,7 +817,7 @@ bool WidgetBase::CanComposeInline() {
   FrameWidget* frame_widget = client_->FrameWidget();
   if (!frame_widget)
     return true;
-  return frame_widget->Client()->CanComposeInline();
+  return frame_widget->CanComposeInline();
 }
 
 void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
@@ -1040,8 +1040,7 @@ void WidgetBase::RequestCompositionUpdates(bool immediate_request,
 void WidgetBase::GetCompositionRange(gfx::Range* range) {
   *range = gfx::Range::InvalidRange();
   FrameWidget* frame_widget = client_->FrameWidget();
-  if (!frame_widget ||
-      frame_widget->Client()->ShouldDispatchImeEventsToPepper())
+  if (!frame_widget)
     return;
   *range = frame_widget->CompositionRange();
 }
@@ -1051,8 +1050,7 @@ void WidgetBase::GetCompositionCharacterBounds(Vector<gfx::Rect>* bounds) {
   bounds->clear();
 
   FrameWidget* frame_widget = client_->FrameWidget();
-  if (!frame_widget ||
-      frame_widget->Client()->ShouldDispatchImeEventsToPepper())
+  if (!frame_widget)
     return;
 
   frame_widget->GetCompositionCharacterBoundsInWindow(bounds);
@@ -1175,12 +1173,10 @@ void WidgetBase::ImeSetComposition(
   FrameWidget* frame_widget = client_->FrameWidget();
   if (!frame_widget)
     return;
-  if (frame_widget->Client()->ShouldDispatchImeEventsToPepper()) {
-    frame_widget->Client()->ImeSetCompositionForPepper(
-        text,
-        std::vector<ui::ImeTextSpan>(ime_text_spans.begin(),
-                                     ime_text_spans.end()),
-        replacement_range, selection_start, selection_end);
+  if (frame_widget->ShouldDispatchImeEventsToPlugin()) {
+    frame_widget->ImeSetCompositionForPlugin(text, ime_text_spans,
+                                             replacement_range, selection_start,
+                                             selection_end);
     return;
   }
 
@@ -1208,12 +1204,9 @@ void WidgetBase::ImeCommitText(const String& text,
   FrameWidget* frame_widget = client_->FrameWidget();
   if (!frame_widget)
     return;
-  if (frame_widget->Client()->ShouldDispatchImeEventsToPepper()) {
-    frame_widget->Client()->ImeCommitTextForPepper(
-        text,
-        std::vector<ui::ImeTextSpan>(ime_text_spans.begin(),
-                                     ime_text_spans.end()),
-        replacement_range, relative_cursor_pos);
+  if (frame_widget->ShouldDispatchImeEventsToPlugin()) {
+    frame_widget->ImeCommitTextForPlugin(
+        text, ime_text_spans, replacement_range, relative_cursor_pos);
     return;
   }
 
@@ -1232,8 +1225,8 @@ void WidgetBase::ImeFinishComposingText(bool keep_selection) {
   FrameWidget* frame_widget = client_->FrameWidget();
   if (!frame_widget)
     return;
-  if (frame_widget->Client()->ShouldDispatchImeEventsToPepper()) {
-    frame_widget->Client()->ImeFinishComposingTextForPepper(keep_selection);
+  if (frame_widget->ShouldDispatchImeEventsToPlugin()) {
+    frame_widget->ImeFinishComposingTextForPlugin(keep_selection);
     return;
   }
 

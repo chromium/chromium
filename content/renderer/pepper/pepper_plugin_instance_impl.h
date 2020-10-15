@@ -228,6 +228,15 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
                    const gfx::Rect& unobscured);
 
   // Handlers for composition events.
+  void OnImeSetComposition(const base::string16& text,
+                           const std::vector<ui::ImeTextSpan>& ime_text_spans,
+                           int selection_start,
+                           int selection_end);
+  void OnImeCommitText(const base::string16& text,
+                       const gfx::Range& replacement_range,
+                       int relative_cursor_pos);
+  void OnImeFinishComposingText(bool keep_selection);
+  void HandlePepperImeCommit(const base::string16& text);
   bool HandleCompositionStart(const base::string16& text);
   bool HandleCompositionUpdate(
       const base::string16& text,
@@ -849,6 +858,10 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // The controller for all active audios of this pepper instance.
   std::unique_ptr<PepperAudioController> audio_controller_;
+
+  // Current text input composition text. Empty if no composition is in
+  // progress.
+  base::string16 composition_text_;
 
   // We use a weak ptr factory for scheduling DidChangeView events so that we
   // can tell whether updates are pending and consolidate them. When there's

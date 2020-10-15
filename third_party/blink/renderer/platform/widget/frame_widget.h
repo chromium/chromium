@@ -211,6 +211,31 @@ class PLATFORM_EXPORT FrameWidget
 
   // Mouse capture has been lost.
   virtual void MouseCaptureLost() = 0;
+
+  // Determines whether composition can happen inline.
+  virtual bool CanComposeInline() = 0;
+
+  // Determines if IME events should be sent to Plugin instead of processed to
+  // the currently focused frame.
+  virtual bool ShouldDispatchImeEventsToPlugin() = 0;
+
+  // Set the composition in plugin.
+  virtual void ImeSetCompositionForPlugin(
+      const String& text,
+      const Vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int selection_start,
+      int selection_end) = 0;
+
+  // Commit the text to plugin.
+  virtual void ImeCommitTextForPlugin(
+      const String& text,
+      const Vector<ui::ImeTextSpan>& ime_text_spans,
+      const gfx::Range& replacement_range,
+      int relative_cursor_pos) = 0;
+
+  // Indicate composition is complete to plugin.
+  virtual void ImeFinishComposingTextForPlugin(bool keep_selection) = 0;
 };
 
 }  // namespace blink

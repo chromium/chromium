@@ -63,12 +63,10 @@ class Point;
 
 namespace ui {
 class Cursor;
-struct ImeTextSpan;
 }
 
 namespace blink {
 class WebDragData;
-class WebString;
 
 class WebWidgetClient {
  public:
@@ -144,39 +142,6 @@ class WebWidgetClient {
   // Record the time it took for the first paint after the widget transitioned
   // from background inactive to active.
   virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) {}
-
-  // Determines whether composition can happen inline.
-  virtual bool CanComposeInline() { return false; }
-
-  // Determines if IME events should be sent to Pepper instead of processed to
-  // the currently focused frame.
-  virtual bool ShouldDispatchImeEventsToPepper() { return false; }
-
-  // Returns the current pepper text input type.
-  virtual WebTextInputType GetPepperTextInputType() {
-    return WebTextInputType::kWebTextInputTypeNone;
-  }
-
-  // Returns the current pepper caret bounds in blink/viewport coordinates.
-  virtual gfx::Rect GetPepperCaretBounds() { return gfx::Rect(); }
-
-  // Set the composition in pepper.
-  virtual void ImeSetCompositionForPepper(
-      const WebString& text,
-      const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      const gfx::Range& replacement_range,
-      int selection_start,
-      int selection_end) {}
-
-  // Commit the text to pepper.
-  virtual void ImeCommitTextForPepper(
-      const WebString& text,
-      const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      const gfx::Range& replacement_range,
-      int relative_cursor_pos) {}
-
-  // Indicate composition is complete to pepper.
-  virtual void ImeFinishComposingTextForPepper(bool keep_selection) {}
 
   // Called to indicate a syntehtic event was queued.
   virtual void WillQueueSyntheticEvent(const WebCoalescedInputEvent& event) {}

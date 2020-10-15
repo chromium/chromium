@@ -66,13 +66,11 @@ class WebPagePopup;
 
 namespace gfx {
 struct PresentationFeedback;
-class Range;
 }  // namespace gfx
 
 namespace content {
 class AgentSchedulingGroup;
 class CompositorDependencies;
-class PepperPluginInstanceImpl;
 class RenderFrameImpl;
 class RenderFrameProxy;
 class RenderViewImpl;
@@ -204,22 +202,6 @@ class CONTENT_EXPORT RenderWidget
   viz::FrameSinkId GetFrameSinkId() override;
   void RecordTimeToFirstActivePaint(base::TimeDelta duration) override;
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time) override;
-  bool CanComposeInline() override;
-  bool ShouldDispatchImeEventsToPepper() override;
-  blink::WebTextInputType GetPepperTextInputType() override;
-  gfx::Rect GetPepperCaretBounds() override;
-  void ImeSetCompositionForPepper(
-      const blink::WebString& text,
-      const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      const gfx::Range& replacement_range,
-      int selection_start,
-      int selection_end) override;
-  void ImeCommitTextForPepper(
-      const blink::WebString& text,
-      const std::vector<ui::ImeTextSpan>& ime_text_spans,
-      const gfx::Range& replacement_range,
-      int relative_cursor_pos) override;
-  void ImeFinishComposingTextForPepper(bool keep_selection) override;
 
   void ConvertViewportToWindow(blink::WebRect* rect);
   void UpdateTextInputState();
@@ -283,9 +265,6 @@ class CONTENT_EXPORT RenderWidget
       const gfx::PointF& screen_pt,
       blink::DragOperationsMask operations_allowed,
       int key_modifiers);
-  void OnDragSourceEnded(const gfx::PointF& client_point,
-                         const gfx::PointF& screen_point,
-                         blink::DragOperation drag_operation);
 
   // Set the pending window rect.
   // Because the real render_widget is hosted in another process, there is
@@ -300,15 +279,6 @@ class CONTENT_EXPORT RenderWidget
   // that is not a WebFrameWidget. A WebFrameWidget only makes sense when there
   // a local root associated with it.
   blink::WebFrameWidget* GetFrameWidget() const;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Returns the focused pepper plugin, if any, inside the WebWidget. That is
-  // the pepper plugin which is focused inside a frame which belongs to the
-  // local root associated with this RenderWidget.
-  PepperPluginInstanceImpl* GetFocusedPepperPluginInsideWidget();
-#endif
-
-  bool AutoResizeMode();
 
   // Whether this widget is for a frame. This excludes widgets that are not for
   // a frame (eg popups, pepper), but includes both the main frame

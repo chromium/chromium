@@ -22,12 +22,14 @@
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
+#include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -1086,8 +1088,9 @@ void WebFrameWidgetBase::DidHandleKeyEvent() {
 }
 
 WebTextInputType WebFrameWidgetBase::GetTextInputType() {
-  if (Client()->ShouldDispatchImeEventsToPepper())
-    return Client()->GetPepperTextInputType();
+  if (ShouldDispatchImeEventsToPlugin()) {
+    return GetFocusedPluginContainer()->GetPluginTextInputType();
+  }
 
   WebInputMethodController* controller = GetActiveWebInputMethodController();
   if (!controller)
@@ -1591,13 +1594,13 @@ bool WebFrameWidgetBase::GetSelectionBoundsInWindow(
     base::i18n::TextDirection* focus_dir,
     base::i18n::TextDirection* anchor_dir,
     bool* is_anchor_first) {
-  if (Client()->ShouldDispatchImeEventsToPepper()) {
+  if (ShouldDispatchImeEventsToPlugin()) {
     // TODO(kinaba) http://crbug.com/101101
     // Current Pepper IME API does not handle selection bounds. So we simply
     // use the caret position as an empty range for now. It will be updated
     // after Pepper API equips features related to surrounding text retrieval.
     gfx::Rect pepper_caret_in_dips = widget_base_->BlinkSpaceToEnclosedDIPs(
-        Client()->GetPepperCaretBounds());
+        GetFocusedPluginContainer()->GetPluginCaretBounds());
     if (pepper_caret_in_dips == *focus && pepper_caret_in_dips == *anchor)
       return false;
     *focus = pepper_caret_in_dips;
@@ -1852,8 +1855,9 @@ void WebFrameWidgetBase::SetMouseCapture(bool capture) {
 
 gfx::Range WebFrameWidgetBase::CompositionRange() {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
-  if (!focused_frame)
+  if (!focused_frame || ShouldDispatchImeEventsToPlugin())
     return gfx::Range::InvalidRange();
+
   blink::WebInputMethodController* controller =
       focused_frame->GetInputMethodController();
   WebRange web_range = controller->CompositionRange();
@@ -1865,7 +1869,7 @@ gfx::Range WebFrameWidgetBase::CompositionRange() {
 void WebFrameWidgetBase::GetCompositionCharacterBoundsInWindow(
     Vector<gfx::Rect>* bounds_in_dips) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
-  if (!focused_frame)
+  if (!focused_frame || ShouldDispatchImeEventsToPlugin())
     return;
   blink::WebInputMethodController* controller =
       focused_frame->GetInputMethodController();
@@ -2311,6 +2315,61 @@ KURL WebFrameWidgetBase::GetURLForDebugTrace() {
 void WebFrameWidgetBase::ReleaseMouseLockAndPointerCaptureForTesting() {
   GetPage()->GetPointerLockController().ExitPointerLock();
   MouseCaptureLost();
+}
+
+WebPlugin* WebFrameWidgetBase::GetFocusedPluginContainer() {
+  LocalFrame* focused_frame = FocusedLocalFrameInWidget();
+  if (!focused_frame)
+    return nullptr;
+  if (auto* container = focused_frame->GetWebPluginContainer())
+    return container->Plugin();
+  return nullptr;
+}
+
+bool WebFrameWidgetBase::CanComposeInline() {
+  if (auto* plugin = GetFocusedPluginContainer())
+    return plugin->CanComposeInline();
+  return true;
+}
+
+bool WebFrameWidgetBase::ShouldDispatchImeEventsToPlugin() {
+  if (auto* plugin = GetFocusedPluginContainer())
+    return plugin->ShouldDispatchImeEventsToPlugin();
+  return false;
+}
+
+void WebFrameWidgetBase::ImeSetCompositionForPlugin(
+    const String& text,
+    const Vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& replacement_range,
+    int selection_start,
+    int selection_end) {
+  if (auto* plugin = GetFocusedPluginContainer()) {
+    plugin->ImeSetCompositionForPlugin(
+        text,
+        std::vector<ui::ImeTextSpan>(ime_text_spans.begin(),
+                                     ime_text_spans.end()),
+        replacement_range, selection_start, selection_end);
+  }
+}
+
+void WebFrameWidgetBase::ImeCommitTextForPlugin(
+    const String& text,
+    const Vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& replacement_range,
+    int relative_cursor_pos) {
+  if (auto* plugin = GetFocusedPluginContainer()) {
+    plugin->ImeCommitTextForPlugin(
+        text,
+        std::vector<ui::ImeTextSpan>(ime_text_spans.begin(),
+                                     ime_text_spans.end()),
+        replacement_range, relative_cursor_pos);
+  }
+}
+
+void WebFrameWidgetBase::ImeFinishComposingTextForPlugin(bool keep_selection) {
+  if (auto* plugin = GetFocusedPluginContainer())
+    plugin->ImeFinishComposingTextForPlugin(keep_selection);
 }
 
 }  // namespace blink

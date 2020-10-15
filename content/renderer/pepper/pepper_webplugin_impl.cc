@@ -57,6 +57,13 @@ using blink::WebVector;
 
 namespace content {
 
+blink::WebTextInputType ConvertTextInputType(ui::TextInputType type) {
+  // Check the type is in the range representable by ui::TextInputType.
+  DCHECK_LE(type, static_cast<int>(ui::TEXT_INPUT_TYPE_MAX))
+      << "blink::WebTextInputType and ui::TextInputType not synchronized";
+  return static_cast<blink::WebTextInputType>(type);
+}
+
 struct PepperWebPluginImpl::InitData {
   scoped_refptr<PluginModule> module;
   RenderFrameImpl* render_frame;
@@ -499,6 +506,57 @@ void PepperWebPluginImpl::DidLoseMouseLock() {
 void PepperWebPluginImpl::DidReceiveMouseLockResult(bool success) {
   if (instance_)
     instance_->OnLockMouseACK(success);
+}
+
+bool PepperWebPluginImpl::CanComposeInline() {
+  if (!instance_)
+    return false;
+  return instance_->IsPluginAcceptingCompositionEvents();
+}
+
+void PepperWebPluginImpl::ImeCommitTextForPlugin(
+    const blink::WebString& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& replacement_range,
+    int relative_cursor_pos) {
+  if (!instance_)
+    return;
+  instance_->OnImeCommitText(text.Utf16(), replacement_range,
+                             relative_cursor_pos);
+}
+
+void PepperWebPluginImpl::ImeSetCompositionForPlugin(
+    const blink::WebString& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& replacement_range,
+    int selection_start,
+    int selection_end) {
+  if (!instance_)
+    return;
+  instance_->OnImeSetComposition(text.Utf16(), ime_text_spans, selection_start,
+                                 selection_end);
+}
+
+void PepperWebPluginImpl::ImeFinishComposingTextForPlugin(bool keep_selection) {
+  if (!instance_)
+    return;
+  instance_->OnImeFinishComposingText(keep_selection);
+}
+
+bool PepperWebPluginImpl::ShouldDispatchImeEventsToPlugin() {
+  return true;
+}
+
+blink::WebTextInputType PepperWebPluginImpl::GetPluginTextInputType() {
+  if (!instance_)
+    return blink::WebTextInputType::kWebTextInputTypeNone;
+  return ConvertTextInputType(instance_->text_input_type());
+}
+
+gfx::Rect PepperWebPluginImpl::GetPluginCaretBounds() {
+  if (!instance_)
+    return gfx::Rect();
+  return instance_->GetCaretBounds();
 }
 
 }  // namespace content
