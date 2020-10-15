@@ -1460,12 +1460,12 @@
   {
     "name": "enable-ephemeral-tab",
     "owners": [ "donnd", "jinsukkim" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "enable-ephemeral-tab-bottom-sheet",
     "owners": [ "donnd", "jinsukkim" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "enable-experimental-accessibility-chromevox-annotations",

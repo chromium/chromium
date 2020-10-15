@@ -4462,7 +4462,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EphemeralTab.BottomSheet.CloseReason"
-    enum="BottomSheet.StateChangeReason" expires_after="M88">
+    enum="BottomSheet.StateChangeReason" expires_after="M92">
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -4472,7 +4472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EphemeralTab.CloseReason"
-    enum="OverlayPanel.StateChangeReason" expires_after="M88">
+    enum="OverlayPanel.StateChangeReason" expires_after="M92">
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -4481,7 +4481,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="EphemeralTab.Ctr" enum="BooleanOpened" expires_after="M88">
+<histogram name="EphemeralTab.Ctr" enum="BooleanOpened" expires_after="M92">
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -4490,7 +4490,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="EphemeralTab.CtrPeek" enum="BooleanOpened" expires_after="M88">
+<histogram name="EphemeralTab.CtrPeek" enum="BooleanOpened" expires_after="M92">
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -4499,7 +4499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="EphemeralTab.DurationOpened" units="ms" expires_after="M88">
+<histogram name="EphemeralTab.DurationOpened" units="ms" expires_after="M92">
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
@@ -4508,7 +4508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="EphemeralTab.DurationPeeked" units="ms" expires_after="M88">
+<histogram name="EphemeralTab.DurationPeeked" units="ms" expires_after="M92">
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
