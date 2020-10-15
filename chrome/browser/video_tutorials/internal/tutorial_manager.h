@@ -22,7 +22,7 @@ class TutorialManager {
   virtual void GetTutorials(GetTutorialsCallback callback) = 0;
 
   // Returns a list of languages for which video tutorials are available.
-  virtual const std::vector<Language>& GetSupportedLanguages() = 0;
+  virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
 
   // Returns the preferred locale for the video tutorials.
   virtual std::string GetPreferredLocale() = 0;

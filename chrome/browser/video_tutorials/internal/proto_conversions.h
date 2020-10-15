@@ -10,16 +10,9 @@
 
 namespace video_tutorials {
 
-using LanguageProto = video_tutorials::proto::Language;
 using TutorialProto = video_tutorials::proto::VideoTutorial;
 using TutorialGroupProto = video_tutorials::proto::VideoTutorialGroup;
 using ServerResponseProto = video_tutorials::proto::ServerResponse;
-
-// Convert in-memory struct Language to proto::Language.
-void LanguageToProto(Language* language, LanguageProto* proto);
-
-// Convert proto::Language to in-memory struct Language.
-void LanguageFromProto(LanguageProto* proto, Language* language);
 
 // Convert in-memory struct Tutorial to proto::VideoTutorial.
 void TutorialToProto(Tutorial* tutorial, TutorialProto* proto);

@@ -27,7 +27,7 @@ std::vector<TutorialGroup> CreateSampleGroups(
   std::vector<TutorialGroup> groups;
   for (const auto& locale : locales) {
     TutorialGroup group;
-    group.language.locale = locale;
+    group.language = locale;
     group.tutorials.emplace_back(Tutorial());
     group.tutorials.emplace_back(Tutorial());
     groups.emplace_back(group);
@@ -63,7 +63,7 @@ class TestStore : public Store<TutorialGroup> {
         entries->emplace_back(group);
       } else {
         for (auto& key : keys) {
-          if (key == group.language.locale) {
+          if (key == group.language) {
             entries->emplace_back(group);
           }
         }

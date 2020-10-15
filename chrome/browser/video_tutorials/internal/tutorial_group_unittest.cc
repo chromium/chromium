@@ -10,9 +10,7 @@ namespace video_tutorials {
 namespace {
 
 void ResetTutorialGroup(TutorialGroup* group) {
-  Language language;
-  language.locale = "en";
-  *group = TutorialGroup(language);
+  *group = TutorialGroup("en");
   group->tutorials.resize(3, Tutorial());
   group->tutorials.front().feature = FeatureType::kDownload;
   group->tutorials.back().feature = FeatureType::kSearch;
@@ -26,7 +24,7 @@ TEST(VideoTutorialGroupTest, CopyAndCompareOperators) {
 
   EXPECT_EQ(lhs, rhs);
 
-  rhs.language.locale = "jp";
+  rhs.language = "jp";
   EXPECT_NE(lhs, rhs);
   ResetTutorialGroup(&rhs);
 

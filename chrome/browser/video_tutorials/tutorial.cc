@@ -6,15 +6,6 @@
 
 namespace video_tutorials {
 
-bool Language::operator==(const Language& other) const {
-  return locale == other.locale && name == other.name &&
-         native_name == other.native_name;
-}
-
-bool Language::operator!=(const Language& other) const {
-  return !(*this == other);
-}
-
 Tutorial::Tutorial() : feature(FeatureType::kInvalid), video_length(0) {}
 
 Tutorial::Tutorial(FeatureType feature,

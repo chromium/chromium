@@ -29,7 +29,7 @@ class TutorialManagerImpl : public TutorialManager {
  private:
   // TutorialManager implementation.
   void GetTutorials(GetTutorialsCallback callback) override;
-  const std::vector<Language>& GetSupportedLanguages() override;
+  const std::vector<std::string>& GetSupportedLanguages() override;
   std::string GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
   void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups,
@@ -50,7 +50,7 @@ class TutorialManagerImpl : public TutorialManager {
   PrefService* prefs_;
 
   // List of languages for which we have tutorials.
-  std::vector<Language> supported_languages_;
+  std::vector<std::string> supported_languages_;
 
   // We only keep the tutorials for the preferred locale.
   base::Optional<TutorialGroup> tutorial_group_;

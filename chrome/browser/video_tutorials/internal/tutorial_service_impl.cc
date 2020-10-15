@@ -78,7 +78,7 @@ void TutorialServiceImpl::OnFetchFinished(
                                 base::BindOnce(std::move(lambda)));
 }
 
-const std::vector<Language>& TutorialServiceImpl::GetSupportedLanguages() {
+const std::vector<std::string>& TutorialServiceImpl::GetSupportedLanguages() {
   return tutorial_manager_->GetSupportedLanguages();
 }
 

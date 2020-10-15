@@ -25,18 +25,6 @@ TEST(VideoTutorialsProtoConversionsTest, FeatureConversion) {
   }
 }
 
-// Verify round-way conversion of Language struct.
-TEST(VideoTutorialsProtoConversionsTest, LanguageConversion) {
-  Language expected, actual;
-  expected.locale = "jp";
-  expected.name = "Japanese";
-  expected.native_name = "Japanese-Native";
-  LanguageProto intermediate;
-  LanguageToProto(&expected, &intermediate);
-  LanguageFromProto(&intermediate, &actual);
-  EXPECT_EQ(expected, actual);
-}
-
 // Verify round-way conversion of Tutorial struct.
 TEST(VideoTutorialsProtoConversionsTest, TutorialConversion) {
   Tutorial expected, actual;

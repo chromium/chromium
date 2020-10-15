@@ -57,7 +57,7 @@ class TutorialStoreTest : public testing::Test {
     for (auto& entry : input) {
       TutorialGroupProto proto;
       TutorialGroupToProto(&entry, &proto);
-      db_entries_.emplace(entry.language.locale, proto);
+      db_entries_.emplace(entry.language, proto);
     }
   }
 
@@ -177,8 +177,7 @@ TEST_F(TutorialStoreTest, AddAndUpdateDataSuccess) {
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
   std::vector<std::pair<std::string, TutorialGroup>> entries_to_save;
-  entries_to_save.emplace_back(
-      std::make_pair(test_group.language.locale, test_group));
+  entries_to_save.emplace_back(std::make_pair(test_group.language, test_group));
   std::vector<std::string> keys_to_delete;
   store()->UpdateAll(
       entries_to_save, keys_to_delete,
@@ -186,7 +185,7 @@ TEST_F(TutorialStoreTest, AddAndUpdateDataSuccess) {
   db()->UpdateCallback(true);
 
   auto expected = std::make_unique<KeysAndEntries>();
-  expected->emplace(test_group.language.locale, std::move(test_group));
+  expected->emplace(test_group.language, std::move(test_group));
   VerifyDataInDb(std::move(expected));
 }
 
@@ -194,7 +193,7 @@ TEST_F(TutorialStoreTest, AddAndUpdateDataSuccess) {
 TEST_F(TutorialStoreTest, Delete) {
   TutorialGroup test_group;
   test::BuildTestGroup(&test_group);
-  std::string locale = test_group.language.locale;
+  std::string locale = test_group.language;
   std::vector<TutorialGroup> test_data;
   test_data.emplace_back(std::move(test_group));
   Init(test_data, InitStatus::kOK, true /* expected */);

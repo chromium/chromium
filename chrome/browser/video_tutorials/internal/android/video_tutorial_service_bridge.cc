@@ -93,7 +93,7 @@ void VideoTutorialServiceBridge::GetTutorial(
 ScopedJavaLocalRef<jobject> VideoTutorialServiceBridge::GetSupportedLanguages(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
-  return TutorialConversionBridge::CreateJavaLanguages(
+  return base::android::ToJavaArrayOfStrings(
       env, video_tutorial_service_->GetSupportedLanguages());
 }
 

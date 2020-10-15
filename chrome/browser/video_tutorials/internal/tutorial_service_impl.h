@@ -25,7 +25,7 @@ class TutorialServiceImpl : public VideoTutorialService {
   void GetTutorials(MultipleItemCallback callback) override;
   void GetTutorial(FeatureType feature_type,
                    SingleItemCallback callback) override;
-  const std::vector<Language>& GetSupportedLanguages() override;
+  const std::vector<std::string>& GetSupportedLanguages() override;
   std::string GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
 

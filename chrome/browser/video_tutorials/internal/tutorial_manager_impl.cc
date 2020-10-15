@@ -37,8 +37,7 @@ void TutorialManagerImpl::GetTutorials(GetTutorialsCallback callback) {
 
   // Find the data from cache.
   std::string locale = GetPreferredLocale();
-  if (tutorial_group_.has_value() &&
-      tutorial_group_->language.locale == locale) {
+  if (tutorial_group_.has_value() && tutorial_group_->language == locale) {
     std::move(callback).Run(tutorial_group_->tutorials);
     return;
   }
@@ -51,7 +50,7 @@ void TutorialManagerImpl::GetTutorials(GetTutorialsCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-const std::vector<Language>& TutorialManagerImpl::GetSupportedLanguages() {
+const std::vector<std::string>& TutorialManagerImpl::GetSupportedLanguages() {
   return supported_languages_;
 }
 
@@ -122,17 +121,17 @@ void TutorialManagerImpl::SaveGroups(
   std::vector<std::string> new_locales;
   std::vector<std::pair<std::string, TutorialGroup>> key_entry_pairs;
   for (auto& group : *groups.get()) {
-    new_locales.emplace_back(group.language.locale);
-    key_entry_pairs.emplace_back(std::make_pair(group.language.locale, group));
+    new_locales.emplace_back(group.language);
+    key_entry_pairs.emplace_back(std::make_pair(group.language, group));
   }
 
   // Remove the languages that don't exist in the new data.
   // TODO(shaktisahu): Maybe completely nuke the DB and save new data.
   std::vector<std::string> keys_to_delete;
   for (auto& old_language : supported_languages_) {
-    if (std::find(new_locales.begin(), new_locales.end(),
-                  old_language.locale) == new_locales.end()) {
-      keys_to_delete.emplace_back(old_language.locale);
+    if (std::find(new_locales.begin(), new_locales.end(), old_language) ==
+        new_locales.end()) {
+      keys_to_delete.emplace_back(old_language);
     }
   }
 
