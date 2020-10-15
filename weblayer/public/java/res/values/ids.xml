@@ -5,4 +5,6 @@
 
 <resources>
     <item type="id" name="weblayer_media_session_notification" />
+    <item type="id" name="weblayer_presentation_api_notification" />
+    <item type="id" name="weblayer_remote_playback_api_notification" />
 </resources>

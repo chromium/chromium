@@ -104,4 +104,8 @@ interface IWebLayer {
   IObjectWrapper getApplicationContext() = 20;
   IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
       in IRemoteFragmentClient remoteFragmentClient) = 21;
+
+  // Added in Version 88.
+  void onRemoteMediaServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 22;
+  void onRemoteMediaServiceDestroyed(int id) = 23;
 }

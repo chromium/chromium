@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -39,6 +40,16 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
     @Override
     public void showNotification(MediaNotificationInfo notificationInfo) {
         ChromeMediaNotificationManager.show(notificationInfo);
+    }
+
+    @Override
+    public int getPresentationNotificationId() {
+        return R.id.presentation_notification;
+    }
+
+    @Override
+    public int getRemotingNotificationId() {
+        return R.id.remote_playback_notification;
     }
 
     @Override

@@ -168,7 +168,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_cast_dark_chrome.xml",
     "java/res/layout/caf_controller_media_route_button.xml",
     "java/res/layout/expanded_cast_controller.xml",
-    "java/res/values/ids.xml",
     "java/res/values/styles.xml",
   ]
   deps = [

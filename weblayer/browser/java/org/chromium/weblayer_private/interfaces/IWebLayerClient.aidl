@@ -18,4 +18,7 @@ interface IWebLayerClient {
   long getClassLoaderCreationTime() = 4;
   long getContextCreationTime() = 5;
   long getWebLayerLoaderCreationTime() = 6;
+  Intent createRemoteMediaServiceIntent() = 7;
+  int getPresentationApiNotificationId() = 8;
+  int getRemotePlaybackApiNotificationId() = 9;
 }

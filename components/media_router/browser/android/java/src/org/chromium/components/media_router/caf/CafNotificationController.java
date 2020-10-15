@@ -7,7 +7,7 @@ package org.chromium.components.media_router.caf;
 import android.content.Intent;
 
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
-import org.chromium.components.media_router.R;
+import org.chromium.components.media_router.MediaRouterClient;
 
 /** NotificationController implementation for presentation. */
 public class CafNotificationController extends BaseNotificationController {
@@ -28,6 +28,6 @@ public class CafNotificationController extends BaseNotificationController {
 
     @Override
     public int getNotificationId() {
-        return R.id.presentation_notification;
+        return MediaRouterClient.getInstance().getPresentationNotificationId();
     }
 }

@@ -49,6 +49,12 @@ public abstract class MediaRouterClient {
      */
     public abstract void showNotification(MediaNotificationInfo notificationInfo);
 
+    /** Returns the ID to be used for Presentation API notifications. */
+    public abstract int getPresentationNotificationId();
+
+    /** Returns the ID to be used for Remote Playback API notifications. */
+    public abstract int getRemotingNotificationId();
+
     /**
      * @param initiator the web contents that initiated the request.
      * @return a {@link FragmentManager} suitable for displaying a media router {@link

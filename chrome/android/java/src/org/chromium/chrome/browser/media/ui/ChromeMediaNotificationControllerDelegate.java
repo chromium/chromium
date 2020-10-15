@@ -187,7 +187,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
      * This class is used internally but has to be public to be able to launch the service.
      */
     public static final class CastListenerServiceImpl extends ListenerServiceImpl {
-        static final int NOTIFICATION_ID = R.id.remote_notification;
+        static final int NOTIFICATION_ID = R.id.remote_playback_notification;
 
         public CastListenerServiceImpl() {
             super(NOTIFICATION_ID);

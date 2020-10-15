@@ -79,6 +79,7 @@ import org.chromium.weblayer_private.interfaces.IWebLayerClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
+import org.chromium.weblayer_private.media.MediaRouterClientImpl;
 import org.chromium.weblayer_private.media.MediaSessionManager;
 import org.chromium.weblayer_private.media.MediaStreamManager;
 import org.chromium.weblayer_private.metrics.MetricsServiceClient;
@@ -405,6 +406,19 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     @Override
+    public void onRemoteMediaServiceStarted(IObjectWrapper sessionService, Intent intent) {
+        StrictModeWorkaround.apply();
+        MediaRouterClientImpl.serviceStarted(
+                ObjectWrapper.unwrap(sessionService, Service.class), intent);
+    }
+
+    @Override
+    public void onRemoteMediaServiceDestroyed(int id) {
+        StrictModeWorkaround.apply();
+        MediaRouterClientImpl.serviceDestroyed(id);
+    }
+
+    @Override
     public IBinder initializeImageDecoder(IObjectWrapper appContext, IObjectWrapper remoteContext) {
         StrictModeWorkaround.apply();
 
@@ -508,6 +522,42 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         try {
             return sClient.getMediaSessionNotificationId();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    public static Intent createRemoteMediaServiceIntent() {
+        if (sClient == null) {
+            throw new IllegalStateException("WebLayer should have been initialized already.");
+        }
+
+        try {
+            return sClient.createRemoteMediaServiceIntent();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    public static int getPresentationApiNotificationId() {
+        if (sClient == null) {
+            throw new IllegalStateException("WebLayer should have been initialized already.");
+        }
+
+        try {
+            return sClient.getPresentationApiNotificationId();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    public static int getRemotePlaybackApiNotificationId() {
+        if (sClient == null) {
+            throw new IllegalStateException("WebLayer should have been initialized already.");
+        }
+
+        try {
+            return sClient.getRemotePlaybackApiNotificationId();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

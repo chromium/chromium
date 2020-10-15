@@ -32,6 +32,16 @@ public class TestMediaRouterClient extends MediaRouterClient {
     public void showNotification(MediaNotificationInfo notificationInfo) {}
 
     @Override
+    public int getPresentationNotificationId() {
+        return 2;
+    }
+
+    @Override
+    public int getRemotingNotificationId() {
+        return 3;
+    }
+
+    @Override
     public FragmentManager getSupportFragmentManager(WebContents initiator) {
         return null;
     }

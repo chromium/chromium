@@ -8,7 +8,7 @@ import android.content.Intent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
-import org.chromium.components.media_router.R;
+import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.components.media_router.caf.BaseNotificationController;
 import org.chromium.components.media_router.caf.BaseSessionController;
 
@@ -30,6 +30,6 @@ public class RemotingNotificationController extends BaseNotificationController {
 
     @Override
     public int getNotificationId() {
-        return R.id.remote_notification;
+        return MediaRouterClient.getInstance().getRemotingNotificationId();
     }
 }

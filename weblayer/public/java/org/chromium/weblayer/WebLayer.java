@@ -749,6 +749,26 @@ public class WebLayer {
         public long getWebLayerLoaderCreationTime() {
             return sWebLayerLoaderCreationTime;
         }
+
+        @Override
+        public Intent createRemoteMediaServiceIntent() {
+            StrictModeWorkaround.apply();
+            return new Intent(WebLayer.getAppContext(), RemoteMediaService.class);
+        }
+
+        @Override
+        public int getPresentationApiNotificationId() {
+            StrictModeWorkaround.apply();
+            // The id is part of the public library to avoid conflicts.
+            return R.id.weblayer_presentation_api_notification;
+        }
+
+        @Override
+        public int getRemotePlaybackApiNotificationId() {
+            StrictModeWorkaround.apply();
+            // The id is part of the public library to avoid conflicts.
+            return R.id.weblayer_remote_playback_api_notification;
+        }
     }
 
     @VerifiesOnO

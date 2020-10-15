@@ -85,6 +85,13 @@
             </intent-filter>
         </service>
 
+        <service android:name="org.chromium.weblayer.RemoteMediaService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
+
         <!-- Service for decoding images in a sandboxed process. -->
         <service
             android:name="org.chromium.weblayer.ImageDecoderService"

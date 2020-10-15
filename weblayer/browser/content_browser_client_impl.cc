@@ -638,7 +638,7 @@ content::ControllerPresentationServiceDelegate*
 ContentBrowserClientImpl::GetControllerPresentationServiceDelegate(
     content::WebContents* web_contents) {
 #if defined(OS_ANDROID)
-  if (WebLayerFactoryImplAndroid::GetClientMajorVersion() < 87)
+  if (WebLayerFactoryImplAndroid::GetClientMajorVersion() < 88)
     return nullptr;
 
   if (base::FeatureList::IsEnabled(features::kMediaRouter)) {

@@ -4,22 +4,45 @@
 
 package org.chromium.weblayer_private.media;
 
+import android.app.Service;
 import android.content.Intent;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.components.browser_ui.media.MediaNotificationManager;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.weblayer_private.IntentUtils;
 import org.chromium.weblayer_private.TabImpl;
+import org.chromium.weblayer_private.WebLayerImpl;
+import org.chromium.weblayer_private.interfaces.RemoteMediaServiceConstants;
 
 /** Provides WebLayer-specific behavior for Media Router. */
 @JNINamespace("weblayer")
 public class MediaRouterClientImpl extends MediaRouterClient {
+    static int sPresentationNotificationId;
+    static int sRemotingNotificationId;
+
     private MediaRouterClientImpl() {}
+
+    public static void serviceStarted(Service service, Intent intent) {
+        int notificationId = intent.getIntExtra(RemoteMediaServiceConstants.NOTIFICATION_ID_KEY, 0);
+        if (notificationId == 0) {
+            throw new RuntimeException("Invalid RemoteMediaService notification id");
+        }
+        MediaSessionNotificationHelper.serviceStarted(service, intent, notificationId);
+    }
+
+    public static void serviceDestroyed(int notificationId) {
+        MediaSessionNotificationHelper.serviceDestroyed(notificationId);
+    }
 
     @Override
     public int getTabId(WebContents webContents) {
@@ -34,7 +57,19 @@ public class MediaRouterClientImpl extends MediaRouterClient {
 
     @Override
     public void showNotification(MediaNotificationInfo notificationInfo) {
-        // TODO: implement.
+        MediaNotificationManager.show(notificationInfo, () -> {
+            return new MediaRouterNotificationControllerDelegate(notificationInfo.id);
+        });
+    }
+
+    @Override
+    public int getPresentationNotificationId() {
+        return getPresentationNotificationIdFromClient();
+    }
+
+    @Override
+    public int getRemotingNotificationId() {
+        return getRemotingNotificationIdFromClient();
     }
 
     @Override
@@ -50,5 +85,63 @@ public class MediaRouterClientImpl extends MediaRouterClient {
         if (MediaRouterClient.getInstance() != null) return;
 
         MediaRouterClient.setInstance(new MediaRouterClientImpl());
+    }
+
+    private static class MediaRouterNotificationControllerDelegate
+            implements MediaNotificationController.Delegate {
+        // The ID distinguishes between Presentation and Remoting services/notifications.
+        private final int mNotificationId;
+
+        MediaRouterNotificationControllerDelegate(int notificationId) {
+            mNotificationId = notificationId;
+        }
+
+        @Override
+        public Intent createServiceIntent() {
+            return WebLayerImpl.createRemoteMediaServiceIntent().putExtra(
+                    RemoteMediaServiceConstants.NOTIFICATION_ID_KEY, mNotificationId);
+        }
+
+        @Override
+        public String getAppName() {
+            return WebLayerImpl.getClientApplicationName();
+        }
+
+        @Override
+        public String getNotificationGroupName() {
+            if (mNotificationId == getPresentationNotificationIdFromClient()) {
+                return "org.chromium.weblayer.PresentationApi";
+            }
+
+            assert mNotificationId == getRemotingNotificationIdFromClient();
+            return "org.chromium.weblayer.RemotePlaybackApi";
+        }
+
+        @Override
+        public NotificationWrapperBuilder createNotificationWrapperBuilder() {
+            return MediaSessionNotificationHelper.createNotificationWrapperBuilder(mNotificationId);
+        }
+
+        @Override
+        public void onMediaSessionUpdated(MediaSessionCompat session) {
+            // TODO(estade): implement.
+        }
+
+        @Override
+        public void logNotificationShown(NotificationWrapper notification) {}
+    }
+
+    private static int getPresentationNotificationIdFromClient() {
+        if (sPresentationNotificationId == 0) {
+            sPresentationNotificationId = WebLayerImpl.getPresentationApiNotificationId();
+        }
+        return sPresentationNotificationId;
+    }
+
+    private static int getRemotingNotificationIdFromClient() {
+        if (sRemotingNotificationId == 0) {
+            sRemotingNotificationId = WebLayerImpl.getRemotePlaybackApiNotificationId();
+        }
+        return sRemotingNotificationId;
     }
 }
