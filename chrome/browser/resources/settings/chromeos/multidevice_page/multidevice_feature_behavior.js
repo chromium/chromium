@@ -138,9 +138,8 @@ const MultiDeviceFeatureBehaviorImpl = {
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
         return 'os-settings:multidevice-better-together-suite';
-      // TODO(cvandermerwe): Use real Wifi Sync asset.
       case settings.MultiDeviceFeature.WIFI_SYNC:
-        return 'os-settings:multidevice-wifi';
+        return 'os-settings:multidevice-wifi-sync';
       default:
         return '';
     }
