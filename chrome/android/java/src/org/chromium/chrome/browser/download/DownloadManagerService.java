@@ -111,6 +111,7 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     private final Handler mHandler;
 
+    // Deprecated after new download backend.
     /** Generic interface for notifying external UI components about downloads and their states. */
     public interface DownloadObserver extends DownloadSharedPreferenceHelper.Observer {
         /** Called in response to {@link DownloadManagerService#getAllDownloads(boolean)}. */
@@ -158,6 +159,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         void interceptDownloadRequest(DownloadItem item, boolean notifyComplete);
     }
 
+    // Deprecated after new download backend.
     /**
      * Class representing progress of a download.
      */
@@ -291,6 +293,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         mInfoBarController = infoBarController;
     }
 
+    // Deprecated after new download backend.
     @Override
     public void onDownloadCompleted(final DownloadInfo downloadInfo) {
         @DownloadStatus
@@ -311,6 +314,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         updateDownloadInfoBar(downloadItem);
     }
 
+    // Deprecated after new download backend.
     @Override
     public void onDownloadUpdated(final DownloadInfo downloadInfo) {
         DownloadItem item = new DownloadItem(false, downloadInfo);
@@ -323,6 +327,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         scheduleUpdateIfNeeded();
     }
 
+    // Deprecated after new download backend.
     @Override
     public void onDownloadCancelled(final DownloadInfo downloadInfo) {
         DownloadInfo newInfo = DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
@@ -334,6 +339,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         updateDownloadInfoBar(item);
     }
 
+    // Deprecated after new download backend.
     @Override
     public void onDownloadInterrupted(final DownloadInfo downloadInfo, boolean isAutoResumable) {
         @DownloadStatus
@@ -369,6 +375,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after native auto-resumption.
     /**
      * Helper method to schedule a download for resumption.
      * @param item DownloadItem to resume.
@@ -409,6 +416,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Broadcast that a download was successful.
      * @param downloadInfo info about the download.
      */
+    // For testing only.
     protected void broadcastDownloadSuccessful(DownloadInfo downloadInfo) {
         for (DownloadObserver observer : mDownloadObservers) {
             observer.broadcastDownloadSuccessfulForTesting(downloadInfo);
@@ -474,6 +482,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after new download backend.
     /**
      * Update notification for a specific download.
      * @param progress Specific notification to update.
@@ -520,6 +529,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         if (removeFromDownloadProgressMap) mDownloadProgressMap.remove(item.getId());
     }
 
+    // Deprecated after new download backend.
     /**
      * Helper method to schedule a task to update the download success notification.
      * @param progress Download progress to update.
@@ -598,6 +608,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                 DownloadOpenSource.AUTO_OPEN);
     }
 
+    // Deprecated after new download backend.
     /**
      * Schedule an update if there is no update scheduled.
      */
@@ -633,6 +644,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param downloadItem Information about the download.
      * @param downloadStatus Status of the download.
      */
+    // Deprecated after new download backend.
     private void updateDownloadProgress(
             DownloadItem downloadItem, @DownloadStatus int downloadStatus) {
         boolean isSupportedMimeType = downloadStatus == DownloadStatus.COMPLETE
@@ -908,6 +920,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after new download backend.
     @Override
     public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
         DownloadProgress progress = mDownloadProgressMap.get(item.getId());
@@ -964,6 +977,8 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param item The current download that needs to retry.
      * @param hasUserGesture Whether the request was originated due to user gesture.
      */
+    // Deprecated after new download backend.
+    // TODO(shaktisahu): Add retry to offline content provider or route it from resume call.
     public void retryDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
         DownloadManagerServiceJni.get().retryDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, item.getId(),
@@ -975,6 +990,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param id The {@link ContentId} of the download to cancel.
      * @param isOffTheRecord Whether the download is off the record.
      */
+    // Deprecated after new download backend.
     @Override
     public void cancelDownload(ContentId id, boolean isOffTheRecord) {
         DownloadManagerServiceJni.get().cancelDownload(getNativeDownloadManagerService(),
@@ -998,6 +1014,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param id The {@link ContentId} of the download to pause.
      * @param isOffTheRecord Whether the download is off the record.
      */
+    // Deprecated after new download backend.
     @Override
     public void pauseDownload(ContentId id, boolean isOffTheRecord) {
         DownloadManagerServiceJni.get().pauseDownload(getNativeDownloadManagerService(),
@@ -1217,6 +1234,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Helper method to add an auto resumable download.
      * @param guid Id of the download item.
      */
+    // Deprecated after native auto-resumption handler.
     private void addAutoResumableDownload(String guid) {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
             return;
@@ -1234,6 +1252,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Helper method to remove an auto resumable download.
      * @param guid Id of the download item.
      */
+    // Deprecated after native auto-resumption.
     private void removeAutoResumableDownload(String guid) {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
             return;
@@ -1247,12 +1266,14 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Helper method to remove a download from |mDownloadProgressMap|.
      * @param guid Id of the download item.
      */
+    // Deprecated after new download backend.
     private void removeDownloadProgress(String guid) {
         mDownloadProgressMap.remove(guid);
         removeAutoResumableDownload(guid);
         sFirstSeenDownloadIds.remove(guid);
     }
 
+    // Deprecated after native auto resumption.
     @Override
     public void onConnectionTypeChanged(int connectionType) {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE)) {
@@ -1280,6 +1301,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Helper method to stop listening to the connection type change
      * if it is no longer needed.
      */
+    // Deprecated after native auto resumption.
     private void stopListenToConnectionChangeIfNotNeeded() {
         if (mAutoResumableDownloadIds.isEmpty() && mNetworkChangeNotifier != null) {
             mNetworkChangeNotifier.destroy();
@@ -1287,6 +1309,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after native auto resumption.
     static boolean isActiveNetworkMetered(Context context) {
         if (sIsNetworkListenerDisabled) return sIsNetworkMetered;
         ConnectivityManager cm =
@@ -1295,12 +1318,14 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     /** Adds a new DownloadObserver to the list. */
+    // Deprecated after new download backend.
     public void addDownloadObserver(DownloadObserver observer) {
         mDownloadObservers.addObserver(observer);
         DownloadSharedPreferenceHelper.getInstance().addObserver(observer);
     }
 
     /** Removes a DownloadObserver from the list. */
+    // Deprecated after new download backend.
     public void removeDownloadObserver(DownloadObserver observer) {
         mDownloadObservers.removeObserver(observer);
         DownloadSharedPreferenceHelper.getInstance().removeObserver(observer);
@@ -1313,6 +1338,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      *
      * @param isOffTheRecord Whether or not to get downloads for the off the record profile.
      */
+    // Deprecated after new download backend.
     public void getAllDownloads(boolean isOffTheRecord) {
         DownloadManagerServiceJni.get().getAllDownloads(getNativeDownloadManagerService(),
                 DownloadManagerService.this, getProfileKey(isOffTheRecord));
@@ -1322,6 +1348,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Fires an Intent that alerts the DownloadNotificationService that an action must be taken
      * for a particular item.
      */
+    // Deprecated after new download backend.
     public void broadcastDownloadAction(DownloadItem downloadItem, String action) {
         Context appContext = ContextUtils.getApplicationContext();
             Intent intent = DownloadNotificationFactory.buildActionIntent(appContext, action,
@@ -1331,6 +1358,7 @@ public class DownloadManagerService implements DownloadController.Observer,
             appContext.startService(intent);
     }
 
+    // Deprecated after new download backend.
     public void renameDownload(ContentId id, String name,
             Callback<Integer /*RenameResult*/> callback, boolean isOffTheRecord) {
         DownloadManagerServiceJni.get().renameDownload(getNativeDownloadManagerService(),
@@ -1343,6 +1371,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param schedule The download schedule that defines when to start the download.
      * @param isOffTheRecord Whether the download is for off the record profile.
      */
+    // Deprecated after new download backend.
     public void changeSchedule(
             final ContentId id, final OfflineItemSchedule schedule, boolean isOffTheRecord) {
         boolean onlyOnWifi = (schedule == null) ? false : schedule.onlyOnWifi;
@@ -1358,6 +1387,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param intent The Intent associated with the download action.
      * @param downloadItem The download associated with download action.
      */
+    // Deprecated after new download backend.
     private void addCancelExtra(Intent intent, DownloadItem downloadItem) {
         if (intent.getAction().equals(DownloadNotificationService.ACTION_DOWNLOAD_CANCEL)) {
             int state;
@@ -1387,16 +1417,19 @@ public class DownloadManagerService implements DownloadController.Observer,
                 getProfileKey(isOffTheRecord));
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private List<DownloadItem> createDownloadItemList() {
         return new ArrayList<DownloadItem>();
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private void addDownloadItemToList(List<DownloadItem> list, DownloadItem item) {
         list.add(item);
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private void onAllDownloadsRetrieved(final List<DownloadItem> list, ProfileKey profileKey) {
         // TODO(https://crbug.com/1099577): Pass the profileKey/profile to adapter instead of the
@@ -1415,6 +1448,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      *
      * @param list  List of DownloadItems to check.
      */
+    // TODO(shaktisahu): Drive this from a similar observer.
     private void maybeShowMissingSdCardError(List<DownloadItem> list) {
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         // Only show the missing directory snackbar once.
@@ -1480,6 +1514,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         return true;
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemCreated(DownloadItem item) {
         for (DownloadObserver adapter : mDownloadObservers) {
@@ -1487,6 +1522,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemUpdated(DownloadItem item) {
         for (DownloadObserver adapter : mDownloadObservers) {
@@ -1494,6 +1530,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private void onDownloadItemRemoved(String guid, boolean isOffTheRecord) {
         DownloadInfoBarController infobarController = getInfoBarController(isOffTheRecord);
@@ -1507,6 +1544,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
     }
 
+    // Deprecated after new download backend.
     @CalledByNative
     private void openDownloadItem(DownloadItem downloadItem, @DownloadOpenSource int source) {
         DownloadInfo downloadInfo = downloadItem.getDownloadInfo();
@@ -1524,6 +1562,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param id The {@link ContentId} of the download to be opened.
      * @param source The source where the user opened this download.
      */
+    // Deprecated after new download backend.
     public void openDownload(ContentId id, boolean isOffTheRecord, @DownloadOpenSource int source) {
         DownloadManagerServiceJni.get().openDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, id.id, getProfileKey(isOffTheRecord), source);
@@ -1631,6 +1670,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param downloadGuid Download GUID.
      * @param hasUserGesture Whether the retry is caused by user gesture.
      */
+    // Deprecated after new download backend.
     private void incrementDownloadRetryCount(String downloadGuid, boolean hasUserGesture) {
         String name = getDownloadRetryCountSharedPrefName(downloadGuid, hasUserGesture, false);
         incrementDownloadRetrySharedPreferenceCount(name);
@@ -1642,6 +1682,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Helper method to increment the retry count for a SharedPreference entry.
      * @param sharedPreferenceName Name of the SharedPreference entry.
      */
+    // Deprecated after new download backend.
     private void incrementDownloadRetrySharedPreferenceCount(String sharedPreferenceName) {
         SharedPreferences sharedPrefs = getAutoRetryCountSharedPreference();
         int count = sharedPrefs.getInt(sharedPreferenceName, 0);
@@ -1659,6 +1700,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param hasUserGesture Whether the SharedPreference is for manual retry attempts.
      * @param isTotalCount Whether the SharedPreference is for total retry attempts.
      */
+    // Deprecated after new download backend.
     private String getDownloadRetryCountSharedPrefName(
             String downloadGuid, boolean hasUserGesture, boolean isTotalCount) {
         if (isTotalCount) return downloadGuid + DOWNLOAD_TOTAL_RETRY_SUFFIX;
@@ -1672,6 +1714,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param downloadGuid Download GUID.
      * @param isAutoRetryOnly Whether to clear the auto retry count only.
      */
+    // Deprecated after new download backend.
     private void clearDownloadRetryCount(String downloadGuid, boolean isAutoRetryOnly) {
         SharedPreferences sharedPrefs = getAutoRetryCountSharedPreference();
         String name = getDownloadRetryCountSharedPrefName(downloadGuid, !isAutoRetryOnly, false);
@@ -1694,6 +1737,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         editor.apply();
     }
 
+    // Deprecated after new download backend.
     int getAutoResumptionLimit() {
         if (mAutoResumptionLimit < 0) {
             mAutoResumptionLimit = DownloadManagerServiceJni.get().getAutoResumptionLimit();
@@ -1722,6 +1766,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param downloadGuid Download GUID.
      * @param isOffTheRecord Whether the download is off the record.
      */
+    // Deprecated after new download backend.
     public void updateLastAccessTime(String downloadGuid, boolean isOffTheRecord) {
         if (TextUtils.isEmpty(downloadGuid)) return;
 
@@ -1729,18 +1774,23 @@ public class DownloadManagerService implements DownloadController.Observer,
                 DownloadManagerService.this, downloadGuid, getProfileKey(isOffTheRecord));
     }
 
+    // Deprecated after native auto-resumption handler.
     @Override
     public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
 
+    // Deprecated after native auto-resumption handler.
     @Override
     public void onNetworkConnect(long netId, int connectionType) {}
 
+    // Deprecated after native auto-resumption handler.
     @Override
     public void onNetworkSoonToDisconnect(long netId) {}
 
+    // Deprecated after native auto-resumption handler.
     @Override
     public void onNetworkDisconnect(long netId) {}
 
+    // Deprecated after native auto-resumption handler.
     @Override
     public void purgeActiveNetworkList(long[] activeNetIds) {}
 

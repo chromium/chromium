@@ -20,6 +20,7 @@ import java.util.List;
 /**
  * Class for scheduing download resumption tasks.
  */
+// Deprecated after native auto-resumption handler.
 public class DownloadResumptionScheduler {
     @SuppressLint("StaticFieldLeak")
     private static DownloadResumptionScheduler sDownloadResumptionScheduler;
