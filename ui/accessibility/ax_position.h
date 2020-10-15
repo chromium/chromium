@@ -3225,6 +3225,13 @@ class AXPosition {
     if (AnchorUnignoredChildCount())
       return false;
 
+    // Embed element with non empty children should not be treated as empty
+    // objects.
+    if (GetAnchorRole() == ax::mojom::Role::kEmbeddedObject &&
+        AnchorChildCount() > 0) {
+      return false;
+    }
+
     // All unignored leaf nodes in the AXTree except document and text
     // nodes should be replaced by the embedded object character. Also, nodes
     // that only have ignored children (e.g., a button that contains only an

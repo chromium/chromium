@@ -7810,6 +7810,53 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, text_position->affinity());
 }
 
+TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // Parent Tree
+  // ++1 kRootWebArea
+  // ++++2 kEmbeddedObject
+  //
+  // Child Tree
+  // ++1 kDocument
+  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Create tree manager for parent tree.
+  AXNodeData root;
+  AXNodeData embed_object;
+
+  root.id = 1;
+  embed_object.id = 2;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {embed_object.id};
+
+  embed_object.role = ax::mojom::Role::kEmbeddedObject;
+  embed_object.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+                                  child_tree_id.ToString());
+  SetTree(CreateAXTree({root, embed_object}));
+
+  // Create tree manager for child tree.
+  AXNodeData child_root;
+  child_root.id = 1;
+  child_root.role = ax::mojom::Role::kDocument;
+
+  AXTreeUpdate update;
+  update.tree_data.tree_id = child_tree_id;
+  update.tree_data.parent_tree_id = GetTreeID();
+  update.has_tree_data = true;
+  update.root_id = child_root.id;
+  update.nodes.push_back(child_root);
+  TestAXTreeManager child_tree_manager(std::make_unique<AXTree>(update));
+
+  // Verify that kEmbeddedObject node with child tree is not treated as an
+  // empty object.
+  TestPositionType tree_position = AXNodePosition::CreateTreePosition(
+      GetTreeID(), embed_object.id, 0 /* child_index */);
+  ASSERT_TRUE(tree_position->IsTreePosition());
+  EXPECT_FALSE(tree_position->IsLeaf());
+}
+
 TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   // On Windows, a <select> element is replaced by a combobox that contains
   // an AXMenuListPopup parent of AXMenuListOptions. When the select dropdown is
