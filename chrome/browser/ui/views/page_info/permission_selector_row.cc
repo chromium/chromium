@@ -273,7 +273,7 @@ void PermissionSelectorRow::InitializeComboboxView(
   auto combobox = std::make_unique<internal::PermissionCombobox>(
       combobox_model_adapter_.get(), button_enabled, true);
   combobox->SetEnabled(button_enabled);
-  combobox->SetTooltipText(l10n_util::GetStringFUTF16(
+  combobox->SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_SELECTOR_TOOLTIP,
       PageInfoUI::PermissionTypeToUIString(permission.type)));
   combobox_ = layout->AddView(std::move(combobox));

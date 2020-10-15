@@ -318,7 +318,12 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   }
 }
 
-void Combobox::SetTooltipText(const base::string16& tooltip_text) {
+base::string16 Combobox::GetTooltipTextAndAccessibleName() const {
+  return arrow_button_->GetTooltipText();
+}
+
+void Combobox::SetTooltipTextAndAccessibleName(
+    const base::string16& tooltip_text) {
   arrow_button_->SetTooltipText(tooltip_text);
   if (accessible_name_.empty())
     accessible_name_ = tooltip_text;
@@ -716,6 +721,7 @@ ADD_PROPERTY_METADATA(int, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)
 ADD_PROPERTY_METADATA(base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(base::string16, TooltipTextAndAccessibleName)
 END_METADATA
 
 }  // namespace views

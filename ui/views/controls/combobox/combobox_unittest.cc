@@ -830,13 +830,14 @@ TEST_F(ComboboxTest, MenuModel) {
   EXPECT_TRUE(menu_model->IsVisibleAt(0));
 }
 
-// Verifies setting the tooltip text will call NotifyAccessibilityEvent.
+// Verifies SetTooltipTextAndAccessibleName will call NotifyAccessibilityEvent.
 TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   InitCombobox(nullptr);
   base::string16 test_tooltip_text = ASCIIToUTF16("Test Tooltip Text");
   test::AXEventCounter counter(AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
-  combobox_->SetTooltipText(test_tooltip_text);
+  combobox_->SetTooltipTextAndAccessibleName(test_tooltip_text);
+  EXPECT_EQ(test_tooltip_text, combobox_->GetTooltipTextAndAccessibleName());
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
   EXPECT_EQ(test_tooltip_text, combobox_->GetAccessibleName());
   ui::AXNodeData data;

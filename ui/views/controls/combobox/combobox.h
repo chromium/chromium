@@ -16,6 +16,7 @@
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/prefix_delegate.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace gfx {
@@ -81,8 +82,10 @@ class VIEWS_EXPORT Combobox : public View,
 
   ui::ComboboxModel* model() const { return model_; }
 
-  // Set the tooltip text, and the accessible name if it is currently empty.
-  void SetTooltipText(const base::string16& tooltip_text);
+  // Gets/Sets the tooltip text, and the accessible name if it is currently
+  // empty.
+  base::string16 GetTooltipTextAndAccessibleName() const;
+  void SetTooltipTextAndAccessibleName(const base::string16& tooltip_text);
 
   // Set the accessible name of the combobox.
   void SetAccessibleName(const base::string16& name);
@@ -222,6 +225,14 @@ class VIEWS_EXPORT Combobox : public View,
 
   DISALLOW_COPY_AND_ASSIGN(Combobox);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Combobox, View)
+VIEW_BUILDER_PROPERTY(int, SelectedIndex)
+VIEW_BUILDER_PROPERTY(bool, Invalid)
+VIEW_BUILDER_PROPERTY(bool, SizeToLargestLabel)
+VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
+VIEW_BUILDER_PROPERTY(base::string16, TooltipTextAndAccessibleName)
+END_VIEW_BUILDER(VIEWS_EXPORT, Combobox)
 
 }  // namespace views
 
