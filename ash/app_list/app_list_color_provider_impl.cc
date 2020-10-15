@@ -82,7 +82,7 @@ SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
 SkColor AppListColorProviderImpl::GetAppListItemTextColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary,
-      /*default_color*/ SK_ColorBLACK);
+      /*default_color*/ SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
