@@ -38,9 +38,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
-#include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/test/ui_controls.h"
@@ -811,56 +809,5 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   ClickBrowserWindowCenter();
   close_waiter.Wait();
   EXPECT_FALSE(omnibox_view->model()->popup_model()->IsOpen());
-}
-
-namespace {
-
-// MockInputMethod ------------------------------------------------------------
-class OmniBoxMockInputMethod : public ui::MockInputMethod {
- public:
-  OmniBoxMockInputMethod() : ui::MockInputMethod(nullptr) {}
-  bool IsInputLocaleCJK() const override { return input_locale_cjk; }
-  void SetInputLocaleCJK(bool is_cjk) { input_locale_cjk = is_cjk; }
-
- private:
-  bool input_locale_cjk = false;
-};
-
-}  // namespace
-
-class OmniboxViewViewsIMETest : public OmniboxViewViewsTest {
- public:
-  OmniboxViewViewsIMETest() {}
-  void SetUp() override {
-    input_method_ = new OmniBoxMockInputMethod();
-    // transfers ownership.
-    ui::SetUpInputMethodForTesting(input_method_);
-    InProcessBrowserTest::SetUp();
-  }
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    OmniboxViewViewsTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnableExperimentalUIAutomation);
-  }
-  OmniBoxMockInputMethod* input_method_ = nullptr;
-};
-
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsIMETest, TextInputTypeChangedTest) {
-  chrome::FocusLocationBar(browser());
-  OmniboxView* view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &view));
-  OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
-  ui::InputMethod* input_method =
-      omnibox_view_views->GetWidget()->GetInputMethod();
-  EXPECT_EQ(input_method, input_method_);
-  EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, omnibox_view_views->GetTextInputType());
-  input_method_->SetInputLocaleCJK(/*is_cjk*/ true);
-  omnibox_view_views->OnInputMethodChanged();
-  EXPECT_EQ(ui::TEXT_INPUT_TYPE_SEARCH, omnibox_view_views->GetTextInputType());
-
-  input_method_->SetInputLocaleCJK(/*is_cjk*/ false);
-  omnibox_view_views->OnInputMethodChanged();
-  EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, omnibox_view_views->GetTextInputType());
 }
 #endif  // OS_WIN

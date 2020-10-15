@@ -803,23 +803,23 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-void OmniboxViewViews::OnInputMethodChanged() {
-#if defined(OS_WIN)
+ui::TextInputType OmniboxViewViews::GetTextInputType() const {
+  ui::TextInputType input_type = views::Textfield::GetTextInputType();
   // We'd like to set the text input type to TEXT_INPUT_TYPE_URL, because this
   // triggers URL-specific layout in software keyboards, e.g. adding top-level
   // "/" and ".com" keys for English.  However, this also causes IMEs to default
   // to Latin character mode, which makes entering search queries difficult for
   // IME users. Therefore, we try to guess whether an IME will be used based on
   // the input language, and set the input type accordingly.
-  if (location_bar_view_) {
+#if defined(OS_WIN)
+  if (input_type != ui::TEXT_INPUT_TYPE_NONE && location_bar_view_) {
     ui::InputMethod* input_method =
         location_bar_view_->GetWidget()->GetInputMethod();
     if (input_method && input_method->IsInputLocaleCJK())
-      SetTextInputType(ui::TEXT_INPUT_TYPE_SEARCH);
-    else
-      SetTextInputType(ui::TEXT_INPUT_TYPE_URL);
+      return ui::TEXT_INPUT_TYPE_SEARCH;
   }
 #endif
+  return input_type;
 }
 
 void OmniboxViewViews::AddedToWidget() {
