@@ -164,7 +164,8 @@ void UpdateProfileName(Profile* profile,
 
 bool IsRegularOrGuestSession(Browser* browser) {
   Profile* profile = browser->profile();
-  return profile->IsRegularProfile() || profile->IsGuestSession();
+  return profile->IsRegularProfile() || profile->IsGuestSession() ||
+         profile->IsEphemeralGuestProfile();
 }
 
 bool IsProfileLocked(const base::FilePath& profile_path) {

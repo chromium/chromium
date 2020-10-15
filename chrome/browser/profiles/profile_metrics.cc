@@ -178,7 +178,7 @@ profile_metrics::BrowserProfileType ProfileMetrics::GetBrowserProfileType(
     Profile* profile) {
   if (profile->IsSystemProfile())
     return profile_metrics::BrowserProfileType::kSystem;
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     return profile_metrics::BrowserProfileType::kGuest;
   // A regular profile can be in a guest session or a system profile. Hence it
   // should be checked after them.

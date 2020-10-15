@@ -163,11 +163,11 @@ void AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting() {
 bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
     Profile* profile) {
   // IsGuestSession() returns true for the ProfileImpl associated with Guest
-  // profiles. This profile manually sets the kSigninAllowed prference, which
+  // profiles. This profile manually sets the kSigninAllowed preference, which
   // causes crashes if the AccountConsistencyModeManager is instantiated. See
   // https://crbug.com/940026
   return profile->IsRegularProfile() && !profile->IsGuestSession() &&
-         !profile->IsSystemProfile();
+         !profile->IsEphemeralGuestProfile() && !profile->IsSystemProfile();
 }
 
 AccountConsistencyMethod

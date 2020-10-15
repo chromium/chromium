@@ -31,7 +31,7 @@ constexpr base::TimeDelta kLongTimeOfInactivity =
     base::TimeDelta::FromMinutes(30);
 
 int GetMetricsBucketIndex(const Profile* profile) {
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     return 0;
 
   ProfileAttributesEntry* entry;

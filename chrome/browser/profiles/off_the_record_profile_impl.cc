@@ -148,11 +148,11 @@ void OffTheRecordProfileImpl::Init() {
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
 
+  // Incognito is not available for ephemeral Guest profiles.
+  CHECK(!profile_->IsEphemeralGuestProfile());
+
   // Always crash when incognito is not available.
-  // Guest profiles may always be OTR, and non primary OTRs are always allowed.
-  // Check IncognitoModePrefs otherwise.
-  CHECK(profile_->IsGuestSession() || profile_->IsSystemProfile() ||
-        !IsPrimaryOTRProfile() ||
+  CHECK(!profile_->IsIncognitoProfile() ||
         IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
             IncognitoModePrefs::DISABLED);
 

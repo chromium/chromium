@@ -205,7 +205,7 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
   }
 
 #if !defined(OS_CHROMEOS)
-  if (!profile->IsGuestSession()) {
+  if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
     ProfileAttributesEntry* entry;
     if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
             GetProfileAttributesWithPath(profile->GetPath(), &entry) &&
@@ -284,7 +284,8 @@ void SwitchToGuestProfile(ProfileManager::CreateCallback callback) {
 #endif
 
 bool HasProfileSwitchTargets(Profile* profile) {
-  size_t min_profiles = profile->IsGuestSession() ? 1 : 2;
+  size_t min_profiles =
+      (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) ? 1 : 2;
   size_t number_of_profiles =
       g_browser_process->profile_manager()->GetNumberOfProfiles();
   return number_of_profiles >= min_profiles;
@@ -354,8 +355,10 @@ void LockProfile(Profile* profile) {
 
 bool IsLockAvailable(Profile* profile) {
   DCHECK(profile);
-  if (profile->IsGuestSession() || profile->IsSystemProfile())
+  if (profile->IsGuestSession() || profile->IsSystemProfile() ||
+      profile->IsEphemeralGuestProfile()) {
     return false;
+  }
 
   std::string hosted_domain = profile->GetPrefs()->
       GetString(prefs::kGoogleServicesHostedDomain);

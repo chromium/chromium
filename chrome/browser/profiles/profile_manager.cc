@@ -600,13 +600,17 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
   if (!callback.is_null()) {
     if (iter != profiles_info_.end() && info->created) {
       Profile* profile = info->profile.get();
-      // If this was the guest profile, apply settings and go OffTheRecord.
+      // If this was the non-ephemeral Guest profile, apply settings and go
+      // OffTheRecord.
       // The system profile also needs characteristics of being off the record,
       // such as having no extensions, not writing to disk, etc.
-      if (profile->IsGuestSession() || profile->IsSystemProfile()) {
+      if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
+          profile->IsSystemProfile()) {
         SetNonPersonalProfilePrefs(profile);
-        profile = profile->GetPrimaryOTRProfile();
       }
+      if (profile->IsGuestSession() || profile->IsSystemProfile())
+        profile = profile->GetPrimaryOTRProfile();
+
       // Profile has already been created. Run callback immediately.
       callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
     } else {
@@ -718,7 +722,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles(
       if (profile) {
         // crbug.com/823338 -> CHECK that the profiles aren't guest or
         // incognito, causing a crash during session restore.
-        CHECK(!profile->IsGuestSession())
+        CHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile())
             << "Guest profiles shouldn't have been saved as active profiles";
         CHECK(!profile->IsOffTheRecord())
             << "OTR profiles shouldn't have been saved as active profiles";
@@ -1060,7 +1064,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
   size_t avatar_index;
   std::string profile_name;
   std::string supervised_user_id;
-  if (profile->IsGuestSession()) {
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     profile_name = l10n_util::GetStringUTF8(IDS_PROFILES_GUEST_PROFILE_NAME);
     avatar_index = 0;
   } else {
@@ -1198,8 +1202,10 @@ void ProfileManager::OnProfileCreated(Profile* profile,
   if (profile) {
     // If this was the guest or system profile, finish setting its special
     // status.
-    if (profile->IsGuestSession() || profile->IsSystemProfile())
+    if (profile->IsGuestSession() || profile->IsSystemProfile() ||
+        profile->IsEphemeralGuestProfile()) {
       SetNonPersonalProfilePrefs(profile);
+    }
 
     // Invoke CREATED callback for incognito profiles.
     if (go_off_the_record)

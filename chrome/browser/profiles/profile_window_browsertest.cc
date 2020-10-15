@@ -230,8 +230,11 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenGuestBrowser) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIsIncognito) {
-  Browser* guest_browser = OpenGuestBrowser();
-  EXPECT_TRUE(guest_browser->profile()->IsOffTheRecord());
+  Profile* guest_profile = OpenGuestBrowser()->profile();
+  if (guest_profile->IsEphemeralGuestProfile())
+    EXPECT_FALSE(guest_profile->IsOffTheRecord());
+  else
+    EXPECT_TRUE(guest_profile->IsOffTheRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
@@ -249,7 +252,10 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
 
   std::vector<GURL> urls =
       ui_test_utils::HistoryEnumerator(guest_browser->profile()).urls();
-  ASSERT_EQ(0U, urls.size());
+
+  unsigned int expect_history =
+      guest_browser->profile()->IsEphemeralGuestProfile() ? 1 : 0;
+  ASSERT_EQ(expect_history, urls.size());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
