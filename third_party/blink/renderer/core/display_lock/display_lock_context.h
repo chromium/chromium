@@ -148,12 +148,6 @@ class CORE_EXPORT DisplayLockContext final
 
   void NotifyChildLayoutWasBlocked() { child_layout_was_blocked_ = true; }
 
-  // Inform the display lock that it needs a graphics layer collection when it
-  // needs to paint.
-  void NotifyNeedsGraphicsLayerCollection() {
-    needs_graphics_layer_collection_ = true;
-  }
-
   void NotifyCompositingRequirementsUpdateWasBlocked() {
     needs_compositing_requirements_update_ = true;
   }
@@ -258,7 +252,7 @@ class CORE_EXPORT DisplayLockContext final
   bool MarkForStyleRecalcIfNeeded();
   bool MarkForLayoutIfNeeded();
   bool MarkAncestorsForPrePaintIfNeeded();
-  bool MarkPaintLayerNeedsRepaint();
+  bool MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
   bool MarkForCompositingUpdatesIfNeeded();
 
   bool IsElementDirtyForStyleRecalc() const;
@@ -341,7 +335,6 @@ class CORE_EXPORT DisplayLockContext final
 
   bool needs_effective_allowed_touch_action_update_ = false;
   bool needs_prepaint_subtree_walk_ = false;
-  bool needs_graphics_layer_collection_ = false;
   bool needs_compositing_requirements_update_ = false;
   bool needs_compositing_dependent_flag_update_ = false;
 

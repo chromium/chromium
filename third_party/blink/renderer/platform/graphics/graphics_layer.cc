@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/region.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -48,6 +49,8 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
@@ -59,8 +62,6 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace blink {
 
@@ -170,9 +171,12 @@ void GraphicsLayer::AppendAdditionalInfoAsJSON(LayerTreeFlags flags,
     json.SetBoolean("shouldCreateLayersAfterPaint", true);
   } else {
 #if DCHECK_IS_ON()
-    if (HasLayerState() && DrawsContent() &&
-        (flags & kLayerTreeIncludesPaintRecords))
-      json.SetValue("paintRecord", RecordAsJSON(*CapturePaintRecord()));
+    if (HasLayerState() && cc_display_item_list_ &&
+        (flags & kLayerTreeIncludesPaintRecords)) {
+      LoggingCanvas canvas;
+      cc_display_item_list_->Raster(&canvas);
+      json.SetValue("paintRecord", canvas.Log());
+    }
 #endif
   }
 }
@@ -266,18 +270,25 @@ IntRect GraphicsLayer::InterestRect() {
   return previous_interest_rect_;
 }
 
-bool GraphicsLayer::PaintRecursively(PaintBenchmarkMode benchmark_mode) {
+bool GraphicsLayer::PaintRecursively(
+    GraphicsContext& context,
+    Vector<PreCompositedLayerInfo>& pre_composited_layers,
+    PaintBenchmarkMode benchmark_mode) {
   bool repainted = false;
   ForAllActiveGraphicsLayers(
-      *this, [&repainted, benchmark_mode](GraphicsLayer& layer) {
-        if (layer.PaintsContentOrHitTest()) {
-          PaintController::ScopedBenchmarkMode scoped_benchmark_mode(
-              layer.GetPaintController(), benchmark_mode);
-          layer.Paint();
-          repainted |= layer.repainted_;
-        } else {
-          layer.repainted_ = false;
-        }
+      *this,
+      [&](GraphicsLayer& layer) {
+        layer.Paint(pre_composited_layers, benchmark_mode);
+        repainted |= layer.repainted_;
+      },
+      [&](const GraphicsLayer& layer, cc::Layer& contents_layer) {
+        PaintChunkSubsetRecorder subset_recorder(context.GetPaintController());
+        RecordForeignLayer(
+            context, layer, DisplayItem::kForeignLayerContentsWrapper,
+            &contents_layer, layer.GetContentsOffsetFromTransformNode(),
+            &layer.GetContentsPropertyTreeState());
+        pre_composited_layers.push_back(
+            PreCompositedLayerInfo{subset_recorder.Get()});
       });
 #if DCHECK_IS_ON()
   if (repainted) {
@@ -290,8 +301,29 @@ bool GraphicsLayer::PaintRecursively(PaintBenchmarkMode benchmark_mode) {
   return repainted;
 }
 
-void GraphicsLayer::Paint() {
+void GraphicsLayer::PaintForTesting(const IntRect& interest_rect) {
+  Vector<PreCompositedLayerInfo> pre_composited_layers;
+  Paint(pre_composited_layers, PaintBenchmarkMode::kNormal, &interest_rect);
+}
+
+void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
+                          PaintBenchmarkMode benchmark_mode,
+                          const IntRect* interest_rect) {
   repainted_ = false;
+
+  DCHECK(!client_.ShouldThrottleRendering());
+  DCHECK(!client_.IsUnderSVGHiddenContainer());
+
+  if (!PaintsContentOrHitTest()) {
+    pre_composited_layers.push_back(
+        PreCompositedLayerInfo{PaintChunkSubset(), this});
+    return;
+  }
+
+  IntRect new_interest_rect =
+      interest_rect
+          ? *interest_rect
+          : client_.ComputeInterestRect(this, previous_interest_rect_);
 
 #if !DCHECK_IS_ON()
   // TODO(crbug.com/853096): Investigate why we can ever reach here without
@@ -303,25 +335,41 @@ void GraphicsLayer::Paint() {
   if (!layer_state_)
     return;
 #endif
+  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
 
-  if (PaintWithoutCommit()) {
-    GetPaintController().CommitNewDisplayItems();
-  } else if (!needs_check_raster_invalidation_ &&
-             GetPaintController().GetBenchmarkMode() !=
-                 PaintBenchmarkMode::kForceRasterInvalidationAndConvert) {
+  auto& paint_controller = GetPaintController();
+  PaintController::ScopedBenchmarkMode scoped_benchmark_mode(paint_controller,
+                                                             benchmark_mode);
+  bool cached = !paint_controller.ShouldForcePaintForBenchmark() &&
+                !client_.NeedsRepaint(*this) &&
+                !paint_controller.CacheIsAllInvalid() &&
+                previous_interest_rect_ == new_interest_rect;
+  if (!cached) {
+    GraphicsContext context(paint_controller);
+    DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
+    paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
+                                                       layer_state_->state);
+    previous_interest_rect_ = new_interest_rect;
+    client_.PaintContents(this, context, painting_phase_, new_interest_rect);
+    paint_controller.CommitNewDisplayItems();
+
+    DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
+             << " interest_rect=" << InterestRect().ToString();
+  }
+
+  PaintChunkSubset chunks(paint_controller.GetPaintArtifactShared());
+  pre_composited_layers.push_back(PreCompositedLayerInfo{chunks, this});
+
+  if (cached && !needs_check_raster_invalidation_ &&
+      paint_controller.GetBenchmarkMode() !=
+          PaintBenchmarkMode::kForceRasterInvalidationAndConvert) {
     return;
   }
 
-  DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
-           << " interest_rect=" << InterestRect().ToString();
-
-  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-  // Generate raster invalidations for SPv1.
   if (!ShouldCreateLayersAfterPaint()) {
     auto& raster_invalidator = EnsureRasterInvalidator();
-    IntSize old_layer_size(raster_invalidator.LayerBounds().size());
-    IntRect layer_bounds(layer_state_->offset, IntSize(Size()));
-    PaintChunkSubset chunks(GetPaintController().GetPaintArtifactShared());
+    gfx::Size old_layer_size = raster_invalidator.LayerBounds().size();
+    gfx::Rect layer_bounds(layer_state_->offset, Size());
     EnsureRasterInvalidator().Generate(raster_invalidation_function_, chunks,
                                        layer_bounds,
                                        layer_state_->state.Unalias(), this);
@@ -339,8 +387,7 @@ void GraphicsLayer::Paint() {
     // Here check layer_bounds because RasterInvalidator doesn't issue raster
     // invalidation when only layer_bounds change.
     if (raster_invalidated_ || !cc_display_item_list_ ||
-        old_layer_size != layer_bounds.Size() ||
-        raster_under_invalidation_params) {
+        old_layer_size != Size() || raster_under_invalidation_params) {
       cc_display_item_list_ = PaintChunksToCcLayer::Convert(
           chunks, layer_state_->state.Unalias(),
           gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
@@ -372,42 +419,6 @@ void GraphicsLayer::SetShouldCreateLayersAfterPaint(
     // PaintController for CAP and pre-CAP.
     NotifyChildListChange();
   }
-}
-
-bool GraphicsLayer::PaintWithoutCommitForTesting(
-    const base::Optional<IntRect>& interest_rect) {
-  return PaintWithoutCommit(base::OptionalOrNullptr(interest_rect));
-}
-
-bool GraphicsLayer::PaintWithoutCommit(const IntRect* interest_rect) {
-  DCHECK(PaintsContentOrHitTest());
-
-  if (client_.ShouldThrottleRendering() || client_.IsUnderSVGHiddenContainer())
-    return false;
-
-  IntRect new_interest_rect;
-  if (!interest_rect) {
-    new_interest_rect =
-        client_.ComputeInterestRect(this, previous_interest_rect_);
-    interest_rect = &new_interest_rect;
-  }
-
-  PaintController& paint_controller = GetPaintController();
-  if (!paint_controller.ShouldForcePaintForBenchmark() &&
-      !client_.NeedsRepaint(*this) && !paint_controller.CacheIsAllInvalid() &&
-      previous_interest_rect_ == *interest_rect) {
-    GetPaintController().UpdateUMACountsOnFullyCached();
-    return false;
-  }
-
-  GraphicsContext context(GetPaintController());
-  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-  paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
-                                                     layer_state_->state);
-
-  previous_interest_rect_ = *interest_rect;
-  client_.PaintContents(this, context, painting_phase_, *interest_rect);
-  return true;
 }
 
 void GraphicsLayer::NotifyChildListChange() {
@@ -666,28 +677,6 @@ PaintController& GraphicsLayer::GetPaintController() const {
 
 void GraphicsLayer::SetElementId(const CompositorElementId& id) {
   CcLayer().SetElementId(id);
-}
-
-sk_sp<PaintRecord> GraphicsLayer::CapturePaintRecord() const {
-  DCHECK(PaintsContentOrHitTest());
-  DCHECK(!ShouldCreateLayersAfterPaint());
-
-  if (client_.ShouldThrottleRendering())
-    return sk_sp<PaintRecord>(new PaintRecord);
-
-  if (client_.IsUnderSVGHiddenContainer())
-    return sk_sp<PaintRecord>(new PaintRecord);
-
-  if (client_.PaintBlockedByDisplayLockIncludingAncestors())
-    return sk_sp<PaintRecord>(new PaintRecord);
-
-  FloatRect bounds((IntRect(IntPoint(), IntSize(Size()))));
-  GraphicsContext graphics_context(GetPaintController());
-  graphics_context.BeginRecording(bounds);
-  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-  GetPaintController().GetPaintArtifact().Replay(
-      graphics_context, layer_state_->state.Unalias(), layer_state_->offset);
-  return graphics_context.EndRecording();
 }
 
 void GraphicsLayer::SetLayerState(const PropertyTreeStateOrAlias& layer_state,

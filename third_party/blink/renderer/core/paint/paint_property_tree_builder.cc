@@ -3439,14 +3439,6 @@ void PaintPropertyTreeBuilder::CreateFragmentContextsInFlowThread(
   if (fragments_changed) {
     object_.GetMutableForPainting().AddSubtreePaintPropertyUpdateReason(
         SubtreePaintPropertyUpdateReason::kFragmentsChanged);
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        NeedsLinkHighlightEffect(object_)) {
-      // We need to recollect the foreign layers for link highlight for the
-      // changed fragments. CompositeAfterPaint doesn't need this because we
-      // collect foreign layers during LocalFrameView::PaintTree() which is not
-      // controlled by the flag.
-      object_.GetFrameView()->SetForeignLayerListNeedsUpdate();
-    }
   }
 }
 

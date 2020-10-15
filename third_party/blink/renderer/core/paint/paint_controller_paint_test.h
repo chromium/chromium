@@ -28,7 +28,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   LayoutView& GetLayoutView() const { return *GetDocument().GetLayoutView(); }
   PaintController& RootPaintController() const {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return *GetDocument().View()->GetPaintController();
+      return GetDocument().View()->GetPaintControllerForTesting();
     return GetLayoutView()
         .Layer()
         ->GraphicsLayerBacking()
@@ -56,24 +56,18 @@ class PaintControllerPaintTestBase : public RenderingTest {
   // layer only.
   void PaintContents(const IntRect& interest_rect) {
     GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
-    bool needs_commit = false;
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {
         GraphicsContext graphics_context(RootPaintController());
         GetDocument().View()->Paint(graphics_context, kGlobalPaintNormalPhase,
                                     CullRect(interest_rect));
-        needs_commit = true;
+        RootPaintController().CommitNewDisplayItems();
       }
-    } else if (GetLayoutView()
-                   .Layer()
-                   ->GraphicsLayerBacking()
-                   ->PaintWithoutCommitForTesting(interest_rect)) {
-      needs_commit = true;
+    } else {
+      GetLayoutView().Layer()->GraphicsLayerBacking()->PaintForTesting(
+          interest_rect);
     }
-    if (needs_commit) {
-      RootPaintController().CommitNewDisplayItems();
-      RootPaintController().FinishCycle();
-    }
+    RootPaintController().FinishCycle();
     GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
   }
 

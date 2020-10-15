@@ -296,16 +296,6 @@ bool PaintInvalidator::InvalidatePaint(
   if (!object.ShouldCheckForPaintInvalidation() && !context.NeedsSubtreeWalk())
     return false;
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      object.GetFrame()->GetPage()->GetLinkHighlight().NeedsHighlightEffect(
-          object)) {
-    // We need to recollect the foreign layers for link highlight when the
-    // geometry of the highlights may change. CompositeAfterPaint doesn't
-    // need this because we collect foreign layers during
-    // LocalFrameView::PaintTree() which is not controlled by the flag.
-    object.GetFrameView()->SetForeignLayerListNeedsUpdate();
-  }
-
   if (pre_paint_info) {
     FragmentData& fragment_data = pre_paint_info->fragment_data;
     context.fragment_data = &fragment_data;

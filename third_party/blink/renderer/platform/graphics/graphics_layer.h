@@ -67,6 +67,7 @@ namespace blink {
 class PaintController;
 class RasterInvalidationTracking;
 class RasterInvalidator;
+struct PreCompositedLayerInfo;
 
 typedef Vector<GraphicsLayer*, 64> GraphicsLayerVector;
 
@@ -183,7 +184,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   IntRect InterestRect();
 
   // Returns true if any layer is repainted.
-  bool PaintRecursively(PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
+  bool PaintRecursively(GraphicsContext&,
+                        Vector<PreCompositedLayerInfo>&,
+                        PaintBenchmarkMode = PaintBenchmarkMode::kNormal);
 
   PaintController& GetPaintController() const;
 
@@ -217,16 +220,11 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
                                  : GetOffsetFromTransformNode();
   }
 
-  // Capture the last painted result into a PaintRecord. This GraphicsLayer
-  // must DrawsContent. The result is never nullptr.
-  sk_sp<PaintRecord> CapturePaintRecord() const;
-
   void SetNeedsCheckRasterInvalidation() {
     needs_check_raster_invalidation_ = true;
   }
 
-  bool PaintWithoutCommitForTesting(
-      const base::Optional<IntRect>& interest_rect = base::nullopt);
+  void PaintForTesting(const IntRect& interest_rect);
 
   void SetShouldCreateLayersAfterPaint(bool);
   bool ShouldCreateLayersAfterPaint() const {
@@ -250,9 +248,9 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
   bool FillsBoundsCompletely() const override { return false; }
 
-  // Returns true if PaintController::PaintArtifact() changed and needs commit.
-  bool PaintWithoutCommit(const IntRect* interest_rect = nullptr);
-  void Paint();
+  void Paint(Vector<PreCompositedLayerInfo>&,
+             PaintBenchmarkMode,
+             const IntRect* interest_rect = nullptr);
 
   // Adds a child without calling NotifyChildListChange(), so that adding
   // children can be batched before updating.
@@ -342,12 +340,8 @@ void ForAllActiveGraphicsLayers(
     return;
   }
 
-  if (layer.Client().PaintBlockedByDisplayLockIncludingAncestors()) {
-    // If we skip the layer, then we need to ensure to notify the
-    // display-lock, since we need to force recollect the layers when we commit.
-    layer.Client().NotifyDisplayLockNeedsGraphicsLayerCollection();
+  if (layer.Client().PaintBlockedByDisplayLockIncludingAncestors())
     return;
-  }
 
   DCHECK(layer.HasLayerState());
 

@@ -321,15 +321,7 @@ void DisplayLockContext::Lock() {
   if (!element_->GetLayoutObject())
     return;
 
-  // GraphicsLayer collection would normally skip layers if paint is blocked
-  // by display-locking (see: CollectDrawableLayersForLayerListRecursively
-  // in LocalFrameView). However, if we don't trigger this collection, then
-  // we might use the cached result instead. In order to ensure we skip the
-  // newly locked layers, we need to set |need_graphics_layer_collection_|
-  // before marking the layer for repaint.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    needs_graphics_layer_collection_ = true;
-  MarkPaintLayerNeedsRepaint();
+  MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
 }
 
 // Should* and Did* function for the lifecycle phases. These functions control
@@ -558,7 +550,7 @@ void DisplayLockContext::Unlock() {
   // reach the rest of the phases as well.
   MarkForLayoutIfNeeded();
   MarkAncestorsForPrePaintIfNeeded();
-  MarkPaintLayerNeedsRepaint();
+  MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
 }
 
 void DisplayLockContext::AddToWhitespaceReattachSet(Element& element) {
@@ -686,15 +678,11 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
   return compositing_dirtied;
 }
 
-bool DisplayLockContext::MarkPaintLayerNeedsRepaint() {
+bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
   DCHECK(ConnectedToView());
   if (auto* layout_object = element_->GetLayoutObject()) {
     layout_object->PaintingLayer()->SetNeedsRepaint();
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        needs_graphics_layer_collection_) {
-      document_->View()->SetForeignLayerListNeedsUpdate();
-      needs_graphics_layer_collection_ = false;
-    }
+    document_->View()->SetPaintArtifactCompositorNeedsUpdate();
     return true;
   }
   return false;

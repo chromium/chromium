@@ -91,7 +91,6 @@ class LayoutSVGRoot;
 class LayoutView;
 class LocalFrame;
 class Page;
-class PaintController;
 class PaintLayer;
 class PaintLayerScrollableArea;
 class PaintTimingDetector;
@@ -228,7 +227,6 @@ class CORE_EXPORT LocalFrameView final
   void ForceUpdateViewportIntersections();
 
   void SetPaintArtifactCompositorNeedsUpdate();
-  void SetForeignLayerListNeedsUpdate();
 
   // Marks this frame, and ancestor frames, as needing a mandatory compositing
   // update. This overrides throttling for one frame, up to kCompositingClean.
@@ -727,11 +725,12 @@ class CORE_EXPORT LocalFrameView final
 
   PaintLayer* GetFullScreenOverlayLayer() const;
 
-  wtf_size_t PreCompositedLayerCountForTesting() const {
-    return pre_composited_layers_.size();
-  }
-
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
+
+  PaintController& GetPaintControllerForTesting() {
+    DCHECK(paint_controller_);
+    return *paint_controller_;
+  }
 
  protected:
   void FrameRectsChanged(const IntRect&) override;
@@ -900,8 +899,6 @@ class CORE_EXPORT LocalFrameView final
   // This is a recursive helper for determining intersection observations which
   // need to happen in post-layout.
   void ComputePostLayoutIntersections(unsigned parent_flags);
-
-  PaintController* GetPaintController() { return paint_controller_.get(); }
 
   // Returns true if the root object was laid out. Returns false if the layout
   // was prevented (e.g. by ancestor display-lock) or not needed.
@@ -1088,8 +1085,6 @@ class CORE_EXPORT LocalFrameView final
   bool is_updating_descendant_dependent_flags_;
 #endif
 
-  FRIEND_TEST_ALL_PREFIXES(WebViewTest, DeviceEmulationResetScrollbars);
-  FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, GraphicsLayerCollection);
   FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, ForAllThrottledLocalFrameViews);
 };
 

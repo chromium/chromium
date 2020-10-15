@@ -1613,15 +1613,16 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
-  auto layer_count = GetDocument().View()->PreCompositedLayerCountForTesting();
+  auto layer_count = GetDocument().View()->RootCcLayer()->children().size();
 
   // Moving the child fully outside the parent makes it invisible.
   frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
   CompositeFrame();
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
-  // Change of throttling clears paint controller, to force re-collection of
-  // graphics layers in the next frame.
-  EXPECT_EQ(0u, GetDocument().View()->PreCompositedLayerCountForTesting());
+  // Change of throttling will force PaintArtifactCompositor update in the next
+  // frame.
+  EXPECT_TRUE(
+      GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
 
   // Force a frame update. We should re-collect the graphics layers.
   GetDocument().GetPage()->Animator().ScheduleVisualUpdate(
@@ -1631,7 +1632,7 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   // We no longer collect the graphics layers of the iframe and the composited
   // content.
   EXPECT_GT(layer_count,
-            GetDocument().View()->PreCompositedLayerCountForTesting());
+            GetDocument().View()->RootCcLayer()->children().size());
 
   // Move the child back to the visible viewport.
   frame_element->setAttribute(kStyleAttr,
@@ -1640,15 +1641,14 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   // frame.
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
-  // Change of throttling clears paint controller, to force re-collection of
-  // graphics layers in the next frame.
-  EXPECT_EQ(nullptr, GetDocument().View()->GetPaintController());
+  EXPECT_TRUE(
+      GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
 
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRendering());
   // Now we should collect all graphics layers again.
   EXPECT_EQ(layer_count,
-            GetDocument().View()->PreCompositedLayerCountForTesting());
+            GetDocument().View()->RootCcLayer()->children().size());
 }
 
 TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {

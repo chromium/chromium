@@ -149,10 +149,6 @@ class DisplayLockContextTest
     context->SetRequestedState(EContentVisibility::kVisible);
   }
 
-  bool GraphicsLayerNeedsCollection(DisplayLockContext* context) const {
-    return context->needs_graphics_layer_collection_;
-  }
-
   mojom::blink::FindOptionsPtr FindOptions(bool new_session = true) {
     auto find_options = mojom::blink::FindOptions::New();
     find_options->run_synchronously_for_testing = true;
@@ -1593,43 +1589,6 @@ TEST_F(DisplayLockContextTest, DescendantAllowedTouchAction) {
   EXPECT_FALSE(descendant_object->InsideBlockingTouchEventHandler());
   EXPECT_FALSE(locked_object->InsideBlockingTouchEventHandler());
   EXPECT_TRUE(handler_object->InsideBlockingTouchEventHandler());
-}
-
-TEST_F(DisplayLockContextTest,
-       CompositedLayerLockCausesGraphicsLayersCollection) {
-  ResizeAndFocus();
-  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-    #container {
-      width: 100px;
-      height: 100px;
-      contain: style layout;
-      will-change: transform;
-    }
-    #composited {
-      will-change: transform;
-    }
-    </style>
-    <body>
-    <div id="container"><div id="composited">testing</div></div></body>
-    </body>
-  )HTML");
-
-  // Check if the result is correct if we update the contents.
-  auto* container = GetDocument().getElementById("container");
-
-  // Ensure that we will gather graphics layer on the next update (after lock).
-  GetDocument().View()->SetForeignLayerListNeedsUpdate();
-
-  LockElement(*container, false /* activatable */);
-  EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
-  EXPECT_TRUE(GraphicsLayerNeedsCollection(container->GetDisplayLockContext()));
-
-  CommitElement(*container);
-  EXPECT_FALSE(
-      GraphicsLayerNeedsCollection(container->GetDisplayLockContext()));
 }
 
 TEST_F(DisplayLockContextTest, DescendantNeedsPaintPropertyUpdateBlocked) {

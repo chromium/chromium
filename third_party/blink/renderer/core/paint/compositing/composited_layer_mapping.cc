@@ -1401,11 +1401,8 @@ bool CompositedLayerMapping::ContainsPaintedContent() const {
 }
 
 void CompositedLayerMapping::ContentChanged(ContentChangeType change_type) {
-  if (change_type == kCanvasChanged &&
-      IsTextureLayerCanvas(GetLayoutObject())) {
+  if (change_type == kCanvasChanged && IsTextureLayerCanvas(GetLayoutObject()))
     graphics_layer_->SetContentsNeedsDisplay();
-    return;
-  }
 }
 
 // Return the offset from the top-left of this compositing layer at which the
@@ -2057,22 +2054,13 @@ bool CompositedLayerMapping::IsTrackingRasterInvalidations() const {
 void CompositedLayerMapping::GraphicsLayersDidChange() {
   LocalFrameView* frame_view = GetLayoutObject().GetFrameView();
   DCHECK(frame_view);
-  frame_view->SetForeignLayerListNeedsUpdate();
+  frame_view->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 bool CompositedLayerMapping::PaintBlockedByDisplayLockIncludingAncestors()
     const {
   return DisplayLockUtilities::NearestLockedExclusiveAncestor(
       GetLayoutObject());
-}
-
-void CompositedLayerMapping::NotifyDisplayLockNeedsGraphicsLayerCollection() {
-  if (auto* locked_element =
-          DisplayLockUtilities::NearestLockedInclusiveAncestor(
-              GetLayoutObject())) {
-    locked_element->GetDisplayLockContext()
-        ->NotifyNeedsGraphicsLayerCollection();
-  }
 }
 
 #if DCHECK_IS_ON()

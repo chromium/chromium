@@ -112,7 +112,7 @@ void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,
 }
 
 void FrameOverlay::GraphicsLayersDidChange() {
-  frame_->View()->SetForeignLayerListNeedsUpdate();
+  frame_->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 void FrameOverlay::ServiceScriptedAnimations(

@@ -837,7 +837,8 @@ void PaintArtifactCompositor::CollectPendingLayers(
   // Shrink, but do not release the backing. Re-use it from the last frame.
   pending_layers_.Shrink(0);
   for (auto& layer : pre_composited_layers) {
-    if (layer.graphics_layer) {
+    if (layer.graphics_layer &&
+        !layer.graphics_layer->ShouldCreateLayersAfterPaint()) {
       pending_layers_.emplace_back(layer);
       continue;
     }

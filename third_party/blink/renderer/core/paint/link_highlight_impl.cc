@@ -345,11 +345,8 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
 
 void LinkHighlightImpl::SetPaintArtifactCompositorNeedsUpdate() {
   DCHECK(node_);
-  if (auto* frame_view = node_->GetDocument().View()) {
+  if (auto* frame_view = node_->GetDocument().View())
     frame_view->SetPaintArtifactCompositorNeedsUpdate();
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      frame_view->SetForeignLayerListNeedsUpdate();
-  }
 }
 
 void LinkHighlightImpl::UpdateOpacity(float opacity) {
