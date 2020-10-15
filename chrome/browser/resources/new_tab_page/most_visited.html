@@ -1,10 +1,11 @@
 <style include="cr-hidden-style cr-icons">
   :host {
-    --icon-size: 48px;
-    --tile-size: 112px;
-    --icon-button-color: var(--google-grey-600);
     --icon-button-color-active: var(--google-grey-refresh-700);
+    --icon-button-color: var(--google-grey-600);
+    --icon-size: 48px;
     --tile-hover-color: rgba(var(--google-grey-900-rgb), .1);
+    --tile-size: 112px;  /* top padding + icon + title margin + title */
+    --title-height: 32px;
   }
 
   #container {
@@ -26,7 +27,8 @@
     opacity: 1;
   }
 
-  #addShortcutIcon {
+  #addShortcutIcon,
+  .query-tile-icon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
@@ -35,8 +37,17 @@
     width: 24px;
   }
 
+  .query-tile-icon {
+    -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
+    background-color: var(--google-grey-700);
+  }
+
   :host([use-white-add-icon]) #addShortcutIcon {
     background-color: white;
+  }
+
+  :host([use-white-add-icon]) .query-tile-icon {
+    background-color: var(--google-grey-400);
   }
 
   .tile,
@@ -72,7 +83,7 @@
     background-color: transparent;
     border: none;
     box-shadow: none;
-    padding: 0;
+    padding: 16px 0 0;
   }
 
   :host(:not([reordering_])) .tile:hover,
@@ -101,8 +112,7 @@
     border-radius: 12px;
     color: var(--ntp-theme-text-color);
     display: flex;
-    height: 24px;
-    margin-top: 7px;
+    margin-top: 16px;
     padding: 0 8px;
     width: 88px;
   }
@@ -114,12 +124,21 @@
 
   .tile-title span {
     font-weight: 400;
+    height: var(--title-height);
+    line-height: calc(var(--title-height) / 2);
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
     text-shadow: var(--ntp-theme-text-shadow);
     white-space: nowrap;
     width: 100%;
+  }
+
+  .tile[query-tile] .tile-title span {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    white-space: initial;
   }
 
   :host([use-title-pill]) .tile-title span {
@@ -176,11 +195,14 @@
     style="--column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
+      <!-- TOOD(crbug.com/1138578): replace the query-tile attr binding to
+      something that checks whether the tile is a repeatable query tile. -->
       <a class="tile" draggable="true" href$="[[item.url.url]]"
           title$="[[item.title]]" on-dragstart="onDragStart_"
           on-touchstart="onTouchStart_"
           hidden$="[[isHidden_(index, columnCount_)]]"
-          on-click="onTileClick_" on-keydown="onTileKeyDown_">
+          on-click="onTileClick_" on-keydown="onTileKeyDown_"
+          query-tile$="[[isHidden_(index, columnCount_)]]">
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
             title="$i18n{moreActions}" on-click="onTileActionButtonClick_"
             tabindex="0" hidden$="[[!customLinksEnabled_]]"></cr-icon-button>
@@ -188,7 +210,12 @@
             title="$i18n{linkRemove}" on-click="onTileRemoveButtonClick_"
             tabindex="0" hidden$="[[customLinksEnabled_]]"></cr-icon-button>
         <div class="tile-icon">
-          <img src$="[[getFaviconUrl_(item.url)]]" draggable="false"></img>
+          <!-- TOOD(crbug.com/1138578): replace the hidden attr binding to
+          something that checks whether the tile is a repeatable query tile. -->
+          <img src$="[[getFaviconUrl_(item.url)]]" draggable="false"
+              hidden$="[[isHidden_(index, columnCount_)]]"></img>
+          <div class="query-tile-icon" draggable="false"
+              hidden$="[[!isHidden_(index, columnCount_)]]"></div>
         </div>
         <div class$="tile-title [[getTileTitleDirectionClass_(item)]]">
           <span>[[item.title]]</span>
