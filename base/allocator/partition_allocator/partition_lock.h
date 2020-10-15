@@ -57,7 +57,7 @@ class SCOPED_LOCKABLE ScopedUnlockGuard {
 // Spinlock. Do not use, to be removed. crbug.com/1061437.
 class BASE_EXPORT SpinLock {
  public:
-  SpinLock() = default;
+  constexpr SpinLock() = default;
   ~SpinLock() = default;
 
   ALWAYS_INLINE void Acquire() {
@@ -91,7 +91,7 @@ class BASE_EXPORT SpinLock {
 template <>
 class LOCKABLE MaybeSpinLock<true> {
  public:
-  MaybeSpinLock() : lock_() {}
+  constexpr MaybeSpinLock() : lock_() {}
   void Lock() EXCLUSIVE_LOCK_FUNCTION() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DCHECK_IS_ON()
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
@@ -169,6 +169,9 @@ class LOCKABLE MaybeSpinLock<false> {
 static_assert(
     sizeof(MaybeSpinLock<true>) == sizeof(MaybeSpinLock<false>),
     "Sizes should be equal to ensure identical layout of PartitionRoot");
+
+using PartitionLock = MaybeSpinLock<true>;
+using PartitionAutoLock = ScopedGuard<true>;
 
 }  // namespace internal
 }  // namespace base

@@ -14,6 +14,12 @@ namespace base {
 
 namespace internal {
 
+namespace {
+
+ThreadCacheRegistry g_instance;
+
+}
+
 BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 
 namespace {
@@ -30,14 +36,11 @@ static std::atomic<bool> g_has_instance;
 
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
-  static NoDestructor<ThreadCacheRegistry> instance;
-  return *instance.get();
+  return g_instance;
 }
 
-ThreadCacheRegistry::ThreadCacheRegistry() = default;
-
 void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
-  AutoLock scoped_locker(GetLock());
+  PartitionAutoLock scoped_locker(GetLock());
   cache->next_ = nullptr;
   cache->prev_ = nullptr;
 
@@ -49,7 +52,7 @@ void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
 }
 
 void ThreadCacheRegistry::UnregisterThreadCache(ThreadCache* cache) {
-  AutoLock scoped_locker(GetLock());
+  PartitionAutoLock scoped_locker(GetLock());
   if (cache->prev_)
     cache->prev_->next_ = cache->next_;
   if (cache->next_)
@@ -62,7 +65,7 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
                                     ThreadCacheStats* stats) {
   memset(reinterpret_cast<void*>(stats), 0, sizeof(ThreadCacheStats));
 
-  AutoLock scoped_locker(GetLock());
+  PartitionAutoLock scoped_locker(GetLock());
   if (my_thread_only) {
     auto* tcache = ThreadCache::Get();
     if (!tcache)
@@ -85,7 +88,7 @@ void ThreadCacheRegistry::PurgeAll() {
   auto* current_thread_tcache = ThreadCache::Get();
 
   {
-    AutoLock scoped_locker(GetLock());
+    PartitionAutoLock scoped_locker(GetLock());
     ThreadCache* tcache = list_head_;
     while (tcache) {
       // Cannot purge directly, need to ask the other thread to purge "at some

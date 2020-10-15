@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
@@ -63,7 +64,20 @@ struct ThreadCacheStats {
 class BASE_EXPORT ThreadCacheRegistry {
  public:
   static ThreadCacheRegistry& Instance();
-  ~ThreadCacheRegistry() = delete;
+  // Do not instantiate.
+  //
+  // Several things are surprising here:
+  // - The constructor is public even though this is intended to be a singleton:
+  //   we cannot use a "static local" variable in |Instance()| as this is
+  //   reached too early during CRT initialization on Windows, meaning that
+  //   static local variables don't work (as they call into the uninitialized
+  //   runtime). To sidestep that, we use a regular global variable in the .cc,
+  //   which is fine as this object's constructor is constexpr.
+  // - Marked inline so that the chromium style plugin doesn't complain that a
+  //   "complex constructor" has an inline body. This warning is disabled when
+  //   the constructor is explicitly marked "inline". Note that this is a false
+  //   positive of the plugin, since constexpr implies inline.
+  inline constexpr ThreadCacheRegistry();
 
   void RegisterThreadCache(ThreadCache* cache);
   void UnregisterThreadCache(ThreadCache* cache);
@@ -73,15 +87,16 @@ class BASE_EXPORT ThreadCacheRegistry {
   // a later point (during a deallocation).
   void PurgeAll();
 
-  static Lock& GetLock() { return Instance().lock_; }
+  static PartitionLock& GetLock() { return Instance().lock_; }
 
  private:
   friend class NoDestructor<ThreadCacheRegistry>;
-  ThreadCacheRegistry();
-
-  Lock lock_;
+  // Not using base::Lock as the object's constructor must be constexpr.
+  PartitionLock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
 };
+
+constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
 
 // Optional statistics collection.
 #if DCHECK_IS_ON()

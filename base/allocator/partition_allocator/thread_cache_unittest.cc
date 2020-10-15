@@ -260,7 +260,7 @@ TEST_F(ThreadCacheTest, ThreadCacheRegistry) {
     auto* tcache = g_root->thread_cache_for_testing();
     EXPECT_TRUE(tcache);
 
-    AutoLock lock(ThreadCacheRegistry::GetLock());
+    PartitionAutoLock lock(ThreadCacheRegistry::GetLock());
     EXPECT_EQ(tcache->prev_, nullptr);
     EXPECT_EQ(tcache->next_, parent_thread_tcache);
   })};
@@ -269,7 +269,7 @@ TEST_F(ThreadCacheTest, ThreadCacheRegistry) {
   PlatformThread::Create(0, &delegate, &thread_handle);
   PlatformThread::Join(thread_handle);
 
-  AutoLock lock(ThreadCacheRegistry::GetLock());
+  PartitionAutoLock lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
   EXPECT_EQ(parent_thread_tcache->next_, nullptr);
 }
