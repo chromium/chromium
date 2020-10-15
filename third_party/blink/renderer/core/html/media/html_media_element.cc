@@ -399,10 +399,9 @@ std::ostream& operator<<(std::ostream& stream,
 constexpr double HTMLMediaElement::kMinPlaybackRate;
 constexpr double HTMLMediaElement::kMaxPlaybackRate;
 
+// static
 MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
     const ContentType& content_type) {
-  DEFINE_STATIC_LOCAL(const String, codecs, ("codecs"));
-
   // TODO(https://crbug.com/809912): Finding source of mime parsing crash.
   static base::debug::CrashKeyString* content_type_crash_key =
       base::debug::AllocateCrashKeyString("media_content_type",
@@ -413,7 +412,7 @@ MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
   String type = content_type.GetType().DeprecatedLower();
   // The codecs string is not lower-cased because MP4 values are case sensitive
   // per http://tools.ietf.org/html/rfc4281#page-7.
-  String type_codecs = content_type.Parameter(codecs);
+  String type_codecs = content_type.Parameter("codecs");
 
   if (type.IsEmpty())
     return MIMETypeRegistry::kIsNotSupported;
