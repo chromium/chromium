@@ -13,6 +13,7 @@ import './scanner_select.js';
 import './source_select.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {getScanService} from './mojo_interface_provider.js';
 import {ScannerArr} from './scanning_app_types.js';
 import {tokenToString} from './scanning_app_util.js';
@@ -25,6 +26,8 @@ Polymer({
   is: 'scanning-app',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
 
   /** @private {?chromeos.scanning.mojom.ScanServiceInterface} */
   scanService_: null,
