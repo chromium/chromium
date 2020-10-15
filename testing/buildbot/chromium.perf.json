@@ -1163,6 +1163,7 @@
           "dimension_sets": [
             {
               "cpu": "arm",
+              "os": "Mac",
               "pool": "chrome.tests.perf"
             }
           ],

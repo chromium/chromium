@@ -644,6 +644,7 @@ BUILDERS = {
         'mac',
         'dimension': {
             'cpu': 'arm',
+            'os': 'Mac',
             'pool': 'chrome.tests.perf',
         },
     },
