@@ -247,22 +247,22 @@ void DevToolsListener::DispatchProtocolMessage(
   if (!navigated_)
     return;
 
-  std::unique_ptr<base::DictionaryValue> response = base::DictionaryValue::From(
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(SpanToStringPiece(message)));
-  CHECK(response);
+  CHECK(value);
 
-  std::string* method = response->FindStringPath("method");
+  std::string* method = value->FindStringPath("method");
   if (method) {
     if (*method == "Runtime.executionContextsCreated")
       script_.clear();
     else if (*method == "Debugger.scriptParsed")
-      script_.push_back(std::move(response));
+      script_.push_back(std::move(value));
     return;
   }
 
-  base::Optional<int> id = response->FindIntPath("id");
+  base::Optional<int> id = value->FindIntPath("id");
   if (id.has_value() && id.value() == value_id_) {
-    value_.reset(response.release());
+    value_.reset(value.release());
     CHECK(value_closure_);
     std::move(value_closure_).Run();
   }
