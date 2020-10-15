@@ -29,4 +29,11 @@ bool TestCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
   return true;
 }
 
+void TestCaptureModeDelegate::StartObservingRestrictedContent(
+    const aura::Window* window,
+    const gfx::Rect& bounds,
+    base::OnceClosure stop_callback) {}
+
+void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
+
 }  // namespace ash

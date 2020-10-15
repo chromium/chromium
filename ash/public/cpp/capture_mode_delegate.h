@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback.h"
 
 namespace aura {
 class Window;
@@ -49,6 +50,18 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual bool IsCaptureAllowed(const aura::Window* window,
                                 const gfx::Rect& bounds,
                                 bool for_video) const = 0;
+
+  // Called when a video capture for |window| and |bounds| area is started, so
+  // that Data Leak Prevention can start observing the area.
+  // |on_area_restricted_callback| will be called when the area becomes
+  // restricted so that the capture should be interrupted.
+  virtual void StartObservingRestrictedContent(
+      const aura::Window* window,
+      const gfx::Rect& bounds,
+      base::OnceClosure on_area_restricted_callback) = 0;
+
+  // Called when the running video capture is stopped.
+  virtual void StopObservingRestrictedContent() = 0;
 };
 
 }  // namespace ash

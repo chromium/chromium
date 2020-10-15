@@ -85,6 +85,18 @@ bool ChromeCaptureModeDelegate::IsCaptureAllowed(const aura::Window* window,
   policy::DlpContentManager* dlp_content_manager =
       policy::DlpContentManager::Get();
   const ScreenshotArea area = ConvertToScreenshotArea(window, bounds);
-  // TODO(poromov): Implement check for video capture.
-  return for_video ? true : !dlp_content_manager->IsScreenshotRestricted(area);
+  return for_video ? !dlp_content_manager->IsVideoCaptureRestricted(area)
+                   : !dlp_content_manager->IsScreenshotRestricted(area);
+}
+
+void ChromeCaptureModeDelegate::StartObservingRestrictedContent(
+    const aura::Window* window,
+    const gfx::Rect& bounds,
+    base::OnceClosure stop_callback) {
+  policy::DlpContentManager::Get()->OnVideoCaptureStarted(
+      ConvertToScreenshotArea(window, bounds), std::move(stop_callback));
+}
+
+void ChromeCaptureModeDelegate::StopObservingRestrictedContent() {
+  policy::DlpContentManager::Get()->OnVideoCaptureStopped();
 }

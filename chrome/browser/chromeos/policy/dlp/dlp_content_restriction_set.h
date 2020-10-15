@@ -19,6 +19,8 @@ enum DlpContentRestriction {
   kPrivacyScreen = 1 << 1,
   // Do not allow printing.
   kPrint = 1 << 2,
+  // Do not allow video capturing of the content.
+  kVideoCapture = 1 << 3,
 };
 
 // Represents set of restrictions applied to on-screen content.

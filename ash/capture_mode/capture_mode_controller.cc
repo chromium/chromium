@@ -284,6 +284,7 @@ void CaptureModeController::EndVideoRecording() {
   // with all the frames.
   is_recording_in_progress_ = false;
   Shell::Get()->UpdateCursorCompositingEnabled();
+  delegate_->StopObservingRestrictedContent();
 }
 
 bool CaptureModeController::IsCaptureAllowed() const {
@@ -520,6 +521,11 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   Shell::Get()->UpdateCursorCompositingEnabled();
 
   // TODO(afakhry): Call into the recording service.
+
+  delegate_->StartObservingRestrictedContent(
+      capture_params->window, capture_params->bounds,
+      base::BindOnce(&CaptureModeController::EndVideoRecording,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   ShowStopRecordingButton(capture_params->window->GetRootWindow());
 }

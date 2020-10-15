@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_TEST_CAPTURE_MODE_DELEGATE_H_
 
 #include "ash/public/cpp/capture_mode_delegate.h"
+#include "base/callback.h"
 
 namespace ash {
 
@@ -24,6 +25,11 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool IsCaptureAllowed(const aura::Window* window,
                         const gfx::Rect& bounds,
                         bool for_video) const override;
+  void StartObservingRestrictedContent(
+      const aura::Window* window,
+      const gfx::Rect& bounds,
+      base::OnceClosure stop_callback) override;
+  void StopObservingRestrictedContent() override;
 };
 
 }  // namespace ash

@@ -9,7 +9,6 @@
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
@@ -51,53 +50,12 @@ DlpContentRestrictionSet DlpContentManager::GetOnScreenPresentRestrictions()
 
 bool DlpContentManager::IsScreenshotRestricted(
     const ScreenshotArea& area) const {
-  // Fullscreen - restricted if any confidential data is visible.
-  if (area.type == ScreenshotType::kAllRootWindows) {
-    return GetOnScreenPresentRestrictions().HasRestriction(
-        DlpContentRestriction::kScreenshot);
-  }
+  return IsAreaRestricted(area, DlpContentRestriction::kScreenshot);
+}
 
-  // Window - restricted if the window contains confidential data.
-  if (area.type == ScreenshotType::kWindow) {
-    DCHECK(area.window);
-    for (auto& entry : confidential_web_contents_) {
-      aura::Window* web_contents_window = entry.first->GetNativeView();
-      if (entry.second.HasRestriction(DlpContentRestriction::kScreenshot) &&
-          area.window->Contains(web_contents_window)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  DCHECK_EQ(area.type, ScreenshotType::kPartialWindow);
-  DCHECK(area.rect);
-  DCHECK(area.window);
-  // Partial - restricted if any visible confidential WebContents intersects
-  // with the area.
-  for (auto& entry : confidential_web_contents_) {
-    if (entry.first->GetVisibility() != content::Visibility::VISIBLE ||
-        !entry.second.HasRestriction(DlpContentRestriction::kScreenshot)) {
-      continue;
-    }
-    aura::Window* web_contents_window = entry.first->GetNativeView();
-    aura::Window* root_window = web_contents_window->GetRootWindow();
-    // If no root window, then the WebContent shouldn't be visible.
-    if (!root_window)
-      continue;
-    // Not allowing if the area intersects with confidential WebContents,
-    // but the intersection doesn't belong to occluded area.
-    gfx::Rect intersection(*area.rect);
-    aura::Window::ConvertRectToTarget(area.window, root_window, &intersection);
-    intersection.Intersect(web_contents_window->GetBoundsInRootWindow());
-    if (!intersection.IsEmpty() &&
-        !web_contents_window->occluded_region_in_root().contains(
-            gfx::RectToSkIRect(intersection))) {
-      return true;
-    }
-  }
-
-  return false;
+bool DlpContentManager::IsVideoCaptureRestricted(
+    const ScreenshotArea& area) const {
+  return IsAreaRestricted(area, DlpContentRestriction::kVideoCapture);
 }
 
 bool DlpContentManager::IsPrintingRestricted(
@@ -111,6 +69,21 @@ bool DlpContentManager::IsPrintingRestricted(
 
   return GetConfidentialRestrictions(web_contents)
       .HasRestriction(DlpContentRestriction::kPrint);
+}
+
+void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area,
+                                              base::OnceClosure stop_callback) {
+  if (IsVideoCaptureRestricted(area)) {
+    std::move(stop_callback).Run();
+    return;
+  }
+  DCHECK(!running_video_capture_.has_value());
+  running_video_capture_.emplace(
+      std::make_pair(area, std::move(stop_callback)));
+}
+
+void DlpContentManager::OnVideoCaptureStopped() {
+  running_video_capture_.reset();
 }
 
 /* static */
@@ -140,6 +113,9 @@ void DlpContentManager::OnConfidentialityChanged(
     if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
       MaybeChangeOnScreenRestrictions();
     }
+    // TODO(crbug.com/1133324): Track the corresponding window position for
+    // video capture. It might appear that some confidential content will become
+    // visible in the video capture area and it should be stopped.
   }
 }
 
@@ -201,6 +177,7 @@ void DlpContentManager::MaybeChangeOnScreenRestrictions() {
     on_screen_restrictions_ = new_restriction_set;
     OnScreenRestrictionsChanged(added_restrictions, removed_restrictions);
   }
+  CheckRunningVideoCapture();
 }
 
 void DlpContentManager::OnScreenRestrictionsChanged(
@@ -229,6 +206,68 @@ void DlpContentManager::MaybeRemovePrivacyScreenEnforcement() const {
   if (!GetOnScreenPresentRestrictions().HasRestriction(
           DlpContentRestriction::kPrivacyScreen)) {
     ash::PrivacyScreenDlpHelper::Get()->SetEnforced(false);
+  }
+}
+
+bool DlpContentManager::IsAreaRestricted(
+    const ScreenshotArea& area,
+    DlpContentRestriction restriction) const {
+  // Fullscreen - restricted if any confidential data is visible.
+  if (area.type == ScreenshotType::kAllRootWindows) {
+    return GetOnScreenPresentRestrictions().HasRestriction(restriction);
+  }
+
+  // Window - restricted if the window contains confidential data.
+  if (area.type == ScreenshotType::kWindow) {
+    DCHECK(area.window);
+    for (auto& entry : confidential_web_contents_) {
+      aura::Window* web_contents_window = entry.first->GetNativeView();
+      if (entry.second.HasRestriction(restriction) &&
+          area.window->Contains(web_contents_window)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  DCHECK_EQ(area.type, ScreenshotType::kPartialWindow);
+  DCHECK(area.rect);
+  DCHECK(area.window);
+  // Partial - restricted if any visible confidential WebContents intersects
+  // with the area.
+  for (auto& entry : confidential_web_contents_) {
+    if (entry.first->GetVisibility() != content::Visibility::VISIBLE ||
+        !entry.second.HasRestriction(restriction)) {
+      continue;
+    }
+    aura::Window* web_contents_window = entry.first->GetNativeView();
+    aura::Window* root_window = web_contents_window->GetRootWindow();
+    // If no root window, then the WebContent shouldn't be visible.
+    if (!root_window)
+      continue;
+    // Not allowing if the area intersects with confidential WebContents,
+    // but the intersection doesn't belong to occluded area.
+    gfx::Rect intersection(*area.rect);
+    aura::Window::ConvertRectToTarget(area.window, root_window, &intersection);
+    intersection.Intersect(web_contents_window->GetBoundsInRootWindow());
+    if (!intersection.IsEmpty() &&
+        !web_contents_window->occluded_region_in_root().contains(
+            gfx::RectToSkIRect(intersection))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void DlpContentManager::CheckRunningVideoCapture() {
+  if (!running_video_capture_.has_value())
+    return;
+  const auto& area = running_video_capture_->first;
+  auto& stop_callback = running_video_capture_->second;
+  if (IsAreaRestricted(area, DlpContentRestriction::kVideoCapture)) {
+    std::move(stop_callback).Run();
+    running_video_capture_.reset();
   }
 }
 

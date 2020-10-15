@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_H_
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/ui/ash/screenshot_area.h"
 
 class GURL;
 struct ScreenshotArea;
@@ -41,8 +44,19 @@ class DlpContentManager {
   // Returns whether screenshots should be restricted.
   virtual bool IsScreenshotRestricted(const ScreenshotArea& area) const;
 
+  // Returns whether video capture should be restricted.
+  bool IsVideoCaptureRestricted(const ScreenshotArea& area) const;
+
   // Returns whether printing should be restricted.
   bool IsPrintingRestricted(content::WebContents* web_contents) const;
+
+  // Called when video capturing for |area| is started.
+  // |stop_callback| will be called when restricted content will appear there.
+  void OnVideoCaptureStarted(const ScreenshotArea& area,
+                             base::OnceClosure stop_callback);
+
+  // Called when video capturing is stopped.
+  void OnVideoCaptureStopped();
 
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
@@ -91,6 +105,14 @@ class DlpContentManager {
   // Removes PrivacyScreen enforcement after delay if it's still not enforced.
   void MaybeRemovePrivacyScreenEnforcement() const;
 
+  // Returns whether |restriction| is currently enforced for |area|.
+  bool IsAreaRestricted(const ScreenshotArea& area,
+                        DlpContentRestriction restriction) const;
+
+  // Checks and stops the running video capture if restricted content appeared
+  // in the corresponding areas.
+  void CheckRunningVideoCapture();
+
   // Get the delay before switching privacy screen off.
   static base::TimeDelta GetPrivacyScreenOffDelayForTesting();
 
@@ -100,6 +122,10 @@ class DlpContentManager {
 
   // Set of restriction applied to the currently visible content.
   DlpContentRestrictionSet on_screen_restrictions_;
+
+  // The currently running video capture are and callback to stop, if any.
+  base::Optional<std::pair<ScreenshotArea, base::OnceClosure>>
+      running_video_capture_;
 };
 
 }  // namespace policy
