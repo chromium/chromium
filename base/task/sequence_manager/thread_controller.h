@@ -102,13 +102,17 @@ class ThreadController {
   virtual void DetachFromMessagePump() = 0;
 #endif
 
+  // Sets the SingleThreadTaskRunner that will be returned by
+  // ThreadTaskRunnerHandle::Get on the thread controlled by this
+  // ThreadController.
+  virtual void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) = 0;
+
   // TODO(altimin): Get rid of the methods below.
   // These methods exist due to current integration of SequenceManager
   // with MessageLoop.
 
   virtual bool RunsTasksInCurrentSequence() = 0;
   virtual const TickClock* GetClock() = 0;
-  virtual void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) = 0;
   virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
   virtual void RestoreDefaultTaskRunner() = 0;
   virtual void AddNestingObserver(RunLoop::NestingObserver* observer) = 0;

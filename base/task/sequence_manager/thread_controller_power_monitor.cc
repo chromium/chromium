@@ -30,7 +30,7 @@ ThreadControllerPowerMonitor::~ThreadControllerPowerMonitor() {
 }
 
 void ThreadControllerPowerMonitor::BindToCurrentThread() {
-  // Occasionally registration happens twice (i.e. when the deprecated
+  // Occasionally registration happens twice (i.e. when the
   // ThreadController::SetDefaultTaskRunner() re-initializes the
   // ThreadController).
   if (is_observer_registered_)
