@@ -1212,7 +1212,6 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.h
 
 crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-2.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/fractions/frac-invalid-3.html [ Failure ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-dynamic.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction-009.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/presentation-markup/direction/direction.html [ Failure ]

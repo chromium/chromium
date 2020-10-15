@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
@@ -138,6 +139,14 @@ void MathMLOperatorElement::ParseAttribute(
   } else if (param.name == mathml_names::kMovablelimitsAttr) {
     SetOperatorPropertyDirtyFlagIfNeeded(
         param, MathMLOperatorElement::kMovableLimits, needs_layout);
+  } else if (param.name == mathml_names::kLspaceAttr ||
+             param.name == mathml_names::kRspaceAttr) {
+    needs_layout = param.new_value != param.old_value;
+    if (needs_layout && GetLayoutObject()) {
+      SetNeedsStyleRecalc(
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
+    }
   }
   if (needs_layout && GetLayoutObject() && GetLayoutObject()->IsMathML()) {
     GetLayoutObject()
