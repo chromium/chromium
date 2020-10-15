@@ -12,11 +12,15 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
+#include "chrome/browser/upgrade_detector/installed_version_monitor.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
 
@@ -100,6 +104,15 @@ InstalledVersionPoller::ScopedDisableForTesting::~ScopedDisableForTesting() {
 
 // InstalledVersionPoller ------------------------------------------------------
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class InstalledVersionPoller::PollType {
+  kStartup = 0,   // The initial poll created at startup.
+  kMonitor = 1,   // A poll in response to notification from the monitor.
+  kPeriodic = 2,  // The periodic poll.
+  kMaxValue = kPeriodic
+};
+
 // static
 const base::TimeDelta InstalledVersionPoller::kDefaultPollingInterval =
     base::TimeDelta::FromHours(2);
@@ -107,31 +120,56 @@ const base::TimeDelta InstalledVersionPoller::kDefaultPollingInterval =
 InstalledVersionPoller::InstalledVersionPoller(BuildState* build_state)
     : InstalledVersionPoller(build_state,
                              GetGetInstalledVersionCallback(),
+                             InstalledVersionMonitor::Create(),
                              nullptr) {}
 
 InstalledVersionPoller::InstalledVersionPoller(
     BuildState* build_state,
     GetInstalledVersionCallback get_installed_version,
+    std::unique_ptr<InstalledVersionMonitor> monitor,
     const base::TickClock* tick_clock)
     : build_state_(build_state),
       get_installed_version_(std::move(get_installed_version)),
-      timer_(FROM_HERE,
-             GetPollingInterval(),
-             base::BindRepeating(&InstalledVersionPoller::Poll,
-                                 base::Unretained(this)),
-             tick_clock) {
+      timer_(tick_clock) {
   // Make the first check in the background without delay. Suppress this if
   // polling is disabled for testing. This prevents all polling from taking
   // place since the result of poll N kicks off poll N+1.
-  if (!g_disabled_for_testing)
-    Poll();
+  if (!g_disabled_for_testing) {
+    StartMonitor(std::move(monitor));
+    Poll(PollType::kStartup);
+  }
 }
 
 InstalledVersionPoller::~InstalledVersionPoller() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void InstalledVersionPoller::Poll() {
+void InstalledVersionPoller::StartMonitor(
+    std::unique_ptr<InstalledVersionMonitor> monitor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!monitor_);
+  monitor_ = std::move(monitor);
+  monitor_->Start(base::BindRepeating(&InstalledVersionPoller::OnMonitorResult,
+                                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InstalledVersionPoller::OnMonitorResult(bool error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!error) {
+    // Wait ten seconds before polling for the new version in case the monitor
+    // provides multiple notifications during a normal update. Repeat
+    // notifications will push back the poll.
+    timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10),
+                 base::BindOnce(&InstalledVersionPoller::Poll,
+                                base::Unretained(this), PollType::kMonitor));
+  } else {
+    // An error occurred while monitoring; disable the monitor.
+    monitor_.reset();
+  }
+}
+
+void InstalledVersionPoller::Poll(PollType poll_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Run the version getter in the background. Get the result back via a weak
   // pointer so that the result is dropped on the floor should this instance be
@@ -142,10 +180,11 @@ void InstalledVersionPoller::Poll() {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(get_installed_version_),
       base::BindOnce(&InstalledVersionPoller::OnInstalledVersion,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), poll_type));
 }
 
 void InstalledVersionPoller::OnInstalledVersion(
+    PollType poll_type,
     InstalledAndCriticalVersion versions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -171,7 +210,20 @@ void InstalledVersionPoller::OnInstalledVersion(
     // version) or differs from the running version. Report it accordingly.
     build_state_->SetUpdate(update_type, versions.installed_version,
                             versions.critical_version);
+    // Report the first type of poll that discovers an update.
+    RecordPollTypeOnce(poll_type);
   }
   // Poll again after the polling interval passes.
-  timer_.Reset();
+  timer_.Start(FROM_HERE, GetPollingInterval(),
+               base::BindOnce(&InstalledVersionPoller::Poll,
+                              base::Unretained(this), PollType::kPeriodic));
+}
+
+void InstalledVersionPoller::RecordPollTypeOnce(PollType poll_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (recorded_poll_type_)
+    return;
+
+  base::UmaHistogramEnumeration("UpgradeDetector.PollType", poll_type);
+  recorded_poll_type_ = true;
 }

@@ -4507,6 +4507,8 @@ static_library("browser") {
       "themes/theme_helper_win.cc",
       "themes/theme_helper_win.h",
       "upgrade_detector/get_installed_version_win.cc",
+      "upgrade_detector/registry_monitor.cc",
+      "upgrade_detector/registry_monitor.h",
       "webshare/win/show_share_ui_for_window_operation.cc",
       "webshare/win/show_share_ui_for_window_operation.h",
       "win/app_icon.cc",
@@ -4752,6 +4754,8 @@ static_library("browser") {
       "renderer_host/chrome_render_widget_host_view_mac_history_swiper.h",
       "renderer_host/chrome_render_widget_host_view_mac_history_swiper.mm",
       "shell_integration_mac.mm",
+      "upgrade_detector/directory_monitor.cc",
+      "upgrade_detector/directory_monitor.h",
       "upgrade_detector/get_installed_version_mac.mm",
     ]
     deps += [
@@ -4829,6 +4833,8 @@ static_library("browser") {
       "shell_integration_linux.h",
       "themes/theme_service_aura_linux.cc",
       "themes/theme_service_aura_linux.h",
+      "upgrade_detector/directory_monitor.cc",
+      "upgrade_detector/directory_monitor.h",
       "upgrade_detector/get_installed_version_linux.cc",
     ]
     deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
@@ -5002,6 +5008,7 @@ static_library("browser") {
       "signin/signin_global_error_factory.h",
       "upgrade_detector/get_installed_version.cc",
       "upgrade_detector/get_installed_version.h",
+      "upgrade_detector/installed_version_monitor.h",
       "upgrade_detector/installed_version_poller.cc",
       "upgrade_detector/installed_version_poller.h",
       "upgrade_detector/upgrade_detector_impl.cc",

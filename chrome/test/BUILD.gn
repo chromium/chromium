@@ -3842,6 +3842,7 @@ test("unit_tests") {
       "../browser/shell_integration_win_unittest.cc",
       "../browser/ui/webui/version_handler_win_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_win_unittest.cc",
+      "../browser/upgrade_detector/registry_monitor_unittest.cc",
       "../browser/win/chrome_elf_init_unittest.cc",
       "../browser/win/jumplist_file_util_unittest.cc",
       "../browser/win/jumplist_update_util_unittest.cc",
@@ -3868,6 +3869,7 @@ test("unit_tests") {
       "../browser/notifications/stub_notification_center_mac.mm",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/service_process/service_process_control_mac_unittest.mm",
+      "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../common/mac/mock_launchd.h",
       "../common/mac/mock_launchd.mm",
     ]
@@ -5460,6 +5462,7 @@ test("unit_tests") {
     sources += [
       "../browser/shell_integration_linux_unittest.cc",
       "../browser/ui/global_media_controls/media_notification_device_monitor_unittest.cc",
+      "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_linux_unittest.cc",
     ]
   }

@@ -38093,6 +38093,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
              PackageManager"/>
 </enum>
 
+<enum name="InstalledVersionPollType">
+  <int value="0" label="Process startup"/>
+  <int value="1" label="InstalledVersionMonitor notification"/>
+  <int value="2" label="Periodic poll"/>
+</enum>
+
 <enum name="InstallStatus">
   <int value="0" label="FIRST_INSTALL_SUCCESS"/>
   <int value="1" label="INSTALL_REPAIRED"/>
