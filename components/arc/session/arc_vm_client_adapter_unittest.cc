@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -648,6 +649,85 @@ TEST_F(ArcVmClientAdapterTest, StopArcInstance) {
   run_loop()->Run();
   // ..and that calls ArcInstanceStopped.
   EXPECT_TRUE(arc_instance_stopped_called());
+}
+
+// b/164816080 This test ensures that a new vm instance that is
+// created while handling the shutting down of the previous instance,
+// doesn't incorrectly receive the shutdown event as well.
+TEST_F(ArcVmClientAdapterTest, DoesNotGetArcInstanceStoppedOnNestedInstance) {
+  using RunLoopFactory = base::RepeatingCallback<base::RunLoop*()>;
+
+  class Observer : public ArcClientAdapter::Observer {
+   public:
+    Observer(RunLoopFactory run_loop_factory, Observer* child_observer)
+        : run_loop_factory_(run_loop_factory),
+          child_observer_(child_observer) {}
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+    ~Observer() override {
+      if (child_observer_ && nested_adapter_)
+        nested_adapter_->RemoveObserver(child_observer_);
+    }
+
+    bool stopped_called() const { return stopped_called_; }
+
+    // ArcClientAdapter::Observer:
+    void ArcInstanceStopped() override {
+      stopped_called_ = true;
+
+      if (child_observer_) {
+        nested_adapter_ = CreateArcVmClientAdapterForTesting(base::DoNothing());
+        nested_adapter_->AddObserver(child_observer_);
+        nested_adapter_->SetUserInfo(
+            cryptohome::Identification(user_manager::StubAccountId()),
+            kUserIdHash, kSerialNumber);
+
+        base::RunLoop* run_loop = run_loop_factory_.Run();
+        nested_adapter_->StartMiniArc({}, QuitClosure(run_loop));
+        run_loop->Run();
+
+        run_loop = run_loop_factory_.Run();
+        nested_adapter_->UpgradeArc({}, QuitClosure(run_loop));
+        run_loop->Run();
+      }
+    }
+
+   private:
+    base::OnceCallback<void(bool)> QuitClosure(base::RunLoop* run_loop) {
+      return base::BindOnce(
+          [](base::RunLoop* run_loop, bool result) { run_loop->Quit(); },
+          run_loop);
+    }
+
+    base::RepeatingCallback<base::RunLoop*()> const run_loop_factory_;
+    Observer* const child_observer_;
+    std::unique_ptr<ArcClientAdapter> nested_adapter_;
+    bool stopped_called_ = false;
+  };
+
+  SetValidUserInfo();
+  StartMiniArc();
+  UpgradeArc(true);
+
+  RunLoopFactory run_loop_factory = base::BindLambdaForTesting([this]() {
+    RecreateRunLoop();
+    return run_loop();
+  });
+
+  Observer child_observer(run_loop_factory, nullptr);
+  Observer parent_observer(run_loop_factory, &child_observer);
+  adapter()->AddObserver(&parent_observer);
+  base::ScopedClosureRunner teardown(base::BindOnce(
+      [](ArcClientAdapter* adapter, Observer* parent_observer) {
+        adapter->RemoveObserver(parent_observer);
+      },
+      adapter(), &parent_observer));
+
+  SendVmStoppedSignal();
+
+  EXPECT_TRUE(parent_observer.stopped_called());
+  EXPECT_FALSE(child_observer.stopped_called());
 }
 
 // Tests that StopArcInstance() initiates ARC log backup.
