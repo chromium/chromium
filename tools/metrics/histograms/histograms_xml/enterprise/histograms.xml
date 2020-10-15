@@ -1561,8 +1561,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsDomainJoined" enum="BooleanEnabled"
-    expires_after="2020-11-15">
-  <owner>mad@chromium.org</owner>
+    expires_after="2021-11-01">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is joined to an AD domain. This check is performed once
     at start-up on Windows.
@@ -1570,8 +1572,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsEnterpriseUser" enum="BooleanEnabled"
-    expires_after="2021-03-07">
+    expires_after="2021-11-01">
+  <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is considered an enterprise user. An enterprise user is
     either in a domain or is managed via MDM. This check is performed once at
@@ -1591,8 +1595,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalMachine" enum="Boolean"
-    expires_after="2020-06-18">
-  <owner>mad@chromium.org</owner>
+    expires_after="2021-11-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
   <summary>
     Whether the full machine name is the same as the short one, identifying a
     local machine. This check is performed once at start-up on Windows.
@@ -1600,8 +1606,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalUser" enum="Boolean"
-    expires_after="2020-06-18">
-  <owner>mad@chromium.org</owner>
+    expires_after="2021-11-01">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
   <summary>
     Whether the currently logged in user is a local user or not, based on its
     SAM compatible user name and machine name. This check is performed once at
@@ -1610,9 +1618,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManaged2" enum="BooleanEnabled"
-    expires_after="2021-04-04">
+    expires_after="2021-11-01">
   <owner>rogerta@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
   <summary>
     On Windows: Whether the machine is managed via MDM. On macOS: Whether Chrome
     found a file of managed policies to follow. On Android (OS version
