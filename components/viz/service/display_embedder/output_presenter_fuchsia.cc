@@ -230,11 +230,13 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   // the ImagePipe.
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
   sysmem_allocator_->AllocateSharedCollection(collection_token.NewRequest());
+  collection_token->SetName(100u, "ChromiumOutput");
+  collection_token->SetDebugClientInfo("vulkan", 0u);
 
-  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-      token_for_scenic;
+  fuchsia::sysmem::BufferCollectionTokenSyncPtr token_for_scenic;
   collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                               token_for_scenic.NewRequest());
+  token_for_scenic->SetDebugClientInfo("scenic", 0u);
 
   zx_status_t status = collection_token->Sync();
   if (status != ZX_OK) {
