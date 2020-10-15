@@ -2586,6 +2586,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "font-access-chooser",
+    "owners": [ "oyiptong" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "force-color-profile",
     "owners": [ "ccameron" ],
     "expiry_milestone": 89

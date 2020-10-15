@@ -43467,6 +43467,7 @@ from previous Chrome versions.
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>
   <int value="-152439608" label="download-later-debug-on-wifi"/>
+  <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-147283486" label="enable-network-portal-notification"/>
   <int value="-146552997" label="enable-affiliation-based-matching"/>
   <int value="-146315671" label="PrivacyAdvisor:enabled"/>
@@ -43712,6 +43713,7 @@ from previous Chrome versions.
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="87886288" label="DiagnosticsApp:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
+  <int value="89758831" label="FontAccessChooser:enabled"/>
   <int value="89785725"
       label="DataReductionProxyEnabledWithNetworkService:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>

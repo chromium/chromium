@@ -261,6 +261,9 @@ extern const char
 extern const char kFontAccessAPIName[];
 extern const char kFontAccessAPIDescription[];
 
+extern const char kFontAccessChooserAPIName[];
+extern const char kFontAccessChooserAPIDescription[];
+
 extern const char kForceColorProfileSRGB[];
 extern const char kForceColorProfileP3[];
 extern const char kForceColorProfileColorSpin[];

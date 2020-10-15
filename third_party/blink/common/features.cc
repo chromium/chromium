@@ -292,6 +292,10 @@ const base::Feature kAllowSyncXHRInPageDismissal{
 const base::Feature kFontAccess{"FontAccess",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Font access using a chooser interface. https://crbug.com/1138621
+const base::Feature kFontAccessChooser{"FontAccessChooser",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allows Web Components v0 to be re-enabled.
 const base::Feature kWebComponentsV0{"WebComponentsV0",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
