@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_rect_getter.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -91,20 +92,22 @@ class MockWebController : public WebController {
                                             const std::string&)>& callback));
 
   void GetVisualViewport(
-      base::OnceCallback<void(bool, const RectF&)> callback) override {
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback)
+      override {
     OnGetVisualViewport(callback);
   }
   MOCK_METHOD1(OnGetVisualViewport,
-               void(base::OnceCallback<void(bool, const RectF&)>& callback));
+               void(base::OnceCallback<void(const ClientStatus&, const RectF&)>&
+                        callback));
 
-  void GetElementPosition(
+  void GetElementRect(
       const Selector& selector,
-      base::OnceCallback<void(bool, const RectF&)> callback) override {
-    OnGetElementPosition(selector, callback);
+      ElementRectGetter::ElementRectCallback callback) override {
+    OnGetElementRect(selector, callback);
   }
-  MOCK_METHOD2(OnGetElementPosition,
+  MOCK_METHOD2(OnGetElementRect,
                void(const Selector& selector,
-                    base::OnceCallback<void(bool, const RectF&)>& callback));
+                    ElementRectGetter::ElementRectCallback& callback));
 
   void WaitForWindowHeightChange(
       base::OnceCallback<void(const ClientStatus&)> callback) {

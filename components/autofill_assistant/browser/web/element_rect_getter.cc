@@ -86,7 +86,9 @@ void ElementRectGetter::OnGetClientRectResult(
       !result->GetResult()->GetValue()->is_list() ||
       result->GetResult()->GetValue()->GetList().size() != 4u) {
     VLOG(2) << __func__ << " Failed to get element rect: " << status;
-    std::move(callback).Run(false, RectF());
+    std::move(callback).Run(
+        JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
+        RectF());
     return;
   }
 
@@ -108,11 +110,12 @@ void ElementRectGetter::OnGetClientRectResult(
   }
 
   if (index >= element->frame_stack.size()) {
-    std::move(callback).Run(true, rect);
-  } else {
-    GetBoundingClientRect(std::move(element), index + 1, rect,
-                          std::move(callback));
+    std::move(callback).Run(OkClientStatus(), rect);
+    return;
   }
+
+  GetBoundingClientRect(std::move(element), index + 1, rect,
+                        std::move(callback));
 }
 
 }  // namespace autofill_assistant

@@ -121,10 +121,10 @@ class ElementArea {
   void AddRectangles(const ::google::protobuf::RepeatedPtrField<
                          ElementAreaProto::Rectangle>& rectangles_proto,
                      bool restricted);
-  void OnGetElementPosition(const Selector& selector,
-                            bool found,
-                            const RectF& rect);
-  void OnGetVisualViewport(bool success, const RectF& rect);
+  void OnGetElementRect(const Selector& selector,
+                        const ClientStatus& rect_status,
+                        const RectF& rect);
+  void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
   ScriptExecutorDelegate* const delegate_;

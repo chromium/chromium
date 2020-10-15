@@ -206,17 +206,17 @@ class WebController {
   //
   // The rectangle is expressed in absolute CSS coordinates.
   virtual void GetVisualViewport(
-      base::OnceCallback<void(bool, const RectF&)> callback);
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback);
 
   // Gets the position of the element identified by the selector.
   //
-  // If unsuccessful, the callback gets (false, 0, 0, 0, 0).
+  // If unsuccessful, the callback gets the failure status with an empty rect.
   //
-  // If successful, the callback gets (true, left, top, right, bottom), with
-  // coordinates expressed in absolute CSS coordinates.
-  virtual void GetElementPosition(
-      const Selector& selector,
-      base::OnceCallback<void(bool, const RectF&)> callback);
+  // If successful, the callback gets a success status with a set of
+  // (left, top, right, bottom) coordinates rect, expressed in absolute CSS
+  // coordinates.
+  virtual void GetElementRect(const Selector& selector,
+                              ElementRectGetter::ElementRectCallback callback);
 
   // Checks whether an element matches the given selector.
   //
@@ -336,7 +336,6 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::EvaluateResult> result);
-
   void OnFindElementResult(ElementFinder* finder_to_release,
                            ElementFinder::Callback callback,
                            const ClientStatus& status,
@@ -389,19 +388,17 @@ class WebController {
       size_t index,
       int delay_in_milli,
       base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnFindElementForPosition(
-      base::OnceCallback<void(bool, const RectF&)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> result);
+  void OnFindElementForRect(ElementRectGetter::ElementRectCallback callback,
+                            const ClientStatus& status,
+                            std::unique_ptr<ElementFinder::Result> result);
+  void OnGetElementRect(ElementRectGetter* getter_to_release,
+                        ElementRectGetter::ElementRectCallback callback,
+                        const ClientStatus& rect_status,
+                        const RectF& element_rect);
   void OnGetVisualViewport(
-      base::OnceCallback<void(bool, const RectF&)> callback,
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::EvaluateResult> result);
-  void OnGetElementRectResult(
-      ElementRectGetter* getter_to_release,
-      base::OnceCallback<void(bool, const RectF&)> callback,
-      bool has_rect,
-      const RectF& element_rect);
 
   // Creates a new instance of DispatchKeyEventParams for the specified type and
   // unicode codepoint.

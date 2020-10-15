@@ -70,10 +70,12 @@ class ElementAreaTest : public testing::Test {
     delegate_.GetMutableSettings()->element_position_update_interval =
         base::TimeDelta::FromMilliseconds(100);
 
-    ON_CALL(mock_web_controller_, OnGetElementPosition(_, _))
-        .WillByDefault(RunOnceCallback<1>(false, RectF()));
+    ON_CALL(mock_web_controller_, OnGetElementRect(_, _))
+        .WillByDefault(
+            RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
     ON_CALL(mock_web_controller_, OnGetVisualViewport(_))
-        .WillByDefault(RunOnceCallback<0>(true, RectF(0, 0, 200, 400)));
+        .WillByDefault(
+            RunOnceCallback<0>(OkClientStatus(), RectF(0, 0, 200, 400)));
 
     element_area_.SetOnUpdate(base::BindRepeating(&ElementAreaTest::OnUpdate,
                                                   base::Unretained(this)));
@@ -144,8 +146,8 @@ TEST_F(ElementAreaTest, GetVisualViewport) {
 
 TEST_F(ElementAreaTest, OneRectangle) {
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              OnGetElementRect(Eq(Selector({"#found"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
   std::vector<RectF> rectangles;
@@ -155,8 +157,8 @@ TEST_F(ElementAreaTest, OneRectangle) {
 
 TEST_F(ElementAreaTest, CallOnUpdate) {
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              OnGetElementRect(Eq(Selector({"#found"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 1);
@@ -166,8 +168,9 @@ TEST_F(ElementAreaTest, CallOnUpdate) {
 
 TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillRepeatedly(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              OnGetElementRect(Eq(Selector({"#found"}).MustBeVisible()), _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 1);
@@ -181,8 +184,8 @@ TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
   EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
       .WillOnce(DoNothing());
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              OnGetElementRect(Eq(Selector({"#found"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 0);
@@ -190,7 +193,8 @@ TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
 
 TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
   EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
-      .WillRepeatedly(RunOnceCallback<0>(false, RectF()));
+      .WillRepeatedly(
+          RunOnceCallback<0>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
 
   SetElement("#found");
 
@@ -204,14 +208,13 @@ TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
 }
 
 TEST_F(ElementAreaTest, TwoRectangles) {
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#top_left"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 0, 25, 25)));
   EXPECT_CALL(
       mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#top_left"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 0, 25, 25)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#bottom_right"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 100, 100)));
+      OnGetElementRect(Eq(Selector({"#bottom_right"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 100, 100)));
 
   ElementAreaProto area_proto;
   *area_proto.add_touchable()->add_elements() = ToSelectorProto("#top_left");
@@ -226,14 +229,12 @@ TEST_F(ElementAreaTest, TwoRectangles) {
 }
 
 TEST_F(ElementAreaTest, OneRectangleTwoElements) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 3, 2, 4)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(5, 2, 6, 5)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element1"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element2"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 2, 6, 5)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
@@ -247,16 +248,14 @@ TEST_F(ElementAreaTest, OneRectangleTwoElements) {
 }
 
 TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 3, 2, 4)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element1"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
 
   // Getting the position of #element2 neither succeeds nor fails, simulating an
   // intermediate state which shouldn't be reported to the callback.
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element2"}).MustBeVisible()), _))
       .WillOnce(DoNothing());  // overrides default action
 
   ElementAreaProto area_proto;
@@ -273,22 +272,18 @@ TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
 }
 
 TEST_F(ElementAreaTest, OneRectangleFourElements) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 0, 1, 1)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(9, 9, 100, 100)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element3"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 9, 1, 100)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element4"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(9, 0, 100, 1)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element1"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 0, 1, 1)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element2"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(9, 9, 100, 100)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element3"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 9, 1, 100)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element4"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(9, 0, 100, 1)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
@@ -304,14 +299,12 @@ TEST_F(ElementAreaTest, OneRectangleFourElements) {
 }
 
 TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 1, 2, 2)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(false, RectF()));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element1"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 1, 2, 2)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element2"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
@@ -327,16 +320,15 @@ TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
 }
 
 TEST_F(ElementAreaTest, FullWidthRectangle) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 3, 2, 4)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(5, 7, 6, 8)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element1"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element2"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 7, 6, 8)));
   EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
-      .WillRepeatedly(RunOnceCallback<0>(true, RectF(100, 0, 200, 400)));
+      .WillRepeatedly(
+          RunOnceCallback<0>(OkClientStatus(), RectF(100, 0, 200, 400)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
@@ -355,11 +347,10 @@ TEST_F(ElementAreaTest, FullWidthRectangle) {
 
 TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
   testing::InSequence seq;
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 25, 100, 50)))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 50, 100, 75)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 25, 100, 50)))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
 
   SetElement("#element");
 
@@ -381,11 +372,11 @@ TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
 
 TEST_F(ElementAreaTest, ElementMovesWithTime) {
   testing::InSequence seq;
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 25, 100, 50)))
-      .WillRepeatedly(RunOnceCallback<1>(true, RectF(0, 50, 100, 75)));
+  EXPECT_CALL(mock_web_controller_,
+              OnGetElementRect(Eq(Selector({"#element"}).MustBeVisible()), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 25, 100, 50)))
+      .WillRepeatedly(
+          RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
 
   SetElement("#element");
 
@@ -409,9 +400,9 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
 
 TEST_F(ElementAreaTest, RestrictedElement) {
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(
+              OnGetElementRect(
                   Eq(Selector({"#restricted_element"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#restricted_element", /* restricted= */ true);
 

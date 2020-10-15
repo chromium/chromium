@@ -128,9 +128,9 @@ void ElementArea::Update() {
 
   for (auto& rectangle : rectangles_) {
     for (auto& position : rectangle.positions) {
-      delegate_->GetWebController()->GetElementPosition(
+      delegate_->GetWebController()->GetElementRect(
           position.selector,
-          base::BindOnce(&ElementArea::OnGetElementPosition,
+          base::BindOnce(&ElementArea::OnGetElementRect,
                          weak_ptr_factory_.GetWeakPtr(), position.selector));
     }
   }
@@ -205,10 +205,10 @@ void ElementArea::Rectangle::FillRect(RectF* rect,
   return;
 }
 
-void ElementArea::OnGetElementPosition(const Selector& selector,
-                                       bool found,
-                                       const RectF& rect) {
-  // found == false, has all coordinates set to 0.0, which clears the area.
+void ElementArea::OnGetElementRect(const Selector& selector,
+                                   const ClientStatus& rect_status,
+                                   const RectF& rect) {
+  // !rect_status.ok() has all coordinates set to 0.0, which clears the area.
   bool updated = false;
   for (auto& rectangle : rectangles_) {
     for (auto& position : rectangle.positions) {
@@ -227,12 +227,13 @@ void ElementArea::OnGetElementPosition(const Selector& selector,
   // rectangles_. This is fine.
 }
 
-void ElementArea::OnGetVisualViewport(bool success, const RectF& rect) {
+void ElementArea::OnGetVisualViewport(const ClientStatus& rect_status,
+                                      const RectF& rect) {
   if (!visual_viewport_pending_update_)
     return;
 
   visual_viewport_pending_update_ = false;
-  if (!success)
+  if (!rect_status.ok())
     return;
 
   visual_viewport_ = rect;

@@ -1144,7 +1144,7 @@ void WebController::SendKeyboardInput(
 }
 
 void WebController::GetVisualViewport(
-    base::OnceCallback<void(bool, const RectF&)> callback) {
+    base::OnceCallback<void(const ClientStatus&, const RectF&)> callback) {
   devtools_client_->GetRuntime()->Evaluate(
       runtime::EvaluateParams::Builder()
           .SetExpression(std::string(kGetVisualViewport))
@@ -1156,7 +1156,7 @@ void WebController::GetVisualViewport(
 }
 
 void WebController::OnGetVisualViewport(
-    base::OnceCallback<void(bool, const RectF&)> callback,
+    base::OnceCallback<void(const ClientStatus&, const RectF&)> callback,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::EvaluateResult> result) {
   ClientStatus status =
@@ -1165,8 +1165,9 @@ void WebController::OnGetVisualViewport(
       !result->GetResult()->GetValue()->is_list() ||
       result->GetResult()->GetValue()->GetList().size() != 4u) {
     VLOG(1) << __func__ << " Failed to get visual viewport: " << status;
-    RectF empty;
-    std::move(callback).Run(false, empty);
+    std::move(callback).Run(
+        JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
+        RectF());
     return;
   }
   const auto& list = result->GetResult()->GetValue()->GetList();
@@ -1184,25 +1185,24 @@ void WebController::OnGetVisualViewport(
   rect.right = left + width;
   rect.bottom = top + height;
 
-  std::move(callback).Run(true, rect);
+  std::move(callback).Run(OkClientStatus(), rect);
 }
 
-void WebController::GetElementPosition(
+void WebController::GetElementRect(
     const Selector& selector,
-    base::OnceCallback<void(bool, const RectF&)> callback) {
+    ElementRectGetter::ElementRectCallback callback) {
   FindElement(
       selector, /* strict_mode= */ true,
-      base::BindOnce(&WebController::OnFindElementForPosition,
+      base::BindOnce(&WebController::OnFindElementForRect,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebController::OnFindElementForPosition(
-    base::OnceCallback<void(bool, const RectF&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> result) {
-  if (!status.ok()) {
-    RectF empty;
-    std::move(callback).Run(false, empty);
+void WebController::OnFindElementForRect(
+    ElementRectGetter::ElementRectCallback callback,
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> element_result) {
+  if (!element_status.ok()) {
+    std::move(callback).Run(element_status, RectF());
     return;
   }
   std::unique_ptr<ElementRectGetter> getter =
@@ -1210,20 +1210,20 @@ void WebController::OnFindElementForPosition(
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(
-      std::move(result),
-      base::BindOnce(&WebController::OnGetElementRectResult,
+      std::move(element_result),
+      base::BindOnce(&WebController::OnGetElementRect,
                      weak_ptr_factory_.GetWeakPtr(), ptr, std::move(callback)));
 }
 
-void WebController::OnGetElementRectResult(
+void WebController::OnGetElementRect(
     ElementRectGetter* getter_to_release,
-    base::OnceCallback<void(bool, const RectF&)> callback,
-    bool has_rect,
+    ElementRectGetter::ElementRectCallback callback,
+    const ClientStatus& rect_status,
     const RectF& element_rect) {
   base::EraseIf(pending_workers_, [getter_to_release](const auto& worker) {
     return worker.get() == getter_to_release;
   });
-  std::move(callback).Run(has_rect, element_rect);
+  std::move(callback).Run(rect_status, element_rect);
 }
 
 void WebController::GetOuterHtml(

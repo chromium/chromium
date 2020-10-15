@@ -745,27 +745,26 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                        std::move(done_callback), result_output));
   }
 
-  bool GetElementPosition(const Selector& selector, RectF* rect_output) {
+  ClientStatus GetElementRect(const Selector& selector, RectF* rect_output) {
     base::RunLoop run_loop;
-    bool result;
-    web_controller_->GetElementPosition(
-        selector,
-        base::BindOnce(&WebControllerBrowserTest::OnGetElementPosition,
-                       base::Unretained(this), run_loop.QuitClosure(), &result,
-                       rect_output));
+    ClientStatus result;
+    web_controller_->GetElementRect(
+        selector, base::BindOnce(&WebControllerBrowserTest::OnGetElementRect,
+                                 base::Unretained(this), run_loop.QuitClosure(),
+                                 &result, rect_output));
     run_loop.Run();
     return result;
   }
 
-  void OnGetElementPosition(base::OnceClosure done_callback,
-                            bool* result_output,
-                            RectF* rect_output,
-                            bool non_empty,
-                            const RectF& rect) {
-    if (non_empty) {
+  void OnGetElementRect(base::OnceClosure done_callback,
+                        ClientStatus* result_output,
+                        RectF* rect_output,
+                        const ClientStatus& rect_status,
+                        const RectF& rect) {
+    if (rect_status.ok()) {
       *rect_output = rect;
     }
-    *result_output = non_empty;
+    *result_output = rect_status;
     std::move(done_callback).Run();
   }
 
@@ -1887,23 +1886,28 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
               AnyOf(DOCUMENT_LOADED, DOCUMENT_INTERACTIVE, DOCUMENT_COMPLETE));
 }
 
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetElementPosition) {
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetElementRect) {
   RectF document_element_rect;
   Selector document_element({"#full_height_section"});
-  EXPECT_TRUE(GetElementPosition(document_element, &document_element_rect));
+  EXPECT_EQ(
+      ACTION_APPLIED,
+      GetElementRect(document_element, &document_element_rect).proto_status());
 
   // The iFrame must be after the #full_height_section element to check that
   // the resulting rect is global.
   RectF iframe_element_rect;
   Selector iframe_element({"#iframe", "#touch_area_1"});
-  EXPECT_TRUE(GetElementPosition(iframe_element, &iframe_element_rect));
+  EXPECT_EQ(
+      ACTION_APPLIED,
+      GetElementRect(iframe_element, &iframe_element_rect).proto_status());
 
   EXPECT_GT(iframe_element_rect.top, document_element_rect.bottom);
 
   // Make sure the element is within the iframe.
   RectF iframe_rect;
   Selector iframe({"#iframe"});
-  EXPECT_TRUE(GetElementPosition(iframe, &iframe_rect));
+  EXPECT_EQ(ACTION_APPLIED,
+            GetElementRect(iframe, &iframe_rect).proto_status());
 
   EXPECT_GT(iframe_element_rect.left, iframe_rect.left);
   EXPECT_LT(iframe_element_rect.right, iframe_rect.right);

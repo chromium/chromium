@@ -37,9 +37,12 @@ class ElementRectGetter : public WebControllerWorker {
 
   // Callback that receives the bounding rect of the element.
   //
-  // If the first element is false, the call failed. Otherwise, the second
-  // element contains the rect.
-  using ElementRectCallback = base::OnceCallback<void(bool, const RectF&)>;
+  // If the first argument is a failure status, the call failed and will
+  // send an empty rectangle as the second argument. Otherwise, if the first
+  // argument is a success status the second argumnt will contain the element's
+  // bounding box in global CSS coordinates.
+  using ElementRectCallback =
+      base::OnceCallback<void(const ClientStatus&, const RectF&)>;
 
   void Start(std::unique_ptr<ElementFinder::Result> element,
              ElementRectCallback callback);
