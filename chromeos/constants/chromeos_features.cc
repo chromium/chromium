@@ -327,7 +327,7 @@ const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
 
 // Controls whether to launch IME service with an 'ime' sandbox.
 const base::Feature kEnableImeSandbox{"EnableImeSandbox",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable restriction of symlink traversal on user-supplied filesystems.
 const base::Feature kFsNosymfollow{"FsNosymfollow",
@@ -373,6 +373,10 @@ const base::Feature kImeInputLogicFst{"ImeInputLogicFst",
 // on Chrome OS.
 const base::Feature kImeInputLogicMozc{"ImeInputLogicMozc",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable or disable IME decoder via Mojo connection on Chrome OS.
+const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables view-based version of multiprofile login, as opposed to Web UI one.
 const base::Feature kViewBasedMultiprofileLogin{

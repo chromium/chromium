@@ -35,8 +35,11 @@ inline constexpr bool CrosImeSharedDataEnabled() {
 constexpr int dlopen_flag = RTLD_LAZY | RTLD_NODELETE;
 
 void PreloadSharedLibrary() {
-  if (!dlopen(kCrosImeDecoderLib, dlopen_flag))
-    LOG(ERROR) << "Unable to open " << kCrosImeDecoderLib << " : " << dlerror();
+  if (ImeDecoderInstalled()) {
+    if (!dlopen(kCrosImeDecoderLib, dlopen_flag))
+      LOG(ERROR) << "Unable to open " << kCrosImeDecoderLib << " : "
+                 << dlerror();
+  }
 }
 
 void AddBundleFolder(std::vector<BrokerFilePermission>* permissions) {

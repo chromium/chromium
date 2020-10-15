@@ -423,9 +423,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features->AppendString(GenerateFeatureFlag(
       "mozcinputlogic",
       base::FeatureList::IsEnabled(chromeos::features::kImeInputLogicMozc)));
-  // Flag used to enable UIL Mojo APIs instead of NaCl APIs.
+  // Flag used to enable system built-in IME decoder instead of NaCl.
   features->AppendString(GenerateFeatureFlag(
-      "usemojodecoder", chromeos::features::IsImeSandboxEnabled()));
+      "usemojodecoder",
+      base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)));
   features->AppendString(GenerateFeatureFlag(
       "borderedkey", base::FeatureList::IsEnabled(
                          chromeos::features::kVirtualKeyboardBorderedKey)));

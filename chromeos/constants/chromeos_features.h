@@ -172,6 +172,8 @@ extern const base::Feature kImeInputLogicFst;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kImeInputLogicMozc;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kImeMojoDecoder;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kVirtualKeyboardFloatingDefault;

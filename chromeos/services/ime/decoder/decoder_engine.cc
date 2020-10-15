@@ -74,7 +74,7 @@ DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
     // TODO(b/156897880): Add a fake main entry.
   } else {
     if (!TryLoadDecoder()) {
-      LOG(ERROR) << "DecoderEngine INIT FAILED!";
+      LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
     }
   }
 }
@@ -82,6 +82,11 @@ DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
 DecoderEngine::~DecoderEngine() {}
 
 bool DecoderEngine::TryLoadDecoder() {
+  if (!ImeDecoderInstalled()) {
+    LOG(WARNING) << "IME decoder shared library is not installed.";
+    return false;
+  }
+
   if (engine_main_entry_)
     return true;
 
