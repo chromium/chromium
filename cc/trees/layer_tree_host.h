@@ -65,6 +65,7 @@ struct PresentationFeedback;
 
 namespace cc {
 
+class RasterDarkModeFilter;
 class HeadsUpDisplayLayer;
 class Layer;
 class LayerTreeHostImpl;
@@ -110,6 +111,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     LayerTreeSettings const* settings = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
     MutatorHost* mutator_host = nullptr;
+    RasterDarkModeFilter* dark_mode_filter = nullptr;
 
     // The image worker task runner is used to schedule image decodes. The
     // compositor thread may make sync calls to this thread, analogous to the
@@ -904,6 +906,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool has_copy_request_ = false;
 
   MutatorHost* mutator_host_;
+
+  RasterDarkModeFilter* dark_mode_filter_;
 
   std::vector<std::pair<PaintImage, base::OnceCallback<void(bool)>>>
       queued_image_decodes_;

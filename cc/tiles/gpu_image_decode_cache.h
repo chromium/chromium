@@ -31,6 +31,8 @@ class RasterContextProvider;
 
 namespace cc {
 
+class RasterDarkModeFilter;
+
 // OVERVIEW:
 //
 // GpuImageDecodeCache handles the decode and upload of images that will
@@ -141,7 +143,8 @@ class CC_EXPORT GpuImageDecodeCache
                                SkColorType color_type,
                                size_t max_working_set_bytes,
                                int max_texture_size,
-                               PaintImage::GeneratorClientId client_id);
+                               PaintImage::GeneratorClientId client_id,
+                               RasterDarkModeFilter* const dark_mode_filter);
   ~GpuImageDecodeCache() override;
 
   // Returns the GL texture ID backing the given SkImage.
@@ -749,6 +752,8 @@ class CC_EXPORT GpuImageDecodeCache
   size_t working_set_bytes_ = 0;
   size_t working_set_items_ = 0;
   bool aggressively_freeing_resources_ = false;
+
+  RasterDarkModeFilter* const dark_mode_filter_;
 
   // We can't modify GPU backed SkImages without holding the context lock, so
   // we queue up operations to run the next time the lock is held.

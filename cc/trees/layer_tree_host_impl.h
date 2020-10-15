@@ -88,6 +88,7 @@ namespace cc {
 enum class ActivelyScrollingType;
 class BrowserControlsOffsetManager;
 class CompositorFrameReportingController;
+class RasterDarkModeFilter;
 class DebugRectHistory;
 class EvictionTilePriorityQueue;
 class DroppedFrameCounter;
@@ -260,6 +261,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<MutatorHost> mutator_host,
+      RasterDarkModeFilter* dark_mode_filter,
       int id,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
       LayerTreeHostSchedulingClient* scheduling_client);
@@ -810,6 +812,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       RenderingStatsInstrumentation* rendering_stats_instrumentation,
       TaskGraphRunner* task_graph_runner,
       std::unique_ptr<MutatorHost> mutator_host,
+      RasterDarkModeFilter* dark_mode_filter,
       int id,
       scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
       LayerTreeHostSchedulingClient* scheduling_client);
@@ -1054,6 +1057,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<MutatorHost> mutator_host_;
   std::unique_ptr<MutatorEvents> mutator_events_;
   std::set<VideoFrameController*> video_frame_controllers_;
+  RasterDarkModeFilter* const dark_mode_filter_;
 
   // Map from scroll element ID to scrollbar animation controller.
   // There is one animation controller per pair of overlay scrollbars.

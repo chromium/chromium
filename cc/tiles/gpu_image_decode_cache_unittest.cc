@@ -394,7 +394,7 @@ class GpuImageDecodeCacheTest
     return std::make_unique<GpuImageDecodeCache>(
         context_provider_.get(), use_transfer_cache_, color_type_,
         memory_limit_bytes, max_texture_size_,
-        PaintImage::kDefaultGeneratorClientId);
+        PaintImage::kDefaultGeneratorClientId, nullptr);
   }
 
   // Returns dimensions for an image that will not fit in GPU memory and hence

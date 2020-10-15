@@ -38,6 +38,9 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/single_release_callback.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
+#include "third_party/blink/renderer/platform/graphics/raster_dark_mode_filter_impl.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc {
@@ -50,6 +53,8 @@ LayerTreeView::LayerTreeView(LayerTreeViewDelegate* delegate,
                              scheduler::WebThreadScheduler* scheduler)
     : web_main_thread_scheduler_(scheduler),
       animation_host_(cc::AnimationHost::CreateMainInstance()),
+      dark_mode_filter_(std::make_unique<RasterDarkModeFilterImpl>(
+          GetCurrentDarkModeSettings())),
       delegate_(delegate) {}
 
 LayerTreeView::~LayerTreeView() = default;
@@ -70,6 +75,7 @@ void LayerTreeView::Initialize(
   params.task_graph_runner = task_graph_runner;
   params.main_task_runner = std::move(main_thread);
   params.mutator_host = animation_host_.get();
+  params.dark_mode_filter = dark_mode_filter_.get();
   params.ukm_recorder_factory = std::move(ukm_recorder_factory);
   if (base::ThreadPoolInstance::Get()) {
     // The image worker thread needs to allow waiting since it makes discardable
