@@ -19,12 +19,12 @@ public interface BrowserPaymentRequest {
     interface Factory {
         /**
          * Create an instance of {@link BrowserPaymentRequest}.
-         * @param componentPaymentRequestImpl The ComponentPaymentRequestImpl to work together with
+         * @param paymentRequestService The PaymentRequestService to work together with
          *         the BrowserPaymentRequest instance, cannot be null.
          * @return An instance of BrowserPaymentRequest, cannot be null.
          */
         BrowserPaymentRequest createBrowserPaymentRequest(
-                ComponentPaymentRequestImpl componentPaymentRequestImpl);
+                PaymentRequestService paymentRequestService);
     }
 
     /**
@@ -81,7 +81,7 @@ public interface BrowserPaymentRequest {
     void canMakePayment();
 
     /**
-     * Delegate to the same method of PaymentRequestImpl.
+     * Delegate to the same method of ChromePaymentRequestService.
      * @param debugMessage The debug message shown for web developers.
      * @param reason The reason of the disconnection defined in {@link PaymentErrorReason}.
      */

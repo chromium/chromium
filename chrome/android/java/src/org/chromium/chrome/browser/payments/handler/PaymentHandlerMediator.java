@@ -218,7 +218,7 @@ import java.lang.annotation.RetentionPolicy;
                 break;
             case CloseReason.OTHERS:
                 // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
-                // payment request (and thus {@link PaymentRequestImpl} closes
+                // payment request (and thus {@link ChromePaymentRequestService} closes
                 // PaymentHandlerMediator). "OTHERS" category includes this cases.
                 // TODO(crbug.com/1091957): we should explicitly list merchant aborting payment
                 // request as a {@link CloseReason}, renames "OTHERS" as "UNKNOWN" and asserts

@@ -9,10 +9,10 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.payments.ComponentPaymentRequestImpl;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.OriginSecurityChecker;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
@@ -34,11 +34,11 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /**
- * Creates instances of PaymentRequest.
+ * Creates an instance of PaymentRequest for use in Chrome.
  */
-public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
+public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
     // Tests can inject behaviour on future PaymentRequests via these objects.
-    public static ComponentPaymentRequestImpl.Delegate sDelegateForTest;
+    public static PaymentRequestService.Delegate sDelegateForTest;
 
     private final RenderFrameHost mRenderFrameHost;
 
@@ -103,10 +103,10 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
     }
 
     /**
-     * Production implementation of the PaymentRequestImpl's Delegate. Gives true answers
+     * Production implementation of the ChromePaymentRequestService's Delegate. Gives true answers
      * about the system.
      */
-    public static class PaymentRequestDelegateImpl implements ComponentPaymentRequestImpl.Delegate {
+    public static class PaymentRequestDelegateImpl implements PaymentRequestService.Delegate {
         private final TwaPackageManagerDelegate mPackageManagerDelegate =
                 new TwaPackageManagerDelegate();
         private final RenderFrameHost mRenderFrameHost;
@@ -181,7 +181,7 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
      *
      * @param renderFrameHost The host of the frame that has invoked the PaymentRequest API.
      */
-    public PaymentRequestFactory(RenderFrameHost renderFrameHost) {
+    public ChromePaymentRequestFactory(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
     }
 
@@ -198,7 +198,7 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
             return new InvalidPaymentRequest();
         }
 
-        ComponentPaymentRequestImpl.Delegate delegate;
+        PaymentRequestService.Delegate delegate;
         if (sDelegateForTest != null) {
             delegate = sDelegateForTest;
         } else {
@@ -208,10 +208,10 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
 
-        return ComponentPaymentRequestImpl.createPaymentRequest(mRenderFrameHost,
+        return PaymentRequestService.createPaymentRequest(mRenderFrameHost,
                 /*isOffTheRecord=*/delegate.isOffTheRecord(),
                 /*skipUiForBasicCard=*/delegate.skipUiForBasicCard(), delegate,
                 (componentPaymentRequest)
-                        -> new PaymentRequestImpl(componentPaymentRequest, delegate));
+                        -> new ChromePaymentRequestService(componentPaymentRequest, delegate));
     }
 }

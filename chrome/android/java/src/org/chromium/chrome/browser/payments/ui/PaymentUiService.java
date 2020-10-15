@@ -29,9 +29,9 @@ import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentAppCreator;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.CardEditor;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
-import org.chromium.chrome.browser.payments.PaymentRequestImpl;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
@@ -92,12 +92,12 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * This class manages all of the UIs related to payment. The UI logic of {@link PaymentRequestImpl}
- * should be moved into this class.
+ * This class manages all of the UIs related to payment. The UI logic of {@link
+ * ChromePaymentRequestService} should be moved into this class.
  */
-public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Observer,
-                                          PaymentRequestLifecycleObserver, PaymentHandlerUiObserver,
-                                          FocusChangedObserver, NormalizedAddressRequestDelegate {
+public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Observer,
+                                         PaymentRequestLifecycleObserver, PaymentHandlerUiObserver,
+                                         FocusChangedObserver, NormalizedAddressRequestDelegate {
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
@@ -159,7 +159,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail);
         /** Record the show event to the journey logger and record the transaction amount. */
         void recordShowEventAndTransactionAmount();
-        /** Gets the PaymentRequestUI Client from PaymentRequestImpl. */
+        /** Gets the PaymentRequestUI Client from ChromePaymentRequestService. */
         // TODO(crbug.com/1114791): This class will implement the PaymentRequestUI Client interface
         // once its current implementation has no dependency on PRImpl.
         PaymentRequestUI.Client getPaymentRequestUIClient();
@@ -220,7 +220,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     }
 
     /**
-     * Create PaymentUIsManager.
+     * Create PaymentUiService.
      * @param delegate The delegate of this instance.
      * @param params The parameters of the payment request specified by the merchant.
      * @param webContents The WebContents of the merchant page.
@@ -229,9 +229,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      * @param topLevelOrigin The last committed url of webContents.
      * @param observer The payment UIs observer.
      */
-    public PaymentUIsManager(Delegate delegate, PaymentRequestParams params,
-            WebContents webContents, boolean isOffTheRecord, JourneyLogger journeyLogger,
-            String topLevelOrigin, PaymentUIsObserver observer) {
+    public PaymentUiService(Delegate delegate, PaymentRequestParams params, WebContents webContents,
+            boolean isOffTheRecord, JourneyLogger journeyLogger, String topLevelOrigin,
+            PaymentUIsObserver observer) {
         assert !params.hasClosed();
         mDelegate = delegate;
         mParams = params;
@@ -391,7 +391,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     }
 
     /** @return The minimal UI coordinator. */
-    public MinimalUICoordinator getMinimalUI() { return mMinimalUi; }
+    public MinimalUICoordinator getMinimalUI() {
+        return mMinimalUi;
+    }
 
     /** @return Whether the Payment Request or Minimal UIs are showing. */
     public boolean isShowingUI() {
@@ -439,18 +441,17 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      * @param dismissObserver The onMinimalUiDismissed function.
      */
     public boolean triggerMinimalUI(ChromeActivity chromeActivity, PaymentItem mRawTotal,
-                                 MinimalUICoordinator.ReadyObserver readyObserver,
-                                 MinimalUICoordinator.ConfirmObserver confirmObserver,
-                                 MinimalUICoordinator.DismissObserver dismissObserver) {
+            MinimalUICoordinator.ReadyObserver readyObserver,
+            MinimalUICoordinator.ConfirmObserver confirmObserver,
+            MinimalUICoordinator.DismissObserver dismissObserver) {
         // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
         mPaymentUisShowStateReconciler.onBottomSheetShown();
         mMinimalUi = new MinimalUICoordinator();
         if (mMinimalUi.show(chromeActivity,
-                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                (PaymentApp) mPaymentMethodsSection.getSelectedItem(),
-                mCurrencyFormatterMap.get(mRawTotal.amount.currency),
-                mUiShoppingCart.getTotal(), readyObserver,
-                confirmObserver, dismissObserver)) {
+                    BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
+                    (PaymentApp) mPaymentMethodsSection.getSelectedItem(),
+                    mCurrencyFormatterMap.get(mRawTotal.amount.currency),
+                    mUiShoppingCart.getTotal(), readyObserver, confirmObserver, dismissObserver)) {
             return true;
         }
         return false;
@@ -465,9 +466,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      *                                                completes for non-minimal UI.
      */
     public void onPaymentRequestComplete(int result,
-                     MinimalUICoordinator.ErrorAndCloseObserver onMinimalUiErroredAndClosed,
-                     MinimalUICoordinator.CompleteAndCloseObserver onMinimalUiCompletedAndClosed,
-                     Runnable onPaymentRequestCompleteForNonMinimalUI) {
+            MinimalUICoordinator.ErrorAndCloseObserver onMinimalUiErroredAndClosed,
+            MinimalUICoordinator.CompleteAndCloseObserver onMinimalUiCompletedAndClosed,
+            Runnable onPaymentRequestCompleteForNonMinimalUI) {
         // Update records of the used payment app for sorting payment apps next time.
         EditableOption selectedPaymentMethod = mPaymentMethodsSection.getSelectedItem();
         PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod.getIdentifier());
@@ -475,8 +476,8 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                 selectedPaymentMethod.getIdentifier(), System.currentTimeMillis());
 
         if (mMinimalUi != null) {
-            mMinimalUi.onPaymentRequestComplete(result, onMinimalUiErroredAndClosed,
-                    onMinimalUiCompletedAndClosed);
+            mMinimalUi.onPaymentRequestComplete(
+                    result, onMinimalUiErroredAndClosed, onMinimalUiCompletedAndClosed);
             return;
         }
 
@@ -1522,7 +1523,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      * @param optionType Data being updated.
      * @param option Value of the data being updated.
      * @param callback The callback after an asynchronous check has completed.
-     * @param wasRetryCalled Whether {@link PaymentRequestImpl#retry} has been called.
+     * @param wasRetryCalled Whether {@link ChromePaymentRequestService#retry} has been called.
      * @return The result of the selection.
      */
     @PaymentRequestUI.SelectionResult

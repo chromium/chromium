@@ -31,8 +31,8 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.payments.BasicCardUtils;
-import org.chromium.components.payments.ComponentPaymentRequestImpl;
 import org.chromium.components.payments.MethodStrings;
+import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
 
@@ -540,11 +540,11 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument>
                           R.string.payments_card_expiration_invalid_validation_message));
             mMonthField.setIsFullLine(false);
 
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
+            if (PaymentRequestService.getObserverForTest() != null) {
                 mMonthField.setDropdownCallback(new Callback<Pair<String, Runnable>>() {
                     @Override
                     public void onResult(final Pair<String, Runnable> eventData) {
-                        ComponentPaymentRequestImpl.getObserverForTest()
+                        PaymentRequestService.getObserverForTest()
                                 .onPaymentRequestServiceExpirationMonthChange();
                     }
                 });
@@ -672,8 +672,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument>
                 final boolean isSelectingIncompleteAddress =
                         mIncompleteProfilesForBillingAddress.containsKey(eventData.first);
                 if (!isAddingNewAddress && !isSelectingIncompleteAddress) {
-                    if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                        ComponentPaymentRequestImpl.getObserverForTest()
+                    if (PaymentRequestService.getObserverForTest() != null) {
+                        PaymentRequestService.getObserverForTest()
                                 .onPaymentRequestServiceBillingAddressChangeProcessed();
                     }
                     return;

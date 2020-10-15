@@ -21,7 +21,7 @@ public class PaymentDetailsUpdateService extends Service {
     // AIDL calls can happen on multiple threads in parallel. The binder uses PostTask for
     // synchronization since locks are discouraged in Chromium. The UI thread task runner is used
     // rather than a SequencedTaskRunner since the state of the helper class is also changed by
-    // PaymentRequestImpl.java, which runs on the UI thread.
+    // ChromePaymentRequestService.java, which runs on the UI thread.
     private final IPaymentDetailsUpdateService.Stub mBinder =
             new IPaymentDetailsUpdateService.Stub() {
                 @Override

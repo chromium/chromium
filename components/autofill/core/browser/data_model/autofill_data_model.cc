@@ -72,8 +72,8 @@ double AutofillDataModel::GetFrecencyScore(base::Time time) const {
   // of the profile and leveraging the properties of the logarithmic function.
   // DaysSinceLastUse() and |use_count_| are offset because their minimum values
   // are respectively 0 and 1 but the formula requires at least a value of 2.
-  // Please update getFrecencyScore in PaymentRequestImpl.java as well if below
-  // formula needs update.
+  // Please update getFrecencyScore in ChromePaymentRequestService.java as well
+  // if below formula needs update.
   return -log((time - use_date_).InDays() + 2) / log(use_count_ + 1);
 }
 

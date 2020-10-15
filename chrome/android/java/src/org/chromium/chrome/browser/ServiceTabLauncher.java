@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.payments.PaymentRequestImpl;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -82,7 +82,7 @@ public class ServiceTabLauncher {
             boolean success = false;
             if (PaymentHandlerCoordinator.isEnabled()) {
                 WebContents paymentHandlerWebContent =
-                        PaymentRequestImpl.openPaymentHandlerWindow(url);
+                        ChromePaymentRequestService.openPaymentHandlerWindow(url);
                 if (paymentHandlerWebContent != null) {
                     success = true;
                     onWebContentsForRequestAvailable(requestId, paymentHandlerWebContent);

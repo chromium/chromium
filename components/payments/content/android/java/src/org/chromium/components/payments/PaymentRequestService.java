@@ -33,18 +33,19 @@ import org.chromium.url.Origin;
 import java.util.List;
 
 /**
- * {@link ComponentPaymentRequestImpl}, {@link MojoPaymentRequestGateKeeper} and PaymentRequestImpl
- * together make up the PaymentRequest service defined in
+ * {@link PaymentRequestService}, {@link MojoPaymentRequestGateKeeper} and
+ * ChromePaymentRequestService together make up the PaymentRequest service defined in
  * third_party/blink/public/mojom/payments/payment_request.mojom. This class provides the parts
  * shareable between Clank and WebLayer. The Clank specific logic lives in
- * org.chromium.chrome.browser.payments.PaymentRequestImpl.
- * TODO(crbug.com/1102522): PaymentRequestImpl is under refactoring, with the purpose of moving the
- * business logic of PaymentRequestImpl into ComponentPaymentRequestImpl and eventually moving
- * PaymentRequestImpl. Note that the callers of the instances of this class need to close them with
- * {@link ComponentPaymentRequestImpl#close()}, after which no usage is allowed.
+ * org.chromium.chrome.browser.payments.ChromePaymentRequestService.
+ * TODO(crbug.com/1102522): ChromePaymentRequestService is under refactoring, with the purpose of
+ * moving the business logic of ChromePaymentRequestService into PaymentRequestService and
+ * eventually moving ChromePaymentRequestService. Note that the callers of the instances of this
+ * class need to close them with
+ * {@link PaymentRequestService#close()}, after which no usage is allowed.
  */
-public class ComponentPaymentRequestImpl {
-    private static final String TAG = "CompPaymentRequest";
+public class PaymentRequestService {
+    private static final String TAG = "PaymentRequestServ";
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
     private final Runnable mOnClosedListener;
@@ -144,11 +145,11 @@ public class ComponentPaymentRequestImpl {
      */
     public interface PaymentRequestServiceObserverForTest {
         /**
-         * Called after an instance of {@link ComponentPaymentRequestImpl} has been created.
+         * Called after an instance of {@link PaymentRequestService} has been created.
          *
-         * @param componentPaymentRequest The newly created instance of ComponentPaymentRequestImpl.
+         * @param componentPaymentRequest The newly created instance of PaymentRequestService.
          */
-        void onPaymentRequestCreated(ComponentPaymentRequestImpl componentPaymentRequest);
+        void onPaymentRequestCreated(PaymentRequestService componentPaymentRequest);
 
         /**
          * Called when an abort request was denied.
@@ -221,18 +222,18 @@ public class ComponentPaymentRequestImpl {
             BrowserPaymentRequest.Factory browserPaymentRequestFactory) {
         return new MojoPaymentRequestGateKeeper(
                 (client, methodData, details, options, googlePayBridgeEligible, onClosedListener)
-                        -> ComponentPaymentRequestImpl.createIfParamsValid(renderFrameHost,
+                        -> PaymentRequestService.createIfParamsValid(renderFrameHost,
                                 isOffTheRecord, skipUiForBasicCard, browserPaymentRequestFactory,
                                 client, methodData, details, options, googlePayBridgeEligible,
                                 onClosedListener, delegate));
     }
 
     /**
-     * @return An instance of {@link ComponentPaymentRequestImpl} only if the parameters are deemed
+     * @return An instance of {@link PaymentRequestService} only if the parameters are deemed
      *         valid; Otherwise, null.
      */
     @Nullable
-    private static ComponentPaymentRequestImpl createIfParamsValid(RenderFrameHost renderFrameHost,
+    private static PaymentRequestService createIfParamsValid(RenderFrameHost renderFrameHost,
             boolean isOffTheRecord, boolean skipUiForBasicCard,
             BrowserPaymentRequest.Factory browserPaymentRequestFactory,
             @Nullable PaymentRequestClient client, @Nullable PaymentMethodData[] methodData,
@@ -285,8 +286,8 @@ public class ComponentPaymentRequestImpl {
             return null;
         }
 
-        ComponentPaymentRequestImpl instance =
-                new ComponentPaymentRequestImpl(client, renderFrameHost, webContents, journeyLogger,
+        PaymentRequestService instance =
+                new PaymentRequestService(client, renderFrameHost, webContents, journeyLogger,
                         options, skipUiForBasicCard, isOffTheRecord, onClosedListener, delegate);
         instance.onCreated();
         boolean valid = instance.initAndValidate(
@@ -312,10 +313,10 @@ public class ComponentPaymentRequestImpl {
         if (sNativeObserverForTest != null) sNativeObserverForTest.onConnectionTerminated();
     }
 
-    private ComponentPaymentRequestImpl(PaymentRequestClient client,
-            RenderFrameHost renderFrameHost, WebContents webContents, JourneyLogger journeyLogger,
-            PaymentOptions options, boolean skipUiForBasicCard, boolean isOffTheRecord,
-            Runnable onClosedListener, Delegate delegate) {
+    private PaymentRequestService(PaymentRequestClient client, RenderFrameHost renderFrameHost,
+            WebContents webContents, JourneyLogger journeyLogger, PaymentOptions options,
+            boolean skipUiForBasicCard, boolean isOffTheRecord, Runnable onClosedListener,
+            Delegate delegate) {
         assert client != null;
         assert renderFrameHost != null;
         assert webContents != null;
@@ -544,7 +545,7 @@ public class ComponentPaymentRequestImpl {
         mBrowserPaymentRequest = null;
 
         // mClient can be null only when this method is called from
-        // ComponentPaymentRequestImpl#create().
+        // PaymentRequestService#create().
         if (mClient != null) mClient.close();
         mClient = null;
 

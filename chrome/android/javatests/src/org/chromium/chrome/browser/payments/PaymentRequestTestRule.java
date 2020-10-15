@@ -37,11 +37,11 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.PaymentRequestObserverForTest;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.AbortReason;
-import org.chromium.components.payments.ComponentPaymentRequestImpl;
-import org.chromium.components.payments.ComponentPaymentRequestImpl.PaymentRequestServiceObserverForTest;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.PaymentRequestService;
+import org.chromium.components.payments.PaymentRequestService.PaymentRequestServiceObserverForTest;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -145,7 +145,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     final CallbackHelper mPaymentResponseReady;
     final CallbackHelper mCompleteReplied;
     final CallbackHelper mRendererClosedMojoConnection;
-    ComponentPaymentRequestImpl mComponentPaymentRequest;
+    PaymentRequestService mComponentPaymentRequest;
     PaymentRequestUI mUI;
 
     private final boolean mDelayStartActivity;
@@ -254,7 +254,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
             mWebContentsRef.set(getActivity().getCurrentWebContents());
             PaymentRequestUI.setEditorObserverForTest(PaymentRequestTestRule.this);
             PaymentRequestUI.setPaymentRequestObserverForTest(PaymentRequestTestRule.this);
-            ComponentPaymentRequestImpl.setObserverForTest(PaymentRequestTestRule.this);
+            PaymentRequestService.setObserverForTest(PaymentRequestTestRule.this);
             CardUnmaskPrompt.setObserverForTest(PaymentRequestTestRule.this);
         });
         assertWaitForPageScaleFactorMatch(1);
@@ -1059,7 +1059,7 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
     }
 
     @Override
-    public void onPaymentRequestCreated(ComponentPaymentRequestImpl paymentRequest) {
+    public void onPaymentRequestCreated(PaymentRequestService paymentRequest) {
         ThreadUtils.assertOnUiThread();
         mComponentPaymentRequest = paymentRequest;
     }

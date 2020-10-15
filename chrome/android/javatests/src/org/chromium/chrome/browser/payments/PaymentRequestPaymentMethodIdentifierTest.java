@@ -46,7 +46,7 @@ public class PaymentRequestPaymentMethodIdentifierTest implements MainActivitySt
 
     @Before
     public void setUp() {
-        PaymentRequestImpl.setIsLocalCanMakePaymentQueryQuotaEnforcedForTest();
+        ChromePaymentRequestService.setIsLocalCanMakePaymentQueryQuotaEnforcedForTest();
     }
 
     @Override

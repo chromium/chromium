@@ -8,7 +8,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGoodsFactoryFactory;
 import org.chromium.chrome.browser.installedapp.InstalledAppProviderFactory;
-import org.chromium.chrome.browser.payments.PaymentRequestFactory;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.webauth.AuthenticatorFactory;
 import org.chromium.chrome.browser.webshare.ShareServiceImplementationFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
@@ -45,7 +45,7 @@ class ChromeInterfaceRegistrar {
         public void registerInterfaces(
                 InterfaceRegistry registry, final RenderFrameHost renderFrameHost) {
             registry.addInterface(
-                    PaymentRequest.MANAGER, new PaymentRequestFactory(renderFrameHost));
+                    PaymentRequest.MANAGER, new ChromePaymentRequestFactory(renderFrameHost));
             registry.addInterface(
                     InstalledAppProvider.MANAGER, new InstalledAppProviderFactory(renderFrameHost));
             registry.addInterface(Authenticator.MANAGER, new AuthenticatorFactory(renderFrameHost));

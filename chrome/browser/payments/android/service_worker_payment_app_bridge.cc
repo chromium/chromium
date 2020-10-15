@@ -157,7 +157,8 @@ JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
   // At this point we know that the payment handler window is open for the
   // payment app associated with this scope. Since this getter is called inside
   // PaymentApp::getUkmSourceId() function which in turn gets called for the
-  // invoked app inside PaymentRequestImpl::openPaymentHandlerWindowInternal.
+  // invoked app inside
+  // ChromePaymentRequestService::openPaymentHandlerWindowInternal.
   return content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
       url::GURLAndroid::ToNativeGURL(env, jscope).get()->GetOrigin());
 }

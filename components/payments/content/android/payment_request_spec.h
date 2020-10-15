@@ -18,7 +18,7 @@ namespace android {
 //
 // Object ownership diagram:
 //
-// PaymentRequestImpl.java
+// ChromePaymentRequestService.java
 //       |
 //       v
 // PaymentRequestSpec.java

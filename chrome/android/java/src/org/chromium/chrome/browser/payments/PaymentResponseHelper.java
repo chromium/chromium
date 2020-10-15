@@ -66,8 +66,8 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
         mPaymentOptions = paymentOptions;
         mSkipToGpay = skipToGpay;
 
-        // Contacts are created in PaymentRequestImpl.init(). These should all be instances of
-        // AutofillContact.
+        // Contacts are created in ChromePaymentRequestService.init(). These should all be instances
+        // of AutofillContact.
         mSelectedContact = (AutofillContact) selectedContact;
 
         // Set up the shipping option section of the response when it comes from payment sheet
@@ -86,8 +86,8 @@ public class PaymentResponseHelper implements NormalizedAddressRequestDelegate {
         if (mPaymentOptions.requestShipping && !mSelectedPaymentApp.handlesShippingAddress()
                 && !mSkipToGpay) {
             assert selectedShippingAddress != null;
-            // Shipping addresses are created in PaymentRequestImpl.init(). These should all be
-            // instances of AutofillAddress.
+            // Shipping addresses are created in ChromePaymentRequestService.init(). These should
+            // all be instances of AutofillAddress.
             mSelectedShippingAddress = (AutofillAddress) selectedShippingAddress;
 
             // Addresses to be sent to the merchant should always be complete.

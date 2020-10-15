@@ -19,7 +19,8 @@ namespace android {
 // The native bridge for Java to interact with the payment handler host.
 // Object relationship diagram:
 //
-// PaymentRequestImpl.java --- implements ---> PaymentRequestUpdateEventListener
+// ChromePaymentRequestService.java --- implements --->
+// PaymentRequestUpdateEventListener
 //       |        ^
 //      owns      |________________________
 //       |                                |

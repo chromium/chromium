@@ -40,7 +40,7 @@ public class PaymentRequestCcCanMakePaymentQueryTest implements MainActivityStar
 
     @Before
     public void setUp() {
-        PaymentRequestImpl.setIsLocalCanMakePaymentQueryQuotaEnforcedForTest();
+        ChromePaymentRequestService.setIsLocalCanMakePaymentQueryQuotaEnforcedForTest();
     }
 
     @Override

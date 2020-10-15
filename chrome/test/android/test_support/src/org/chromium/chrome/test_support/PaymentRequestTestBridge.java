@@ -11,11 +11,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.payments.PaymentRequestFactory;
-import org.chromium.chrome.browser.payments.PaymentRequestImpl;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
+import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.payments.ComponentPaymentRequestImpl;
-import org.chromium.components.payments.ComponentPaymentRequestImpl.NativeObserverForTest;
+import org.chromium.components.payments.PaymentRequestService;
+import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
 
@@ -27,12 +27,11 @@ import java.util.List;
 @JNINamespace("payments")
 public class PaymentRequestTestBridge {
     /**
-     * A test override of the PaymentRequestImpl's Delegate. Allows tests to control the answers
-     * about the state of the system, in order to control which paths should be tested in the
-     * PaymentRequestImpl.
+     * A test override of the ChromePaymentRequestService's Delegate. Allows tests to control the
+     * answers about the state of the system, in order to control which paths should be tested in
+     * the ChromePaymentRequestService.
      */
-    private static class PaymentRequestDelegateForTest
-            implements ComponentPaymentRequestImpl.Delegate {
+    private static class PaymentRequestDelegateForTest implements PaymentRequestService.Delegate {
         private final boolean mIsOffTheRecord;
         private final boolean mIsValidSsl;
         private final boolean mIsWebContentsActive;
@@ -197,11 +196,11 @@ public class PaymentRequestTestBridge {
             boolean isValidSsl, boolean isWebContentsActive, boolean prefsCanMakePayment,
             boolean skipUiForBasicCard, String twaPackageName) {
         if (useDelegate) {
-            PaymentRequestFactory.sDelegateForTest =
+            ChromePaymentRequestFactory.sDelegateForTest =
                     new PaymentRequestDelegateForTest(isOffTheRecord, isValidSsl,
                             isWebContentsActive, prefsCanMakePayment, twaPackageName);
         } else {
-            PaymentRequestFactory.sDelegateForTest = null;
+            ChromePaymentRequestFactory.sDelegateForTest = null;
         }
     }
 
@@ -211,7 +210,7 @@ public class PaymentRequestTestBridge {
             long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
             long setAppDescriptionPtr, long onNotSupportedErrorPtr, long onConnectionTerminatedPtr,
             long onAbortCalledPtr, long onCompleteCalledPtr, long onMinimalUIReadyPtr) {
-        ComponentPaymentRequestImpl.setNativeObserverForTest(
+        PaymentRequestService.setNativeObserverForTest(
                 new PaymentRequestNativeObserverBridgeToNativeForTest(onCanMakePaymentCalledPtr,
                         onCanMakePaymentReturnedPtr, onHasEnrolledInstrumentCalledPtr,
                         onHasEnrolledInstrumentReturnedPtr, onAppListReadyPtr, setAppDescriptionPtr,
@@ -221,27 +220,27 @@ public class PaymentRequestTestBridge {
 
     @CalledByNative
     private static WebContents getPaymentHandlerWebContentsForTest() {
-        return PaymentRequestImpl.getPaymentHandlerWebContentsForTest();
+        return ChromePaymentRequestService.getPaymentHandlerWebContentsForTest();
     }
 
     @CalledByNative
     private static boolean clickPaymentHandlerSecurityIconForTest() {
-        return PaymentRequestImpl.clickPaymentHandlerSecurityIconForTest();
+        return ChromePaymentRequestService.clickPaymentHandlerSecurityIconForTest();
     }
 
     @CalledByNative
     private static boolean clickPaymentHandlerCloseButtonForTest() {
-        return PaymentRequestImpl.clickPaymentHandlerCloseButtonForTest();
+        return ChromePaymentRequestService.clickPaymentHandlerCloseButtonForTest();
     }
 
     @CalledByNative
     private static boolean confirmMinimalUIForTest() {
-        return PaymentRequestImpl.confirmMinimalUIForTest();
+        return ChromePaymentRequestService.confirmMinimalUIForTest();
     }
 
     @CalledByNative
     private static boolean dismissMinimalUIForTest() {
-        return PaymentRequestImpl.dismissMinimalUIForTest();
+        return ChromePaymentRequestService.dismissMinimalUIForTest();
     }
 
     @CalledByNative

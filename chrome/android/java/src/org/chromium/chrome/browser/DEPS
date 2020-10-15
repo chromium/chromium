@@ -308,10 +308,10 @@ specific_include_rules = {
   "CardEditor\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "PaymentRequestFactory\.java": [
+  "ChromePaymentRequestFactory\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "PaymentRequestImpl\.java": [
+  "ChromePaymentRequestService\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "TwaPackageManagerDelegate\.java": [
@@ -326,7 +326,7 @@ specific_include_rules = {
   "PaymentHandlerToolbarCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "PaymentUIsManager\.java": [
+  "PaymentUiService\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "PrintShareActivity\.java": [

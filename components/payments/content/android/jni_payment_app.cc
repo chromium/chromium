@@ -111,7 +111,7 @@ ScopedJavaLocalRef<jstring> JniPaymentApp::GetCountryCode(JNIEnv* env) {
 }
 
 bool JniPaymentApp::CanMakePayment(JNIEnv* env) {
-  // PaymentRequestImpl.java uses this value to determine whether
+  // ChromePaymentRequestService.java uses this value to determine whether
   // PaymentRequest.hasEnrolledInstrument() should return true.
   return payment_app_->HasEnrolledInstrument();
 }

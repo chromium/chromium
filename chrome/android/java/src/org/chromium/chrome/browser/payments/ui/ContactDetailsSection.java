@@ -137,7 +137,7 @@ public class ContactDetailsSection extends SectionInformation {
             if (isNewSuggestion) uniqueContacts.add(contact);
 
             // Limit the number of suggestions.
-            if (uniqueContacts.size() == PaymentUIsManager.SUGGESTIONS_LIMIT) break;
+            if (uniqueContacts.size() == PaymentUiService.SUGGESTIONS_LIMIT) break;
         }
 
         // Automatically select the first address if it is complete.

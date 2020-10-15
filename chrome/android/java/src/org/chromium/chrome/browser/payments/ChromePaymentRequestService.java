@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.ui.PaymentInformation;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
-import org.chromium.chrome.browser.payments.ui.PaymentUIsManager;
+import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.chrome.browser.payments.ui.ShoppingCart;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
@@ -33,8 +33,6 @@ import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.CanMakePaymentQuery;
 import org.chromium.components.payments.CheckoutFunnelStep;
-import org.chromium.components.payments.ComponentPaymentRequestImpl;
-import org.chromium.components.payments.ComponentPaymentRequestImpl.Delegate;
 import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;
@@ -51,6 +49,8 @@ import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentOptionsUtils;
+import org.chromium.components.payments.PaymentRequestService;
+import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentUIsObserver;
@@ -89,28 +89,28 @@ import java.util.Set;
 
 /**
  * This is the Clank specific parts of {@link PaymentRequest}, with the parts shared with WebLayer
- * living in {@link ComponentPaymentRequestImpl}.
+ * living in {@link PaymentRequestService}.
  */
-public class PaymentRequestImpl
+public class ChromePaymentRequestService
         implements BrowserPaymentRequest, PaymentRequestUI.Client, PaymentAppFactoryDelegate,
                    PaymentAppFactoryParams, PaymentRequestUpdateEventListener,
                    PaymentApp.AbortCallback, PaymentApp.InstrumentDetailsCallback,
                    PaymentResponseHelper.PaymentResponseRequesterDelegate,
-                   PaymentDetailsConverter.MethodChecker, PaymentUIsManager.Delegate,
+                   PaymentDetailsConverter.MethodChecker, PaymentUiService.Delegate,
                    PaymentUIsObserver {
-
     private static final String TAG = "PaymentRequest";
     private static boolean sIsLocalCanMakePaymentQueryQuotaEnforcedForTest;
     /**
      * Hold the currently showing PaymentRequest. Used to prevent showing more than one
      * PaymentRequest UI per browser process.
      */
-    private static PaymentRequestImpl sShowingPaymentRequest;
+    private static ChromePaymentRequestService sShowingPaymentRequest;
 
-    // Null-check is necessary because retainers of PaymentRequestImpl could still reference
-    // PaymentRequestImpl after mComponentPaymentRequestImpl is set null, e.g., crbug.com/1122148.
+    // Null-check is necessary because retainers of ChromePaymentRequestService could still
+    // reference ChromePaymentRequestService after mPaymentRequestService is set null, e.g.,
+    // crbug.com/1122148.
     @Nullable
-    private ComponentPaymentRequestImpl mComponentPaymentRequestImpl;
+    private PaymentRequestService mPaymentRequestService;
 
     private final Handler mHandler = new Handler();
     private final RenderFrameHost mRenderFrameHost;
@@ -125,7 +125,7 @@ public class PaymentRequestImpl
     private final JourneyLogger mJourneyLogger;
     private final boolean mIsOffTheRecord;
 
-    private final PaymentUIsManager mPaymentUIsManager;
+    private final PaymentUiService mPaymentUiService;
 
     @Nullable
     private final PaymentOptions mPaymentOptions;
@@ -203,32 +203,31 @@ public class PaymentRequestImpl
     /**
      * Builds the PaymentRequest service implementation.
      *
-     * @param componentPaymentRequestImpl The component side of the PaymentRequest implementation.
+     * @param paymentRequestService The component side of the PaymentRequest implementation.
      * @param delegate The delegate of this class.
      */
-    public PaymentRequestImpl(
-            ComponentPaymentRequestImpl componentPaymentRequestImpl, Delegate delegate) {
-        assert componentPaymentRequestImpl != null;
+    public ChromePaymentRequestService(
+            PaymentRequestService paymentRequestService, Delegate delegate) {
+        assert paymentRequestService != null;
         assert delegate != null;
 
-        mComponentPaymentRequestImpl = componentPaymentRequestImpl;
-        mRenderFrameHost = componentPaymentRequestImpl.getRenderFrameHost();
+        mPaymentRequestService = paymentRequestService;
+        mRenderFrameHost = paymentRequestService.getRenderFrameHost();
         assert mRenderFrameHost != null;
-        mPaymentRequestOrigin = componentPaymentRequestImpl.getPaymentRequestOrigin();
+        mPaymentRequestOrigin = paymentRequestService.getPaymentRequestOrigin();
         assert mPaymentRequestOrigin != null;
-        mPaymentRequestSecurityOrigin =
-                componentPaymentRequestImpl.getPaymentRequestSecurityOrigin();
+        mPaymentRequestSecurityOrigin = paymentRequestService.getPaymentRequestSecurityOrigin();
         assert mPaymentRequestSecurityOrigin != null;
-        mTopLevelOrigin = componentPaymentRequestImpl.getTopLevelOrigin();
+        mTopLevelOrigin = paymentRequestService.getTopLevelOrigin();
         assert mTopLevelOrigin != null;
-        mCertificateChain = componentPaymentRequestImpl.getCertificateChain();
-        mIsOffTheRecord = componentPaymentRequestImpl.isOffTheRecord();
+        mCertificateChain = paymentRequestService.getCertificateChain();
+        mIsOffTheRecord = paymentRequestService.isOffTheRecord();
         mDelegate = delegate;
-        mWebContents = componentPaymentRequestImpl.getWebContents();
+        mWebContents = paymentRequestService.getWebContents();
         mMerchantName = mWebContents.getTitle();
-        mJourneyLogger = componentPaymentRequestImpl.getJourneyLogger();
+        mJourneyLogger = paymentRequestService.getJourneyLogger();
 
-        mPaymentOptions = componentPaymentRequestImpl.getPaymentOptions();
+        mPaymentOptions = paymentRequestService.getPaymentOptions();
         assert mPaymentOptions != null;
         mRequestShipping = mPaymentOptions.requestShipping;
         mRequestPayerName = mPaymentOptions.requestPayerName;
@@ -236,18 +235,18 @@ public class PaymentRequestImpl
         mRequestPayerEmail = mPaymentOptions.requestPayerEmail;
         mShippingType = mPaymentOptions.shippingType;
 
-        mComponentPaymentRequestImpl = componentPaymentRequestImpl;
-        mPaymentUIsManager = new PaymentUIsManager(/*delegate=*/this,
+        mPaymentRequestService = paymentRequestService;
+        mPaymentUiService = new PaymentUiService(/*delegate=*/this,
                 /*params=*/this, mWebContents, mIsOffTheRecord, mJourneyLogger, mTopLevelOrigin,
                 /*observer=*/this);
-        mComponentPaymentRequestImpl.registerPaymentRequestLifecycleObserver(mPaymentUIsManager);
+        mPaymentRequestService.registerPaymentRequestLifecycleObserver(mPaymentUiService);
     }
 
     // Implement BrowserPaymentRequest:
     @Override
     public boolean initAndValidate(PaymentMethodData[] rawMethodData, PaymentDetails details,
             boolean googlePayBridgeEligible) {
-        assert mComponentPaymentRequestImpl != null;
+        assert mPaymentRequestService != null;
         assert rawMethodData != null;
         assert details != null;
 
@@ -293,22 +292,21 @@ public class PaymentRequestImpl
             return false;
         }
 
-        mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
 
         // The first time initializations and validation of all of the parameters of {@link
         // PaymentRequestParams} should be done before {@link
         // PaymentRequestLifeCycleObserver#onPaymentRequestParamsInitiated}.
-        mComponentPaymentRequestImpl.getPaymentRequestLifecycleObserver()
-                .onPaymentRequestParamsInitiated(
-                        /*params=*/this);
+        mPaymentRequestService.getPaymentRequestLifecycleObserver().onPaymentRequestParamsInitiated(
+                /*params=*/this);
 
         PaymentAppService.getInstance().create(/*delegate=*/this);
 
         // Log the various types of payment methods that were requested by the merchant.
         boolean requestedMethodGoogle = false;
         // Not to record requestedMethodBasicCard because JourneyLogger ignore the case where the
-        // specified networks are unsupported. mPaymentUIsManager.merchantSupportsAutofillCards()
+        // specified networks are unsupported. mPaymentUiService.merchantSupportsAutofillCards()
         // better captures this group of interest than requestedMethodBasicCard.
         boolean requestedMethodOther = false;
         mURLPaymentMethodIdentifiersSupported = false;
@@ -321,7 +319,7 @@ public class PaymentRequestImpl
                     break;
                 case MethodStrings.BASIC_CARD:
                     // Not to record requestedMethodBasicCard because
-                    // mPaymentUIsManager.merchantSupportsAutofillCards() is used instead.
+                    // mPaymentUiService.merchantSupportsAutofillCards() is used instead.
                     break;
                 default:
                     // "Other" includes https url, http url(when certifate check is bypassed) and
@@ -334,22 +332,21 @@ public class PaymentRequestImpl
             }
         }
         mJourneyLogger.setRequestedPaymentMethodTypes(
-                /*requestedBasicCard=*/mPaymentUIsManager.merchantSupportsAutofillCards(),
+                /*requestedBasicCard=*/mPaymentUiService.merchantSupportsAutofillCards(),
                 requestedMethodGoogle, requestedMethodOther);
         return true;
     }
 
     /** @return Whether the UI was built. */
     private boolean buildUI(ChromeActivity activity) {
-        String error = mPaymentUIsManager.buildPaymentRequestUI(activity,
+        String error = mPaymentUiService.buildPaymentRequestUI(activity,
                 /*isWebContentsActive=*/mDelegate.isWebContentsActive(),
                 /*waitForUpdatedDetails=*/mWaitForUpdatedDetails);
         if (error != null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
             disconnectFromClientWithDebugMessage(error);
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceShowFailed();
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
             }
             return false;
         }
@@ -362,9 +359,9 @@ public class PaymentRequestImpl
      */
     @Override
     public void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
-        if (mPaymentUIsManager.isShowingUI()) {
+        if (mPaymentUiService.isShowingUI()) {
             // Can be triggered only by a compromised renderer. In normal operation, calling show()
             // twice on the same instance of PaymentRequest in JavaScript is rejected at the
             // renderer level.
@@ -380,9 +377,8 @@ public class PaymentRequestImpl
             mJourneyLogger.setNotShown(NotShownReason.CONCURRENT_REQUESTS);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceShowFailed();
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
             }
             return;
         }
@@ -400,29 +396,28 @@ public class PaymentRequestImpl
         if (chromeActivity == null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
             disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceShowFailed();
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
             }
             return;
         }
 
         if (mIsFinishedQueryingPaymentApps) {
             // Send AppListReady signal when all apps are created and request.show() is called.
-            if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getNativeObserverForTest().onAppListReady(
-                        mPaymentUIsManager.getPaymentMethodsSection().getItems(),
+            if (PaymentRequestService.getNativeObserverForTest() != null) {
+                PaymentRequestService.getNativeObserverForTest().onAppListReady(
+                        mPaymentUiService.getPaymentMethodsSection().getItems(),
                         mSpec.getRawTotal());
             }
             // Calculate skip ui and build ui only after all payment apps are ready and
             // request.show() is called.
-            mPaymentUIsManager.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
+            mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
                     mURLPaymentMethodIdentifiersSupported,
-                    mComponentPaymentRequestImpl.skipUiForNonUrlPaymentMethodIdentifiers());
+                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers());
             if (!buildUI(chromeActivity)) return;
-            if (!mPaymentUIsManager.shouldSkipShowingPaymentRequestUi()
+            if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
                     && mSkipToGPayHelper == null) {
-                mPaymentUIsManager.getPaymentRequestUI().show();
+                mPaymentUiService.getPaymentRequestUI().show();
             }
         }
 
@@ -442,20 +437,20 @@ public class PaymentRequestImpl
             // are the only ones that can open the bottom-sheet.
             return;
         }
-        mPaymentUIsManager.getPaymentRequestUI().dimBackground();
+        mPaymentUiService.getPaymentRequestUI().dimBackground();
     }
 
     private void triggerPaymentAppUiSkipIfApplicable(ChromeActivity chromeActivity) {
         // If we are skipping showing the Payment Request UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
-        if ((mPaymentUIsManager.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
+        if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
                 && mIsFinishedQueryingPaymentApps && mIsCurrentPaymentRequestShowing
                 && !mWaitForUpdatedDetails) {
-            assert !mPaymentUIsManager.getPaymentMethodsSection().isEmpty();
-            assert mPaymentUIsManager.getPaymentRequestUI() != null;
+            assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
+            assert mPaymentUiService.getPaymentRequestUI() != null;
 
             if (isMinimalUiApplicable()) {
-                if (mPaymentUIsManager.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
+                if (mPaymentUiService.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
                             this::onMinimalUIReady, this::onMinimalUiConfirmed,
                             /*dismissObserver=*/this::onDismiss)) {
                     mDidRecordShowEvent = true;
@@ -466,9 +461,9 @@ public class PaymentRequestImpl
                 return;
             }
 
-            assert !mPaymentUIsManager.getPaymentMethodsSection().isEmpty();
+            assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
             PaymentApp selectedApp =
-                    (PaymentApp) mPaymentUIsManager.getPaymentMethodsSection().getSelectedItem();
+                    (PaymentApp) mPaymentUiService.getPaymentMethodsSection().getSelectedItem();
             dimBackgroundIfNotBottomSheetPaymentHandler(selectedApp);
             mDidRecordShowEvent = true;
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
@@ -485,13 +480,13 @@ public class PaymentRequestImpl
 
     /** @return Whether the minimal UI should be shown. */
     private boolean isMinimalUiApplicable() {
-        if (!mIsUserGestureShow || mPaymentUIsManager.getPaymentMethodsSection() == null
-                || mPaymentUIsManager.getPaymentMethodsSection().getSize() != 1) {
+        if (!mIsUserGestureShow || mPaymentUiService.getPaymentMethodsSection() == null
+                || mPaymentUiService.getPaymentMethodsSection().getSize() != 1) {
             return false;
         }
 
         PaymentApp app =
-                (PaymentApp) mPaymentUIsManager.getPaymentMethodsSection().getSelectedItem();
+                (PaymentApp) mPaymentUiService.getPaymentMethodsSection().getSelectedItem();
         if (app == null || !app.isReadyForMinimalUI() || TextUtils.isEmpty(app.accountBalance())) {
             return false;
         }
@@ -500,8 +495,8 @@ public class PaymentRequestImpl
     }
 
     private void onMinimalUIReady() {
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onMinimalUIReady();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onMinimalUIReady();
         }
     }
 
@@ -513,21 +508,21 @@ public class PaymentRequestImpl
     }
 
     private void onMinimalUiCompletedAndClosed() {
-        if (mComponentPaymentRequestImpl == null) return;
-        mComponentPaymentRequestImpl.onComplete();
+        if (mPaymentRequestService == null) return;
+        mPaymentRequestService.onComplete();
         close();
     }
 
     /** Called after the non-minimal UI has handled {@link #complete}. */
     private void onNonMinimalUiHandledComplete() {
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onCompleteCalled();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onCompleteCalled();
         }
-        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getObserverForTest().onCompleteReplied();
+        if (PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest().onCompleteReplied();
         }
-        if (mComponentPaymentRequestImpl != null) {
-            mComponentPaymentRequestImpl.onComplete();
+        if (mPaymentRequestService != null) {
+            mPaymentRequestService.onComplete();
             close();
         }
     }
@@ -563,12 +558,12 @@ public class PaymentRequestImpl
     @Override
     public boolean changePaymentMethodFromInvokedApp(String methodName, String stringifiedDetails) {
         if (TextUtils.isEmpty(methodName) || stringifiedDetails == null
-                || mComponentPaymentRequestImpl == null || mInvokedPaymentApp == null
+                || mPaymentRequestService == null || mInvokedPaymentApp == null
                 || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
             return false;
         }
 
-        mComponentPaymentRequestImpl.onPaymentMethodChange(methodName, stringifiedDetails);
+        mPaymentRequestService.onPaymentMethodChange(methodName, stringifiedDetails);
         return true;
     }
 
@@ -577,7 +572,7 @@ public class PaymentRequestImpl
      */
     @Override
     public boolean changeShippingOptionFromInvokedApp(String shippingOptionId) {
-        if (TextUtils.isEmpty(shippingOptionId) || mComponentPaymentRequestImpl == null
+        if (TextUtils.isEmpty(shippingOptionId) || mPaymentRequestService == null
                 || mInvokedPaymentApp == null
                 || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping
                 || mSpec.getRawShippingOptions() == null) {
@@ -594,7 +589,7 @@ public class PaymentRequestImpl
 
         if (!isValidId) return false;
 
-        mComponentPaymentRequestImpl.onShippingOptionChange(shippingOptionId);
+        mPaymentRequestService.onShippingOptionChange(shippingOptionId);
         return true;
     }
 
@@ -603,13 +598,12 @@ public class PaymentRequestImpl
      */
     @Override
     public boolean changeShippingAddressFromInvokedApp(PaymentAddress shippingAddress) {
-        if (shippingAddress == null || mComponentPaymentRequestImpl == null
-                || mInvokedPaymentApp == null
+        if (shippingAddress == null || mPaymentRequestService == null || mInvokedPaymentApp == null
                 || mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate() || !mRequestShipping) {
             return false;
         }
 
-        mComponentPaymentRequestImpl.onShippingAddressChange(shippingAddress);
+        mPaymentRequestService.onShippingAddressChange(shippingAddress);
         return true;
     }
 
@@ -627,7 +621,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private WebContents getPaymentHandlerWebContentsForTestInternal() {
-        return mPaymentUIsManager.getPaymentHandlerWebContentsForTest();
+        return mPaymentUiService.getPaymentHandlerWebContentsForTest();
     }
 
     /**
@@ -644,7 +638,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean clickPaymentHandlerSecurityIconForTestInternal() {
-        return mPaymentUIsManager.clickPaymentHandlerSecurityIconForTest();
+        return mPaymentUiService.clickPaymentHandlerSecurityIconForTest();
     }
 
     /**
@@ -661,7 +655,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean clickPaymentHandlerCloseButtonForTestInternal() {
-        return mPaymentUIsManager.clickPaymentHandlerCloseButtonForTest();
+        return mPaymentUiService.clickPaymentHandlerCloseButtonForTest();
     }
 
     /**
@@ -677,7 +671,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean confirmMinimalUIForTestInternal() {
-        return mPaymentUIsManager.confirmMinimalUIForTest();
+        return mPaymentUiService.confirmMinimalUIForTest();
     }
 
     /**
@@ -693,7 +687,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean dismissMinimalUIForTestInternal() {
-        return mPaymentUIsManager.dismissMinimalUIForTest();
+        return mPaymentUiService.dismissMinimalUIForTest();
     }
 
     /**
@@ -719,11 +713,11 @@ public class PaymentRequestImpl
         assert mInvokedPaymentApp != null;
         assert mInvokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
 
-        if (mComponentPaymentRequestImpl == null) return null;
+        if (mPaymentRequestService == null) return null;
 
         @Nullable
-        WebContents paymentHandlerWebContents = mPaymentUIsManager.showPaymentHandlerUI(
-                url, mComponentPaymentRequestImpl.isOffTheRecord());
+        WebContents paymentHandlerWebContents = mPaymentUiService.showPaymentHandlerUI(
+                url, mPaymentRequestService.isOffTheRecord());
         if (paymentHandlerWebContents != null) {
             ServiceWorkerPaymentAppBridge.onOpeningPaymentAppWindow(
                     /*paymentRequestWebContents=*/mWebContents,
@@ -749,7 +743,7 @@ public class PaymentRequestImpl
      */
     @Override
     public void updateWith(PaymentDetails details) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
@@ -758,7 +752,7 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (mPaymentUIsManager.getPaymentRequestUI() == null) {
+        if (mPaymentUiService.getPaymentRequestUI() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW);
             return;
@@ -779,7 +773,7 @@ public class PaymentRequestImpl
             return;
         }
         mSpec.updateWith(details);
-        mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
 
         if (mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
@@ -794,17 +788,17 @@ public class PaymentRequestImpl
         }
 
         if (shouldShowShippingSection()
-                && (mPaymentUIsManager.getUiShippingOptions().isEmpty()
+                && (mPaymentUiService.getUiShippingOptions().isEmpty()
                         || !TextUtils.isEmpty(details.error))
-                && mPaymentUIsManager.getShippingAddressesSection().getSelectedItem() != null) {
-            mPaymentUIsManager.getShippingAddressesSection().getSelectedItem().setInvalid();
-            mPaymentUIsManager.getShippingAddressesSection().setSelectedItemIndex(
+                && mPaymentUiService.getShippingAddressesSection().getSelectedItem() != null) {
+            mPaymentUiService.getShippingAddressesSection().getSelectedItem().setInvalid();
+            mPaymentUiService.getShippingAddressesSection().setSelectedItemIndex(
                     SectionInformation.INVALID_SELECTION);
-            mPaymentUIsManager.getShippingAddressesSection().setErrorMessage(details.error);
+            mPaymentUiService.getShippingAddressesSection().setErrorMessage(details.error);
         }
 
         boolean providedInformationToPaymentRequestUI =
-                mPaymentUIsManager.enableAndUpdatePaymentRequestUIWithPaymentInfo();
+                mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
         if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
     }
 
@@ -827,7 +821,7 @@ public class PaymentRequestImpl
             return;
         }
         mSpec.updateWith(details);
-        mPaymentUIsManager.updateDetailsOnPaymentRequestUI(
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
 
         if (!TextUtils.isEmpty(details.error)) {
@@ -838,8 +832,8 @@ public class PaymentRequestImpl
 
         // Do not create shipping section When UI is not built yet. This happens when the show
         // promise gets resolved before all apps are ready.
-        if (mPaymentUIsManager.getPaymentRequestUI() != null && shouldShowShippingSection()) {
-            mPaymentUIsManager.createShippingSectionForPaymentRequestUI(chromeActivity);
+        if (mPaymentUiService.getPaymentRequestUI() != null && shouldShowShippingSection()) {
+            mPaymentUiService.createShippingSectionForPaymentRequestUI(chromeActivity);
         }
 
         mWaitForUpdatedDetails = false;
@@ -858,9 +852,9 @@ public class PaymentRequestImpl
         triggerPaymentAppUiSkipIfApplicable(chromeActivity);
 
         if (mIsFinishedQueryingPaymentApps
-                && !mPaymentUIsManager.shouldSkipShowingPaymentRequestUi()) {
+                && !mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
             boolean providedInformationToPaymentRequestUI =
-                    mPaymentUIsManager.enableAndUpdatePaymentRequestUIWithPaymentInfo();
+                    mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
             if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
         }
     }
@@ -872,12 +866,12 @@ public class PaymentRequestImpl
      */
     @Override
     public void onPaymentDetailsNotUpdated() {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
         // mSpec.recomputeSpecForDetails(), mSpec.selectedShippingOptionError() can be used only
         // when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
-        if (mPaymentUIsManager.getPaymentRequestUI() == null) {
+        if (mPaymentUiService.getPaymentRequestUI() == null) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW);
             return;
@@ -891,18 +885,18 @@ public class PaymentRequestImpl
         }
 
         if (shouldShowShippingSection()
-                && (mPaymentUIsManager.getUiShippingOptions().isEmpty()
+                && (mPaymentUiService.getUiShippingOptions().isEmpty()
                         || !TextUtils.isEmpty(mSpec.selectedShippingOptionError()))
-                && mPaymentUIsManager.getShippingAddressesSection().getSelectedItem() != null) {
-            mPaymentUIsManager.getShippingAddressesSection().getSelectedItem().setInvalid();
-            mPaymentUIsManager.getShippingAddressesSection().setSelectedItemIndex(
+                && mPaymentUiService.getShippingAddressesSection().getSelectedItem() != null) {
+            mPaymentUiService.getShippingAddressesSection().getSelectedItem().setInvalid();
+            mPaymentUiService.getShippingAddressesSection().setSelectedItemIndex(
                     SectionInformation.INVALID_SELECTION);
-            mPaymentUIsManager.getShippingAddressesSection().setErrorMessage(
+            mPaymentUiService.getShippingAddressesSection().setErrorMessage(
                     mSpec.selectedShippingOptionError());
         }
 
         boolean providedInformationToPaymentRequestUI =
-                mPaymentUIsManager.enableAndUpdatePaymentRequestUIWithPaymentInfo();
+                mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
         if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
     }
 
@@ -921,11 +915,11 @@ public class PaymentRequestImpl
      */
     @Override
     public void getDefaultPaymentInformation(Callback<PaymentInformation> callback) {
-        mPaymentUIsManager.getDefaultPaymentInformation(callback, mIsCurrentPaymentRequestShowing,
+        mPaymentUiService.getDefaultPaymentInformation(callback, mIsCurrentPaymentRequestShowing,
                 mIsFinishedQueryingPaymentApps, mWaitForUpdatedDetails);
     }
 
-    // Implement PaymentUIsManager.Delegate:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void recordShowEventAndTransactionAmount() {
         if (mDidRecordShowEvent) return;
@@ -943,20 +937,20 @@ public class PaymentRequestImpl
 
     @Override
     public void getShoppingCart(final Callback<ShoppingCart> callback) {
-        mHandler.post(callback.bind(mPaymentUIsManager.getUiShoppingCart()));
+        mHandler.post(callback.bind(mPaymentUiService.getUiShoppingCart()));
     }
 
     @Override
     public void getSectionInformation(@PaymentRequestUI.DataType final int optionType,
             final Callback<SectionInformation> callback) {
-        mPaymentUIsManager.getSectionInformation(optionType, callback);
+        mPaymentUiService.getSectionInformation(optionType, callback);
     }
 
     @Override
     @PaymentRequestUI.SelectionResult
     public int onSectionOptionSelected(@PaymentRequestUI.DataType int optionType,
             EditableOption option, Callback<PaymentInformation> callback) {
-        return mPaymentUIsManager.onSectionOptionSelected(
+        return mPaymentUiService.onSectionOptionSelected(
                 optionType, option, callback, mWasRetryCalled);
     }
 
@@ -964,36 +958,36 @@ public class PaymentRequestImpl
     @PaymentRequestUI.SelectionResult
     public int onSectionEditOption(@PaymentRequestUI.DataType int optionType, EditableOption option,
             Callback<PaymentInformation> callback) {
-        return mPaymentUIsManager.onSectionEditOption(optionType, option, callback);
+        return mPaymentUiService.onSectionEditOption(optionType, option, callback);
     }
 
     @Override
     @PaymentRequestUI.SelectionResult
     public int onSectionAddOption(
             @PaymentRequestUI.DataType int optionType, Callback<PaymentInformation> callback) {
-        return mPaymentUIsManager.onSectionAddOption(optionType, callback);
+        return mPaymentUiService.onSectionAddOption(optionType, callback);
     }
 
     @Override
     public boolean shouldShowShippingSection() {
-        return mPaymentUIsManager.shouldShowShippingSection();
+        return mPaymentUiService.shouldShowShippingSection();
     }
 
     @Override
     public boolean shouldShowContactSection() {
-        return mPaymentUIsManager.shouldShowContactSection();
+        return mPaymentUiService.shouldShowContactSection();
     }
 
     @Override
     public void onInstrumentDetailsLoadingWithoutUI() {
-        if (mComponentPaymentRequestImpl == null || mPaymentUIsManager.getPaymentRequestUI() == null
+        if (mPaymentRequestService == null || mPaymentUiService.getPaymentRequestUI() == null
                 || mPaymentResponseHelper == null) {
             return;
         }
 
-        assert mPaymentUIsManager.getSelectedPaymentAppType() == PaymentAppType.AUTOFILL;
+        assert mPaymentUiService.getSelectedPaymentAppType() == PaymentAppType.AUTOFILL;
 
-        mPaymentUIsManager.getPaymentRequestUI().showProcessingMessage();
+        mPaymentUiService.getPaymentRequestUI().showProcessingMessage();
     }
 
     @Override
@@ -1002,8 +996,8 @@ public class PaymentRequestImpl
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.PAYMENT_HANDLER_INVOKED);
         mInvokedPaymentApp = (PaymentApp) selectedPaymentMethod;
 
-        EditableOption selectedContact = mPaymentUIsManager.getContactSection() != null
-                ? mPaymentUIsManager.getContactSection().getSelectedItem()
+        EditableOption selectedContact = mPaymentUiService.getContactSection() != null
+                ? mPaymentUiService.getContactSection().getSelectedItem()
                 : null;
         mPaymentResponseHelper = new PaymentResponseHelper(selectedShippingAddress,
                 selectedShippingOption, selectedContact, mInvokedPaymentApp, mPaymentOptions,
@@ -1095,16 +1089,16 @@ public class PaymentRequestImpl
 
     // Implement BrowserPaymentRequest:
     // This method is not supposed to be used outside this class and
-    // ComponentPaymentRequestImpl.
+    // PaymentRequestService.
     @Override
     public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
         Log.d(TAG, debugMessage);
-        if (mComponentPaymentRequestImpl != null) {
-            mComponentPaymentRequestImpl.onError(reason, debugMessage);
+        if (mPaymentRequestService != null) {
+            mPaymentRequestService.onError(reason, debugMessage);
         }
         close();
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onConnectionTerminated();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onConnectionTerminated();
         }
     }
 
@@ -1114,7 +1108,7 @@ public class PaymentRequestImpl
      */
     @Override
     public void abort() {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
         if (mInvokedPaymentApp != null) {
             mInvokedPaymentApp.abortPaymentApp(/*callback=*/this);
@@ -1126,19 +1120,18 @@ public class PaymentRequestImpl
     /** Called by the payment app in response to an abort request. */
     @Override
     public void onInstrumentAbortResult(boolean abortSucceeded) {
-        if (mComponentPaymentRequestImpl == null) return;
-        mComponentPaymentRequestImpl.onAbort(abortSucceeded);
+        if (mPaymentRequestService == null) return;
+        mPaymentRequestService.onAbort(abortSucceeded);
         if (abortSucceeded) {
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_MERCHANT);
             close();
         } else {
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceUnableToAbort();
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceUnableToAbort();
             }
         }
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onAbortCalled();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onAbortCalled();
         }
     }
 
@@ -1148,7 +1141,7 @@ public class PaymentRequestImpl
      */
     @Override
     public void complete(int result) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
         if (result != PaymentComplete.FAIL) {
             mJourneyLogger.setCompleted();
@@ -1160,7 +1153,7 @@ public class PaymentRequestImpl
                     mSpec.getRawTotal().amount.value, true /*completed*/);
         }
 
-        mPaymentUIsManager.onPaymentRequestComplete(result,
+        mPaymentUiService.onPaymentRequestComplete(result,
                 /*onMinimalUiErroredAndClosed=*/this::close, this::onMinimalUiCompletedAndClosed,
                 this::onNonMinimalUiHandledComplete);
     }
@@ -1168,7 +1161,7 @@ public class PaymentRequestImpl
     // Implement BrowserPaymentRequest:
     @Override
     public void retry(PaymentValidationErrors errors) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
         // mSpec.retry() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
@@ -1181,7 +1174,7 @@ public class PaymentRequestImpl
 
         mWasRetryCalled = true;
 
-        mComponentPaymentRequestImpl.getPaymentRequestLifecycleObserver().onRetry(errors);
+        mPaymentRequestService.getPaymentRequestLifecycleObserver().onRetry(errors);
     }
 
     @Override
@@ -1201,10 +1194,10 @@ public class PaymentRequestImpl
     /** Called by the merchant website to check if the user has complete payment apps. */
     @Override
     public void canMakePayment() {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onCanMakePaymentCalled();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onCanMakePaymentCalled();
         }
 
         if (mIsFinishedQueryingPaymentApps) {
@@ -1215,24 +1208,23 @@ public class PaymentRequestImpl
     }
 
     private void respondCanMakePaymentQuery() {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
         mIsCanMakePaymentResponsePending = false;
 
         boolean response = mCanMakePayment && mDelegate.prefsCanMakePayment();
-        mComponentPaymentRequestImpl.onCanMakePayment(response
+        mPaymentRequestService.onCanMakePayment(response
                         ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
                         : CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT);
 
-        mJourneyLogger.setCanMakePaymentValue(
-                response || mComponentPaymentRequestImpl.isOffTheRecord());
+        mJourneyLogger.setCanMakePaymentValue(response || mPaymentRequestService.isOffTheRecord());
 
-        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getObserverForTest()
+        if (PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest()
                     .onPaymentRequestServiceCanMakePaymentQueryResponded();
         }
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onCanMakePaymentReturned();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onCanMakePaymentReturned();
         }
     }
 
@@ -1240,10 +1232,10 @@ public class PaymentRequestImpl
     /** Called by the merchant website to check if the user has complete payment instruments. */
     @Override
     public void hasEnrolledInstrument() {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onHasEnrolledInstrumentCalled();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onHasEnrolledInstrumentCalled();
         }
 
         if (mIsFinishedQueryingPaymentApps) {
@@ -1254,33 +1246,32 @@ public class PaymentRequestImpl
     }
 
     private void respondHasEnrolledInstrumentQuery(boolean response) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
         mIsHasEnrolledInstrumentResponsePending = false;
 
         if (CanMakePaymentQuery.canQuery(
                     mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
-            mComponentPaymentRequestImpl.onHasEnrolledInstrument(response
+            mPaymentRequestService.onHasEnrolledInstrument(response
                             ? HasEnrolledInstrumentQueryResult.HAS_ENROLLED_INSTRUMENT
                             : HasEnrolledInstrumentQueryResult.HAS_NO_ENROLLED_INSTRUMENT);
         } else if (shouldEnforceCanMakePaymentQueryQuota()) {
-            mComponentPaymentRequestImpl.onHasEnrolledInstrument(
+            mPaymentRequestService.onHasEnrolledInstrument(
                     HasEnrolledInstrumentQueryResult.QUERY_QUOTA_EXCEEDED);
         } else {
-            mComponentPaymentRequestImpl.onHasEnrolledInstrument(response
+            mPaymentRequestService.onHasEnrolledInstrument(response
                             ? HasEnrolledInstrumentQueryResult.WARNING_HAS_ENROLLED_INSTRUMENT
                             : HasEnrolledInstrumentQueryResult.WARNING_HAS_NO_ENROLLED_INSTRUMENT);
         }
 
         mJourneyLogger.setHasEnrolledInstrumentValue(response || mIsOffTheRecord);
 
-        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getObserverForTest()
+        if (PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest()
                     .onPaymentRequestServiceHasEnrolledInstrumentQueryResponded();
         }
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest()
-                    .onHasEnrolledInstrumentReturned();
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onHasEnrolledInstrumentReturned();
         }
     }
 
@@ -1303,9 +1294,9 @@ public class PaymentRequestImpl
         if (mHasClosed) return;
         mHasClosed = true;
 
-        assert mComponentPaymentRequestImpl != null;
-        mComponentPaymentRequestImpl.close();
-        mComponentPaymentRequestImpl = null;
+        assert mPaymentRequestService != null;
+        mPaymentRequestService.close();
+        mPaymentRequestService = null;
 
         closeUIAndDestroyNativeObjects();
     }
@@ -1389,7 +1380,7 @@ public class PaymentRequestImpl
     // PaymentAppFactoryParams implementation.
     @Override
     public boolean getMayCrawl() {
-        return !mPaymentUIsManager.canUserAddCreditCard()
+        return !mPaymentUiService.canUserAddCreditCard()
                 || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.WEB_PAYMENTS_ALWAYS_ALLOW_JUST_IN_TIME_PAYMENT_APP);
     }
@@ -1428,7 +1419,7 @@ public class PaymentRequestImpl
     // PaymentAppFactoryDelegate implementation.
     @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
         mCanMakePayment = canMakePayment;
 
@@ -1442,16 +1433,16 @@ public class PaymentRequestImpl
     // PaymentAppFactoryDelegate implementation.
     @Override
     public void onAutofillPaymentAppCreatorAvailable(AutofillPaymentAppCreator creator) {
-        mPaymentUIsManager.setAutofillPaymentAppCreator(creator);
+        mPaymentUiService.setAutofillPaymentAppCreator(creator);
     }
 
     // PaymentAppFactoryDelegate implementation.
     @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
 
         mHideServerAutofillCards |= paymentApp.isServerAutofillInstrumentReplacement();
-        paymentApp.setHaveRequestedAutofillData(mPaymentUIsManager.haveRequestedAutofillData());
+        paymentApp.setHaveRequestedAutofillData(mPaymentUiService.haveRequestedAutofillData());
         mHasEnrolledInstrument |= paymentApp.canMakePayment();
         mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
 
@@ -1478,7 +1469,7 @@ public class PaymentRequestImpl
     public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
         mIsFinishedQueryingPaymentApps = true;
 
-        if (mComponentPaymentRequestImpl == null || disconnectIfNoPaymentMethodsSupported()) {
+        if (mPaymentRequestService == null || disconnectIfNoPaymentMethodsSupported()) {
             return;
         }
 
@@ -1508,7 +1499,7 @@ public class PaymentRequestImpl
             }
         }
 
-        mPaymentUIsManager.rankPaymentAppsForPaymentRequestUI(mPendingApps);
+        mPaymentUiService.rankPaymentAppsForPaymentRequestUI(mPendingApps);
 
         // Possibly pre-select the first app on the list.
         int selection = !mPendingApps.isEmpty() && mPendingApps.get(0).canPreselect()
@@ -1527,15 +1518,14 @@ public class PaymentRequestImpl
         if (chromeActivity == null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
             disconnectFromClientWithDebugMessage(ErrorStrings.ACTIVITY_NOT_FOUND);
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceShowFailed();
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
             }
             return;
         }
 
         // The list of payment apps is ready to display.
-        mPaymentUIsManager.setPaymentMethodsSection(
+        mPaymentUiService.setPaymentMethodsSection(
                 new SectionInformation(PaymentRequestUI.DataType.PAYMENT_METHODS, selection,
                         new ArrayList<>(mPendingApps)));
 
@@ -1546,7 +1536,7 @@ public class PaymentRequestImpl
 
         int missingFields = 0;
         if (mPendingApps.isEmpty()) {
-            if (mPaymentUIsManager.merchantSupportsAutofillCards()) {
+            if (mPaymentUiService.merchantSupportsAutofillCards()) {
                 // Record all fields if basic-card is supported but no card exists.
                 missingFields = AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_EXPIRED
                         | AutofillPaymentInstrument.CompletionStatus.CREDIT_CARD_NO_CARDHOLDER
@@ -1563,28 +1553,28 @@ public class PaymentRequestImpl
 
         mPendingApps.clear();
 
-        mPaymentUIsManager.updateAppModifiedTotals();
+        mPaymentUiService.updateAppModifiedTotals();
 
-        SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUIsManager);
+        SettingsAutofillAndPaymentsObserver.getInstance().registerObserver(mPaymentUiService);
 
         if (mIsCurrentPaymentRequestShowing) {
             // Send AppListReady signal when all apps are created and request.show() is called.
-            if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getNativeObserverForTest().onAppListReady(
-                        mPaymentUIsManager.getPaymentMethodsSection().getItems(),
+            if (PaymentRequestService.getNativeObserverForTest() != null) {
+                PaymentRequestService.getNativeObserverForTest().onAppListReady(
+                        mPaymentUiService.getPaymentMethodsSection().getItems(),
                         mSpec.getRawTotal());
             }
             // Calculate skip ui and build ui only after all payment apps are ready and
             // request.show() is called, since only then whether or not should skip payment sheet UI
             // is determined.
             assert mIsFinishedQueryingPaymentApps;
-            mPaymentUIsManager.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
+            mPaymentUiService.calculateWhetherShouldSkipShowingPaymentRequestUi(mIsUserGestureShow,
                     mURLPaymentMethodIdentifiersSupported,
-                    mComponentPaymentRequestImpl.skipUiForNonUrlPaymentMethodIdentifiers());
+                    mPaymentRequestService.skipUiForNonUrlPaymentMethodIdentifiers());
             if (!buildUI(chromeActivity)) return;
-            if (!mPaymentUIsManager.shouldSkipShowingPaymentRequestUi()
+            if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi()
                     && mSkipToGPayHelper == null) {
-                mPaymentUIsManager.getPaymentRequestUI().show();
+                mPaymentUiService.getPaymentRequestUI().show();
             }
         }
 
@@ -1599,25 +1589,25 @@ public class PaymentRequestImpl
         if (!mIsFinishedQueryingPaymentApps || !mIsCurrentPaymentRequestShowing) return false;
 
         boolean havePaymentApps = !mPendingApps.isEmpty()
-                || (mPaymentUIsManager.getPaymentMethodsSection() != null
-                        && !mPaymentUIsManager.getPaymentMethodsSection().isEmpty());
+                || (mPaymentUiService.getPaymentMethodsSection() != null
+                        && !mPaymentUiService.getPaymentMethodsSection().isEmpty());
 
         if (!mCanMakePayment
-                || (!havePaymentApps && !mPaymentUIsManager.merchantSupportsAutofillCards())) {
+                || (!havePaymentApps && !mPaymentUiService.merchantSupportsAutofillCards())) {
             // All factories have responded, but none of them have apps. It's possible to add credit
             // cards, but the merchant does not support them either. The payment request must be
             // rejected.
             mJourneyLogger.setNotShown(mCanMakePayment
                             ? NotShownReason.NO_MATCHING_PAYMENT_METHOD
                             : NotShownReason.NO_SUPPORTED_PAYMENT_METHOD);
-            if (mComponentPaymentRequestImpl.isOffTheRecord()) {
+            if (mPaymentRequestService.isOffTheRecord()) {
                 // If the user is in the OffTheRecord mode, hide the absence of their payment
                 // methods from the merchant site.
                 disconnectFromClientWithDebugMessage(
                         ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
             } else {
-                if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-                    ComponentPaymentRequestImpl.getNativeObserverForTest().onNotSupportedError();
+                if (PaymentRequestService.getNativeObserverForTest() != null) {
+                    PaymentRequestService.getNativeObserverForTest().onNotSupportedError();
                 }
                 if (TextUtils.isEmpty(mRejectShowErrorMessage) && !isInTwa()
                         && mSpec.getMethodData().get(MethodStrings.GOOGLE_PLAY_BILLING) != null) {
@@ -1630,9 +1620,8 @@ public class PaymentRequestImpl
                                                 : " " + mRejectShowErrorMessage),
                         PaymentErrorReason.NOT_SUPPORTED);
             }
-            if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                ComponentPaymentRequestImpl.getObserverForTest()
-                        .onPaymentRequestServiceShowFailed();
+            if (PaymentRequestService.getObserverForTest() != null) {
+                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
             }
             return true;
         }
@@ -1656,8 +1645,8 @@ public class PaymentRequestImpl
             return false;
         }
 
-        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getObserverForTest().onPaymentRequestServiceShowFailed();
+        if (PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
         }
         mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
         disconnectFromClientWithDebugMessage(
@@ -1675,13 +1664,13 @@ public class PaymentRequestImpl
         assert methodName != null;
         assert stringifiedDetails != null;
 
-        if (mComponentPaymentRequestImpl == null || mPaymentResponseHelper == null) {
+        if (mPaymentRequestService == null || mPaymentResponseHelper == null) {
             return;
         }
 
         // If the payment method was an Autofill credit card with an identifier, record its use.
         PaymentApp selectedPaymentMethod =
-                (PaymentApp) mPaymentUIsManager.getPaymentMethodsSection().getSelectedItem();
+                (PaymentApp) mPaymentUiService.getPaymentMethodsSection().getSelectedItem();
         if (selectedPaymentMethod != null
                 && selectedPaymentMethod.getPaymentAppType() == PaymentAppType.AUTOFILL
                 && !selectedPaymentMethod.getIdentifier().isEmpty()) {
@@ -1691,9 +1680,9 @@ public class PaymentRequestImpl
 
         // Showing the payment request UI if we were previously skipping it so the loading
         // spinner shows up until the merchant notifies that payment was completed.
-        if (mPaymentUIsManager.shouldSkipShowingPaymentRequestUi()
-                && mPaymentUIsManager.getPaymentRequestUI() != null) {
-            mPaymentUIsManager.getPaymentRequestUI().showProcessingMessageAfterUiSkip();
+        if (mPaymentUiService.shouldSkipShowingPaymentRequestUi()
+                && mPaymentUiService.getPaymentRequestUI() != null) {
+            mPaymentUiService.getPaymentRequestUI().showProcessingMessageAfterUiSkip();
         }
 
         mJourneyLogger.setEventOccurred(Event.RECEIVED_INSTRUMENT_DETAILS);
@@ -1707,38 +1696,38 @@ public class PaymentRequestImpl
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
         }
-        if (mComponentPaymentRequestImpl == null) return;
-        mComponentPaymentRequestImpl.onPaymentResponse(response);
+        if (mPaymentRequestService == null) return;
+        mPaymentRequestService.onPaymentResponse(response);
         mPaymentResponseHelper = null;
-        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getObserverForTest().onPaymentResponseReady();
+        if (PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest().onPaymentResponseReady();
         }
     }
 
     /** Called if unable to retrieve payment details. */
     @Override
     public void onInstrumentDetailsError(String errorMessage) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
         mInvokedPaymentApp = null;
-        if (mPaymentUIsManager.getMinimalUI() != null) {
+        if (mPaymentUiService.getMinimalUI() != null) {
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            mPaymentUIsManager.getMinimalUI().showErrorAndClose(
+            mPaymentUiService.getMinimalUI().showErrorAndClose(
                     /*observer=*/this::close, R.string.payments_error_message);
             return;
         }
 
         // When skipping UI, any errors/cancel from fetching payment details should abort payment.
-        if (mPaymentUIsManager.shouldSkipShowingPaymentRequestUi()) {
+        if (mPaymentUiService.shouldSkipShowingPaymentRequestUi()) {
             assert !TextUtils.isEmpty(errorMessage);
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             disconnectFromClientWithDebugMessage(errorMessage);
         } else {
-            mPaymentUIsManager.getPaymentRequestUI().onPayButtonProcessingCancelled();
+            mPaymentUiService.getPaymentRequestUI().onPayButtonProcessingCancelled();
             PaymentDetailsUpdateServiceHelper.getInstance().reset();
         }
     }
 
-    // Implement PaymentUIsManager.Delegate:
+    // Implement PaymentUiService.Delegate:
     @Override
     public PaymentRequestUI.Client getPaymentRequestUIClient() {
         return this;
@@ -1746,41 +1735,41 @@ public class PaymentRequestImpl
 
     /**
      * Closes the UI and destroys native objects. If the client is still connected, then it's
-     * notified of UI hiding. This PaymentRequestImpl object can't be reused after this function is
-     * called.
+     * notified of UI hiding. This ChromePaymentRequestService object can't be reused after this
+     * function is called.
      */
     private void closeUIAndDestroyNativeObjects() {
-        mPaymentUIsManager.ensureHideAndResetPaymentHandlerUi();
-        mPaymentUIsManager.hideMinimalUI();
+        mPaymentUiService.ensureHideAndResetPaymentHandlerUi();
+        mPaymentUiService.hideMinimalUI();
 
-        if (mPaymentUIsManager.getPaymentRequestUI() != null) {
-            mPaymentUIsManager.getPaymentRequestUI().close();
+        if (mPaymentUiService.getPaymentRequestUI() != null) {
+            mPaymentUiService.getPaymentRequestUI().close();
             ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
             if (activity != null) {
                 activity.getLifecycleDispatcher().unregister(
-                        mPaymentUIsManager.getPaymentRequestUI());
+                        mPaymentUiService.getPaymentRequestUI());
             }
-            mPaymentUIsManager.setPaymentRequestUI(null);
-            mPaymentUIsManager.getPaymentUisShowStateReconciler().onPaymentRequestUiClosed();
+            mPaymentUiService.setPaymentRequestUI(null);
+            mPaymentUiService.getPaymentUisShowStateReconciler().onPaymentRequestUiClosed();
         }
 
         setShowingPaymentRequest(null);
         mIsCurrentPaymentRequestShowing = false;
 
-        if (mPaymentUIsManager.getPaymentMethodsSection() != null) {
-            for (int i = 0; i < mPaymentUIsManager.getPaymentMethodsSection().getSize(); i++) {
-                EditableOption option = mPaymentUIsManager.getPaymentMethodsSection().getItem(i);
+        if (mPaymentUiService.getPaymentMethodsSection() != null) {
+            for (int i = 0; i < mPaymentUiService.getPaymentMethodsSection().getSize(); i++) {
+                EditableOption option = mPaymentUiService.getPaymentMethodsSection().getItem(i);
                 ((PaymentApp) option).dismissInstrument();
             }
-            mPaymentUIsManager.setPaymentMethodsSection(null);
+            mPaymentUiService.setPaymentMethodsSection(null);
         }
 
-        mPaymentUIsManager.removeLeavingTabObservers();
+        mPaymentUiService.removeLeavingTabObservers();
 
-        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUIsManager);
+        SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
 
         // Destroy native objects.
-        mPaymentUIsManager.destroyCurrencyFormatters();
+        mPaymentUiService.destroyCurrencyFormatters();
         mJourneyLogger.destroy();
 
         if (mPaymentHandlerHost != null) {
@@ -1794,11 +1783,11 @@ public class PaymentRequestImpl
         PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
-    // Implement PaymentUIsManager.Delegate:
+    // Implement PaymentUiService.Delegate:
     @Override
     public void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail) {
-        if (mComponentPaymentRequestImpl == null || !mWasRetryCalled) return;
-        mComponentPaymentRequestImpl.onPayerDetailChange(detail);
+        if (mPaymentRequestService == null || !mWasRetryCalled) return;
+        mPaymentRequestService.onPayerDetailChange(detail);
     }
 
     /**
@@ -1810,8 +1799,8 @@ public class PaymentRequestImpl
         return sShowingPaymentRequest != null;
     }
 
-    /** @param paymentRequest The currently showing PaymentRequestImpl. */
-    private static void setShowingPaymentRequest(PaymentRequestImpl paymentRequest) {
+    /** @param paymentRequest The currently showing ChromePaymentRequestService. */
+    private static void setShowingPaymentRequest(ChromePaymentRequestService paymentRequest) {
         assert sShowingPaymentRequest == null || paymentRequest == null;
         sShowingPaymentRequest = paymentRequest;
     }
@@ -1824,21 +1813,21 @@ public class PaymentRequestImpl
     // Implement PaymentUIsObserver:
     @Override
     public void onPaymentRequestUIFaviconNotAvailable() {
-        if (mComponentPaymentRequestImpl == null) return;
-        mComponentPaymentRequestImpl.warnNoFavicon();
+        if (mPaymentRequestService == null) return;
+        mPaymentRequestService.warnNoFavicon();
     }
 
     // Implement PaymentUIsObserver:
     @Override
     public void onShippingOptionChange(String optionId) {
-        if (mComponentPaymentRequestImpl == null) return;
-        mComponentPaymentRequestImpl.onShippingOptionChange(optionId);
+        if (mPaymentRequestService == null) return;
+        mPaymentRequestService.onShippingOptionChange(optionId);
     }
 
     // Implement PaymentUIsObserver.onLeavingCurrentTab:
     @Override
     public void onLeavingCurrentTab(String reason) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
         mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
         disconnectFromClientWithDebugMessage(reason);
     }
@@ -1848,16 +1837,16 @@ public class PaymentRequestImpl
     public void onUiServiceError(String error) {
         mJourneyLogger.setAborted(AbortReason.OTHER);
         disconnectFromClientWithDebugMessage(error);
-        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getObserverForTest().onPaymentRequestServiceShowFailed();
+        if (PaymentRequestService.getObserverForTest() != null) {
+            PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
         }
     }
 
     // Implement PaymentUIsObserver:
     @Override
     public void onShippingAddressChange(PaymentAddress address) {
-        if (mComponentPaymentRequestImpl == null) return;
+        if (mPaymentRequestService == null) return;
         // This updates the line items and the shipping options asynchronously.
-        mComponentPaymentRequestImpl.onShippingAddressChange(address);
+        mPaymentRequestService.onShippingAddressChange(address);
     }
 }
