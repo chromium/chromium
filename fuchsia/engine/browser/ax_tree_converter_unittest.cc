@@ -97,8 +97,9 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   attributes.set_label(kLabel1);
   attributes.set_secondary_label(kDescription1);
   fuchsia::ui::gfx::BoundingBox box;
-  box.min = scenic::NewVector3({kRectX, kRectY + kRectHeight, 0.0f});
-  box.max = scenic::NewVector3({kRectHeight, kRectY, 0.0f});
+  box.min = scenic::NewVector3({kRectX, kRectY, 0.0f});
+  box.max =
+      scenic::NewVector3({kRectX + kRectWidth, kRectY + kRectHeight, 0.0f});
   fuchsia::ui::gfx::Matrix4Value mat =
       scenic::NewMatrix4Value(k4DIdentityMatrix);
   States states;
@@ -181,8 +182,9 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
   states.set_hidden(false);
   states.set_checked_state(CheckedState::UNCHECKED);
   fuchsia::ui::gfx::BoundingBox box;
-  box.min = scenic::NewVector3({kRectX, kRectY + kRectHeight, 0.0f});
-  box.max = scenic::NewVector3({kRectHeight, kRectY, 0.0f});
+  box.min = scenic::NewVector3({kRectX, kRectY, 0.0f});
+  box.max =
+      scenic::NewVector3({kRectX + kRectWidth, kRectY + kRectHeight, 0.0f});
   fuchsia::ui::gfx::Matrix4Value mat =
       scenic::NewMatrix4Value(k4DIdentityMatrix);
   auto expected_node = CreateSemanticNode(
@@ -206,6 +208,26 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
   modified_node_data.child_ids = std::vector<int32_t>{};
   converted_node = AXNodeDataToSemanticNode(modified_node_data, kRootId);
   EXPECT_FALSE(fidl::Equals(converted_node, expected_node));
+}
+
+TEST_F(AXTreeConverterTest, LocationFieldRespectsTypeInvariants) {
+  ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
+  relative_bounds.bounds = gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
+  relative_bounds.transform =
+      std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
+  relative_bounds.transform->MakeIdentity();
+  auto source_node_data = CreateAXNodeData(
+      ax::mojom::Role::kHeader, ax::mojom::Action::kSetValue,
+      std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
+      kLabel1, kDescription1, ax::mojom::CheckedState::kFalse);
+  auto converted_node = AXNodeDataToSemanticNode(source_node_data, kRootId);
+
+  // The type definition of the location field requires that in order to be
+  // interpreted as having non-zero length in a dimension, the min must be less
+  // than the max in that dimension.
+  EXPECT_LE(converted_node.location().min.x, converted_node.location().max.x);
+  EXPECT_LE(converted_node.location().min.y, converted_node.location().max.y);
+  EXPECT_LE(converted_node.location().min.z, converted_node.location().max.z);
 }
 
 TEST_F(AXTreeConverterTest, DefaultAction) {

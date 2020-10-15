@@ -187,10 +187,10 @@ std::vector<uint32_t> ConvertChildIds(std::vector<int32_t> ids,
 
 fuchsia::ui::gfx::BoundingBox ConvertBoundingBox(gfx::RectF bounds) {
   fuchsia::ui::gfx::BoundingBox box;
-  box.min = scenic::NewVector3({bounds.bottom_left().x(),
-                                bounds.bottom_left().y(), 0.0f});
-  box.max = scenic::NewVector3({bounds.top_right().x(), bounds.top_right().y(),
-                                0.0f});
+  // Since the origin is at the top left, min should represent the top left and
+  // max should be the bottom right.
+  box.min = scenic::NewVector3({bounds.x(), bounds.y(), 0.0f});
+  box.max = scenic::NewVector3({bounds.right(), bounds.bottom(), 0.0f});
   return box;
 }
 
