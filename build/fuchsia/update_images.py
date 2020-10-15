@@ -128,12 +128,12 @@ def main():
     try:
       DownloadSdkBootImages(bucket, sdk_hash, args.boot_images,
                             args.image_root_dir)
+      with open(signature_filename, 'w') as f:
+        f.write(new_signature)
+
     except subprocess.CalledProcessError as e:
       logging.error(("command '%s' failed with status %d.%s"), " ".join(e.cmd),
                     e.returncode, " Details: " + e.output if e.output else "")
-
-    with open(signature_filename, 'w') as f:
-      f.write(new_signature)
 
   return 0
 
