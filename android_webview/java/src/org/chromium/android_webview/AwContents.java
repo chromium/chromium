@@ -885,28 +885,26 @@ public class AwContents implements SmartClipProvider {
         @Override
         public boolean onPreDraw() {
             if (TRACE) Log.i(TAG, "%s onPreDraw", this);
-            if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
-                List<Rect> openWebContentRects = new ArrayList<Rect>();
-                for (AwContents content : mAwContentsList) {
-                    assert !content.isDestroyed(NO_WARN);
-                    if (AwContentsJni.get().isDisplayingOpenWebContent(
-                                content.mNativeAwContents, content)) {
-                        openWebContentRects.add(content.getGlobalVisibleRect());
-                    }
+            List<Rect> openWebContentRects = new ArrayList<Rect>();
+            for (AwContents content : mAwContentsList) {
+                assert !content.isDestroyed(NO_WARN);
+                if (AwContentsJni.get().isDisplayingOpenWebContent(
+                            content.mNativeAwContents, content)) {
+                    openWebContentRects.add(content.getGlobalVisibleRect());
                 }
-
-                Rect rootVisibleRect = new Rect((int) mRootView.getX(), (int) mRootView.getY(),
-                        (int) mRootView.getX() + mRootView.getWidth(),
-                        (int) mRootView.getY() + mRootView.getHeight());
-                int openWebPixelCoverage =
-                        RectUtils.calculatePixelsOfCoverage(rootVisibleRect, openWebContentRects);
-
-                float openWebVisiblePercentage =
-                        (float) openWebPixelCoverage / RectUtils.getRectArea(rootVisibleRect);
-
-                AwContentsJni.get().updateOpenWebScreenArea(
-                        openWebPixelCoverage, (int) openWebVisiblePercentage);
             }
+
+            Rect rootVisibleRect = new Rect((int) mRootView.getX(), (int) mRootView.getY(),
+                    (int) mRootView.getX() + mRootView.getWidth(),
+                    (int) mRootView.getY() + mRootView.getHeight());
+            int openWebPixelCoverage =
+                    RectUtils.calculatePixelsOfCoverage(rootVisibleRect, openWebContentRects);
+
+            float openWebVisiblePercentage =
+                    (float) openWebPixelCoverage / RectUtils.getRectArea(rootVisibleRect);
+
+            AwContentsJni.get().updateOpenWebScreenArea(
+                    openWebPixelCoverage, (int) openWebVisiblePercentage);
             return true;
         }
     }
@@ -2987,8 +2985,10 @@ public class AwContents implements SmartClipProvider {
         mAwViewMethods.onAttachedToWindow();
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
-        AwOnPreDrawListener listener = getOrCreateOnPreDrawListener(mContainerView);
-        listener.trackContents(this);
+        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
+            AwOnPreDrawListener listener = getOrCreateOnPreDrawListener(mContainerView);
+            listener.trackContents(this);
+        }
     }
 
     private AwOnPreDrawListener getOrCreateOnPreDrawListener(ViewGroup viewGroup) {
@@ -3027,7 +3027,10 @@ public class AwContents implements SmartClipProvider {
     @SuppressLint("MissingSuperCall")
     public void onDetachedFromWindow() {
         if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
-        detachPreDrawListener();
+
+        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
+            detachPreDrawListener();
+        }
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
     }
