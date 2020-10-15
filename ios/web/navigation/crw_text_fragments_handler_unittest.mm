@@ -43,6 +43,23 @@ class MockWebStateImpl : public web::WebStateImpl {
 
   MOCK_METHOD1(ExecuteJavaScript, void(const base::string16&));
   MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
+
+  std::unique_ptr<web::WebState::ScriptCommandSubscription>
+  AddScriptCommandCallback(const web::WebState::ScriptCommandCallback& callback,
+                           const std::string& command_prefix) override {
+    last_callback_ = callback;
+    last_command_prefix_ = command_prefix;
+    return nil;
+  }
+
+  web::WebState::ScriptCommandCallback last_callback() {
+    return last_callback_;
+  }
+  const std::string last_command_prefix() { return last_command_prefix_; }
+
+ private:
+  web::WebState::ScriptCommandCallback last_callback_;
+  std::string last_command_prefix_;
 };
 
 class CRWTextFragmentsHandlerTest : public web::WebTest {
@@ -109,6 +126,11 @@ TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptSuccess) {
   EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
 
   [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+
+  // Verify that a command callback was added with the right prefix.
+  EXPECT_NE(web::WebState::ScriptCommandCallback(),
+            web_state_->last_callback());
+  EXPECT_EQ("textFragments", web_state_->last_command_prefix());
 }
 
 // Tests that the handler will not execute JavaScript if the scroll to text
@@ -123,6 +145,10 @@ TEST_F(CRWTextFragmentsHandlerTest, FeatureDisabledFragmentsDisallowed) {
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
 
   [handler processTextFragmentsWithContext:&context_ referrer:Referrer()];
+
+  // Verify that no callback was set when the flag is disabled.
+  EXPECT_EQ(web::WebState::ScriptCommandCallback(),
+            web_state_->last_callback());
 }
 
 // Tests that the handler will not execute JavaScript if the WebState has an

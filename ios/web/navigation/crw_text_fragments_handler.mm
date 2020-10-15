@@ -9,17 +9,26 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/text_fragments_utils.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/referrer.h"
-#import "ios/web/web_state/web_state_impl.h"
-
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
+#import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface CRWTextFragmentsHandler ()
+namespace {
+
+const char kScriptCommandPrefix[] = "textFragments";
+const char kScriptResponseCommand[] = "textFragments.response";
+
+}  // namespace
+
+@interface CRWTextFragmentsHandler () {
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> _subscription;
+}
 
 @property(nonatomic, weak) id<CRWWebViewHandlerDelegate> delegate;
 
@@ -31,8 +40,24 @@
 @implementation CRWTextFragmentsHandler
 
 - (instancetype)initWithDelegate:(id<CRWWebViewHandlerDelegate>)delegate {
+  DCHECK(delegate);
   if (self = [super init]) {
     _delegate = delegate;
+
+    if (base::FeatureList::IsEnabled(web::features::kScrollToTextIOS) &&
+        self.webStateImpl) {
+      __weak __typeof(self) weakSelf = self;
+      const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
+          ^(const base::DictionaryValue& message, const GURL& page_url,
+            bool interacted, web::WebFrame* sender_frame) {
+            if (sender_frame && sender_frame->IsMainFrame()) {
+              [weakSelf didReceiveJavaScriptResponse:message];
+            }
+          });
+
+      _subscription = self.webStateImpl->AddScriptCommandCallback(
+          callback, kScriptCommandPrefix);
+    }
   }
 
   return self;
@@ -50,6 +75,7 @@
   if (parsedFragments.type() == base::Value::Type::NONE)
     return;
 
+  // TODO (crbug.com/1099268): Log the origin and number of fragments metrics.
   std::string fragmentParam;
   base::JSONWriter::Write(parsedFragments, &fragmentParam);
 
@@ -87,6 +113,15 @@
 
 - (web::WebStateImpl*)webStateImpl {
   return [self.delegate webStateImplForWebViewHandler:self];
+}
+
+- (void)didReceiveJavaScriptResponse:(const base::DictionaryValue&)response {
+  const std::string* command = response.FindStringKey("command");
+  if (!command || *command != kScriptResponseCommand) {
+    return;
+  }
+
+  // TODO (crbug.com/1099268): Log the success/failure metric.
 }
 
 @end
