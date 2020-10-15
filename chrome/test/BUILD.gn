@@ -5884,6 +5884,7 @@ test("unit_tests") {
       "//ui/web_dialogs:test_support",
     ]
     sources += [
+      "../../ui/views/controls/webview/web_bubble_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
       "../browser/ui/in_product_help/feature_promo_snooze_service_unittest.cc",

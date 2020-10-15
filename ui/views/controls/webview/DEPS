@@ -6,4 +6,5 @@ include_rules = [
   "+ui/content_accelerators",
   "+ui/views",
   "+ui/web_dialogs",
+  "+ui/webui",
 ]

@@ -4,6 +4,8 @@
 
 static_library("webui") {
   sources = [
+    "mojo_bubble_web_ui_controller.cc",
+    "mojo_bubble_web_ui_controller.h",
     "mojo_web_ui_controller.cc",
     "mojo_web_ui_controller.h",
     "webui_allowlist.cc",
