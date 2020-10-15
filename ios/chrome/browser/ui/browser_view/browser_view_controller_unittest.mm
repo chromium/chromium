@@ -164,9 +164,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         std::make_unique<FakeClipboardRecentContent>());
 
     container_ = [[BrowserContainerViewController alloc] init];
-    bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
-                                        dependencyFactory:factory
-                           browserContainerViewController:container_];
+    bvc_ = [[BrowserViewController alloc]
+                       initWithBrowser:browser_.get()
+                     dependencyFactory:factory
+        browserContainerViewController:container_
+                            dispatcher:browser_->GetCommandDispatcher()];
 
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];

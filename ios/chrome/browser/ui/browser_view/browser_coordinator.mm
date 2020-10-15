@@ -242,6 +242,7 @@
   [self removeWebStateListObserver];
   [self uninstallDelegatesForBrowser];
   [self uninstallDelegatesForAllWebStates];
+  self.viewController.commandDispatcher = nil;
   [self.dispatcher stopDispatchingToTarget:self];
   [self stopChildCoordinators];
   [self destroyViewController];
@@ -305,7 +306,8 @@
                      initWithBrowser:self.browser
                    dependencyFactory:factory
       browserContainerViewController:self.browserContainerCoordinator
-                                         .viewController];
+                                         .viewController
+                          dispatcher:self.dispatcher];
 }
 
 // Shuts down the BrowserViewController.

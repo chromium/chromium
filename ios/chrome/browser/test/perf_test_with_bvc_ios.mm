@@ -123,7 +123,8 @@ void PerfTestWithBVC::SetUp() {
                      initWithBrowser:browser_.get()
                    dependencyFactory:bvc_factory_
       browserContainerViewController:[[BrowserContainerViewController alloc]
-                                         init]];
+                                         init]
+                          dispatcher:browser_->GetCommandDispatcher()];
   [bvc_ setActive:YES];
 
   // Create a real window to give to the browser view controller.

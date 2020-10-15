@@ -20,6 +20,7 @@
 class Browser;
 @class BrowserContainerViewController;
 @class BrowserViewControllerDependencyFactory;
+@class CommandDispatcher;
 @class ToolbarAccessoryPresenter;
 
 // The top-level view controller for the browser UI. Manages other controllers
@@ -42,12 +43,16 @@ class Browser;
                      (BrowserViewControllerDependencyFactory*)factory
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
+                        dispatcher:(CommandDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+// Command dispatcher.
+@property(nonatomic, weak) CommandDispatcher* commandDispatcher;
 
 // Returns whether or not text to speech is playing.
 @property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
