@@ -197,9 +197,9 @@
     <template>
       <!-- TOOD(crbug.com/1138578): replace the query-tile attr binding to
       something that checks whether the tile is a repeatable query tile. -->
-      <a class="tile" draggable="true" href$="[[item.url.url]]"
-          title$="[[item.title]]" on-dragstart="onDragStart_"
-          on-touchstart="onTouchStart_"
+      <a class="tile" draggable$="[[booleanToString_(customLinksEnabled_)]]"
+          href$="[[item.url.url]]" title$="[[item.title]]"
+          on-dragstart="onDragStart_" on-touchstart="onTouchStart_"
           hidden$="[[isHidden_(index, columnCount_)]]"
           on-click="onTileClick_" on-keydown="onTileKeyDown_"
           query-tile$="[[isHidden_(index, columnCount_)]]">

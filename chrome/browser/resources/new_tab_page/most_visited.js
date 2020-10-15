@@ -346,6 +346,10 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   dragEnd_(x, y) {
+    if (!this.customLinksEnabled_) {
+      this.reordering_ = false;
+      return;
+    }
     this.dragOffset_ = null;
     const dragElement = this.shadowRoot.querySelector('.tile.dragging');
     if (!dragElement) {
@@ -811,6 +815,15 @@ class MostVisitedElement extends PolymerElement {
     performance.measure('most-visited-rendered');
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_, BrowserProxy.getInstance().now());
+  }
+
+  /**
+   * @param {boolean} value
+   * @return {string} String representing the given boolean.
+   * @private
+   */
+  booleanToString_(value) {
+    return Boolean(value).toString();
   }
 }
 

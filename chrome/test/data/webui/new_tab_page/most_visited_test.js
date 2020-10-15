@@ -644,6 +644,10 @@ suite('NewTabPageMostVisitedTest', () => {
   test('drag first tile to second position', async () => {
     await addTiles(2);
     const [first, second] = queryTiles();
+    assertEquals('https://a/', first.href);
+    assertTrue(first.draggable);
+    assertEquals('https://b/', second.href);
+    assertTrue(second.draggable);
     const firstRect = first.getBoundingClientRect();
     const secondRect = second.getBoundingClientRect();
     first.dispatchEvent(new DragEvent('dragstart', {
@@ -668,6 +672,10 @@ suite('NewTabPageMostVisitedTest', () => {
   test('drag second tile to first position', async () => {
     await addTiles(2);
     const [first, second] = queryTiles();
+    assertEquals('https://a/', first.href);
+    assertTrue(first.draggable);
+    assertEquals('https://b/', second.href);
+    assertTrue(second.draggable);
     const firstRect = first.getBoundingClientRect();
     const secondRect = second.getBoundingClientRect();
     second.dispatchEvent(new DragEvent('dragstart', {
@@ -687,6 +695,31 @@ suite('NewTabPageMostVisitedTest', () => {
     const [newFirst, newSecond] = queryTiles();
     assertEquals('https://b/', newFirst.href);
     assertEquals('https://a/', newSecond.href);
+  });
+
+  test('most visited tiles are not draggable', async () => {
+    await addTiles(2, /* customLinksEnabled= */ false);
+    const [first, second] = queryTiles();
+    assertEquals('https://a/', first.href);
+    assertFalse(first.draggable);
+    assertEquals('https://b/', second.href);
+    assertFalse(second.draggable);
+
+    const firstRect = first.getBoundingClientRect();
+    const secondRect = second.getBoundingClientRect();
+    first.dispatchEvent(new DragEvent('dragstart', {
+      clientX: firstRect.x + firstRect.width / 2,
+      clientY: firstRect.y + firstRect.height / 2,
+    }));
+    document.dispatchEvent(new DragEvent('dragend', {
+      clientX: secondRect.x + 1,
+      clientY: secondRect.y + 1,
+    }));
+    await flushTasks();
+    assertEquals(0, testProxy.handler.getCallCount('reorderMostVisitedTile'));
+    const [newFirst, newSecond] = queryTiles();
+    assertEquals('https://a/', newFirst.href);
+    assertEquals('https://b/', newSecond.href);
   });
 
   test('RIGHT_TO_LEFT tile title text direction', async () => {
