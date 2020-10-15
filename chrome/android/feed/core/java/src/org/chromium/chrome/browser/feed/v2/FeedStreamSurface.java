@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed.v2;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -25,6 +27,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -70,6 +73,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +87,8 @@ import java.util.Map;
 @JNINamespace("feed")
 public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHandler {
     private static final String TAG = "FeedStreamSurface";
+
+    private static final String FEED_SPLIT_NAME = "feedv2";
 
     private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
     private static final int SNACKBAR_DURATION_MS_LONG = 10000;
@@ -211,15 +217,17 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
      */
     private static class FeedProcessScopeDependencyProvider
             implements ProcessScopeDependencyProvider {
+        private Context mContext;
         private ImageFetchClient mImageFetchClient;
 
         FeedProcessScopeDependencyProvider() {
+            mContext = createFeedContext(ContextUtils.getApplicationContext());
             mImageFetchClient = new FeedImageFetchClient();
         }
 
         @Override
         public Context getContext() {
-            return ContextUtils.getApplicationContext();
+            return mContext;
         }
 
         @Deprecated
@@ -288,7 +296,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         final boolean mDarkMode;
 
         FeedSurfaceScopeDependencyProvider(Context activityContext, boolean darkMode) {
-            mActivityContext = activityContext;
+            mActivityContext = createFeedContext(activityContext);
             mDarkMode = darkMode;
         }
 
@@ -1006,6 +1014,27 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         FeedStreamSurfaceJni.get().reportStreamScrollStart(
                 mNativeFeedStreamSurface, FeedStreamSurface.this);
         mScrollReporter.trackScroll(dx, dy);
+    }
+
+    private static Context createFeedContext(Context context) {
+        // Isolated splits are only supported in O+, so just return the base context on other
+        // versions, since it will have access to all splits.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return context;
+        }
+
+        // If the feed split does not exist, return the original context.
+        String[] splitNames = ApiHelperForO.getSplitNames(context.getApplicationInfo());
+        if (splitNames == null || !Arrays.asList(splitNames).contains(FEED_SPLIT_NAME)) {
+            return context;
+        }
+
+        try {
+            return ApiHelperForO.createContextForSplit(context, FEED_SPLIT_NAME);
+        } catch (PackageManager.NameNotFoundException e) {
+            // Feed is not in a split.
+            return context;
+        }
     }
 
     // Detects animation finishes in RecyclerView.

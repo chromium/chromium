@@ -288,7 +288,15 @@ def _OptimizeWithR8(options,
       for main_dex_rule in options.main_dex_rules_path:
         cmd += ['--main-dex-rules', main_dex_rule]
 
-    module_input_jars = set(base_dex_context.input_paths)
+    base_jars = set(base_dex_context.input_paths)
+    # If a jar is present in multiple features, it should be moved to the base
+    # module.
+    all_feature_jars = set()
+    for feature in feature_contexts:
+      base_jars.update(all_feature_jars.intersection(feature.input_paths))
+      all_feature_jars.update(feature.input_paths)
+
+    module_input_jars = base_jars.copy()
     for feature in feature_contexts:
       feature_input_jars = [
           p for p in feature.input_paths if p not in module_input_jars
@@ -297,7 +305,7 @@ def _OptimizeWithR8(options,
       for in_jar in feature_input_jars:
         cmd += ['--feature', in_jar, feature.staging_dir]
 
-    cmd += base_dex_context.input_paths
+    cmd += sorted(base_jars)
     # Add any extra input jars to the base module (e.g. desugar runtime).
     extra_jars = set(options.input_paths) - module_input_jars
     cmd += sorted(extra_jars)
