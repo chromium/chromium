@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/horizontal_layout.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -34,6 +35,7 @@
 
 namespace {
 NSString* const kCellIdentifier = @"GridCellIdentifier";
+NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
 // Creates an NSIndexPath with |index| in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
@@ -125,6 +127,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                          collectionViewLayout:self.currentLayout];
   [collectionView registerClass:[GridCell class]
       forCellWithReuseIdentifier:kCellIdentifier];
+  [collectionView registerClass:[PlusSignCell class]
+      forCellWithReuseIdentifier:kPlusSignCellIdentifier];
   collectionView.dataSource = self;
   collectionView.delegate = self;
   collectionView.backgroundView = [[UIView alloc] init];
@@ -310,33 +314,47 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
+  if (IsThumbStripEnabled()) {
+    // The PlusSignCell (new item button) is always appended at the end of the
+    // collection.
+    return base::checked_cast<NSInteger>(self.items.count + 1);
+  }
   return base::checked_cast<NSInteger>(self.items.count);
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  GridCell* cell = base::mac::ObjCCastStrict<GridCell>([collectionView
-      dequeueReusableCellWithReuseIdentifier:kCellIdentifier
-                                forIndexPath:indexPath]);
-  cell.accessibilityIdentifier =
-      [NSString stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix,
-                                 base::checked_cast<long>(indexPath.item)];
+  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
+  UICollectionViewCell* cell;
 
-  // In some cases this is called with an indexPath.item that's beyond (by 1)
-  // the bounds of self.items -- see crbug.com/1068136. Presumably this is a
-  // race condition where an item has been deleted at the same time as the
-  // collection is doing layout (potentially during rotation?). DCHECK to
-  // catch this in debug, and then in production fudge by duplicating the last
-  // cell. The assumption is that there will be another, correct layout shortly
-  // after the incorrect one.
-  NSUInteger itemIndex = indexPath.item;
-  DCHECK(itemIndex < self.items.count);
-  // Outside of debug builds, keep array bounds valid.
-  if (itemIndex >= self.items.count)
-    itemIndex = self.items.count - 1;
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    cell = [collectionView
+        dequeueReusableCellWithReuseIdentifier:kPlusSignCellIdentifier
+                                  forIndexPath:indexPath];
+    PlusSignCell* plusSignCell = base::mac::ObjCCastStrict<PlusSignCell>(cell);
+    plusSignCell.theme = self.theme;
+  } else {
+    // In some cases this is called with an indexPath.item that's beyond (by 1)
+    // the bounds of self.items -- see crbug.com/1068136. Presumably this is a
+    // race condition where an item has been deleted at the same time as the
+    // collection is doing layout (potentially during rotation?). DCHECK to
+    // catch this in debug, and then in production fudge by duplicating the last
+    // cell. The assumption is that there will be another, correct layout
+    // shortly after the incorrect one.
+    DCHECK_LT(itemIndex, self.items.count);
+    // Outside of debug builds, keep array bounds valid.
+    if (itemIndex >= self.items.count)
+      itemIndex = self.items.count - 1;
 
-  GridItem* item = self.items[itemIndex];
-  [self configureCell:cell withItem:item];
+    GridItem* item = self.items[itemIndex];
+    cell =
+        [collectionView dequeueReusableCellWithReuseIdentifier:kCellIdentifier
+                                                  forIndexPath:indexPath];
+    cell.accessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
+    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
+    [self configureCell:gridCell withItem:item];
+  }
   // Set the z index of cells so that lower rows are superposed during
   // transitions between grid and horizontal layouts.
   cell.layer.zPosition = itemIndex;
@@ -359,6 +377,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
     canMoveItemAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    // The PlusSignCell is at the end of the collection and should not be moved.
+    return NO;
+  }
   return indexPath && self.items.count > 1;
 }
 
@@ -380,6 +402,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 #pragma mark - UICollectionViewDelegate
+
+// This prevents the user from dragging a cell past the plus sign cell (the last
+// cell in the collection view).
+- (NSIndexPath*)collectionView:(UICollectionView*)collectionView
+    targetIndexPathForMoveFromItemAtIndexPath:(NSIndexPath*)originalIndexPath
+                          toProposedIndexPath:(NSIndexPath*)proposedIndexPath {
+  if ([self isIndexPathForPlusSignCell:proposedIndexPath]) {
+    return CreateIndexPath(proposedIndexPath.item - 1);
+  }
+  return proposedIndexPath;
+}
 
 // This method is used instead of -didSelectItemAtIndexPath, because any
 // selection events will be signalled through the model layer and handled in
@@ -424,6 +457,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    // Return an empty array because the plus sign cell should not be dragged.
+    return @[];
+  }
   GridItem* item = self.items[indexPath.item];
   return @[ [self.dragDropHandler dragItemForItemWithID:item.identifier] ];
 }
@@ -439,6 +476,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (UIDragPreviewParameters*)collectionView:(UICollectionView*)collectionView
     dragPreviewParametersForItemAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    // Return nil so that the plus sign cell doesn't superpose the dragged cell.
+    return nil;
+  }
   GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return gridCell.dragPreviewParameters;
@@ -471,19 +512,31 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   id<UICollectionViewDropItem> item = coordinator.items.firstObject;
 
   // Append to the end of the collection, unless drop index is specified.
-  NSUInteger destinationIndex = self.items.count;
-  if (item.sourceIndexPath) {
-    // The sourceIndexPath is non-nil if the drop item is from this same
-    // collection view. Move to last position rather than appending if this is a
-    // reorder operation.
-    destinationIndex = self.items.count - 1;
-  }
+  // The sourceIndexPath is nil if the drop item is not from the same
+  // collection view. Set the destinationIndex to reflect the addition of an
+  // item.
+  NSUInteger destinationIndex =
+      item.sourceIndexPath ? self.items.count - 1 : self.items.count;
   if (coordinator.destinationIndexPath) {
     destinationIndex =
         base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
   }
-  NSIndexPath* dropIndexPath = [NSIndexPath indexPathForItem:destinationIndex
-                                                   inSection:0];
+  if (IsThumbStripEnabled()) {
+    // The sourceIndexPath is nil if the drop item is not from the same
+    // collection view.
+    NSUInteger plusSignCellIndex =
+        item.sourceIndexPath ? self.items.count : self.items.count + 1;
+    // Can't use [self isIndexPathForPlusSignCell:] here because the index of
+    // the plus sign cell in this point in code depends on
+    // |item.sourceIndexPath|.
+    // I.e., in this point in code, |collectionView.numberOfItemsInSection| is
+    // equal to |self.items.count + 1|.
+    if (destinationIndex == plusSignCellIndex) {
+      // Prevent the cell from being dropped where the plus sign cell is.
+      destinationIndex = plusSignCellIndex - 1;
+    }
+  }
+  NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
 
   // Drop synchronously if local object is available.
   if (item.dragItem.localObject) {
@@ -746,6 +799,20 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
+// Checks whether |indexPath| corresponds to the index path of the plus sign
+// cell. The plus sign cell is the last cell in the collection view after all
+// the items.
+- (BOOL)isIndexPathForPlusSignCell:(NSIndexPath*)indexPath {
+  // When items are dragged from another collection, the count of cells in the
+  // collectionView is increased before self.items.count increases. That's what
+  // happens when the UICollectionViewDelegate's method
+  // |targetIndexPathForMoveFromItemAtIndexPath:toProposedIndexPath:| gets
+  // called, and that's why indexPath.item is not being compared to
+  // self.items.count here.
+  return IsThumbStripEnabled() &&
+         indexPath.item == [self.collectionView numberOfItemsInSection:0] - 1;
+}
+
 // Performs model updates and view updates together.
 - (void)performModelUpdates:(ProceduralBlock)modelUpdates
               collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
@@ -800,6 +867,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Tells the delegate that the user tapped the item with identifier
 // corresponding to |indexPath|.
 - (void)tappedItemAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    [self.delegate didTapPlusSignInGridViewController:self];
+    return;
+  }
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
   DCHECK_LT(index, self.items.count);
   NSString* itemID = self.items[index].identifier;

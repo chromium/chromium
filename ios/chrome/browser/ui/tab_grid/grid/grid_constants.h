@@ -20,6 +20,10 @@ extern NSString* const kGridCellCloseButtonIdentifier;
 // Grid styling.
 extern NSString* const kGridBackgroundColor;
 
+// PlusSignCell styling
+extern NSString* const kPlusSignCellBackgroundColor;
+extern NSString* const kPlusSignCellBackgroundDarkColor;
+
 // GridLayout.
 // Extra-small screens require a slightly different layout configuration (e.g.,
 // margins) even though they may be categorized into the same size class as

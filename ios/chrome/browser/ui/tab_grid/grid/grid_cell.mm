@@ -152,7 +152,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.selected = NO;
 }
 
-#pragma mark - Accessibility
+#pragma mark - UIAccessibility
 
 - (BOOL)isAccessibilityElement {
   // This makes the whole cell tappable in VoiceOver rather than the individual
@@ -179,7 +179,7 @@ void PositionView(UIView* view, CGPoint point) {
 
   // This background color must be set to avoid the corners behind the rounded
   // layer from showing when dragging and dropping.
-  self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+  self.backgroundColor = [UIColor clearColor];
 
   self.iconView.backgroundColor = UIColor.clearColor;
   switch (theme) {
