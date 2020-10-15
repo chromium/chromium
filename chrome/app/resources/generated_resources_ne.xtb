@@ -2794,6 +2794,7 @@
 <translation id="425573743389990240">वाटमा ब्याट्री डिस्चार्ज दर (नकारात्मक मानको मतलब ब्याट्री चारज्भइरहेको छ भन्ने हो)</translation>
 <translation id="4256316378292851214">भिडियोलाई यसको रूपमा ब&amp;चत गर्नुहोस्..</translation>
 <translation id="4258348331913189841">फाइल सिस्टमहरू</translation>
+<translation id="4259388776256904261">यो कार्य गर्न केही बेर लाग्न सक्छ</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google को सुरक्षासम्बन्धी उन्नत सुविधामा पठाउने हो? डाउनलोड बारमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4263223596040212967">आफ्नो किबोर्डको लेआउटको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4263757076580287579">मुद्रक दर्ता रद्द गरिएको छ।</translation>
@@ -2901,6 +2902,7 @@
 <translation id="4400632832271803360">शीर्ष-पङ्क्तिका कुञ्जीहरूको व्यवहार बदल्न लन्चर कुञ्जीलाई थिचिराख्नुहोस्</translation>
 <translation id="4400963414856942668">तपाईं कुनै ट्याबमा पुस्तक चिन्ह लगाउनका लागि तारा चिन्हमा क्लिक गर्न सक्नुहुन्छ</translation>
 <translation id="4403775189117163360">कुनै अर्को फोल्डर छनौट गर्नुहोस्</translation>
+<translation id="440391631796167175">कुनै कमजोर पासवर्ड भेट्टिएन</translation>
 <translation id="4404136731284211429">फेरि स्क्यान गर्नुहोस्</translation>
 <translation id="4404843640767531781">तपाईंका अभिभावकले <ph name="APP_NAME" /> माथि रोक लगाउनुभएको छ। यो एप प्रयोग गर्न आफ्ना अभिभावकको अनुमति लिनुहोस्।</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
@@ -4507,7 +4509,7 @@
 <translation id="6318407754858604988">डाउनलोड सुरु भयो</translation>
 <translation id="6318944945640833942">प्रिन्टर पत्ता लगाउन सकिएन। कृपया प्रिन्टरको ठेगाना फेरि प्रविष्टि गर्नुहोस्।</translation>
 <translation id="6321407676395378991">स्क्रिन सेभर अन गर्नुहोस्</translation>
-<translation id="6322653941595359182">आफ्नो Chromebook बाट पाठ सन्देशहरू पठाउनुहोस् र रिसिभ गर्नुहोस्</translation>
+<translation id="6322653941595359182">आफ्नो Chromebook बाट टेक्स्ट म्यासेजहरू पठाउनुहोस् र रिसिभ गर्नुहोस्</translation>
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="6325191661371220117">स्वत: सुरुवात असक्षम गर्नुहोस्</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
@@ -5053,6 +5055,7 @@
 <translation id="6995899638241819463">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिइन्छ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - क्रियाकलापको लग</translation>
 <translation id="6997707937646349884">तपाईंका यन्त्रहरूमा:</translation>
+<translation id="6998093258894828179">कार्डहरू लुकाइयोस्</translation>
 <translation id="6998793565256476099">भिडियो सम्मेलनका लागि यन्त्र दर्ता गर्नुहोस्‌</translation>
 <translation id="6999956497249459195">नयाँ समूह</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> जोडिएको छ तर यसलाई कन्फिगर गर्नु पर्छ</translation>
@@ -5723,6 +5726,7 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> माथि स्वतः रोक लगाइएको छ</translation>
 <translation id="7799299114731150374">वालपेपर सफलतापूर्वक सेट गरियो</translation>
 <translation id="7800518121066352902">वा&amp;मावर्त घुमाउनुहोस्</translation>
+<translation id="7802539296536804623">यो पृष्ठमा कार्डहरू नदेखाइयोस्</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7804072833593604762">ट्याब बन्द गरियो</translation>
 <translation id="7805768142964895445">स्थिति</translation>
@@ -6174,6 +6178,7 @@
 <translation id="8300011035382349091">यस ट्याबको पुस्तक चिन्ह सम्पादन गर्नुहोस्</translation>
 <translation id="8300374739238450534">Midnight Blue</translation>
 <translation id="8300849813060516376">OTASP असफल</translation>
+<translation id="8304383784961451596">तपाईंलाई यो यन्त्र प्रयोग गर्ने अधिकार दिइएको छैन। कृपया साइन इन गर्ने अनुमति प्राप्त गर्न एड्मिनसँग सम्पर्क गर्नुहोस् वा Family Link मार्फत सुपरिवेक्षण गरिएको Google खातामा साइन इन गर्नुहोस्।</translation>
 <translation id="8308179586020895837">Ask if <ph name="HOST" /> wants to access your camera</translation>
 <translation id="830868413617744215">बेटा</translation>
 <translation id="8309458809024885768">सर्टिफिकेट पहिले नै विद्यमान छ</translation>
@@ -6984,7 +6989,7 @@
 <translation id="964286338916298286">तपाईंको IT एडमिनले तपाईंको यन्त्रमा Chrome Goodies लाई असक्षम पार्नुभएको छ।</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{अनुप्रयोग}other{अनुप्रयोगहरू}}</translation>
 <translation id="964790508619473209">स्क्रिनका सेटिङ</translation>
-<translation id="965211523698323809">आफ्नो <ph name="DEVICE_TYPE" /> बाट पाठ सन्देशहरू सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="965211523698323809">आफ्नो <ph name="DEVICE_TYPE" /> बाट टेक्स्ट म्यासेजहरू सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">कुनै पनि साइटलाई HID यन्त्रहरूमाथि पहुँच राख्ने अनुमति नदिनुहोस्</translation>
 <translation id="967624055006145463">डेटा भण्डारण गरियो</translation>
 <translation id="968000525894980488">Google Play services सक्रिय गर्नुहोस्।</translation>

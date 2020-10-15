@@ -22,6 +22,7 @@
 <translation id="1058479211578257048">Gardando tarxetas…</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1062160989074299343">Prc10 (sobre)</translation>
+<translation id="1066573427009091463">Devolución do <ph name="PERCENT" /></translation>
 <translation id="106701514854093668">Marcadores do escritorio</translation>
 <translation id="1068672505746868501">Non traducir nunca páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">Noite</translation>
@@ -493,6 +494,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2955913368246107853">Pecha a barra de busca</translation>
 <translation id="2969319727213777354">Para establecer unha conexión segura, é necesario que o reloxo estea correctamente axustado. Isto débese a que os certificados utilizados polos sitios web para identificarse só son válidos durante períodos de tempo específicos. Debido a que o reloxo do dispositivo está incorrectamente axustado, Chrome non pode verificar estes certificados.</translation>
 <translation id="2972581237482394796">&amp;Refacer</translation>
+<translation id="2975775789586780239"><ph name="DISCOUNT" /> de desconto</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />: opción actualmente seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2985306909656435243">Se se activa esta opción, Chromium almacenará unha copia da túa tarxeta neste dispositivo para completar os formularios máis rápido.</translation>
 <translation id="2985398929374701810">Introduce un enderezo válido</translation>
@@ -1887,6 +1889,7 @@ Detalles adicionais:
 <translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8688672835843460752">Dispoñible</translation>
 <translation id="868922510921656628">Páxinas por xogo</translation>
+<translation id="8697373104056314601">Para gozar do máximo nivel de seguranza de Chrome, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />activa a protección mellorada<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8703575177326907206">A túa conexión con <ph name="DOMAIN" /> non está cifrada.</translation>

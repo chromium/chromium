@@ -202,7 +202,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
 <translation id="3196681740617426482">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv.
 
-Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhistorik på forskellige websites for f.eks. at tilpasse annoncer.</translation>
+Når du er i inkognito, kan websites ikke bruge cookies til at se din browserhistorik på forskellige websites for f.eks. at tilpasse annoncer.</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3240426699337459095">Linket er kopieret</translation>
@@ -254,7 +254,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3691593122358196899">Bogmærket er gemt i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Markér som ulæst</translation>
-<translation id="3740397331642243698">Åbner de angivne webadresser i Google Chrome i Inkognito.</translation>
+<translation id="3740397331642243698">Åbner de angivne webadresser i Google Chrome i inkognito.</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internetforbindelse.</translation>
@@ -514,7 +514,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="6585618849026997638">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke</translation>
 <translation id="6610002944194042868">Valgmuligheder for oversættelse</translation>
 <translation id="6620279676667515405">Annuller</translation>
-<translation id="6624219055418309072">Bloker i Inkognito</translation>
+<translation id="6624219055418309072">Bloker i inkognito</translation>
 <translation id="6628106477656132239">Udløbsdatoen er ugyldig</translation>
 <translation id="6638511529934826365">Zoom ind/ud på tekst…</translation>
 <translation id="6639730758971422557">Åbn <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
@@ -647,7 +647,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8027581147000338959">Åbn i nyt vindue</translation>
 <translation id="804427445359061970">Her kan du se dine faner fra andre enheder</translation>
 <translation id="8059533439631660104">Skjuler sektionen.</translation>
-<translation id="8065292699993359127">Åbn webadresser i Chrome i Inkognito</translation>
+<translation id="8065292699993359127">Åbn webadresser i Chrome i inkognito</translation>
 <translation id="806745655614357130">Hold mine data adskilt</translation>
 <translation id="8073670137947914548">Downloaden er fuldført</translation>
 <translation id="8073872304774253879">Gør søgninger og browsing endnu bedre</translation>
@@ -690,7 +690,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8548878600947630424">Find på siden...</translation>
 <translation id="8574235780160508979">Servicevilkårene for Chrome ændres den 31. marts <ph name="BEGIN_LINK" />Gennemgå dem<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Fra</translation>
-<translation id="8591976964826315682">Bloker tredjepartscookies i Inkognito</translation>
+<translation id="8591976964826315682">Bloker tredjepartscookies i inkognito</translation>
 <translation id="8605219856220328675">Luk fane.</translation>
 <translation id="8620640915598389714">Rediger</translation>
 <translation id="8636825310635137004">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder.</translation>
