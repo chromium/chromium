@@ -106,19 +106,11 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
                                    const GPURequestAdapterOptions* options,
                                    ScriptPromiseResolver* resolver,
                                    int32_t adapter_server_id,
-                                   const WGPUDeviceProperties& properties,
-                                   const char* error_message) {
+                                   const WGPUDeviceProperties& properties) {
   GPUAdapter* adapter = nullptr;
   if (adapter_server_id >= 0) {
     adapter = MakeGarbageCollected<GPUAdapter>(
         "Default", adapter_server_id, properties, dawn_control_client_);
-  }
-  if (error_message) {
-    ExecutionContext* execution_context = ExecutionContext::From(script_state);
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, error_message);
-    execution_context->AddConsoleMessage(console_message);
   }
   RecordAdapterForIdentifiability(script_state, options, adapter);
   resolver->Resolve(adapter);

@@ -38,7 +38,7 @@ ReservedTexture WebGPUInterfaceStub::ReserveTexture(
 }
 bool WebGPUInterfaceStub::RequestAdapterAsync(
     PowerPreference power_preference,
-    base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
+    base::OnceCallback<void(int32_t, const WGPUDeviceProperties&)>
         request_adapter_callback) {
   return false;
 }

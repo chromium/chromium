@@ -45,8 +45,7 @@ class GPU final : public ScriptWrappable,
                                 const GPURequestAdapterOptions* options,
                                 ScriptPromiseResolver* resolver,
                                 int32_t adapter_server_id,
-                                const WGPUDeviceProperties& properties,
-                                const char* error_message);
+                                const WGPUDeviceProperties& properties);
 
   void RecordAdapterForIdentifiability(ScriptState* script_state,
                                        const GPURequestAdapterOptions* options,

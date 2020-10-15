@@ -196,7 +196,7 @@
           "--order=natural",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -230,7 +230,7 @@
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -451,7 +451,7 @@
           "--order=natural",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -485,7 +485,7 @@
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -706,7 +706,7 @@
           "--order=natural",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -740,7 +740,7 @@
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -961,7 +961,7 @@
           "--order=natural",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -995,7 +995,7 @@
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--use-gpu-in-tests",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
+          "--additional-driver-flag=--use-vulkan=native"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
