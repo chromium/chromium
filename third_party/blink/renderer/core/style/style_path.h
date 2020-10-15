@@ -18,7 +18,8 @@ class SVGPathByteStream;
 
 class StylePath final : public BasicShape {
  public:
-  static scoped_refptr<StylePath> Create(std::unique_ptr<SVGPathByteStream>);
+  static scoped_refptr<StylePath> Create(std::unique_ptr<SVGPathByteStream>,
+                                         WindRule wind_rule = RULE_NONZERO);
   ~StylePath() override;
 
   static const StylePath* EmptyPath();
@@ -31,17 +32,20 @@ class StylePath final : public BasicShape {
 
   CSSValue* ComputedCSSValue() const;
 
-  void GetPath(Path&, const FloatRect&) override;
+  void GetPath(Path&, const FloatRect&, float zoom) override;
+  WindRule GetWindRule() const override { return wind_rule_; }
+
   bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kStylePathType; }
 
  private:
-  explicit StylePath(std::unique_ptr<SVGPathByteStream>);
+  explicit StylePath(std::unique_ptr<SVGPathByteStream>, WindRule wind_rule);
 
   std::unique_ptr<SVGPathByteStream> byte_stream_;
   mutable std::unique_ptr<Path> path_;
   mutable float path_length_;
+  WindRule wind_rule_;
 };
 
 template <>

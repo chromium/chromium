@@ -537,6 +537,9 @@ InterpolationValue basic_shape_interpolation_functions::MaybeConvertBasicShape(
     case BasicShape::kBasicShapePolygonType:
       return polygon_functions::ConvertBasicShape(To<BasicShapePolygon>(*shape),
                                                   zoom);
+    // Handled by PathInterpolationFunction.
+    case BasicShape::kStylePathType:
+      return nullptr;
     default:
       NOTREACHED();
       return nullptr;

@@ -13,20 +13,24 @@
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
 
-StylePath::StylePath(std::unique_ptr<SVGPathByteStream> path_byte_stream)
+StylePath::StylePath(std::unique_ptr<SVGPathByteStream> path_byte_stream,
+                     WindRule wind_rule)
     : byte_stream_(std::move(path_byte_stream)),
-      path_length_(std::numeric_limits<float>::quiet_NaN()) {
+      path_length_(std::numeric_limits<float>::quiet_NaN()),
+      wind_rule_(wind_rule) {
   DCHECK(byte_stream_);
 }
 
 StylePath::~StylePath() = default;
 
 scoped_refptr<StylePath> StylePath::Create(
-    std::unique_ptr<SVGPathByteStream> path_byte_stream) {
-  return base::AdoptRef(new StylePath(std::move(path_byte_stream)));
+    std::unique_ptr<SVGPathByteStream> path_byte_stream,
+    WindRule wind_rule) {
+  return base::AdoptRef(new StylePath(std::move(path_byte_stream), wind_rule));
 }
 
 const StylePath* StylePath::EmptyPath() {
@@ -62,12 +66,13 @@ bool StylePath::operator==(const BasicShape& o) const {
   if (!IsSameType(o))
     return false;
   const StylePath& other = To<StylePath>(o);
-  return *byte_stream_ == *other.byte_stream_;
+  return wind_rule_ == other.wind_rule_ && *byte_stream_ == *other.byte_stream_;
 }
 
-void StylePath::GetPath(Path&, const FloatRect&) {
-  // Callers should use GetPath() overload, which avoids making a copy.
-  NOTREACHED();
+void StylePath::GetPath(Path& path, const FloatRect& offset_rect, float zoom) {
+  path = GetPath();
+  path.Transform(AffineTransform::Translation(offset_rect.X(), offset_rect.Y())
+                     .Scale(zoom));
 }
 
 }  // namespace blink

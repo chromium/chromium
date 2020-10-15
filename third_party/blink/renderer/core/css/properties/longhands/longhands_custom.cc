@@ -1455,7 +1455,8 @@ const CSSValue* ClipPath::ParseSingleValue(CSSParserTokenRange& range,
   if (cssvalue::CSSURIValue* url =
           css_parsing_utils::ConsumeUrl(range, context))
     return url;
-  return css_parsing_utils::ConsumeBasicShape(range, context);
+  return css_parsing_utils::ConsumeBasicShape(
+      range, context, css_parsing_utils::AllowPathValue::kAllow);
 }
 
 const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
@@ -5791,8 +5792,8 @@ const CSSValue* ShapeOutside::ParseSingleValue(
     return image_value;
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* box_value = css_parsing_utils::ConsumeShapeBox(range);
-  if (CSSValue* shape_value =
-          css_parsing_utils::ConsumeBasicShape(range, context)) {
+  if (CSSValue* shape_value = css_parsing_utils::ConsumeBasicShape(
+          range, context, css_parsing_utils::AllowPathValue::kForbid)) {
     list->Append(*shape_value);
     if (!box_value) {
       box_value = css_parsing_utils::ConsumeShapeBox(range);

@@ -20,17 +20,13 @@ class PathInterpolationFunctions {
  public:
   enum CoordinateConversion { PreserveCoordinates, ForceAbsolute };
 
-  static std::unique_ptr<SVGPathByteStream> AppliedValue(
-      const InterpolableValue&,
-      const NonInterpolableValue*);
+  static scoped_refptr<StylePath> AppliedValue(const InterpolableValue&,
+                                               const NonInterpolableValue*);
 
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,
                         const InterpolationType&,
                         const InterpolationValue&);
-
-  static InterpolationValue ConvertValue(const SVGPathByteStream&,
-                                         CoordinateConversion);
 
   static InterpolationValue ConvertValue(const StylePath*,
                                          CoordinateConversion);

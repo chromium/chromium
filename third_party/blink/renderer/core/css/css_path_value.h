@@ -26,6 +26,7 @@ class CSSPathValue : public CSSValue {
   explicit CSSPathValue(scoped_refptr<StylePath>,
                         PathSerializationFormat = kNoTransformation);
   explicit CSSPathValue(std::unique_ptr<SVGPathByteStream>,
+                        WindRule wind_rule = RULE_NONZERO,
                         PathSerializationFormat = kNoTransformation);
 
   StylePath* GetStylePath() const { return style_path_.get(); }

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 
 namespace blink {
 
@@ -24,11 +25,13 @@ const StylePath* GetPath(const CSSProperty& property,
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
       return style.SvgStyle().D();
-    case CSSPropertyID::kOffsetPath: {
-      BasicShape* offset_path = style.OffsetPath();
-      if (!offset_path || offset_path->GetType() != BasicShape::kStylePathType)
+    case CSSPropertyID::kOffsetPath:
+      return DynamicTo<StylePath>(style.OffsetPath());
+    case CSSPropertyID::kClipPath: {
+      auto* shape = DynamicTo<ShapeClipPathOperation>(style.ClipPath());
+      if (!shape)
         return nullptr;
-      return To<StylePath>(style.OffsetPath());
+      return DynamicTo<StylePath>(shape->GetBasicShape());
     }
     default:
       NOTREACHED();
@@ -47,6 +50,9 @@ void SetPath(const CSSProperty& property,
     case CSSPropertyID::kOffsetPath:
       style.SetOffsetPath(std::move(path));
       return;
+    case CSSPropertyID::kClipPath:
+      style.SetClipPath(ShapeClipPathOperation::Create(std::move(path)));
+      return;
     default:
       NOTREACHED();
       return;
@@ -59,15 +65,9 @@ void CSSPathInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  std::unique_ptr<SVGPathByteStream> path_byte_stream =
-      PathInterpolationFunctions::AppliedValue(interpolable_value,
-                                               non_interpolable_value);
-  if (path_byte_stream->IsEmpty()) {
-    SetPath(CssProperty(), *state.Style(), nullptr);
-    return;
-  }
   SetPath(CssProperty(), *state.Style(),
-          StylePath::Create(std::move(path_byte_stream)));
+          PathInterpolationFunctions::AppliedValue(interpolable_value,
+                                                   non_interpolable_value));
 }
 
 void CSSPathInterpolationType::Composite(
@@ -125,13 +125,13 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
 InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
-    ConversionCheckers& conversion_checkers) const {
+    ConversionCheckers&) const {
   auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value);
-  if (!path_value) {
+  if (!path_value)
     return nullptr;
-  }
+
   return PathInterpolationFunctions::ConvertValue(
-      path_value->ByteStream(), PathInterpolationFunctions::ForceAbsolute);
+      path_value->GetStylePath(), PathInterpolationFunctions::ForceAbsolute);
 }
 
 InterpolationValue

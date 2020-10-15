@@ -4386,7 +4386,43 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
   return false;
 }
 
-CSSValue* ConsumePath(CSSParserTokenRange& range) {
+std::unique_ptr<SVGPathByteStream> ConsumePathStringArg(
+    CSSParserTokenRange& args) {
+  if (args.Peek().GetType() != kStringToken)
+    return nullptr;
+
+  StringView path_string = args.ConsumeIncludingWhitespace().Value();
+  std::unique_ptr<SVGPathByteStream> byte_stream =
+      std::make_unique<SVGPathByteStream>();
+  if (BuildByteStreamFromString(path_string, *byte_stream) !=
+      SVGParseStatus::kNoError) {
+    return nullptr;
+  }
+
+  return byte_stream;
+}
+
+cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenRange& args) {
+  auto wind_rule = RULE_NONZERO;
+
+  if (IdentMatches<CSSValueID::kEvenodd, CSSValueID::kNonzero>(
+          args.Peek().Id())) {
+    wind_rule = args.ConsumeIncludingWhitespace().Id() == CSSValueID::kEvenodd
+                    ? RULE_EVENODD
+                    : RULE_NONZERO;
+    if (!ConsumeCommaIncludingWhitespace(args))
+      return nullptr;
+  }
+
+  auto byte_stream = ConsumePathStringArg(args);
+  if (!byte_stream || !args.AtEnd())
+    return nullptr;
+
+  return MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(byte_stream),
+                                                      wind_rule);
+}
+
+CSSValue* ConsumePathFunction(CSSParserTokenRange& range) {
   // FIXME: Add support for <url>, <basic-shape>, <geometry-box>.
   if (range.Peek().FunctionId() != CSSValueID::kPath)
     return nullptr;
@@ -4394,16 +4430,9 @@ CSSValue* ConsumePath(CSSParserTokenRange& range) {
   CSSParserTokenRange function_range = range;
   CSSParserTokenRange function_args = ConsumeFunction(function_range);
 
-  if (function_args.Peek().GetType() != kStringToken)
+  auto byte_stream = ConsumePathStringArg(function_args);
+  if (!byte_stream || !function_args.AtEnd())
     return nullptr;
-  StringView path_string = function_args.ConsumeIncludingWhitespace().Value();
-  std::unique_ptr<SVGPathByteStream> byte_stream =
-      std::make_unique<SVGPathByteStream>();
-  if (BuildByteStreamFromString(path_string, *byte_stream) !=
-          SVGParseStatus::kNoError ||
-      !function_args.AtEnd()) {
-    return nullptr;
-  }
 
   range = function_range;
   if (byte_stream->IsEmpty())
@@ -4505,7 +4534,7 @@ CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {
   if (id == CSSValueID::kNone)
     return ConsumeIdent(range);
 
-  return ConsumePath(range);
+  return ConsumePathFunction(range);
 }
 
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
@@ -4574,7 +4603,8 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
 }
 
 CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
-                            const CSSParserContext& context) {
+                            const CSSParserContext& context,
+                            AllowPathValue allow_path) {
   CSSValue* shape = nullptr;
   if (range.Peek().GetType() != kFunctionToken)
     return nullptr;
@@ -4589,6 +4619,8 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
     shape = ConsumeBasicShapePolygon(args, context);
   else if (id == CSSValueID::kInset)
     shape = ConsumeBasicShapeInset(args, context);
+  else if (id == CSSValueID::kPath && allow_path == AllowPathValue::kAllow)
+    shape = ConsumeBasicShapePath(args);
   if (!shape || !args.AtEnd())
     return nullptr;
 

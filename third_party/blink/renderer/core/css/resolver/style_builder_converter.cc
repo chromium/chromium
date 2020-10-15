@@ -147,8 +147,9 @@ LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,
 scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (value.IsBasicShapeValue())
+  if (value.IsBasicShapeValue() || value.IsPathValue())
     return ShapeClipPathOperation::Create(BasicShapeForValue(state, value));
+
   if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
     SVGResource* resource =
         state.GetElementStyleResources().GetSVGResourceFromValue(

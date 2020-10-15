@@ -33,12 +33,21 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
       if (style.ShapeOutside()->CssBox() != CSSBoxType::kMissing)
         return nullptr;
       return style.ShapeOutside()->Shape();
-    case CSSPropertyID::kClipPath:
+    case CSSPropertyID::kClipPath: {
       if (!style.ClipPath())
         return nullptr;
-      if (style.ClipPath()->GetType() != ClipPathOperation::SHAPE)
+      auto* clip_path_operation =
+          DynamicTo<ShapeClipPathOperation>(style.ClipPath());
+      if (!clip_path_operation)
         return nullptr;
-      return To<ShapeClipPathOperation>(style.ClipPath())->GetBasicShape();
+      auto* shape = clip_path_operation->GetBasicShape();
+
+      // Path shape is handled by PathInterpolationType.
+      if (shape->GetType() == BasicShape::kStylePathType)
+        return nullptr;
+
+      return shape;
+    }
     default:
       NOTREACHED();
       return nullptr;

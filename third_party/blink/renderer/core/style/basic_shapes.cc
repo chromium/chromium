@@ -64,7 +64,9 @@ float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
                   std::max(center.Y(), height_delta));
 }
 
-void BasicShapeCircle::GetPath(Path& path, const FloatRect& bounding_box) {
+void BasicShapeCircle::GetPath(Path& path,
+                               const FloatRect& bounding_box,
+                               float) {
   DCHECK(path.IsEmpty());
   FloatPoint center =
       FloatPointForCenterCoordinate(center_x_, center_y_, bounding_box.Size());
@@ -97,7 +99,9 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
   return std::max(center, width_or_height_delta);
 }
 
-void BasicShapeEllipse::GetPath(Path& path, const FloatRect& bounding_box) {
+void BasicShapeEllipse::GetPath(Path& path,
+                                const FloatRect& bounding_box,
+                                float) {
   DCHECK(path.IsEmpty());
   FloatPoint center =
       FloatPointForCenterCoordinate(center_x_, center_y_, bounding_box.Size());
@@ -110,7 +114,9 @@ void BasicShapeEllipse::GetPath(Path& path, const FloatRect& bounding_box) {
                             radius_x * 2, radius_y * 2));
 }
 
-void BasicShapePolygon::GetPath(Path& path, const FloatRect& bounding_box) {
+void BasicShapePolygon::GetPath(Path& path,
+                                const FloatRect& bounding_box,
+                                float) {
   DCHECK(path.IsEmpty());
   DCHECK(!(values_.size() % 2));
   wtf_size_t length = values_.size();
@@ -140,7 +146,9 @@ bool BasicShapePolygon::operator==(const BasicShape& o) const {
   return wind_rule_ == other.wind_rule_ && values_ == other.values_;
 }
 
-void BasicShapeInset::GetPath(Path& path, const FloatRect& bounding_box) {
+void BasicShapeInset::GetPath(Path& path,
+                              const FloatRect& bounding_box,
+                              float) {
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.Width());
   float top = FloatValueForLength(top_, bounding_box.Height());

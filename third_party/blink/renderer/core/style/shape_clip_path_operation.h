@@ -45,10 +45,10 @@ class ShapeClipPathOperation final : public ClipPathOperation {
 
   const BasicShape* GetBasicShape() const { return shape_.get(); }
   bool IsValid() const { return shape_.get(); }
-  Path GetPath(const FloatRect& bounding_rect) const {
+  Path GetPath(const FloatRect& bounding_rect, float zoom) const {
     DCHECK(shape_);
     Path path;
-    shape_->GetPath(path, bounding_rect);
+    shape_->GetPath(path, bounding_rect, zoom);
     path.SetWindRule(shape_->GetWindRule());
     return path;
   }

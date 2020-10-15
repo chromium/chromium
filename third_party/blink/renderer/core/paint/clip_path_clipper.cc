@@ -75,7 +75,9 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
     ShapeClipPathOperation& shape = To<ShapeClipPathOperation>(clip_path);
     if (!shape.IsValid())
       return base::nullopt;
-    FloatRect bounding_box = shape.GetPath(reference_box).BoundingRect();
+    auto zoom =
+        UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
+    FloatRect bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
     bounding_box.Intersect(LayoutRect::InfiniteIntRect());
     return bounding_box;
   }
@@ -160,7 +162,10 @@ static base::Optional<Path> PathBasedClipInternal(
 
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::SHAPE);
   auto& shape = To<ShapeClipPathOperation>(clip_path);
-  return shape.GetPath(reference_box);
+  float zoom = uses_zoomed_reference_box
+                   ? clip_path_owner.StyleRef().EffectiveZoom()
+                   : 1;
+  return shape.GetPath(reference_box, zoom);
 }
 
 void ClipPathClipper::PaintClipPathAsMaskImage(

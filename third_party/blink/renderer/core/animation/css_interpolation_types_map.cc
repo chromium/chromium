@@ -343,6 +343,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSImageSliceInterpolationType>(used_property));
         break;
       case CSSPropertyID::kClipPath:
+        applicable_types->push_back(
+            std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+        applicable_types->push_back(
+            std::make_unique<CSSPathInterpolationType>(used_property));
+        break;
       case CSSPropertyID::kShapeOutside:
         applicable_types->push_back(
             std::make_unique<CSSBasicShapeInterpolationType>(used_property));

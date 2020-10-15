@@ -453,7 +453,7 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   if (clip_path_operation->GetType() == ClipPathOperation::SHAPE) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
-    return clip_path.GetPath(reference_box)
+    return clip_path.GetPath(reference_box, 1)
         .Contains(location.TransformedPoint());
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
