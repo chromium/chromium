@@ -365,7 +365,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.EventCodes" enum="SyncEventCode"
-    expires_after="2021-04-04">
+    expires_after="2020-10-13">
+  <obsolete>
+    Removed as of 10/2020.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>A UI event occured.</summary>

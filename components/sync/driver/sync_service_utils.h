@@ -37,29 +37,6 @@ enum class UploadState {
   kMaxValue = ACTIVE
 };
 
-// NOTE: Used in a UMA histogram, do not reorder etc.
-enum SyncEventCodes {
-  // Events starting the sync service.
-  // START_FROM_NTP = 1,
-  // START_FROM_WRENCH = 2,
-  // START_FROM_OPTIONS = 3,
-  // START_FROM_BOOKMARK_MANAGER = 4,
-  // START_FROM_PROFILE_MENU = 5,
-  // START_FROM_URL = 6,
-
-  // Events regarding cancellation of the signon process of sync.
-  // CANCEL_FROM_SIGNON_WITHOUT_AUTH = 10,
-  // CANCEL_DURING_SIGNON = 11,
-  CANCEL_DURING_CONFIGURE = 12,  // Cancelled before choosing data types and
-                                 // clicking OK.
-
-  // Events resulting in the stoppage of sync service.
-  STOP_FROM_OPTIONS = 20,  // Sync was stopped from Wrench->Options.
-  // STOP_FROM_ADVANCED_DIALOG = 21,
-
-  MAX_SYNC_EVENT_CODE = 22
-};
-
 // Used for UMA histogram, do not reorder. Represents the UI elements which
 // contain trusted vault error button.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
@@ -82,8 +59,6 @@ enum class KeyRetrievalTriggerForUMA {
 // Google.
 UploadState GetUploadToGoogleState(const SyncService* sync_service,
                                    ModelType type);
-
-void RecordSyncEvent(SyncEventCodes code);
 
 void RecordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA trigger);
 

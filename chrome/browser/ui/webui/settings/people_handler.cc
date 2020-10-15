@@ -49,7 +49,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "content/public/browser/render_view_host.h"
@@ -665,9 +664,6 @@ void PeopleHandler::HandleTurnOffSync(const base::ListValue* args) {
   DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   DCHECK(signin_util::IsUserSignoutAllowedForProfile(profile_));
 
-  if (GetSyncService())
-    syncer::RecordSyncEvent(syncer::STOP_FROM_OPTIONS);
-
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent();
 }
 #endif  // defined(OS_CHROMEOS)
@@ -695,8 +691,6 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
   } else {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
     if (identity_manager->HasPrimaryAccount()) {
-      if (GetSyncService())
-        syncer::RecordSyncEvent(syncer::STOP_FROM_OPTIONS);
 
       signin_metrics::SignoutDelete delete_metric =
           delete_profile ? signin_metrics::SignoutDelete::DELETED
@@ -784,8 +778,6 @@ void PeopleHandler::CloseSyncSetup() {
           sync_service->GetAuthError().state() ==
               GoogleServiceAuthError::NONE))) {
       if (configuring_sync_) {
-        syncer::RecordSyncEvent(syncer::CANCEL_DURING_CONFIGURE);
-
         // If the user clicked "Cancel" while setting up sync, disable sync
         // because we don't want the sync engine to remain in the
         // first-setup-incomplete state.

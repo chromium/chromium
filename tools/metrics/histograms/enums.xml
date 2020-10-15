@@ -70544,6 +70544,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncEventCode">
+  <obsolete>
+    Removed 2020-10.
+  </obsolete>
   <summary>
     Sync UI events. The codes are listed in profile_syncer_service.h with more
     details.

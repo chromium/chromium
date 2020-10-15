@@ -71,10 +71,6 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
   return UploadState::NOT_ACTIVE;
 }
 
-void RecordSyncEvent(SyncEventCodes code) {
-  UMA_HISTOGRAM_ENUMERATION("Sync.EventCodes", code, MAX_SYNC_EVENT_CODE);
-}
-
 void RecordKeyRetrievalTrigger(KeyRetrievalTriggerForUMA trigger) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultKeyRetrievalTrigger",
                                 trigger);

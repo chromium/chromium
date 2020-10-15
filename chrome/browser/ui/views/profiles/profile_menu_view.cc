@@ -53,7 +53,6 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/sync_service_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -318,10 +317,6 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
       chrome::ShowSettingsSubPage(browser(), chrome::kSignOutSubPage);
       break;
     case sync_ui_util::UNRECOVERABLE_ERROR:
-      if (ProfileSyncServiceFactory::GetForProfile(browser()->profile())) {
-        syncer::RecordSyncEvent(syncer::STOP_FROM_OPTIONS);
-      }
-
       // GetPrimaryAccountMutator() might return nullptr on some platforms.
       if (auto* account_mutator =
               IdentityManagerFactory::GetForProfile(browser()->profile())
