@@ -1631,10 +1631,20 @@ void LayoutGrid::ApplyStretchAlignmentToChildIfNeeded(LayoutBox& child) {
     LayoutUnit desired_logical_height = child.ConstrainLogicalHeightByMinMax(
         stretched_logical_height, LayoutUnit(-1));
     child.SetOverrideLogicalHeight(desired_logical_height);
-    if (desired_logical_height != child.LogicalHeight()) {
-      // TODO (lajava): Can avoid laying out here in some cases. See
-      // https://webkit.org/b/87905.
-      child.SetLogicalHeight(LayoutUnit());
+
+    // Checking the logical-height of a child isn't enough. Setting an override
+    // logical-height changes the definiteness, resulting in percentages to
+    // resolve differently.
+    // NG nodes have enough information to check for this case, and only layout
+    // if needed.
+    //
+    // TODO (lajava): Can avoid laying out here in some cases.
+    // See https://webkit.org/b/87905.
+    if (desired_logical_height != child.LogicalHeight() ||
+        child.MaybeHasPercentHeightDescendant()) {
+      // Never mess around with the logical-height of any NG children.
+      if (!child.IsLayoutNGMixin())
+        child.SetLogicalHeight(LayoutUnit());
       child.SetSelfNeedsLayoutForAvailableSpace(true);
     }
   }

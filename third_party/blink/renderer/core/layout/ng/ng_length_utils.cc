@@ -1153,6 +1153,8 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
   if (style.LogicalHeight().IsPercentOrCalc() ||
       style.LogicalMinHeight().IsPercentOrCalc() ||
       style.LogicalMaxHeight().IsPercentOrCalc() ||
+      style.LogicalTop().IsPercentOrCalc() ||
+      style.LogicalBottom().IsPercentOrCalc() ||
       (node.IsFlexItem() && style.FlexBasis().IsPercentOrCalc())) {
     // This call has the side-effect of setting HasPercentHeightDescendants
     // correctly.
