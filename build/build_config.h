@@ -61,7 +61,11 @@
 #define OS_MAC 1
 #endif  // defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #elif defined(__linux__)
+#if !defined(OS_CHROMEOS)
+// Do not define OS_LINUX on Chrome OS build.
+// The OS_CHROMEOS macro is defined in GN.
 #define OS_LINUX 1
+#endif  // !defined(OS_CHROMEOS)
 // Include a system header to pull in features.h for glibc/uclibc macros.
 #include <unistd.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
