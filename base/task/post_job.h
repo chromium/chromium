@@ -36,7 +36,7 @@ class BASE_EXPORT JobDelegate {
               internal::PooledTaskRunnerDelegate* pooled_task_runner_delegate);
   ~JobDelegate();
 
-  // Returns true if this thread should return from the worker task on the
+  // Returns true if this thread *must* return from the worker task on the
   // current thread ASAP. Workers should periodically invoke ShouldYield (or
   // YieldIfNeeded()) as often as is reasonable.
   bool ShouldYield();

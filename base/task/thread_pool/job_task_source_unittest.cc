@@ -27,7 +27,7 @@ class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
  public:
   MOCK_METHOD2(PostTaskWithSequence,
                bool(Task task, scoped_refptr<Sequence> sequence));
-  MOCK_CONST_METHOD1(ShouldYield, bool(const TaskSource* task_source));
+  MOCK_METHOD1(ShouldYield, bool(const TaskSource* task_source));
   MOCK_METHOD1(EnqueueJobTaskSource,
                bool(scoped_refptr<JobTaskSource> task_source));
   MOCK_METHOD1(RemoveJobTaskSource,

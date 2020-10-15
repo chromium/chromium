@@ -63,7 +63,7 @@ class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
                             scoped_refptr<Sequence> sequence) override;
   bool EnqueueJobTaskSource(scoped_refptr<JobTaskSource> task_source) override;
   void RemoveJobTaskSource(scoped_refptr<JobTaskSource> task_source) override;
-  bool ShouldYield(const TaskSource* task_source) const override;
+  bool ShouldYield(const TaskSource* task_source) override;
   void UpdatePriority(scoped_refptr<TaskSource> task_source,
                       TaskPriority priority) override;
 

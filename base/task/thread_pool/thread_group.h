@@ -97,7 +97,7 @@ class BASE_EXPORT ThreadGroup {
   // work of higher priority is pending. Thread-safe but may return an outdated
   // result (if a task unnecessarily yields due to this, it will simply be
   // re-scheduled).
-  bool ShouldYield(TaskSourceSortKey sort_key) const;
+  bool ShouldYield(TaskSourceSortKey sort_key);
 
   // Prevents new tasks from starting to run and waits for currently running
   // tasks to complete their execution. It is guaranteed that no thread will do
@@ -228,17 +228,21 @@ class BASE_EXPORT ThreadGroup {
     TaskPriority priority;
     uint8_t worker_count;
   };
+  // Sort key which compares greater than or equal to any other sort key.
+  static constexpr YieldSortKey kMaxYieldSortKey = {TaskPriority::BEST_EFFORT,
+                                                    0U};
 
-  // When the thread group is at or above capacity and has pending work, this
-  // contains the priority and worker count of the next TaskSource to schedule.
-  // Otherwise, it contains |priority| = BEST_EFFORT and |worker_count| = 0.
-  // This is used to decide whether a TaskSource should yield. This is expected
-  // to be always kept up-to-date by derived classes when |lock_| is released.
-  // It is annotated as GUARDED_BY(lock_) because it is always updated under the
-  // lock (to avoid races with other state during the update) but it is
-  // nonetheless always safe to read it without the lock (since it's atomic).
+  // When the thread group is at or above capacity and has pending work, this is
+  // set to contain the priority and worker count of the next TaskSource to
+  // schedule, or kMaxYieldSortKey otherwise. This is used to decide whether a
+  // TaskSource should yield. Once ShouldYield() returns true, it is reset to
+  // kMaxYieldSortKey to prevent additional from unnecessary yielding. This is
+  // expected to be always kept up-to-date by derived classes when |lock_| is
+  // released. It is annotated as GUARDED_BY(lock_) because it is always updated
+  // under the lock (to avoid races with other state during the update) but it
+  // is nonetheless always safe to read it without the lock (since it's atomic).
   std::atomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
-      {TaskPriority::BEST_EFFORT, 0U}};
+      kMaxYieldSortKey};
 
   // If |replacement_thread_group_| is non-null, this ThreadGroup is invalid and
   // all task sources should be scheduled on |replacement_thread_group_|. Used

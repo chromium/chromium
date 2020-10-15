@@ -103,8 +103,7 @@ void ThreadGroupNative::UpdateMinAllowedPriorityLockRequired() {
   // Tasks should yield as soon as there is work of higher priority in
   // |priority_queue_|.
   if (priority_queue_.IsEmpty()) {
-    max_allowed_sort_key_.store({TaskPriority::BEST_EFFORT, 0},
-                                std::memory_order_relaxed);
+    max_allowed_sort_key_.store(kMaxYieldSortKey, std::memory_order_relaxed);
   } else {
     max_allowed_sort_key_.store({priority_queue_.PeekSortKey().priority(),
                                  priority_queue_.PeekSortKey().worker_count()},

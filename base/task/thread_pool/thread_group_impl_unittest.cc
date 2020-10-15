@@ -344,18 +344,23 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
 
   // Posting a USER_VISIBLE task should cause BEST_EFFORT and USER_VISIBLE with
   // higher worker_count tasks to yield.
-  test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
-                               &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                   EXPECT_FALSE(thread_group_->ShouldYield(
-                       {TaskPriority::USER_VISIBLE, TimeTicks(),
-                        /* worker_count=*/1}));
-                 }));
+  auto post_user_visible = [&]() {
+    test::CreatePooledTaskRunner({TaskPriority::USER_VISIBLE},
+                                 &mock_pooled_task_runner_delegate_)
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                     EXPECT_FALSE(thread_group_->ShouldYield(
+                         {TaskPriority::USER_VISIBLE, TimeTicks(),
+                          /* worker_count=*/1}));
+                   }));
+  };
   // A USER_VISIBLE task with too many workers should yield.
+  post_user_visible();
   EXPECT_TRUE(thread_group_->ShouldYield(
       {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/2}));
+  post_user_visible();
   EXPECT_TRUE(thread_group_->ShouldYield(
       {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/0}));
+  post_user_visible();
   EXPECT_FALSE(thread_group_->ShouldYield(
       {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/1}));
   EXPECT_FALSE(thread_group_->ShouldYield(
@@ -363,21 +368,28 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
 
   // Posting a USER_BLOCKING task should cause BEST_EFFORT, USER_VISIBLE and
   // USER_BLOCKING with higher worker_count tasks to yield.
-  test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
-                               &mock_pooled_task_runner_delegate_)
-      ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                   // Once this task got to start, no other task needs to yield.
-                   EXPECT_FALSE(thread_group_->ShouldYield(
-                       {TaskPriority::USER_BLOCKING, TimeTicks(),
-                        /* worker_count=*/1}));
-                 }));
+  auto post_user_blocking = [&]() {
+    test::CreatePooledTaskRunner({TaskPriority::USER_BLOCKING},
+                                 &mock_pooled_task_runner_delegate_)
+        ->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                     // Once this task got to start, no other task needs to
+                     // yield.
+                     EXPECT_FALSE(thread_group_->ShouldYield(
+                         {TaskPriority::USER_BLOCKING, TimeTicks(),
+                          /* worker_count=*/1}));
+                   }));
+  };
   // A USER_BLOCKING task with too many workers should have to yield.
+  post_user_blocking();
   EXPECT_TRUE(thread_group_->ShouldYield(
       {TaskPriority::USER_BLOCKING, TimeTicks(), /* worker_count=*/2}));
+  post_user_blocking();
   EXPECT_TRUE(thread_group_->ShouldYield(
       {TaskPriority::BEST_EFFORT, TimeTicks(), /* worker_count=*/0}));
+  post_user_blocking();
   EXPECT_TRUE(thread_group_->ShouldYield(
       {TaskPriority::USER_VISIBLE, TimeTicks(), /* worker_count=*/0}));
+  post_user_blocking();
   EXPECT_FALSE(thread_group_->ShouldYield(
       {TaskPriority::USER_BLOCKING, TimeTicks(), /* worker_count=*/1}));
 
