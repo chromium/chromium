@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -67,11 +69,18 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   void EndPaint() override;
 
  private:
-  // Used as callback for SwapBuffersAsync and PostSubBufferAsync to finish
-  // operation
+  class OverlayData;
+
+  // Use instead of calling FinishSwapBuffers() directly. On Windows this cleans
+  // up old entries in |overlays_|.
   void DoFinishSwapBuffers(const gfx::Size& size,
                            std::vector<ui::LatencyInfo> latency_info,
                            gfx::SwapCompletionResult result);
+  // Used as callback for SwapBuffersAsync and PostSubBufferAsync to finish
+  // operation
+  void DoFinishSwapBuffersAsync(const gfx::Size& size,
+                                std::vector<ui::LatencyInfo> latency_info,
+                                gfx::SwapCompletionResult result);
 
   scoped_refptr<gl::GLImage> GetGLImageForMailbox(const gpu::Mailbox& mailbox);
 
@@ -85,6 +94,12 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   const bool supports_async_swap_;
 
   sk_sp<SkSurface> sk_surface_;
+
+  // Mailboxes of overlays scheduled in the current frame.
+  base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
+
+  // Holds references to overlay textures so they aren't destroyed while in use.
+  base::flat_map<gpu::Mailbox, OverlayData> overlays_;
 
   uint64_t backbuffer_estimated_size_ = 0;
 
