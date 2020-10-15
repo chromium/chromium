@@ -5191,6 +5191,21 @@
             ]
         }
     ],
+    "PasswordCheckIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordCompromisedBubble": [
         {
             "platforms": [

@@ -270,6 +270,9 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
                  @"Keyboard Should be Shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
+      performAction:grey_tap()];
 }
 
 // Tests that the Password View Controller is resumed after selecting other
