@@ -132,13 +132,6 @@ class ScopedFeatureList final {
       const std::vector<FeatureAndParams>& enabled_features_and_params,
       const std::vector<Feature>& disabled_features);
 
-  // Initializes and registers a FeatureList instance based on present
-  // FeatureList and overridden with single enabled feature and associated field
-  // trial override.
-  // |trial| is expected to outlive the ScopedFeatureList.
-  void InitAndEnableFeatureWithFieldTrialOverride(const Feature& feature,
-                                                  FieldTrial* trial);
-
   bool init_called_ = false;
   std::unique_ptr<FeatureList> original_feature_list_;
   base::FieldTrialList* original_field_trial_list_ = nullptr;
