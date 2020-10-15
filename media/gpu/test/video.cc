@@ -542,6 +542,8 @@ base::Optional<VideoCodecProfile> Video::ConvertStringtoProfile(
     return VP9PROFILE_PROFILE0;
   } else if (profile == "VP9PROFILE_PROFILE2") {
     return VP9PROFILE_PROFILE2;
+  } else if (profile == "AV1PROFILE_PROFILE_MAIN") {
+    return AV1PROFILE_PROFILE_MAIN;
   } else {
     VLOG(2) << profile << " is not supported";
     return base::nullopt;
@@ -557,6 +559,8 @@ base::Optional<VideoCodec> Video::ConvertProfileToCodec(
     return kCodecVP8;
   } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
     return kCodecVP9;
+  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
+    return kCodecAV1;
   } else {
     VLOG(2) << GetProfileName(profile) << " is not supported";
     return base::nullopt;

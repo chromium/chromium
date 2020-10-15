@@ -135,6 +135,7 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
       return GetNextFragment();
     case kCodecVP8:
     case kCodecVP9:
+    case kCodecAV1:
       return GetNextFrame();
     default:
       NOTREACHED();
@@ -343,6 +344,9 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
     }
     // Stream configuration is present in a keyframe in vp9.
     return frame_header.IsKeyframe();
+  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
+    // TODO(hiroh): Implement this.
+    return false;
   }
   // Shouldn't happen at this point.
   LOG(FATAL) << "Invalid profile: " << GetProfileName(profile);
