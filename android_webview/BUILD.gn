@@ -657,6 +657,7 @@ android_library("common_java") {
     "//components/viz:viz_java",
     "//gpu/config:config_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/blink/public/common:common_java",
   ]
   srcjar_deps = [
     ":common_java_features_srcjar",

@@ -5,6 +5,7 @@
 package org.chromium.android_webview.common;
 
 import org.chromium.base.BaseSwitches;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
@@ -74,8 +75,8 @@ public final class ProductionSupportedFlagList {
                             + "security checks."),
             Flag.baseFeature(AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                     "Enables brotli compression support in WebView."),
-            Flag.baseFeature(
-                    "AppCache", "Controls AppCache to facilitate testing against future removal."),
+            Flag.baseFeature(BlinkFeatures.APP_CACHE,
+                    "Controls AppCache to facilitate testing against future removal."),
             Flag.baseFeature(AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                     "Only allow extra headers added via loadUrl() to be sent to the same origin "
                             + "as the original request."),
@@ -88,7 +89,7 @@ public final class ProductionSupportedFlagList {
                             + "of the total screen size. Depending on the number of WebVieaws and "
                             + "the size of the screen this might be expensive so hidden behind a "
                             + "feature flag until the true runtime cost can be measured."),
-            Flag.baseFeature("WebComponentsV0",
+            Flag.baseFeature(BlinkFeatures.WEB_COMPONENTS_V0,
                     "Re-enables the deprecated Web Components v0 features (Shadow DOM v0, Custom "
                             + "Elements v0, and HTML Imports)."),
             Flag.baseFeature(AwFeatures.WEBVIEW_DISPLAY_CUTOUT,

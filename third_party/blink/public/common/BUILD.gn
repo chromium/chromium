@@ -9,6 +9,10 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 # Public common API headers, mojom and libraries that can be linked and
 # referenced both by browser-side and renderer-side components.
 component("common") {
@@ -259,4 +263,19 @@ if (is_android || is_win) {
 
 proto_library("font_enumeration_table_proto") {
   sources = [ "font_access/font_enumeration_table.proto" ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":common_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//third_party/blink/common/features.cc" ]
+    template = "//third_party/blink/public/common/android/java_templates/BlinkFeatures.java.tmpl"
+  }
+
+  android_library("common_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }
