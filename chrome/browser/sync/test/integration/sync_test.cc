@@ -221,19 +221,18 @@ instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
         profile_to_instance_id_driver_map) {
   if (!profile_to_instance_id_driver_map->count(profile)) {
     (*profile_to_instance_id_driver_map)[profile] =
-        std::make_unique<SyncTest::FakeInstanceIDDriver>(
-            /*gcm_driver=*/gcm::GCMProfileServiceFactory::GetForProfile(profile)
-                ->driver());
+        std::make_unique<SyncTest::FakeInstanceIDDriver>();
   }
   return (*profile_to_instance_id_driver_map)[profile].get();
 }
 
 }  // namespace
 
-SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id,
-                                         gcm::GCMDriver* gcm_driver)
-    : instance_id::InstanceID(app_id, gcm_driver),
-      token_(GenerateNextToken()) {}
+int SyncTest::FakeInstanceID::next_token_id_ = 1;
+
+SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id)
+    : instance_id::InstanceID(app_id, /*gcm_driver = */ nullptr),
+      token_(base::StringPrintf("token %d", next_token_id_++)) {}
 
 void SyncTest::FakeInstanceID::GetToken(
     const std::string& authorized_entity,
@@ -245,27 +244,15 @@ void SyncTest::FakeInstanceID::GetToken(
   std::move(callback).Run(token_, instance_id::InstanceID::Result::SUCCESS);
 }
 
-// Deleting the InstanceID also clears any associated token.
-void SyncTest::FakeInstanceID::DeleteIDImpl(DeleteIDCallback callback) {
-  token_ = GenerateNextToken();
-  std::move(callback).Run(instance_id::InstanceID::Result::SUCCESS);
-}
-
-std::string SyncTest::FakeInstanceID::GenerateNextToken() {
-  static int next_token_id_ = 1;
-  return base::StringPrintf("token %d", next_token_id_++);
-}
-
-SyncTest::FakeInstanceIDDriver::FakeInstanceIDDriver(gcm::GCMDriver* gcm_driver)
-    : instance_id::InstanceIDDriver(gcm_driver), gcm_driver_(gcm_driver) {}
+SyncTest::FakeInstanceIDDriver::FakeInstanceIDDriver()
+    : instance_id::InstanceIDDriver(/*gcm_driver=*/nullptr) {}
 
 SyncTest::FakeInstanceIDDriver::~FakeInstanceIDDriver() = default;
 
 instance_id::InstanceID* SyncTest::FakeInstanceIDDriver::GetInstanceID(
     const std::string& app_id) {
   if (!fake_instance_ids_.count(app_id)) {
-    fake_instance_ids_[app_id] =
-        std::make_unique<FakeInstanceID>(app_id, gcm_driver_);
+    fake_instance_ids_[app_id] = std::make_unique<FakeInstanceID>(app_id);
   }
   return fake_instance_ids_[app_id].get();
 }

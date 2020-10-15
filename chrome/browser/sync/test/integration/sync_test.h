@@ -105,8 +105,7 @@ class SyncTest : public PlatformBrowserTest {
 
   class FakeInstanceID : public instance_id::InstanceID {
    public:
-    explicit FakeInstanceID(const std::string& app_id,
-                            gcm::GCMDriver* gcm_driver);
+    explicit FakeInstanceID(const std::string& app_id);
     ~FakeInstanceID() override = default;
 
     void GetID(GetIDCallback callback) override {}
@@ -133,26 +132,23 @@ class SyncTest : public PlatformBrowserTest {
     void DeleteTokenImpl(const std::string& authorized_entity,
                          const std::string& scope,
                          DeleteTokenCallback callback) override {}
-
-    void DeleteIDImpl(DeleteIDCallback callback) override;
+    void DeleteIDImpl(DeleteIDCallback callback) override {}
 
    private:
-    static std::string GenerateNextToken();
-
-    std::string token_;
+    static int next_token_id_;
+    const std::string token_;
     DISALLOW_COPY_AND_ASSIGN(FakeInstanceID);
   };
 
   class FakeInstanceIDDriver : public instance_id::InstanceIDDriver {
    public:
-    explicit FakeInstanceIDDriver(gcm::GCMDriver* gcm_driver);
+    FakeInstanceIDDriver();
     ~FakeInstanceIDDriver() override;
     instance_id::InstanceID* GetInstanceID(const std::string& app_id) override;
     void RemoveInstanceID(const std::string& app_id) override {}
     bool ExistsInstanceID(const std::string& app_id) const override;
 
    private:
-    gcm::GCMDriver* gcm_driver_;
     std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
     DISALLOW_COPY_AND_ASSIGN(FakeInstanceIDDriver);
   };
