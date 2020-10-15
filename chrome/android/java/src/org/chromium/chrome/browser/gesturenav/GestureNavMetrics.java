@@ -17,12 +17,24 @@ import java.lang.annotation.RetentionPolicy;
  */
 class GestureNavMetrics {
     // Used to record the UMA histogram GestureNavigation. This definition should be
-    // in sync with the enum "GestureNavigationDirection" in tools/metrics/histograms/enum.xml.
+    // in sync with the enum "GestureNavigationDirection" in tools/metrics/histograms/enums.xml.
     @IntDef({GestureNavigationDirection.BACK, GestureNavigationDirection.FORWARD})
     @Retention(RetentionPolicy.SOURCE)
     private @interface GestureNavigationDirection {
         int BACK = 0;
         int FORWARD = 1;
+
+        int NUM_ENTRIES = 2;
+    }
+
+    // Should be in sync with the enum "GestureNavigationType" in
+    // tools/metrics/histograms/enums.xml.
+    @SuppressWarnings("unused")
+    @IntDef({GestureNavigationType.CHROME, GestureNavigationType.SYSTEM})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface GestureNavigationType {
+        int SYSTEM = 0;
+        int CHROME = 1;
 
         int NUM_ENTRIES = 2;
     }
@@ -46,5 +58,16 @@ class GestureNavMetrics {
      */
     static void recordUserAction(String name) {
         RecordUserAction.record("BackMenu_" + name);
+    }
+
+    /**
+     * Records UMA histogram that tells which gesture navigation type is being used.
+     * @param isChromeGesture {@code true} if Chrome's own UI is in use.
+     */
+    static void logGestureType(boolean isChromeGesture) {
+        // true  -> GestureNavigationType.CHROME
+        // false -> GestureNavigationType.SYSTEM
+        // This histogram is logged at Chrome startup.
+        RecordHistogram.recordBooleanHistogram("GestureNavigation.Type", isChromeGesture);
     }
 }

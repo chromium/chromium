@@ -161,6 +161,7 @@ public class HistoryNavigationCoordinator
             insetObserverView.addObserver(this);
         }
         layoutManager.addSceneOverlay(mOverscrollGlowOverlay);
+        GestureNavMetrics.logGestureType(isFeatureEnabled());
     }
 
     private boolean isNativePage() {

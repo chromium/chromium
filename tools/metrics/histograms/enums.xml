@@ -34141,6 +34141,11 @@ Called by update_feature_policy_enum.py.-->
   <int value="1" label="Gesture navigation forward"/>
 </enum>
 
+<enum name="GestureNavigationType">
+  <int value="0" label="OS system Gesture navigation"/>
+  <int value="1" label="Chrome custom Gesture navigation"/>
+</enum>
+
 <enum name="GesturePredictionResult">
   <int value="0" label="Gesture occured and was predicted"/>
   <int value="1" label="Gesture occured but was not predicted"/>
