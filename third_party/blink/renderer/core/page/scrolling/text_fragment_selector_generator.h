@@ -40,7 +40,13 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     kContextLimitReached,
     kEmptySelection,
 
-    kMaxValue = kEmptySelection
+    // Recorded from browser/java side when tab or its content becomes
+    // unavailable. Added here to keep in sync with the enums.xml values.
+    kTabHidden,
+    kOmniboxNavigation,
+    kTabCrash,
+
+    kMaxValue = kTabCrash
   };
   explicit TextFragmentSelectorGenerator() = default;
 

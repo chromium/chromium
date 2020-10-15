@@ -46,4 +46,18 @@ void LogTextFragmentSelectorCount(int count) {
   base::UmaHistogramCounts100("TextFragmentAnchor.SelectorCount", count);
 }
 
+void LogGenerateErrorTabHidden() {
+  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error",
+                                LinkGenerationError::kTabHidden);
+}
+
+void LogGenerateErrorOmniboxNavigation() {
+  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error",
+                                LinkGenerationError::kOmniboxNavigation);
+}
+
+void LogGenerateErrorTabCrash() {
+  base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error",
+                                LinkGenerationError::kTabCrash);
+}
 }  // namespace shared_highlighting

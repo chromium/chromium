@@ -22,6 +22,7 @@ include_rules = [
   "+components/browser_ui/share/android",
   "+components/browser_ui/android/bottomsheet",
   "+components/infobars/android",
+  "+components/shared_highlighting/core/common",
   "+content/public/android/java/src/org/chromium/content_public/browser/RenderWidgetHostView.java",
   "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
 ]

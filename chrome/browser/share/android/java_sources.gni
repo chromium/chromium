@@ -8,6 +8,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/clipboard/ClipboardImageFileProvider.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextMetricsBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialog.java",

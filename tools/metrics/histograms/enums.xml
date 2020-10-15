@@ -40698,6 +40698,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Available context exhausted"/>
   <int value="4" label="Context word limit reached"/>
   <int value="5" label="Empty selection"/>
+  <int value="6" label="Tab hidden"/>
+  <int value="7" label="Omnibox navigation"/>
+  <int value="8" label="Tab crash"/>
 </enum>
 
 <enum name="LinkMonitorFailureType">
