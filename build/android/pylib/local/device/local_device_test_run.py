@@ -135,6 +135,7 @@ class LocalDeviceTestRun(test_run.TestRun):
 
     try:
       with signal_handler.AddSignalHandler(signal.SIGTERM, stop_tests):
+        self._env.ResetCurrentTry()
         while self._env.current_try < self._env.max_tries and tests:
           tries = self._env.current_try
           grouped_tests = self._GroupTests(tests)

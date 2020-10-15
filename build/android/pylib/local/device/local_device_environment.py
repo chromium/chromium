@@ -196,6 +196,9 @@ class LocalDeviceEnvironment(environment.Environment):
   def IncrementCurrentTry(self):
     self._current_try += 1
 
+  def ResetCurrentTry(self):
+    self._current_try = 0
+
   @property
   def denylist(self):
     return self._denylist
