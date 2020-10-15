@@ -15,6 +15,8 @@ namespace chromeos {
 namespace nearby {
 namespace {
 
+bool g_bypass_primary_user_check_for_testing = false;
+
 bool IsLoggedInAsPrimaryUser(Profile* profile) {
   // Guest/incognito profiles cannot use Phone Hub.
   if (profile->IsOffTheRecord())
@@ -42,6 +44,13 @@ NearbyProcessManagerFactory* NearbyProcessManagerFactory::GetInstance() {
   return base::Singleton<NearbyProcessManagerFactory>::get();
 }
 
+// static
+void NearbyProcessManagerFactory::SetBypassPrimaryUserCheckForTesting(
+    bool bypass_primary_user_check_for_testing) {
+  g_bypass_primary_user_check_for_testing =
+      bypass_primary_user_check_for_testing;
+}
+
 NearbyProcessManagerFactory::NearbyProcessManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "NearbyProcessManager",
@@ -58,11 +67,15 @@ KeyedService* NearbyProcessManagerFactory::BuildServiceInstanceFor(
   // The service is meant to be a singleton, since multiple simultaneous process
   // managers could interfere with each other. Provide access only to the
   // primary user.
-  if (!IsLoggedInAsPrimaryUser(profile))
-    return nullptr;
+  if (IsLoggedInAsPrimaryUser(profile) ||
+      g_bypass_primary_user_check_for_testing) {
+    return NearbyProcessManagerImpl::Factory::Create(
+               NearbyConnectionsDependenciesProviderFactory::GetForProfile(
+                   profile))
+        .release();
+  }
 
-  return new NearbyProcessManagerImpl(
-      NearbyConnectionsDependenciesProviderFactory::GetForProfile(profile));
+  return nullptr;
 }
 
 bool NearbyProcessManagerFactory::ServiceIsCreatedWithBrowserContext() const {

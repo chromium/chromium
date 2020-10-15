@@ -15,12 +15,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/services/nearby/public/cpp/fake_nearby_process_manager.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
@@ -46,53 +50,26 @@ using NearbySharingDecoderMojom = sharing::mojom::NearbySharingDecoder;
 
 namespace {
 
-class FakeSharingMojoService : public sharing::mojom::Sharing {
+class FakeNearbyProcessManagerFactory
+    : public chromeos::nearby::NearbyProcessManagerImpl::Factory {
  public:
-  FakeSharingMojoService() = default;
-  ~FakeSharingMojoService() override = default;
+  FakeNearbyProcessManagerFactory() = default;
+  ~FakeNearbyProcessManagerFactory() override = default;
 
-  // sharing::mojom::Sharing:
-  void CreateNearbyConnections(
-      NearbyConnectionsDependenciesPtr dependencies,
-      CreateNearbyConnectionsCallback callback) override {
-    dependencies_ = std::move(dependencies);
-    mojo::PendingRemote<NearbyConnectionsMojom> remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<chromeos::nearby::MockNearbyConnections>(),
-        remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(remote));
-
-    run_loop_connections.Quit();
-  }
-
-  void CreateNearbySharingDecoder(
-      CreateNearbySharingDecoderCallback callback) override {
-    mojo::PendingRemote<NearbySharingDecoderMojom> remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<chromeos::nearby::MockNearbySharingDecoder>(),
-        remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(remote));
-
-    run_loop_decoder.Quit();
-  }
-
-  mojo::PendingRemote<sharing::mojom::Sharing> BindSharingService() {
-    return receiver.BindNewPipeAndPassRemote();
-  }
-
-  void WaitForConnections() { run_loop_connections.Run(); }
-
-  void WaitForDecoder() { run_loop_decoder.Run(); }
-
-  void Reset() { receiver.reset(); }
-
-  NearbyConnectionsDependencies* dependencies() { return dependencies_.get(); }
+  chromeos::nearby::FakeNearbyProcessManager* instance() { return instance_; }
 
  private:
-  base::RunLoop run_loop_connections;
-  base::RunLoop run_loop_decoder;
-  mojo::Receiver<sharing::mojom::Sharing> receiver{this};
-  NearbyConnectionsDependenciesPtr dependencies_;
+  // chromeos::nearby::NearbyProcessManagerImpl::Factory:
+  std::unique_ptr<chromeos::nearby::NearbyProcessManager> BuildInstance(
+      chromeos::nearby::NearbyConnectionsDependenciesProvider*
+          nearby_connections_dependencies_provider) override {
+    auto instance =
+        std::make_unique<chromeos::nearby::FakeNearbyProcessManager>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  chromeos::nearby::FakeNearbyProcessManager* instance_ = nullptr;
 };
 
 class MockNearbyProcessManagerObserver : public NearbyProcessManager::Observer {
@@ -108,6 +85,8 @@ class NearbyProcessManagerTest : public testing::Test {
   ~NearbyProcessManagerTest() override = default;
 
   void SetUp() override {
+    chromeos::nearby::NearbyProcessManagerImpl::Factory::SetFactoryForTesting(
+        &fake_nearby_process_manager_factory_);
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     NearbyProcessManager::GetInstance().ClearActiveProfile();
   }
@@ -115,10 +94,22 @@ class NearbyProcessManagerTest : public testing::Test {
   void TearDown() override {
     NearbyProcessManager::GetInstance().ClearActiveProfile();
     DeleteAllProfiles();
+    chromeos::nearby::NearbyProcessManagerImpl::Factory::SetFactoryForTesting(
+        nullptr);
   }
 
-  Profile* CreateProfile(const std::string& name) {
+  Profile* CreateProfile(const std::string& name,
+                         bool is_primary_profile = false) {
+    // NearbyProcessManager is only created for the primary user. Because it is
+    // created when the Profile is created but it is not possible to set the
+    // primary user before the Proflile is created, use
+    // SetBypassPrimaryUserCheckForTesting() to bypass this.
+    chromeos::nearby::NearbyProcessManagerFactory::
+        SetBypassPrimaryUserCheckForTesting(is_primary_profile);
     Profile* profile = testing_profile_manager_.CreateTestingProfile(name);
+    chromeos::nearby::NearbyProcessManagerFactory::
+        SetBypassPrimaryUserCheckForTesting(false);
+
     profiles_.insert(profile);
     return profile;
   }
@@ -147,6 +138,10 @@ class NearbyProcessManagerTest : public testing::Test {
     profiles_.clear();
   }
 
+  chromeos::nearby::FakeNearbyProcessManager* fake_process_manager() {
+    return fake_nearby_process_manager_factory_.instance();
+  }
+
  private:
   void DoDeleteProfile(Profile* profile) {
     NearbyProcessManager::GetInstance().OnProfileMarkedForPermanentDeletion(
@@ -161,6 +156,7 @@ class NearbyProcessManagerTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   std::set<Profile*> profiles_;
+  FakeNearbyProcessManagerFactory fake_nearby_process_manager_factory_;
 };
 }  // namespace
 
@@ -263,18 +259,10 @@ TEST_F(NearbyProcessManagerTest, OnProfileDeleted_InactiveProfile) {
   EXPECT_FALSE(manager.IsActiveProfile(profile_2));
 }
 
-TEST_F(NearbyProcessManagerTest, StartStopProcessWithNearbyConnections) {
+TEST_F(NearbyProcessManagerTest, NearbyConnections) {
   auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
+  Profile* profile = CreateProfile("name", /*is_primary_profile=*/true);
   manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
-
-  auto adapter = base::MakeRefCounted<device::MockBluetoothAdapter>();
-  EXPECT_CALL(*adapter, IsPresent()).WillOnce(testing::Return(true));
-  device::BluetoothAdapterFactory::SetAdapterForTesting(adapter);
 
   MockNearbyProcessManagerObserver observer;
   base::RunLoop run_loop_started;
@@ -285,97 +273,29 @@ TEST_F(NearbyProcessManagerTest, StartStopProcessWithNearbyConnections) {
       .WillOnce(testing::Invoke(&run_loop_stopped, &base::RunLoop::Quit));
   manager.AddObserver(&observer);
 
-  // Start up a new process and wait for it to launch.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbyConnections(profile));
+  NearbyProcessManager::NearbyConnectionsMojom* nearby_connections =
+      manager.GetOrStartNearbyConnections(profile);
   run_loop_started.Run();
+  EXPECT_EQ(
+      nearby_connections,
+      fake_process_manager()->active_connections()->shared_remote().get());
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
 
   // Stop the process and wait for it to finish.
   manager.StopProcess(profile);
   run_loop_stopped.Run();
 
+  EXPECT_EQ(0u, fake_process_manager()->GetNumActiveReferences());
+
   // Active profile should still be active.
   EXPECT_TRUE(manager.IsActiveProfile(profile));
-
   manager.RemoveObserver(&observer);
 }
 
-TEST_F(NearbyProcessManagerTest, GetOrStartNearbyConnections) {
+TEST_F(NearbyProcessManagerTest, NearbySharingDecoder) {
   auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
+  Profile* profile = CreateProfile("name", /*is_primary_profile=*/true);
   manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
-
-  auto adapter = base::MakeRefCounted<device::MockBluetoothAdapter>();
-  EXPECT_CALL(*adapter, IsPresent()).WillOnce(testing::Return(true));
-  device::BluetoothAdapterFactory::SetAdapterForTesting(adapter);
-
-  // Request a new Nearby Connections interface.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbyConnections(profile));
-  // Expect the manager to bind a new Nearby Connections pipe.
-  fake_sharing_service.WaitForConnections();
-
-  EXPECT_TRUE(fake_sharing_service.dependencies()->bluetooth_adapter);
-  EXPECT_TRUE(fake_sharing_service.dependencies()->webrtc_dependencies);
-}
-
-TEST_F(NearbyProcessManagerTest,
-       GetOrStartNearbyConnections_BluetoothNotPresent) {
-  auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
-  manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
-
-  auto adapter = base::MakeRefCounted<device::MockBluetoothAdapter>();
-  EXPECT_CALL(*adapter, IsPresent()).WillOnce(testing::Return(false));
-  device::BluetoothAdapterFactory::SetAdapterForTesting(adapter);
-
-  // Request a new Nearby Connections interface.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbyConnections(profile));
-  // Expect the manager to bind a new Nearby Connections pipe.
-  fake_sharing_service.WaitForConnections();
-
-  EXPECT_FALSE(fake_sharing_service.dependencies()->bluetooth_adapter);
-  EXPECT_TRUE(fake_sharing_service.dependencies()->webrtc_dependencies);
-}
-
-TEST_F(NearbyProcessManagerTest, ResetNearbyProcess) {
-  auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
-  manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
-
-  MockNearbyProcessManagerObserver observer;
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnNearbyProcessStopped())
-      .WillOnce(testing::Invoke(&run_loop, &base::RunLoop::Quit));
-  manager.AddObserver(&observer);
-
-  // Simulate a dropped mojo connection to the Nearby process.
-  fake_sharing_service.Reset();
-
-  // Expect the OnNearbyProcessStopped() callback to run.
-  run_loop.Run();
-
-  manager.RemoveObserver(&observer);
-}
-
-TEST_F(NearbyProcessManagerTest, StartStopProcessWithNearbySharingDecoder) {
-  auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
-  manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
 
   MockNearbyProcessManagerObserver observer;
   base::RunLoop run_loop_started;
@@ -386,47 +306,28 @@ TEST_F(NearbyProcessManagerTest, StartStopProcessWithNearbySharingDecoder) {
       .WillOnce(testing::Invoke(&run_loop_stopped, &base::RunLoop::Quit));
   manager.AddObserver(&observer);
 
-  // Start up a new process and wait for it to launch.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbySharingDecoder(profile));
+  sharing::mojom::NearbySharingDecoder* decoder =
+      manager.GetOrStartNearbySharingDecoder(profile);
   run_loop_started.Run();
+  EXPECT_EQ(decoder,
+            fake_process_manager()->active_decoder()->shared_remote().get());
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
 
   // Stop the process and wait for it to finish.
   manager.StopProcess(profile);
   run_loop_stopped.Run();
 
+  EXPECT_EQ(0u, fake_process_manager()->GetNumActiveReferences());
+
   // Active profile should still be active.
   EXPECT_TRUE(manager.IsActiveProfile(profile));
-
   manager.RemoveObserver(&observer);
 }
 
-TEST_F(NearbyProcessManagerTest, GetOrStartNearbySharingDecoder) {
+TEST_F(NearbyProcessManagerTest, NearbyConnectionsAndDecoder) {
   auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
+  Profile* profile = CreateProfile("name", /*is_primary_profile=*/true);
   manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
-
-  // Request a new Nearby Sharing Decoder interface.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbySharingDecoder(profile));
-  // Expect the manager to bind a new Nearby Sharing Decoder pipe.
-  fake_sharing_service.WaitForDecoder();
-}
-
-TEST_F(NearbyProcessManagerTest, GetOrStartNearbySharingDecoderAndConnections) {
-  auto& manager = NearbyProcessManager::GetInstance();
-  Profile* profile = CreateProfile("name");
-  manager.SetActiveProfile(profile);
-
-  // Inject fake Nearby process mojo connection.
-  FakeSharingMojoService fake_sharing_service;
-  manager.BindSharingProcess(fake_sharing_service.BindSharingService());
-
-  auto adapter = base::MakeRefCounted<device::MockBluetoothAdapter>();
-  EXPECT_CALL(*adapter, IsPresent()).WillOnce(testing::Return(true));
-  device::BluetoothAdapterFactory::SetAdapterForTesting(adapter);
 
   MockNearbyProcessManagerObserver observer;
   base::RunLoop run_loop_started;
@@ -437,21 +338,109 @@ TEST_F(NearbyProcessManagerTest, GetOrStartNearbySharingDecoderAndConnections) {
       .WillOnce(testing::Invoke(&run_loop_stopped, &base::RunLoop::Quit));
   manager.AddObserver(&observer);
 
-  // Request a new Nearby Sharing Decoder interface.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbySharingDecoder(profile));
-  fake_sharing_service.WaitForDecoder();
+  NearbyProcessManager::NearbyConnectionsMojom* nearby_connections =
+      manager.GetOrStartNearbyConnections(profile);
   run_loop_started.Run();
+  EXPECT_EQ(
+      nearby_connections,
+      fake_process_manager()->active_connections()->shared_remote().get());
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
 
-  // Then request a new Nearby Connections interface.
-  EXPECT_NE(nullptr, manager.GetOrStartNearbyConnections(profile));
-  fake_sharing_service.WaitForConnections();
+  sharing::mojom::NearbySharingDecoder* decoder =
+      manager.GetOrStartNearbySharingDecoder(profile);
+  EXPECT_EQ(decoder,
+            fake_process_manager()->active_decoder()->shared_remote().get());
+
+  // Only one reference should have been created to serve both Nearby
+  // Connections and the Nearby Share decoder.
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
 
   // Stop the process and wait for it to finish.
   manager.StopProcess(profile);
   run_loop_stopped.Run();
 
+  EXPECT_EQ(0u, fake_process_manager()->GetNumActiveReferences());
+
   // Active profile should still be active.
   EXPECT_TRUE(manager.IsActiveProfile(profile));
+  manager.RemoveObserver(&observer);
+}
 
+TEST_F(NearbyProcessManagerTest, SharedReferences) {
+  auto& manager = NearbyProcessManager::GetInstance();
+  Profile* profile = CreateProfile("name", /*is_primary_profile=*/true);
+  manager.SetActiveProfile(profile);
+
+  MockNearbyProcessManagerObserver observer;
+  base::RunLoop run_loop_started;
+  base::RunLoop run_loop_stopped;
+  EXPECT_CALL(observer, OnNearbyProcessStarted())
+      .WillOnce(testing::Invoke(&run_loop_started, &base::RunLoop::Quit));
+  EXPECT_CALL(observer, OnNearbyProcessStopped())
+      .WillOnce(testing::Invoke(&run_loop_stopped, &base::RunLoop::Quit));
+  manager.AddObserver(&observer);
+
+  // Create a reference without using the class; this simulates another feature
+  // (e.g., Phone Hub) using Nearby Connections.
+  auto reference =
+      fake_process_manager()->GetNearbyProcessReference(base::DoNothing());
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
+
+  NearbyProcessManager::NearbyConnectionsMojom* nearby_connections =
+      manager.GetOrStartNearbyConnections(profile);
+  run_loop_started.Run();
+  EXPECT_EQ(
+      nearby_connections,
+      fake_process_manager()->active_connections()->shared_remote().get());
+  EXPECT_EQ(2u, fake_process_manager()->GetNumActiveReferences());
+
+  // Stop the process; there should still be an active reference.
+  manager.StopProcess(profile);
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
+
+  // Delete the reference and verify the process is stopped.
+  reference.reset();
+  run_loop_stopped.Run();
+  EXPECT_EQ(0u, fake_process_manager()->GetNumActiveReferences());
+
+  // Active profile should still be active.
+  EXPECT_TRUE(manager.IsActiveProfile(profile));
+  manager.RemoveObserver(&observer);
+}
+
+TEST_F(NearbyProcessManagerTest, NearbyProcessStopsOnItsOwn) {
+  auto& manager = NearbyProcessManager::GetInstance();
+  Profile* profile = CreateProfile("name", /*is_primary_profile=*/true);
+  manager.SetActiveProfile(profile);
+
+  MockNearbyProcessManagerObserver observer;
+  base::RunLoop run_loop_started;
+  base::RunLoop run_loop_stopped;
+  EXPECT_CALL(observer, OnNearbyProcessStarted())
+      .WillOnce(testing::Invoke(&run_loop_started, &base::RunLoop::Quit));
+  EXPECT_CALL(observer, OnNearbyProcessStopped())
+      .WillOnce(testing::Invoke(&run_loop_stopped, &base::RunLoop::Quit));
+  manager.AddObserver(&observer);
+
+  NearbyProcessManager::NearbyConnectionsMojom* nearby_connections =
+      manager.GetOrStartNearbyConnections(profile);
+  run_loop_started.Run();
+  EXPECT_EQ(
+      nearby_connections,
+      fake_process_manager()->active_connections()->shared_remote().get());
+  EXPECT_EQ(1u, fake_process_manager()->GetNumActiveReferences());
+
+  // Simulate the process stopping on its own, like what would happen if it
+  // crashed.
+  fake_process_manager()->SimulateProcessStopped();
+
+  // Verify that the observer was notified.
+  run_loop_stopped.Run();
+
+  // NearbyProcessManager is expected to have dropped its active reference.
+  EXPECT_EQ(0u, fake_process_manager()->GetNumActiveReferences());
+
+  // Active profile should still be active.
+  EXPECT_TRUE(manager.IsActiveProfile(profile));
   manager.RemoveObserver(&observer);
 }

@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
@@ -24,9 +25,10 @@
 class Profile;
 class ProfileAttributesEntry;
 
-// Manages the lifetime of the Nearby process. It runs the Nearby Connections
-// library and Nearby Sharing data decoding. Only one instance of the process is
-// supported at a time.
+// Interfaces with the Nearby utility process.
+// TODO(https://crbug.com/1137664): This class should be renamed or deleted
+// altogether. It was written before chromeos::nearby::NerabyProcessManager was
+// created.
 class NearbyProcessManager : public ProfileManagerObserver {
  public:
   using NearbyConnectionsMojom =
@@ -107,10 +109,6 @@ class NearbyProcessManager : public ProfileManagerObserver {
   void OnProfileAdded(Profile* profile) override;
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
-  // Binds the given |sharing| remote to be used as the interface to the Sharing
-  // process running in a sandbox.
-  void BindSharingProcess(mojo::PendingRemote<sharing::mojom::Sharing> sharing);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(NearbyProcessManagerTest, AddRemoveObserver);
   FRIEND_TEST_ALL_PREFIXES(NearbySharingServiceImplTest,
@@ -124,65 +122,15 @@ class NearbyProcessManager : public ProfileManagerObserver {
   NearbyProcessManager();
   ~NearbyProcessManager() override;
 
-  // Launches a new sandboxed process and stops any currently running one. This
-  // process is then used to run the Nearby Connections library. The process
-  // will use the current profile to initialize Nearby Connections as returned
-  // by UsedProfile().
-  void LaunchNewProcess();
-
-  // Binds a new pipe to the Nearby Connections library. May start a new process
-  // if there is none running yet.
-  void BindNearbyConnections();
-
-  // Gather dependencies for NearbyConnections:
-  void GetBluetoothAdapter(
-      location::nearby::connections::mojom::NearbyConnectionsDependencies*
-          dependencies,
-      base::ScopedClosureRunner done_closure);
-  void OnGetBluetoothAdapter(
-      location::nearby::connections::mojom::NearbyConnectionsDependencies*
-          dependencies,
-      base::ScopedClosureRunner done_closure,
-      scoped_refptr<device::BluetoothAdapter> adapter);
-
-  void GetWebRtcDependencies(
-      location::nearby::connections::mojom::NearbyConnectionsDependencies*
-          dependencies,
-      base::ScopedClosureRunner done_closure);
-
-  // Called when all dependencies are gathered.
-  void OnDependenciesGathered(
-      mojo::PendingReceiver<NearbyConnectionsMojom> receiver,
-      location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-          dependencies);
-
-  // Called by the sandboxed process after initializing the Nearby Connections
-  // library.
-  void OnNearbyConnections(
-      mojo::PendingReceiver<NearbyConnectionsMojom> receiver,
-      mojo::PendingRemote<NearbyConnectionsMojom> remote);
-
-  // Called if any of the mojo interfaces to the sandboxed process disconnects.
-  // If that happens we stop the process and notify all observers via
-  // Observer::OnNearbyProcessStopped().
+  void EnsureProcessIsRunning();
   void OnNearbyProcessStopped();
+  void EnsureNearbyProcessReferenceReleased();
 
-  // Binds a new pipe to the Nearby Sharing Decoder. May start a new process
-  // if there is none running yet.
-  void BindNearbySharingDecoder();
-
-  // Called by the sandboxed process after initializing the Nearby Sharing
-  // Decoder.
-  void OnNearbySharingDecoder(
-      mojo::PendingReceiver<NearbySharingDecoderMojom> receiver,
-      mojo::PendingRemote<NearbySharingDecoderMojom> remote);
-
-  // The bound remote to a sandboxed process.
-  mojo::Remote<sharing::mojom::Sharing> sharing_process_;
-  // The bound remote to the Nearby Connections library inside the sandbox.
-  mojo::Remote<NearbyConnectionsMojom> connections_;
-  // The bound remote to the Nearby Decoder interface inside the sandbox.
-  mojo::Remote<NearbySharingDecoderMojom> decoder_;
+  // Reference to the Nearby utility process; if null, no reference is currently
+  // held.
+  std::unique_ptr<
+      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+      reference_;
 
   // All registered observers, typically one per loaded profile.
   base::ObserverList<Observer> observers_;

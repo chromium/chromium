@@ -14,6 +14,8 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
@@ -87,33 +89,6 @@ bool IsStoredNearbyProfile(Profile* profile) {
   return profile && entry->GetPath() == profile->GetPath();
 }
 
-template <typename T>
-struct MojoPipe {
-  mojo::PendingRemote<T> remote;
-  mojo::PendingReceiver<T> receiver{remote.InitWithNewPipeAndPassReceiver()};
-};
-
-class P2PTrustedSocketManagerClientImpl
-    : public network::mojom::P2PTrustedSocketManagerClient {
- public:
-  explicit P2PTrustedSocketManagerClientImpl(
-      mojo::PendingRemote<network::mojom::P2PTrustedSocketManager>
-          socket_manager)
-      : socket_manager_(std::move(socket_manager)) {}
-  ~P2PTrustedSocketManagerClientImpl() override = default;
-
-  // network::mojom::P2PTrustedSocketManagerClient:
-  void InvalidSocketPortRangeRequested() override { NOTIMPLEMENTED(); }
-  void DumpPacket(const std::vector<uint8_t>& packet_header,
-                  uint64_t packet_length,
-                  bool incoming) override {
-    NOTIMPLEMENTED();
-  }
-
- private:
-  mojo::Remote<network::mojom::P2PTrustedSocketManager> socket_manager_;
-};
-
 }  // namespace
 
 // static
@@ -167,12 +142,8 @@ NearbyProcessManager::GetOrStartNearbyConnections(Profile* profile) {
   if (!IsActiveProfile(profile))
     return nullptr;
 
-  active_profile_ = profile;
-  // Launch a new Nearby Connections interface if required.
-  if (!connections_.is_bound())
-    BindNearbyConnections();
-
-  return connections_.get();
+  EnsureProcessIsRunning();
+  return reference_->GetNearbyConnections().get();
 }
 
 sharing::mojom::NearbySharingDecoder*
@@ -180,28 +151,15 @@ NearbyProcessManager::GetOrStartNearbySharingDecoder(Profile* profile) {
   if (!IsActiveProfile(profile))
     return nullptr;
 
-  active_profile_ = profile;
-  // Launch a new Nearby Sharing Decoder interface if required.
-  if (!decoder_.is_bound())
-    BindNearbySharingDecoder();
-
-  return decoder_.get();
+  EnsureProcessIsRunning();
+  return reference_->GetNearbySharingDecoder().get();
 }
 
 void NearbyProcessManager::StopProcess(Profile* profile) {
   if (!IsActiveProfile(profile))
     return;
 
-  bool was_running = sharing_process_.is_bound();
-
-  connections_.reset();
-  decoder_.reset();
-  sharing_process_.reset();
-
-  if (was_running) {
-    for (auto& observer : observers_)
-      observer.OnNearbyProcessStopped();
-  }
+  EnsureNearbyProcessReferenceReleased();
 }
 
 void NearbyProcessManager::OnProfileAdded(Profile* profile) {
@@ -216,14 +174,6 @@ void NearbyProcessManager::OnProfileMarkedForPermanentDeletion(
     SetActiveProfile(nullptr);
 }
 
-void NearbyProcessManager::BindSharingProcess(
-    mojo::PendingRemote<sharing::mojom::Sharing> sharing) {
-  sharing_process_.Bind(std::move(sharing));
-  // base::Unretained() is safe as |this| is a singleton.
-  sharing_process_.set_disconnect_handler(base::BindOnce(
-      &NearbyProcessManager::OnNearbyProcessStopped, base::Unretained(this)));
-}
-
 NearbyProcessManager::NearbyProcessManager() {
   // profile_manager() might be null in tests or during shutdown.
   if (auto* manager = g_browser_process->profile_manager())
@@ -235,194 +185,41 @@ NearbyProcessManager::~NearbyProcessManager() {
     manager->RemoveObserver(this);
 }
 
-void NearbyProcessManager::LaunchNewProcess() {
-  // Stop any running process and mojo pipes.
-  StopProcess(active_profile_);
+void NearbyProcessManager::EnsureProcessIsRunning() {
+  DCHECK(IsAnyProfileActive());
 
-  // Launch a new sandboxed process.
-  // TODO(crbug.com/1095650): Set process name to "Nearby Sharing".
-  BindSharingProcess(sharing::LaunchSharing());
-}
+  // A reference already exists; the process is active.
+  if (reference_)
+    return;
 
-void NearbyProcessManager::BindNearbyConnections() {
-  // Start a new process if there is none running yet.
-  if (!sharing_process_.is_bound())
-    LaunchNewProcess();
+  chromeos::nearby::NearbyProcessManager* process_manager =
+      chromeos::nearby::NearbyProcessManagerFactory::GetForProfile(
+          active_profile_);
+  DCHECK(process_manager);
 
-  mojo::PendingReceiver<NearbyConnectionsMojom> pending_receiver =
-      connections_.BindNewPipeAndPassReceiver();
-  auto dependencies = location::nearby::connections::mojom::
-      NearbyConnectionsDependencies::New();
-  location::nearby::connections::mojom::NearbyConnectionsDependencies*
-      dependencies_ptr = dependencies.get();
+  NS_LOG(INFO) << "Initializing Nearby Share process reference.";
 
-  // base::Unretained() is safe as |this| is a singleton.
-  auto done_closure = base::BarrierClosure(
-      /*num_closures=*/2,
-      base::BindOnce(&NearbyProcessManager::OnDependenciesGathered,
-                     base::Unretained(this), std::move(pending_receiver),
-                     std::move(dependencies)));
-
-  GetBluetoothAdapter(dependencies_ptr,
-                      base::ScopedClosureRunner(done_closure));
-
-  GetWebRtcDependencies(dependencies_ptr,
-                        base::ScopedClosureRunner(done_closure));
-
-  // Terminate the process if the Nearby Connections interface disconnects as
-  // that indicated an incorrect state and we have to restart the process.
-  // base::Unretained() is safe as |this| is a singleton.
-  connections_.set_disconnect_handler(base::BindOnce(
+  // Note: base::Unretained(this) is used because this is a singleton.
+  reference_ = process_manager->GetNearbyProcessReference(base::BindOnce(
       &NearbyProcessManager::OnNearbyProcessStopped, base::Unretained(this)));
-}
-
-void NearbyProcessManager::GetBluetoothAdapter(
-    location::nearby::connections::mojom::NearbyConnectionsDependencies*
-        dependencies,
-    base::ScopedClosureRunner done_closure) {
-  NS_LOG(VERBOSE) << __func__
-                  << " Request for Bluetooth "
-                     "adapter received on the browser process.";
-  if (!device::BluetoothAdapterFactory::IsBluetoothSupported()) {
-    NS_LOG(VERBOSE) << __func__ << " Bluetooth is not supported on this device";
-    dependencies->bluetooth_adapter = mojo::NullRemote();
-    return;
-  }
-
-  // base::Unretained() is safe as |this| is a singleton.
-  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-      &NearbyProcessManager::OnGetBluetoothAdapter, base::Unretained(this),
-      dependencies, std::move(done_closure)));
-}
-
-void NearbyProcessManager::OnGetBluetoothAdapter(
-    location::nearby::connections::mojom::NearbyConnectionsDependencies*
-        dependencies,
-    base::ScopedClosureRunner done_closure,
-    scoped_refptr<device::BluetoothAdapter> adapter) {
-  if (!adapter->IsPresent()) {
-    NS_LOG(VERBOSE) << __func__ << " Bluetooth adapter is not present";
-    dependencies->bluetooth_adapter = mojo::NullRemote();
-    return;
-  }
-
-  mojo::PendingRemote<bluetooth::mojom::Adapter> pending_adapter;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<bluetooth::Adapter>(adapter),
-                              pending_adapter.InitWithNewPipeAndPassReceiver());
-
-  NS_LOG(VERBOSE) << __func__ << " Got bluetooth adapter";
-  dependencies->bluetooth_adapter = std::move(pending_adapter);
-}
-
-void NearbyProcessManager::GetWebRtcDependencies(
-    location::nearby::connections::mojom::NearbyConnectionsDependencies*
-        dependencies,
-    base::ScopedClosureRunner done_closure) {
-  DCHECK(active_profile_);
-
-  auto* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(active_profile_)
-          ->GetNetworkContext();
-
-  auto url_loader_factory = active_profile_->GetURLLoaderFactory();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(active_profile_);
-
-  MojoPipe<network::mojom::P2PTrustedSocketManagerClient> socket_manager_client;
-  MojoPipe<network::mojom::P2PTrustedSocketManager> trusted_socket_manager;
-  MojoPipe<network::mojom::P2PSocketManager> socket_manager;
-  MojoPipe<network::mojom::MdnsResponder> mdns_responder;
-
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<P2PTrustedSocketManagerClientImpl>(
-          std::move(trusted_socket_manager.remote)),
-      std::move(socket_manager_client.receiver));
-
-  // Create socket manager.
-  network_context->CreateP2PSocketManager(
-      net::NetworkIsolationKey::CreateTransient(),
-      std::move(socket_manager_client.remote),
-      std::move(trusted_socket_manager.receiver),
-      std::move(socket_manager.receiver));
-
-  // Create mdns responder.
-  network_context->CreateMdnsResponder(std::move(mdns_responder.receiver));
-
-  // Create ice config fetcher.
-  MojoPipe<sharing::mojom::IceConfigFetcher> ice_config_fetcher;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<IceConfigFetcher>(url_loader_factory),
-      std::move(ice_config_fetcher.receiver));
-
-  MojoPipe<sharing::mojom::WebRtcSignalingMessenger> messenger;
-  mojo::MakeSelfOwnedReceiver(std::make_unique<WebRtcSignalingMessenger>(
-                                  identity_manager, url_loader_factory),
-                              std::move(messenger.receiver));
-
-  dependencies->webrtc_dependencies =
-      location::nearby::connections::mojom::WebRtcDependencies::New(
-          std::move(socket_manager.remote), std::move(mdns_responder.remote),
-          std::move(ice_config_fetcher.remote), std::move(messenger.remote));
-}
-
-void NearbyProcessManager::OnDependenciesGathered(
-    mojo::PendingReceiver<NearbyConnectionsMojom> receiver,
-    location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-        dependencies) {
-  if (!sharing_process_.is_bound())
-    return;
-
-  // Create the Nearby Connections stack in the sandboxed process.
-  // base::Unretained() calls below are safe as |this| is a singleton.
-  sharing_process_->CreateNearbyConnections(
-      std::move(dependencies),
-      base::BindOnce(&NearbyProcessManager::OnNearbyConnections,
-                     base::Unretained(this), std::move(receiver)));
-}
-
-void NearbyProcessManager::OnNearbyConnections(
-    mojo::PendingReceiver<NearbyConnectionsMojom> receiver,
-    mojo::PendingRemote<NearbyConnectionsMojom> remote) {
-  if (!mojo::FusePipes(std::move(receiver), std::move(remote))) {
-    NS_LOG(WARNING) << "Failed to initialize Nearby Connections process";
-    StopProcess(active_profile_);
-    return;
-  }
+  DCHECK(reference_);
 
   for (auto& observer : observers_)
     observer.OnNearbyProcessStarted();
 }
 
 void NearbyProcessManager::OnNearbyProcessStopped() {
-  StopProcess(active_profile_);
+  NS_LOG(INFO) << "Nearby process has stopped.";
+  EnsureNearbyProcessReferenceReleased();
 }
 
-void NearbyProcessManager::BindNearbySharingDecoder() {
-  // Start a new process if there is none running yet.
-  if (!sharing_process_.is_bound())
-    LaunchNewProcess();
-
-  // Create the Nearby Sharing Decoder stack in the sandboxed process.
-  // base::Unretained() calls below are safe as |this| is a singleton.
-  sharing_process_->CreateNearbySharingDecoder(base::BindOnce(
-      &NearbyProcessManager::OnNearbySharingDecoder, base::Unretained(this),
-      decoder_.BindNewPipeAndPassReceiver()));
-
-  // Terminate the process if the Nearby Sharing Decoder interface disconnects
-  // as that indicated an incorrect state and we have to restart the process.
-  decoder_.set_disconnect_handler(base::BindOnce(
-      &NearbyProcessManager::OnNearbyProcessStopped, base::Unretained(this)));
-}
-
-void NearbyProcessManager::OnNearbySharingDecoder(
-    mojo::PendingReceiver<NearbySharingDecoderMojom> receiver,
-    mojo::PendingRemote<NearbySharingDecoderMojom> remote) {
-  if (!mojo::FusePipes(std::move(receiver), std::move(remote))) {
-    NS_LOG(WARNING) << "Failed to initialize Nearby Sharing Decoder process";
-    StopProcess(active_profile_);
+void NearbyProcessManager::EnsureNearbyProcessReferenceReleased() {
+  if (!reference_)
     return;
-  }
+
+  NS_LOG(INFO) << "Releasing Nearby Share process reference.";
+  reference_.reset();
 
   for (auto& observer : observers_)
-    observer.OnNearbyProcessStarted();
+    observer.OnNearbyProcessStopped();
 }

@@ -4338,6 +4338,7 @@ static_library("browser") {
       "//chromeos/services/multidevice_setup",
       "//chromeos/services/multidevice_setup/public/cpp:first_run_field_trial",
       "//chromeos/services/multidevice_setup/public/mojom",
+      "//chromeos/services/nearby/public/cpp",
       "//chromeos/services/network_config",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/services/secure_channel/public/mojom",

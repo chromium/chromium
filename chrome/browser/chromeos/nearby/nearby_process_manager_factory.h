@@ -23,6 +23,11 @@ class NearbyProcessManagerFactory : public BrowserContextKeyedServiceFactory {
 
   static NearbyProcessManagerFactory* GetInstance();
 
+  // When true is passed, this factory will create a NearbyProcessManager even
+  // when it is not the primary profile.
+  static void SetBypassPrimaryUserCheckForTesting(
+      bool bypass_primary_user_check_for_testing);
+
  private:
   friend struct base::DefaultSingletonTraits<NearbyProcessManagerFactory>;
 

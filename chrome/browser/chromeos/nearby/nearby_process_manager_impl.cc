@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/sharing/webrtc/sharing_mojo_service.h"
@@ -12,6 +13,29 @@
 
 namespace chromeos {
 namespace nearby {
+namespace {
+
+NearbyProcessManagerImpl::Factory* g_test_factory = nullptr;
+
+}  // namespace
+
+// static
+std::unique_ptr<NearbyProcessManager> NearbyProcessManagerImpl::Factory::Create(
+    NearbyConnectionsDependenciesProvider*
+        nearby_connections_dependencies_provider) {
+  if (g_test_factory) {
+    return g_test_factory->BuildInstance(
+        nearby_connections_dependencies_provider);
+  }
+
+  return base::WrapUnique(
+      new NearbyProcessManagerImpl(nearby_connections_dependencies_provider));
+}
+
+// static
+void NearbyProcessManagerImpl::Factory::SetFactoryForTesting(Factory* factory) {
+  g_test_factory = factory;
+}
 
 NearbyProcessManagerImpl::NearbyReferenceImpl::NearbyReferenceImpl(
     const mojo::SharedRemote<

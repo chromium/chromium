@@ -30,9 +30,20 @@ class NearbyConnectionsDependenciesProvider;
 // is killed as soon as the last client releases its reference.
 class NearbyProcessManagerImpl : public NearbyProcessManager {
  public:
-  explicit NearbyProcessManagerImpl(
-      NearbyConnectionsDependenciesProvider*
-          nearby_connections_dependencies_provider);
+  class Factory {
+   public:
+    static std::unique_ptr<NearbyProcessManager> Create(
+        NearbyConnectionsDependenciesProvider*
+            nearby_connections_dependencies_provider);
+    static void SetFactoryForTesting(Factory* factory);
+    virtual ~Factory() = default;
+
+   private:
+    virtual std::unique_ptr<NearbyProcessManager> BuildInstance(
+        NearbyConnectionsDependenciesProvider*
+            nearby_connections_dependencies_provider) = 0;
+  };
+
   ~NearbyProcessManagerImpl() override;
 
  private:
@@ -60,6 +71,10 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
     base::OnceClosure destructor_callback_;
   };
+
+  explicit NearbyProcessManagerImpl(
+      NearbyConnectionsDependenciesProvider*
+          nearby_connections_dependencies_provider);
 
   // NearbyProcessManagerImpl:
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
