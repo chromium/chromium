@@ -413,6 +413,15 @@
      }
     },
     "css-sizing": {
+     "aspect-ratio": {
+      "small-aspect-ratio-crash.html": [
+       "07712542f179c5e83cc44f4f15130c48e030d8c0",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "frameset-intrinsic-crash.html": [
       "ab9c43ee44d6c838597074152e1a7463644d29b1",
       [
@@ -80285,6 +80294,32 @@
         [
          [
           "/css/css-masking/clip-path/reference/clip-path-path-interpolation-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-path-interpolation-with-zoom.html": [
+       "4d54708da198d2c35bc5980857a8248b9159d3d4",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-interpolation-with-zoom-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-path-with-zoom.html": [
+       "5879917f36e7efb74db4b1aaeb8a05bee96f39cd",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-with-zoom-ref.html",
           "=="
          ]
         ],
@@ -191870,6 +191905,14 @@
         "567764a30124c2bc8821a508e2a7f8b6f0787c7e",
         []
        ],
+       "clip-path-path-interpolation-with-zoom-ref.html": [
+        "7e0d2a54266f3855dbc8e8e87167a06ea0cc323b",
+        []
+       ],
+       "clip-path-path-with-zoom-ref.html": [
+        "ef91c619c40615f633c64d59bfe302fcfbd8c5fb",
+        []
+       ],
        "clip-path-rectangle-border-ref.html": [
         "9a61c7690248f48ba123535524bf1bff60b4016c",
         []
@@ -192140,7 +192183,7 @@
      },
      "parsing": {
       "clip-path-valid-expected.txt": [
-       "1646361592a83fbfef48787803459972ee51c04e",
+       "60c4fb024402c9c1f5dbc24062b601ff48266451",
        []
       ],
       "mask-position-valid-expected.txt": [
@@ -268254,6 +268297,13 @@
        {}
       ]
      ],
+     "interface-prototype-constructor-set-receiver.html": [
+      "20f33f243abeef901357fb2026f0fe2182277673",
+      [
+       null,
+       {}
+      ]
+     ],
      "interface-prototype-object.html": [
       "d2d43eda9a94688ffd707a3ed8f89c28e74324c4",
       [
@@ -290906,6 +290956,13 @@
       ]
      },
      "clip-path": {
+      "clip-path-path-with-zoom-hittest.html": [
+       "30ceefcbc03980564136ad29b6fd1a8f9a318d38",
+       [
+        null,
+        {}
+       ]
+      ],
       "interpolation.html": [
        "da3981feed6ed681ee4a7d88b7ecd167b9fd5c7b",
        [
@@ -410220,7 +410277,7 @@
      ]
     ],
     "urlsearchparams-constructor.any.js": [
-     "1135d5d3dbbfa3625391e090985231c41e88f2c6",
+     "f9878373e5e067598054df4682652a0e9ced270a",
      [
       "url/urlsearchparams-constructor.any.html",
       {}
