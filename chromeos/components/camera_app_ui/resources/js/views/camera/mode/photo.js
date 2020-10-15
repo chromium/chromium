@@ -6,11 +6,11 @@ import {Filenamer} from '../../../models/file_namer.js';
 import * as filesystem from '../../../models/file_system.js';
 import {DeviceOperator, parseMetadata} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
-import {PerfEvent} from '../../../perf.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
   Facing,  // eslint-disable-line no-unused-vars
+  PerfEvent,
   Resolution,
 } from '../../../type.js';
 import * as util from '../../../util.js';

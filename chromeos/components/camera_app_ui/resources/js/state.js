@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {assert} from './chrome_util.js';
-import {PerfEvent} from './perf.js';
 import {
   Mode,
+  PerfEvent,
   PerfInformation,  // eslint-disable-line no-unused-vars
   ViewName,
 } from './type.js';

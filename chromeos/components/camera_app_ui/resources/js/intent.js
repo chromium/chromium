@@ -121,8 +121,11 @@ export class Intent {
       return;
     }
     this.done_ = true;
-    await this.chromeHelper_.cancel(this.intentId);
+    // TODO(crbug.com/1125997): We send the metrics before the actual action
+    // here to workaround the issue that codes behind "await" might not be
+    // executed when unloading window.
     this.logResult(metrics.IntentResultType.CANCELED);
+    await this.chromeHelper_.cancel(this.intentId);
   }
 
   /**

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 // eslint-disable-next-line no-unused-vars
+import {AppWindow} from './app_window.js';
+// eslint-disable-next-line no-unused-vars
 import {TestingErrorCallback} from './error.js';
 // eslint-disable-next-line no-unused-vars
 import {Intent} from './intent.js';
@@ -38,6 +40,12 @@ export class BackgroundOps {
    * @param {!ForegroundOps} ops
    */
   bindForegroundOps(ops) {}
+
+  /**
+   * Sets the app window which is associated to the foreground window.
+   * @param {?AppWindow} appWindow
+   */
+  bindAppWindow(appWindow) {}
 
   /**
    * Gets intent associate with CCA Window object.

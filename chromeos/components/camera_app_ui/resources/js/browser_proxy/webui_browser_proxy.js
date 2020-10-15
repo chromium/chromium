@@ -102,6 +102,11 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
+  async localStorageClear() {
+    window.localStorage.clear();
+  }
+
+  /** @override */
   async getBoard() {
     return window.loadTimeData.getString('board_name');
   }
@@ -142,16 +147,6 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  addOnMessageExternalListener(listener) {
-    throw new NotImplementedError();
-  }
-
-  /** @override */
-  addOnConnectExternalListener(listener) {
-    throw new NotImplementedError();
-  }
-
-  /** @override */
   addDummyHistoryIfNotAvailable() {
     // no-ops
   }
@@ -170,6 +165,7 @@ class WebUIBrowserProxy {
     const intent = url.includes('intent') ? Intent.create(new URL(url)) : null;
     return /** @type {!BackgroundOps} */ ({
       bindForegroundOps: (ops) => {},
+      bindAppWindow: (appWindow) => {},
       getIntent: () => intent,
       getPerfLogger: () => perfLogger,
       getTestingErrorCallback: () => null,
@@ -214,6 +210,16 @@ class WebUIBrowserProxy {
   openFeedback() {
     ChromeHelper.getInstance().openFeedbackDialog(
         this.getI18nMessage('feedback_description_placeholder'));
+  }
+
+  /** @override */
+  setupUnloadListener(listener) {
+    window.addEventListener('unload', listener);
+  }
+
+  /** @override */
+  async setLaunchingFromWindowCreationStartTime(callback) {
+    await callback();
   }
 }
 

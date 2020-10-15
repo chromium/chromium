@@ -4,10 +4,10 @@
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
-import {ErrorLevel, ErrorType, reportError} from './error.js';
+import {reportError} from './error.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {Facing} from './type.js';
+import {ErrorLevel, ErrorType, Facing} from './type.js';
 
 /**
  * Creates a canvas element for 2D drawing.

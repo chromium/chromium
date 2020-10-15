@@ -22,6 +22,7 @@ js_type_check("closure_compile") {
 
 js_library("compile_resources") {
   sources = [
+    "app_window.js",
     "async_job_queue.js",
     "background.js",
     "background_ops.js",
@@ -60,6 +61,7 @@ js_library("compile_resources") {
     "perf.js",
     "sound.js",
     "state.js",
+    "test_bridge.js",
     "toast.js",
     "tooltip.js",
     "type.js",

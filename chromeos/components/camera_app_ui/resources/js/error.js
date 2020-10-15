@@ -2,37 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// eslint-disable-next-line no-unused-vars
+import {AppWindow} from './app_window.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as metrics from './metrics.js';
-
-/**
- * Types of error used in ERROR metrics.
- * @enum {string}
- */
-export const ErrorType = {
-  BROKEN_THUMBNAIL: 'broken-thumbnail',
-  UNCAUGHT_PROMISE: 'uncaught-promise',
-};
-
-/**
- * Error level used in ERROR metrics.
- * @enum {string}
- */
-export const ErrorLevel = {
-  WARNING: 'WARNING',
-  ERROR: 'ERROR',
-};
-
-/**
- * Error reported in testing run.
- * @typedef {{
- *   type: !ErrorType,
- *   level: !ErrorLevel,
- *   stack: string,
- *   time: number,
- * }}
- */
-let ErrorInfo;  // eslint-disable-line no-unused-vars
+import {
+  ErrorInfo,  // eslint-disable-line no-unused-vars
+  ErrorLevel,
+  ErrorType,
+} from './type.js';
 
 /**
  * Callback for reporting error in testing run.
@@ -143,6 +121,11 @@ export function formatErrorStack(error) {
 let onTestingError = null;
 
 /**
+ * @type {?AppWindow}
+ */
+const appWindow = window['appWindow'];
+
+/**
  * Initializes error collecting functions.
  * @param {?TestingErrorCallback} onError Callback for reporting error in
  *     testing run. Set to null in non testing run.
@@ -193,8 +176,14 @@ export function reportError(type, level, error) {
   }
   triggeredErrorSet.add(hash);
 
+  // TODO(crbug.com/980846): Remove the old error reporting logic once the
+  // implementation using TestBridge on Tast side is ready.
   if (onTestingError !== null) {
     onTestingError({type, level, stack: formatErrorStack(error), time});
+    return;
+  }
+  if (appWindow !== null) {
+    appWindow.reportError({type, level, stack: formatErrorStack(error), time});
     return;
   }
   metrics.sendErrorEvent(

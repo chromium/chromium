@@ -110,8 +110,7 @@ const struct {
   const char* path;
   int id;
 } kGritResourceMap[] = {
-    {"js/browser_proxy/browser_proxy.js",
-     IDR_CAMERA_WEBUI_BROWSER_PROXY_JS},
+    {"js/browser_proxy/browser_proxy.js", IDR_CAMERA_WEBUI_BROWSER_PROXY_JS},
     {"js/mojo/camera_intent.mojom-lite.js",
      IDR_CAMERA_CAMERA_INTENT_MOJOM_LITE_JS},
     {"js/mojo/image_capture.mojom-lite.js",
@@ -122,16 +121,14 @@ const struct {
      IDR_CAMERA_CAMERA_METADATA_MOJOM_LITE_JS},
     {"js/mojo/camera_metadata_tags.mojom-lite.js",
      IDR_CAMERA_CAMERA_METADATA_TAGS_MOJOM_LITE_JS},
-    {"js/mojo/camera_app.mojom-lite.js",
-     IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
+    {"js/mojo/camera_app.mojom-lite.js", IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
     {"js/mojo/mojo_bindings_lite.js", IDR_MOJO_MOJO_BINDINGS_LITE_JS},
     {"js/mojo/camera_app_helper.mojom-lite.js",
      IDR_CAMERA_CAMERA_APP_HELPER_MOJOM_LITE_JS},
     {"js/mojo/time.mojom-lite.js", IDR_CAMERA_TIME_MOJOM_LITE_JS},
     {"js/mojo/idle_manager.mojom-lite.js",
      IDR_CAMERA_IDLE_MANAGER_MOJOM_LITE_JS},
-    {"js/mojo/camera_app.mojom-lite.js",
-     IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
+    {"js/mojo/camera_app.mojom-lite.js", IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
     {"js/mojo/geometry.mojom-lite.js", IDR_CAMERA_GEOMETRY_MOJOM_LITE_JS},
     {"js/mojo/range.mojom-lite.js", IDR_CAMERA_RANGE_MOJOM_LITE_JS},
 };

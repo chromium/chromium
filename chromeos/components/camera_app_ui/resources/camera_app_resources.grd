@@ -13,6 +13,7 @@
   <release seq="1">
     <structures>
       <structure name="IDR_CAMERA_ANALYTICS_JS" file="js/lib/analytics.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_APP_WINDOW_JS" file="js/app_window.js" type="chrome_html" />
       <structure name="IDR_CAMERA_ASYNC_JOB_QUEUE_JS" file="js/async_job_queue.js" type="chrome_html" />
       <structure name="IDR_CAMERA_ASYNC_WRITER_JS" file="js/models/async_writer.js" type="chrome_html" />
       <structure name="IDR_CAMERA_BACKGROUND_JS" file="js/background.js" type="chrome_html" />
@@ -64,6 +65,8 @@
       <structure name="IDR_CAMERA_SETTINGS_JS" file="js/views/settings.js" type="chrome_html" />
       <structure name="IDR_CAMERA_SOUND_JS" file="js/sound.js" type="chrome_html" />
       <structure name="IDR_CAMERA_STATE_JS" file="js/state.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_TEST_BRIDGE_JS" file="js/test_bridge.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_TEST_HTML" file="views/test.html" type="chrome_html" />
       <structure name="IDR_CAMERA_TIMERTICK_JS" file="js/views/camera/timertick.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TOAST_JS" file="js/toast.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TOOLTIP_JS" file="js/tooltip.js" type="chrome_html" />

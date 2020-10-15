@@ -93,6 +93,11 @@ class ChromeAppBrowserProxy {
   }
 
   /** @override */
+  localStorageClear() {
+    return promisify(chrome.storage.local.clear.bind(chrome.storage.local))();
+  }
+
+  /** @override */
   async getBoard() {
     const values = await promisify(chrome.chromeosInfoPrivate.get)(['board']);
     return values['board'];
@@ -143,16 +148,6 @@ class ChromeAppBrowserProxy {
   /** @override */
   getTextDirection() {
     return this.getI18nMessage('@@bidi_dir');
-  }
-
-  /** @override */
-  addOnMessageExternalListener(listener) {
-    chrome.runtime.onMessageExternal.addListener(listener);
-  }
-
-  /** @override */
-  addOnConnectExternalListener(listener) {
-    chrome.runtime.onConnectExternal.addListener(listener);
   }
 
   /** @override */
@@ -261,6 +256,18 @@ class ChromeAppBrowserProxy {
     };
     const id = 'gfdkimpbcpahaombhbimeihdjnejgicl';  // Feedback extension id.
     chrome.runtime.sendMessage(id, data);
+  }
+
+  /** @override */
+  setupUnloadListener(listener) {
+    // Platform app should use chrome.app.window.AppWindow onClosed event
+    // listener in background page instead of window unload event listener.
+  }
+
+  /** @override */
+  async setLaunchingFromWindowCreationStartTime(callback) {
+    // For platform app, the start time of window creation is recorded by
+    // background page so we don't need to trigger it here.
   }
 }
 

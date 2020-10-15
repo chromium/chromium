@@ -124,14 +124,6 @@ export const ViewName = {
 
 /**
  * @typedef {{
- *   hasError: (boolean|undefined),
- *   resolution: (!Resolution|undefined),
- * }}
- */
-export let PerfInformation;
-
-/**
- * @typedef {{
  *   width: number,
  *   height: number,
  *   maxFps: number,
@@ -166,3 +158,67 @@ export let MaxFpsInfo;
  * @typedef {!Array<!FpsRange>}
  */
 export let FpsRangeList;
+
+/**
+ * Type for performance event.
+ * @enum {string}
+ */
+export const PerfEvent = {
+  PHOTO_TAKING: 'photo-taking',
+  PHOTO_CAPTURE_SHUTTER: 'photo-capture-shutter',
+  PHOTO_CAPTURE_POST_PROCESSING: 'photo-capture-post-processing',
+  VIDEO_CAPTURE_POST_PROCESSING: 'video-capture-post-processing',
+  PORTRAIT_MODE_CAPTURE_POST_PROCESSING:
+      'portrait-mode-capture-post-processing',
+  MODE_SWITCHING: 'mode-switching',
+  CAMERA_SWITCHING: 'camera-switching',
+  LAUNCHING_FROM_WINDOW_CREATION: 'launching-from-window-creation',
+  LAUNCHING_FROM_LAUNCH_APP_COLD: 'launching-from-launch-app-cold',
+  LAUNCHING_FROM_LAUNCH_APP_WARM: 'launching-from-launch-app-warm',
+};
+
+/**
+ * @typedef {{
+ *   hasError: (boolean|undefined),
+ *   resolution: (!Resolution|undefined),
+ * }}
+ */
+export let PerfInformation;
+
+/**
+ * @typedef {{
+ *   event: !PerfEvent,
+ *   duration: number,
+ *   perfInfo: (!PerfInformation|undefined),
+ * }}
+ */
+export let PerfEntry;
+
+/**
+ * Error reported in testing run.
+ * @typedef {{
+ *   type: !ErrorType,
+ *   level: !ErrorLevel,
+ *   stack: string,
+ *   time: number,
+ * }}
+ */
+export let ErrorInfo;
+
+/**
+ * Types of error used in ERROR metrics.
+ * @enum {string}
+ */
+export const ErrorType = {
+  BROKEN_THUMBNAIL: 'broken-thumbnail',
+  UNCAUGHT_PROMISE: 'uncaught-promise',
+};
+
+/**
+ * Error level used in ERROR metrics.
+ * @enum {string}
+ */
+export const ErrorLevel = {
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+};

@@ -9,9 +9,8 @@ import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import * as nav from '../../nav.js';
-import {PerfEvent} from '../../perf.js';
 import * as state from '../../state.js';
-import {Facing, ViewName} from '../../type.js';
+import {Facing, PerfEvent, ViewName} from '../../type.js';
 import * as util from '../../util.js';
 
 /**

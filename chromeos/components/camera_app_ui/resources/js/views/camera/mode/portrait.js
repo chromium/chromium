@@ -4,11 +4,11 @@
 
 import {Filenamer} from '../../../models/file_namer.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
-import {PerfEvent} from '../../../perf.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
-  Facing,      // eslint-disable-line no-unused-vars
+  Facing,  // eslint-disable-line no-unused-vars
+  PerfEvent,
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
 import * as util from '../../../util.js';

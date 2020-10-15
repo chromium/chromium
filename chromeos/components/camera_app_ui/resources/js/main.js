@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// eslint-disable-next-line no-unused-vars
+import {AppWindow} from './app_window.js';
 import {
   BackgroundOps,  // eslint-disable-line no-unused-vars
   ForegroundOps,  // eslint-disable-line no-unused-vars
@@ -19,10 +21,9 @@ import {GalleryButton} from './gallerybutton.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
 import * as nav from './nav.js';
-import {PerfEvent} from './perf.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {Mode, ViewName} from './type.js';
+import {Mode, PerfEvent, ViewName} from './type.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
@@ -34,6 +35,11 @@ import {
 } from './views/settings.js';
 import {View} from './views/view.js';
 import {Warning} from './views/warning.js';
+
+/**
+ * @type {?AppWindow}
+ */
+const appWindow = window['appWindow'];
 
 /**
  * Creates the Camera App main object.
@@ -124,6 +130,7 @@ export class App {
 
     nav.open(ViewName.SPLASH);
     this.backgroundOps_.bindForegroundOps(this);
+    this.backgroundOps_.bindAppWindow(appWindow);
   }
 
   /**
@@ -211,7 +218,16 @@ export class App {
       const isSuccess = await this.cameraView_.start();
       nav.close(ViewName.SPLASH);
       nav.open(ViewName.CAMERA);
-      this.backgroundOps_.getPerfLogger().stopLaunch({hasError: !isSuccess});
+      await browserProxy.setLaunchingFromWindowCreationStartTime(async () => {
+        const windowCreationTime = window['windowCreationTime'];
+        this.backgroundOps_.getPerfLogger().start(
+            PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
+      });
+      this.backgroundOps_.getPerfLogger().stop(
+          PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, {hasError: !isSuccess});
+      if (appWindow !== null) {
+        appWindow.onAppLaunched();
+      }
     })();
 
     metrics.sendLaunchEvent({ackMigrate: false});
@@ -264,6 +280,18 @@ let instance = null;
   }
   const bgOps = browserProxy.getBackgroundOps();
 
+  browserProxy.setupUnloadListener(() => {
+    const intent = bgOps.getIntent();
+    if (intent !== null && !intent.done) {
+      // TODO(crbug.com/1125997): Move the task to ServiceWorker once it is
+      // supported on SWA.
+      intent.cancel();
+    }
+    if (appWindow !== null) {
+      appWindow.notifyClosed();
+    }
+  });
+
   const testErrorCallback = bgOps.getTestingErrorCallback();
   metrics.initMetrics();
   if (testErrorCallback !== null) {
@@ -276,8 +304,22 @@ let instance = null;
   const perfLogger = bgOps.getPerfLogger();
 
   // Setup listener for performance events.
-  perfLogger.addListener((event, duration, extras) => {
-    metrics.sendPerfEvent({event, duration, extras});
+  perfLogger.addListener(({event, duration, perfInfo}) => {
+    metrics.sendPerfEvent({event, duration, perfInfo});
+
+    // Setup for console perf logger.
+    if (state.get(state.State.PRINT_PERFORMANCE_LOGS)) {
+      // eslint-disable-next-line no-console
+      console.log(
+          '%c%s %s ms %s', 'color: #4E4F97; font-weight: bold;',
+          event.padEnd(40), duration.toFixed(0).padStart(4),
+          JSON.stringify(perfInfo));
+    }
+
+    // Setup for Tast tests logger.
+    if (appWindow !== null) {
+      appWindow.reportPerf({event, duration, perfInfo});
+    }
   });
   const states = Object.values(PerfEvent);
   states.push(state.State.TAKING);
@@ -300,17 +342,6 @@ let instance = null;
         perfLogger.stop(event, extras);
       }
     });
-  });
-
-  // Setup for console perf logger.
-  perfLogger.addListener((event, duration, extras) => {
-    if (state.get(state.State.PRINT_PERFORMANCE_LOGS)) {
-      // eslint-disable-next-line no-console
-      console.log(
-          '%c%s %s ms %s', 'color: #4E4F97; font-weight: bold;',
-          event.padEnd(40), duration.toFixed(0).padStart(4),
-          JSON.stringify(extras));
-    }
   });
 
   instance = new App(

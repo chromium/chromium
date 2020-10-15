@@ -167,7 +167,15 @@ export class CameraIntent extends Camera {
       });
       if (confirmed) {
         await this.intent_.finish();
-        window.close();
+
+        const appWindow = window['appWindow'];
+        if (appWindow === null) {
+          window.close();
+        } else {
+          // For test session, we notify tests and let test close the window for
+          // us.
+          await appWindow.notifyClosingItself();
+        }
         return;
       }
       this.focus();  // Refocus the visible shutter button for ChromeVox.

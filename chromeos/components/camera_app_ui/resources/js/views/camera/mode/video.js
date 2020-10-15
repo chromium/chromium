@@ -9,12 +9,12 @@ import {Filenamer} from '../../../models/file_namer.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
-import {PerfEvent} from '../../../perf.js';
 import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
   Facing,  // eslint-disable-line no-unused-vars
+  PerfEvent,
   Resolution,
   ResolutionList,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';

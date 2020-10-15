@@ -96,6 +96,7 @@ copy("chrome_camera_app_images") {
 
 copy("chrome_camera_app_js") {
   sources = [
+    "js/app_window.js",
     "js/async_job_queue.js",
     "js/background.js",
     "js/background_ops.js",
@@ -111,6 +112,7 @@ copy("chrome_camera_app_js") {
     "js/perf.js",
     "js/sound.js",
     "js/state.js",
+    "js/test_bridge.js",
     "js/toast.js",
     "js/tooltip.js",
     "js/type.js",

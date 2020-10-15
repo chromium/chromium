@@ -10,6 +10,8 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
 
+class GURL;
+
 namespace content {
 struct MediaStreamRequest;
 class RenderFrameHost;

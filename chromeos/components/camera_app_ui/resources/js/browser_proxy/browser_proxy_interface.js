@@ -49,6 +49,12 @@ export class BrowserProxy {
   async localStorageRemove(items) {}
 
   /**
+   * @return {!Promise}
+   * @abstract
+   */
+  async localStorageClear() {}
+
+  /**
    * @return {!Promise<string>}
    * @abstract
    */
@@ -99,19 +105,6 @@ export class BrowserProxy {
    * @abstract
    */
   getTextDirection() {}
-
-  /**
-   * @param {function(*, !MessageSender, function(string)): (boolean|undefined)}
-   *     listener
-   * @abstract
-   */
-  addOnMessageExternalListener(listener) {}
-
-  /**
-   * @param {function(!Port)} listener
-   * @abstract
-   */
-  addOnConnectExternalListener(listener) {}
 
   /**
    * @abstract
@@ -168,4 +161,17 @@ export class BrowserProxy {
    * @abstract
    */
   openFeedback() {}
+
+  /**
+   * @param {function(): void} listener
+   * @abstract
+   */
+  setupUnloadListener(listener) {}
+
+  /**
+   * @param {function(): !Promise} callback
+   * @return {!Promise}
+   * @abstract
+   */
+  async setLaunchingFromWindowCreationStartTime(callback) {}
 }

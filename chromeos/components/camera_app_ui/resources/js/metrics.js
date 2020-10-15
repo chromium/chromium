@@ -5,12 +5,13 @@
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 // eslint-disable-next-line no-unused-vars
-import {PerfEvent} from './perf.js';
 import * as state from './state.js';
 import {
   Facing,  // eslint-disable-line no-unused-vars
   Mode,
-  Resolution,  // eslint-disable-line no-unused-vars
+  PerfEvent,        // eslint-disable-line no-unused-vars
+  PerfInformation,  // eslint-disable-line no-unused-vars
+  Resolution,       // eslint-disable-line no-unused-vars
 } from './type.js';
 
 /**
@@ -306,9 +307,9 @@ export class PerfEventParam {
     this.duration;
 
     /**
-     * @type {!Object|undefined} Optional information for the event.
+     * @type {!PerfInformation|undefined} Optional information for the event.
      */
-    this.extras;
+    this.perfInfo;
   }
 }
 
@@ -316,9 +317,9 @@ export class PerfEventParam {
  * Sends perf type event.
  * @param {!PerfEventParam} param
  */
-export function sendPerfEvent({event, duration, extras = {}}) {
-  const resolution = extras['resolution'] || '';
-  const facing = extras['facing'] || '';
+export function sendPerfEvent({event, duration, perfInfo = {}}) {
+  const resolution = perfInfo['resolution'] || '';
+  const facing = perfInfo['facing'] || '';
   sendEvent(
       {
         eventCategory: 'perf',

@@ -4,28 +4,10 @@
 
 import {ChromeHelper} from './mojo/chrome_helper.js';
 // eslint-disable-next-line no-unused-vars
-import {PerfInformation} from './type.js';
+import {PerfEntry, PerfEvent, PerfInformation} from './type.js';
 
 /**
- * Type for performance event.
- * @enum {string}
- */
-export const PerfEvent = {
-  PHOTO_TAKING: 'photo-taking',
-  PHOTO_CAPTURE_SHUTTER: 'photo-capture-shutter',
-  PHOTO_CAPTURE_POST_PROCESSING: 'photo-capture-post-processing',
-  VIDEO_CAPTURE_POST_PROCESSING: 'video-capture-post-processing',
-  PORTRAIT_MODE_CAPTURE_POST_PROCESSING:
-      'portrait-mode-capture-post-processing',
-  MODE_SWITCHING: 'mode-switching',
-  CAMERA_SWITCHING: 'camera-switching',
-  LAUNCHING_FROM_WINDOW_CREATION: 'launching-from-window-creation',
-  LAUNCHING_FROM_LAUNCH_APP_COLD: 'launching-from-launch-app-cold',
-  LAUNCHING_FROM_LAUNCH_APP_WARM: 'launching-from-launch-app-warm',
-};
-
-/**
- * @typedef {function(!PerfEvent, number, !Object=)}
+ * @typedef {function(!PerfEntry): void}
  */
 let PerfEventListener;  // eslint-disable-line no-unused-vars
 
@@ -77,14 +59,15 @@ export class PerfLogger {
   /**
    * Starts the measurement for given event.
    * @param {!PerfEvent} event Target event.
+   * @param {number=} startTime The start time of the event.
    */
-  start(event) {
+  start(event, startTime = performance.now()) {
     if (this.startTimeMap_.has(event)) {
       console.error(`Failed to start event ${event} since the previous one is
                      not stopped.`);
       return;
     }
-    this.startTimeMap_.set(event, performance.now());
+    this.startTimeMap_.set(event, startTime);
     ChromeHelper.getInstance().startTracing(event);
   }
 
@@ -117,26 +100,8 @@ export class PerfLogger {
 
     const duration = performance.now() - startTime;
     ChromeHelper.getInstance().stopTracing(event);
-    this.listeners_.forEach((listener) => listener(event, duration, perfInfo));
-  }
-
-  /**
-   * Stops the measurement of launch-related events.
-   * @param {!PerfInformation=} perfInfo Optional information of this event
-   *     for performance measurement.
-   */
-  stopLaunch(perfInfo) {
-    const launchEvents = [
-      PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
-      PerfEvent.LAUNCHING_FROM_LAUNCH_APP_COLD,
-      PerfEvent.LAUNCHING_FROM_LAUNCH_APP_WARM,
-    ];
-
-    launchEvents.forEach((event) => {
-      if (this.startTimeMap_.has(event)) {
-        this.stop(event, perfInfo);
-      }
-    });
+    this.listeners_.forEach(
+        (listener) => listener({event, duration, perfInfo}));
   }
 
   /**
