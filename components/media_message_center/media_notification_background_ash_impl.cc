@@ -44,8 +44,12 @@ gfx::Rect MediaNotificationBackgroundAshImpl::GetArtworkBounds(
   int vertical_offset = (kArtworkSize.height() - target_size.height()) / 2;
   int horizontal_offset = (kArtworkSize.width() - target_size.width()) / 2;
 
-  return gfx::Rect(view_bounds.right() - kArtworkRightMargin -
-                       kArtworkSize.width() + horizontal_offset,
+  int bounds_x = base::i18n::IsRTL()
+                     ? view_bounds.x() + kArtworkRightMargin + horizontal_offset
+                     : view_bounds.right() - kArtworkRightMargin -
+                           kArtworkSize.width() + horizontal_offset;
+
+  return gfx::Rect(bounds_x,
                    view_bounds.bottom() - kArtworkBottomMargin -
                        kArtworkSize.height() + vertical_offset,
                    target_size.width(), target_size.height());

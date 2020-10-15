@@ -4,6 +4,7 @@
 
 #include "components/media_message_center/media_notification_background_ash_impl.h"
 
+#include "base/i18n/rtl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_message_center {
@@ -45,6 +46,10 @@ TEST_F(MediaNotificationBackgroundAshImplTest, ArtworkBoundsTest) {
 
   background()->UpdateArtwork(CreateTestImage(40, 20));
   EXPECT_EQ(GetArtworkBounds(parent_bounds).size(), gfx::Size(80, 40));
+
+  base::i18n::SetRTLForTesting(true);
+  background()->UpdateArtwork(CreateTestImage(40, 80));
+  EXPECT_EQ(GetArtworkBounds(parent_bounds), gfx::Rect(36, 4, 40, 80));
 }
 
 }  // namespace media_message_center
