@@ -5,7 +5,7 @@
 module chrome.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
@@ -46,7 +46,7 @@ interface MediaParser {
   // Note: it is still not safe to decode the file in the calling process after
   // this check.
   CheckMediaFile(mojo_base.mojom.TimeDelta decode_time,
-                 mojo_base.mojom.File file)
+                 mojo_base.mojom.ReadOnlyFile file)
       => (bool success);
 
   // Used by tests to validate the right CPU information is set on third-party
