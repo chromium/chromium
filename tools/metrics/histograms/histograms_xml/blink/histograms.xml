@@ -2202,7 +2202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.MainThreadMarkingThroughput" units="MB/s"
-    expires_after="M88">
+    expires_after="M92">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2214,7 +2214,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.ObjectSizeAfterGC" units="KB" expires_after="M88">
+<histogram name="BlinkGC.ObjectSizeAfterGC" units="KB" expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
@@ -2223,7 +2223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.ObjectSizeBeforeGC" units="KB" expires_after="M88">
+<histogram name="BlinkGC.ObjectSizeBeforeGC" units="KB" expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
@@ -2241,7 +2241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForAtomicPhase" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForAtomicPhase" units="ms" expires_after="M92">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2253,7 +2253,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForAtomicPhaseMarking" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2263,7 +2263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForCompleteSweep" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForCompleteSweep" units="ms" expires_after="M92">
   <owner>bikineev@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2272,7 +2272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForGCCycle" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForGCCycle" units="ms" expires_after="M92">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2282,7 +2282,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForGlobalWeakProcessing" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
@@ -2291,7 +2291,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForHeapCompaction" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForHeapCompaction" units="ms" expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
@@ -2301,7 +2301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForIncrementalMarking" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2311,7 +2311,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForInvokingPreFinalizers" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
@@ -2320,7 +2320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForMarking" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForMarking" units="ms" expires_after="M92">
   <owner>omerkatz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2330,7 +2330,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForMarkingRoots" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForMarkingRoots" units="ms" expires_after="M92">
   <owner>omerkatz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2339,7 +2339,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForNestedInV8" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForNestedInV8" units="ms" expires_after="M92">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2349,7 +2349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForSweepingBackground" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>bikineev@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2360,7 +2360,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForSweepingForeground" units="ms"
-    expires_after="M88">
+    expires_after="M92">
   <owner>bikineev@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2370,7 +2370,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForSweepingSum" units="ms" expires_after="M88">
+<histogram name="BlinkGC.TimeForSweepingSum" units="ms" expires_after="M92">
   <owner>bikineev@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2393,7 +2393,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TotalAllocatedSpace" units="KB" expires_after="M88">
+<histogram name="BlinkGC.TotalAllocatedSpace" units="KB" expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
@@ -2401,7 +2401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TotalObjectSpace" units="KB" expires_after="M88">
+<histogram name="BlinkGC.TotalObjectSpace" units="KB" expires_after="M92">
   <owner>haraken@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>
