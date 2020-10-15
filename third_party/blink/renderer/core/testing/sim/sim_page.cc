@@ -25,4 +25,12 @@ bool SimPage::IsFocused() const {
   return page_->GetFocusController().IsFocused();
 }
 
+void SimPage::SetActive(bool value) {
+  page_->GetFocusController().SetActive(value);
+}
+
+bool SimPage::IsActive() const {
+  return page_->GetFocusController().IsActive();
+}
+
 }  // namespace blink

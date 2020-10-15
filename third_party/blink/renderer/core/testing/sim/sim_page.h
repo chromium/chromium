@@ -22,6 +22,9 @@ class SimPage final {
   void SetFocused(bool);
   bool IsFocused() const;
 
+  void SetActive(bool);
+  bool IsActive() const;
+
  private:
   Persistent<Page> page_;
 };

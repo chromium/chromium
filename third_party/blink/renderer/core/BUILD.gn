@@ -1380,6 +1380,7 @@ source_set("unit_tests") {
     "paint/paint_property_tree_update_tests.cc",
     "paint/paint_timing_test_helper.h",
     "paint/pre_paint_tree_walk_test.cc",
+    "paint/selection_painting_utils_test.cc",
     "paint/svg_container_painter_test.cc",
     "paint/table_painter_test.cc",
     "paint/text_paint_timing_detector_test.cc",

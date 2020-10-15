@@ -5,14 +5,17 @@
 #include "third_party/blink/renderer/core/paint/selection_painting_utils.h"
 
 #include "third_party/blink/renderer/core/css/pseudo_style_request.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -27,23 +30,20 @@ bool NodeIsSelectable(const ComputedStyle& style, Node* node) {
                                style.UserModify() == EUserModify::kReadOnly);
 }
 
-scoped_refptr<ComputedStyle> GetUncachedSelectionStyle(Node* node) {
+scoped_refptr<const ComputedStyle> SelectionPseudoStyle(Node* node) {
   if (!node)
     return nullptr;
+
+  Element* element = nullptr;
 
   // In Blink, ::selection only applies to direct children of the element on
   // which ::selection is matched. In order to be able to style ::selection
   // inside elements implemented with a UA shadow tree, like input::selection,
   // we calculate ::selection style on the shadow host for elements inside the
   // UA shadow.
-  if (ShadowRoot* root = node->ContainingShadowRoot()) {
-    if (root->IsUserAgent()) {
-      if (Element* shadow_host = node->OwnerShadowHost()) {
-        return shadow_host->StyleForPseudoElement(
-            PseudoElementStyleRequest(kPseudoIdSelection));
-      }
-    }
-  }
+  ShadowRoot* root = node->ContainingShadowRoot();
+  if (root && root->IsUserAgent())
+    element = node->OwnerShadowHost();
 
   // If we request ::selection style for LayoutText, query ::selection style on
   // the parent element instead, as that is the node for which ::selection
@@ -51,7 +51,8 @@ scoped_refptr<ComputedStyle> GetUncachedSelectionStyle(Node* node) {
   // don't implement inheritance of ::selection styles, it would probably break
   // cases where you style a shadow host with ::selection and expect light tree
   // text children to be affected by that style.
-  Element* element = Traversal<Element>::FirstAncestorOrSelf(*node);
+  if (!element)
+    element = Traversal<Element>::FirstAncestorOrSelf(*node);
 
   // <content> and <shadow> elements do not have ComputedStyle, hence they will
   // return null for StyleForPseudoElement(). Return early to avoid DCHECK
@@ -61,8 +62,16 @@ scoped_refptr<ComputedStyle> GetUncachedSelectionStyle(Node* node) {
     return nullptr;
   }
 
-  return element->StyleForPseudoElement(
-      PseudoElementStyleRequest(kPseudoIdSelection));
+  PseudoElementStyleRequest request(kPseudoIdSelection);
+  // ::selection and ::selection:window-inactive styles may be different. Only
+  // cache the styles for ::selection if there are no :window-inactive selector,
+  // or if the page is active.
+  if (element->GetDocument().GetStyleEngine().UsesWindowInactiveSelector() &&
+      !element->GetDocument().GetPage()->GetFocusController().IsActive()) {
+    return element->StyleForPseudoElement(request, element->GetComputedStyle());
+  }
+
+  return element->CachedStyleForPseudoElement(request);
 }
 
 Color SelectionColor(const Document& document,
@@ -76,8 +85,8 @@ Color SelectionColor(const Document& document,
       (global_paint_flags & kGlobalPaintSelectionDragImageOnly))
     return style.VisitedDependentColor(color_property);
 
-  if (scoped_refptr<ComputedStyle> pseudo_style =
-          GetUncachedSelectionStyle(node)) {
+  if (scoped_refptr<const ComputedStyle> pseudo_style =
+          SelectionPseudoStyle(node)) {
     if (document.InForcedColorsMode() &&
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kNone) {
       return LayoutTheme::GetTheme().SystemColor(CSSValueID::kHighlighttext,
@@ -100,16 +109,6 @@ Color SelectionColor(const Document& document,
                    style.UsedColorScheme());
 }
 
-const ComputedStyle* SelectionPseudoStyle(Node* node) {
-  if (!node)
-    return nullptr;
-  Element* element = Traversal<Element>::FirstAncestorOrSelf(*node);
-  if (!element)
-    return nullptr;
-  return element->CachedStyleForPseudoElement(
-      PseudoElementStyleRequest(kPseudoIdSelection));
-}
-
 }  // anonymous namespace
 
 Color SelectionPaintingUtils::SelectionBackgroundColor(
@@ -119,8 +118,8 @@ Color SelectionPaintingUtils::SelectionBackgroundColor(
   if (node && !NodeIsSelectable(style, node))
     return Color::kTransparent;
 
-  if (scoped_refptr<ComputedStyle> pseudo_style =
-          GetUncachedSelectionStyle(node)) {
+  if (scoped_refptr<const ComputedStyle> pseudo_style =
+          SelectionPseudoStyle(node)) {
     if (document.InForcedColorsMode() &&
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kNone) {
       return LayoutTheme::GetTheme().SystemColor(CSSValueID::kHighlight,
@@ -211,7 +210,8 @@ TextPaintStyle SelectionPaintingUtils::SelectionPaintingStyle(
           SelectionEmphasisMarkColor(document, style, node, global_paint_flags);
     }
 
-    if (const ComputedStyle* pseudo_style = SelectionPseudoStyle(node)) {
+    if (scoped_refptr<const ComputedStyle> pseudo_style =
+            SelectionPseudoStyle(node)) {
       selection_style.stroke_color =
           uses_text_as_clip ? Color::kBlack
                             : pseudo_style->VisitedDependentColor(

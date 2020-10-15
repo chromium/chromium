@@ -395,7 +395,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
   void SetStyleType(PseudoId style_type) { SetStyleTypeInternal(style_type); }
 
-  const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
+  CORE_EXPORT const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
   const ComputedStyle* AddCachedPseudoElementStyle(
       scoped_refptr<const ComputedStyle>) const;
   void ClearCachedPseudoElementStyles() const {
