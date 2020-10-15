@@ -9,11 +9,16 @@ namespace nearby {
 
 MockNearbyConnections::MockNearbyConnections() {
   mojo::PendingRemote<NearbyConnectionsMojom> pending_remote;
-  receiver_.Bind(pending_remote.InitWithNewPipeAndPassReceiver());
+  receiver_set_.Add(this, pending_remote.InitWithNewPipeAndPassReceiver());
   shared_remote_.Bind(std::move(pending_remote), /*bind_task_runner=*/nullptr);
 }
 
 MockNearbyConnections::~MockNearbyConnections() = default;
+
+void MockNearbyConnections::BindInterface(
+    mojo::PendingReceiver<NearbyConnectionsMojom> pending_receiver) {
+  receiver_set_.Add(this, std::move(pending_receiver));
+}
 
 }  // namespace nearby
 }  // namespace chromeos

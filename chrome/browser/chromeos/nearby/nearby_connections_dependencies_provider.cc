@@ -53,8 +53,12 @@ NearbyConnectionsDependenciesProvider::NearbyConnectionsDependenciesProvider(
     Profile* profile,
     signin::IdentityManager* identity_manager)
     : profile_(profile), identity_manager_(identity_manager) {
+  DCHECK(profile_);
   DCHECK(identity_manager_);
 }
+
+NearbyConnectionsDependenciesProvider::NearbyConnectionsDependenciesProvider() =
+    default;
 
 NearbyConnectionsDependenciesProvider::
     ~NearbyConnectionsDependenciesProvider() = default;

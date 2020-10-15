@@ -32,12 +32,17 @@ class NearbyConnectionsDependenciesProvider : public KeyedService {
   ~NearbyConnectionsDependenciesProvider() override;
 
   // Note: Returns null during session shutdown.
-  location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
+  virtual location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
   GetDependencies();
 
  private:
+  friend class NearbyProcessManagerImplTest;
+
   // KeyedService:
   void Shutdown() override;
+
+  // Test-only constructor.
+  NearbyConnectionsDependenciesProvider();
 
   mojo::PendingRemote<bluetooth::mojom::Adapter>
   GetBluetoothAdapterPendingRemote();
@@ -47,8 +52,8 @@ class NearbyConnectionsDependenciesProvider : public KeyedService {
 
   bool shut_down_ = false;
 
-  Profile* profile_;
-  signin::IdentityManager* identity_manager_;
+  Profile* profile_ = nullptr;
+  signin::IdentityManager* identity_manager_ = nullptr;
 
   base::WeakPtrFactory<NearbyConnectionsDependenciesProvider> weak_ptr_factory_{
       this};

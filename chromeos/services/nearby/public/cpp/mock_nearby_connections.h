@@ -6,7 +6,7 @@
 #define CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_
 
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -38,6 +38,9 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
   const mojo::SharedRemote<NearbyConnectionsMojom>& shared_remote() const {
     return shared_remote_;
   }
+
+  void BindInterface(
+      mojo::PendingReceiver<NearbyConnectionsMojom> pending_receiver);
 
   MOCK_METHOD(void,
               StartAdvertising,
@@ -107,7 +110,7 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
               (override));
 
  private:
-  mojo::Receiver<NearbyConnectionsMojom> receiver_{this};
+  mojo::ReceiverSet<NearbyConnectionsMojom> receiver_set_;
   mojo::SharedRemote<NearbyConnectionsMojom> shared_remote_;
 };
 

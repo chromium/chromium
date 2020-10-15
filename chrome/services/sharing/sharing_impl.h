@@ -48,13 +48,16 @@ class SharingImpl : public mojom::Sharing {
   ~SharingImpl() override;
 
   // mojom::Sharing:
-  void CreateNearbyConnections(
-      NearbyConnectionsDependenciesPtr dependencies,
-      CreateNearbyConnectionsCallback callback) override;
-  void CreateNearbySharingDecoder(
-      CreateNearbySharingDecoderCallback callback) override;
+  void Connect(
+      NearbyConnectionsDependenciesPtr deps,
+      mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
+      mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+          decoder_receiver) override;
+  void ShutDown(ShutDownCallback callback) override;
 
  private:
+  friend class SharingImplTest;
+
   void NearbyConnectionsDisconnected();
 
   mojo::Receiver<mojom::Sharing> receiver_;

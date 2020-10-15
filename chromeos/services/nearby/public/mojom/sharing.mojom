@@ -12,17 +12,20 @@ import "services/network/public/mojom/p2p.mojom";
 // Interface for sharing related services. Lives in a sandboxed utility process
 // and is used by the browser process to offload unsafe protocol parsing.
 interface Sharing {
-  // Creates a new Nearby Connections stack. All dependencies should be provided
-  // via the |dependencies| struct. Closing the returned |connections| interface
-  // destroys the stack. Calling this method with an existing instance of the
-  // stack shuts down the previous one and creates a new one.
-  CreateNearbyConnections(
-      location.nearby.connections.mojom.NearbyConnectionsDependencies
-          dependencies)
-      => (pending_remote<location.nearby.connections.mojom.NearbyConnections>
-             connections);
+  // Connects to Nearby functionality: Nearby Connections and the Nearby Share
+  // decoder. All dependencies should be provided via the |dependencies| struct.
+  // Shutdown of Nearby functionality is asynchronous; to shut down the process,
+  // call ShutDown() and wait for the operation to complete before disconnecting
+  // the Sharing Mojo connection.
+  Connect(
+      location.nearby.connections.mojom.NearbyConnectionsDependencies deps,
+      pending_receiver<
+          location.nearby.connections.mojom.NearbyConnections>
+              nearby_connections,
+      pending_receiver<sharing.mojom.NearbySharingDecoder>
+          decoder);
 
-  // Creates a new Nearby Sharing Decoder.
-  CreateNearbySharingDecoder()
-      => (pending_remote<sharing.mojom.NearbySharingDecoder> decoder);
+  // Shuts down Nearby functionality; once this operation returns, it is safe to
+  // disconnect active Mojo connections.
+  ShutDown() => ();
 };

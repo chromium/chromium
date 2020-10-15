@@ -21,30 +21,26 @@ SharingImpl::SharingImpl(
 
 SharingImpl::~SharingImpl() = default;
 
-void SharingImpl::CreateNearbyConnections(
-    NearbyConnectionsDependenciesPtr dependencies,
-    CreateNearbyConnectionsCallback callback) {
-  // Reset old instance of Nearby Connections stack.
-  nearby_connections_.reset();
+void SharingImpl::Connect(
+    NearbyConnectionsDependenciesPtr deps,
+    mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
+    mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+        decoder_receiver) {
+  DCHECK(!nearby_connections_);
+  DCHECK(!nearby_decoder_);
 
-  mojo::PendingRemote<NearbyConnectionsMojom> remote;
   nearby_connections_ = std::make_unique<NearbyConnections>(
-      remote.InitWithNewPipeAndPassReceiver(), std::move(dependencies),
-      io_task_runner_,
+      std::move(connections_receiver), std::move(deps), io_task_runner_,
       base::BindOnce(&SharingImpl::NearbyConnectionsDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
-  std::move(callback).Run(std::move(remote));
+  nearby_decoder_ =
+      std::make_unique<NearbySharingDecoder>(std::move(decoder_receiver));
 }
 
-void SharingImpl::CreateNearbySharingDecoder(
-    CreateNearbySharingDecoderCallback callback) {
-  // Reset old instance of Nearby Sharing Decoder stack.
+void SharingImpl::ShutDown(ShutDownCallback callback) {
+  nearby_connections_.reset();
   nearby_decoder_.reset();
-
-  mojo::PendingRemote<sharing::mojom::NearbySharingDecoder> remote;
-  nearby_decoder_ = std::make_unique<NearbySharingDecoder>(
-      remote.InitWithNewPipeAndPassReceiver());
-  std::move(callback).Run(std::move(remote));
+  std::move(callback).Run();
 }
 
 void SharingImpl::NearbyConnectionsDisconnected() {

@@ -6,7 +6,7 @@
 #define CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_SHARING_DECODER_H_
 
 #include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,6 +25,9 @@ class MockNearbySharingDecoder : public sharing::mojom::NearbySharingDecoder {
     return shared_remote_;
   }
 
+  void BindInterface(mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+                         pending_receiver);
+
   // sharing::mojom::NearbySharingDecoder:
   MOCK_METHOD(void,
               DecodeAdvertisement,
@@ -37,7 +40,7 @@ class MockNearbySharingDecoder : public sharing::mojom::NearbySharingDecoder {
               (override));
 
  private:
-  mojo::Receiver<sharing::mojom::NearbySharingDecoder> receiver_{this};
+  mojo::ReceiverSet<sharing::mojom::NearbySharingDecoder> receiver_set_;
   mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> shared_remote_;
 };
 

@@ -38,7 +38,10 @@ class SharingImplTest : public testing::Test {
 
   SharingImpl* service() const { return service_.get(); }
 
-  mojo::Remote<NearbyConnectionsMojom> CreateNearbyConnections(
+  void Connect(
+      mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
+      mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+          decoder_receiver,
       mojo::PendingRemote<bluetooth::mojom::Adapter> bluetooth_adapter,
       mojo::PendingRemote<network::mojom::P2PSocketManager> socket_manager,
       mojo::PendingRemote<network::mojom::MdnsResponder> mdns_responder,
@@ -55,29 +58,22 @@ class SharingImplTest : public testing::Test {
         location::nearby::connections::mojom::NearbyConnectionsDependencies::
             New(std::move(bluetooth_adapter), std::move(webrtc_dependencies));
     base::RunLoop run_loop;
-    service()->CreateNearbyConnections(
-        std::move(dependencies),
-        base::BindLambdaForTesting(
-            [&](mojo::PendingRemote<NearbyConnectionsMojom> pending_remote) {
-              connections.Bind(std::move(pending_remote));
-              run_loop.Quit();
-            }));
-    // Wait until NearbyConnectionsMojom is connected.
-    run_loop.Run();
-    return connections;
+    service()->Connect(std::move(dependencies), std::move(connections_receiver),
+                       std::move(decoder_receiver));
+
+    // Run Mojo connection handlers.
+    base::RunLoop().RunUntilIdle();
   }
 
-  mojo::Remote<NearbySharingDecoderMojom> CreateNearbySharingDecoder() {
-    mojo::Remote<NearbySharingDecoderMojom> remote;
-    base::RunLoop run_loop;
-    service()->CreateNearbySharingDecoder(base::BindLambdaForTesting(
-        [&](mojo::PendingRemote<NearbySharingDecoderMojom> pending_remote) {
-          remote.Bind(std::move(pending_remote));
-          run_loop.Quit();
-        }));
-    // Wait until NearbySharingDecoderMojom is connected.
-    run_loop.Run();
-    return remote;
+  void ShutDown() {
+    service()->ShutDown(base::DoNothing());
+
+    // Run Mojo disconnection handlers.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool AreNearbyConnectionsAndDecoderInstancesActive() {
+    return service()->nearby_connections_ && service()->nearby_decoder_;
   }
 
  protected:
@@ -86,57 +82,49 @@ class SharingImplTest : public testing::Test {
   std::unique_ptr<SharingImpl> service_;
 };
 
-TEST_F(SharingImplTest, NearbyConnections_Create) {
+TEST_F(SharingImplTest, ConnectAndShutDown) {
+  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
+      connections;
+  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder;
   bluetooth::FakeAdapter bluetooth_adapter;
   sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
 
+  Connect(connections.BindNewPipeAndPassReceiver(),
+          decoder.BindNewPipeAndPassReceiver(),
+          bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  EXPECT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
   EXPECT_TRUE(connections.is_connected());
-}
+  EXPECT_TRUE(decoder.is_connected());
 
-TEST_F(SharingImplTest, NearbyConnections_CreateMultiple) {
-  bluetooth::FakeAdapter bluetooth_adapter_1;
-  sharing::MockWebRtcDependencies webrtc_dependencies_1;
-  mojo::Remote<NearbyConnectionsMojom> connections_1 = CreateNearbyConnections(
-      bluetooth_adapter_1.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_1.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_1.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_1.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_1.messenger_.BindNewPipeAndPassRemote());
-  EXPECT_TRUE(connections_1.is_connected());
-
-  // Calling CreateNearbyConnections() again should disconnect the old instance.
-  bluetooth::FakeAdapter bluetooth_adapter_2;
-  sharing::MockWebRtcDependencies webrtc_dependencies_2;
-  mojo::Remote<NearbyConnectionsMojom> connections_2 = CreateNearbyConnections(
-      bluetooth_adapter_2.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_2.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_2.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_2.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies_2.messenger_.BindNewPipeAndPassRemote());
-
-  // Run mojo disconnect handlers.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(connections_1.is_connected());
-  EXPECT_TRUE(connections_2.is_connected());
+  ShutDown();
+  EXPECT_FALSE(AreNearbyConnectionsAndDecoderInstancesActive());
+  EXPECT_FALSE(connections.is_connected());
+  EXPECT_FALSE(decoder.is_connected());
 }
 
 TEST_F(SharingImplTest, NearbyConnections_BluetoothDisconnects) {
+  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
+      connections;
+  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder;
   bluetooth::FakeAdapter bluetooth_adapter;
   sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  Connect(connections.BindNewPipeAndPassReceiver(),
+          decoder.BindNewPipeAndPassReceiver(),
+          bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  EXPECT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
   EXPECT_TRUE(connections.is_connected());
+  EXPECT_TRUE(decoder.is_connected());
 
   // Disconnecting the |bluetooth_adapter| interface should also
   // disconnect and destroy the |connections| interface.
@@ -149,15 +137,23 @@ TEST_F(SharingImplTest, NearbyConnections_BluetoothDisconnects) {
 }
 
 TEST_F(SharingImplTest, NearbyConnections_WebRtcSignalingMessengerDisconnects) {
+  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
+      connections;
+  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder;
   bluetooth::FakeAdapter bluetooth_adapter;
   sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  Connect(connections.BindNewPipeAndPassReceiver(),
+          decoder.BindNewPipeAndPassReceiver(),
+          bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  EXPECT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
   EXPECT_TRUE(connections.is_connected());
+  EXPECT_TRUE(decoder.is_connected());
 
   // Disconnecting the |webrtc_dependencies.messenger_| interface should also
   // disconnect and destroy the |connections| interface.
@@ -170,15 +166,23 @@ TEST_F(SharingImplTest, NearbyConnections_WebRtcSignalingMessengerDisconnects) {
 }
 
 TEST_F(SharingImplTest, NearbyConnections_WebRtcMdnsResponderDisconnects) {
+  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
+      connections;
+  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder;
   bluetooth::FakeAdapter bluetooth_adapter;
   sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  Connect(connections.BindNewPipeAndPassReceiver(),
+          decoder.BindNewPipeAndPassReceiver(),
+          bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  EXPECT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
   EXPECT_TRUE(connections.is_connected());
+  EXPECT_TRUE(decoder.is_connected());
 
   // Disconnecting the |webrtc_dependencies.mdns_responder_| interface should
   // also disconnect and destroy the |connections| interface.
@@ -191,15 +195,23 @@ TEST_F(SharingImplTest, NearbyConnections_WebRtcMdnsResponderDisconnects) {
 }
 
 TEST_F(SharingImplTest, NearbyConnections_WebRtcP2PSocketManagerDisconnects) {
+  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
+      connections;
+  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder;
   bluetooth::FakeAdapter bluetooth_adapter;
   sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  Connect(connections.BindNewPipeAndPassReceiver(),
+          decoder.BindNewPipeAndPassReceiver(),
+          bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  EXPECT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
   EXPECT_TRUE(connections.is_connected());
+  EXPECT_TRUE(decoder.is_connected());
 
   // Disconnecting the |webrtc_dependencies.socket_manager_| interface should
   // also disconnect and destroy the |connections| interface.
@@ -212,15 +224,23 @@ TEST_F(SharingImplTest, NearbyConnections_WebRtcP2PSocketManagerDisconnects) {
 }
 
 TEST_F(SharingImplTest, NearbyConnections_WebRtcIceConfigFetcherDisconnects) {
+  mojo::Remote<location::nearby::connections::mojom::NearbyConnections>
+      connections;
+  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder;
   bluetooth::FakeAdapter bluetooth_adapter;
   sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  Connect(connections.BindNewPipeAndPassReceiver(),
+          decoder.BindNewPipeAndPassReceiver(),
+          bluetooth_adapter.adapter_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+          webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
+
+  EXPECT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
   EXPECT_TRUE(connections.is_connected());
+  EXPECT_TRUE(decoder.is_connected());
 
   // Disconnecting the |webrtc_dependencies.ice_config_fetcher_| interface
   // should also disconnect and destroy the |connections| interface.
@@ -230,39 +250,6 @@ TEST_F(SharingImplTest, NearbyConnections_WebRtcIceConfigFetcherDisconnects) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(connections.is_connected());
-}
-
-TEST_F(SharingImplTest, NearbyConnections_NullBluetoothAdapter) {
-  sharing::MockWebRtcDependencies webrtc_dependencies;
-  mojo::Remote<NearbyConnectionsMojom> connections = CreateNearbyConnections(
-      mojo::NullRemote(),
-      webrtc_dependencies.socket_manager_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.mdns_responder_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-      webrtc_dependencies.messenger_.BindNewPipeAndPassRemote());
-  EXPECT_TRUE(connections.is_connected());
-}
-
-TEST_F(SharingImplTest, NearbySharingDecoder_Create) {
-  mojo::Remote<NearbySharingDecoderMojom> remote = CreateNearbySharingDecoder();
-  EXPECT_TRUE(remote.is_connected());
-}
-
-TEST_F(SharingImplTest, NearbySharingDecoder_CreateMultiple) {
-  mojo::Remote<NearbySharingDecoderMojom> remote_1 =
-      CreateNearbySharingDecoder();
-  EXPECT_TRUE(remote_1.is_connected());
-
-  // Calling CreateNearbySharingDecoder() again should disconnect the old
-  // instance.
-  mojo::Remote<NearbySharingDecoderMojom> remote_2 =
-      CreateNearbySharingDecoder();
-
-  // Run mojo disconnect handlers.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(remote_1.is_connected());
-  EXPECT_TRUE(remote_2.is_connected());
 }
 
 }  // namespace sharing
