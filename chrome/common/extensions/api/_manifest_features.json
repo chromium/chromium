@@ -51,7 +51,8 @@
   }],
   "browser_action": {
     "channel": "stable",
-    "extension_types": ["extension"]
+    "extension_types": ["extension"],
+    "max_manifest_version": 2
   },
   "chrome_settings_overrides": {
     "channel": "stable",
@@ -191,7 +192,8 @@
   },
   "page_action": {
     "channel": "stable",
-    "extension_types": ["extension"]
+    "extension_types": ["extension"],
+    "max_manifest_version": 2
   },
   "platforms": {
     "channel": "stable",
