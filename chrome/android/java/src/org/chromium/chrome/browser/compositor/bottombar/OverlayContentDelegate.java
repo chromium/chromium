@@ -88,9 +88,4 @@ public class OverlayContentDelegate {
      * Called once the WebContents has been created and set up completely.
      */
     public void onContentViewCreated() {}
-
-    /**
-     * Called once the WebContents has been destroyed.
-     */
-    public void onContentViewDestroyed() {}
 }

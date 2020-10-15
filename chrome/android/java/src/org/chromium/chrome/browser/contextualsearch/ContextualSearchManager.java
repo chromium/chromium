@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -1069,11 +1068,6 @@ public class ContextualSearchManager
         }
 
         @Override
-        public void onContentViewDestroyed() {
-            updateTabConstraints();
-        }
-
-        @Override
         public void onContentViewSeen() {
             assert mSearchPanel != null;
             mSearchPanel.setWasSearchContentViewSeen();
@@ -1107,14 +1101,6 @@ public class ContextualSearchManager
     // ============================================================================================
     // Search Content View
     // ============================================================================================
-
-    /**
-     * Update the state of the browser controls (whether they can be shown or hidden) based on the
-     * current tab.
-     */
-    private void updateTabConstraints() {
-        TabBrowserControlsConstraintsHelper.updateEnabledState(mTabSupplier.get());
-    }
 
     /** Removes the last resolved search URL from the Chrome history. */
     private void removeLastSearchVisit() {

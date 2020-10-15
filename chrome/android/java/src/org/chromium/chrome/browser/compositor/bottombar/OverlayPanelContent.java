@@ -416,9 +416,6 @@ public class OverlayPanelContent {
             mShouldReuseWebContents = false;
 
             setVisibility(false);
-
-            // After everything has been disposed, notify the observer.
-            mContentDelegate.onContentViewDestroyed();
         }
     }
 
