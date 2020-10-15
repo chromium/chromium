@@ -124,38 +124,10 @@ export class BrowserProxy {
   getBackgroundOps() {}
 
   /**
-   * @return {boolean}
-   * @abstract
-   */
-  isFullscreenOrMaximized() {}
-
-  /**
    * @return {!Promise}
    * @abstract
    */
   async fitWindow() {}
-
-  /**
-   * @abstract
-   */
-  showWindow() {}
-
-  /**
-   * @abstract
-   */
-  hideWindow() {}
-
-  /**
-   * @return {boolean}
-   * @abstract
-   */
-  isMinimized() {}
-
-  /**
-   * @param {function(): void} listener
-   * @abstract
-   */
-  addOnMinimizedListener(listener) {}
 
   /**
    * @abstract

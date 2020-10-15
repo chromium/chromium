@@ -31,6 +31,7 @@ import {
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
+import {windowController} from '../window_controller/window_controller.js';
 
 import {Layout} from './camera/layout.js';
 import {   // eslint-disable-line no-unused-vars
@@ -255,7 +256,7 @@ export class Camera extends View {
       }
     });
 
-    browserProxy.addOnMinimizedListener(() => {
+    windowController.addOnMinimizedListener(() => {
       this.start();
     });
 
@@ -334,7 +335,7 @@ export class Camera extends View {
    * @return {boolean}
    */
   isSuspended() {
-    return this.locked_ || browserProxy.isMinimized() ||
+    return this.locked_ || windowController.isMinimized() ||
         state.get(state.State.SUSPEND) || this.screenOff_ ||
         this.isTabletBackground_();
   }

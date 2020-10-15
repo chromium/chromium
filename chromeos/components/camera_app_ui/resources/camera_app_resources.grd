@@ -53,6 +53,7 @@
       <structure name="IDR_CAMERA_MODE_RECORD_TIME_JS" file="js/views/camera/mode/record_time.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MODE_SQUARE_JS" file="js/views/camera/mode/square.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MODE_VIDEO_JS" file="js/views/camera/mode/video.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_MOJO_WINDOW_CONTROLLER_JS" file="js/window_controller/mojo_window_controller.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MP4_VIDEO_PROCESSOR_JS" file="js/models/mp4_video_processor.js" type="chrome_html" />
       <structure name="IDR_CAMERA_NATIVE_FILE_SYSTEM_ENTRY_JS" file="js/models/native_file_system_entry.js" type="chrome_html" />
       <structure name="IDR_CAMERA_NAV_JS" file="js/nav.js" type="chrome_html" />
@@ -77,6 +78,7 @@
       <structure name="IDR_CAMERA_WAITABLE_EVENT_JS" file="js/waitable_event.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WARNING_JS" file="js/views/warning.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WEBUI_BROWSER_PROXY_JS" file="js/browser_proxy/webui_browser_proxy.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_WINDOW_CONTROLLER_INTERFACE_JS" file="js/window_controller/window_controller_interface.js" type="chrome_html" />
     </structures>
     <includes>
       <!-- Mojo Lite Bindings -->

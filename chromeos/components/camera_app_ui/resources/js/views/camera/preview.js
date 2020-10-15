@@ -8,6 +8,7 @@ import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import * as util from '../../util.js';
+import {windowController} from '../../window_controller/window_controller.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -417,7 +418,7 @@ export class Preview {
         .then(() => {
           // Resize window by aspect ratio only if it's not maximized or
           // fullscreen.
-          if (browserProxy.isFullscreenOrMaximized()) {
+          if (windowController.isFullscreenOrMaximized()) {
             return;
           }
           return browserProxy.fitWindow();

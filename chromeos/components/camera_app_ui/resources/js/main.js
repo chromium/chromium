@@ -35,6 +35,7 @@ import {
 } from './views/settings.js';
 import {View} from './views/view.js';
 import {Warning} from './views/warning.js';
+import {windowController} from './window_controller/window_controller.js';
 
 /**
  * @type {?AppWindow}
@@ -211,7 +212,7 @@ export class App {
 
     const showWindow = (async () => {
       await browserProxy.fitWindow();
-      browserProxy.showWindow();
+      windowController.enable();
       this.backgroundOps_.notifyActivation();
     })();
     const startCamera = (async () => {
@@ -251,7 +252,7 @@ export class App {
   async suspend() {
     state.set(state.State.SUSPEND, true);
     await this.cameraView_.start();
-    browserProxy.hideWindow();
+    windowController.disable();
     this.backgroundOps_.notifySuspension();
   }
 
@@ -260,7 +261,7 @@ export class App {
    */
   resume() {
     state.set(state.State.SUSPEND, false);
-    browserProxy.showWindow();
+    windowController.enable();
     this.backgroundOps_.notifyActivation();
   }
 }

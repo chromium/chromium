@@ -85,6 +85,9 @@ js_library("compile_resources") {
     "views/view.js",
     "views/warning.js",
     "waitable_event.js",
+    "window_controller/mojo_window_controller.js",
+    "window_controller/window_controller.js",
+    "window_controller/window_controller_interface.js",
   ]
   deps = [
     "//chromeos/components/camera_app_ui:mojo_bindings_js_library_for_compile",

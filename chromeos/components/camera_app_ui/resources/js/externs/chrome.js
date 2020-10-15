@@ -9,3 +9,14 @@
  * }}
  */
 chrome.chromeosInfoPrivate;
+
+/** @const */
+chrome.events = {};
+
+/**
+ * @typedef {{
+ *   addListener: function(function(): void),
+ *   removeListener: function(function(): void),
+ * }}
+ */
+chrome.events.Event;

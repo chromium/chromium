@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../../browser_proxy/browser_proxy.js';
 import {
   assert,
   assertInstanceof,
@@ -10,6 +9,7 @@ import {
 import * as dom from '../../dom.js';
 import * as state from '../../state.js';
 import {Mode, Resolution} from '../../type.js';
+import {windowController} from '../../window_controller/window_controller.js';
 
 /**
  * CSS rules.
@@ -111,7 +111,7 @@ export class Layout {
    * Updates the layout for video-size or window-size changes.
    */
   update() {
-    const fullWindow = browserProxy.isFullscreenOrMaximized();
+    const fullWindow = windowController.isFullscreenOrMaximized();
     const tall = window.innerHeight > window.innerWidth;
     state.set(state.State.TABLET_LANDSCAPE, fullWindow && !tall);
     state.set(state.State.MAX_WND, fullWindow);

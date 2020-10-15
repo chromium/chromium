@@ -14,7 +14,6 @@ import '/strings.m.js';
 // eslint-disable-next-line no-unused-vars
 import {BackgroundOps} from '../background_ops.js';
 import {assert} from '../chrome_util.js';
-import {NotImplementedError} from '../error.js';
 import {Intent} from '../intent.js';
 import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
 import {NativeDirectoryEntry} from '../models/native_file_system_entry.js';
@@ -133,7 +132,8 @@ class WebUIBrowserProxy {
 
   /** @override */
   openInspector(type) {
-    throw new NotImplementedError();
+    // SWA can open the inspector by the hot-keys and there is no need to
+    // implement it.
   }
 
   /** @override */
@@ -175,35 +175,8 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  isFullscreenOrMaximized() {
-    // TODO(crbug.com/980846): Implement the fullscreen monitor.
-    return false;
-  }
-
-  /** @override */
   fitWindow() {
     // TODO(crbug.com/980846): Remove the method once we migrate to SWA.
-  }
-
-  /** @override */
-  showWindow() {
-    // TODO(crbug.com/980846): Remove the method once we migrate to SWA.
-  }
-
-  /** @override */
-  hideWindow() {
-    // TODO(crbug.com/980846): Remove the method once we migrate to SWA.
-  }
-
-  /** @override */
-  isMinimized() {
-    // TODO(crbug.com/980846): Implement the minimization monitor.
-    return false;
-  }
-
-  /** @override */
-  addOnMinimizedListener(listener) {
-    // TODO(crbug.com/980846): Implement the minimization monitor.
   }
 
   /** @override */

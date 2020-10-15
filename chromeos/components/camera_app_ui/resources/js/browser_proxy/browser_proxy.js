@@ -169,12 +169,6 @@ class ChromeAppBrowserProxy {
   }
 
   /** @override */
-  isFullscreenOrMaximized() {
-    return chrome.app.window.current().outerBounds.width >= screen.width ||
-        chrome.app.window.current().outerBounds.height >= screen.height;
-  }
-
-  /** @override */
   async fitWindow() {
     const appWindow = chrome.app.window.current();
 
@@ -218,26 +212,6 @@ class ChromeAppBrowserProxy {
 
       Object.assign(inner, {width, height, minWidth: width, minHeight: height});
     });
-  }
-
-  /** @override */
-  showWindow() {
-    chrome.app.window.current().show();
-  }
-
-  /** @override */
-  hideWindow() {
-    chrome.app.window.current().hide();
-  }
-
-  /** @override */
-  isMinimized() {
-    return chrome.app.window.current().isMinimized();
-  }
-
-  /** @override */
-  addOnMinimizedListener(listener) {
-    chrome.app.window.current().onMinimized.addListener(listener);
   }
 
   /** @override */

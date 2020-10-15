@@ -204,8 +204,6 @@ class CCAWindow {
           this.appWindow_ = appWindow;
           this.appWindow_.onClosed.addListener(() => {
             browserProxy.localStorageSet({maximized: appWindow.isMaximized()});
-            browserProxy.localStorageSet(
-                {fullscreen: appWindow.isFullscreen()});
             this.state_ = WindowState.CLOSED;
             if (this.intent_ !== null && !this.intent_.done) {
               this.intent_.cancel();
