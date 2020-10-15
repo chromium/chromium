@@ -315,7 +315,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // RenderWidgetDelegate implementation ----------------------------------
 
-  void SetActiveForWidget(bool active) override;
   bool SupportsMultipleWindowsForWidget() override;
   void DidCommitCompositorFrameForWidget() override;
 

@@ -233,8 +233,6 @@ class CONTENT_EXPORT RenderWidget
 
   void DidNavigate(ukm::SourceId source_id, const GURL& url);
 
-  void SetActive(bool active);
-
   // Forces a redraw and invokes the callback once the frame's been displayed
   // to the user in the display compositor.
   using PresentationTimeCallback =

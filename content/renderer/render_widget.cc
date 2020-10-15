@@ -339,11 +339,6 @@ void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {
   layer_tree_host_->SetNeedsCommitWithForcedRedraw();
 }
 
-void RenderWidget::SetActive(bool active) {
-  if (delegate())
-    delegate()->SetActiveForWidget(active);
-}
-
 void RenderWidget::DidCommitCompositorFrame(base::TimeTicks commit_start_time) {
   if (delegate())
     delegate()->DidCommitCompositorFrameForWidget();

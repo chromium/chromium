@@ -3156,7 +3156,11 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
     // This path simulates losing focus on the window, without moving it to
     // another window.
     if (widget->GetWebWidget()->HasFocus()) {
-      widget->SetActive(false);
+      auto* view_proxy = frame_proxy->GetWebViewTestProxy();
+      // TODO(dtapuska): We should call the exact IPC the browser
+      // calls. ie. WebFrameWidgetBase::SetActive but that isn't
+      // exposed outside of blink.
+      view_proxy->GetWebView()->SetIsActive(false);
       widget->GetWebWidget()->SetFocus(false);
     }
     return;
@@ -3167,7 +3171,11 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
     if (other_main_frame != main_frame) {
       RenderWidget* other_widget = other_main_frame->GetLocalRootRenderWidget();
       if (other_widget->GetWebWidget()->HasFocus()) {
-        other_widget->SetActive(false);
+        auto* other_view_proxy = other_main_frame->GetWebViewTestProxy();
+        // TODO(dtapuska): We should call the exact IPC the browser
+        // calls. ie. WebFrameWidgetBase::SetActive but that isn't
+        // exposed outside of blink.
+        other_view_proxy->GetWebView()->SetIsActive(false);
         other_widget->GetWebWidget()->SetFocus(false);
       }
     }
@@ -3175,7 +3183,6 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
 
   if (!widget->GetWebWidget()->HasFocus()) {
     widget->GetWebWidget()->SetFocus(true);
-    widget->SetActive(true);
   }
 }
 

@@ -478,11 +478,6 @@ void RenderViewImpl::RemoveObserver(RenderViewObserver* observer) {
 
 // RenderWidgetOwnerDelegate -----------------------------------------
 
-void RenderViewImpl::SetActiveForWidget(bool active) {
-  if (GetWebView())
-    GetWebView()->SetIsActive(active);
-}
-
 bool RenderViewImpl::SupportsMultipleWindowsForWidget() {
   return webview_->GetWebPreferences().supports_multiple_windows;
 }

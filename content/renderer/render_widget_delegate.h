@@ -18,9 +18,6 @@ class CONTENT_EXPORT RenderWidgetDelegate {
  public:
   virtual ~RenderWidgetDelegate() = default;
 
-  // See comment in RenderWidgetHost::SetActive().
-  virtual void SetActiveForWidget(bool active) = 0;
-
   // Returns whether multiple windows are allowed for the widget. If true, then
   // Show() may be called more than once.
   virtual bool SupportsMultipleWindowsForWidget() = 0;
