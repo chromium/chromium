@@ -16,27 +16,26 @@
 
 namespace file_manager {
 
-// Collects code coverage from a WebContents during a
-// browser test using Chrome Devtools Protocol (CDP).
+// Collects code coverage from a WebContents, during a browser test
+// for example, using Chrome Devtools Protocol (CDP).
 class DevToolsListener : public content::DevToolsAgentHostClient {
  public:
-  // Attaches to a host and enables CDP.
+  // Attaches to host and enables CDP.
   DevToolsListener(content::DevToolsAgentHost* host, uint32_t uuid);
   ~DevToolsListener() override;
 
-  // Starts code coverage.
+  // Host navigation starts code coverage.
   void Navigated(content::DevToolsAgentHost* host);
 
   // Returns true if host has started code coverage.
   bool HasCoverage(content::DevToolsAgentHost* host);
 
-  // If host HasCoverage() collect the coverage and
-  // write it into the |store|.
+  // If host HasCoverage(), collect it and save it in |store|.
   void GetCoverage(content::DevToolsAgentHost* host,
                    const base::FilePath& store,
                    const std::string& test);
 
-  // Detaches from a host.
+  // Detaches from host.
   void Detach(content::DevToolsAgentHost* host);
 
   // Returns a unique host identifier, with optional |prefix|.
@@ -44,37 +43,36 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
                                 const std::string& prefix = {});
 
  private:
-  // Enable CDP on host.
+  // Starts CDP session on host.
   void Start(content::DevToolsAgentHost* host);
 
-  // Starts JavaScript code coverage on host.
+  // Starts JavaScript (JS) code coverage on host.
   bool StartJSCoverage(content::DevToolsAgentHost* host);
 
-  // Collects JavaScript code coverage on host and writes
-  // it into the |store|.
+  // Collects JavaScript coverage from host and saves it in |store|.
   void StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
                               const base::FilePath& store,
                               const std::string& test);
 
-  // Stores scripts that are parsed during execution on host.
+  // Stores JS scripts used during code execution on host.
   void StoreScripts(content::DevToolsAgentHost* host,
                     const base::FilePath& store);
 
-  // Send CDP command to the host.
+  // Sends CDP commands to host.
   void SendCommandMessage(content::DevToolsAgentHost* host,
                           const std::string& command);
 
-  // Await CDP response to command |id|.
+  // Awaits CDP response to command |id|.
   void AwaitCommandResponse(int id);
 
-  // Receives CDP messages sent by host.
+  // Receives CDP messages from host.
   void DispatchProtocolMessage(content::DevToolsAgentHost* host,
                                base::span<const uint8_t> message) override;
 
   // Returns true if URL should be attached to.
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
 
-  // Clean up when host is closed.
+  // Called if host was shut down (closed).
   void AgentHostClosed(content::DevToolsAgentHost* host) override;
 
  private:
