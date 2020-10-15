@@ -19,9 +19,10 @@
 #include "base/system/sys_info.h"
 #endif
 
-#if BUILDFLAG(ENABLE_MOJO_RENDERER)
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || defined(THREAD_SANITIZER)
 // Remote mojo renderer does not send audio/video frames back to the renderer
 // process and hence does not support capture: https://crbug.com/641559.
+// Failing on TSan: crbug.com/1138712
 #define MAYBE_CaptureFromMediaElement DISABLED_CaptureFromMediaElement
 #else
 #define MAYBE_CaptureFromMediaElement CaptureFromMediaElement
