@@ -14,12 +14,16 @@ SRC_DIR = os.path.dirname(
 TYP_DIR = os.path.join(
     SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
 DEVIL_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult', 'devil')
+DEVIL_CHROMIUM_DIR = os.path.join(SRC_DIR, 'build', 'android')
 
 if TYP_DIR not in sys.path:
   sys.path.insert(0, TYP_DIR)
 if DEVIL_DIR not in sys.path:
   sys.path.insert(0, DEVIL_DIR)
+if DEVIL_CHROMIUM_DIR not in sys.path:
+  sys.path.insert(0, DEVIL_CHROMIUM_DIR)
 
+import devil_chromium
 from devil.android.sdk import build_tools
 from devil.utils import cmd_helper
 import typ
