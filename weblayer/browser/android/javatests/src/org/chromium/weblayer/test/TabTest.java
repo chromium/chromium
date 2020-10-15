@@ -270,7 +270,7 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(87) // Bug fix in 87.
+    @MinWebLayerVersion(88) // Bug fix in 88.
     // This is a regression test for https://crbug.com/1075744 .
     public void testRotationDoesntChangeVisibility() throws Exception {
         String url = mActivityTestRule.getTestDataURL("rotation.html");
