@@ -133,10 +133,6 @@ public class AutofillAssistantFacade {
                 }
             }
 
-            AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
-                    AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser()
-                            ? LiteScriptStarted.LITE_SCRIPT_FIRST_TIME_USER
-                            : LiteScriptStarted.LITE_SCRIPT_RETURNING_USER);
             AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(
                     tab, (moduleEntry) -> {
                         if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
