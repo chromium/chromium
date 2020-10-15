@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
 import org.chromium.chrome.browser.video_tutorials.languages.LanguagePickerCoordinator;
@@ -60,6 +61,8 @@ public class VideoPlayerMediatorUnitTest {
     PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock
     Callback<Tutorial> mTryNowCallback;
+    @Mock
+    private LanguageInfoProvider mLanguageProvider;
 
     @Before
     public void setUp() {
@@ -73,7 +76,7 @@ public class VideoPlayerMediatorUnitTest {
 
         mTestVideoTutorialService = new TestVideoTutorialService();
         mMediator = new VideoPlayerMediator(mContext, mModel, mTestVideoTutorialService,
-                mLanguagePicker, mWebContents, mTryNowCallback, mCloseCallback);
+                mLanguagePicker, mLanguageProvider, mWebContents, mTryNowCallback, mCloseCallback);
     }
 
     @Test
@@ -91,7 +94,7 @@ public class VideoPlayerMediatorUnitTest {
 
     @Test
     public void languagePickerNotShownIfPreferredLocaleSetAlready() {
-        mTestVideoTutorialService.setPreferredLocale(TestVideoTutorialService.ENGLISH.locale);
+        mTestVideoTutorialService.setPreferredLocale("en");
         Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
         mMediator.playVideoTutorial(tutorial);
 

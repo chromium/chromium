@@ -21,7 +21,7 @@ import java.util.Map;
  *
  *The LanguagesManager is responsible for fetching languages details from native.
  */
-class LanguagesManager {
+public class LanguagesManager {
     /**
      * An observer interface that allows other classes to know when the accept language list is
      * updated in native side.
@@ -166,6 +166,14 @@ class LanguagesManager {
         TranslateBridge.setLanguageOrder(codes);
         recordAction(LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
         if (reload) notifyAcceptLanguageObserver();
+    }
+
+    /**
+     * Called to get all languages available in chrome.
+     * @return A map of language code to {@code LanguageItem} for all available languages.
+     */
+    public Map<String, LanguageItem> getLanguageMap() {
+        return mLanguagesMap;
     }
 
     /**

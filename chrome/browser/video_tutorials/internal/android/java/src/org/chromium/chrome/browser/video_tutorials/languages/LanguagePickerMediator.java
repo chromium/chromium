@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.chrome.browser.video_tutorials.Language;
+import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -22,6 +23,7 @@ import java.util.List;
 public class LanguagePickerMediator {
     private final Context mContext;
     private final VideoTutorialService mVideoTutorialService;
+    private final LanguageInfoProvider mLanguageInfoProvider;
     private final PropertyModel mModel;
     private final ModelList mListModel;
 
@@ -30,9 +32,10 @@ public class LanguagePickerMediator {
      * @param videoTutorialService The video tutorial service backend.
      */
     public LanguagePickerMediator(Context context, PropertyModel model, ModelList listModel,
-            VideoTutorialService videoTutorialService) {
+            VideoTutorialService videoTutorialService, LanguageInfoProvider languageInfoProvider) {
         mContext = context;
         mVideoTutorialService = videoTutorialService;
+        mLanguageInfoProvider = languageInfoProvider;
         mModel = model;
         mListModel = listModel;
     }
@@ -51,11 +54,14 @@ public class LanguagePickerMediator {
         populateList(mVideoTutorialService.getSupportedLanguages());
     }
 
-    private void populateList(List<Language> supportedLanguages) {
+    private void populateList(List<String> supportedLanguages) {
         List<ListItem> listItems = new ArrayList<>();
-        for (Language locale : supportedLanguages) {
+        for (String locale : supportedLanguages) {
+            Language language = mLanguageInfoProvider.getLanguageInfo(locale);
+            if (language == null) continue;
+
             ListItem listItem = new ListItem(
-                    LanguageItemProperties.ITEM_VIEW_TYPE, buildListItemModelFromLocale(locale));
+                    LanguageItemProperties.ITEM_VIEW_TYPE, buildListItemModelFromLocale(language));
             listItems.add(listItem);
         }
         mListModel.set(listItems);

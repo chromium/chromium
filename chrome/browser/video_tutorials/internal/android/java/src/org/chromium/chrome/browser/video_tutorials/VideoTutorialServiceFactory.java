@@ -54,9 +54,10 @@ public class VideoTutorialServiceFactory {
     public static VideoPlayerCoordinator createVideoPlayerCoordinator(Context context,
             VideoTutorialService videoTutorialService,
             Supplier<Pair<WebContents, ContentView>> webContentsFactory,
-            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
-        return new VideoPlayerCoordinatorImpl(
-                context, videoTutorialService, webContentsFactory, tryNowCallback, closeCallback);
+            LanguageInfoProvider languageInfoProvider, Callback<Tutorial> tryNowCallback,
+            Runnable closeCallback) {
+        return new VideoPlayerCoordinatorImpl(context, videoTutorialService, webContentsFactory,
+                languageInfoProvider, tryNowCallback, closeCallback);
     }
 
     /** See {@link TutorialListCoordinator}.*/

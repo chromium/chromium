@@ -47,8 +47,9 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
         VideoTutorialService videoTutorialService =
                 VideoTutorialServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         mWindowAndroid = new ActivityWindowAndroid(this);
-        mCoordinator = VideoTutorialServiceFactory.createVideoPlayerCoordinator(
-                this, videoTutorialService, this::createWebContents, this::tryNow, this::finish);
+        mCoordinator = VideoTutorialServiceFactory.createVideoPlayerCoordinator(this,
+                videoTutorialService, this::createWebContents, new ChromeLanguageInfoProvider(),
+                this::tryNow, this::finish);
         setContentView(mCoordinator.getView());
 
         int featureType =

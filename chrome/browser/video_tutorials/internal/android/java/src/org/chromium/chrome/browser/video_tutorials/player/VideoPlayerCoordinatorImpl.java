@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -48,17 +49,19 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
      */
     public VideoPlayerCoordinatorImpl(Context context, VideoTutorialService videoTutorialService,
             Supplier<Pair<WebContents, ContentView>> webContentsFactory,
-            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
+            LanguageInfoProvider languageInfoProvider, Callback<Tutorial> tryNowCallback,
+            Runnable closeCallback) {
         mContext = context;
         mVideoTutorialService = videoTutorialService;
         mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
 
         ThinWebView thinWebView = createThinWebView(webContentsFactory);
         mView = new VideoPlayerView(context, mModel, thinWebView);
-        mLanguagePicker = new LanguagePickerCoordinator(
-                mView.getView().findViewById(R.id.language_picker), mVideoTutorialService);
+        mLanguagePicker =
+                new LanguagePickerCoordinator(mView.getView().findViewById(R.id.language_picker),
+                        mVideoTutorialService, languageInfoProvider);
         mMediator = new VideoPlayerMediator(mContext, mModel, videoTutorialService, mLanguagePicker,
-                mWebContents, tryNowCallback, closeCallback);
+                languageInfoProvider, mWebContents, tryNowCallback, closeCallback);
         PropertyModelChangeProcessor.create(mModel, mView, new VideoPlayerViewBinder());
     }
 

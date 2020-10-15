@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.video_tutorials.languages;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,13 +28,15 @@ public class LanguagePickerCoordinator {
      * @param view The view representing this language picker.
      * @param videoTutorialService The video tutorial service backend.
      */
-    public LanguagePickerCoordinator(View view, VideoTutorialService videoTutorialService) {
+    public LanguagePickerCoordinator(View view, VideoTutorialService videoTutorialService,
+            LanguageInfoProvider languageInfoProvider) {
         mContext = view.getContext();
         mVideoTutorialService = videoTutorialService;
         mModel = new PropertyModel(LanguagePickerProperties.ALL_KEYS);
         mListModel = new ModelList();
         mView = new LanguagePickerView(view, mModel, mListModel);
-        mMediator = new LanguagePickerMediator(mContext, mModel, mListModel, videoTutorialService);
+        mMediator = new LanguagePickerMediator(
+                mContext, mModel, mListModel, videoTutorialService, languageInfoProvider);
     }
 
     /**

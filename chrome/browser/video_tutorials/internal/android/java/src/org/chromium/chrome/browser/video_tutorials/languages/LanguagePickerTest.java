@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService;
@@ -46,6 +47,8 @@ public class LanguagePickerTest {
     private View mContentView;
     private VideoTutorialService mVideoTutorialService;
     private LanguagePickerCoordinator mCoordinator;
+    @Mock
+    private LanguageInfoProvider mLanguageProvider;
 
     @Mock
     private Runnable mWatchCallback;
@@ -63,7 +66,10 @@ public class LanguagePickerTest {
             mContentView =
                     LayoutInflater.from(mActivity).inflate(R.layout.language_picker, null, false);
             parentView.addView(mContentView);
-            mCoordinator = new LanguagePickerCoordinator(mContentView, mVideoTutorialService);
+            Mockito.when(mLanguageProvider.getLanguageInfo("hi"))
+                    .thenReturn(TestVideoTutorialService.HINDI);
+            mCoordinator = new LanguagePickerCoordinator(
+                    mContentView, mVideoTutorialService, mLanguageProvider);
             mCoordinator.showLanguagePicker(mWatchCallback, mCloseCallback);
         });
     }

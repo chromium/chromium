@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.video_tutorials.player;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.video_tutorials.Language;
+import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -35,16 +35,19 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     private Tutorial mTutorial;
     private final Callback<Tutorial> mTryNowCallback;
     private final Runnable mCloseCallback;
+    private final LanguageInfoProvider mLanguageInfoProvider;
     private long mVideoStartTime;
 
     /** Constructor. */
     public VideoPlayerMediator(Context context, PropertyModel model,
             VideoTutorialService videoTutorialService, LanguagePickerCoordinator languagePicker,
-            WebContents webContents, Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
+            LanguageInfoProvider languageInfoProvider, WebContents webContents,
+            Callback<Tutorial> tryNowCallback, Runnable closeCallback) {
         mContext = context;
         mModel = model;
         mVideoTutorialService = videoTutorialService;
         mLanguagePicker = languagePicker;
+        mLanguageInfoProvider = languageInfoProvider;
         mWebContents = webContents;
         mTryNowCallback = tryNowCallback;
         mCloseCallback = closeCallback;
@@ -129,14 +132,13 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     }
 
     private void updateChangeLanguageButtonText() {
-        String locale = mVideoTutorialService.getPreferredLocale();
-        for (Language language : mVideoTutorialService.getSupportedLanguages()) {
-            if (TextUtils.equals(language.locale, locale)) {
-                String buttonText = mContext.getResources().getString(
-                        R.string.video_tutorials_change_language, language.nativeName);
-                mModel.set(VideoPlayerProperties.CHANGE_LANGUAGE_BUTTON_TEXT, buttonText);
-            }
-        }
+        String preferredLocale = mVideoTutorialService.getPreferredLocale();
+        Language language = mLanguageInfoProvider.getLanguageInfo(preferredLocale);
+        if (language == null) return;
+
+        String buttonText = mContext.getResources().getString(
+                R.string.video_tutorials_change_language, language.nativeName);
+        mModel.set(VideoPlayerProperties.CHANGE_LANGUAGE_BUTTON_TEXT, buttonText);
     }
 
     private void onLanguageSelected() {
