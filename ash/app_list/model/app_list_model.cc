@@ -302,6 +302,10 @@ void AppListModel::DeleteAllItems() {
     const std::string id = item->id();
     for (auto& observer : observers_)
       observer.OnAppListItemWillBeDeleted(item);
+    if (item->GetItemType() == AppListFolderItem::kItemType) {
+      item_list_scoped_observer_.Remove(
+          static_cast<AppListFolderItem*>(item)->item_list());
+    }
     top_level_item_list_->DeleteItemAt(0);
     for (auto& observer : observers_)
       observer.OnAppListItemDeleted(id);

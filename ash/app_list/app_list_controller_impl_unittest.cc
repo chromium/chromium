@@ -651,6 +651,29 @@ TEST_F(AppListControllerImplTest,
   EXPECT_FALSE(GetAppListView()->GetWidget()->GetNativeWindow()->IsVisible());
 }
 
+// Tests that swapping out an AppListModel (simulating a profile swap with
+// multiprofile enabled) drops all references to previous folders (see
+// https://crbug.com/1130901).
+TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
+  // Add a folder, whose AppListItemList the AppListModel will observe.
+  const std::string folder_id("folder_1");
+  auto folder = std::make_unique<AppListFolderItem>(folder_id);
+  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+  model->AddItem(std::move(folder));
+
+  for (int i = 0; i < 2; ++i) {
+    auto item = std::make_unique<AppListItem>(base::StringPrintf("app_%d", i));
+    model->AddItemToFolder(std::move(item), folder_id);
+  }
+
+  // Set a new model, simulating profile switching in multi-profile mode. This
+  // should cleanly drop the reference to the folder added earlier.
+  Shell::Get()->app_list_controller()->SetModelData(
+      /*profile_id=*/12, /*apps=*/{}, /*is_search_engine_google=*/false);
+
+  // Test that there is no crash on ~AppListModel() when the test finishes.
+}
+
 class AppListControllerImplTestWithNotificationBadging
     : public AppListControllerImplTest {
  public:
