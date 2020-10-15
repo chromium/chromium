@@ -14,10 +14,6 @@
 #include "chromeos/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace dbus {
 class Bus;
 class ObjectPath;
@@ -74,12 +70,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
         const std::string& service_path,
         std::vector<std::string>* profiles) = 0;
 
-    // Sets |properties| to the entry for |service_path|, sets |profile_path|
-    // to the path of the profile with the entry, and returns true if the
-    // service exists in any profile.
-    virtual bool GetService(const std::string& service_path,
-                            std::string* profile_path,
-                            base::DictionaryValue* properties) = 0;
+    // Returns the entry for |service_path| if it exists in any profile and sets
+    // |profile_path| to the path of the profile the service was found in.
+    // Profiles are searched starting with the most recently added profile.
+    // If the service does not exist in any profile, an empty Value is returned.
+    virtual base::Value GetService(const std::string& service_path,
+                                   std::string* profile_path) = 0;
 
     // Returns true iff an entry sepcified via |service_path| exists in
     // any profile.

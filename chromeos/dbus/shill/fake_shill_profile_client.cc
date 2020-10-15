@@ -233,24 +233,19 @@ void FakeShillProfileClient::GetProfilePathsContainingService(
   }
 }
 
-bool FakeShillProfileClient::GetService(const std::string& service_path,
-                                        std::string* profile_path,
-                                        base::DictionaryValue* properties) {
+base::Value FakeShillProfileClient::GetService(const std::string& service_path,
+                                               std::string* profile_path) {
   DCHECK(profile_path);
-  DCHECK(properties);
 
-  properties->Clear();
   // Returns the entry added latest.
   for (const auto& profile : base::Reversed(profiles_)) {
-    const base::Value* entry = profile->entries.FindKeyOfType(
-        service_path, base::Value::Type::DICTIONARY);
-    if (entry) {
-      *profile_path = profile->path;
-      *properties = static_cast<base::DictionaryValue&&>(entry->Clone());
-      return true;
-    }
+    const base::Value* entry = profile->entries.FindDictKey(service_path);
+    if (!entry)
+      continue;
+    *profile_path = profile->path;
+    return entry->Clone();
   }
-  return false;
+  return base::Value();
 }
 
 bool FakeShillProfileClient::HasService(const std::string& service_path) {

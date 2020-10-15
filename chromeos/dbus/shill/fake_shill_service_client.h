@@ -116,16 +116,15 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
 
   void NotifyObserversPropertyChanged(const dbus::ObjectPath& service_path,
                                       const std::string& property);
-  base::DictionaryValue* GetModifiableServiceProperties(
-      const std::string& service_path,
-      bool create_if_missing);
+  base::Value* GetModifiableServiceProperties(const std::string& service_path,
+                                              bool create_if_missing);
   PropertyObserverList& GetObserverList(const dbus::ObjectPath& device_path);
   void SetOtherServicesOffline(const std::string& service_path);
   void SetCellularActivated(const dbus::ObjectPath& service_path,
                             ErrorCallback error_callback);
   void ContinueConnect(const std::string& service_path);
 
-  base::DictionaryValue stub_services_;
+  base::Value stub_services_{base::Value::Type::DICTIONARY};
 
   // Per network service, stores a closure that is executed on each connection
   // attempt. The callback can for example modify the services properties in

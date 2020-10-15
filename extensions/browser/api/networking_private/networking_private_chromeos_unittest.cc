@@ -276,8 +276,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
   bool GetServiceProfile(const std::string& service_path,
                          std::string* profile_path) {
-    base::DictionaryValue properties;
-    return profile_test_->GetService(service_path, profile_path, &properties);
+    return profile_test_->GetService(service_path, profile_path).is_dict();
   }
 
   std::unique_ptr<base::DictionaryValue> GetNetworkProperties(
