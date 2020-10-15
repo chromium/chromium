@@ -109,17 +109,36 @@ void DatabaseStatusCallback(
   std::move(quit_closure).Run();
 }
 
-// TODO(crbug.com/1016064): Remove the following helper functions to read/write
-// resources once all tests that use these helper functions are moved to
-// service_worker_registry_unittest.cc
+ReadResponseHeadResult ReadResponseHead(ServiceWorkerStorage* storage,
+                                        int64_t id) {
+  std::unique_ptr<ServiceWorkerResourceReaderImpl> reader =
+      storage->CreateResourceReader(id);
 
-int WriteResponse(
-    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
-    int64_t id,
-    const std::string& headers,
-    mojo_base::BigBuffer body) {
-  mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
-  storage->CreateResourceWriter(id, writer.BindNewPipeAndPassReceiver());
+  ReadResponseHeadResult out;
+  base::RunLoop loop;
+  reader->ReadResponseHead(base::BindLambdaForTesting(
+      [&](int result, network::mojom::URLResponseHeadPtr response_head,
+          base::Optional<mojo_base::BigBuffer> metadata) {
+        out.result = result;
+        out.response_head = std::move(response_head);
+        out.metadata = std::move(metadata);
+        loop.Quit();
+      }));
+  loop.Run();
+  return out;
+}
+
+int WriteBasicResponse(ServiceWorkerStorage* storage, int64_t id) {
+  const std::string kHttpHeaders =
+      "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
+  const std::string kHttpBody = "Hello";
+
+  std::string headers(kHttpHeaders, base::size(kHttpHeaders));
+  mojo_base::BigBuffer body(
+      base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
+
+  std::unique_ptr<ServiceWorkerResourceWriterImpl> writer =
+      storage->CreateResourceWriter(id);
 
   int rv = 0;
   {
@@ -153,56 +172,14 @@ int WriteResponse(
   return rv;
 }
 
-int WriteStringResponse(
-    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
-    int64_t id,
-    const std::string& headers,
-    const std::string& body) {
-  mojo_base::BigBuffer buffer(
-      base::as_bytes(base::make_span(body.data(), body.length())));
-  return WriteResponse(storage, id, headers, std::move(buffer));
-}
-
-int WriteBasicResponse(
-    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
-    int64_t id) {
-  const char kHttpHeaders[] = "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
-  const char kHttpBody[] = "Hello";
-  std::string headers(kHttpHeaders, base::size(kHttpHeaders));
-  return WriteStringResponse(storage, id, headers, std::string(kHttpBody));
-}
-
-ReadResponseHeadResult ReadResponseHead(
-    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
-    int64_t id) {
-  mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
-  storage->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
-
-  ReadResponseHeadResult out;
-  base::RunLoop loop;
-  reader->ReadResponseHead(base::BindLambdaForTesting(
-      [&](int result, network::mojom::URLResponseHeadPtr response_head,
-          base::Optional<mojo_base::BigBuffer> metadata) {
-        out.result = result;
-        out.response_head = std::move(response_head);
-        out.metadata = std::move(metadata);
-        loop.Quit();
-      }));
-  loop.Run();
-  return out;
-}
-
-int WriteResponseMetadata(
-    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
-    int64_t id,
-    const std::string& metadata) {
+int WriteResponseMetadata(ServiceWorkerStorage* storage,
+                          int64_t id,
+                          const std::string& metadata) {
   mojo_base::BigBuffer buffer(
       base::as_bytes(base::make_span(metadata.data(), metadata.length())));
 
-  mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter>
-      metadata_writer;
-  storage->CreateResourceMetadataWriter(
-      id, metadata_writer.BindNewPipeAndPassReceiver());
+  std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl> metadata_writer =
+      storage->CreateResourceMetadataWriter(id);
   int rv = 0;
   base::RunLoop loop;
   metadata_writer->WriteMetadata(std::move(buffer),
@@ -243,9 +220,6 @@ class ServiceWorkerStorageTest : public testing::Test {
   ServiceWorkerContextCore* context() { return helper_->context(); }
   ServiceWorkerRegistry* registry() { return context()->registry(); }
   ServiceWorkerStorage* storage() { return registry()->storage(); }
-  mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage_control() {
-    return registry()->GetRemoteStorageControl();
-  }
   ServiceWorkerDatabase* database() { return storage()->database_.get(); }
 
  protected:
@@ -663,12 +637,11 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
 
   // Response reader and writer created by the disabled storage should fail to
   // access the disk cache.
-  ReadResponseHeadResult out = ReadResponseHead(storage_control(), kResourceId);
-  EXPECT_EQ(net::ERR_CACHE_MISS, out.result);
-  EXPECT_EQ(net::ERR_FAILED,
-            WriteBasicResponse(storage_control(), kResourceId));
-  EXPECT_EQ(net::ERR_FAILED,
-            WriteResponseMetadata(storage_control(), kResourceId, "foo"));
+  ReadResponseHeadResult out = ReadResponseHead(storage(), kResourceId);
+  EXPECT_EQ(out.result, net::ERR_CACHE_MISS);
+  EXPECT_EQ(WriteBasicResponse(storage(), kResourceId), net::ERR_FAILED);
+  EXPECT_EQ(WriteResponseMetadata(storage(), kResourceId, "foo"),
+            net::ERR_FAILED);
 
   const std::string kUserDataKey = "key";
   std::vector<std::string> user_data_out;
@@ -929,18 +902,9 @@ class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
     std::vector<ResourceRecord> resources;
     resources.push_back(CreateResourceRecord(1, kScript, kScriptSize));
 
-    base::RunLoop loop;
-    storage_control()->StoreRegistration(
-        std::move(data), std::move(resources),
-        base::BindLambdaForTesting(
-            [&](storage::mojom::ServiceWorkerDatabaseStatus status) {
-              DCHECK_EQ(storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-                        status);
-              loop.Quit();
-            }));
-    loop.Run();
-
-    WriteBasicResponse(storage_control(), 1);
+    ASSERT_EQ(StoreRegistrationData(std::move(data), std::move(resources)),
+              ServiceWorkerDatabase::Status::kOk);
+    WriteBasicResponse(storage(), 1);
   }
 };
 
