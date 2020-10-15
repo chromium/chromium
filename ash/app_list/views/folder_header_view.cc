@@ -42,6 +42,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
     set_placeholder_text_color(
         AppListColorProvider::Get()->GetFolderHintTextColor());
+    SetTextColor(AppListColorProvider::Get()->GetFolderTitleTextColor(
+        gfx::kGoogleGrey700));
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 

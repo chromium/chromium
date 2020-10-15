@@ -339,7 +339,9 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
   title->SetFontList(GetAppListConfig().app_title_font());
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title->SetEnabledColor(
-      AppListColorProvider::Get()->GetAppListItemTextColor());
+      apps_grid_view_->is_in_folder()
+          ? SK_ColorBLACK
+          : AppListColorProvider::Get()->GetAppListItemTextColor());
 
   if (!is_in_folder) {
     gfx::ShadowValues title_shadow = gfx::ShadowValues(
