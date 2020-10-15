@@ -499,7 +499,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.SamlChallengeKeyHandlerResult"
-    enum="SamlChallengeKeyHandlerResult" expires_after="2020-12-01">
+    enum="SamlChallengeKeyHandlerResult" expires_after="2021-06-01">
   <owner>miersh@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
