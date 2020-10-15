@@ -49,40 +49,6 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
 
 namespace {
 
-// Taps on the primary sign-in button in recent tabs, and scroll first, if
-// necessary.
-void TapOnPrimarySignInButtonInRecentTabs() {
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)
-      onElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kRecentTabsTableViewControllerAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-}
-
-// Collapses the recently closed tabs section if the sign in promo is
-// inaccessible otherwise.
-void CollapseRecentlyClosedTabsSectionIfNecessary() {
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kRecentTabsTableViewControllerAccessibilityIdentifier)]
-      assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
-                  error:&error];
-
-  if (error) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
-                                  l10n_util::GetNSString(
-                                      IDS_IOS_RECENT_TABS_RECENTLY_CLOSED)),
-                              grey_sufficientlyVisible(), nil)]
-        performAction:grey_tap()];
-  }
-}
-
 // Returns a matcher for |userEmail| in IdentityChooserViewController.
 id<GREYMatcher> identityChooserButtonMatcherWithEmail(NSString* userEmail) {
   return grey_allOf(grey_accessibilityID(userEmail),
@@ -186,28 +152,6 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 
   // Sign out.
   [SigninEarlGreyUI signOutAndClearDataFromDevice];
-}
-
-// Tests that signing in, tapping the Settings link on the confirmation screen
-// and closing the advanced sign-in settings correctly leaves the user signed
-// in.
-- (void)testSignInOpenSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:YES];
-
-  [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
-      performAction:grey_tap()];
-
-  // Test sync is on in the settings view.
-  id<GREYMatcher> settings_matcher =
-      chrome_test_util::StaticTextWithAccessibilityLabelId(
-          IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON);
-  [[EarlGrey selectElementWithMatcher:settings_matcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Test the user is signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Opens the sign in screen and then cancel it by opening a new tab. Ensures
@@ -456,7 +400,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       [ChromeEarlGreyUI openToolsMenu];
       [ChromeEarlGreyUI
           tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
-      TapOnPrimarySignInButtonInRecentTabs();
+      [SigninEarlGreyUI scrollToPrimarySignInButtonInRecentTabs];
       break;
     case OpenSigninMethodFromTabSwitcher:
       [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
@@ -465,10 +409,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
                                               TabGridOtherDevicesPanelButton()]
           performAction:grey_tap()];
 
-      // TODO(crbug.com/1131479): Find a way to scroll the view instead.
-      CollapseRecentlyClosedTabsSectionIfNecessary();
-
-      TapOnPrimarySignInButtonInRecentTabs();
+      [SigninEarlGreyUI collapseRecentlyClosedTabsIfSigninPromoNotVisible];
+      [SigninEarlGreyUI scrollToPrimarySignInButtonInRecentTabs];
       break;
   }
   if (tapSettingsLink) {

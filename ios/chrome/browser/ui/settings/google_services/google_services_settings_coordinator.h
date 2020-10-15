@@ -7,8 +7,10 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mode.h"
+#import "ios/chrome/browser/ui/settings/google_services/sync_settings_view_state.h"
 
 @protocol ApplicationCommands;
+@protocol SyncSettingsViewState;
 @class GoogleServicesSettingsCoordinator;
 
 // Delegate for GoogleServicesSettingsCoordinator.
@@ -24,7 +26,8 @@
 // All the sync changes made by the user are applied when
 // -[GoogleServicesSettingsCoordinator stop] is called, or when the
 // GoogleServicesSettingsCoordinator instance is deallocated.
-@interface GoogleServicesSettingsCoordinator : ChromeCoordinator
+@interface GoogleServicesSettingsCoordinator
+    : ChromeCoordinator <SyncSettingsViewState>
 
 // View controller for the Google services settings.
 @property(nonatomic, strong) UIViewController* viewController;

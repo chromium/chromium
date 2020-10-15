@@ -132,7 +132,10 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
 chrome_ios_eg2_test("ios_chrome_signin_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/browser/ui/authentication/signin:eg2_tests" ]
+  deps = [
+    "//ios/chrome/browser/ui/authentication/signin:eg2_tests",
+    "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:eg2_tests",
+  ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 

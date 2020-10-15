@@ -44,7 +44,8 @@ using signin_metrics::PromoAction;
     GoogleServicesSettingsCommandHandler,
     GoogleServicesSettingsViewControllerPresentationDelegate,
     ManageSyncSettingsCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler>
+    SyncErrorSettingsCommandHandler,
+    SyncSettingsViewState>
 
 // Google services settings mode.
 @property(nonatomic, assign, readonly) GoogleServicesSettingsMode mode;
@@ -62,10 +63,9 @@ using signin_metrics::PromoAction;
     ManageSyncSettingsCoordinator* manageSyncSettingsCoordinator;
 // YES if stop has been called.
 @property(nonatomic, assign) BOOL stopDone;
-// YES if the last sign-in has been interrupted. In that case, the coordinator
-// is going to be stopped, and the sync setup flag should not be marked as done.
-// And the sync should not be marked as disabled. The sync should be kept
-// undecided.
+// YES if the last sign-in has been interrupted. In that case, the sync UI will
+// be dismissed and the sync setup flag should not be marked as done. The sync
+// should be kept undecided, not marked as disabled.
 @property(nonatomic, assign) BOOL signinInterrupted;
 
 @end
@@ -168,9 +168,15 @@ using signin_metrics::PromoAction;
       self.viewController);
 }
 
-- (BOOL)googleServicesSettingsViewIsShown {
+#pragma mark - SyncSettingsViewState
+
+- (BOOL)isSettingsViewShown {
   return [self.viewController
       isEqual:self.baseNavigationController.topViewController];
+}
+
+- (UINavigationItem*)navigationItem {
+  return self.viewController.navigationItem;
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

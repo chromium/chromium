@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -223,6 +224,36 @@ using chrome_test_util::SignOutAccountsButton;
       performAction:grey_tap()];
   // Wait until the account is removed.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
++ (void)scrollToPrimarySignInButtonInRecentTabs {
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+}
+
++ (void)collapseRecentlyClosedTabsIfSigninPromoNotVisible {
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kRecentTabsTableViewControllerAccessibilityIdentifier)]
+      assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
+                  error:&error];
+
+  if (error) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
+                                  l10n_util::GetNSString(
+                                      IDS_IOS_RECENT_TABS_RECENTLY_CLOSED)),
+                              grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
 }
 
 #pragma mark - Private

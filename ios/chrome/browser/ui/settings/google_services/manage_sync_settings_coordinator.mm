@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -49,7 +50,8 @@ using signin_metrics::PromoAction;
     ManageSyncSettingsCommandHandler,
     SyncErrorSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
-    SyncObserverModelBridge> {
+    SyncObserverModelBridge,
+    SyncSettingsViewState> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
@@ -68,6 +70,10 @@ using signin_metrics::PromoAction;
     dismissWebAndAppSettingDetailsControllerBlock;
 // Manages the authentication flow for a given identity.
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
+// YES if the last sign-in has been interrupted. In that case, the sync UI will
+// be dismissed and the sync setup flag should not be marked as done. The sync
+// should be kept undecided, not marked as disabled.
+@property(nonatomic, assign) BOOL signinInterrupted;
 
 @end
 
@@ -106,6 +112,23 @@ using signin_metrics::PromoAction;
   _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
 }
 
+- (void)stop {
+  // Sync changes should only be commited if the user is authenticated and
+  // the sign-in has not been interrupted.
+  if (self.authService->IsAuthenticated() || !self.signinInterrupted) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    if (syncSetupService->GetSyncServiceState() ==
+        SyncSetupService::kSyncSettingsNotConfirmed) {
+      // If Sync is still in aborted state, this means the user didn't turn on
+      // sync, and wants Sync off. To acknowledge, Sync has to be turned off.
+      syncSetupService->SetSyncEnabled(false);
+    }
+    syncSetupService->CommitSyncChanges();
+  }
+}
+
 #pragma mark - Properties
 
 - (syncer::SyncService*)syncService {
@@ -116,6 +139,17 @@ using signin_metrics::PromoAction;
 - (AuthenticationService*)authService {
   return AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+}
+
+#pragma mark - SyncSettingsViewState
+
+- (BOOL)isSettingsViewShown {
+  return [self.viewController
+      isEqual:self.baseNavigationController.topViewController];
+}
+
+- (UINavigationItem*)navigationItem {
+  return self.viewController.navigationItem;
 }
 
 #pragma mark - Private
@@ -131,6 +165,20 @@ using signin_metrics::PromoAction;
                                               animated:NO];
     [self.baseNavigationController popViewControllerAnimated:YES];
   }
+}
+
+- (void)signinFinishedWithSuccess:(BOOL)success {
+  DCHECK(self.authenticationFlow);
+  self.authenticationFlow = nil;
+  [self.viewController allowUserInteraction];
+
+  ChromeIdentity* primaryAccount =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
+          ->GetAuthenticatedIdentity();
+  // TODO(crbug.com/1101346): SigninCoordinatorResult should be received instead
+  // of guessing if the sign-in has been interrupted.
+  self.signinInterrupted = !success && primaryAccount;
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerPresentationDelegate
@@ -230,10 +278,7 @@ using signin_metrics::PromoAction;
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
   [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    // TODO(crbug.com/889919): Needs to add histogram for |success|.
-    DCHECK(weakSelf.authenticationFlow);
-    weakSelf.authenticationFlow = nil;
-    [weakSelf.viewController allowUserInteraction];
+    [weakSelf signinFinishedWithSuccess:success];
   }];
 }
 
