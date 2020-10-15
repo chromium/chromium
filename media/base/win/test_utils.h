@@ -43,6 +43,9 @@
 #define MOCK_STDCALL_METHOD9(Name, Types) \
   MOCK_METHOD9_WITH_CALLTYPE(STDMETHODCALLTYPE, Name, Types)
 
+#define MOCK_STDCALL_METHOD10(Name, Types) \
+  MOCK_METHOD10_WITH_CALLTYPE(STDMETHODCALLTYPE, Name, Types)
+
 // Helper ON_CALL and EXPECT_CALL for Microsoft::WRL::ComPtr, e.g.
 //   COM_EXPECT_CALL(foo_, Bar());
 // where |foo_| is ComPtr<D3D11FooMock>.

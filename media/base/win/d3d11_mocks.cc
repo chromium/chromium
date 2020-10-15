@@ -50,4 +50,7 @@ D3D11VideoProcessorEnumeratorMock::~D3D11VideoProcessorEnumeratorMock() =
 D3D11DeviceContextMock::D3D11DeviceContextMock() = default;
 D3D11DeviceContextMock::~D3D11DeviceContextMock() = default;
 
+D3D11FenceMock::D3D11FenceMock() = default;
+D3D11FenceMock::~D3D11FenceMock() = default;
+
 }  // namespace media
