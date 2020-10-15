@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor_metrics.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -182,8 +183,10 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
                          time_to_scroll_into_view.InMilliseconds());
   }
 
-  UMA_HISTOGRAM_BOOLEAN("TextFragmentAnchor.LinkOpenSource",
-                        has_search_engine_source_);
+  base::UmaHistogramEnumeration("TextFragmentAnchor.LinkOpenSource",
+                                has_search_engine_source_
+                                    ? TextFragmentLinkOpenSource::kSearchEngine
+                                    : TextFragmentLinkOpenSource::kUnknown);
 #ifndef NDEBUG
   metrics_reported_ = true;
 #endif

@@ -40,6 +40,14 @@ class CORE_EXPORT TextFragmentAnchorMetrics final
     kMaxValue = kTextRangeWithContext,
   };
 
+  // Update corresponding |TextFragmentLinkOpenSource| in enums.xml.
+  enum class TextFragmentLinkOpenSource {
+    kUnknown,
+    kSearchEngine,
+
+    kMaxValue = kSearchEngine,
+  };
+
   explicit TextFragmentAnchorMetrics(Document* document);
 
   static TextFragmentAnchorParameters GetParametersForSelector(
