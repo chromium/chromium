@@ -17,6 +17,7 @@ namespace ash {
 // to benefit future maintenance.
 SkColor DeprecatedGetShieldLayerColor(AshColorProvider::ShieldLayerType type,
                                       SkColor default_color);
+SkColor DeprecatedGetBackgroundColor(SkColor default_color);
 SkColor DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType type,
                                     SkColor default_color);
 SkColor DeprecatedGetControlsLayerColor(

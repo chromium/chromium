@@ -14,6 +14,8 @@
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_controller.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
@@ -507,8 +509,12 @@ void OverviewItem::UpdateCannotSnapWarningVisibility() {
     RoundedLabelWidget::InitParams params;
     params.horizontal_padding = kSplitviewLabelHorizontalInsetDp;
     params.vertical_padding = kSplitviewLabelVerticalInsetDp;
-    params.background_color = kSplitviewLabelBackgroundColor;
-    params.foreground_color = kSplitviewLabelEnabledColor;
+    params.background_color = DeprecatedGetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80,
+        kSplitviewLabelBackgroundColor);
+    params.foreground_color = DeprecatedGetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary,
+        kSplitviewLabelEnabledColor);
     params.rounding_dp = kSplitviewLabelRoundRectRadiusDp;
     params.preferred_height = kSplitviewLabelPreferredHeightDp;
     params.message_id = IDS_ASH_SPLIT_VIEW_CANNOT_SNAP;

@@ -13,6 +13,9 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/overview/rounded_rect_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_highlight_view.h"
@@ -128,7 +131,10 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
     // this extra view so that we can rotate the label, while having a slide
     // animation at times on the whole thing.
     label_parent_ = AddChildView(std::make_unique<RoundedRectView>(
-        kSplitviewLabelRoundRectRadiusDp, kSplitviewLabelBackgroundColor));
+        kSplitviewLabelRoundRectRadiusDp,
+        DeprecatedGetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80,
+            kSplitviewLabelBackgroundColor)));
     label_parent_->SetPaintToLayer();
     label_parent_->layer()->SetFillsBoundsOpaquely(false);
     label_parent_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -138,8 +144,12 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
 
     label_ = label_parent_->AddChildView(std::make_unique<views::Label>(
         base::string16(), views::style::CONTEXT_LABEL));
-    label_->SetEnabledColor(kSplitviewLabelEnabledColor);
-    label_->SetBackgroundColor(kSplitviewLabelBackgroundColor);
+    label_->SetEnabledColor(DeprecatedGetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary,
+        kSplitviewLabelEnabledColor));
+    label_->SetBackgroundColor(DeprecatedGetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80,
+        kSplitviewLabelBackgroundColor));
   }
 
   ~RotatedImageLabelView() override = default;

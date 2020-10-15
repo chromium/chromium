@@ -6,6 +6,8 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -53,7 +55,8 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
     : is_right_or_bottom_(is_right_or_bottom) {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetColor(SK_ColorWHITE);
+  layer()->SetColor(
+      DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor));
   layer()->SetRoundedCornerRadius(kHighlightScreenRoundRectRadii);
   layer()->SetIsFastRoundedCorner(true);
 }
@@ -157,8 +160,10 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  layer()->SetColor(can_dragged_window_be_snapped ? SK_ColorWHITE
-                                                  : SK_ColorBLACK);
+  layer()->SetColor(DeprecatedGetBackgroundColor(
+      can_dragged_window_be_snapped
+          ? kSplitviewHighlightViewBackgroundColor
+          : kSplitviewHighlightViewBackgroundCannotSnapColor));
 
   if (preview_position != SplitViewController::NONE) {
     DoSplitviewOpacityAnimation(
@@ -178,15 +183,22 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
       // This code is for the preview. If |previews_only|, just fade out. Else
       // fade in from |kPreviewAreaHighlightOpacity| to |kHighlightOpacity|.
       DoSplitviewOpacityAnimation(
-          layer(), previews_only ? SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT
-                                 : SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN);
+          layer(),
+          previews_only
+              ? SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT
+              : can_dragged_window_be_snapped
+                    ? SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN
+                    : SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN_CANNOT_SNAP);
     } else {
       // This code is for the other highlight. If |previews_only|, just stay
       // hidden (in other words, do nothing). Else fade in.
       DCHECK_EQ(0.f, layer()->GetTargetOpacity());
       if (!previews_only) {
         DoSplitviewOpacityAnimation(
-            layer(), SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN);
+            layer(),
+            can_dragged_window_be_snapped
+                ? SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN
+                : SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN_CANNOT_SNAP);
       }
     }
     return;
@@ -196,7 +208,10 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
   // in a snap area. If |previews_only|, there is nothing to do. Else fade in.
   DCHECK_EQ(0.f, layer()->GetTargetOpacity());
   if (!previews_only) {
-    DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN);
+    DoSplitviewOpacityAnimation(
+        layer(), can_dragged_window_be_snapped
+                     ? SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN
+                     : SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN_CANNOT_SNAP);
     return;
   }
 }

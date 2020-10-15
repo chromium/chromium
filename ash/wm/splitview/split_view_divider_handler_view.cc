@@ -6,6 +6,8 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "base/timer/timer.h"
@@ -106,7 +108,10 @@ class SplitViewDividerHandlerView::SpawningAnimation
 };
 
 SplitViewDividerHandlerView::SplitViewDividerHandlerView()
-    : RoundedRectView(kSplitviewWhiteBarCornerRadius, kSplitviewWhiteBarColor),
+    : RoundedRectView(kSplitviewWhiteBarCornerRadius,
+                      DeprecatedGetContentLayerColor(
+                          AshColorProvider::ContentLayerType::kIconColorPrimary,
+                          kSplitviewDividerHandlerBarColor)),
       selection_animation_(std::make_unique<SelectionAnimation>(this)) {
   SetPaintToLayer();
 }

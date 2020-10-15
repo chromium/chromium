@@ -28,12 +28,14 @@ enum SplitviewAnimationType {
   // Used to fade in and out the highlights on either side which indicate where
   // to drag a selector item.
   SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN,
+  SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN_CANNOT_SNAP,
   SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT,
   // Used to fade in and out the other highlight. There are normally two
   // highlights, one on each side. When entering a state with a preview
   // highlight, one highlight is the preview highlight, and the other highlight
   // is the other highlight.
   SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN,
+  SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN_CANNOT_SNAP,
   SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_OUT,
   // Used to fade in and out the label on the overview item which warns users
   // the item cannot be snapped. The label appears on the overview item after

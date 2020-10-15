@@ -19,6 +19,8 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -1635,7 +1637,8 @@ void SplitViewController::UpdateBlackScrim(
   if (!black_scrim_layer_) {
     // Create an invisible black scrim layer.
     black_scrim_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-    black_scrim_layer_->SetColor(SK_ColorBLACK);
+    black_scrim_layer_->SetColor(
+        DeprecatedGetBackgroundColor(kSplitviewBlackScrimLayerColor));
     root_window_->layer()->Add(black_scrim_layer_.get());
     root_window_->layer()->StackAtTop(black_scrim_layer_.get());
   }

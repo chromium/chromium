@@ -11,6 +11,9 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -77,7 +80,8 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
       : controller_(controller), divider_(divider) {
     divider_view_ = new views::View();
     divider_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    divider_view_->layer()->SetColor(kSplitviewDividerColor);
+    divider_view_->layer()->SetColor(DeprecatedGetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kOpaque, kSplitviewDividerColor));
 
     divider_handler_view_ = new SplitViewDividerHandlerView();
 
