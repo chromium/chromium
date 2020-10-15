@@ -71,10 +71,11 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   // WebUI "showWelcomeDialogIfRequired" message callback.
   void HandleShowWelcomeDialogIfRequired(const base::ListValue* args);
 
-  // |AccountManager::GetAccounts| callback.
-  void OnGetAccounts(
+  // |AccountManager::CheckDummyGaiaTokenForAllAccounts| callback.
+  void OnCheckDummyGaiaTokenForAllAccounts(
       base::Value callback_id,
-      const std::vector<AccountManager::Account>& stored_accounts);
+      const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+          account_dummy_token_list);
 
   // Returns secondary Gaia accounts from |stored_accounts| list. If the Device
   // Account is a Gaia account, populates |device_account| with information
@@ -83,7 +84,8 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   // in this case "unmigrated" property will be always false for secondary
   // accounts.
   base::ListValue GetSecondaryGaiaAccounts(
-      const std::vector<AccountManager::Account>& stored_accounts,
+      const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+          account_dummy_token_list,
       const AccountId device_account_id,
       const bool is_child_user,
       base::DictionaryValue* device_account);

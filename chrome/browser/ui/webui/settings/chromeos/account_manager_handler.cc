@@ -230,20 +230,21 @@ void AccountManagerUIHandler::HandleGetAccounts(const base::ListValue* args) {
 
   base::Value callback_id = args_list[0].Clone();
 
-  account_manager_->GetAccounts(
-      base::BindOnce(&AccountManagerUIHandler::OnGetAccounts,
-                     weak_factory_.GetWeakPtr(), std::move(callback_id)));
+  account_manager_->CheckDummyGaiaTokenForAllAccounts(base::BindOnce(
+      &AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts,
+      weak_factory_.GetWeakPtr(), std::move(callback_id)));
 }
 
-void AccountManagerUIHandler::OnGetAccounts(
+void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
     base::Value callback_id,
-    const std::vector<AccountManager::Account>& stored_accounts) {
+    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+        account_dummy_token_list) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
   base::DictionaryValue gaia_device_account;
   base::ListValue accounts =
-      GetSecondaryGaiaAccounts(stored_accounts, user->GetAccountId(),
+      GetSecondaryGaiaAccounts(account_dummy_token_list, user->GetAccountId(),
                                profile_->IsChild(), &gaia_device_account);
 
   AccountBuilder device_account;
@@ -291,19 +292,20 @@ void AccountManagerUIHandler::OnGetAccounts(
 }
 
 base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
-    const std::vector<AccountManager::Account>& stored_accounts,
+    const std::vector<std::pair<chromeos::AccountManager::Account, bool>>&
+        account_dummy_token_list,
     const AccountId device_account_id,
     const bool is_child_user,
     base::DictionaryValue* device_account) {
   base::ListValue accounts;
-  for (const auto& stored_account : stored_accounts) {
+  for (const auto& account_token_pair : account_dummy_token_list) {
+    const AccountManager::Account& stored_account = account_token_pair.first;
     const AccountManager::AccountKey& account_key = stored_account.key;
     // We are only interested in listing GAIA accounts.
     if (account_key.account_type !=
         account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
       continue;
     }
-
 
     base::Optional<AccountInfo> maybe_account_info =
         identity_manager_
@@ -317,13 +319,11 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         .SetIsDeviceAccount(false)
         .SetFullName(maybe_account_info->full_name)
         .SetEmail(stored_account.raw_email)
-        // Secondary accounts in child user session cannot be unmigrated. If
-        // such account has dummy gaia token, it was invalidated.
-        .SetUnmigrated(!is_child_user &&
-                       account_manager_->HasDummyGaiaTokenSync(account_key))
+        .SetUnmigrated(!is_child_user && account_token_pair.second)
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
                                 maybe_account_info->account_id));
+
     if (!maybe_account_info->account_image.IsEmpty()) {
       account.SetPic(webui::GetBitmapDataUrl(
           maybe_account_info->account_image.AsBitmap()));
