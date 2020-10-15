@@ -14,11 +14,9 @@ namespace blink {
 namespace {
 
 TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlags) {
-  DarkModeFilter filter;
-
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-  filter.UpdateSettings(settings);
+  DarkModeFilter filter(settings);
 
   EXPECT_EQ(SK_ColorBLACK,
             filter.InvertColorIfNeeded(
@@ -43,11 +41,9 @@ TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlags) {
 }
 
 TEST(DarkModeFilterTest, InvertedColorCacheSize) {
-  DarkModeFilter filter;
   DarkModeSettings settings;
-
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-  filter.UpdateSettings(settings);
+  DarkModeFilter filter(settings);
   EXPECT_EQ(0u, filter.GetInvertedColorCacheSizeForTesting());
   EXPECT_EQ(SK_ColorBLACK,
             filter.InvertColorIfNeeded(
@@ -58,18 +54,12 @@ TEST(DarkModeFilterTest, InvertedColorCacheSize) {
             filter.InvertColorIfNeeded(
                 SK_ColorWHITE, DarkModeFilter::ElementRole::kBackground));
   EXPECT_EQ(1u, filter.GetInvertedColorCacheSizeForTesting());
-
-  // On changing DarkModeSettings, cache should be reset.
-  settings.mode = DarkModeInversionAlgorithm::kInvertLightness;
-  filter.UpdateSettings(settings);
-  EXPECT_EQ(0u, filter.GetInvertedColorCacheSizeForTesting());
 }
 
 TEST(DarkModeFilterTest, InvertedColorCacheZeroMaxKeys) {
-  DarkModeFilter filter;
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-  filter.UpdateSettings(settings);
+  DarkModeFilter filter(settings);
 
   EXPECT_EQ(0u, filter.GetInvertedColorCacheSizeForTesting());
   EXPECT_EQ(SK_ColorBLACK,
@@ -92,11 +82,10 @@ TEST(DarkModeFilterTest, InvertedColorCacheZeroMaxKeys) {
 }
 
 TEST(DarkModeFilterTest, AnalyzeShouldApplyToImage) {
-  DarkModeFilter filter;
   DarkModeSettings settings;
   settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
   settings.image_policy = DarkModeImagePolicy::kFilterSmart;
-  filter.UpdateSettings(settings);
+  DarkModeFilter filter(settings);
 
   // |dst| is smaller than threshold size.
   EXPECT_EQ(filter.AnalyzeShouldApplyToImage(SkIRect::MakeWH(100, 100),

@@ -154,8 +154,8 @@ GraphicsContext::~GraphicsContext() {
 
 DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
   if (!dark_mode_filter_) {
-    dark_mode_filter_ = std::make_unique<DarkModeFilter>();
-    dark_mode_filter_->UpdateSettings(GetCurrentDarkModeSettings());
+    dark_mode_filter_ =
+        std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
   }
 
   return dark_mode_filter_.get();
@@ -163,7 +163,7 @@ DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
 
 void GraphicsContext::UpdateDarkModeSettingsForTest(
     const DarkModeSettings& settings) {
-  GetDarkModeFilter()->UpdateSettings(settings);
+  dark_mode_filter_ = std::make_unique<DarkModeFilter>(settings);
 }
 
 void GraphicsContext::Save() {

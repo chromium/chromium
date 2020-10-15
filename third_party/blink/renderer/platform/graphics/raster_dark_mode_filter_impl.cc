@@ -11,8 +11,7 @@ namespace blink {
 
 RasterDarkModeFilterImpl::RasterDarkModeFilterImpl(
     const DarkModeSettings& settings) {
-  dark_mode_filter_ = std::make_unique<DarkModeFilter>();
-  dark_mode_filter_->UpdateSettings(settings);
+  dark_mode_filter_ = std::make_unique<DarkModeFilter>(settings);
 }
 
 cc::RasterDarkModeFilter::Result

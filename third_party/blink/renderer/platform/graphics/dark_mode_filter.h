@@ -27,11 +27,8 @@ class PLATFORM_EXPORT DarkModeFilter {
  public:
   // Dark mode is disabled by default. Enable it by calling UpdateSettings()
   // with a mode other than DarkMode::kOff.
-  DarkModeFilter();
+  explicit DarkModeFilter(const DarkModeSettings& settings);
   ~DarkModeFilter();
-
-  const DarkModeSettings& settings() const { return settings_; }
-  void UpdateSettings(const DarkModeSettings& new_settings);
 
   // TODO(gilmanmh): Add a role for shadows. In general, we don't want to
   // invert shadows, but we may need to do some other kind of processing for
@@ -43,12 +40,15 @@ class PLATFORM_EXPORT DarkModeFilter {
       const cc::PaintFlags& flags,
       ElementRole element_role);
 
+  size_t GetInvertedColorCacheSizeForTesting();
+
   // Decides whether to apply dark mode or not based on |src| and |dst|.
   // DarkModeResult::kDoNotApplyFilter - Dark mode filter should not be applied.
   // DarkModeResult::kApplyFilter - Dark mode filter should be applied and to
   // get the color filter GetImageFilter() should be called.
   // DarkModeResult::kNotClassified - Dark mode filter should be applied and to
-  // get the color filter ApplyToImage() should be called.
+  // get the color filter ApplyToImage() should be called. This API is
+  // thread-safe.
   DarkModeResult AnalyzeShouldApplyToImage(const SkIRect& src,
                                            const SkIRect& dst) const;
 
@@ -57,7 +57,8 @@ class PLATFORM_EXPORT DarkModeFilter {
   // empty or |src| is larger than pixmap bounds. Before calling this function
   // AnalyzeShouldApplyToImage() must be called for early out or deciding
   // appropriate function call. This function should be called only if image
-  // policy is set to DarkModeImagePolicy::kFilterSmart.
+  // policy is set to DarkModeImagePolicy::kFilterSmart. This API is
+  // thread-safe.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
                                     const SkIRect& src,
                                     const SkIRect& dst) const;
@@ -65,25 +66,31 @@ class PLATFORM_EXPORT DarkModeFilter {
   // Returns dark mode color filter for images. Before calling this function
   // AnalyzeShouldApplyToImage() must be called for early out or deciding
   // appropriate function call. This function should be called only if image
-  // policy is set to DarkModeImagePolicy::kFilterAll.
+  // policy is set to DarkModeImagePolicy::kFilterAll. This API is thread-safe.
   sk_sp<SkColorFilter> GetImageFilter() const;
-
-  size_t GetInvertedColorCacheSizeForTesting();
-
  private:
   friend class ScopedDarkModeElementRoleOverride;
 
-  DarkModeSettings settings_;
+  struct ImmutableData {
+    explicit ImmutableData(const DarkModeSettings& settings);
+
+    DarkModeSettings settings;
+    std::unique_ptr<DarkModeColorClassifier> text_classifier;
+    std::unique_ptr<DarkModeColorClassifier> background_classifier;
+    std::unique_ptr<DarkModeImageClassifier> image_classifier;
+    std::unique_ptr<DarkModeColorFilter> color_filter;
+    sk_sp<SkColorFilter> image_filter;
+  };
 
   bool ShouldApplyToColor(SkColor color, ElementRole role);
 
-  std::unique_ptr<DarkModeColorClassifier> text_classifier_;
-  std::unique_ptr<DarkModeColorClassifier> background_classifier_;
-  std::unique_ptr<DarkModeImageClassifier> image_classifier_;
+  // This is read-only data and is thread-safe.
+  const ImmutableData immutable_;
 
-  std::unique_ptr<DarkModeColorFilter> color_filter_;
-  sk_sp<SkColorFilter> image_filter_;
+  // Following two members used for color classifications are not thread-safe.
+  // TODO(prashant.n): Remove element override concept.
   base::Optional<ElementRole> role_override_;
+  // TODO(prashant.n): Move cache out of dark mode filter.
   std::unique_ptr<DarkModeInvertedColorCache> inverted_color_cache_;
 };
 
