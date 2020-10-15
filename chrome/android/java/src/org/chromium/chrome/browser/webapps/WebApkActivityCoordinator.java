@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.webapps;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
+import org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity.DisclosureInfobar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
@@ -27,11 +29,11 @@ public class WebApkActivityCoordinator implements Destroyable {
     @Inject
     public WebApkActivityCoordinator(ChromeActivity<?> activity,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappDisclosureSnackbarController disclosureSnackbarController,
+            WebappDisclosureController disclosureController, DisclosureInfobar disclosureInfobar,
             WebApkActivityLifecycleUmaTracker webApkActivityLifecycleUmaTracker,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Lazy<WebApkUpdateManager> webApkUpdateManager) {
-        // We don't need to do anything with |disclosureSnackbarController| and
+        // We don't need to do anything with |disclosureController|, |disclosureInfobar| and
         // |webApkActivityLifecycleUmaTracker|. We just need to resolve
         // them so that they start working.
 

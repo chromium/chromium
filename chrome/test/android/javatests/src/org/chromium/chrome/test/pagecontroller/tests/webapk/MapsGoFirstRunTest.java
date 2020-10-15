@@ -103,7 +103,7 @@ public class MapsGoFirstRunTest {
         UiLocatorHelper helper =
                 UiAutomatorUtils.getInstance().getLocatorHelper(MAPS_GO_FRE_TIMEOUT_MS);
         IUi2Locator runningInChromeBanner =
-                Ui2Locators.withContentDescString(R.string.app_running_in_chrome_disclosure);
+                Ui2Locators.withContentDescString(R.string.twa_running_in_chrome);
         helper.verifyOnScreen(runningInChromeBanner);
     }
 }

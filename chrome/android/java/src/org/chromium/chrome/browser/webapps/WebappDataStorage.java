@@ -304,7 +304,7 @@ public class WebappDataStorage {
      * Deletes the data for a web app by clearing all the information inside the SharedPreferences
      * file. This does NOT delete the file itself but the file is left empty.
      */
-    void delete() {
+    public void delete() {
         deletePendingUpdateRequestFile();
         mPreferences.edit().clear().apply();
     }
@@ -455,7 +455,7 @@ public class WebappDataStorage {
      * Returns whether to show the user a privacy disclosure (used for TWAs and unbound WebAPKs).
      * This is not cleared until the user explicitly acknowledges it.
      */
-    boolean shouldShowDisclosure() {
+    public boolean shouldShowDisclosure() {
         return mPreferences.getBoolean(KEY_SHOW_DISCLOSURE, false);
     }
 
@@ -464,7 +464,7 @@ public class WebappDataStorage {
      * disclosure on every resume of the Webapp. This should be called when the user has
      * acknowledged the disclosure.
      */
-    void clearShowDisclosure() {
+    public void clearShowDisclosure() {
         mPreferences.edit().putBoolean(KEY_SHOW_DISCLOSURE, false).apply();
     }
 
@@ -473,7 +473,7 @@ public class WebappDataStorage {
      * This is set the first time an app is opened without storage (either right after install or
      * after Chrome's storage is cleared).
      */
-    void setShowDisclosure() {
+    public void setShowDisclosure() {
         mPreferences.edit().putBoolean(KEY_SHOW_DISCLOSURE, true).apply();
     }
 
