@@ -1101,10 +1101,6 @@ void ProfileSyncService::OnConfigureDone(
   for (auto& observer : observers_)
     observer.OnSyncConfigurationCompleted(this);
 
-  // This must be done before we start syncing with the server to avoid
-  // sending unencrypted data up on a first time sync.
-  if (user_settings_->IsEncryptionPending())
-    engine_->EnableEncryptEverything();
   NotifyObservers();
 
   if (migrator_.get() && migrator_->state() != BackendMigrator::IDLE) {

@@ -56,8 +56,6 @@ void FakeSyncEngine::Shutdown(ShutdownReason reason) {}
 
 void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {}
 
-void FakeSyncEngine::EnableEncryptEverything() {}
-
 void FakeSyncEngine::ActivateDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {}

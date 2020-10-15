@@ -103,10 +103,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoAddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys);
 
-  // Called to turn on encryption of all sync data as well as
-  // reencrypt everything.
-  void DoEnableEncryptEverything();
-
   // Ask the syncer to check for updates for the specified types.
   void DoRefreshTypes(ModelTypeSet types);
 

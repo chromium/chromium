@@ -143,9 +143,6 @@ class SyncEngine : public ModelTypeConfigurer {
   // Must be called *after* StopSyncingForShutdown.
   virtual void Shutdown(ShutdownReason reason) = 0;
 
-  // Turns on encryption of all present and future sync data.
-  virtual void EnableEncryptEverything() = 0;
-
   // Returns current detailed status information.
   virtual const SyncStatus& GetDetailedStatus() const = 0;
 

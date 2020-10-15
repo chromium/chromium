@@ -58,8 +58,6 @@ class FakeSyncEngine : public SyncEngine {
 
   void ConfigureDataTypes(ConfigureParams params) override;
 
-  void EnableEncryptEverything() override;
-
   void ActivateDataType(ModelType type,
                         std::unique_ptr<DataTypeActivationResponse>) override;
   void DeactivateDataType(ModelType type) override;

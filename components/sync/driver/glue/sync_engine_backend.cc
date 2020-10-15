@@ -376,11 +376,6 @@ void SyncEngineBackend::DoSetDecryptionPassphrase(
   sync_manager_->GetEncryptionHandler()->SetDecryptionPassphrase(passphrase);
 }
 
-void SyncEngineBackend::DoEnableEncryptEverything() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->EnableEncryptEverything();
-}
-
 void SyncEngineBackend::ShutdownOnUIThread() {
   // This will cut short any blocking network tasks, cut short any in-progress
   // sync cycles, and prevent the creation of new blocking network tasks and new

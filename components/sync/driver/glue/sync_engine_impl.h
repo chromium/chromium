@@ -80,7 +80,6 @@ class SyncEngineImpl : public SyncEngine,
   void DeactivateDataType(ModelType type) override;
   void ActivateProxyDataType(ModelType type) override;
   void DeactivateProxyDataType(ModelType type) override;
-  void EnableEncryptEverything() override;
   const Status& GetDetailedStatus() const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;

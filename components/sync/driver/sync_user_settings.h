@@ -93,6 +93,9 @@ class SyncUserSettings {
   virtual bool IsEncryptEverythingEnabled() const = 0;
   // Turns on encryption for all data. Callers must call SetChosenDataTypes()
   // after calling this to force the encryption to occur.
+  // TODO(crbug.com/1033040): This was only relevant for the Directory
+  // implementation of Nigori, and should be cleaned up. The same goes for
+  // related code in PeopleHandler and possibly its Javascript counterpart.
   virtual void EnableEncryptEverything() = 0;
 
   // The current set of encrypted data types.

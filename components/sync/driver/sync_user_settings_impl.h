@@ -78,7 +78,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 
   ModelTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypeEnabled() const;
-  bool IsEncryptionPending() const;
 
   // Converts |selected_types| to ModelTypeSet of corresponding UserTypes() by
   // resolving pref groups (e.g. {kExtensions} becomes {EXTENSIONS,

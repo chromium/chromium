@@ -151,13 +151,6 @@ class SyncEncryptionHandler {
   virtual void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys) = 0;
 
-  // Enables encryption of all datatypes.
-  virtual void EnableEncryptEverything() = 0;
-
-  // Whether encryption of all datatypes is enabled. If false, only sensitive
-  // types are encrypted.
-  virtual bool IsEncryptEverythingEnabled() const = 0;
-
   // Returns the time when Nigori was migrated to keystore or when it was
   // initialized in case it happens after migration was introduced. Returns
   // base::Time() in case migration isn't completed.

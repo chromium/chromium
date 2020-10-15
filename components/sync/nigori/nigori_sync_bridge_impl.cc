@@ -655,24 +655,6 @@ void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
   MaybeNotifyBootstrapTokenUpdated();
 }
 
-void NigoriSyncBridgeImpl::EnableEncryptEverything() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This method was relevant only for Directory implementation. USS
-  // implementation catches that as part of SetEncryptionPassphrase(), which
-  // is always called together with this method.
-  // TODO(crbug.com/1033040): remove this method and clean up calling sides.
-}
-
-bool NigoriSyncBridgeImpl::IsEncryptEverythingEnabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This method was relevant only for Directory implementation and used only
-  // for testing.
-  // TODO(crbug.com/1033040): remove this method or at least append ForTesting
-  // suffix.
-  NOTREACHED();
-  return false;
-}
-
 base::Time NigoriSyncBridgeImpl::GetKeystoreMigrationTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_.keystore_migration_time;
