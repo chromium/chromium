@@ -2239,12 +2239,13 @@
                     "params": {
                         "availability": ">0",
                         "event_many_tabs_opened": "name:sixth_tab_opened;comparator:>0;window:1;storage:365",
-                        "event_trigger": "name:tab_groups_new_group_iph_triggered;comparator:<1;window:365;storage:365",
+                        "event_trigger": "name:tab_groups_new_group_iph_triggered;comparator:any;window:365;storage:365",
                         "event_used": "name:tab_group_created;comparator:==0;window:365;storage:365",
                         "session_rate": "<3"
                     },
                     "enable_features": [
                         "EnableNewBadgeOnMenuItems",
+                        "IPH_DesktopSnoozeFeature",
                         "IPH_DesktopTabGroupsNewGroup"
                     ]
                 }
