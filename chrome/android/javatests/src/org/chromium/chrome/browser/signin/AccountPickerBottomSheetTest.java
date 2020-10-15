@@ -46,12 +46,15 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.MetricsUtils;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
+import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -310,18 +313,26 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testSignInDefaultAccountOnCollapsedSheet() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndCheckSignInInProgressSheet();
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     @Test
     @MediumTest
     public void testSignInAnotherAccount() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         buildAndShowExpandedBottomSheet();
         onView(withText(PROFILE_DATA2.getAccountName())).perform(click());
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_continue_as_button)::isShown);
         clickContinueButtonAndCheckSignInInProgressSheet();
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     @Test
