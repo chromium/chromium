@@ -770,7 +770,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // TODO(1107916): Move contextual search initialization to the RootUiCoordinator.
         if (ContextualSearchFieldTrial.isEnabled()) {
             mContextualSearchManager = new ContextualSearchManager(
-                    this, this, mRootUiCoordinator.getScrimCoordinator());
+                    this, this, mRootUiCoordinator.getScrimCoordinator(), getActivityTabProvider());
         }
 
         TraceEvent.end("ChromeActivity:CompositorInitialization");
@@ -1724,11 +1724,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void initializeCompositorContent(LayoutManager layoutManager, View urlBar,
             ViewGroup contentContainer, ControlContainer controlContainer) {
-        if (mContextualSearchManager != null) {
-            mContextualSearchManager.initialize(contentContainer);
-            mContextualSearchManager.setSearchContentViewDelegate(layoutManager);
-        }
-
         mLayoutManagerSupplier.set(layoutManager);
 
         layoutManager.addSceneChangeObserver(this);
@@ -1738,8 +1733,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mCompositorViewHolder.setBrowserControlsManager(getBrowserControlsManager());
         mCompositorViewHolder.setUrlBar(urlBar);
         mCompositorViewHolder.setInsetObserverView(getInsetObserverView());
-        mCompositorViewHolder.onFinishNativeInitialization(
-                getTabModelSelector(), this, mContextualSearchManager);
+        mCompositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
 
         if (controlContainer != null && DeviceClassManager.enableToolbarSwipe()
                 && getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler() != null) {
@@ -1748,6 +1742,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         mActivityTabProvider.setLayoutManager(layoutManager);
+
+        if (mContextualSearchManager != null) {
+            mContextualSearchManager.initialize(contentContainer, layoutManager);
+        }
     }
 
     /**

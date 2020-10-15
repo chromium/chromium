@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.EmptyEdgeSwipe
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -159,9 +158,7 @@ public class LayoutManagerChrome
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            ControlContainer controlContainer,
-            ContextualSearchManagementDelegate contextualSearchDelegate,
-            DynamicResourceLoader dynamicResourceLoader) {
+            ControlContainer controlContainer, DynamicResourceLoader dynamicResourceLoader) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =
@@ -179,8 +176,7 @@ public class LayoutManagerChrome
                     (ObservableSupplier<BrowserControlsStateProvider>) browserControlsSupplier);
         }
 
-        super.init(selector, creator, controlContainer, contextualSearchDelegate,
-                dynamicResourceLoader);
+        super.init(selector, creator, controlContainer, dynamicResourceLoader);
 
         // TODO: TitleCache should be a part of the ResourceManager.
         mTitleCache = mHost.getTitleCache();
@@ -262,13 +258,6 @@ public class LayoutManagerChrome
         super.startShowing(layout, animate);
 
         Layout layoutBeingShown = getActiveLayout();
-
-        // Check if a layout is showing that should hide the overlay panels.
-        if (isOverviewLayout(layoutBeingShown) || layoutBeingShown == mToolbarSwipeLayout) {
-            if (mContextualSearchDelegate != null) {
-                mContextualSearchDelegate.dismissContextualSearchBar();
-            }
-        }
 
         // Check if we should notify OverviewModeObservers.
         if (isOverviewLayout(layoutBeingShown)) {

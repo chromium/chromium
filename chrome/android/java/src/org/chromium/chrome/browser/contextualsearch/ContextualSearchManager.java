@@ -22,13 +22,14 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentViewDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -150,7 +152,6 @@ public class ContextualSearchManager
 
     private ViewGroup mParentView;
     private RedirectHandler mRedirectHandler;
-    private OverlayPanelContentViewDelegate mSearchContentViewDelegate;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
@@ -202,6 +203,12 @@ public class ContextualSearchManager
     /** An observer that reports selected context to GSA for search quality. */
     private ContextualSearchObserver mContextReportingObserver;
 
+    /** A means of accessing the currently active tab. */
+    private Supplier<Tab> mTabSupplier;
+
+    /** A means of observing scene changes and attaching overlays. */
+    private LayoutManager mLayoutManager;
+
     /**
      * The delegate that is responsible for promoting a {@link WebContents} to a {@link Tab}
      * when necessary.
@@ -221,13 +228,15 @@ public class ContextualSearchManager
      * @param tabPromotionDelegate The {@link ContextualSearchTabPromotionDelegate} that is
      *        responsible for building tabs from contextual search {@link WebContents}.
      * @param scrimCoordinator A mechanism for showing and hiding the shared scrim.
+     * @param tabSupplier Access to the tab that is currently active.
      */
     public ContextualSearchManager(ChromeActivity activity,
             ContextualSearchTabPromotionDelegate tabPromotionDelegate,
-            ScrimCoordinator scrimCoordinator) {
+            ScrimCoordinator scrimCoordinator, Supplier<Tab> tabSupplier) {
         mActivity = activity;
         mTabPromotionDelegate = tabPromotionDelegate;
         mScrimCoordinator = scrimCoordinator;
+        mTabSupplier = tabSupplier;
 
         final View controlContainer = mActivity.findViewById(R.id.control_container);
         mOnFocusChangeListener = new OnGlobalFocusChangeListener() {
@@ -266,12 +275,21 @@ public class ContextualSearchManager
     /**
      * Initializes this manager.
      * @param parentView The parent view to attach Contextual Search UX to.
+     * @param layoutManager A means of attaching the OverlayPanel to the scene.
      */
-    public void initialize(ViewGroup parentView) {
+    public void initialize(ViewGroup parentView, LayoutManager layoutManager) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
 
         mParentView = parentView;
         mParentView.getViewTreeObserver().addOnGlobalFocusChangeListener(mOnFocusChangeListener);
+
+        mLayoutManager = layoutManager;
+
+        ContextualSearchPanel panel = new ContextualSearchPanel(
+                mActivity, mLayoutManager, mLayoutManager.getOverlayPanelManager());
+        panel.setManagementDelegate(this);
+        setContextualSearchPanel(panel);
+        mLayoutManager.addSceneOverlay(panel);
 
         mInProductHelp.setParentView(parentView);
 
@@ -304,6 +322,9 @@ public class ContextualSearchManager
         mRedirectHandler.clear();
         mInternalStateController.enter(InternalState.UNDEFINED);
         ChromeAccessibilityUtil.get().removeObserver(this);
+
+        if (mSearchPanel != null) mSearchPanel.destroy();
+        mSearchPanel = null;
     }
 
     @Override
@@ -1049,9 +1070,7 @@ public class ContextualSearchManager
 
         @Override
         public void onContentViewDestroyed() {
-            if (mSearchContentViewDelegate != null) {
-                mSearchContentViewDelegate.releaseOverlayPanelContent();
-            }
+            updateTabConstraints();
         }
 
         @Override
@@ -1090,11 +1109,11 @@ public class ContextualSearchManager
     // ============================================================================================
 
     /**
-     * Sets the {@code OverlayPanelContentViewDelegate} associated with the Content View.
-     * @param delegate
+     * Update the state of the browser controls (whether they can be shown or hidden) based on the
+     * current tab.
      */
-    public void setSearchContentViewDelegate(OverlayPanelContentViewDelegate delegate) {
-        mSearchContentViewDelegate = delegate;
+    private void updateTabConstraints() {
+        TabBrowserControlsConstraintsHelper.updateEnabledState(mTabSupplier.get());
     }
 
     /** Removes the last resolved search URL from the Chrome history. */

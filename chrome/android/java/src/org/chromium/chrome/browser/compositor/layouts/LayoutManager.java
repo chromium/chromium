@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentViewDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
@@ -40,14 +39,12 @@ import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlay
 import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.ScrollingBottomViewSceneLayer;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -83,7 +80,6 @@ import java.util.Map;
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
 public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
-                                      OverlayPanelContentViewDelegate,
                                       TabModelSelector.CloseAllTabsDelegate {
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
@@ -136,12 +132,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     private int mControlsShowingToken = TokenHolder.INVALID_TOKEN;
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private boolean mUpdateRequested;
-    private ContextualSearchPanel mContextualSearchPanel;
     private final OverlayPanelManager mOverlayPanelManager;
-    private SceneOverlay mGestureNavigationOverscrollGlow;
-
-    /** A delegate for interacting with the Contextual Search manager. */
-    protected ContextualSearchManagementDelegate mContextualSearchDelegate;
 
     private final Context mContext;
 
@@ -446,12 +437,10 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * @param selector                 A {@link TabModelSelector} instance.
      * @param creator                  A {@link TabCreatorManager} instance.
      * @param controlContainer         A {@link ControlContainer} for browser controls' layout.
-     * @param contextualSearchDelegate A {@link ContextualSearchManagementDelegate} instance.
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
      */
     public void init(TabModelSelector selector, TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
-            ContextualSearchManagementDelegate contextualSearchDelegate,
             DynamicResourceLoader dynamicResourceLoader) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
@@ -467,23 +456,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         // Initialize Layouts
         mStaticLayout.onFinishNativeInitialization();
 
-        // Contextual Search scene overlay.
-        mContextualSearchPanel = new ContextualSearchPanel(mContext, this, mOverlayPanelManager);
-        addSceneOverlay(mContextualSearchPanel);
-
-        // Save state
-        mContextualSearchDelegate = contextualSearchDelegate;
-
         // Initialize Layouts
         mBrowserControlsStateProviderSupplier.set(mHost.getBrowserControlsManager());
-
-        // Initialize Contextual Search Panel
-        mContextualSearchPanel.setManagementDelegate(contextualSearchDelegate);
-
-        // Set back flow communication
-        if (contextualSearchDelegate != null) {
-            contextualSearchDelegate.setContextualSearchPanel(mContextualSearchPanel);
-        }
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
@@ -650,13 +624,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             controlsVisibilityManager.releaseAndroidControlsHidingToken(mControlsHidingToken);
             mAndroidViewShownSupplier.set(true);
         }
-    }
-
-    @Override
-    public void releaseOverlayPanelContent() {
-        if (getTabModelSelector() == null) return;
-        TabBrowserControlsConstraintsHelper.updateEnabledState(
-                getTabModelSelector().getCurrentTab());
     }
 
     /**

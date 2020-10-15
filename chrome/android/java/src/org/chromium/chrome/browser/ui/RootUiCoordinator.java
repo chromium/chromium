@@ -33,8 +33,12 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
+import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
+import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
@@ -110,6 +114,7 @@ public class RootUiCoordinator
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabObscuringHandler mTabObscuringHandler;
     private final AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
+    private final SceneChangeObserver mContextualSearchSceneChangeObserver;
 
     private ActivityTabProvider mActivityTabProvider;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
@@ -159,6 +164,7 @@ public class RootUiCoordinator
     private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     @Nullable
     private ManagedMessageDispatcher mMessageDispatcher;
+    private LayoutManager mLayoutManager;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -215,6 +221,20 @@ public class RootUiCoordinator
         mOverviewModeBehaviorSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setOverviewModeBehavior));
         mStartSurfaceSupplier = startSurfaceSupplier;
+
+        mContextualSearchSceneChangeObserver = new SceneChangeObserver() {
+            @Override
+            public void onSceneChange(Layout layout) {
+                // Check if a layout is showing that should hide the overlay panels.
+                if (layout instanceof StaticLayout || layout instanceof SimpleAnimationLayout) {
+                    return;
+                }
+                mContextualSearchManagerSupplier.get().dismissContextualSearchBar();
+            }
+
+            @Override
+            public void onTabSelectionHinted(int tabId) {}
+        };
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -232,6 +252,10 @@ public class RootUiCoordinator
         if (mMessageDispatcher != null) {
             MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
             mMessageDispatcher = null;
+        }
+
+        if (mLayoutManager != null) {
+            mLayoutManager.removeSceneChangeObserver(mContextualSearchSceneChangeObserver);
         }
 
         if (mOverlayPanelManager != null) {
@@ -486,6 +510,7 @@ public class RootUiCoordinator
     // Protected class methods
 
     protected void onLayoutManagerAvailable(LayoutManager layoutManager) {
+        mLayoutManager = layoutManager;
         if (mOverlayPanelManager != null) {
             mOverlayPanelManager.removeObserver(mOverlayPanelManagerObserver);
         }
@@ -506,6 +531,7 @@ public class RootUiCoordinator
         }
 
         mOverlayPanelManager.addObserver(mOverlayPanelManagerObserver);
+        layoutManager.addSceneChangeObserver(mContextualSearchSceneChangeObserver);
     }
 
     /**

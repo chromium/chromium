@@ -97,7 +97,8 @@ public class ContextualSearchTapEventTest {
      */
     private static class ContextualSearchManagerWrapper extends ContextualSearchManager {
         public ContextualSearchManagerWrapper(ChromeActivity activity) {
-            super(activity, null, activity.getRootUiCoordinatorForTesting().getScrimCoordinator());
+            super(activity, null, activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
+                    activity.getActivityTabProvider());
             setSelectionController(new MockCSSelectionController(activity, this));
             WebContents webContents = WebContentsFactory.createWebContents(false, false);
             ContentView cv = ContentView.createContentView(

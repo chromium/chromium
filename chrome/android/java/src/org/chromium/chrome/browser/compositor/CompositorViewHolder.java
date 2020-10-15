@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -1239,14 +1238,11 @@ public class CompositorViewHolder extends FrameLayout
      * @param tabModelSelector        The {@link TabModelSelector} this View should hold and
      *                                represent.
      * @param tabCreatorManager       The {@link TabCreatorManager} for this view.
-     * @param contextualSearchManager A {@link ContextualSearchManagementDelegate} instance.
      */
-    public void onFinishNativeInitialization(TabModelSelector tabModelSelector,
-            TabCreatorManager tabCreatorManager,
-            ContextualSearchManagementDelegate contextualSearchManager) {
+    public void onFinishNativeInitialization(
+            TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager) {
         assert mLayoutManager != null;
         mLayoutManager.init(tabModelSelector, tabCreatorManager, mControlContainer,
-                contextualSearchManager,
                 mCompositorView.getResourceManager().getDynamicResourceLoader());
 
         mTabModelSelector = tabModelSelector;
