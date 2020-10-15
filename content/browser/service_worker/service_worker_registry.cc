@@ -751,12 +751,6 @@ void ServiceWorkerRegistry::DeleteAndStartOver(StatusCallback callback) {
       CreateDatabaseStatusCallback(std::move(callback)));
 }
 
-void ServiceWorkerRegistry::DisableDeleteAndStartOverForTesting() {
-  DCHECK(should_schedule_delete_and_start_over_);
-  should_schedule_delete_and_start_over_ = false;
-  is_storage_disabled_ = true;
-}
-
 void ServiceWorkerRegistry::SimulateStorageRestartForTesting() {
   storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
       ServiceWorkerStorage::Create(user_data_directory_, database_task_runner_,

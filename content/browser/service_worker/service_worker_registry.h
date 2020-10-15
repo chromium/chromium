@@ -242,8 +242,6 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // recovery.
   void DeleteAndStartOver(StatusCallback callback);
 
-  void DisableDeleteAndStartOverForTesting();
-
   void SimulateStorageRestartForTesting();
 
  private:

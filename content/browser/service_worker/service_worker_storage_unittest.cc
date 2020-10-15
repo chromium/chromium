@@ -60,6 +60,8 @@ struct ReadResponseHeadResult {
 
 using RegistrationData = storage::mojom::ServiceWorkerRegistrationData;
 using ResourceRecord = storage::mojom::ServiceWorkerResourceRecordPtr;
+using ResourceList =
+    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>;
 
 ResourceRecord CreateResourceRecord(int64_t resource_id,
                                     const GURL& url,
@@ -105,27 +107,6 @@ void DatabaseStatusCallback(
     ServiceWorkerDatabase::Status status) {
   *result = status;
   std::move(quit_closure).Run();
-}
-
-void FindCallback(base::OnceClosure quit_closure,
-                  base::Optional<blink::ServiceWorkerStatusCode>* result,
-                  scoped_refptr<ServiceWorkerRegistration>* found,
-                  blink::ServiceWorkerStatusCode status,
-                  scoped_refptr<ServiceWorkerRegistration> registration) {
-  *result = status;
-  *found = std::move(registration);
-  std::move(quit_closure).Run();
-}
-
-void UserDataCallback(
-    base::OnceClosure quit,
-    std::vector<std::string>* data_out,
-    base::Optional<blink::ServiceWorkerStatusCode>* status_out,
-    const std::vector<std::string>& data,
-    blink::ServiceWorkerStatusCode status) {
-  *data_out = data;
-  *status_out = status;
-  std::move(quit).Run();
 }
 
 // TODO(crbug.com/1016064): Remove the following helper functions to read/write
@@ -316,20 +297,20 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  blink::ServiceWorkerStatusCode GetAllRegistrationsInfos(
-      std::vector<ServiceWorkerRegistrationInfo>* registrations) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+  // Currently some Get/Find helper functions just return success/failure
+  // status. This is because existing tests don't need actual values.
+
+  ServiceWorkerDatabase::Status GetAllRegistrations() {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->GetAllRegistrationsInfos(base::BindLambdaForTesting(
-        [&](blink::ServiceWorkerStatusCode status,
-            const std::vector<ServiceWorkerRegistrationInfo>& infos) {
+    storage()->GetAllRegistrations(base::BindLambdaForTesting(
+        [&](ServiceWorkerDatabase::Status status,
+            std::unique_ptr<ServiceWorkerStorage::RegistrationList>) {
           result = status;
-          *registrations = infos;
           loop.Quit();
         }));
-    EXPECT_FALSE(result.has_value());  // always async
     loop.Run();
-    return result.value();
+    return result;
   }
 
   blink::ServiceWorkerStatusCode GetStorageUsageForOrigin(
@@ -348,186 +329,222 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  blink::ServiceWorkerStatusCode GetRegistrationsForOrigin(
-      const url::Origin& origin,
-      std::vector<scoped_refptr<ServiceWorkerRegistration>>* registrations) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+  ServiceWorkerDatabase::Status GetRegistrationsForOrigin(
+      const url::Origin& origin) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->GetRegistrationsForOrigin(
-        origin,
-        base::BindLambdaForTesting(
-            [&](blink::ServiceWorkerStatusCode status,
-                const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
-                    found_registrations) {
-              result = status;
-              *registrations = found_registrations;
-              loop.Quit();
-            }));
-    EXPECT_FALSE(result.has_value());  // always async
+    storage()->GetRegistrationsForOrigin(
+        origin, base::BindLambdaForTesting(
+                    [&](ServiceWorkerDatabase::Status status,
+                        std::unique_ptr<ServiceWorkerStorage::RegistrationList>,
+                        std::unique_ptr<std::vector<ResourceList>>) {
+                      result = status;
+                      loop.Quit();
+                    }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode GetUserData(
+  ServiceWorkerDatabase::Status GetUserData(
       int64_t registration_id,
       const std::vector<std::string>& keys,
-      std::vector<std::string>* data) {
+      std::vector<std::string>& out_data) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->GetUserData(
+    storage()->GetUserData(
         registration_id, keys,
-        base::BindOnce(&UserDataCallback, loop.QuitClosure(), data, &result));
-    EXPECT_FALSE(result.has_value());  // always async
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status,
+                                       const std::vector<std::string>& data) {
+          result = status;
+          out_data = data;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode GetUserDataByKeyPrefix(
+  ServiceWorkerDatabase::Status GetUserDataByKeyPrefix(
       int64_t registration_id,
       const std::string& key_prefix,
-      std::vector<std::string>* data) {
+      std::vector<std::string>& out_data) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->GetUserDataByKeyPrefix(
+    storage()->GetUserDataByKeyPrefix(
         registration_id, key_prefix,
-        base::BindOnce(&UserDataCallback, loop.QuitClosure(), data, &result));
-    EXPECT_FALSE(result.has_value());  // always async
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status,
+                                       const std::vector<std::string>& data) {
+          result = status;
+          out_data = data;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode StoreUserData(
+  ServiceWorkerDatabase::Status StoreUserData(
       int64_t registration_id,
       const url::Origin& origin,
       const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
+    std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data;
+    for (const auto& kv : key_value_pairs) {
+      user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
+          registration_id, kv.first, kv.second));
+    }
+
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->StoreUserData(
-        registration_id, origin, key_value_pairs,
-        base::BindOnce(&StatusCallback, loop.QuitClosure(), &result));
-    EXPECT_FALSE(result.has_value());  // always async
+    storage()->StoreUserData(
+        registration_id, origin, std::move(user_data),
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode ClearUserData(
+  ServiceWorkerDatabase::Status ClearUserData(
       int64_t registration_id,
       const std::vector<std::string>& keys) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->ClearUserData(
+    storage()->ClearUserData(
         registration_id, keys,
-        base::BindOnce(&StatusCallback, loop.QuitClosure(), &result));
-    EXPECT_FALSE(result);  // always async
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode ClearUserDataByKeyPrefixes(
+  ServiceWorkerDatabase::Status ClearUserDataByKeyPrefixes(
       int64_t registration_id,
       const std::vector<std::string>& key_prefixes) {
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->ClearUserDataByKeyPrefixes(
+    ServiceWorkerDatabase::Status result;
+    storage()->ClearUserDataByKeyPrefixes(
         registration_id, key_prefixes,
-        base::BindOnce(&StatusCallback, loop.QuitClosure(), &result));
-    EXPECT_FALSE(result.has_value());  // always async
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode GetUserDataForAllRegistrations(
+  ServiceWorkerDatabase::Status GetUserDataForAllRegistrations(
       const std::string& key,
-      std::vector<std::pair<int64_t, std::string>>* data) {
+      std::vector<std::pair<int64_t, std::string>>& data) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->GetUserDataForAllRegistrations(
+    storage()->GetUserDataForAllRegistrations(
         key,
         base::BindLambdaForTesting(
-            [&](const std::vector<std::pair<int64_t, std::string>>& user_data,
-                blink::ServiceWorkerStatusCode status) {
+            [&](ServiceWorkerDatabase::Status status,
+                std::vector<storage::mojom::ServiceWorkerUserDataPtr> entries) {
               result = status;
-              *data = user_data;
+              for (auto& entry : entries) {
+                data.emplace_back(entry->registration_id, entry->value);
+              }
               loop.Quit();
             }));
-    EXPECT_FALSE(result.has_value());  // always async
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode ClearUserDataForAllRegistrationsByKeyPrefix(
+  ServiceWorkerDatabase::Status ClearUserDataForAllRegistrationsByKeyPrefix(
       const std::string& key_prefix) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->ClearUserDataForAllRegistrationsByKeyPrefix(
+    storage()->ClearUserDataForAllRegistrationsByKeyPrefix(
         key_prefix,
-        base::BindOnce(&StatusCallback, loop.QuitClosure(), &result));
-    EXPECT_FALSE(result.has_value());  // always async
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode UpdateToActiveState(
-      scoped_refptr<ServiceWorkerRegistration> registration) {
+  ServiceWorkerDatabase::Status UpdateToActiveState(int64_t registration_id,
+                                                    const url::Origin& origin) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    base::Optional<blink::ServiceWorkerStatusCode> result;
-    registry()->UpdateToActiveState(
-        registration->id(), registration->scope().GetOrigin(),
-        base::BindOnce(&StatusCallback, loop.QuitClosure(), &result));
-    EXPECT_FALSE(result.has_value());  // always async
+    storage()->UpdateToActiveState(
+        registration_id, origin.GetURL(),
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode FindRegistrationForClientUrl(
-      const GURL& document_url,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+  ServiceWorkerDatabase::Status FindRegistrationForClientUrl(
+      const GURL& document_url) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->FindRegistrationForClientUrl(
-        document_url, base::BindOnce(&FindCallback, loop.QuitClosure(), &result,
-                                     registration));
+    storage()->FindRegistrationForClientUrl(
+        document_url, base::BindLambdaForTesting(
+                          [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
+                              std::unique_ptr<ResourceList>,
+                              ServiceWorkerDatabase::Status status) {
+                            result = status;
+                            loop.Quit();
+                          }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode FindRegistrationForScope(
-      const GURL& scope,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+  ServiceWorkerDatabase::Status FindRegistrationForScope(const GURL& scope) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->FindRegistrationForScope(
-        scope, base::BindOnce(&FindCallback, loop.QuitClosure(), &result,
-                              registration));
-    EXPECT_FALSE(result);  // always async
+    storage()->FindRegistrationForScope(
+        scope, base::BindLambdaForTesting(
+                   [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
+                       std::unique_ptr<ResourceList>,
+                       ServiceWorkerDatabase::Status status) {
+                     result = status;
+                     loop.Quit();
+                   }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode FindRegistrationForId(
+  ServiceWorkerDatabase::Status FindRegistrationForId(
       int64_t registration_id,
-      const url::Origin& origin,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+      const url::Origin& origin) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->FindRegistrationForId(
+    storage()->FindRegistrationForId(
         registration_id, origin,
-        base::BindOnce(&FindCallback, loop.QuitClosure(), &result,
-                       registration));
+        base::BindLambdaForTesting(
+            [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
+                std::unique_ptr<ResourceList>,
+                ServiceWorkerDatabase::Status status) {
+              result = status;
+              loop.Quit();
+            }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
-  blink::ServiceWorkerStatusCode FindRegistrationForIdOnly(
-      int64_t registration_id,
-      scoped_refptr<ServiceWorkerRegistration>* registration) {
-    base::Optional<blink::ServiceWorkerStatusCode> result;
+  ServiceWorkerDatabase::Status FindRegistrationForIdOnly(
+      int64_t registration_id) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    registry()->FindRegistrationForIdOnly(
-        registration_id, base::BindOnce(&FindCallback, loop.QuitClosure(),
-                                        &result, registration));
+    storage()->FindRegistrationForIdOnly(
+        registration_id,
+        base::BindLambdaForTesting(
+            [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
+                std::unique_ptr<ResourceList>,
+                ServiceWorkerDatabase::Status status) {
+              result = status;
+              loop.Quit();
+            }));
     loop.Run();
-    return result.value();
+    return result;
   }
 
   int64_t GetNewRegistrationId() {
@@ -577,9 +594,10 @@ class ServiceWorkerStorageTest : public testing::Test {
     return ids;
   }
 
-  void StoreRegistrationData(
+  ServiceWorkerDatabase::Status StoreRegistrationData(
       storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
       std::vector<ResourceRecord> resources) {
+    ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->StoreRegistrationData(
         std::move(registration_data), std::move(resources),
@@ -587,11 +605,11 @@ class ServiceWorkerStorageTest : public testing::Test {
             [&](storage::mojom::ServiceWorkerDatabaseStatus status,
                 int64_t /*deleted_version_id*/,
                 const std::vector<int64_t>& /*newly_purgeable_resources*/) {
-              ASSERT_EQ(storage::mojom::ServiceWorkerDatabaseStatus::kOk,
-                        status);
+              result = status;
               loop.Quit();
             }));
     loop.Run();
+    return result;
   }
 
   // user_data_directory_ must be declared first to preserve destructor order.
@@ -610,49 +628,38 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   const int64_t kVersionId = 0;
   const int64_t kResourceId = 0;
 
-  registry()->DisableDeleteAndStartOverForTesting();
   LazyInitialize();
   storage()->Disable();
 
-  scoped_refptr<ServiceWorkerRegistration> found_registration;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            FindRegistrationForClientUrl(kDocumentUrl, &found_registration));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            FindRegistrationForScope(kScope, &found_registration));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
-                                  &found_registration));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            FindRegistrationForIdOnly(kRegistrationId, &found_registration));
-  EXPECT_FALSE(registry()->GetUninstallingRegistration(kScope.GetOrigin()));
+  EXPECT_EQ(FindRegistrationForClientUrl(kDocumentUrl),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(FindRegistrationForScope(kScope),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope)),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(FindRegistrationForIdOnly(kRegistrationId),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  std::vector<scoped_refptr<ServiceWorkerRegistration>> found_registrations;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            GetRegistrationsForOrigin(url::Origin::Create(kScope),
-                                      &found_registrations));
+  EXPECT_EQ(GetRegistrationsForOrigin(url::Origin::Create(kScope)),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  std::vector<ServiceWorkerRegistrationInfo> all_registrations;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            GetAllRegistrationsInfos(&all_registrations));
+  EXPECT_EQ(GetAllRegistrations(),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = kScope;
-  scoped_refptr<ServiceWorkerRegistration> live_registration =
-      new ServiceWorkerRegistration(options, kRegistrationId,
-                                    context()->AsWeakPtr());
-  scoped_refptr<ServiceWorkerVersion> live_version = new ServiceWorkerVersion(
-      live_registration.get(), kScript, blink::mojom::ScriptType::kClassic,
-      kVersionId,
-      mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            StoreRegistration(live_registration, live_version));
+  std::vector<ResourceRecord> resources;
+  resources.push_back(CreateResourceRecord(kResourceId, kScript, 100));
+  storage::mojom::ServiceWorkerRegistrationDataPtr registration_data =
+      CreateRegistrationData(kRegistrationId, kVersionId, kScope, kScript,
+                             resources);
+  EXPECT_EQ(
+      StoreRegistrationData(std::move(registration_data), std::move(resources)),
+      ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            UpdateToActiveState(live_registration));
+  EXPECT_EQ(UpdateToActiveState(kRegistrationId, kOrigin),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            DeleteRegistration(live_registration, kScope.GetOrigin()));
+  EXPECT_EQ(DeleteRegistrationById(kRegistrationId, kScope.GetOrigin()),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
 
   // Response reader and writer created by the disabled storage should fail to
   // access the disk cache.
@@ -665,21 +672,21 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
 
   const std::string kUserDataKey = "key";
   std::vector<std::string> user_data_out;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            GetUserData(kRegistrationId, {kUserDataKey}, &user_data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            GetUserDataByKeyPrefix(kRegistrationId, "prefix", &user_data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            StoreUserData(kRegistrationId, kOrigin, {{kUserDataKey, "foo"}}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            ClearUserData(kRegistrationId, {kUserDataKey}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            ClearUserDataByKeyPrefixes(kRegistrationId, {"prefix"}));
+  EXPECT_EQ(GetUserData(kRegistrationId, {kUserDataKey}, user_data_out),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, "prefix", user_data_out),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin, {{kUserDataKey, "foo"}}),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(ClearUserData(kRegistrationId, {kUserDataKey}),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(ClearUserDataByKeyPrefixes(kRegistrationId, {"prefix"}),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
   std::vector<std::pair<int64_t, std::string>> data_list_out;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            GetUserDataForAllRegistrations(kUserDataKey, &data_list_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            ClearUserDataForAllRegistrationsByKeyPrefix("prefix"));
+  EXPECT_EQ(GetUserDataForAllRegistrations(kUserDataKey, data_list_out),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+  EXPECT_EQ(ClearUserDataForAllRegistrationsByKeyPrefix("prefix"),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
 
   // Next available ids should be invalid.
   EXPECT_EQ(blink::mojom::kInvalidServiceWorkerRegistrationId,
@@ -701,198 +708,198 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   storage::mojom::ServiceWorkerRegistrationDataPtr registration_data =
       CreateRegistrationData(kRegistrationId,
                              /*version_id=*/1, kScope, kScript, resources);
-  StoreRegistrationData(std::move(registration_data), std::move(resources));
+  ASSERT_EQ(
+      StoreRegistrationData(std::move(registration_data), std::move(resources)),
+      ServiceWorkerDatabase::Status::kOk);
 
   // Store user data associated with the registration.
   std::vector<std::string> data_out;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserData(kRegistrationId, {"key"}, &data_out));
+  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(1u, data_out.size());
   EXPECT_EQ("data", data_out[0]);
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"unknown_key"}, &data_out));
+  EXPECT_EQ(GetUserData(kRegistrationId, {"unknown_key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
   std::vector<std::pair<int64_t, std::string>> data_list_out;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataForAllRegistrations("key", &data_list_out));
+  EXPECT_EQ(GetUserDataForAllRegistrations("key", data_list_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(1u, data_list_out.size());
   EXPECT_EQ(kRegistrationId, data_list_out[0].first);
   EXPECT_EQ("data", data_list_out[0].second);
   data_list_out.clear();
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataForAllRegistrations("unknown_key", &data_list_out));
+  EXPECT_EQ(GetUserDataForAllRegistrations("unknown_key", data_list_out),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(0u, data_list_out.size());
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            ClearUserData(kRegistrationId, {"key"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key"}, &data_out));
+  EXPECT_EQ(ClearUserData(kRegistrationId, {"key"}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
 
   // Write/overwrite multiple user data keys.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreUserData(
+  EXPECT_EQ(StoreUserData(
                 kRegistrationId, kOrigin,
-                {{"key", "overwrite"}, {"key3", "data3"}, {"key4", "data4"}}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key2"}, &data_out));
+                {{"key", "overwrite"}, {"key3", "data3"}, {"key4", "data4"}}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key2"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
   EXPECT_TRUE(data_out.empty());
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserData(kRegistrationId, {"key", "key3", "key4"}, &data_out));
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key", "key3", "key4"}, data_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(3u, data_out.size());
   EXPECT_EQ("overwrite", data_out[0]);
   EXPECT_EQ("data3", data_out[1]);
   EXPECT_EQ("data4", data_out[2]);
   // Multiple gets fail if one is not found.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key", "key2"}, &data_out));
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key", "key2"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
   EXPECT_TRUE(data_out.empty());
 
   // Delete multiple user data keys, even if some are not found.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            ClearUserData(kRegistrationId, {"key", "key2", "key3"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key"}, &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key2"}, &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key3"}, &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserData(kRegistrationId, {"key4"}, &data_out));
+  EXPECT_EQ(ClearUserData(kRegistrationId, {"key", "key2", "key3"}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key2"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key3"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key4"}, data_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(1u, data_out.size());
   EXPECT_EQ("data4", data_out[0]);
 
   // Get/delete multiple user data keys by prefixes.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreUserData(kRegistrationId, kOrigin,
+  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin,
                           {{"prefixA", "data1"},
                            {"prefixA2", "data2"},
                            {"prefixB", "data3"},
-                           {"prefixC", "data4"}}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataByKeyPrefix(kRegistrationId, "prefix", &data_out));
+                           {"prefixC", "data4"}}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, "prefix", data_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(4u, data_out.size());
   EXPECT_EQ("data1", data_out[0]);
   EXPECT_EQ("data2", data_out[1]);
   EXPECT_EQ("data3", data_out[2]);
   EXPECT_EQ("data4", data_out[3]);
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      ClearUserDataByKeyPrefixes(kRegistrationId, {"prefixA", "prefixC"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataByKeyPrefix(kRegistrationId, "prefix", &data_out));
+  EXPECT_EQ(ClearUserDataByKeyPrefixes(kRegistrationId, {"prefixA", "prefixC"}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, "prefix", data_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(1u, data_out.size());
   EXPECT_EQ("data3", data_out[0]);
 
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            ClearUserDataForAllRegistrationsByKeyPrefix("prefixB"));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataByKeyPrefix(kRegistrationId, "prefix", &data_out));
+  EXPECT_EQ(ClearUserDataForAllRegistrationsByKeyPrefix("prefixB"),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, "prefix", data_out),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_TRUE(data_out.empty());
 
   // User data should be deleted when the associated registration is deleted.
-  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}));
-  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserData(kRegistrationId, {"key"}, &data_out));
+  ASSERT_EQ(StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}),
+            ServiceWorkerDatabase::Status::kOk);
+  ASSERT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(1u, data_out.size());
   ASSERT_EQ("data", data_out[0]);
 
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            DeleteRegistrationById(kRegistrationId, kScope.GetOrigin()));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key"}, &data_out));
+  EXPECT_EQ(DeleteRegistrationById(kRegistrationId, kScope.GetOrigin()),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
   data_list_out.clear();
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataForAllRegistrations("key", &data_list_out));
+  EXPECT_EQ(GetUserDataForAllRegistrations("key", data_list_out),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(0u, data_list_out.size());
 
   // Data access with an invalid registration id should be failed.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
-                          kOrigin, {{"key", "data"}}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            GetUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
-                        {"key"}, &data_out));
+  EXPECT_EQ(StoreUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
+                          kOrigin, {{"key", "data"}}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(GetUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
+                        {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorFailed);
   EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kErrorFailed,
       GetUserDataByKeyPrefix(blink::mojom::kInvalidServiceWorkerRegistrationId,
-                             "prefix", &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
-                          {"key"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserDataByKeyPrefixes(
-                blink::mojom::kInvalidServiceWorkerRegistrationId, {"prefix"}));
+                             "prefix", data_out),
+      ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(
+      ClearUserData(blink::mojom::kInvalidServiceWorkerRegistrationId, {"key"}),
+      ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserDataByKeyPrefixes(
+                blink::mojom::kInvalidServiceWorkerRegistrationId, {"prefix"}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
 
   // Data access with an empty key should be failed.
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(kRegistrationId, kOrigin,
-                          std::vector<std::pair<std::string, std::string>>()));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(kRegistrationId, kOrigin, {{std::string(), "data"}}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(kRegistrationId, kOrigin,
-                          {{std::string(), "data"}, {"key", "data"}}));
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kErrorFailed,
-      GetUserData(kRegistrationId, std::vector<std::string>(), &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            GetUserDataByKeyPrefix(kRegistrationId, std::string(), &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            GetUserData(kRegistrationId, {std::string()}, &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            GetUserData(kRegistrationId, {std::string(), "key"}, &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserData(kRegistrationId, std::vector<std::string>()));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserData(kRegistrationId, {std::string()}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserData(kRegistrationId, {std::string(), "key"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserDataByKeyPrefixes(kRegistrationId, {}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserDataByKeyPrefixes(kRegistrationId, {std::string()}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            ClearUserDataForAllRegistrationsByKeyPrefix(std::string()));
+  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin,
+                          std::vector<std::pair<std::string, std::string>>()),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin, {{std::string(), "data"}}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin,
+                          {{std::string(), "data"}, {"key", "data"}}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(GetUserData(kRegistrationId, std::vector<std::string>(), data_out),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, std::string(), data_out),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(GetUserData(kRegistrationId, {std::string()}, data_out),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(GetUserData(kRegistrationId, {std::string(), "key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserData(kRegistrationId, std::vector<std::string>()),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserData(kRegistrationId, {std::string()}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserData(kRegistrationId, {std::string(), "key"}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserDataByKeyPrefixes(kRegistrationId, {}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserDataByKeyPrefixes(kRegistrationId, {std::string()}),
+            ServiceWorkerDatabase::Status::kErrorFailed);
+  EXPECT_EQ(ClearUserDataForAllRegistrationsByKeyPrefix(std::string()),
+            ServiceWorkerDatabase::Status::kErrorFailed);
   data_list_out.clear();
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            GetUserDataForAllRegistrations(std::string(), &data_list_out));
+  EXPECT_EQ(GetUserDataForAllRegistrations(std::string(), data_list_out),
+            ServiceWorkerDatabase::Status::kErrorFailed);
 }
 
 // The *_BeforeInitialize tests exercise the API before LazyInitialize() is
 // called.
 TEST_F(ServiceWorkerStorageTest, StoreUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            StoreUserData(kRegistrationId,
+  EXPECT_EQ(StoreUserData(kRegistrationId,
                           url::Origin::Create(GURL("https://example.com")),
-                          {{"key", "data"}}));
+                          {{"key", "data"}}),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
 }
 
 TEST_F(ServiceWorkerStorageTest, GetUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
   std::vector<std::string> data_out;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserData(kRegistrationId, {"key"}, &data_out));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            GetUserDataByKeyPrefix(kRegistrationId, "prefix", &data_out));
+  EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
+  EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, "prefix", data_out),
+            ServiceWorkerDatabase::Status::kErrorNotFound);
 }
 
 TEST_F(ServiceWorkerStorageTest, ClearUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            ClearUserData(kRegistrationId, {"key"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            ClearUserDataByKeyPrefixes(kRegistrationId, {"prefix"}));
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            ClearUserDataForAllRegistrationsByKeyPrefix("key"));
+  EXPECT_EQ(ClearUserData(kRegistrationId, {"key"}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(ClearUserDataByKeyPrefixes(kRegistrationId, {"prefix"}),
+            ServiceWorkerDatabase::Status::kOk);
+  EXPECT_EQ(ClearUserDataForAllRegistrationsByKeyPrefix("key"),
+            ServiceWorkerDatabase::Status::kOk);
 }
 
 TEST_F(ServiceWorkerStorageTest,
        GetUserDataForAllRegistrations_BeforeInitialize) {
   std::vector<std::pair<int64_t, std::string>> data_list_out;
-  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            GetUserDataForAllRegistrations("key", &data_list_out));
+  EXPECT_EQ(GetUserDataForAllRegistrations("key", data_list_out),
+            ServiceWorkerDatabase::Status::kOk);
   EXPECT_TRUE(data_list_out.empty());
 }
 
@@ -1031,7 +1038,8 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
           /*scope=*/kScope1,
           /*script_url=*/kScript1, resources1);
   int64_t resources_total_size_bytes1 = data1->resources_total_size_bytes;
-  StoreRegistrationData(std::move(data1), std::move(resources1));
+  ASSERT_EQ(StoreRegistrationData(std::move(data1), std::move(resources1)),
+            ServiceWorkerDatabase::Status::kOk);
 
   std::vector<ResourceRecord> resources2;
   resources2.push_back(CreateResourceRecord(2, kScript2, 456));
@@ -1043,7 +1051,8 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
           /*scope=*/kScope1,
           /*script_url=*/kScript2, resources2);
   int64_t resources_total_size_bytes2 = data2->resources_total_size_bytes;
-  StoreRegistrationData(std::move(data2), std::move(resources2));
+  ASSERT_EQ(StoreRegistrationData(std::move(data2), std::move(resources2)),
+            ServiceWorkerDatabase::Status::kOk);
 
   // Storage usage should report total resource size from two registrations.
   const url::Origin origin = url::Origin::Create(kScope1.GetOrigin());

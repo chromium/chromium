@@ -686,10 +686,22 @@ void ServiceWorkerStorage::StoreUserData(
       break;
   }
 
-  // TODO(bashi): Consider replacing these DCHECKs with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK_NE(registration_id, blink::mojom::kInvalidServiceWorkerRegistrationId);
-  DCHECK(!user_data.empty());
+  if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+      user_data.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed));
+    return;
+  }
+
+  for (const auto& entry : user_data) {
+    if (entry->key.empty()) {
+      RunSoon(FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             ServiceWorkerDatabase::Status::kErrorFailed));
+      return;
+    }
+  }
 
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
@@ -721,10 +733,24 @@ void ServiceWorkerStorage::GetUserData(int64_t registration_id,
       break;
   }
 
-  // TODO(bashi): Consider replacing these DCHECKs with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK_NE(registration_id, blink::mojom::kInvalidServiceWorkerRegistrationId);
-  DCHECK(!keys.empty());
+  if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+      keys.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed,
+                           std::vector<std::string>()));
+    return;
+  }
+
+  for (const std::string& key : keys) {
+    if (key.empty()) {
+      RunSoon(FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             ServiceWorkerDatabase::Status::kErrorFailed,
+                             std::vector<std::string>()));
+      return;
+    }
+  }
 
   database_task_runner_->PostTask(
       FROM_HERE,
@@ -756,10 +782,14 @@ void ServiceWorkerStorage::GetUserDataByKeyPrefix(
       break;
   }
 
-  // TODO(bashi): Consider replacing these DCHECKs with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK_NE(registration_id, blink::mojom::kInvalidServiceWorkerRegistrationId);
-  DCHECK(!key_prefix.empty());
+  if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+      key_prefix.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed,
+                           std::vector<std::string>()));
+    return;
+  }
 
   database_task_runner_->PostTask(
       FROM_HERE,
@@ -823,10 +853,22 @@ void ServiceWorkerStorage::ClearUserData(int64_t registration_id,
       break;
   }
 
-  // TODO(bashi): Consider replacing these DCHECKs with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK_NE(registration_id, blink::mojom::kInvalidServiceWorkerRegistrationId);
-  DCHECK(!keys.empty());
+  if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+      keys.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed));
+    return;
+  }
+
+  for (const std::string& key : keys) {
+    if (key.empty()) {
+      RunSoon(FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             ServiceWorkerDatabase::Status::kErrorFailed));
+      return;
+    }
+  }
 
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
@@ -857,10 +899,22 @@ void ServiceWorkerStorage::ClearUserDataByKeyPrefixes(
       break;
   }
 
-  // TODO(bashi): Consider replacing these DCHECKs with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK_NE(registration_id, blink::mojom::kInvalidServiceWorkerRegistrationId);
-  DCHECK(!key_prefixes.empty());
+  if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
+      key_prefixes.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed));
+    return;
+  }
+
+  for (const std::string& key_prefix : key_prefixes) {
+    if (key_prefix.empty()) {
+      RunSoon(FROM_HERE,
+              base::BindOnce(std::move(callback),
+                             ServiceWorkerDatabase::Status::kErrorFailed));
+      return;
+    }
+  }
 
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
@@ -892,9 +946,14 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrations(
       break;
   }
 
-  // TODO(bashi): Consider replacing this DCHECK with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK(!key.empty());
+  if (key.empty()) {
+    RunSoon(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), ServiceWorkerDatabase::Status::kErrorFailed,
+            std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
+    return;
+  }
 
   database_task_runner_->PostTask(
       FROM_HERE,
@@ -925,9 +984,14 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
       break;
   }
 
-  // TODO(bashi): Consider replacing this DCHECK with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK(!key_prefix.empty());
+  if (key_prefix.empty()) {
+    RunSoon(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), ServiceWorkerDatabase::Status::kErrorFailed,
+            std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
+    return;
+  }
 
   database_task_runner_->PostTask(
       FROM_HERE,
@@ -957,9 +1021,12 @@ void ServiceWorkerStorage::ClearUserDataForAllRegistrationsByKeyPrefix(
       break;
   }
 
-  // TODO(bashi): Consider replacing this DCHECK with returning errors once
-  // this class is moved to the Storage Service.
-  DCHECK(!key_prefix.empty());
+  if (key_prefix.empty()) {
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed));
+    return;
+  }
 
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
