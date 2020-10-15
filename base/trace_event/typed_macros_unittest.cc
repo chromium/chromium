@@ -6,13 +6,13 @@
 
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/typed_macros_embedder_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
-
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/log_message.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pb.h"
@@ -166,45 +166,23 @@ TEST_F(TypedTraceEventTest, DescriptorPacketWrittenForEventWithTrack) {
   CancelTrace();
 }
 
-namespace {
-
-struct InternedLocationIndex
-    : public perfetto::TrackEventInternedDataIndex<
-          InternedLocationIndex,
-          perfetto::protos::pbzero::InternedData::kSourceLocationsFieldNumber,
-          Location> {
-  static void Add(perfetto::protos::pbzero::InternedData* interned_data,
-                  size_t iid,
-                  const Location& location) {
-    auto* loc = interned_data->add_source_locations();
-    loc->set_iid(iid);
-    loc->set_file_name(location.file_name());
-    loc->set_function_name(location.function_name());
-    loc->set_line_number(location.line_number());
-  }
-};
-
-}  // namespace
-
 TEST_F(TypedTraceEventTest, InternedData) {
   TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
                                       TraceLog::RECORDING_MODE);
-  const Location location("TestFunction", "test.cc", 123,
-                          reinterpret_cast<void*>(0xdada));
+  const TraceSourceLocation location("TestFunction", "test.cc", 123);
   size_t iid = 0;
 
   TRACE_EVENT("cat", "Name", [&location, &iid](perfetto::EventContext ctx) {
     auto* log = ctx.event()->set_log_message();
-    iid = InternedLocationIndex::Get(&ctx, location);
+    iid = InternedSourceLocation::Get(&ctx, location);
     EXPECT_NE(0u, iid);
     log->set_body_iid(iid);
 
-    size_t iid2 = InternedLocationIndex::Get(&ctx, location);
+    size_t iid2 = InternedSourceLocation::Get(&ctx, location);
     EXPECT_EQ(iid, iid2);
 
-    Location location2("TestFunction2", "test.cc", 456,
-                       reinterpret_cast<void*>(0xf00d));
-    size_t iid3 = InternedLocationIndex::Get(&ctx, location2);
+    TraceSourceLocation location2("TestFunction2", "test.cc", 456);
+    size_t iid3 = InternedSourceLocation::Get(&ctx, location2);
     EXPECT_NE(0u, iid3);
     EXPECT_NE(iid, iid3);
   });
@@ -219,11 +197,9 @@ TEST_F(TypedTraceEventTest, InternedData) {
   EXPECT_EQ(iid, interned_loc.iid());
   EXPECT_EQ("TestFunction", interned_loc.function_name());
   EXPECT_EQ("test.cc", interned_loc.file_name());
-  EXPECT_EQ(123u, interned_loc.line_number());
   interned_loc = interned_data.source_locations()[1];
   EXPECT_EQ("TestFunction2", interned_loc.function_name());
   EXPECT_EQ("test.cc", interned_loc.file_name());
-  EXPECT_EQ(456u, interned_loc.line_number());
 
   // Make sure the in-memory interning index persists between trace events by
   // recording another event.
@@ -232,7 +208,7 @@ TEST_F(TypedTraceEventTest, InternedData) {
 
   TRACE_EVENT("cat", "Name", [&location](perfetto::EventContext ctx) {
     auto* log = ctx.event()->set_log_message();
-    size_t iid = InternedLocationIndex::Get(&ctx, location);
+    size_t iid = InternedSourceLocation::Get(&ctx, location);
     EXPECT_NE(0u, iid);
     log->set_body_iid(iid);
   });

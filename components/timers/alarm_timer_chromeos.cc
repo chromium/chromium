@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
 #include "base/task/common/task_annotator.h"
+#include "base/trace_event/task_execution_macros.h"
 #include "base/trace_event/trace_event.h"
 
 namespace timers {
