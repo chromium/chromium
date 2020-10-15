@@ -67,12 +67,14 @@
 #include "device/fido/virtual_fido_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/url_util.h"
 
 #if defined(OS_MAC)
@@ -416,6 +418,24 @@ std::string GetTestClientDataJSON(std::string type) {
       /*is_cross_origin=*/false);
 }
 
+std::vector<uint8_t> StringToVector(const std::string& string) {
+  std::vector<uint8_t> vector;
+  vector.assign(string.begin(), string.end());
+  return vector;
+}
+
+std::vector<uint8_t> CompressLargeBlob(base::span<const uint8_t> blob) {
+  std::string output;
+  CHECK(compression::GzipCompress(blob, &output));
+  return StringToVector(output);
+}
+
+std::vector<uint8_t> UncompressLargeBlob(base::span<const uint8_t> blob) {
+  std::string output;
+  CHECK(compression::GzipUncompress(blob, &output));
+  return StringToVector(output);
+}
+
 }  // namespace
 
 class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
@@ -597,6 +617,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
   scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
       mock_adapter_ = base::MakeRefCounted<
           ::testing::NiceMock<device::MockBluetoothAdapter>>();
+  data_decoder::test::InProcessDataDecoder data_decoder_service_;
 
  private:
   url::ScopedSchemeRegistryForTests scoped_registry_;
@@ -5068,7 +5089,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobRead) {
           &virtual_device_factory_->mutable_state()
                ->registrations.begin()
                ->second,
-          large_blob);
+          CompressLargeBlob(large_blob));
     } else if (test.large_blob_key_set) {
       virtual_device_factory_->mutable_state()
           ->registrations.begin()
@@ -5133,7 +5154,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
           &virtual_device_factory_->mutable_state()
                ->registrations.begin()
                ->second,
-          large_blob);
+          CompressLargeBlob(large_blob));
     } else if (test.large_blob_key_set) {
       virtual_device_factory_->mutable_state()
           ->registrations.begin()
@@ -5152,11 +5173,12 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
     EXPECT_TRUE(result.response->echo_large_blob_written);
     EXPECT_EQ(test.did_write_large_blob, result.response->large_blob_written);
     if (test.did_write_large_blob) {
-      EXPECT_EQ(large_blob,
-                virtual_device_factory_->mutable_state()->GetLargeBlob(
-                    virtual_device_factory_->mutable_state()
-                        ->registrations.begin()
-                        ->second));
+      base::Optional<std::vector<uint8_t>> compressed_blob =
+          virtual_device_factory_->mutable_state()->GetLargeBlob(
+              virtual_device_factory_->mutable_state()
+                  ->registrations.begin()
+                  ->second);
+      EXPECT_EQ(large_blob, UncompressLargeBlob(*compressed_blob));
     }
     virtual_device_factory_->mutable_state()->registrations.clear();
     virtual_device_factory_->mutable_state()->ClearLargeBlobs();

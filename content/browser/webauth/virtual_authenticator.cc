@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/optional.h"
 #include "crypto/ec_private_key.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_rp_entity.h"
@@ -95,25 +96,6 @@ bool VirtualAuthenticator::RemoveRegistration(
   return state_->registrations.erase(key_handle) != 0;
 }
 
-base::Optional<std::vector<uint8_t>> VirtualAuthenticator::GetLargeBlob(
-    base::span<const uint8_t> key_handle) {
-  auto registration = state_->registrations.find(key_handle);
-  if (registration == state_->registrations.end()) {
-    return base::nullopt;
-  }
-  return state_->GetLargeBlob(registration->second);
-}
-
-bool VirtualAuthenticator::SetLargeBlob(base::span<const uint8_t> key_handle,
-                                        base::span<const uint8_t> blob) {
-  auto registration = state_->registrations.find(key_handle);
-  if (registration == state_->registrations.end()) {
-    return false;
-  }
-  state_->InjectLargeBlob(&registration->second, blob);
-  return true;
-}
-
 void VirtualAuthenticator::SetUserPresence(bool is_user_present) {
   is_user_present_ = is_user_present;
   state_->simulate_press_callback = base::BindRepeating(
@@ -158,6 +140,34 @@ std::unique_ptr<device::FidoDevice> VirtualAuthenticator::ConstructDevice() {
   }
 }
 
+void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
+                                        GetLargeBlobCallback callback) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  base::Optional<std::vector<uint8_t>> blob =
+      state_->GetLargeBlob(registration->second);
+  if (!blob) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  data_decoder_.GzipUncompress(
+      std::move(*blob),
+      base::BindOnce(&VirtualAuthenticator::OnLargeBlobUncompressed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,
+                                        const std::vector<uint8_t>& blob,
+                                        SetLargeBlobCallback callback) {
+  data_decoder_.GzipCompress(
+      blob, base::BindOnce(&VirtualAuthenticator::OnLargeBlobCompressed,
+                           weak_factory_.GetWeakPtr(), key_handle,
+                           std::move(callback)));
+}
+
 void VirtualAuthenticator::GetUniqueId(GetUniqueIdCallback callback) {
   std::move(callback).Run(unique_id_);
 }
@@ -197,21 +207,34 @@ void VirtualAuthenticator::RemoveRegistration(
   std::move(callback).Run(RemoveRegistration(std::move(key_handle)));
 }
 
-void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
-                                        GetLargeBlobCallback callback) {
-  std::move(callback).Run(GetLargeBlob(key_handle));
-}
-
-void VirtualAuthenticator::SetLargeBlob(const std::vector<uint8_t>& key_handle,
-                                        const std::vector<uint8_t>& blob,
-                                        SetLargeBlobCallback callback) {
-  std::move(callback).Run(SetLargeBlob(key_handle, blob));
-}
-
 void VirtualAuthenticator::SetUserVerified(bool verified,
                                            SetUserVerifiedCallback callback) {
   is_user_verified_ = verified;
   std::move(callback).Run();
+}
+
+void VirtualAuthenticator::OnLargeBlobUncompressed(
+    GetLargeBlobCallback callback,
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+  std::move(callback).Run(
+      device::fido_parsing_utils::MaterializeOrNull(result.value));
+}
+
+void VirtualAuthenticator::OnLargeBlobCompressed(
+    const std::vector<uint8_t>& key_handle,
+    SetLargeBlobCallback callback,
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+  auto registration = state_->registrations.find(key_handle);
+  if (registration == state_->registrations.end()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!result.value) {
+    std::move(callback).Run(false);
+    return;
+  }
+  state_->InjectLargeBlob(&registration->second, *result.value);
+  std::move(callback).Run(true);
 }
 
 }  // namespace content

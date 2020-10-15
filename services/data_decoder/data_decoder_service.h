@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/web_bundler.mojom.h"
@@ -76,6 +77,7 @@ class DataDecoderService : public mojom::DataDecoderService {
           receiver) override;
   void BindWebBundler(
       mojo::PendingReceiver<mojom::WebBundler> receiver) override;
+  void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
 
 #ifdef OS_CHROMEOS
   void BindBleScanParser(

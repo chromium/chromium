@@ -8,6 +8,8 @@ source_set("lib") {
   sources = [
     "data_decoder_service.cc",
     "data_decoder_service.h",
+    "gzipper.cc",
+    "gzipper.h",
     "json_parser_impl.cc",
     "json_parser_impl.h",
     "web_bundler.cc",
@@ -32,6 +34,7 @@ source_set("lib") {
     "//net",
     "//skia",
     "//third_party/libxml:xml_reader",
+    "//third_party/zlib/google:compression_utils",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -52,6 +55,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "gzipper_unittest.cc",
     "public/cpp/data_decoder_unittest.cc",
     "public/cpp/json_sanitizer_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",

@@ -14,6 +14,7 @@
 #include "components/web_package/web_bundle_parser_factory.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/data_decoder/gzipper.h"
 #include "services/data_decoder/json_parser_impl.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "services/data_decoder/web_bundler.h"
@@ -89,6 +90,11 @@ void DataDecoderService::BindWebBundler(
     mojo::MakeSelfOwnedReceiver(std::make_unique<WebBundler>(),
                                 std::move(receiver));
   }
+}
+
+void DataDecoderService::BindGzipper(
+    mojo::PendingReceiver<mojom::Gzipper> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<Gzipper>(), std::move(receiver));
 }
 
 #ifdef OS_CHROMEOS

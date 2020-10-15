@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
   base::Optional<std::vector<uint8_t>> large_blob() const {
     return large_blob_;
   }
-  void set_large_blob(std::vector<uint8_t> large_blob) {
+  void set_large_blob(base::Optional<std::vector<uint8_t>> large_blob) {
     large_blob_ = std::move(large_blob);
   }
   bool large_blob_written() const { return large_blob_written_; }

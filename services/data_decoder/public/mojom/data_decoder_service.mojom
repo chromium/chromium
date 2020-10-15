@@ -5,6 +5,7 @@
 module data_decoder.mojom;
 
 import "components/web_package/mojom/web_bundle_parser.mojom";
+import "services/data_decoder/public/mojom/gzipper.mojom";
 import "services/data_decoder/public/mojom/image_decoder.mojom";
 import "services/data_decoder/public/mojom/json_parser.mojom";
 import "services/data_decoder/public/mojom/web_bundler.mojom";
@@ -30,6 +31,10 @@ interface DataDecoderService {
 
   // Binds an interface which can be used to generate a Web Bundle.
   BindWebBundler(pending_receiver<WebBundler> receiver);
+
+  // Binds an interface which can be used to compress and decompress data using
+  // gzip.
+  BindGzipper(pending_receiver<Gzipper> receiver);
 
   // Binds an interface which can be used to parse raw BLE advertising packet
   // data.

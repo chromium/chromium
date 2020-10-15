@@ -42,6 +42,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
@@ -241,7 +242,6 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
     request_parameter.large_blob_key = true;
   }
   if (options->large_blob_write) {
-    request_parameter.large_blob_write = options->large_blob_write;
     request_parameter.large_blob_key = true;
   }
   request_parameter.is_incognito_mode = is_incognito;
@@ -756,6 +756,25 @@ bool AuthenticatorCommon::IsFocused() const {
   return render_frame_host_->IsCurrent() && request_delegate_->IsFocused();
 }
 
+void AuthenticatorCommon::OnLargeBlobCompressed(
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+  ctap_get_assertion_request_->large_blob_write =
+      device::fido_parsing_utils::MaterializeOrNull(result.value);
+  StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
+}
+
+void AuthenticatorCommon::OnLargeBlobUncompressed(
+    device::AuthenticatorGetAssertionResponse response,
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+  response.set_large_blob(
+      device::fido_parsing_utils::MaterializeOrNull(result.value));
+  InvokeCallbackAndCleanup(
+      std::move(get_assertion_response_callback_),
+      blink::mojom::AuthenticatorStatus::SUCCESS,
+      CreateGetAssertionResponse(client_data_json_, std::move(response),
+                                 app_id_, requested_extensions_));
+}
+
 // static
 // mojom::Authenticator
 void AuthenticatorCommon::MakeCredential(
@@ -1212,6 +1231,14 @@ void AuthenticatorCommon::GetAssertion(
         client_data::kGetType, caller_origin_, options->challenge);
   }
 
+  if (options->large_blob_write) {
+    data_decoder_.GzipCompress(
+        *options->large_blob_write,
+        base::BindOnce(&AuthenticatorCommon::OnLargeBlobCompressed,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
 
@@ -1611,6 +1638,13 @@ void AuthenticatorCommon::OnSignResponse(
 
 void AuthenticatorCommon::OnAccountSelected(
     device::AuthenticatorGetAssertionResponse response) {
+  if (response.large_blob()) {
+    std::vector<uint8_t> blob = std::move(*response.large_blob());
+    data_decoder_.GzipUncompress(
+        blob, base::BindOnce(&AuthenticatorCommon::OnLargeBlobUncompressed,
+                             weak_factory_.GetWeakPtr(), std::move(response)));
+    return;
+  }
   InvokeCallbackAndCleanup(
       std::move(get_assertion_response_callback_),
       blink::mojom::AuthenticatorStatus::SUCCESS,

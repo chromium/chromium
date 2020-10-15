@@ -11,12 +11,14 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/virtual_fido_device.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
 
 namespace content {
@@ -73,11 +75,6 @@ class CONTENT_EXPORT VirtualAuthenticator
   base::Optional<std::vector<uint8_t>> GetLargeBlob(
       base::span<const uint8_t> key_handle);
 
-  // Associates a large blob with the credential identified by |key_handle|.
-  // Returns true if the operation was successful, false otherwise.
-  bool SetLargeBlob(base::span<const uint8_t> key_handle,
-                    base::span<const uint8_t> blob);
-
   // Sets whether tests of user presence succeed or not for new requests sent to
   // this authenticator. The default is true.
   void SetUserPresence(bool is_user_present);
@@ -106,6 +103,13 @@ class CONTENT_EXPORT VirtualAuthenticator
   // this method can be called any number of times.
   std::unique_ptr<device::FidoDevice> ConstructDevice();
 
+  // blink::test::mojom::VirtualAuthenticator:
+  void GetLargeBlob(const std::vector<uint8_t>& key_handle,
+                    GetLargeBlobCallback callback) override;
+  void SetLargeBlob(const std::vector<uint8_t>& key_handle,
+                    const std::vector<uint8_t>& blob,
+                    SetLargeBlobCallback callback) override;
+
  protected:
   // blink::test::mojom::VirtualAuthenticator:
   void GetUniqueId(GetUniqueIdCallback callback) override;
@@ -116,16 +120,19 @@ class CONTENT_EXPORT VirtualAuthenticator
   void ClearRegistrations(ClearRegistrationsCallback callback) override;
   void RemoveRegistration(const std::vector<uint8_t>& key_handle,
                           RemoveRegistrationCallback callback) override;
-  void GetLargeBlob(const std::vector<uint8_t>& key_handle,
-                    GetLargeBlobCallback callback) override;
-  void SetLargeBlob(const std::vector<uint8_t>& key_handle,
-                    const std::vector<uint8_t>& blob,
-                    SetLargeBlobCallback callback) override;
 
   void SetUserVerified(bool verified,
                        SetUserVerifiedCallback callback) override;
 
  private:
+  void OnLargeBlobUncompressed(
+      GetLargeBlobCallback callback,
+      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+  void OnLargeBlobCompressed(
+      const std::vector<uint8_t>& key_handle,
+      SetLargeBlobCallback callback,
+      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+
   const device::ProtocolVersion protocol_;
   const device::Ctap2Version ctap2_version_;
   const device::AuthenticatorAttachment attachment_;
@@ -135,8 +142,11 @@ class CONTENT_EXPORT VirtualAuthenticator
   bool is_user_verified_ = true;
   const std::string unique_id_;
   bool is_user_present_;
+  data_decoder::DataDecoder data_decoder_;
   scoped_refptr<device::VirtualFidoDevice::State> state_;
   mojo::ReceiverSet<blink::test::mojom::VirtualAuthenticator> receiver_set_;
+
+  base::WeakPtrFactory<VirtualAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VirtualAuthenticator);
 };

@@ -8,5 +8,6 @@ include_rules = [
   "+third_party/libxml/chromium",
   "+third_party/blink/public",
   "+third_party/skia",
+  "+third_party/zlib",
   "+ui/gfx",
 ]

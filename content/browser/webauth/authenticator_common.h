@@ -29,6 +29,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/make_credential_request_handler.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
@@ -117,6 +118,17 @@ class CONTENT_EXPORT AuthenticatorCommon {
   void StartGetAssertionRequest(bool allow_skipping_pin_touch);
 
   bool IsFocused() const;
+
+  // Callback to handle the large blob being compressed before attempting to
+  // start a request.
+  void OnLargeBlobCompressed(
+      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+
+  // Callback to handle the large blob being uncompressed before completing a
+  // request.
+  void OnLargeBlobUncompressed(
+      device::AuthenticatorGetAssertionResponse response,
+      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
 
   // Callback to handle the async response from a U2fDevice.
   void OnRegisterResponse(
@@ -207,6 +219,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   bool awaiting_attestation_response_ = false;
   blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement_ =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+  data_decoder::DataDecoder data_decoder_;
 
   base::flat_set<RequestExtension> requested_extensions_;
 
