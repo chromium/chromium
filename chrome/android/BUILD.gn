@@ -2075,7 +2075,7 @@ android_library("base_monochrome_module_java") {
   ]
   deps = [
     ":base_module_java",
-    "//android_webview:android_webview_java",
+    "//android_webview:android_webview_no_weblayer_java",
     "//base:base_java",
     "//chrome/browser/version:java",
     "//components/version_info/android:version_constants_java",

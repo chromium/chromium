@@ -8,13 +8,6 @@ import("//build/util/version.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//components/module_installer/android/module_desc_java.gni")
 
-declare_args() {
-  # Whether //chrome code and resources are in a DFM for Monochrome and
-  # Trichrome bundles. This module will also include code and resources from all
-  # other DFMs.
-  enable_chrome_module = false
-}
-
 # Instantiates a Chrome-specific app bundle.
 #
 # Supports most variables of chrome_feature_module and android_app_bundle, plus:
@@ -51,21 +44,27 @@ template("chrome_bundle") {
     _paks = []
     _pak_deps = []
     foreach(_module_desc, invoker.module_descs) {
-      _module_desc_target_name =
-          "${target_name}__${_module_desc.name}__module_desc_java"
-      module_desc_java(_module_desc_target_name) {
-        module_name = _module_desc.name
+      if (defined(_module_desc.supports_isolated_split) &&
+          _module_desc.supports_isolated_split) {
+        _module_descs += [ _module_desc ]
+      } else {
+        _module_desc_target_name =
+            "${target_name}__${_module_desc.name}__module_desc_java"
+        module_desc_java(_module_desc_target_name) {
+          module_name = _module_desc.name
+          if (defined(_module_desc.pak_deps)) {
+            paks = _module_desc.paks
+          }
+          if (defined(_module_desc.load_native_on_get_impl)) {
+            load_native_on_get_impl = _module_desc.load_native_on_get_impl
+          }
+        }
+        _java_deps +=
+            _module_desc.java_deps + [ ":${_module_desc_target_name}" ]
         if (defined(_module_desc.pak_deps)) {
-          paks = _module_desc.paks
+          _paks += _module_desc.paks
+          _pak_deps += _module_desc.pak_deps
         }
-        if (defined(_module_desc.load_native_on_get_impl)) {
-          load_native_on_get_impl = _module_desc.load_native_on_get_impl
-        }
-      }
-      _java_deps += _module_desc.java_deps + [ ":${_module_desc_target_name}" ]
-      if (defined(_module_desc.pak_deps)) {
-        _paks += _module_desc.paks
-        _pak_deps += _module_desc.pak_deps
       }
     }
     chrome_module_desc = {
