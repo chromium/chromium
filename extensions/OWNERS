@@ -19,6 +19,3 @@ reillyg@chromium.org
 
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
-
-# COMPONENT: Platform>Extensions
-# TEAM: chromium-extensions@chromium.org

@@ -16,6 +16,3 @@ per-file automation*.idl=aboxhall@chromium.org
 per-file automation*.idl=dmazzoni@chromium.org
 per-file automation*.idl=dtseng@chromium.org
 per-file automation*.idl=nektar@chromium.org
-
-# COMPONENT: Platform>Extensions>API
-# TEAM: chromium-extensions@chromium.org
