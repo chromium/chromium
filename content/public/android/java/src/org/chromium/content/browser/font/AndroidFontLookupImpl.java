@@ -30,7 +30,7 @@ import org.chromium.mojo.bindings.ExecutorFactory;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.impl.CoreImpl;
-import org.chromium.mojo_base.mojom.File;
+import org.chromium.mojo_base.mojom.ReadOnlyFile;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 import java.io.IOException;
@@ -163,7 +163,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
         // Post synchronous font request to background worker thread.
         PostTask.postTask(TaskTraits.USER_BLOCKING, () -> {
-            File file = null;
+            ReadOnlyFile file = null;
 
             ParcelFileDescriptor fileDescriptor = tryFetchFont(fontUniqueName);
             if (fileDescriptor == null) {
@@ -171,12 +171,12 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                 mExpectedFonts.remove(fontUniqueName);
             } else {
                 // Wrap file descriptor as an opened Mojo file handle.
-                file = new File();
+                file = new ReadOnlyFile();
                 file.fd = core.wrapFileDescriptor(fileDescriptor);
                 file.async = false;
             }
 
-            final File result = file;
+            final ReadOnlyFile result = file;
             RecordHistogram.recordTimesHistogram(MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM,
                     SystemClock.elapsedRealtime() - startTimeMs);
             executor.execute(() -> callback.call(result));

@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Interface for renderer to request Android downloaded fonts from font
 // providers on-device.
@@ -22,5 +22,5 @@ interface AndroidFontLookup {
   // is synchronous for the renderer to avoid unnecessary re-layout jank.
   [Sync]
   MatchLocalFontByUniqueName(string font_unique_name)
-    => (mojo_base.mojom.File? font_file_handle);
+    => (mojo_base.mojom.ReadOnlyFile? font_file_handle);
 };
