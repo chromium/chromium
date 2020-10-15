@@ -433,10 +433,6 @@ const base::Feature kOsSettingsDeepLinking{"OsSettingsDeepLinking",
 const base::Feature kOsSettingsPolymer3{"OsSettingsPolymer3",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable the Parental Controls section of settings.
-const base::Feature kParentalControlsSettings{
-    "ChromeOSParentalControlsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -724,10 +720,6 @@ bool IsClipboardHistoryEnabled() {
 
 bool IsClipboardHistorySimpleRenderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
-}
-
-bool IsParentalControlsSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kParentalControlsSettings);
 }
 
 bool IsPhoneHubEnabled() {

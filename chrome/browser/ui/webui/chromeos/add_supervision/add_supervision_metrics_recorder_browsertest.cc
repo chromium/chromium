@@ -4,7 +4,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -26,12 +24,6 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
  public:
   AddSupervisionMetricsRecorderTest() = default;
   ~AddSupervisionMetricsRecorderTest() override = default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kParentalControlsSettings);
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
@@ -76,7 +68,6 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(AddSupervisionMetricsRecorderTest);
 
-  base::test::ScopedFeatureList feature_list_;
   content::TestWebUI test_web_ui_;
 };
 

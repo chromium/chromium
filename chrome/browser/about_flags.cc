@@ -5592,13 +5592,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFontAccessAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFontAccess)},
 
-#if defined(OS_CHROMEOS)
-    {"enable-parental-controls-settings",
-     flag_descriptions::kEnableParentalControlsSettingsName,
-     flag_descriptions::kEnableParentalControlsSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kParentalControlsSettings)},
-#endif  // defined(OS_CHROMEOS)
-
     {"mouse-subframe-no-implicit-capture",
      flag_descriptions::kMouseSubframeNoImplicitCaptureName,
      flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,

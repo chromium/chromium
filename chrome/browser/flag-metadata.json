@@ -1919,13 +1919,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-parental-controls-settings",
-    "owners": [ "danan", "michaelpg" ],
-    // This flag is used to enable parental controls options in ChromeOS
-    // settings.
-    "expiry_milestone": 79
-  },
-  {
     "name": "enable-persistent-downloads",
     "owners": [ "ewannpv", "gambard", "bling-flags" ],
     "expiry_milestone": 87

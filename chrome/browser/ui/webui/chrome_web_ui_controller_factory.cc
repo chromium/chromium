@@ -120,11 +120,11 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
+#include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
 #include "chrome/browser/ui/webui/webapks_ui.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
-#include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #else   // defined(OS_ANDROID)
 #include "chrome/browser/media/feeds/media_feeds_service.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
@@ -636,10 +636,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::AccountManagerWelcomeUI>;
   if (url.host_piece() == chrome::kChromeUIAccountMigrationWelcomeHost)
     return &NewWebUI<chromeos::AccountMigrationWelcomeUI>;
-  if (chromeos::features::IsParentalControlsSettingsEnabled()) {
-    if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
-      return &NewWebUI<chromeos::AddSupervisionUI>;
-  }
+  if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
+    return &NewWebUI<chromeos::AddSupervisionUI>;
   if (url.host_piece() == chrome::kChromeUIBluetoothPairingHost)
     return &NewWebUI<chromeos::BluetoothPairingDialogUI>;
   if (url.host_piece() == chrome::kChromeUICellularSetupHost)

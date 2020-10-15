@@ -196,8 +196,6 @@ extern const base::Feature kOsSettingsDeepLinking;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kOsSettingsPolymer3;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kParentalControlsSettings;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPhoneHubUseBle;
@@ -317,7 +315,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsClipboardHistoryEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistorySimpleRenderEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsOobeScreensPriorityEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsParentalControlsSettingsEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsPhoneHubEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsPhoneHubUseBleEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
