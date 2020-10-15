@@ -11,6 +11,7 @@ namespace prefs {
 
 extern const char kNotificationAccessGranted[];
 extern const char kHasDismissedUiAfterCompletingOnboarding[];
+extern const char kIsAwaitingVerifiedHost[];
 
 }  // namespace prefs
 }  // namespace phonehub

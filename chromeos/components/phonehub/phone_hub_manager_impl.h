@@ -35,6 +35,7 @@ class ConnectionManager;
 class CrosStateSender;
 class MessageSender;
 class MessageReceiver;
+class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
 class PhoneStatusProcessor;
 
@@ -82,6 +83,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<TetherController> tether_controller_;
   std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;
   std::unique_ptr<BrowserTabsModelController> browser_tabs_model_controller_;
+  std::unique_ptr<MultideviceSetupStateUpdater>
+      multidevice_setup_state_updater_;
 };
 
 }  // namespace phonehub

@@ -489,6 +489,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   VerifyFeatureStateChange(1u /* expected_index */, mojom::Feature::kPhoneHub,
                            mojom::FeatureState::kNotSupportedByPhone);
 
+  // This pref should is disabled for existing Better Together users;
+  // they must go to settings to explicitly enable PhoneHub.
+  test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
                           multidevice::SoftwareFeatureState::kEnabled);

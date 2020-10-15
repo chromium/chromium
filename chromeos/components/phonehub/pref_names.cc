@@ -16,6 +16,11 @@ const char kNotificationAccessGranted[] =
 const char kHasDismissedUiAfterCompletingOnboarding[] =
     "cros.phonehub.has_completed_onboarding_before";
 
+// Whether the MultideviceSetupStateUpdater is waiting for a verified host
+// in order to enable the Multidevice PhoneHub feature.
+const char kIsAwaitingVerifiedHost[] =
+    "cros.phonehub.is_awaiting_verified_host";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace chromeos

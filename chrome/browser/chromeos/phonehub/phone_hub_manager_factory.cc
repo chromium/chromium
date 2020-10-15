@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
@@ -111,6 +112,7 @@ bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 void PhoneHubManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  MultideviceSetupStateUpdater::RegisterPrefs(registry);
   NotificationAccessManagerImpl::RegisterPrefs(registry);
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
 }

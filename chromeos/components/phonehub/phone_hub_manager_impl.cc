@@ -15,6 +15,7 @@
 #include "chromeos/components/phonehub/find_my_device_controller_impl.h"
 #include "chromeos/components/phonehub/message_receiver_impl.h"
 #include "chromeos/components/phonehub/message_sender_impl.h"
+#include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/notification_manager_impl.h"
@@ -87,7 +88,12 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<BrowserTabsModelController>(
               multidevice_setup_client,
               browser_tabs_model_provider_.get(),
-              phone_model_.get())) {}
+              phone_model_.get())),
+      multidevice_setup_state_updater_(
+          std::make_unique<MultideviceSetupStateUpdater>(
+              pref_service,
+              multidevice_setup_client,
+              notification_access_manager_.get())) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
@@ -130,6 +136,7 @@ TetherController* PhoneHubManagerImpl::GetTetherController() {
 // These should be destroyed in the opposite order of how these objects are
 // initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
+  multidevice_setup_state_updater_.reset();
   browser_tabs_model_controller_.reset();
   browser_tabs_model_provider_.reset();
   tether_controller_.reset();
