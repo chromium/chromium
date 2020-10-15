@@ -24,6 +24,7 @@ component("controller") {
   ]
 
   configs += [
+    "//build/config/compiler:noshadowing",
     "//build/config/compiler:wexit_time_destructors",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
