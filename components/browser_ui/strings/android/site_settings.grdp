@@ -31,7 +31,7 @@
     Clipboard
   </message>
   <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR-LIMIT=32]">
-    User presence
+    Your presence
   </message>
   <message name="IDS_JAVASCRIPT_PERMISSION_TITLE" desc="Title of the permission to run javascript [CHAR-LIMIT=32]">
     JavaScript
