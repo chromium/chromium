@@ -1,0 +1,30 @@
+<!-- TODO(jschettler): Update styling to match the spec. -->
+<style>
+  :host {
+    display: flex;
+  }
+
+  ::slotted([slot=label]),
+  ::slotted([slot=settings]) {
+    display: flex;
+    flex-direction: column;
+    min-height: 38px;
+  }
+
+  ::slotted([slot=label]) {
+    flex: none;
+    flex-basis: 100px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding-inline-end: 10px;
+  }
+
+  ::slotted([slot=settings]) {
+    flex: 1;
+    flex-basis: 250px;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+</style>
+<slot name="label"></slot>
+<slot name="settings"></slot>

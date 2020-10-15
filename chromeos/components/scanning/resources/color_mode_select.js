@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './scanning.mojom-lite.js';
+import './scan_settings_section.js';
 
 import {getColorModeString} from './scanning_app_util.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

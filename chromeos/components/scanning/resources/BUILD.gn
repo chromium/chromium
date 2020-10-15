@@ -99,6 +99,7 @@ html_to_js("web_components") {
     "color_mode_select.js",
     "file_type_select.js",
     "resolution_select.js",
+    "scan_settings_section.js",
     "scanner_select.js",
     "scanning_app.js",
     "source_select.js",

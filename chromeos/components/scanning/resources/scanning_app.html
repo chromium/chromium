@@ -1,31 +1,20 @@
 <div id="header"></div>
-<div>
-  <scanner-select id="scannerSelect" scanners="[[scanners_]]"
-      loaded="[[loaded_]]" settings-disabled="[[settingsDisabled_]]"
-      selected-scanner-id="{{selectedScannerId}}"></scanner-select>
-</div>
-<div>
-  <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-source="{{selectedSource}}"></source-select>
-</div>
-<div>
-  <file-type-select id="fileTypeSelect"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-file-type="{{selectedFileType}}"></file-type-select>
-</div>
-<div>
-  <color-mode-select id="colorModeSelect"
-      color-modes="[[capabilities_.colorModes]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-color-mode="{{selectedColorMode}}"></color-mode-select>
-</div>
-<div>
-  <resolution-select id="resolutionSelect"
-      resolutions="[[capabilities_.resolutions]]"
-      settings-disabled="[[settingsDisabled_]]"
-      selected-resolution="{{selectedResolution}}"></resolution-select>
-</div>
+<scanner-select id="scannerSelect" scanners="[[scanners_]]" loaded="[[loaded_]]"
+    settings-disabled="[[settingsDisabled_]]"
+    selected-scanner-id="{{selectedScannerId}}"></scanner-select>
+<source-select id="sourceSelect" sources="[[capabilities_.sources]]"
+    settings-disabled="[[settingsDisabled_]]"
+    selected-source="{{selectedSource}}"></source-select>
+<file-type-select id="fileTypeSelect" settings-disabled="[[settingsDisabled_]]"
+    selected-file-type="{{selectedFileType}}"></file-type-select>
+<color-mode-select id="colorModeSelect"
+    color-modes="[[capabilities_.colorModes]]"
+    settings-disabled="[[settingsDisabled_]]"
+    selected-color-mode="{{selectedColorMode}}"></color-mode-select>
+<resolution-select id="resolutionSelect"
+    resolutions="[[capabilities_.resolutions]]"
+    settings-disabled="[[settingsDisabled_]]"
+    selected-resolution="{{selectedResolution}}"></resolution-select>
 <!-- TODO(jschettler): Replace button label with finalized i18n string. -->
 <cr-button id="scanButton" on-click="onScanClick_"
     disabled$="[[scanButtonDisabled_]]">
