@@ -133,6 +133,8 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
+    [RuntimeEnabled=ShadowDOMV0, RaisesException, DeprecateAs=ElementCreateShadowRoot] ShadowRoot createShadowRoot();
+    [RuntimeEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;

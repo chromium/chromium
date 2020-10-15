@@ -622,6 +622,9 @@
     // removed after M87.
     {
       name: "CustomElementsV0",
+      origin_trial_feature_name: "WebComponentsV0",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
       status: "test",
     },
     {
@@ -899,6 +902,9 @@
     // removed after M87.
     {
       name: "HTMLImports",
+      origin_trial_feature_name: "WebComponentsV0",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
       status: "test",
     },
     {
@@ -1738,6 +1744,9 @@
     // removed after M87.
     {
       name: "ShadowDOMV0",
+      origin_trial_feature_name: "WebComponentsV0",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
       status: "test",
     },
       {

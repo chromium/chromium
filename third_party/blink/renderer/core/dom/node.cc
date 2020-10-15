@@ -3115,11 +3115,6 @@ void Node::DecrementConnectedSubframeCount() {
 }
 
 StaticNodeList* Node::getDestinationInsertionPoints() {
-  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
-  // now-removed Shadow DOM v0 API.
-  DCHECK(false)
-      << "Shadow DOM v0 has been removed (getDestinationInsertionPoints).";
-
   UpdateDistributionForLegacyDistributedNodes();
   HeapVector<Member<V0InsertionPoint>, 8> insertion_points;
   CollectDestinationInsertionPoints(*this, insertion_points);
@@ -3262,13 +3257,14 @@ void Node::SetCustomElementState(CustomElementState new_state) {
 
   if (element->IsDefined() != was_defined) {
     element->PseudoStateChanged(CSSSelector::kPseudoDefined);
-    if (RuntimeEnabledFeatures::CustomElementsV0Enabled())
+    if (RuntimeEnabledFeatures::CustomElementsV0Enabled(GetExecutionContext()))
       element->PseudoStateChanged(CSSSelector::kPseudoUnresolved);
   }
 }
 
 void Node::SetV0CustomElementState(V0CustomElementState new_state) {
-  DCHECK(RuntimeEnabledFeatures::CustomElementsV0Enabled());
+  DCHECK(
+      RuntimeEnabledFeatures::CustomElementsV0Enabled(GetExecutionContext()));
   V0CustomElementState old_state = GetV0CustomElementState();
 
   switch (new_state) {

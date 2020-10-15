@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-PASS element.createShadowRoot should not exist
-PASS element.getDestinationInsertionPoints should not exist
-PASS text.getDestinationInsertionPoints should not exist
+FAIL element.createShadowRoot should not exist assert_false: expected false got true
+FAIL element.getDestinationInsertionPoints should not exist assert_false: expected false got true
+FAIL text.getDestinationInsertionPoints should not exist assert_false: expected false got true
 FAIL event.path should not exist assert_false: expected false got true
 FAIL HTMLContentElement should not exist assert_false: expected false got true
 Harness: the test ran to completion.

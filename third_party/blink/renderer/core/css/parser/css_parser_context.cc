@@ -282,7 +282,11 @@ void CSSParserContext::ReportLayoutAnimationsViolationIfNeeded(
 }
 
 bool CSSParserContext::CustomElementsV0Enabled() const {
-  return RuntimeEnabledFeatures::CustomElementsV0Enabled();
+  // Support features conservatively.
+  if (!document_)
+    return true;
+  return RuntimeEnabledFeatures::CustomElementsV0Enabled(
+      document_->GetExecutionContext());
 }
 
 bool CSSParserContext::IsForMarkupSanitization() const {

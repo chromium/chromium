@@ -29,4 +29,7 @@
     // Mixin Slotable
     // https://dom.spec.whatwg.org/#mixin-slotable
     [ImplementedAs=assignedSlotForBinding] readonly attribute HTMLSlotElement? assignedSlot;
+
+    // Non-standard API:
+    [RuntimeEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
 };

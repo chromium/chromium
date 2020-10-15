@@ -158,7 +158,8 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
   }
 
   Element* element;
-  if (RuntimeEnabledFeatures::CustomElementsV0Enabled()) {
+  if (RuntimeEnabledFeatures::CustomElementsV0Enabled(
+          document.GetExecutionContext())) {
     if (V0CustomElement::IsValidName(tag_name.LocalName()) &&
         document.RegistrationContext()) {
       element = document.RegistrationContext()->CreateCustomTagElement(
