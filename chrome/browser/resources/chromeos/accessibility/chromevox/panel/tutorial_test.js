@@ -363,8 +363,8 @@ TEST_F('ChromeVoxTutorialTest', 'AllLessonsButton', function() {
         .call(doCmd('nextObject'))
         .expectSpeech('On, Off, and Stop', 'Button')
         .call(doCmd('forceClickOnCurrentItem'))
-        .call(this.assertActiveScreen.bind(this, 'lesson'))
         .expectSpeech('On, Off, and Stop', 'Heading 1')
+        .call(this.assertActiveScreen.bind(this, 'lesson'))
         .call(doCmd('nextButton'))
         .expectSpeech('Next lesson')
         .call(doCmd('nextButton'))
@@ -496,9 +496,10 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
     // Helper functions. For this test, activate commands by hooking into the
     // BackgroundKeyboardHandler. This is necessary because UserActionMonitor
     // intercepts key sequences before they are routed to CommandHandler.
-    const getRangeStart = () => {
+    const getRangeStartNode = () => {
       return ChromeVoxState.instance.getCurrentRange().start.node;
     };
+
     const simulateKeyPress = (keyCode, opt_modifiers) => {
       const keyEvent = TestUtils.createMockKeyEvent(keyCode, opt_modifiers);
       keyboardHandler.onKeyDown(keyEvent);
@@ -517,25 +518,26 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .expectSpeech(/Welcome to the ChromeVox tutorial./)
         .call(() => {
           assertEquals(0, tutorial.activeLessonNum);
-          firstLessonNode = getRangeStart();
+          firstLessonNode = getRangeStartNode();
         })
         .call(simulateKeyPress.bind(this, KeyCode.RIGHT, {searchKeyHeld: true}))
         .call(() => {
-          assertEquals(firstLessonNode, getRangeStart());
+          assertEquals(firstLessonNode, getRangeStartNode());
           assertEquals(0, tutorial.activeLessonNum);
         })
         .call(simulateKeyPress.bind(this, KeyCode.LEFT, {searchKeyHeld: true}))
         .call(() => {
-          assertEquals(firstLessonNode, getRangeStart());
+          assertEquals(firstLessonNode, getRangeStartNode());
           assertEquals(0, tutorial.activeLessonNum);
         })
         // Pressing space, which is the desired key sequence, should move us to
         // the next lesson.
         .call(simulateKeyPress.bind(this, KeyCode.SPACE, {}))
         .expectSpeech('Essential Keys: Control')
+        .expectSpeech(/Let's start with a few keys you'll use regularly:/)
         .call(() => {
-          assertNotEquals(firstLessonNode, getRangeStart());
           assertEquals(1, tutorial.activeLessonNum);
+          assertNotEquals(firstLessonNode, getRangeStartNode());
         })
         // Pressing control, which is the desired key sequence, should move us
         // to the next lesson.
