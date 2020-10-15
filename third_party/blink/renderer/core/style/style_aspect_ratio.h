@@ -25,6 +25,12 @@ class StyleAspectRatio {
   EAspectRatioType GetType() const {
     if (ratio_.Width() == 0 || ratio_.Height() == 0)
       return EAspectRatioType::kAuto;
+    // Since we do calculations on LayoutUnits, also check that our width/height
+    // doesn't convert to zero.
+    if (ratio_.Width() < LayoutUnit::Epsilon() ||
+        ratio_.Height() < LayoutUnit::Epsilon()) {
+      return EAspectRatioType::kAuto;
+    }
     return GetTypeForComputedStyle();
   }
 
