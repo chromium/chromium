@@ -329,7 +329,7 @@ class DownloadFileIconExtractorImpl : public DownloadFileIconExtractor {
 
  private:
   void OnIconLoadComplete(float scale,
-                          const IconURLCallback& callback,
+                          IconURLCallback callback,
                           gfx::Image icon);
 
   base::CancelableTaskTracker cancelable_task_tracker_;
@@ -347,17 +347,16 @@ bool DownloadFileIconExtractorImpl::ExtractIconURLForPath(
   im->LoadIcon(
       path, icon_size,
       base::BindOnce(&DownloadFileIconExtractorImpl::OnIconLoadComplete,
-                     base::Unretained(this), scale, callback),
+                     base::Unretained(this), scale, std::move(callback)),
       &cancelable_task_tracker_);
   return true;
 }
 
-void DownloadFileIconExtractorImpl::OnIconLoadComplete(
-    float scale,
-    const IconURLCallback& callback,
-    gfx::Image icon) {
+void DownloadFileIconExtractorImpl::OnIconLoadComplete(float scale,
+                                                       IconURLCallback callback,
+                                                       gfx::Image icon) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  callback.Run(
+  std::move(callback).Run(
       icon.IsEmpty()
           ? std::string()
           : webui::GetBitmapDataUrl(
@@ -614,7 +613,7 @@ void RunDownloadQuery(
     if (incognito_manager)
       incognito_manager->GetAllDownloads(&all_items);
   }
-  query_out.AddFilter(base::Bind(&ShouldExport));
+  query_out.AddFilter(base::BindRepeating(&ShouldExport));
   query_out.Search(all_items.begin(), all_items.end(), results);
 }
 
@@ -1610,10 +1609,9 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
   if (web_contents && web_contents->GetRenderWidgetHostView())
     scale = web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
   EXTENSION_FUNCTION_VALIDATE(icon_extractor_->ExtractIconURLForPath(
-      download_item->GetTargetFilePath(),
-      scale,
+      download_item->GetTargetFilePath(), scale,
       IconLoaderSizeFromPixelSize(icon_size),
-      base::Bind(&DownloadsGetFileIconFunction::OnIconURLExtracted, this)));
+      base::BindOnce(&DownloadsGetFileIconFunction::OnIconURLExtracted, this)));
   return RespondLater();
 }
 

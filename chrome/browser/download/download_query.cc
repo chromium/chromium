@@ -143,11 +143,11 @@ enum ComparisonType {LT, EQ, GT};
 // and |accessor|. |accessor| is conceptually a function that takes a
 // DownloadItem and returns one of its fields, which is then compared to
 // |value|.
-template<typename ValueType>
+template <typename ValueType>
 bool FieldMatches(
     const ValueType& value,
     ComparisonType cmptype,
-    const base::Callback<ValueType(const DownloadItem&)>& accessor,
+    const base::RepeatingCallback<ValueType(const DownloadItem&)>& accessor,
     const DownloadItem& item) {
   switch (cmptype) {
     case LT: return accessor.Run(item) < value;
@@ -164,8 +164,8 @@ template <typename ValueType> DownloadQuery::FilterCallback BuildFilter(
     ValueType (*accessor)(const DownloadItem&)) {
   ValueType cpp_value;
   if (!GetAs(value, &cpp_value)) return DownloadQuery::FilterCallback();
-  return base::Bind(&FieldMatches<ValueType>, cpp_value, cmptype,
-                    base::Bind(accessor));
+  return base::BindRepeating(&FieldMatches<ValueType>, cpp_value, cmptype,
+                             base::BindRepeating(accessor));
 }
 
 // Returns true if |accessor.Run(item)| matches |pattern|.
@@ -256,13 +256,13 @@ bool DownloadQuery::AddFilter(const DownloadQuery::FilterCallback& value) {
 }
 
 void DownloadQuery::AddFilter(DownloadItem::DownloadState state) {
-  AddFilter(base::Bind(&FieldMatches<DownloadItem::DownloadState>, state, EQ,
-      base::Bind(&GetState)));
+  AddFilter(base::BindRepeating(&FieldMatches<DownloadItem::DownloadState>,
+                                state, EQ, base::BindRepeating(&GetState)));
 }
 
 void DownloadQuery::AddFilter(DownloadDangerType danger) {
-  AddFilter(base::Bind(&FieldMatches<DownloadDangerType>, danger, EQ,
-      base::Bind(&GetDangerType)));
+  AddFilter(base::BindRepeating(&FieldMatches<DownloadDangerType>, danger, EQ,
+                                base::BindRepeating(&GetDangerType)));
 }
 
 bool DownloadQuery::AddFilter(DownloadQuery::FilterType type,
@@ -286,7 +286,7 @@ bool DownloadQuery::AddFilter(DownloadQuery::FilterType type,
       std::vector<base::string16> query_terms;
       return GetAs(value, &query_terms) &&
              (query_terms.empty() ||
-              AddFilter(base::Bind(&MatchesQuery, query_terms)));
+              AddFilter(base::BindRepeating(&MatchesQuery, query_terms)));
     }
     case FILTER_ENDED_AFTER:
       return AddFilter(BuildFilter<std::string>(value, GT, &GetEndTime));
@@ -345,8 +345,9 @@ struct DownloadQuery::Sorter {
   template<typename ValueType>
   static Sorter Build(DownloadQuery::SortDirection adirection,
                          ValueType (*accessor)(const DownloadItem&)) {
-    return Sorter(adirection, base::Bind(&Compare<ValueType>,
-        base::Bind(accessor)));
+    return Sorter(adirection,
+                  base::BindRepeating(&Compare<ValueType>,
+                                      base::BindRepeating(accessor)));
   }
 
   Sorter(DownloadQuery::SortDirection adirection,

@@ -48,7 +48,8 @@ class DownloadQuery {
   // FilterCallback is a Callback that takes a DownloadItem and returns true if
   // the item matches the filter and false otherwise.
   // query.AddFilter(base::Bind(&YourFilterFunction));
-  typedef base::Callback<bool(const download::DownloadItem&)> FilterCallback;
+  typedef base::RepeatingCallback<bool(const download::DownloadItem&)>
+      FilterCallback;
 
   // All times are ISO 8601 strings.
   enum FilterType {

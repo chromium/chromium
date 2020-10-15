@@ -700,7 +700,7 @@ class MockIconExtractorImpl : public DownloadFileIconExtractor {
     EXPECT_EQ(expected_icon_size_, icon_size);
     if (expected_path_ == path &&
         expected_icon_size_ == icon_size) {
-      callback_ = callback;
+      callback_ = std::move(callback);
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&MockIconExtractorImpl::RunCallback,
                                     base::Unretained(this)));
@@ -712,7 +712,8 @@ class MockIconExtractorImpl : public DownloadFileIconExtractor {
 
  private:
   void RunCallback() {
-    callback_.Run(response_);
+    DCHECK(callback_);
+    std::move(callback_).Run(response_);
     // Drop the reference on extension function to avoid memory leaks.
     callback_ = IconURLCallback();
   }
