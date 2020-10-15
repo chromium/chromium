@@ -16,7 +16,7 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
  *
  * @since 87
  */
-class MediaRouteDialogFragment extends RemoteFragment {
+public class MediaRouteDialogFragment extends RemoteFragment {
     private static final String FRAGMENT_TAG = "WebLayerMediaRouteDialogFragment";
 
     static IRemoteFragment create(BrowserFragment browserFragment) {

@@ -43,15 +43,22 @@
         <activity android:name="TelemetryActivity"
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar">
         </activity>
-          <activity android:name="org.chromium.weblayer.test.ExternalNavigationTest$DummyActivityForSpecialScheme"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="weblayertest" android:scheme="weblayer" />
-            </intent-filter>
-        </activity>
+        <activity android:name="org.chromium.weblayer.test.ExternalNavigationTest$DummyActivityForSpecialScheme"
+          android:exported="true" >
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:host="weblayertest" android:scheme="weblayer" />
+          </intent-filter>
+      </activity>
+
+      <!-- Cast support -->
+      <meta-data
+          android:name=
+          "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+          android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
+
       {% if weblayer_package is defined %}
             <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
                        android:value="{{ weblayer_package }}"/>
