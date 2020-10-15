@@ -396,6 +396,118 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
     }
 
+    private void updateToolbarLayoutMargin() {
+        int startMargin = calculateStartMarginWhenCloseButtonVisibilityGone();
+
+        updateStartMarginOfVisibleElementsUntilLocationBarFrameLayout(startMargin);
+
+        int locationBarLayoutChildIndex = getLocationBarFrameLayoutIndex();
+        assert locationBarLayoutChildIndex != -1;
+        updateLocationBarLayoutEndMargin(locationBarLayoutChildIndex);
+
+        // Update left margin of mTitleUrlContainer here to make sure the security icon is
+        // always placed left of the urlbar.
+        updateLeftMarginOfTitleUrlContainer();
+    }
+
+    private int calculateStartMarginWhenCloseButtonVisibilityGone() {
+        return (mCloseButton.getVisibility() == GONE) ? getResources().getDimensionPixelSize(
+                       R.dimen.custom_tabs_toolbar_horizontal_margin_no_close)
+                                                      : 0;
+    }
+
+    private void updateStartMarginOfVisibleElementsUntilLocationBarFrameLayout(int startMargin) {
+        int locationBarFrameLayoutIndex = getLocationBarFrameLayoutIndex();
+        for (int i = 0; i < locationBarFrameLayoutIndex; ++i) {
+            View childView = getChildAt(i);
+            if (childView.getVisibility() == GONE) continue;
+
+            updateViewLayoutParams(childView, startMargin);
+
+            LayoutParams childLayoutParams = (LayoutParams) childView.getLayoutParams();
+            int widthMeasureSpec = calcWidthMeasure(childLayoutParams);
+            int heightMeasureSpec = calcHeightMeasure(childLayoutParams);
+            childView.measure(widthMeasureSpec, heightMeasureSpec);
+            startMargin += childView.getMeasuredWidth();
+        }
+
+        updateStartMarginOfLocationBarFrameLayout(startMargin);
+    }
+
+    private void updateStartMarginOfLocationBarFrameLayout(int startMargin) {
+        int locationBarFrameLayoutIndex = getLocationBarFrameLayoutIndex();
+        View locationBarLayoutView = getChildAt(locationBarFrameLayoutIndex);
+        updateViewLayoutParams(locationBarLayoutView, startMargin);
+    }
+
+    private void updateViewLayoutParams(View view, int margin) {
+        LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
+        if (MarginLayoutParamsCompat.getMarginStart(layoutParams) != margin) {
+            MarginLayoutParamsCompat.setMarginStart(layoutParams, margin);
+            view.setLayoutParams(layoutParams);
+        }
+    }
+
+    private void updateLocationBarLayoutEndMargin(int startIndex) {
+        int locationBarLayoutEndMargin = 0;
+        for (int i = startIndex + 1; i < getChildCount(); i++) {
+            View childView = getChildAt(i);
+            if (childView.getVisibility() != GONE) {
+                locationBarLayoutEndMargin += childView.getMeasuredWidth();
+            }
+        }
+        LayoutParams urlLayoutParams = (LayoutParams) mLocationBarFrameLayout.getLayoutParams();
+
+        if (MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams) != locationBarLayoutEndMargin) {
+            MarginLayoutParamsCompat.setMarginEnd(urlLayoutParams, locationBarLayoutEndMargin);
+            mLocationBarFrameLayout.setLayoutParams(urlLayoutParams);
+        }
+    }
+
+    private void updateLeftMarginOfTitleUrlContainer() {
+        int leftMargin = mSecurityButton.getMeasuredWidth();
+        LayoutParams lp = (LayoutParams) mTitleUrlContainer.getLayoutParams();
+
+        if (mSecurityButton.getVisibility() == View.GONE) {
+            leftMargin -= mSecurityButton.getMeasuredWidth();
+        }
+
+        lp.leftMargin = leftMargin;
+        mTitleUrlContainer.setLayoutParams(lp);
+    }
+
+    private int getLocationBarFrameLayoutIndex() {
+        assert mLocationBarFrameLayout.getVisibility() != GONE;
+        for (int i = 0; i < getChildCount(); i++) {
+            if (getChildAt(i) == mLocationBarFrameLayout) return i;
+        }
+        return -1;
+    }
+
+    private int calcWidthMeasure(LayoutParams childLayoutParams) {
+        if (childLayoutParams.width == LayoutParams.WRAP_CONTENT) {
+            return MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);
+        }
+
+        if (childLayoutParams.width == LayoutParams.MATCH_PARENT) {
+            return MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY);
+        }
+
+        return MeasureSpec.makeMeasureSpec(childLayoutParams.width, MeasureSpec.EXACTLY);
+    }
+
+    private int calcHeightMeasure(LayoutParams childLayoutParams) {
+        if (childLayoutParams.height == LayoutParams.WRAP_CONTENT) {
+            return MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.AT_MOST);
+        }
+
+        if (childLayoutParams.height == LayoutParams.MATCH_PARENT) {
+            return MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY);
+        }
+
+        return MeasureSpec.makeMeasureSpec(childLayoutParams.height, MeasureSpec.EXACTLY);
+    }
+
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -456,80 +568,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (!shouldAnimate) mBrandColorTransitionAnimation.end();
     }
 
-    private void updateLayoutParams() {
-        int startMargin = 0;
-        int locationBarLayoutChildIndex = -1;
-        for (int i = 0; i < getChildCount(); i++) {
-            View childView = getChildAt(i);
-            if (childView == mCloseButton && childView.getVisibility() == GONE) {
-                startMargin += getResources().getDimensionPixelSize(
-                        R.dimen.custom_tabs_toolbar_horizontal_margin_no_close);
-            } else if (childView.getVisibility() != GONE) {
-                LayoutParams childLayoutParams = (LayoutParams) childView.getLayoutParams();
-                if (MarginLayoutParamsCompat.getMarginStart(childLayoutParams) != startMargin) {
-                    MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
-                    childView.setLayoutParams(childLayoutParams);
-                }
-                if (childView == mLocationBarFrameLayout) {
-                    locationBarLayoutChildIndex = i;
-                    break;
-                }
-                int widthMeasureSpec;
-                int heightMeasureSpec;
-                if (childLayoutParams.width == LayoutParams.WRAP_CONTENT) {
-                    widthMeasureSpec =
-                            MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST);
-                } else if (childLayoutParams.width == LayoutParams.MATCH_PARENT) {
-                    widthMeasureSpec =
-                            MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY);
-                } else {
-                    widthMeasureSpec = MeasureSpec.makeMeasureSpec(
-                            childLayoutParams.width, MeasureSpec.EXACTLY);
-                }
-                if (childLayoutParams.height == LayoutParams.WRAP_CONTENT) {
-                    heightMeasureSpec =
-                            MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.AT_MOST);
-                } else if (childLayoutParams.height == LayoutParams.MATCH_PARENT) {
-                    heightMeasureSpec =
-                            MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY);
-                } else {
-                    heightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                            childLayoutParams.height, MeasureSpec.EXACTLY);
-                }
-                childView.measure(widthMeasureSpec, heightMeasureSpec);
-                startMargin += childView.getMeasuredWidth();
-            }
-        }
 
-        assert locationBarLayoutChildIndex != -1;
-        int locationBarLayoutEndMargin = 0;
-        for (int i = locationBarLayoutChildIndex + 1; i < getChildCount(); i++) {
-            View childView = getChildAt(i);
-            if (childView.getVisibility() != GONE) {
-                locationBarLayoutEndMargin += childView.getMeasuredWidth();
-            }
-        }
-        LayoutParams urlLayoutParams = (LayoutParams) mLocationBarFrameLayout.getLayoutParams();
-
-        if (MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams) != locationBarLayoutEndMargin) {
-            MarginLayoutParamsCompat.setMarginEnd(urlLayoutParams, locationBarLayoutEndMargin);
-            mLocationBarFrameLayout.setLayoutParams(urlLayoutParams);
-        }
-
-        // Update left margin of mTitleUrlContainer here to make sure the security icon is always
-        // placed left of the urlbar.
-        LayoutParams lp = (LayoutParams) mTitleUrlContainer.getLayoutParams();
-        if (mSecurityButton.getVisibility() == View.GONE) {
-            lp.leftMargin = 0;
-        } else {
-            lp.leftMargin = mSecurityButton.getMeasuredWidth();
-        }
-        mTitleUrlContainer.setLayoutParams(lp);
-    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        updateLayoutParams();
+        updateToolbarLayoutMargin();
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
