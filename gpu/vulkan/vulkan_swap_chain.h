@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     VkImage image() const { return image_; }
     uint32_t image_index() const { return image_index_; }
     VkImageLayout image_layout() const { return image_layout_; }
+    VkImageUsageFlags image_usage() const { return image_usage_; }
     VkSemaphore begin_semaphore() const { return begin_semaphore_; }
     VkSemaphore end_semaphore() const { return end_semaphore_; }
 
@@ -51,6 +52,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     VkImage image_ = VK_NULL_HANDLE;
     uint32_t image_index_ = 0;
     VkImageLayout image_layout_ = VK_IMAGE_LAYOUT_UNDEFINED;
+    VkImageUsageFlags image_usage_ = 0;
     VkSemaphore begin_semaphore_ = VK_NULL_HANDLE;
     VkSemaphore end_semaphore_ = VK_NULL_HANDLE;
 
@@ -134,6 +136,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   bool BeginWriteCurrentImage(VkImage* image,
                               uint32_t* image_index,
                               VkImageLayout* layout,
+                              VkImageUsageFlags* usage,
                               VkSemaphore* begin_semaphore,
                               VkSemaphore* end_semaphore);
   void EndWriteCurrentImage();
@@ -162,6 +165,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
 
   // Images in the swap chain.
   std::vector<ImageData> images_ GUARDED_BY(lock_);
+
+  VkImageUsageFlags image_usage_ = 0;
 
   // True if BeginWriteCurrentImage() is called, but EndWriteCurrentImage() is
   // not.

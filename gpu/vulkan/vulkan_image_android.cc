@@ -100,6 +100,11 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     return false;
   }
 
+  // Skia currently requires all wrapped VkImages to have transfer src and dst
+  // usage. Additionally all AHB support these usages when imported into vulkan.
+  usage_flags |=
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
   VkImageCreateFlags create_flags = 0;
   if (ahb_desc.usage & AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT) {
     create_flags = VK_IMAGE_CREATE_PROTECTED_BIT;

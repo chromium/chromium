@@ -200,6 +200,8 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     vk_image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
     vk_image_info.fImageLayout = scoped_write_->image_layout();
     vk_image_info.fFormat = surface_format;
+    vk_image_info.fImageUsageFlags = scoped_write_->image_usage();
+    vk_image_info.fSampleCount = 1;
     vk_image_info.fLevelCount = 1;
     vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
     vk_image_info.fProtected =

@@ -120,6 +120,8 @@ void VulkanDemo::CreateSkSurface() {
     vk_image_info.fImageLayout = scoped_write_->image_layout();
     vk_image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
     vk_image_info.fFormat = VK_FORMAT_B8G8R8A8_UNORM;
+    vk_image_info.fImageUsageFlags = scoped_write_->image_usage();
+    vk_image_info.fSampleCount = 1;
     vk_image_info.fLevelCount = 1;
     const auto& size = vulkan_surface_->image_size();
     GrBackendRenderTarget render_target(size.width(), size.height(), 0,

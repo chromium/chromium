@@ -441,7 +441,9 @@ void SysmemBufferCollection::InitializeImageCreateInfo(
   vk_image_info->tiling =
       is_mappable() ? VK_IMAGE_TILING_LINEAR : VK_IMAGE_TILING_OPTIMAL;
 
-  vk_image_info->usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+  vk_image_info->usage = VK_IMAGE_USAGE_SAMPLED_BIT |
+                         VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                         VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   if (usage_ == gfx::BufferUsage::SCANOUT ||
       usage_ == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE) {
     vk_image_info->usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
