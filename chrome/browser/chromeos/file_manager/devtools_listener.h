@@ -39,8 +39,7 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // Detaches from a host.
   void Detach(content::DevToolsAgentHost* host);
 
-  // Returns a string that uniquely identifies a host
-  // with an optional prefix.
+  // Returns a unique host identifier, with optional |prefix|.
   static std::string HostString(content::DevToolsAgentHost* host,
                                 const std::string& prefix = {});
 
@@ -61,8 +60,12 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   void StoreScripts(content::DevToolsAgentHost* host,
                     const base::FilePath& store);
 
+  // Send CDP command to the host.
+  void SendCommandMessage(content::DevToolsAgentHost* host,
+                          const std::string& command);
+
   // Await CDP response to command |id|.
-  void AwaitMessageResponse(int id);
+  void AwaitCommandResponse(int id);
 
   // Receives CDP messages sent by host.
   void DispatchProtocolMessage(content::DevToolsAgentHost* host,

@@ -26,10 +26,6 @@ namespace file_manager {
 
 namespace {
 
-base::span<const uint8_t> StringToSpan(const std::string& s) {
-  return base::as_bytes(base::make_span(s));
-}
-
 base::StringPiece SpanToStringPiece(const base::span<const uint8_t>& s) {
   return {reinterpret_cast<const char*>(s.data()), s.size()};
 }
@@ -91,28 +87,28 @@ std::string DevToolsListener::HostString(content::DevToolsAgentHost* host,
 
 void DevToolsListener::Start(content::DevToolsAgentHost* host) {
   std::string enable_runtime = "{\"id\":10,\"method\":\"Runtime.enable\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(enable_runtime));
+  SendCommandMessage(host, enable_runtime);
 
   std::string enable_page = "{\"id\":11,\"method\":\"Page.enable\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(enable_page));
+  SendCommandMessage(host, enable_page);
 }
 
 bool DevToolsListener::StartJSCoverage(content::DevToolsAgentHost* host) {
   std::string enable_profiler = "{\"id\":20,\"method\":\"Profiler.enable\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(enable_profiler));
+  SendCommandMessage(host, enable_profiler);
 
   std::string start_precise_coverage =
       "{\"id\":21,\"method\":\"Profiler.startPreciseCoverage\",\"params\":{"
       "\"callCount\":true,\"detailed\":true}}";
-  host->DispatchProtocolMessage(this, StringToSpan(start_precise_coverage));
+  SendCommandMessage(host, start_precise_coverage);
 
   std::string enable_debugger = "{\"id\":22,\"method\":\"Debugger.enable\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(enable_debugger));
+  SendCommandMessage(host, enable_debugger);
 
-  std::string skip_pauses =
+  std::string skip_all_pauses =
       "{\"id\":23,\"method\":\"Debugger.setSkipAllPauses\""
       ",\"params\":{\"skip\":true}}";
-  host->DispatchProtocolMessage(this, StringToSpan(skip_pauses));
+  SendCommandMessage(host, skip_all_pauses);
 
   return true;
 }
@@ -120,19 +116,19 @@ bool DevToolsListener::StartJSCoverage(content::DevToolsAgentHost* host) {
 void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
                                               const base::FilePath& store,
                                               const std::string& test) {
-  std::string precise_coverage =
+  std::string get_precise_coverage =
       "{\"id\":40,\"method\":\"Profiler.takePreciseCoverage\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(precise_coverage));
-  AwaitMessageResponse(40);
+  SendCommandMessage(host, get_precise_coverage);
+  AwaitCommandResponse(40);
 
   script_coverage_.reset(value_.release());
   StoreScripts(host, store);
 
-  std::string debugger = "{\"id\":41,\"method\":\"Debugger.disable\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(debugger));
+  std::string stop_debugger = "{\"id\":41,\"method\":\"Debugger.disable\"}";
+  SendCommandMessage(host, stop_debugger);
 
-  std::string profiler = "{\"id\":42,\"method\":\"Profiler.disable\"}";
-  host->DispatchProtocolMessage(this, StringToSpan(profiler));
+  std::string stop_profiler = "{\"id\":42,\"method\":\"Profiler.disable\"}";
+  SendCommandMessage(host, stop_profiler);
 
   base::DictionaryValue* result = nullptr;
   CHECK(script_coverage_->GetDictionary("result", &result));
@@ -175,7 +171,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   script_id_map_.clear();
   script_.clear();
 
-  AwaitMessageResponse(42);
+  AwaitCommandResponse(42);
   value_.reset();
 }
 
@@ -192,12 +188,12 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
     if (url.empty())
       continue;
 
-    std::string script_source = base::StringPrintf(
+    std::string get_script_source = base::StringPrintf(
         "{\"id\":50,\"method\":\"Debugger.getScriptSource\""
         ",\"params\":{\"scriptId\":\"%s\"}}",
         id.c_str());
-    host->DispatchProtocolMessage(this, StringToSpan(script_source));
-    AwaitMessageResponse(50);
+    SendCommandMessage(host, get_script_source);
+    AwaitCommandResponse(50);
 
     base::DictionaryValue* result = nullptr;
     CHECK(value_->GetDictionary("result", &result));
@@ -230,7 +226,13 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
   }
 }
 
-void DevToolsListener::AwaitMessageResponse(int id) {
+void DevToolsListener::SendCommandMessage(content::DevToolsAgentHost* host,
+                                          const std::string& command) {
+  auto message = base::as_bytes(base::make_span(command));
+  host->DispatchProtocolMessage(this, message);
+}
+
+void DevToolsListener::AwaitCommandResponse(int id) {
   value_.reset();
   value_id_ = id;
 
