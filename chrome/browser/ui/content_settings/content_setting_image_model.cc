@@ -89,7 +89,8 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
 
   bool IsGeolocationAccessed();
 #if defined(OS_MAC)
-  bool IsGeolocationBlockedOnASystemLevel();
+  bool IsGeolocationAllowedOnASystemLevel();
+  bool IsGeolocationPermissionDetermined();
 #endif  // defined(OS_MAC)
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
@@ -512,13 +513,18 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
           ::features::kMacCoreLocationImplementation)) {
     set_explanatory_string_id(0);
     if (is_allowed) {
-      if (IsGeolocationBlockedOnASystemLevel()) {
+      if (!IsGeolocationAllowedOnASystemLevel()) {
         set_icon(vector_icons::kLocationOnIcon,
                  vector_icons::kBlockedBadgeIcon);
         set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
         if (content_settings->geolocation_was_just_granted_on_site_level())
           set_should_auto_open_bubble(true);
-        set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
+        // At this point macOS may not have told us whether location permission
+        // has been allowed or blocked. Wait until the permission state is
+        // determined before displaying this message since it triggers an
+        // animation that cannot be cancelled
+        if (IsGeolocationPermissionDetermined())
+          set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
         return true;
       }
     }
@@ -534,12 +540,20 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 }
 
 #if defined(OS_MAC)
-bool ContentSettingGeolocationImageModel::IsGeolocationBlockedOnASystemLevel() {
+bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
   GeolocationSystemPermissionManager* permission_manager =
       g_browser_process->platform_part()->location_permission_manager();
   SystemPermissionStatus permission = permission_manager->GetSystemPermission();
 
-  return permission != SystemPermissionStatus::kAllowed;
+  return permission == SystemPermissionStatus::kAllowed;
+}
+
+bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
+  GeolocationSystemPermissionManager* permission_manager =
+      g_browser_process->platform_part()->location_permission_manager();
+  SystemPermissionStatus permission = permission_manager->GetSystemPermission();
+
+  return permission != SystemPermissionStatus::kNotDetermined;
 }
 
 #endif  // defined(OS_MAC)
