@@ -189,18 +189,18 @@ TEST_F(OutputProtectionImplTest, ApplyToMultipleDisplaysOneFails) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(OutputProtectionImplTest, ApplyAggregateTypes) {
+TEST_F(OutputProtectionImplTest, ApplyDoesNotAggregateTypes) {
   UpdateDisplays(1);
   EXPECT_CALL(*delegate_, cached_displays())
       .WillOnce(ReturnRef(cached_displays_));
   OutputProtection::ProtectionType applied_types[] = {
       OutputProtection::ProtectionType::HDCP_TYPE_0,
       OutputProtection::ProtectionType::HDCP_TYPE_1,
-      OutputProtection::ProtectionType::HDCP_TYPE_0};
+      OutputProtection::ProtectionType::NONE};
   display::ContentProtectionMethod expected_types[] = {
       display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0,
       display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1,
-      display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1};
+      display::CONTENT_PROTECTION_METHOD_NONE};
 
   for (size_t i = 0; i < base::size(applied_types); ++i) {
     ExpectProtectionCall(kDisplayIds[0], expected_types[i], true);
