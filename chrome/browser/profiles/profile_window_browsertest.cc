@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -150,6 +152,78 @@ Browser* ProfileWindowBrowserTest::OpenGuestBrowser() {
 
   return browser;
 }
+
+class OTRProfileWindowBrowserTest : public ProfileWindowBrowserTest,
+                                    public testing::WithParamInterface<bool> {
+ protected:
+  OTRProfileWindowBrowserTest() { is_guest_ = GetParam(); }
+
+  int GetWindowCount() {
+    return is_guest_ ? BrowserList::GetGuestBrowserCount()
+                     : BrowserList::GetOffTheRecordBrowsersActiveForProfile(
+                           browser()->profile());
+  }
+
+  Browser* CreateGuestOrIncognitoBrowser() {
+    Browser* new_browser;
+    // When |profile_| is null this means no browsers have been created,
+    // this is the first browser instance.
+    // |is_guest_| is used to determine which browser type to open.
+    if (!profile_) {
+      new_browser = is_guest_ ? OpenGuestBrowser()
+                              : CreateIncognitoBrowser(browser()->profile());
+      profile_ = new_browser->profile();
+    } else {
+      // Using |CreateIncognitoBrowser| to create OTR profile browser, if
+      // |profile_| is a guest profile this method opens a Guest Window. On the
+      // other hand if |profile_| is a primary profile it creates an incognito
+      // window for said profile.
+      new_browser = CreateIncognitoBrowser(profile_);
+    }
+
+    return new_browser;
+  }
+
+ private:
+  bool is_guest_;
+  Profile* profile_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_P(OTRProfileWindowBrowserTest, CountOTRProfileWindows) {
+  DCHECK_EQ(0, GetWindowCount());
+
+  // Create a browser and check the count.
+  Browser* browser1 = CreateGuestOrIncognitoBrowser();
+  DCHECK_EQ(1, GetWindowCount());
+
+  // Create another browser and check the count.
+  Browser* browser2 = CreateGuestOrIncognitoBrowser();
+  DCHECK_EQ(2, GetWindowCount());
+
+  // Open a docked DevTool window and count.
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(browser1, true);
+  DCHECK_EQ(2, GetWindowCount());
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
+
+  // Open a detached DevTool window and count.
+  devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(browser1, false);
+  DCHECK_EQ(2, GetWindowCount());
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
+
+  // Close one browser and count.
+  CloseBrowserSynchronously(browser2);
+  DCHECK_EQ(1, GetWindowCount());
+
+  // Close another browser and count.
+  CloseBrowserSynchronously(browser1);
+  DCHECK_EQ(0, GetWindowCount());
+}
+
+INSTANTIATE_TEST_SUITE_P(IncognitoAndGuestWindowCount,
+                         OTRProfileWindowBrowserTest,
+                         /*is_guest_=*/testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenGuestBrowser) {
   EXPECT_TRUE(OpenGuestBrowser());
