@@ -170,6 +170,10 @@ class TabStripTest : public ChromeViewsTestBase,
     return tab->icon_->ShowingAttentionIndicator();
   }
 
+  views::View* tab_controls_container() {
+    return tab_strip_->tab_controls_container_;
+  }
+
   // Checks whether |tab| contains |point_in_tabstrip_coords|, where the point
   // is in |tab_strip_| coordinates.
   bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tabstrip_coords) {
@@ -1341,6 +1345,33 @@ TEST_P(TabStripTest, ChangingLayoutTypeResizesTabs) {
     // Normal -> touch.
     EXPECT_GT(tab->height(), initial_height);
   }
+}
+
+// We want to make sure that the new tab button sits flush with the top of the
+// tab strip. This is important in ensuring that we maximise the targetable area
+// of the new tab button and users are able to hit the new tab button when the
+// tab strip is flush with the top of the screen when the window is maximized
+// (https://crbug.com/1136557).
+TEST_P(TabStripTest, NewTabButtonFlushWithTopOfTabStrip) {
+  tab_strip_parent_->SetBounds(0, 0, 1000, 100);
+  controller_->AddTab(0, true);
+
+  AnimateToIdealBounds();
+
+  // |tab_controls_container_| should sit flush with the top of the tab strip.
+  EXPECT_EQ(0, tab_strip_->tab_controls_container_ideal_bounds().y());
+
+  // The new tab button should sit flush with the top of the
+  // |tab_controls_container_|.
+  EXPECT_EQ(0, tab_strip_->new_tab_button()->bounds().y());
+
+  // The new tab button should be positioned flush with the top of the tab
+  // strip.
+  gfx::RectF ntb_in_child_coords_f(tab_strip_->new_tab_button()->bounds());
+  views::View::ConvertRectToTarget(tab_controls_container(), tab_strip_,
+                                   &ntb_in_child_coords_f);
+  gfx::Rect ntb_in_child_coords = gfx::ToEnclosingRect(ntb_in_child_coords_f);
+  EXPECT_EQ(0, ntb_in_child_coords.y());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TabStripTest, ::testing::Values(false, true));
