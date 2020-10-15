@@ -64,6 +64,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void CloseBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
+  void AnchorUpdated() override;
 
   // SessionObserver implementation.
   void OnLockStateChanged(bool locked) override;

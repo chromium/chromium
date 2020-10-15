@@ -247,7 +247,7 @@ void MediaTray::ShowBubble(bool show_by_click) {
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
+  init_params.anchor_rect = GetAnchorBoundsInScreen();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
@@ -383,6 +383,14 @@ void MediaTray::ShowEmptyState() {
   empty_state_view->layer()->SetFillsBoundsOpaquely(false);
   empty_state_view_ =
       bubble_->GetBubbleView()->AddChildView(std::move(empty_state_view));
+}
+
+void MediaTray::AnchorUpdated() {
+  if (!bubble_)
+    return;
+
+  bubble_->GetBubbleView()->SetAnchorRect(
+      shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
 }
 
 }  // namespace ash

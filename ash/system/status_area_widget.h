@@ -103,6 +103,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // |overview_button_tray_|.
   TrayBackgroundView* GetSystemTrayAnchor() const;
 
+  // Called by media tray to calculate anchor rect.
+  gfx::Rect GetMediaTrayAnchorRect() const;
+
   StatusAreaWidgetDelegate* status_area_widget_delegate() {
     return status_area_widget_delegate_;
   }
@@ -167,6 +170,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   }
 
  private:
+  friend class MediaTrayTest;
+
   struct LayoutInputs {
     gfx::Rect bounds;
     CollapseState collapse_state = CollapseState::NOT_COLLAPSIBLE;
