@@ -15,8 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -294,31 +292,17 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   base::ScopedNativeLibrary library;
   if (!plugin_entry_points_.initialize_module) {
     // Load the plugin from the specified library.
-    base::TimeDelta load_time;
     {
       TRACE_EVENT1("ppapi", "PpapiThread::LoadPlugin", "path",
                    path.MaybeAsASCII());
-
-      base::TimeTicks start = base::TimeTicks::Now();
       library = base::ScopedNativeLibrary(path);
-      load_time = base::TimeTicks::Now() - start;
     }
 
     if (!library.is_valid()) {
       LOG(ERROR) << "Failed to load Pepper module from " << path.value()
                  << " (error: " << library.GetError()->ToString() << ")";
-      if (!base::PathExists(path)) {
-        ReportLoadResult(path, FILE_MISSING);
-        return;
-      }
-      ReportLoadResult(path, LOAD_FAILED);
-      // Report detailed reason for load failure.
-      ReportLoadErrorCode(path, library.GetError());
       return;
     }
-
-    // Only report load time for success loads.
-    ReportLoadTime(path, load_time);
 
     // Get the GetInterface function (required).
     plugin_entry_points_.get_interface =
@@ -326,7 +310,6 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
             library.GetFunctionPointer("PPP_GetInterface"));
     if (!plugin_entry_points_.get_interface) {
       LOG(WARNING) << "No PPP_GetInterface in plugin library";
-      ReportLoadResult(path, ENTRY_POINT_MISSING);
       return;
     }
 
@@ -345,7 +328,6 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
               library.GetFunctionPointer("PPP_InitializeModule"));
       if (!plugin_entry_points_.initialize_module) {
         LOG(WARNING) << "No PPP_InitializeModule in plugin library";
-        ReportLoadResult(path, ENTRY_POINT_MISSING);
         return;
       }
     }
@@ -397,19 +379,16 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
             library.GetFunctionPointer("PPP_InitializeBroker"));
     if (!init_broker) {
       LOG(WARNING) << "No PPP_InitializeBroker in plugin library";
-      ReportLoadResult(path, ENTRY_POINT_MISSING);
       return;
     }
 
     int32_t init_error = init_broker(&connect_instance_func_);
     if (init_error != PP_OK) {
       LOG(WARNING) << "InitBroker failed with error " << init_error;
-      ReportLoadResult(path, INIT_FAILED);
       return;
     }
     if (!connect_instance_func_) {
       LOG(WARNING) << "InitBroker did not provide PP_ConnectInstance_Func";
-      ReportLoadResult(path, INIT_FAILED);
       return;
     }
   } else {
@@ -417,15 +396,12 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
         local_pp_module_, &ppapi::proxy::PluginDispatcher::GetBrowserInterface);
     if (init_error != PP_OK) {
       LOG(WARNING) << "InitModule failed with error " << init_error;
-      ReportLoadResult(path, INIT_FAILED);
       return;
     }
   }
 
   // Initialization succeeded, so keep the plugin DLL loaded.
   library_ = std::move(library);
-
-  ReportLoadResult(path, LOAD_SUCCESS);
 }
 
 void PpapiThread::OnCreateChannel(base::ProcessId renderer_pid,
@@ -504,54 +480,6 @@ bool PpapiThread::SetupChannel(base::ProcessId renderer_pid,
 void PpapiThread::SavePluginName(const base::FilePath& path) {
   ppapi::proxy::PluginGlobals::Get()->set_plugin_name(
       path.BaseName().AsUTF8Unsafe());
-}
-
-static std::string GetHistogramName(bool is_broker,
-                                    const std::string& metric_name,
-                                    const base::FilePath& path) {
-  return std::string("Plugin.Ppapi") + (is_broker ? "Broker" : "Plugin") +
-         metric_name + "_" + path.BaseName().MaybeAsASCII();
-}
-
-void PpapiThread::ReportLoadResult(const base::FilePath& path,
-                                   LoadResult result) {
-  DCHECK_LT(result, LOAD_RESULT_MAX);
-
-  // Note: This leaks memory, which is expected behavior.
-  base::HistogramBase* histogram =
-      base::LinearHistogram::FactoryGet(
-          GetHistogramName(is_broker_, "LoadResult", path),
-          1,
-          LOAD_RESULT_MAX,
-          LOAD_RESULT_MAX + 1,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-
-  histogram->Add(result);
-}
-
-void PpapiThread::ReportLoadErrorCode(
-    const base::FilePath& path,
-    const base::NativeLibraryLoadError* error) {
-// Only report load error code on Windows because that's the only platform that
-// has a numerical error value.
-#if defined(OS_WIN)
-  base::UmaHistogramSparse(GetHistogramName(is_broker_, "LoadErrorCode", path),
-                           error->code);
-#endif
-}
-
-void PpapiThread::ReportLoadTime(const base::FilePath& path,
-                                 const base::TimeDelta load_time) {
-  // Note: This leaks memory, which is expected behavior.
-  base::HistogramBase* histogram =
-      base::Histogram::FactoryTimeGet(
-          GetHistogramName(is_broker_, "LoadTime", path),
-          base::TimeDelta::FromMilliseconds(1),
-          base::TimeDelta::FromSeconds(10),
-          50,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-
-  histogram->AddTime(load_time);
 }
 
 }  // namespace content

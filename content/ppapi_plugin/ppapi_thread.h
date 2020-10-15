@@ -57,18 +57,6 @@ class PpapiThread : public ChildThreadImpl,
   void Shutdown() override;
 
  private:
-  // Make sure the enum list in tools/histogram/histograms.xml is updated with
-  // any change in this list.
-  enum LoadResult {
-    LOAD_SUCCESS,
-    LOAD_FAILED,
-    ENTRY_POINT_MISSING,
-    INIT_FAILED,
-    FILE_MISSING,
-    // NOTE: Add new values only immediately above this line.
-    LOAD_RESULT_MAX  // Boundary value for UMA_HISTOGRAM_ENUMERATION.
-  };
-
   // ChildThread overrides.
   bool Send(IPC::Message* msg) override;
   bool OnControlMessageReceived(const IPC::Message& msg) override;
@@ -124,16 +112,6 @@ class PpapiThread : public ChildThreadImpl,
 
   // Sets up the name of the plugin for logging using the given path.
   void SavePluginName(const base::FilePath& path);
-
-  void ReportLoadResult(const base::FilePath& path, LoadResult result);
-
-  // Reports |error| to UMA when plugin load fails.
-  void ReportLoadErrorCode(const base::FilePath& path,
-                           const base::NativeLibraryLoadError* error);
-
-  // Reports time to load the plugin.
-  void ReportLoadTime(const base::FilePath& path,
-                      const base::TimeDelta load_time);
 
   // True if running in a broker process rather than a normal plugin process.
   bool is_broker_;
