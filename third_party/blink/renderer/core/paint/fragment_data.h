@@ -150,6 +150,12 @@ class CORE_EXPORT FragmentData {
   //   ancestor transform space.
   PropertyTreeStateOrAlias LocalBorderBoxProperties() const {
     DCHECK(HasLocalBorderBoxProperties());
+
+    // TODO(chrishtr): this should never happen, but does in practice and
+    // we haven't been able to find all of the cases where it happens yet.
+    // See crbug.com/1137883. Once we find more of them, remove this.
+    if (!rare_data_ || !rare_data_->local_border_box_properties)
+      return PropertyTreeState::Root();
     return rare_data_->local_border_box_properties->GetPropertyTreeState();
   }
   bool HasLocalBorderBoxProperties() const {
