@@ -4,8 +4,8 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
@@ -61,7 +61,7 @@ interface DWriteFontProxy {
   [Sync]
   GetFontFiles(uint32 family_index)
      => (array<mojo_base.mojom.FilePath> file_paths,
-         array<mojo_base.mojom.File> file_handles);
+         array<mojo_base.mojom.ReadOnlyFile> file_handles);
 
   // Returns which font unique name matching lookup mode is to be used on the
   // current machine. On DirectWrite 10 and above, single lookups can be
