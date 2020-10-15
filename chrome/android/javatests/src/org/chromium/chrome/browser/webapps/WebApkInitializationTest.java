@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
+import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
@@ -134,8 +135,8 @@ public class WebApkInitializationTest {
                 mTrackingActivityLifecycleDispatcher.getRegisteredObserverClassNames();
         assertTrue(registeredObserverClassNames.contains(
                 WebappActionsNotificationManager.class.getName()));
-        assertTrue(registeredObserverClassNames.contains(
-                WebappDisclosureSnackbarController.class.getName()));
+        assertTrue(
+                registeredObserverClassNames.contains(WebappDisclosureController.class.getName()));
         assertTrue(registeredObserverClassNames.contains(
                 WebApkActivityLifecycleUmaTracker.class.getName()));
         assertTrue(

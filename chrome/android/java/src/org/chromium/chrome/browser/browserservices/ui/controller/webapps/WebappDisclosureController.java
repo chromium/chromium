@@ -2,18 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webapps;
+package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
+
+import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
+import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE;
+import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE_DISMISSED_BY_USER;
+import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
+import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.PACKAGE_NAME;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.webapps.WebApkExtras;
+import org.chromium.chrome.browser.webapps.WebappDataStorage;
+import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
+import org.chromium.chrome.browser.webapps.WebappExtras;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 
 import javax.inject.Inject;
@@ -28,18 +37,24 @@ import javax.inject.Inject;
  * next time the app is opened if it hasn't been acknowledged.
  */
 @ActivityScope
-public class WebappDisclosureSnackbarController
-        implements SnackbarManager.SnackbarController, PauseResumeWithNativeObserver {
-    private final ChromeActivity mActivity;
+public class WebappDisclosureController
+        implements NativeInitObserver, TrustedWebActivityModel.DisclosureEventsCallback {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final TrustedWebActivityModel mModel;
 
     @Inject
-    public WebappDisclosureSnackbarController(ChromeActivity<?> activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
+    public WebappDisclosureController(ChromeActivity<?> activity,
+            BrowserServicesIntentDataProvider intentDataProvider, TrustedWebActivityModel model,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mActivity = activity;
         mIntentDataProvider = intentDataProvider;
+        mModel = model;
+
+        model.set(DISCLOSURE_EVENTS_CALLBACK, this);
+        WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+        if (webApkExtras != null && webApkExtras.webApkPackageName != null) {
+            model.set(PACKAGE_NAME, webApkExtras.webApkPackageName);
+        }
 
         lifecycleDispatcher.register(this);
 
@@ -62,7 +77,7 @@ public class WebappDisclosureSnackbarController
     }
 
     @Override
-    public void onResumeWithNative() {
+    public void onFinishNativeInitialization() {
         WebappExtras webappExtras = mIntentDataProvider.getWebappExtras();
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(
                 mIntentDataProvider.getWebappExtras().id);
@@ -72,23 +87,18 @@ public class WebappDisclosureSnackbarController
     }
 
     @Override
-    public void onPauseWithNative() {}
-
-    /**
-     * @param actionData an instance of WebappInfo
-     */
-    @Override
-    public void onAction(Object actionData) {
-        if (actionData instanceof WebappDataStorage) {
-            ((WebappDataStorage) actionData).clearShowDisclosure();
+    public void onDisclosureAccepted() {
+        WebappExtras webappExtras = mIntentDataProvider.getWebappExtras();
+        WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(
+                mIntentDataProvider.getWebappExtras().id);
+        if (storage != null) {
+            storage.clearShowDisclosure();
         }
+        mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_DISMISSED_BY_USER);
     }
 
-    /**
-     * Stub expected by SnackbarController.
-     */
     @Override
-    public void onDismissNoAction(Object actionData) {}
+    public void onDisclosureShown() {}
 
     /**
      * Shows the disclosure informing the user the Webapp is running in Chrome.
@@ -101,14 +111,8 @@ public class WebappDisclosureSnackbarController
         // If forced we set the bit to show the disclosure. This persists to future instances.
         if (force) storage.setShowDisclosure();
 
-        if (shouldShowDisclosure(storage)) {
-            mActivity.getSnackbarManager().showSnackbar(
-                    Snackbar.make(mActivity.getResources().getString(
-                                          R.string.app_running_in_chrome_disclosure),
-                                    this, Snackbar.TYPE_PERSISTENT,
-                                    Snackbar.UMA_WEBAPK_PRIVACY_DISCLOSURE)
-                            .setAction(mActivity.getResources().getString(R.string.ok), storage)
-                            .setSingleLine(false));
+        if (!isShowing() && shouldShowDisclosure(storage)) {
+            mModel.set(DISCLOSURE_STATE, DISCLOSURE_STATE_SHOWN);
         }
     }
 
@@ -128,5 +132,9 @@ public class WebappDisclosureSnackbarController
         return webApkExtras != null && webApkExtras.webApkPackageName != null
                 && !webApkExtras.webApkPackageName.startsWith(
                         WebApkConstants.WEBAPK_PACKAGE_PREFIX);
+    }
+
+    public boolean isShowing() {
+        return mModel.get(DISCLOSURE_STATE) == DISCLOSURE_STATE_SHOWN;
     }
 }
