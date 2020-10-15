@@ -58,8 +58,8 @@
 #endif
 
 using base::ASCIIToUTF16;
-using base::UTF8ToUTF16;
 using base::UTF16ToUTF8;
+using base::UTF8ToUTF16;
 
 using testing::Contains;
 
@@ -808,12 +808,23 @@ TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("public.utf8-plain-text")));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("NSStringPboardType")));
   EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(2));
-#elif defined(USE_X11)
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS) && \
+    !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_LACROS)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("TEXT")));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("STRING")));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("UTF8_STRING")));
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeTextUtf8)));
+    EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(5));
+    return;
+  }
+#endif  // USE_OZONE
+#if defined(USE_X11)
+  EXPECT_FALSE(features::IsUsingOzonePlatform());
   EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(4));
+#endif  // USE_X11
 #elif defined(OS_WIN)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_UNICODETEXT")));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_TEXT")));
