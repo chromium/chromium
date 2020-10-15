@@ -320,7 +320,7 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
-    _base_perftests(),
+    _base_perftests(10),
     _load_library_perf_tests(),
     _media_perftests(),
     _net_perftests(),
@@ -332,7 +332,7 @@ _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
 ])
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
-    _base_perftests(),
+    _base_perftests(10),
     _dawn_perf_tests(330),
     _media_perftests(),
     _net_perftests(),
@@ -357,7 +357,7 @@ _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _WIN_10_EXECUTABLE_CONFIGS = frozenset([
     _angle_perftests(),
-    _base_perftests(),
+    _base_perftests(20),
     _components_perftests(),
     _dawn_perf_tests(600),
     _media_perftests(),
