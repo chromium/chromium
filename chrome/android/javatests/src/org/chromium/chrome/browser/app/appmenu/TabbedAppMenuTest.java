@@ -366,7 +366,7 @@ public class TabbedAppMenuTest {
     testActionChipViewMenuItem() throws IOException {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(3, actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
 
         int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
         Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
@@ -408,7 +408,7 @@ public class TabbedAppMenuTest {
     testDestinationChipViewMenuItem() throws IOException {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(3, actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
 
         int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
         Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
@@ -450,7 +450,7 @@ public class TabbedAppMenuTest {
     testAddToMenuItem_not_bookmarked() throws IOException {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(3, actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
 
         int addToIndex = findIndexOfMenuItemById(R.id.add_to_menu_id);
         Assert.assertNotEquals("No add to row found.", -1, addToIndex);
@@ -480,7 +480,7 @@ public class TabbedAppMenuTest {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals("Add to Bookmarks/Downloads/Home screen should be shown", 3,
                 actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_three_buttons");
+        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
 
         int addToIndex = findIndexOfMenuItemById(R.id.add_to_menu_id);
         Assert.assertNotEquals("No add to row found.", -1, addToIndex);

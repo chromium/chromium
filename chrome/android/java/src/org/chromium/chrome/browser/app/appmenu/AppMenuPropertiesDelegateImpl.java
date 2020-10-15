@@ -503,6 +503,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         && item.getItemId() != R.id.update_menu_id) {
                     item.setIcon(null);
                 }
+                // Remove icons for menu items that have submenus.
+                if (item.getItemId() == R.id.downloads_row_menu_id
+                        || item.getItemId() == R.id.all_bookmarks_row_menu_id
+                        || item.getItemId() == R.id.add_to_menu_id) {
+                    for (int j = 0; j < item.getSubMenu().size(); ++j) {
+                        item.getSubMenu().getItem(j).setIcon(null);
+                    }
+                }
             }
 
             if (item.getItemId() == R.id.new_incognito_tab_menu_id && item.isVisible()) {

@@ -13,21 +13,19 @@
     android:orientation="horizontal" >
 
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-        android:id="@+id/menu_item_text"
+        android:id="@+id/title"
         style="@style/AppMenuItemTextViewWithCompoundDrawables"
         android:layout_weight="1"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="@string/menu_new_incognito_tab" />
+        android:layout_height="match_parent" />
 
     <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/management_icon"
+        android:id="@+id/trailing_icon"
         android:layout_weight="0"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_business"
         android:tint="@color/default_icon_color_secondary"
         android:visibility="gone" />
 

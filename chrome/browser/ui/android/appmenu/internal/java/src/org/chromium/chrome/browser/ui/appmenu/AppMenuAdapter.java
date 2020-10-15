@@ -495,7 +495,9 @@ class AppMenuAdapter extends BaseAdapter {
             setupImageButton(holder.buttons[i], item.getSubMenu().getItem(i));
         }
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS)) {
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS)
+                || CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)) {
             // Tint action bar's background.
             convertView.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
                     convertView.getContext().getResources(), R.drawable.menu_action_bar_bg));

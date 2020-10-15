@@ -95,7 +95,8 @@
         <item android:id="@+id/add_to_divider_line_id"
             android:title="@null" />
         <item android:id="@+id/add_to_menu_id"
-            android:title="@string/menu_add_to">
+            android:title="@string/menu_add_to"
+            android:icon="@drawable/ic_add" >
           <menu>
                 <item android:id="@+id/add_to_bookmarks_menu_id"
                     android:title="@string/menu_add_to_bookmarks"

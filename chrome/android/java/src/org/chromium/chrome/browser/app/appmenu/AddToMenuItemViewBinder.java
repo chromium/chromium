@@ -50,7 +50,7 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
      * @param modalDialogManager {@link ModalDialogManager} to control the dialog.
      */
     AddToMenuItemViewBinder(Context context, ModalDialogManager modalDialogManager) {
-        super(context, R.layout.add_to_menu_item);
+        super(context, R.layout.add_to_menu_dialog_item);
         mAddToMenuItems = new ArrayList<MenuItem>();
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -86,13 +86,18 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
         AddToMenuItemViewHolder holder;
         if (convertView == null || !(convertView.getTag() instanceof AddToMenuItemViewHolder)) {
             holder = new AddToMenuItemViewHolder();
-            convertView = inflater.inflate(R.layout.add_to_menu_item, parent, false);
+            convertView = inflater.inflate(R.layout.custom_view_menu_item, parent, false);
             holder.title = convertView.findViewById(R.id.title);
             convertView.setTag(holder);
         } else {
             holder = (AddToMenuItemViewHolder) convertView.getTag();
         }
 
+        holder.title.setCompoundDrawablesRelative(item.getIcon(), null, null, null);
+        holder.title.setText(item.getTitle());
+        // Setting |holder.title| to non-focusable will allow TalkBack highlighting the whole view
+        // of the menu item, not just title text.
+        holder.title.setFocusable(false);
         convertView.setOnClickListener(v -> showAddToDialog());
 
         // The submenu is prepared by AppMenuPropertiesDelegateImpl.
