@@ -128,12 +128,15 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Adds an account and seed it in native code.
+     * Adds an account and seed it in native code. Will create a ProfileData entry for the account
+     * if ProfileDataSource is not null.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
     public Account addAccountAndWaitForSeeding(String accountName) {
-        Account account = addAccount(accountName);
+        Account account = mFakeAccountManagerFacade.getProfileDataSource() == null
+                ? addAccount(accountName)
+                : addAccount(createProfileDataFromName(accountName));
         waitForSeeding();
         return account;
     }
@@ -188,6 +191,17 @@ public class AccountManagerTestRule implements TestRule {
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, profileSyncService);
         mIsSignedIn = true;
         return account;
+    }
+
+    /**
+     * Creates ProfileData object from accountName.
+     */
+    public ProfileDataSource.ProfileData createProfileDataFromName(String accountName) {
+        String email = accountName.split("@", 2)[0];
+        String givenName = email + ".given";
+        String fullName = email + ".full";
+        return new ProfileDataSource.ProfileData(
+                accountName, createProfileImage(), fullName, givenName);
     }
 
     /**

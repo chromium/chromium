@@ -29,7 +29,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -49,18 +48,16 @@ import java.util.concurrent.ExecutionException;
 public class RecentTabsPageTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
-    private final FakeProfileDataSource mFakeProfileDataSource = new FakeProfileDataSource();
-
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeProfileDataSource);
+            new AccountManagerTestRule(new FakeProfileDataSource());
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
 
     private FakeRecentlyClosedTabManager mManager;
     private Tab mTab;
@@ -104,12 +101,6 @@ public class RecentTabsPageTest {
     @Feature("RenderTest")
     public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
         Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(account.name,
-                                        mAccountManagerTestRule.createProfileImage(), "Full Name",
-                                        "Given Name")));
         RecentTabsManager.forcePromoStateForTests(
                 RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED);
         mPage = loadRecentTabsPage();
@@ -121,12 +112,6 @@ public class RecentTabsPageTest {
     @Feature("RenderTest")
     public void testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
         Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mFakeProfileDataSource.setProfileData(account.name,
-                                new ProfileDataSource.ProfileData(account.name,
-                                        mAccountManagerTestRule.createProfileImage(), "Full Name",
-                                        "Given Name")));
         RecentTabsManager.forcePromoStateForTests(
                 RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED);
         mPage = loadRecentTabsPage();

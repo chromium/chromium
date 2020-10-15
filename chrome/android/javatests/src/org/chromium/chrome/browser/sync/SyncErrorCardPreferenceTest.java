@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import android.accounts.Account;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -38,8 +37,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,11 +52,9 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 public class SyncErrorCardPreferenceTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_error badge
     // for Sync error card.
-    private final FakeProfileDataSource mFakeProfileDataSource = new FakeProfileDataSource();
-
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeProfileDataSource);
+            new AccountManagerTestRule(new FakeProfileDataSource());
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -71,7 +66,7 @@ public class SyncErrorCardPreferenceTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
 
     @Mock
     private AndroidSyncSettings mAndroidSyncSettingsMock;
@@ -96,15 +91,9 @@ public class SyncErrorCardPreferenceTest {
         // ProfileSyncService.
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        Account account =
-                AccountUtils.createAccountFromName(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeProfileSyncService = new FakeProfileSyncService();
             ProfileSyncService.overrideForTests(mFakeProfileSyncService);
-            mFakeProfileDataSource.setProfileData(account.name,
-                    new ProfileDataSource.ProfileData(account.name,
-                            mAccountManagerTestRule.createProfileImage(), "Full Name",
-                            "Given Name"));
             AndroidSyncSettings.overrideForTests(mAndroidSyncSettingsMock);
             when(mAndroidSyncSettingsMock.isChromeSyncEnabled()).thenReturn(true);
         });
@@ -114,7 +103,6 @@ public class SyncErrorCardPreferenceTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ProfileSyncService.resetForTests();
-            mFakeProfileDataSource.setProfileData(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, null);
         });
     }
 
