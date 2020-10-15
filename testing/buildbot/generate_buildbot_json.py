@@ -1430,13 +1430,6 @@ class BBJSONGenerator(object):
         'Win x64 Builder Code Coverage',
         'Win10 Tests x64 Code Coverage',
         'Win10 x64 Release (NVIDIA) Code Coverage',
-        # TODO(crbug.com/1024915) Delete these when coverage is enabled by
-        # default on Mac OS tryjobs.
-        'Mac Builder Code Coverage',
-        'Mac10.13 Tests Code Coverage',
-        'GPU Mac Builder Code Coverage',
-        'Mac Release (Intel) Code Coverage',
-        'Mac Retina Release (AMD) Code Coverage',
     ]
 
   def get_internal_waterfalls(self):
