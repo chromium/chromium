@@ -31,10 +31,7 @@ def _ExtractObsoleteNode(node):
 
 def _ExtractOwnerNodes(node):
   """Extracts all owners from |node|. Returns None if not exists."""
-  owners = node.getElementsByTagName('owner')
-  if not owners:
-    return None
-  return owners
+  return node.getElementsByTagName('owner')
 
 
 def _RemoveSuffixesComment(node, histogram_suffixes_name):
@@ -223,7 +220,7 @@ def ChooseFiles(args):
   return paths
 
 
-def SuffixesToVariantsMigation(args):
+def SuffixesToVariantsMigration(args):
   """Migates all histogram suffixes to patterned histograms."""
   histogram_suffixes_list = minidom.parse(open(HISTOGRAM_SUFFIXES_LIST_PATH))
   histogram_suffixes_nodes = histogram_suffixes_list.getElementsByTagName(
@@ -269,4 +266,4 @@ if __name__ == '__main__':
   args = parser.parse_args()
   assert len(args.start) == 1 and len(args.end) == 1, (
       'start and end flag should only contain a single letter.')
-  SuffixesToVariantsMigation(args)
+  SuffixesToVariantsMigration(args)

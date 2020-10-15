@@ -2747,18 +2747,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="CloudPrint.UrlFetcherUploadSize"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CodecInfo" separator=".">
-  <suffix name="H264.4k.Hw" label=""/>
-  <suffix name="H264.4k.Sw" label=""/>
-  <suffix name="H264.Hd.Hw" label=""/>
-  <suffix name="H264.Hd.Sw" label=""/>
-  <suffix name="Vp9.4k.Hw" label=""/>
-  <suffix name="Vp9.4k.Sw" label=""/>
-  <suffix name="Vp9.Hd.Hw" label=""/>
-  <suffix name="Vp9.Hd.Sw" label=""/>
-  <affected-histogram name="WebRTC.Video.DecodeTimePerFrameInMs"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CompositingLCDTextDisabledCountSuffixes"
     separator=".">
   <obsolete>
@@ -9393,17 +9381,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NativeWindowVisibility" separator=".">
-  <suffix name="Hidden"
-      label="The native window is not visible because it is in a minimized
-             window"/>
-  <suffix name="Occluded"
-      label="The native window is fully covered by other windows"/>
-  <suffix name="Visible"
-      label="The native window is visible or partially visible."/>
-  <affected-histogram name="Windows.NativeWindowVisibility"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NatType" separator=".">
   <suffix name="NoNAT" label=""/>
   <suffix name="NonSymNAT" label=""/>
@@ -13847,49 +13824,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="For &quot;utility&quot; process metrics."/>
   <suffix name="ZygoteMetrics" label="For &quot;zygote&quot; process metrics."/>
   <affected-histogram name="UMA.PersistentAllocator.Allocs"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PersistentMemoryErrors" separator="."
-    ordering="prefix,2">
-  <suffix name="BrowserMetrics" label="For browser process metrics."/>
-  <suffix name="CrashpadMetrics" label="For metrics from Crashpad."/>
-  <suffix name="FieldTrialAllocator" label="For field-trial allocator."/>
-  <suffix name="GpuMetrics" label="For GPU process metrics."/>
-  <suffix name="NotificationHelperMetrics"
-      label="For notification_helper process metrics."/>
-  <suffix name="PpapiBrokerMetrics"
-      label="For &quot;PPAPI broker&quot; process metrics."/>
-  <suffix name="PpapiPluginMetrics"
-      label="For &quot;PPAPI plugin&quot; process metrics."/>
-  <suffix name="RendererMetrics" label="For renderer process metrics."/>
-  <suffix name="SandboxHelperMetrics"
-      label="For &quot;sandbox helper&quot; process metrics."/>
-  <suffix name="SetupMetrics" label="For setup metrics."/>
-  <suffix name="UtilityMetrics"
-      label="For &quot;utility&quot; process metrics."/>
-  <suffix name="ZygoteMetrics" label="For &quot;zygote&quot; process metrics."/>
-  <affected-histogram name="UMA.PersistentAllocator.Errors"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PersistentMemoryUsedPct" separator="."
-    ordering="prefix,2">
-  <suffix name="BrowserMetrics" label="For browser process metrics."/>
-  <suffix name="FieldTrialAllocator" label="For field-trial allocator."/>
-  <suffix name="GpuMetrics" label="For GPU process metrics."/>
-  <suffix name="NotificationHelperMetrics"
-      label="For notification_helper process metrics."/>
-  <suffix name="PpapiBrokerMetrics"
-      label="For &quot;PPAPI broker&quot; process metrics."/>
-  <suffix name="PpapiPluginMetrics"
-      label="For &quot;PPAPI plugin&quot; process metrics."/>
-  <suffix name="RendererMetrics" label="For renderer process metrics."/>
-  <suffix name="SandboxHelperMetrics"
-      label="For &quot;sandbox helper&quot; process metrics."/>
-  <suffix name="SetupMetrics" label="For setup metrics."/>
-  <suffix name="UtilityMetrics"
-      label="For &quot;utility&quot; process metrics."/>
-  <suffix name="ZygoteMetrics" label="For &quot;zygote&quot; process metrics."/>
-  <affected-histogram name="UMA.PersistentAllocator.UsedPct"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PhoneHubFeature" separator=".">
@@ -19306,16 +19240,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="UkmSourceIdTypes" separator=".">
-  <suffix name="App" label="Restricted to app source id types."/>
-  <suffix name="Default" label="Restricted to default source id type."/>
-  <suffix name="Navigation" label="Restricted to navigation source id types."/>
-  <suffix name="Ukm"
-      label="Restricted to UKM source id types. Deprecated and replaced by
-             'Default' in 2020/05."/>
-  <affected-histogram name="UKM.Sources.SerializedCount2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="UnconsentedPrimaryAccountType" separator=".">
   <suffix name="NoSyncConsumer" label="A consumer account, no sync."/>
   <suffix name="NoSyncEnterprise" label="An enterprise account, no sync."/>
@@ -19405,20 +19329,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="V8.WasmModuleSizeBytes"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="VariationsHeadersURLValidationResult" separator=".">
-  <suffix name="Append"
-      label="Result when checking whether to append a header."/>
-  <suffix name="Remove"
-      label="Result when checking whether to remove a header."/>
-  <affected-histogram name="Variations.Headers.URLValidationResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="VideoAdaptationReason" separator=".">
-  <suffix name="Cpu" label="Adapt reason: CPU."/>
-  <suffix name="Quality" label="Adapt reason: quality."/>
-  <affected-histogram name="WebRTC.Video.AdaptChangesPerMinute"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="VideoCaptureFrameDrop" separator=".">
   <suffix name="DeviceCapture" label=""/>
   <suffix name="DisplayCapture" label=""/>
@@ -19446,28 +19356,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Write" label="Write an entry to the DB"/>
   <affected-histogram name="Media.VideoDecodeStatsDB.OpSuccess"/>
   <affected-histogram name="Media.VideoDecodeStatsDB.OpTiming"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="VideoEncodedQpStats" separator=".">
-  <suffix name="H264"
-      label="Video codec: H264. QP range: 0-51. No spatial layers."/>
-  <suffix name="Vp8"
-      label="Video codec: VP8. QP range: 0-127. Single stream sent."/>
-  <suffix name="Vp8.S0"
-      label="Video codec: VP8. QP range: 0-127. Spatial index 0."/>
-  <suffix name="Vp8.S1"
-      label="Video codec: VP8. QP range: 0-127. Spatial index 1."/>
-  <suffix name="Vp8.S2"
-      label="Video codec: VP8. QP range: 0-127. Spatial index 2."/>
-  <suffix name="Vp9"
-      label="Video codec: VP9. QP range: 0-255. No spatial layers."/>
-  <suffix name="Vp9.S0"
-      label="Video codec: VP9. QP range: 0-255. Spatial layer 0."/>
-  <suffix name="Vp9.S1"
-      label="Video codec: VP9. QP range: 0-255. Spatial layer 1."/>
-  <suffix name="Vp9.S2"
-      label="Video codec: VP9. QP range: 0-255. Spatial layer 2."/>
-  <affected-histogram name="WebRTC.Video.Encoded.Qp"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="VideoFrameRateRange" separator=".">
@@ -19744,17 +19632,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.UnderflowDuration2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebRtcCodecs" separator=".">
-  <suffix name="Av1" label=""/>
-  <suffix name="Generic" label=""/>
-  <suffix name="H264" label=""/>
-  <suffix name="Multiplex" label=""/>
-  <suffix name="Vp8" label=""/>
-  <suffix name="Vp9" label=""/>
-  <affected-histogram
-      name="WebRTC.Video.HardwareDecodedFramesBetweenSoftwareFallbacks"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebRTCEchoCancellerEstimate" separator=".">
   <suffix name="Max" label="The maximum over the time interval"/>
   <suffix name="Min" label="The minimum over the time interval"/>
@@ -19775,16 +19652,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="WebRTC.Audio.EchoCanceller.ErleBand1"/>
   <affected-histogram name="WebRTC.Audio.EchoCanceller.SuppressorGainBand0"/>
   <affected-histogram name="WebRTC.Audio.EchoCanceller.SuppressorGainBand1"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebRtcLoggingEvent" separator=".">
-  <suffix name="Discard" label="Discard"/>
-  <suffix name="Start" label="Start"/>
-  <suffix name="UploadFailed" label="Upload failed"/>
-  <suffix name="UploadStarted" label="Upload started"/>
-  <suffix name="UploadStoredStarted" label="Upload of a stored log started"/>
-  <suffix name="UploadSuccessful" label="Upload successful"/>
-  <affected-histogram name="WebRtcTextLogging"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebRTCMediaType" separator=".">

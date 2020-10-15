@@ -1591,16 +1591,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.AdaptChangesPerMinute" units="changes/minute"
-    expires_after="never">
+<histogram name="WebRTC.Video.AdaptChangesPerMinute{VideoAdaptationReason}"
+    units="changes/minute" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average number of adaptation changes per minute for a sent video stream.
-    Recorded when a stream is removed.
+    Recorded when a stream is removed. {VideoAdaptationReason}
   </summary>
+  <token key="VideoAdaptationReason">
+    <variant name=""/>
+    <variant name=".Cpu" summary="Adapt reason: CPU."/>
+    <variant name=".Quality" summary="Adapt reason: quality."/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.AverageRoundTripTimeInMilliseconds" units="ms"
@@ -1730,13 +1735,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="WebRTC.Video.DecodeTimePerFrameInMs" units="ms"
+<histogram name="WebRTC.Video.DecodeTimePerFrameInMs{CodecInfo}" units="ms"
     expires_after="2021-02-28">
   <owner>kron@chromium.org</owner>
   <summary>
     The decode time per frame for a received video stream. Continously updated
-    after each frame has been decoded.
+    after each frame has been decoded. {CodecInfo}
   </summary>
+  <token key="CodecInfo">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".H264.4k.Hw" summary=""/>
+    <variant name=".H264.4k.Sw" summary=""/>
+    <variant name=".H264.Hd.Hw" summary=""/>
+    <variant name=".H264.Hd.Sw" summary=""/>
+    <variant name=".Vp9.4k.Hw" summary=""/>
+    <variant name=".Vp9.4k.Sw" summary=""/>
+    <variant name=".Vp9.Hd.Hw" summary=""/>
+    <variant name=".Vp9.Hd.Sw" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.DelayedFramesToRenderer" units="%"
@@ -1821,15 +1841,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.Encoded.Qp" units="qp value"
+<histogram name="WebRTC.Video.Encoded.Qp{VideoEncodedQpStats}" units="qp value"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average QP (quantizer value) per frame for a sent video stream. Recorded
-    when a stream is removed.
+    when a stream is removed. {VideoEncodedQpStats}
   </summary>
+  <token key="VideoEncodedQpStats">
+    <variant name=""/>
+    <variant name=".H264"
+        summary="Video codec: H264. QP range: 0-51. No spatial layers."/>
+    <variant name=".Vp8"
+        summary="Video codec: VP8. QP range: 0-127. Single stream sent."/>
+    <variant name=".Vp8.S0"
+        summary="Video codec: VP8. QP range: 0-127. Spatial index 0."/>
+    <variant name=".Vp8.S1"
+        summary="Video codec: VP8. QP range: 0-127. Spatial index 1."/>
+    <variant name=".Vp8.S2"
+        summary="Video codec: VP8. QP range: 0-127. Spatial index 2."/>
+    <variant name=".Vp9"
+        summary="Video codec: VP9. QP range: 0-255. No spatial layers."/>
+    <variant name=".Vp9.S0"
+        summary="Video codec: VP9. QP range: 0-255. Spatial layer 0."/>
+    <variant name=".Vp9.S1"
+        summary="Video codec: VP9. QP range: 0-255. Spatial layer 1."/>
+    <variant name=".Vp9.S2"
+        summary="Video codec: VP9. QP range: 0-255. Spatial layer 2."/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.Encoder.CodecType" enum="WebRtcVideoCodecs"
@@ -1956,15 +1997,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="WebRTC.Video.HardwareDecodedFramesBetweenSoftwareFallbacks"
+<histogram
+    name="WebRTC.Video.HardwareDecodedFramesBetweenSoftwareFallbacks{WebRtcCodecs}"
     units="frames" expires_after="2021-03-16">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The number of hardware decoded frames between fallbacks to software decoder
-    for a received video stream.
+    for a received video stream. {WebRtcCodecs}
   </summary>
+  <token key="WebRtcCodecs">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Av1" summary=""/>
+    <variant name=".Generic" summary=""/>
+    <variant name=".H264" summary=""/>
+    <variant name=".Multiplex" summary=""/>
+    <variant name=".Vp8" summary=""/>
+    <variant name=".Vp9" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.InputFramesPerSecond" units="fps"
@@ -3264,16 +3318,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="WebRtcTextLogging"
-    enum="WebRtcLoggingWebAppIdHash" expires_after="2021-06-01">
-  <owner>guidou@chromium.org</owner>
-  <owner>webrtc-dev@chromium.org</owner>
-  <summary>
-    Counts the number of WebRTC text log events per web application. Suffixed by
-    event.
-  </summary>
-</histogram>
-
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
     enum="NetErrorCodes" expires_after="2021-06-01">
   <owner>guidou@chromium.org</owner>
@@ -3293,6 +3337,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     are logged in WebRtcTextLogging.UploadFailureNetErrorCode. Recorded when an
     upload attempt fails.
   </summary>
+</histogram>
+
+<histogram name="WebRtcTextLogging{WebRtcLoggingEvent}"
+    enum="WebRtcLoggingWebAppIdHash" expires_after="2021-06-01">
+  <owner>guidou@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Counts the number of WebRTC text log events per web application. Suffixed by
+    event. {WebRtcLoggingEvent}
+  </summary>
+  <token key="WebRtcLoggingEvent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Discard" summary="Discard"/>
+    <variant name=".Start" summary="Start"/>
+    <variant name=".UploadFailed" summary="Upload failed"/>
+    <variant name=".UploadStarted" summary="Upload started"/>
+    <variant name=".UploadStoredStarted"
+        summary="Upload of a stored log started"/>
+    <variant name=".UploadSuccessful" summary="Upload successful"/>
+  </token>
 </histogram>
 
 </histograms>
