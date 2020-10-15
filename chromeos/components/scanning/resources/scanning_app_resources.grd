@@ -13,19 +13,19 @@
   <release seq="1">
     <includes>
       <!-- Privileged app host contents. -->
-      <include name="IDR_SCANNING_APP_INDEX_HTML" file="index.html" type="BINDATA" compress="gzip" />
-      <include name="IDR_SCANNING_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/scanning/mojom/scanning.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_SCANNING_APP_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_app.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_SCANNER_SELECT_HTML" file="scanner_select.html" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_SCANNER_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanner_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_SOURCE_SELECT_HTML" file="source_select.html" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_SOURCE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/source_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_HTML" file="file_type_select.html" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/file_type_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_HTML" file="color_mode_select.html" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/color_mode_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_HTML" file="resolution_select.html" compress="gzip" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/resolution_select.js" use_base_dir="false" compress="gzip" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_INDEX_HTML" file="index.html" type="BINDATA" />
+      <include name="IDR_SCANNING_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/scanning/mojom/scanning.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_SCANNING_APP_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_app.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SCANNER_SELECT_HTML" file="scanner_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SCANNER_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanner_select.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SOURCE_SELECT_HTML" file="source_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_SOURCE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/source_select.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_HTML" file="file_type_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_FILE_TYPE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/file_type_select.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_HTML" file="color_mode_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_COLOR_MODE_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/color_mode_select.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_HTML" file="resolution_select.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/resolution_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCAN_SETTINGS_SECTION_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scan_settings_section.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_THROBBER_CSS_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/throbber_css.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_ICON" file="app_icon_192.png" type="BINDATA" />
