@@ -75,7 +75,12 @@ interface SensorDevice {
   // Returns base::nullopt if the attribute cannot be read.
   GetAttribute@1(string attr_name) => (string? value);
 
-  // Sets the frequency of the device before starting to read samples.
+  // Sets the frequency in Hz of the device before starting to read samples.
+  // If no frequency or an invalid frequency is set, an
+  // ObserverErrorType::FREQUENCY_INVALID error will occur after calling
+  // |StartReadingSamples|.
+  // After starting to read samples, the client can set the frequency to 0 to
+  // pause the reading, and set a valid frequency later to resume the reading.
   // |result_freq| would be the frequency set by iioservice for the client.
   SetFrequency@2(double frequency) => (double result_freq);
 
