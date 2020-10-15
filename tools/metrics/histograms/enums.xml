@@ -975,6 +975,15 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="SignedInWithAddedAccount">
     User has added an account and signed in with this account.
   </int>
+  <int value="9" label="DismissedScrim">
+    User has dismissed the promo by tapping on the scrim above the bottom sheet.
+  </int>
+  <int value="10" label="DismissedSwipeDown">
+    User has dismissed the promo by swiping down the bottom sheet.
+  </int>
+  <int value="11" label="DismissedOther">
+    User has dismissed the promo by other means.
+  </int>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

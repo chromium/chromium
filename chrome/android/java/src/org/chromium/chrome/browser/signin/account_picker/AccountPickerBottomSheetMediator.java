@@ -115,8 +115,6 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             return true;
         } else {
             // The bottom sheet will be dismissed for all other view states
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.DISMISSED_BACK);
             return false;
         }
     }
