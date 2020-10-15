@@ -151,17 +151,6 @@ const char kEmergencyLegacyCookieAccessParamName[] = "Patterns";
 const base::FeatureParam<std::string> kEmergencyLegacyCookieAccessParam{
     &kEmergencyLegacyCookieAccess, kEmergencyLegacyCookieAccessParamName, ""};
 
-// Controls whether the CORB allowlist [1] is also applied to OOR-CORS (e.g.
-// whether non-allowlisted content scripts are subject to CORS in OOR-CORS
-// mode).  See also: https://crbug.com/920638
-//
-// [1]
-// https://www.chromium.org/Home/chromium-security/extension-content-script-fetches
-const base::Feature kCorbAllowlistAlsoAppliesToOorCors = {
-    "CorbAllowlistAlsoAppliesToOorCors", base::FEATURE_ENABLED_BY_DEFAULT};
-const char kCorbAllowlistAlsoAppliesToOorCorsParamName[] =
-    "AllowlistForCorbAndCors";
-
 // Controls whether a |request_initiator| that mismatches
 // |request_initiator_origin_lock| leads to 1) failing the HTTP request and 2)
 // calling mojo::ReportBadMessage (on desktop platforms, where NetworkService

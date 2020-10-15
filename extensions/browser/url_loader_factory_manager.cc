@@ -34,7 +34,6 @@
 #include "extensions/common/switches.h"
 #include "extensions/common/user_script.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -45,11 +44,6 @@
 namespace extensions {
 
 namespace {
-
-bool ShouldAllowlistAlsoApplyToOorCors() {
-  return base::FeatureList::IsEnabled(
-      network::features::kCorbAllowlistAlsoAppliesToOorCors);
-}
 
 enum class FactoryUser {
   kContentScript,
@@ -150,12 +144,6 @@ bool ShouldInspectIsolatedWorldOrigin(const Extension& extension,
 
   switch (factory_user) {
     case FactoryUser::kContentScript:
-      // If |extensions_features::kCorbAllowlistAlsoAppliesToOorCors| is
-      // disabled, then go back to the legacy CORS behavior for all extensions.
-      if (!ShouldAllowlistAlsoApplyToOorCors())
-        return true;
-
-      // Otherwise, make an |extension|-specific decision.
       return DoContentScriptsDependOnRelaxedCorbOrCors(extension);
     case FactoryUser::kExtensionProcess:
       return false;

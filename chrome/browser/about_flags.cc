@@ -4200,10 +4200,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kBlockInsecurePrivateNetworkRequests)},
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"cors-for-content-scripts", flag_descriptions::kCorsForContentScriptsName,
-     flag_descriptions::kCorsForContentScriptsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(network::features::kCorbAllowlistAlsoAppliesToOorCors)},
-
     {"force-empty-CORB-and-CORS-allowlist",
      flag_descriptions::kForceEmptyCorbAndCorsAllowlistName,
      flag_descriptions::kForceEmptyCorbAndCorsAllowlistDescription, kOsDesktop,
