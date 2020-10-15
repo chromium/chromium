@@ -179,7 +179,6 @@ TEST(CommitContributionImplTest,
 
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
-  contribution.CleanUp();
 
   ASSERT_EQ(1, msg.commit().entries().size());
   SyncEntity entity = msg.commit().entries(0);
@@ -242,7 +241,6 @@ TEST(CommitContributionImplTest,
 
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
-  contribution.CleanUp();
 
   ASSERT_EQ(1, msg.commit().entries().size());
   SyncEntity entity = msg.commit().entries(0);
@@ -311,7 +309,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
 
   StatusController status;
   contribution.ProcessCommitResponse(response, &status);
-  contribution.CleanUp();
 
   ASSERT_EQ(1u, actual_error_response_list.size());
   FailedCommitResponseData failed_item = actual_error_response_list[0];
@@ -335,7 +332,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
       /*only_commit_specifics=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
-  contribution.CleanUp();
 }
 
 }  // namespace

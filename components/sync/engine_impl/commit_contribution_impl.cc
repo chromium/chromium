@@ -37,12 +37,9 @@ CommitContributionImpl::CommitContributionImpl(
       passphrase_type_(passphrase_type),
       context_(context),
       commit_requests_(std::move(commit_requests)),
-      cleaned_up_(false),
       only_commit_specifics_(only_commit_specifics) {}
 
-CommitContributionImpl::~CommitContributionImpl() {
-  DCHECK(cleaned_up_);
-}
+CommitContributionImpl::~CommitContributionImpl() = default;
 
 void CommitContributionImpl::AddToCommitMessage(
     sync_pb::ClientToServerMessage* msg) {
@@ -184,11 +181,6 @@ void CommitContributionImpl::ProcessCommitFailure(
     SyncCommitError commit_error) {
   std::move(on_full_commit_failure_callback_).Run(commit_error);
   on_commit_response_callback_.Reset();
-}
-
-void CommitContributionImpl::CleanUp() {
-  // TODO(crbug.com/1137896): Remove this method, is has no use anymore.
-  cleaned_up_ = true;
 }
 
 size_t CommitContributionImpl::GetNumEntries() const {

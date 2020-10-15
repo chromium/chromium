@@ -42,7 +42,6 @@ class FakeCommitContribution : public CommitContribution {
     return SyncerError();
   }
   void ProcessCommitFailure(SyncCommitError commit_error) override {}
-  void CleanUp() override {}
   size_t GetNumEntries() const override { return num_entries_; }
 
  private:

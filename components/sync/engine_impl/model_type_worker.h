@@ -102,16 +102,6 @@ class ModelTypeWorker : public UpdateHandler,
   std::unique_ptr<CommitContribution> GetContribution(
       size_t max_entries) override;
 
-  // Extended overload of ProcessGetUpdatesResponse() that allows specifying
-  // whether the updates are coming from the USS migrator, which influences how
-  // UMA metrics are logged.
-  SyncerError ProcessGetUpdatesResponse(
-      const sync_pb::DataTypeProgressMarker& progress_marker,
-      const sync_pb::DataTypeContext& mutated_context,
-      const SyncEntityList& applicable_updates,
-      bool from_uss_migrator,
-      StatusController* status);
-
   bool HasLocalChangesForTest() const;
 
   // An alternative way to drive sending data to the processor, that should be

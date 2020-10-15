@@ -51,7 +51,6 @@ class CommitContributionImpl : public CommitContribution {
       const sync_pb::ClientToServerResponse& response,
       StatusController* status) override;
   void ProcessCommitFailure(SyncCommitError commit_error) override;
-  void CleanUp() override;
   size_t GetNumEntries() const override;
 
   // Public for testing.
@@ -92,10 +91,6 @@ class CommitContributionImpl : public CommitContribution {
   // The index in the commit message where this contribution's entities are
   // added.  Used to correlate per-item requests with per-item responses.
   size_t entries_start_index_;
-
-  // A flag used to ensure this object's contract is respected.  Helps to check
-  // that CleanUp() is called before the object is destructed.
-  bool cleaned_up_;
 
   // Don't send any metadata to server, only specifics. This is needed for
   // commit only types to save bandwidth.

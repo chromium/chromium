@@ -47,10 +47,6 @@ class CommitContribution {
   // was never called.
   virtual void ProcessCommitFailure(SyncCommitError commit_error) = 0;
 
-  // Cleans up any temporary state associated with the commit. Must be called
-  // before destruction.
-  virtual void CleanUp() = 0;
-
   // Returns the number of entries included in this contribution.
   virtual size_t GetNumEntries() const = 0;
 };

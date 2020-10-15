@@ -80,12 +80,9 @@ Commit::Commit(ContributionMap contributions,
                ExtensionsActivity::Records extensions_activity_buffer)
     : contributions_(std::move(contributions)),
       message_(message),
-      extensions_activity_buffer_(extensions_activity_buffer),
-      cleaned_up_(false) {}
+      extensions_activity_buffer_(extensions_activity_buffer) {}
 
-Commit::~Commit() {
-  DCHECK(cleaned_up_);
-}
+Commit::~Commit() = default;
 
 // static
 std::unique_ptr<Commit> Commit::Init(ModelTypeSet enabled_types,
@@ -241,14 +238,6 @@ ModelTypeSet Commit::GetContributingDataTypes() const {
     contributed_data_types.Put(model_type_and_contribution.first);
   }
   return contributed_data_types;
-}
-
-void Commit::CleanUp() {
-  for (ContributionMap::const_iterator it = contributions_.begin();
-       it != contributions_.end(); ++it) {
-    it->second->CleanUp();
-  }
-  cleaned_up_ = true;
 }
 
 void Commit::ReportFullCommitFailure(SyncerError syncer_error) {

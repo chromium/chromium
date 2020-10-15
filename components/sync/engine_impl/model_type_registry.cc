@@ -15,7 +15,6 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/engine_impl/model_type_worker.h"
 #include "components/sync/nigori/cryptographer.h"
 #include "components/sync/nigori/keystore_keys_handler.h"
@@ -235,15 +234,6 @@ void ModelTypeRegistry::OnEncryptionStateChanged() {
       worker->UpdateCryptographer(cryptographer_->Clone());
     }
   }
-}
-
-DataTypeDebugInfoEmitter* ModelTypeRegistry::GetEmitter(ModelType type) {
-  DataTypeDebugInfoEmitter* raw_emitter = nullptr;
-  auto it = data_type_debug_info_emitter_map_.find(type);
-  if (it != data_type_debug_info_emitter_map_.end()) {
-    raw_emitter = it->second.get();
-  }
-  return raw_emitter;
 }
 
 ModelTypeSet ModelTypeRegistry::GetEnabledDataTypes() const {

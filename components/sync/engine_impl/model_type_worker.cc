@@ -168,17 +168,6 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
     const sync_pb::DataTypeContext& mutated_context,
     const SyncEntityList& applicable_updates,
     StatusController* status) {
-  return ProcessGetUpdatesResponse(progress_marker, mutated_context,
-                                   applicable_updates,
-                                   /*from_uss_migrator=*/false, status);
-}
-
-SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
-    const sync_pb::DataTypeProgressMarker& progress_marker,
-    const sync_pb::DataTypeContext& mutated_context,
-    const SyncEntityList& applicable_updates,
-    bool from_uss_migrator,
-    StatusController* status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool is_initial_sync = !model_type_state_.initial_sync_done();
@@ -188,14 +177,10 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
   *model_type_state_.mutable_progress_marker() = progress_marker;
 
   for (const sync_pb::SyncEntity* update_entity : applicable_updates) {
-    // TODO(crbug.com/1137896): The USS migrator doesn't exist anymore, remove
-    // this parameter.
-    if (!from_uss_migrator) {
-      RecordEntityChangeMetrics(
-          type_, is_initial_sync
-                     ? ModelTypeEntityChange::kRemoteInitialUpdate
-                     : ModelTypeEntityChange::kRemoteNonInitialUpdate);
-    }
+    RecordEntityChangeMetrics(
+        type_, is_initial_sync
+                   ? ModelTypeEntityChange::kRemoteInitialUpdate
+                   : ModelTypeEntityChange::kRemoteNonInitialUpdate);
 
     if (update_entity->deleted()) {
       status->increment_num_tombstone_updates_downloaded_by(1);

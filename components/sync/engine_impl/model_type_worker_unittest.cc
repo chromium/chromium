@@ -391,17 +391,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   void PumpModelThread() { processor()->RunQueuedTasks(); }
 
   // Returns true if the |worker_| is ready to commit something.
-  bool WillCommit() {
-    std::unique_ptr<CommitContribution> contribution(
-        worker()->GetContribution(INT_MAX));
-
-    if (contribution) {
-      contribution->CleanUp();  // Gracefully abort the commit.
-      return true;
-    } else {
-      return false;
-    }
-  }
+  bool WillCommit() { return worker()->GetContribution(INT_MAX) != nullptr; }
 
   // Pretend to successfully commit all outstanding unsynced items.
   // It is safe to call this only if WillCommit() returns true.
@@ -421,7 +411,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
         server()->DoSuccessfulCommit(message);
 
     contribution->ProcessCommitResponse(response, &status_controller_);
-    contribution->CleanUp();
   }
 
   void DoCommitFailure() {
@@ -430,7 +419,6 @@ class ModelTypeWorkerTest : public ::testing::Test {
     DCHECK(contribution);
 
     contribution->ProcessCommitFailure(SyncCommitError::kNetworkError);
-    contribution->CleanUp();
   }
 
   // Callback when processor got disconnected with sync.

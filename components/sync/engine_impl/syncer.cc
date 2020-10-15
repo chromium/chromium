@@ -165,7 +165,6 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
       base::UmaHistogramEnumeration(kPrefix + ModelTypeToHistogramSuffix(type),
                                     error.value());
     }
-    commit->CleanUp();
     if (error.value() != SyncerError::SYNCER_OK) {
       return error;
     }

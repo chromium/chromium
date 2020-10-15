@@ -101,8 +101,6 @@ static_library("rest_of_sync") {
     "engine_impl/commit_processor.h",
     "engine_impl/commit_util.cc",
     "engine_impl/commit_util.h",
-    "engine_impl/cycle/data_type_debug_info_emitter.cc",
-    "engine_impl/cycle/data_type_debug_info_emitter.h",
     "engine_impl/cycle/data_type_tracker.cc",
     "engine_impl/cycle/data_type_tracker.h",
     "engine_impl/cycle/debug_info_getter.h",

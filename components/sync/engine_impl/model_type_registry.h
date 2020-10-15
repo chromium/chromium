@@ -23,7 +23,6 @@ namespace syncer {
 
 class CancelationSignal;
 class CommitContributor;
-class DataTypeDebugInfoEmitter;
 class KeystoreKeysHandler;
 class ModelTypeWorker;
 class UpdateHandler;
@@ -85,13 +84,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 
  private:
-  using DataTypeDebugInfoEmitterMap =
-      std::map<ModelType, std::unique_ptr<DataTypeDebugInfoEmitter>>;
-
   void OnEncryptionStateChanged();
-
-  // DebugInfoEmitters are never deleted. Returns an existing one if we have it.
-  DataTypeDebugInfoEmitter* GetEmitter(ModelType type);
 
   ModelTypeSet GetEnabledDataTypes() const;
 
@@ -104,9 +97,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // They do not own any of the objects they point to.
   UpdateHandlerMap update_handler_map_;
   CommitContributorMap commit_contributor_map_;
-
-  // Map of DebugInfoEmitters for sync data types. Does not own its contents.
-  DataTypeDebugInfoEmitterMap data_type_debug_info_emitter_map_;
 
   // A copy of the most recent cryptographer.
   std::unique_ptr<Cryptographer> cryptographer_;
