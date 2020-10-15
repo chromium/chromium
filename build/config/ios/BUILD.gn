@@ -31,46 +31,31 @@ config("compiler") {
 
   # CPU architecture.
   if (current_cpu == "x64") {
-    common_ios_flags += [
-      "-arch",
-      "x86_64",
-    ]
-    swiftflags = [
-      "-target",
-      "x86_64-apple-ios$ios_deployment_target-simulator",
-    ]
+    triplet_cpu = "x86_64"
   } else if (current_cpu == "x86") {
-    common_ios_flags += [
-      "-arch",
-      "i386",
-    ]
-    swiftflags = [
-      "-target",
-      "i386-apple-ios$ios_deployment_target-simulator",
-    ]
-  } else if (current_cpu == "armv7" || current_cpu == "arm") {
-    common_ios_flags += [
-      "-arch",
-      "armv7",
-    ]
-    swiftflags = [
-      "-target",
-      "armv7-apple-ios$ios_deployment_target",
-    ]
+    triplet_cpu = "i386"
+  } else if (current_cpu == "arm" || current_cpu == "armv7") {
+    triplet_cpu = "armv7"
   } else if (current_cpu == "arm64") {
-    common_ios_flags += [
-      "-arch",
-      "arm64",
-    ]
-    swiftflags = [
-      "-target",
-      "arm64-apple-ios$ios_deployment_target",
-    ]
+    triplet_cpu = "arm64"
+  } else {
+    assert(false, "unsupported cpu: $current_cpu")
   }
 
-  swiftflags += [
-    "-swift-version",
-    "5",
+  # Environment.
+  if (use_ios_simulator) {
+    triplet_environment = "-simulator"
+  } else {
+    triplet_environment = ""
+  }
+
+  # OS.
+  triplet_os = "apple-ios"
+
+  # Set target.
+  common_ios_flags = [
+    "-target",
+    "$triplet_cpu-$triplet_os$ios_deployment_target$triplet_environment",
   ]
 
   # This is here so that all files get recompiled after an Xcode update.
@@ -80,6 +65,12 @@ config("compiler") {
 
   asmflags = common_ios_flags
   cflags = common_ios_flags
+  swiftflags = common_ios_flags
+
+  swiftflags += [
+    "-swift-version",
+    "5",
+  ]
 
   # Without this, the constructors and destructors of a C++ object inside
   # an Objective C struct won't be called, which is very bad.
@@ -111,12 +102,6 @@ config("runtime_library") {
       "-sdk",
       sysroot,
     ]
-  }
-
-  if (use_ios_simulator) {
-    common_flags += [ "-mios-simulator-version-min=$ios_deployment_target" ]
-  } else {
-    common_flags += [ "-miphoneos-version-min=$ios_deployment_target" ]
   }
 
   if (use_xcode_clang && enable_ios_bitcode && !use_ios_simulator) {
