@@ -742,6 +742,11 @@
     "expiry_milestone": 78
   },
   {
+    "name": "dark-light-mode",
+    "owners": [ "minch", "tclaiborne" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "darken-websites-checkbox-in-themes-setting",
     "owners": [ "lazzzis@google.com", "twellington" ],
     "expiry_milestone": 92

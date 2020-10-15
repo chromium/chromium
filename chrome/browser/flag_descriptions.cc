@@ -371,6 +371,11 @@ const char kClientStorageAccessContextAuditingName[] =
 const char kClientStorageAccessContextAuditingDescription[] =
     "Record the first-party contexts in which client-side storage was accessed";
 
+const char kDarkLightTestName[] = "Dark/light mode of system UI";
+const char kDarkLightTestDescription[] =
+    "Enables the dark/light mode of system UI, which includes shelf, launcher, "
+    "system tray etc.";
+
 const char kDecodeJpeg420ImagesToYUVName[] = "YUV decoding for JPEG";
 const char kDecodeJpeg420ImagesToYUVDescription[] =
     "Decode and render 4:2:0 formatted jpeg images from YUV instead of RGB."

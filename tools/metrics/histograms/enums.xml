@@ -42515,6 +42515,7 @@ from previous Chrome versions.
   <int value="-1121931029" label="DownloadsForeground:enabled"/>
   <int value="-1119700637" label="ui-disable-partial-swap"/>
   <int value="-1118921985" label="ForceEnableSystemAec:enabled"/>
+  <int value="-1117894706" label="DarkLightMode:enabled"/>
   <int value="-1117104514" label="smbfs-file-shares"/>
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
@@ -43534,6 +43535,7 @@ from previous Chrome versions.
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>
   <int value="-68877684" label="BackgroundVideoTrackOptimization:enabled"/>
   <int value="-68619312" label="PassiveDocumentWheelEventListeners:disabled"/>
+  <int value="-68613812" label="DarkLightMode:disabled"/>
   <int value="-68225452" label="enable-translate-new-ux"/>
   <int value="-67616014" label="PDFAnnotations:enabled"/>
   <int value="-67297229" label="OfflinePagesDescriptivePendingStatus:disabled"/>
