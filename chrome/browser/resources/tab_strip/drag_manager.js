@@ -240,6 +240,15 @@ class DragSession {
           this.element_.tab.pinned, this.srcGroup);
     }
 
+    if (this.element_.isDraggedOut() &&
+        event.dataTransfer.dropEffect === 'move') {
+      // The element was dragged out of the current tab strip and was dropped
+      // into a new window. In this case, do not mark the element as no longer
+      // being dragged out. The element needs to be kept hidden, and will be
+      // automatically removed from the DOM with the next tab-removed event.
+      return;
+    }
+
     this.element_.setDragging(false);
     this.element_.setDraggedOut(false);
 

@@ -292,6 +292,11 @@ export class TabElement extends CustomElement {
     this.toggleAttribute('dragged-out_', isDraggedOut);
   }
 
+  /** @return {boolean} */
+  isDraggedOut() {
+    return this.hasAttribute('dragged-out_');
+  }
+
   /**
    * @return {!Promise}
    */

@@ -689,4 +689,40 @@ suite('DragManager', () => {
     assertEquals(
         0, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
   });
+
+  test('DragEndWithDropEffectMoveDoesNotRemoveDraggedOutAttribute', () => {
+    const draggedTab = delegate.children[0];
+    const dataTransfer = new MockDataTransfer();
+    draggedTab.dispatchEvent(new DragEvent('dragstart', {
+      bubbles: true,
+      composed: true,
+      clientX: 100,
+      clientY: 150,
+      dataTransfer,
+    }));
+    delegate.dispatchEvent(new DragEvent('dragleave', {dataTransfer}));
+    assertTrue(draggedTab.isDraggedOut());
+
+    dataTransfer.dropEffect = 'move';
+    delegate.dispatchEvent(new DragEvent('dragend', {dataTransfer}));
+    assertTrue(draggedTab.isDraggedOut());
+  });
+
+  test('DragEndWithDropEffectNoneRemovesDraggedOutAttribute', () => {
+    const draggedTab = delegate.children[0];
+    const dataTransfer = new MockDataTransfer();
+    draggedTab.dispatchEvent(new DragEvent('dragstart', {
+      bubbles: true,
+      composed: true,
+      clientX: 100,
+      clientY: 150,
+      dataTransfer,
+    }));
+    delegate.dispatchEvent(new DragEvent('dragleave', {dataTransfer}));
+    assertTrue(draggedTab.isDraggedOut());
+
+    dataTransfer.dropEffect = 'none';
+    delegate.dispatchEvent(new DragEvent('dragend', {dataTransfer}));
+    assertFalse(draggedTab.isDraggedOut());
+  });
 });
