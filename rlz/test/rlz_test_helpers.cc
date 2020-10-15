@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "rlz/lib/rlz_lib.h"
