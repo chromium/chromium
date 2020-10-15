@@ -19,12 +19,12 @@ void FakeCfmServiceContext::ProvideAdaptor(
            std::move(callback));
 }
 
-void FakeCfmServiceContext::BindRegistry(
+void FakeCfmServiceContext::RequestBindService(
     const std::string& interface_name,
-    mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
-    BindRegistryCallback callback) {
-  std::move(bind_registry_callback_)
-      .Run(std::move(interface_name), std::move(broker_receiver),
+    mojo::ScopedMessagePipeHandle receiver_pipe,
+    RequestBindServiceCallback callback) {
+  std::move(request_bind_service_callback_)
+      .Run(std::move(interface_name), std::move(receiver_pipe),
            std::move(callback));
 }
 
@@ -33,9 +33,9 @@ void FakeCfmServiceContext::SetFakeProvideAdaptorCallback(
   provide_adaptor_callback_ = std::move(callback);
 }
 
-void FakeCfmServiceContext::SetFakeBindRegistryCallback(
-    FakeBindRegistryCallback callback) {
-  bind_registry_callback_ = std::move(callback);
+void FakeCfmServiceContext::SetFakeRequestBindServiceCallback(
+    FakeRequestBindServiceCallback callback) {
+  request_bind_service_callback_ = std::move(callback);
 }
 
 }  // namespace cfm

@@ -40,8 +40,9 @@ void ServiceAdaptor::BindServiceAdaptor() {
       &ServiceAdaptor::OnAdaptorDisconnect, base::Unretained(this)));
 }
 
-void ServiceAdaptor::BindService(mojo::ScopedMessagePipeHandle receiver_pipe) {
-  delegate_->BindService(std::move(receiver_pipe));
+void ServiceAdaptor::OnBindService(
+    mojo::ScopedMessagePipeHandle receiver_pipe) {
+  delegate_->OnBindService(std::move(receiver_pipe));
 }
 
 void ServiceAdaptor::OnAdaptorConnect(bool success) {

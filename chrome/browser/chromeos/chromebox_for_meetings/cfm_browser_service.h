@@ -39,7 +39,7 @@ class CfmBrowserService : public CfmObserver,
   // Forward |ServiceAdaptorDelegate| implementation
   void OnAdaptorConnect(bool success) override;
   void OnAdaptorDisconnect() override;
-  void BindService(::mojo::ScopedMessagePipeHandle receiver_pipe) override;
+  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
 
   virtual void OnServiceDisconnect();
 

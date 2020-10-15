@@ -21,10 +21,10 @@ class FakeCfmServiceContext : public mojom::CfmServiceContext {
       mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
       ProvideAdaptorCallback callback)>;
 
-  using FakeBindRegistryCallback = base::OnceCallback<void(
-      const std::string& interface_name,
-      mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
-      BindRegistryCallback callback)>;
+  using FakeRequestBindServiceCallback =
+      base::OnceCallback<void(const std::string& interface_name,
+                              mojo::ScopedMessagePipeHandle receiver_pipe,
+                              RequestBindServiceCallback callback)>;
 
   FakeCfmServiceContext();
   FakeCfmServiceContext(const FakeCfmServiceContext&) = delete;
@@ -36,18 +36,18 @@ class FakeCfmServiceContext : public mojom::CfmServiceContext {
       mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
       ProvideAdaptorCallback callback) override;
 
-  void BindRegistry(
-      const std::string& interface_name,
-      mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
-      BindRegistryCallback callback) override;
+  void RequestBindService(const std::string& interface_name,
+                          mojo::ScopedMessagePipeHandle receiver_pipe,
+                          RequestBindServiceCallback callback) override;
 
   void SetFakeProvideAdaptorCallback(FakeProvideAdaptorCallback callback);
 
-  void SetFakeBindRegistryCallback(FakeBindRegistryCallback callback);
+  void SetFakeRequestBindServiceCallback(
+      FakeRequestBindServiceCallback callback);
 
  private:
   FakeProvideAdaptorCallback provide_adaptor_callback_;
-  FakeBindRegistryCallback bind_registry_callback_;
+  FakeRequestBindServiceCallback request_bind_service_callback_;
 };
 
 }  // namespace cfm

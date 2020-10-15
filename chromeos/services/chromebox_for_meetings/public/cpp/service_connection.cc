@@ -53,10 +53,9 @@ class ServiceConnectionImpl : public ServiceConnection,
       const std::string& interface_name,
       mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
       ProvideAdaptorCallback callback) override;
-  void BindRegistry(
-      const std::string& interface_name,
-      mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
-      BindRegistryCallback callback) override;
+  void RequestBindService(const std::string& interface_name,
+                          mojo::ScopedMessagePipeHandle receiver_pipe,
+                          RequestBindServiceCallback callback) override;
 
   void OnMojoConnectionError();
 
@@ -154,14 +153,14 @@ void ServiceConnectionImpl::ProvideAdaptor(
                           std::move(callback));
 }
 
-void ServiceConnectionImpl::BindRegistry(
+void ServiceConnectionImpl::RequestBindService(
     const std::string& interface_name,
-    mojo::PendingReceiver<mojom::CfmServiceRegistry> broker_receiver,
-    BindRegistryCallback callback) {
+    mojo::ScopedMessagePipeHandle receiver_pipe,
+    RequestBindServiceCallback callback) {
   BindPlatformServiceContextIfNeeded();
 
-  remote_->BindRegistry(std::move(interface_name), std::move(broker_receiver),
-                        std::move(callback));
+  remote_->RequestBindService(std::move(interface_name),
+                              std::move(receiver_pipe), std::move(callback));
 }
 
 void ServiceConnectionImpl::OnMojoConnectionError() {

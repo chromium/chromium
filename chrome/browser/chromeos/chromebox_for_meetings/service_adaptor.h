@@ -32,7 +32,7 @@ class ServiceAdaptor : public mojom::CfmServiceAdaptor {
 
     // Called when attempting to Bind a mojom using using a message pipe of the
     // given types PendingReceiver.
-    virtual void BindService(mojo::ScopedMessagePipeHandle receiver_pipe) = 0;
+    virtual void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) = 0;
 
    protected:
     Delegate() = default;
@@ -51,7 +51,7 @@ class ServiceAdaptor : public mojom::CfmServiceAdaptor {
 
  protected:
   // Forward |mojom::CfmServiceAdaptor| implementation
-  void BindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
+  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
 
   // Called when the Service Adaptor has successfully connected to the
   // |mojom::CfmServiceContext|

@@ -17,20 +17,10 @@ interface CfmServiceContext {
       string interface_name,
       pending_remote<CfmServiceAdaptor> adaptor_remote) => (bool success);
 
-  // Request to bind |CfmServiceRegistry| requests assuming a valid
-  // |interface_name| is given.
-  // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
-  BindRegistry@1(
-    string interface_name,
-    pending_receiver<CfmServiceRegistry> registry_receiver) => (bool success);
-};
-
-// Interface used to bind to registered interfaces by name
-interface CfmServiceRegistry {
   // Attempt to bind the |receiver_pipe| of an intended mojo::Receiver
   // to a remote service that is internally identified as |interface_name|
   // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
-  RequestBindService@0(
+  RequestBindService@1(
       string interface_name,
       handle<message_pipe> receiver_pipe) => (bool success);
 };
@@ -47,5 +37,5 @@ interface CfmServiceAdaptor {
   // FooImpl assuming FooImpl also implements the CfmServiceAdaptor.
   // Note: Ideally services should handle multiple clients (i.e BindingSet)
   // unless explicitly stated.
-  BindService@0(handle<message_pipe> receiver_pipe);
+  OnBindService@0(handle<message_pipe> receiver_pipe);
 };
