@@ -222,11 +222,18 @@ WGPUTextureFormat AsDawnEnum<WGPUTextureFormat>(
   }
 
   // Packed 32 bit formats
+  if (webgpu_enum == "rgb9e5ufloat") {
+    return WGPUTextureFormat_RGB9E5Ufloat;
+  }
   if (webgpu_enum == "rgb10a2unorm") {
     return WGPUTextureFormat_RGB10A2Unorm;
   }
   if (webgpu_enum == "rg11b10float") {
-    return WGPUTextureFormat_RG11B10Float;
+    // Deprecated.
+    return WGPUTextureFormat_RG11B10Ufloat;
+  }
+  if (webgpu_enum == "rg11b10ufloat") {
+    return WGPUTextureFormat_RG11B10Ufloat;
   }
 
   // Normal 64 bit formats
@@ -305,8 +312,12 @@ WGPUTextureFormat AsDawnEnum<WGPUTextureFormat>(
   if (webgpu_enum == "bc6h-rgb-ufloat") {
     return WGPUTextureFormat_BC6HRGBUfloat;
   }
+  if (webgpu_enum == "bc6h-rgb-float") {
+    return WGPUTextureFormat_BC6HRGBFloat;
+  }
   if (webgpu_enum == "bc6h-rgb-sfloat") {
-    return WGPUTextureFormat_BC6HRGBSfloat;
+    // Deprecated.
+    return WGPUTextureFormat_BC6HRGBFloat;
   }
   if (webgpu_enum == "bc7-rgba-unorm") {
     return WGPUTextureFormat_BC7RGBAUnorm;

@@ -27,6 +27,14 @@ WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
   dawn_desc.dimension =
       AsDawnEnum<WGPUTextureDimension>(webgpu_desc->dimension());
   dawn_desc.size = AsDawnType(&webgpu_desc->size());
+  if (webgpu_desc->format() == "rg11b10float") {
+    device->AddConsoleWarning(
+        "rg11b10float is deprecated. Use rg11b10ufloat instead.");
+  }
+  if (webgpu_desc->format() == "bc6h-rgb-sfloat") {
+    device->AddConsoleWarning(
+        "bc6h-rgb-sfloat is deprecated. Use bc6h-rgb-float instead.");
+  }
   dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
