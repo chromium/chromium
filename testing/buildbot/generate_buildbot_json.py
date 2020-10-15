@@ -1424,12 +1424,6 @@ class BBJSONGenerator(object):
         'win32-dbg',
         'win-archive-dbg',
         'win32-archive-dbg',
-        # TODO(crbug.com/1033753) Delete these when coverage is enabled by
-        # default on Windows tryjobs.
-        'GPU Win x64 Builder Code Coverage',
-        'Win x64 Builder Code Coverage',
-        'Win10 Tests x64 Code Coverage',
-        'Win10 x64 Release (NVIDIA) Code Coverage',
     ]
 
   def get_internal_waterfalls(self):
