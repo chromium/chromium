@@ -233,6 +233,14 @@ void PaymentMethodViewController::ButtonPressed(views::Button* sender,
   }
 }
 
+bool PaymentMethodViewController::ShouldShowPrimaryButton() {
+  return false;
+}
+
+bool PaymentMethodViewController::ShouldShowSecondaryButton() {
+  return enable_add_card_;
+}
+
 base::string16 PaymentMethodViewController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
 }
@@ -244,10 +252,6 @@ int PaymentMethodViewController::GetSecondaryButtonTag() {
 
 int PaymentMethodViewController::GetSecondaryButtonId() {
   return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CARD_BUTTON);
-}
-
-bool PaymentMethodViewController::ShouldShowSecondaryButton() {
-  return enable_add_card_;
 }
 
 }  // namespace payments

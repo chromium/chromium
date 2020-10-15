@@ -32,7 +32,10 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
 
  private:
   // PaymentRequestSheetController:
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
+  base::string16 GetPrimaryButtonLabel() override;
+  int GetPrimaryButtonTag() override;
+  int GetPrimaryButtonId() override;
+  bool GetPrimaryButtonEnabled() override;
   bool ShouldShowHeaderBackArrow() override;
   bool ShouldShowSecondaryButton() override;
   base::string16 GetSheetTitle() override;

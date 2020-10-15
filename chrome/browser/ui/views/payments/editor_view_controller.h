@@ -145,8 +145,11 @@ class EditorViewController : public PaymentRequestSheetController,
   // Returns true if all fields are valid.
   bool ValidateInputFields();
 
-  // PaymentRequestSheetController;
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
+  // PaymentRequestSheetController:
+  base::string16 GetPrimaryButtonLabel() override;
+  int GetPrimaryButtonTag() override;
+  int GetPrimaryButtonId() override;
+  bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;
   void FillContentView(views::View* content_view) override;
 

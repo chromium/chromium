@@ -261,6 +261,10 @@ void PaymentHandlerWebFlowViewController::FillContentView(
       gfx::Size(0, dialog()->GetActualPaymentHandlerDialogHeight() - 75));
 }
 
+bool PaymentHandlerWebFlowViewController::ShouldShowPrimaryButton() {
+  return false;
+}
+
 bool PaymentHandlerWebFlowViewController::ShouldShowSecondaryButton() {
   return false;
 }

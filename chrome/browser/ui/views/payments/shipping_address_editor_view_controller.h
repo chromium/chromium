@@ -62,7 +62,9 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
   // PaymentRequestSheetController:
   base::string16 GetSheetTitle() override;
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
+
+ protected:
+  int GetPrimaryButtonId() override;
 
  private:
   friend class ShippingAddressValidationDelegate;

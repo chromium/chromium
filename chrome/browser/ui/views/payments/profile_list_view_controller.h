@@ -93,6 +93,7 @@ class ProfileListViewController : public PaymentRequestSheetController {
   void PopulateList();
 
   // PaymentRequestSheetController:
+  bool ShouldShowPrimaryButton() override;
   void FillContentView(views::View* content_view) override;
 
  private:

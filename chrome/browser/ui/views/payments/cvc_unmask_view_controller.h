@@ -67,7 +67,10 @@ class CvcUnmaskViewController
   // PaymentRequestSheetController:
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
+  base::string16 GetPrimaryButtonLabel() override;
+  int GetPrimaryButtonTag() override;
+  int GetPrimaryButtonId() override;
+  bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 

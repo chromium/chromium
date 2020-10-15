@@ -321,9 +321,32 @@ void PaymentRequestSheetController::RelayoutPane() {
   scroll_->Layout();
 }
 
-std::unique_ptr<views::Button>
-PaymentRequestSheetController::CreatePrimaryButton() {
-  return nullptr;
+bool PaymentRequestSheetController::ShouldShowPrimaryButton() {
+  return true;
+}
+
+base::string16 PaymentRequestSheetController::GetPrimaryButtonLabel() {
+  const bool continue_button =
+      state()->selected_app() &&
+      state()->selected_app()->type() != PaymentApp::Type::AUTOFILL;
+  return l10n_util::GetStringUTF16(
+      continue_button ? IDS_PAYMENTS_CONTINUE_BUTTON : IDS_PAYMENTS_PAY_BUTTON);
+}
+
+int PaymentRequestSheetController::GetPrimaryButtonTag() {
+  return static_cast<int>(PaymentRequestCommonTags::PAY_BUTTON_TAG);
+}
+
+int PaymentRequestSheetController::GetPrimaryButtonId() {
+  return static_cast<int>(DialogViewID::PAY_BUTTON);
+}
+
+bool PaymentRequestSheetController::GetPrimaryButtonEnabled() {
+  return state()->is_ready_to_pay();
+}
+
+bool PaymentRequestSheetController::ShouldShowSecondaryButton() {
+  return true;
 }
 
 base::string16 PaymentRequestSheetController::GetSecondaryButtonLabel() {
@@ -336,10 +359,6 @@ int PaymentRequestSheetController::GetSecondaryButtonTag() {
 
 int PaymentRequestSheetController::GetSecondaryButtonId() {
   return static_cast<int>(DialogViewID::CANCEL_BUTTON);
-}
-
-bool PaymentRequestSheetController::ShouldShowSecondaryButton() {
-  return true;
 }
 
 bool PaymentRequestSheetController::ShouldShowHeaderBackArrow() {
@@ -470,10 +489,14 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
 }
 
 void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {
-  std::unique_ptr<views::Button> primary_button = CreatePrimaryButton();
-  if (primary_button) {
-    primary_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    primary_button_ = container->AddChildView(std::move(primary_button));
+  if (ShouldShowPrimaryButton()) {
+    primary_button_ = container->AddChildView(
+        std::make_unique<views::MdTextButton>(this, GetPrimaryButtonLabel()));
+    primary_button_->set_tag(GetPrimaryButtonTag());
+    primary_button_->SetID(GetPrimaryButtonId());
+    primary_button_->SetEnabled(GetPrimaryButtonEnabled());
+    primary_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    primary_button_->SetProminent(true);
   }
 }
 

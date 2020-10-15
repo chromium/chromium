@@ -30,10 +30,11 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  bool ShouldShowPrimaryButton() override;
+  bool ShouldShowSecondaryButton() override;
   base::string16 GetSecondaryButtonLabel() override;
   int GetSecondaryButtonTag() override;
   int GetSecondaryButtonId() override;
-  bool ShouldShowSecondaryButton() override;
 
   PaymentRequestItemList payment_method_list_;
 

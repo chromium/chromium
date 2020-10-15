@@ -60,6 +60,7 @@ class PaymentHandlerWebFlowViewController
   // PaymentRequestSheetController:
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
+  bool ShouldShowPrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
   std::unique_ptr<views::View> CreateHeaderContentView(
       views::View* header_view) override;

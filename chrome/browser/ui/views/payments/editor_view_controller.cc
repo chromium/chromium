@@ -128,13 +128,20 @@ bool EditorViewController::ValidateInputFields() {
   return true;
 }
 
-std::unique_ptr<views::Button> EditorViewController::CreatePrimaryButton() {
-  auto button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_DONE));
-  button->SetProminent(true);
-  button->set_tag(static_cast<int>(EditorViewControllerTags::SAVE_BUTTON));
-  button->SetID(static_cast<int>(DialogViewID::EDITOR_SAVE_BUTTON));
-  return button;
+base::string16 EditorViewController::GetPrimaryButtonLabel() {
+  return l10n_util::GetStringUTF16(IDS_DONE);
+}
+
+int EditorViewController::GetPrimaryButtonTag() {
+  return static_cast<int>(EditorViewControllerTags::SAVE_BUTTON);
+}
+
+int EditorViewController::GetPrimaryButtonId() {
+  return static_cast<int>(DialogViewID::EDITOR_SAVE_BUTTON);
+}
+
+bool EditorViewController::GetPrimaryButtonEnabled() {
+  return true;
 }
 
 bool EditorViewController::ShouldShowSecondaryButton() {

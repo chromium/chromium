@@ -129,6 +129,10 @@ ShippingOptionViewController::CreateExtraFooterView() {
   return nullptr;
 }
 
+bool ShippingOptionViewController::ShouldShowPrimaryButton() {
+  return false;
+}
+
 bool ShippingOptionViewController::ShouldShowSecondaryButton() {
   // Do not show the "Cancel Payment" button.
   return false;

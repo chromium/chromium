@@ -25,14 +25,20 @@ ErrorMessageViewController::ErrorMessageViewController(
 
 ErrorMessageViewController::~ErrorMessageViewController() {}
 
-std::unique_ptr<views::Button>
-ErrorMessageViewController::CreatePrimaryButton() {
-  auto button = std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_CLOSE));
-  button->SetProminent(true);
-  button->set_tag(static_cast<int>(PaymentRequestCommonTags::CLOSE_BUTTON_TAG));
-  button->SetID(static_cast<int>(DialogViewID::CANCEL_BUTTON));
-  return button;
+base::string16 ErrorMessageViewController::GetPrimaryButtonLabel() {
+  return l10n_util::GetStringUTF16(IDS_CLOSE);
+}
+
+int ErrorMessageViewController::GetPrimaryButtonTag() {
+  return static_cast<int>(PaymentRequestCommonTags::CLOSE_BUTTON_TAG);
+}
+
+int ErrorMessageViewController::GetPrimaryButtonId() {
+  return static_cast<int>(DialogViewID::CANCEL_BUTTON);
+}
+
+bool ErrorMessageViewController::GetPrimaryButtonEnabled() {
+  return true;
 }
 
 bool ErrorMessageViewController::ShouldShowHeaderBackArrow() {

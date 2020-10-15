@@ -40,15 +40,12 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
 
  private:
   // PaymentRequestSheetController:
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
   base::string16 GetSecondaryButtonLabel() override;
   bool ShouldShowHeaderBackArrow() override;
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
   std::unique_ptr<views::View> CreateExtraFooterView() override;
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  void UpdatePayButtonState(bool enabled);
 
   // These functions create the various sections and rows of the payment sheet.
   // Where applicable, they also populate |accessible_content|, which shouldn't

@@ -11,10 +11,6 @@
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
 
-namespace views {
-class Button;
-}
-
 namespace payments {
 
 class PaymentRequestDialogView;
@@ -41,13 +37,9 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
 
  private:
   // PaymentRequestSheetController:
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
-  void UpdatePayButtonState(bool enabled);
-
-  views::Button* pay_button_;
 
   base::WeakPtrFactory<OrderSummaryViewController> weak_ptr_factory_{this};
 

@@ -374,6 +374,10 @@ void ProfileListViewController::PopulateList() {
   }
 }
 
+bool ProfileListViewController::ShouldShowPrimaryButton() {
+  return false;
+}
+
 void ProfileListViewController::FillContentView(views::View* content_view) {
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
