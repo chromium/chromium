@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/extension_request_policy_handler.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_policy_handler.h"
 
 #include "base/values.h"
 #include "chrome/common/pref_names.h"

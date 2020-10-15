@@ -7,7 +7,7 @@
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
-#include "chrome/browser/enterprise/reporting/notification/extension_request_observer_factory.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer_factory.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 
 class Profile;

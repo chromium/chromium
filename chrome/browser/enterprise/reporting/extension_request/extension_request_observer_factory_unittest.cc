@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/notification/extension_request_observer_factory.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer_factory.h"
 
-#include "chrome/browser/enterprise/reporting/notification/extension_request_observer.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
