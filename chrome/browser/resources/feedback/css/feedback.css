@@ -49,6 +49,10 @@ body {
   margin: 20px;
 }
 
+.content #free-form-text {
+  margin-top: 0;  /* the content frame already gives enough margin. */
+}
+
 .content #description-text {
   border-color: #c8c8c8;
   box-sizing: border-box;
