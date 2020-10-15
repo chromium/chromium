@@ -222,6 +222,11 @@ void SystemDataProvider::PowerChanged(
                      base::Unretained(this), proto));
 }
 
+void SystemDataProvider::BindInterface(
+    mojo::PendingReceiver<mojom::SystemDataProvider> pending_receiver) {
+  receiver_.Bind(std::move(pending_receiver));
+}
+
 void SystemDataProvider::SetBatteryChargeStatusTimerForTesting(
     std::unique_ptr<base::RepeatingTimer> timer) {
   battery_charge_status_timer_ = std::move(timer);

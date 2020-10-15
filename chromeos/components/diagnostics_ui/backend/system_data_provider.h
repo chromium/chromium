@@ -11,6 +11,8 @@
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -44,6 +46,9 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   // PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
+
+  void BindInterface(
+      mojo::PendingReceiver<mojom::SystemDataProvider> pending_receiver);
 
   void SetBatteryChargeStatusTimerForTesting(
       std::unique_ptr<base::RepeatingTimer> timer);
@@ -95,6 +100,8 @@ class SystemDataProvider : public mojom::SystemDataProvider,
       battery_charge_status_observers_;
   mojo::RemoteSet<mojom::BatteryHealthObserver> battery_health_observers_;
   mojo::RemoteSet<mojom::MemoryUsageObserver> memory_usage_observers_;
+
+  mojo::Receiver<mojom::SystemDataProvider> receiver_{this};
 
   std::unique_ptr<base::RepeatingTimer> battery_charge_status_timer_;
   std::unique_ptr<base::RepeatingTimer> battery_health_timer_;
