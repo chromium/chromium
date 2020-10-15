@@ -41192,6 +41192,8 @@ from previous Chrome versions.
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925117279" label="disable-quic-https"/>
   <int value="-1925106340" label="CameraSystemWebApp:disabled"/>
+  <int value="-1924837577"
+      label="InterestFeedV1ClickAndViewActionsConditionalUpload:enabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
   <int value="-1920912991" label="PermissionChip:disabled"/>
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
@@ -43375,6 +43377,8 @@ from previous Chrome versions.
   <int value="286717452" label="ContextualSearchDebug:disabled"/>
   <int value="287932297" label="AutofillSettingsCardTypeSplit:enabled"/>
   <int value="288012253" label="CrostiniFiles:enabled"/>
+  <int value="288354568"
+      label="InterestFeedV2ClickAndViewActionsConditionalUpload:disabled"/>
   <int value="288755982"
       label="AutofillEnableLocalCardMigrationForNonSyncUser:enabled"/>
   <int value="291389947" label="PercentBasedScrolling:disabled"/>
@@ -43965,6 +43969,8 @@ from previous Chrome versions.
   <int value="877059804" label="AutofillPreventMixedFormsFilling:disabled"/>
   <int value="877235225" label="GlobalMediaControlsForChromeOS:enabled"/>
   <int value="877238334" label="WebUITabStripTabDragIntegration:enabled"/>
+  <int value="877257918"
+      label="InterestFeedV2ClickAndViewActionsConditionalUpload:enabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
@@ -44730,6 +44736,8 @@ from previous Chrome versions.
   <int value="1646498561" label="OfflineBookmarks:disabled"/>
   <int value="1649121568" label="DynamicTcmallocTuning:disabled"/>
   <int value="1651141490" label="SaveEditedPDFForm:enabled"/>
+  <int value="1652798696"
+      label="InterestFeedV1ClickAndViewActionsConditionalUpload:disabled"/>
   <int value="1654445970" label="EphemeralTabUsingBottomSheet:enabled"/>
   <int value="1657713458" label="disable-virtual-keyboard-overscroll"/>
   <int value="1658644418" label="disable-app-list-voice-search"/>

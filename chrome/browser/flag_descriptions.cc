@@ -2867,6 +2867,18 @@ const char kInterestFeedFeedbackDescription[] =
     "Allow the user to provide feedback from a feed card.";
 const char kInterestFeedFeedbackName[] = "Interest Feed Feedback";
 
+const char InterestFeedV1ClickAndViewActionsConditionalUploadName[] =
+    "Interest Feed V1 clicks/views conditional upload";
+const char InterestFeedV1ClickAndViewActionsConditionalUploadDescription[] =
+    "Only enable the upload of clicks/views in Feed V1 after reaching "
+    "conditions.";
+
+const char InterestFeedV2ClickAndViewActionsConditionalUploadName[] =
+    "Interest Feed V2 clicks/views conditional upload";
+const char InterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
+    "Only enable the upload of clicks/views in Feed V2 after reaching "
+    "conditions.";
+
 const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";
