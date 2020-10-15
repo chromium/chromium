@@ -16,14 +16,26 @@
 namespace views {
 namespace metadata {
 
-enum class PropertyFlags {
+enum class PropertyFlags : uint32_t {
   // By default, properties are read/write. This flag indicates that the given
   // property metadata instance needs no special attention.
   kEmpty = 0x00,
   // Property metadata instance should be treated as read-only. Calling
   // SetValueAsString() will trigger a NOTREACHED() error under debug.
   kReadOnly = 0x01,
+  // Property metadata can be serialized to or from a string. Needs to make sure
+  // this flag is set to have meaningful SetValueAsString() and
+  // GetValueFromString().
+  kSerializable = 0x100,
 };
+
+VIEWS_EXPORT extern PropertyFlags operator|(PropertyFlags op1,
+                                            PropertyFlags op2);
+VIEWS_EXPORT extern PropertyFlags operator&(PropertyFlags op1,
+                                            PropertyFlags op2);
+VIEWS_EXPORT extern PropertyFlags operator^(PropertyFlags op1,
+                                            PropertyFlags op2);
+VIEWS_EXPORT extern bool operator!(PropertyFlags op);
 
 // Interface for classes that provide ClassMetaData (via macros in
 // metadata_header_macros.h). GetClassMetaData() is automatically overridden and

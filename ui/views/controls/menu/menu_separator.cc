@@ -9,6 +9,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(OS_WIN)
 #include "ui/display/win/dpi.h"

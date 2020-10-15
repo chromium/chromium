@@ -13,6 +13,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 

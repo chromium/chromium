@@ -22,6 +22,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"

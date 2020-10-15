@@ -53,6 +53,7 @@
 #include "ui/views/controls/views_text_services_context_menu.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"

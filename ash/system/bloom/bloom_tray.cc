@@ -18,6 +18,7 @@
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

@@ -11,6 +11,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

@@ -31,6 +31,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

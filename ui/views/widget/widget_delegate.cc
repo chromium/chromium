@@ -14,6 +14,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"

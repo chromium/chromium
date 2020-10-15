@@ -32,6 +32,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/selection_controller.h"
 

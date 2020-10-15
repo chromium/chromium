@@ -7,6 +7,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

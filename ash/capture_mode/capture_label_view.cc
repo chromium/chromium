@@ -17,6 +17,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 

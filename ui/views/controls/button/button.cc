@@ -27,6 +27,7 @@
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 

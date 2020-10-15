@@ -22,6 +22,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 
 namespace views {

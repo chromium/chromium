@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 namespace hud_display {

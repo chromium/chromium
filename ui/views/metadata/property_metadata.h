@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/metadata/metadata_cache.h"
+#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/views_export.h"
 
@@ -31,14 +32,21 @@ class ClassPropertyReadOnlyMetaData : public MemberMetaDataBase {
   ~ClassPropertyReadOnlyMetaData() override = default;
 
   base::string16 GetValueAsString(void* obj) const override {
+    if (!kIsSerializable)
+      return base::string16();
     return TypeConverter<TValue>::ToString((static_cast<TClass*>(obj)->*Get)());
   }
 
   PropertyFlags GetPropertyFlags() const override {
-    return PropertyFlags::kReadOnly;
+    return kIsSerializable
+               ? (PropertyFlags::kReadOnly | PropertyFlags::kSerializable)
+               : PropertyFlags::kReadOnly;
   }
 
  private:
+  static constexpr bool kIsSerializable =
+      TypeConverter<TValue>::is_serializable;
+
   DISALLOW_COPY_AND_ASSIGN(ClassPropertyReadOnlyMetaData);
 };
 
@@ -61,16 +69,24 @@ class ClassPropertyMetaData
   ~ClassPropertyMetaData() override = default;
 
   void SetValueAsString(void* obj, const base::string16& new_value) override {
+    if (!kIsSerializable)
+      return;
     if (base::Optional<TValue> result =
-            TypeConverter<TValue>::FromString(new_value))
+            TypeConverter<TValue>::FromString(new_value)) {
       (static_cast<TClass*>(obj)->*Set)(result.value());
+    }
   }
 
   PropertyFlags GetPropertyFlags() const override {
-    return PropertyFlags::kEmpty;
+    return kIsSerializable
+               ? (PropertyFlags::kEmpty | PropertyFlags::kSerializable)
+               : PropertyFlags::kEmpty;
   }
 
  private:
+  static constexpr bool kIsSerializable =
+      TypeConverter<TValue>::is_serializable;
+
   DISALLOW_COPY_AND_ASSIGN(ClassPropertyMetaData);
 };
 

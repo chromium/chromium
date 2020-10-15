@@ -36,6 +36,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(OS_CHROMEOS)
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"

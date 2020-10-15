@@ -52,6 +52,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"

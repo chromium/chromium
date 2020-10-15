@@ -41,6 +41,7 @@
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 

@@ -18,6 +18,7 @@
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace views {

@@ -17,6 +17,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 

@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 // static
 void DownloadInProgressDialogView::Show(

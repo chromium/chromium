@@ -29,6 +29,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {

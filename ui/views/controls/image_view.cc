@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

@@ -24,6 +24,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"

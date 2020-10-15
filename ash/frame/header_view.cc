@@ -18,6 +18,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 

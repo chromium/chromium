@@ -11,6 +11,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/mouse_watcher_view_host.h"
 
 namespace views {

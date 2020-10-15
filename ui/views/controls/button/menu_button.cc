@@ -10,6 +10,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

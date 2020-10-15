@@ -16,6 +16,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

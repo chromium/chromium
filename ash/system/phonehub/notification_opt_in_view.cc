@@ -23,6 +23,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
 
 namespace ash {

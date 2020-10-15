@@ -15,6 +15,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

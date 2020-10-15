@@ -9,6 +9,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 

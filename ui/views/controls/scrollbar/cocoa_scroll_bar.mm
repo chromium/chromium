@@ -14,6 +14,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 

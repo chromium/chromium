@@ -46,6 +46,8 @@ using ArgType =
 // General Type Conversion Template Functions ---------------------------------
 template <typename T>
 struct TypeConverter {
+  static constexpr bool is_serializable = std::is_enum<T>::value;
+  static bool IsSerializable() { return is_serializable; }
   static base::string16 ToString(ArgType<T> source_value);
   static base::Optional<T> FromString(const base::string16& source_value);
 };
@@ -107,6 +109,8 @@ static const EnumStrings<T>& GetEnumStringsInstance();
 #define DECLARE_CONVERSIONS(T)                                               \
   template <>                                                                \
   struct VIEWS_EXPORT TypeConverter<T> {                                     \
+    static constexpr bool is_serializable = true;                            \
+    static bool IsSerializable() { return is_serializable; }                 \
     static base::string16 ToString(ArgType<T> source_value);                 \
     static base::Optional<T> FromString(const base::string16& source_value); \
   };
@@ -138,6 +142,8 @@ VIEWS_EXPORT const base::string16& GetNullOptStr();
 
 template <typename T>
 struct TypeConverter<base::Optional<T>> {
+  static constexpr bool is_serializable = TypeConverter<T>::is_serializable;
+  static bool IsSerializable() { return is_serializable; }
   static base::string16 ToString(ArgType<base::Optional<T>> source_value) {
     if (!source_value)
       return GetNullOptStr();

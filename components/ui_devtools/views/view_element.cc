@@ -10,6 +10,7 @@
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/element_utility.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace ui_devtools {
@@ -119,10 +120,12 @@ ViewElement::GetCustomPropertiesForMatchedStyle() const {
               base::UTF16ToUTF8((*member)->GetValueAsString(view_)), &color))
         class_properties.emplace_back("--" + (*member)->member_name(),
                                       color_utils::SkColorToRgbaString(color));
-    } else
+    } else if (!!((*member)->GetPropertyFlags() &
+                  views::metadata::PropertyFlags::kSerializable)) {
       class_properties.emplace_back(
           (*member)->member_name(),
           base::UTF16ToUTF8((*member)->GetValueAsString(view_)));
+    }
 
     if (member.IsLastMember()) {
       ret.emplace_back(member.GetCurrentCollectionName(), class_properties);
@@ -187,6 +190,8 @@ bool ViewElement::SetPropertiesFromString(const std::string& text) {
       }
     }
 
+    DCHECK(!!(member->GetPropertyFlags() &
+              views::metadata::PropertyFlags::kSerializable));
     member->SetValueAsString(view_, base::UTF8ToUTF16(property_value));
     property_set = true;
   }

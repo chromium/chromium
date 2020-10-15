@@ -22,6 +22,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/root_view_targeter.h"
 #include "ui/views/widget/widget.h"
