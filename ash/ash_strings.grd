@@ -2960,6 +2960,17 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SWITCH_TO_LAPTOP_MODE" desc="Alert of switching to laptop mode.">
         Switched to laptop mode
       </message>
+
+      <!-- Multipaste -->
+      <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE" desc="The label used for the multipaste nudge, to be seen once the user copies and pastes multiple times in a short time span.">
+        Press <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. The last 5 items you've copied are saved to your clipboard.
+      </message>
+      <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_LAUNCHER_KEY" desc="The name of the first key to be used for the keyboard shortcut for activating multipaste, when the device has a launcher key.">
+        Launcher
+      </message>
+      <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_SEARCH_KEY" desc="The name of the first key to be used for the keyboard shortcut for activating multipaste, when the device has a search key.">
+        Search
+      </message>
     </messages>
   </release>
 </grit>
