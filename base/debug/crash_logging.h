@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -68,6 +69,35 @@ class BASE_EXPORT ScopedCrashKeyString {
 
   DISALLOW_COPY_AND_ASSIGN(ScopedCrashKeyString);
 };
+
+// Helper macros for putting a local variable crash key on the stack before
+// causing a crash or calling CrashWithoutDumping().
+#define SCOPED_CRASH_KEY_STRING32(category, name, value)                      \
+  static base::debug::CrashKeyString* const crash_key_string_##name =         \
+      base::debug::AllocateCrashKeyString(#category "-" #name,                \
+                                          base::debug::CrashKeySize::Size32); \
+  base::debug::ScopedCrashKeyString crash_scoper_##name(                      \
+      crash_key_string_##name, (value))
+
+#define SCOPED_CRASH_KEY_STRING64(category, name, value)                      \
+  static base::debug::CrashKeyString* const crash_key_string_##name =         \
+      base::debug::AllocateCrashKeyString(#category "-" #name,                \
+                                          base::debug::CrashKeySize::Size64); \
+  base::debug::ScopedCrashKeyString crash_scoper_##name(                      \
+      crash_key_string_##name, (value))
+
+#define SCOPED_CRASH_KEY_STRING256(category, name, value)                      \
+  static base::debug::CrashKeyString* const crash_key_string_##name =          \
+      base::debug::AllocateCrashKeyString(#category "-" #name,                 \
+                                          base::debug::CrashKeySize::Size256); \
+  base::debug::ScopedCrashKeyString crash_scoper_##name(                       \
+      crash_key_string_##name, (value))
+
+#define SCOPED_CRASH_KEY_BOOL(category, name, value) \
+  SCOPED_CRASH_KEY_STRING32(category, name, (value) ? "true" : "false")
+
+#define SCOPED_CRASH_KEY_NUMBER(category, name, value) \
+  SCOPED_CRASH_KEY_STRING32(category, name, base::NumberToString(value))
 
 ////////////////////////////////////////////////////////////////////////////////
 // The following declarations are used to initialize the crash key system
