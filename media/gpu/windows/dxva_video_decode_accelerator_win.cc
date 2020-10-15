@@ -617,6 +617,7 @@ DXVAVideoDecodeAccelerator::DXVAVideoDecodeAccelerator(
       processing_config_changed_(false),
       use_empty_video_hdr_metadata_(workarounds.use_empty_video_hdr_metadata) {
   weak_ptr_ = weak_this_factory_.GetWeakPtr();
+  pb_weak_ptr_ = pb_weak_this_factory_.GetWeakPtr();
   memset(&input_stream_info_, 0, sizeof(input_stream_info_));
   memset(&output_stream_info_, 0, sizeof(output_stream_info_));
   use_color_info_ = base::FeatureList::IsEnabled(kVideoBlitColorAccuracy);
@@ -1138,7 +1139,7 @@ void DXVAVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_buffer_id) {
           FROM_HERE,
           base::BindOnce(
               &DXVAVideoDecodeAccelerator::DeferredDismissStaleBuffer,
-              weak_ptr_, picture_buffer_id));
+              pb_weak_ptr_, picture_buffer_id));
     }
     return;
   }
@@ -1198,7 +1199,7 @@ void DXVAVideoDecodeAccelerator::WaitForOutputBuffer(int32_t picture_buffer_id,
     main_thread_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DXVAVideoDecodeAccelerator::WaitForOutputBuffer,
-                       weak_ptr_, picture_buffer_id, count + 1),
+                       pb_weak_ptr_, picture_buffer_id, count + 1),
         base::TimeDelta::FromMilliseconds(kFlushDecoderSurfaceTimeoutMs));
     return;
   }
@@ -1847,7 +1848,7 @@ bool DXVAVideoDecodeAccelerator::ProcessOutputSample(
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DXVAVideoDecodeAccelerator::RequestPictureBuffers,
-                     weak_ptr_, width, height));
+                     pb_weak_ptr_, width, height));
 
   pictures_requested_ = true;
   return true;
@@ -2010,6 +2011,9 @@ void DXVAVideoDecodeAccelerator::Invalidate() {
   // resolution changes. We already handle that in the
   // HandleResolutionChanged() function.
   if (GetState() != kConfigChange) {
+    pb_weak_this_factory_.InvalidateWeakPtrs();
+    pb_weak_ptr_ = pb_weak_this_factory_.GetWeakPtr();
+
     output_picture_buffers_.clear();
     stale_output_picture_buffers_.clear();
     // We want to continue processing pending input after detecting a config
@@ -2335,12 +2339,12 @@ void DXVAVideoDecodeAccelerator::HandleResolutionChanged(int width,
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DXVAVideoDecodeAccelerator::DismissStaleBuffers,
-                     weak_ptr_, false));
+                     pb_weak_ptr_, false));
 
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DXVAVideoDecodeAccelerator::RequestPictureBuffers,
-                     weak_ptr_, width, height));
+                     pb_weak_ptr_, width, height));
 }
 
 void DXVAVideoDecodeAccelerator::DismissStaleBuffers(bool force) {
