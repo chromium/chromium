@@ -51,7 +51,7 @@ template("system_webview_apk_or_module_tmpl") {
     if (_exclude_weblayer_java) {
       deps += [ "//android_webview:android_webview_no_weblayer_java" ]
     } else {
-      if (_is_bundle_module && weblayer_in_split) {
+      if (_is_bundle_module && weblayer_in_split && webview_includes_weblayer) {
         deps += [
           # TODO(crbug.com/1105096): WebLayer resources are added to the base
           # module for now because of bugs with shared resources in splits.
