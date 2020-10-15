@@ -107,6 +107,10 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
      */
     void hideScrim(boolean animate) {
         assert mModel != null : "#hideScrim(...) was called on an inactive scrim!";
+        if (mIsHidingOrHidden) {
+            if (mOverlayAnimator != null && !animate) mOverlayAnimator.end();
+            return;
+        }
 
         if (mOverlayFadeOutAnimator == null) {
             mOverlayFadeOutAnimator = ValueAnimator.ofFloat(1, 0);
