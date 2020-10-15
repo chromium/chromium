@@ -957,6 +957,11 @@ const char kFamilyUserMetricsDayId[] = "family_user.metrics.day_id";
 const char kFamilyUserMetricsSessionEngagementDuration[] =
     "family_user.metrics.session_engagement_duration";
 
+// TimeDelta pref to record the accumulated Chrome browser app usage for family
+// user metrics.
+const char kFamilyUserMetricsChromeBrowserEngagementDuration[] =
+    "family_user.metrics.chrome_browser_engagement_duration";
+
 // List of preconfigured network file shares.
 const char kNetworkFileSharesPreconfiguredShares[] =
     "network_file_shares.preconfigured_shares";

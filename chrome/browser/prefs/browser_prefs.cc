@@ -258,6 +258,7 @@
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/chromeos/child_accounts/family_user_chrome_activity_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_session_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
@@ -397,7 +398,6 @@
 #include "chrome/browser/media/feeds/media_feeds_service.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
 #endif
-
 
 namespace {
 
@@ -918,6 +918,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);
+  chromeos::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
   chromeos::FamilyUserMetricsService::RegisterProfilePrefs(registry);
   chromeos::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);
   chromeos::first_run::RegisterProfilePrefs(registry);
