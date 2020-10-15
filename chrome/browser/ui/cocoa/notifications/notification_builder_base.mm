@@ -8,20 +8,9 @@
 
 @implementation NotificationBuilderBase
 
-- (instancetype)initWithCloseLabel:(NSString*)closeLabel
-                      optionsLabel:(NSString*)optionsLabel
-                     settingsLabel:(NSString*)settingsLabel {
+- (instancetype)init {
   if ((self = [super init])) {
     _notificationData.reset([[NSMutableDictionary alloc] init]);
-    [_notificationData
-        setObject:closeLabel
-           forKey:notification_constants::kNotificationCloseButtonTag];
-    [_notificationData
-        setObject:optionsLabel
-           forKey:notification_constants::kNotificationOptionsButtonTag];
-    [_notificationData
-        setObject:settingsLabel
-           forKey:notification_constants::kNotificationSettingsButtonTag];
   }
   return self;
 }

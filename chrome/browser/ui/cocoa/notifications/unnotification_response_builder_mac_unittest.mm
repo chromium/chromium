@@ -53,9 +53,7 @@ API_AVAILABLE(macosx(10.14))
 base::scoped_nsobject<UNNotificationBuilder> NewTestBuilder(
     NotificationHandler::Type type) {
   base::scoped_nsobject<UNNotificationBuilder> builder(
-      [[UNNotificationBuilder alloc] initWithCloseLabel:@"Close"
-                                           optionsLabel:@"Options"
-                                          settingsLabel:@"Settings"]);
+      [[UNNotificationBuilder alloc] init]);
   [builder setTitle:@"Title"];
   [builder setSubTitle:@"https://www.moe.com"];
   [builder setContextMessage:@"hey there"];
@@ -210,57 +208,5 @@ TEST(UNNotificationResponseBuilderMacTest, TestNotificationSettingsButton) {
               operation.intValue);
     EXPECT_EQ(notification_constants::kNotificationInvalidButtonIndex,
               buttonIndex.intValue);
-  }
-}
-
-TEST(UNNotificationResponseBuilderMacTest, TestNotificationButtonOne) {
-  if (@available(macOS 10.14, *)) {
-    base::scoped_nsobject<UNNotificationBuilder> builder =
-        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
-    UNMutableNotificationContent* content = [builder buildUserNotification];
-    base::scoped_nsobject<NSMutableDictionary> userInfo(
-        [[content userInfo] mutableCopy]);
-
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier =
-        notification_constants::kNotificationButtonOne;
-
-    NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
-
-    NSNumber* operation =
-        [response objectForKey:notification_constants::kNotificationOperation];
-    NSNumber* buttonIndex = [response
-        objectForKey:notification_constants::kNotificationButtonIndex];
-
-    EXPECT_EQ(static_cast<int>(NotificationOperation::NOTIFICATION_CLICK),
-              operation.intValue);
-    EXPECT_EQ(0, buttonIndex.intValue);
-  }
-}
-
-TEST(UNNotificationResponseBuilderMacTest, TestNotificationButtonTwo) {
-  if (@available(macOS 10.14, *)) {
-    base::scoped_nsobject<UNNotificationBuilder> builder =
-        NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
-    UNMutableNotificationContent* content = [builder buildUserNotification];
-    base::scoped_nsobject<NSMutableDictionary> userInfo(
-        [[content userInfo] mutableCopy]);
-
-    FakeUNNotificationResponse* fakeResponse = CreateFakeResponse(userInfo);
-    fakeResponse.actionIdentifier =
-        notification_constants::kNotificationButtonTwo;
-
-    NSDictionary* response = [UNNotificationResponseBuilder
-        buildDictionary:static_cast<UNNotificationResponse*>(fakeResponse)];
-
-    NSNumber* operation =
-        [response objectForKey:notification_constants::kNotificationOperation];
-    NSNumber* buttonIndex = [response
-        objectForKey:notification_constants::kNotificationButtonIndex];
-
-    EXPECT_EQ(static_cast<int>(NotificationOperation::NOTIFICATION_CLICK),
-              operation.intValue);
-    EXPECT_EQ(1, buttonIndex.intValue);
   }
 }

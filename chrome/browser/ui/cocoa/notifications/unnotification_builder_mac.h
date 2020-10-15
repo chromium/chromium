@@ -11,16 +11,13 @@
 #import "chrome/browser/ui/cocoa/notifications/notification_builder_base.h"
 
 @class UNMutableNotificationContent;
-@class UNNotificationCategory;
 
 // Provides a marshallable way for storing the information required to construct
 // a UNMutableNotificationContent that is to be displayed on the system.
 //
 // A quick example:
 //     base::scoped_nsobject<UNNotificationBuilder> builder(
-//         [[UNNotificationBuilder alloc] initWithCloseLabel:@"Close"
-//                                         optionsLabel:@"Options"
-//                                        settingsLabel:@"Settings"]);
+//         [[UNNotificationBuilder alloc] init]);
 //     [builder setTitle:@"Hello"];
 //
 //     // Build a notification out of the data.
@@ -38,10 +35,6 @@ API_AVAILABLE(macosx(10.14))
 
 // Sets the icon path that is used to display it in the notification if present
 - (void)setIconPath:(NSString*)iconPath;
-
-// Returns a UNNotificationCategory with the specified buttons. Needs to be
-// called after setNotificationId is.
-- (UNNotificationCategory*)buildCategory;
 
 // Returns a notification ready to be displayed out of the provided
 // |notificationData|.

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UNNOTIFICATION_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UNNOTIFICATION_H_
 
-#import <Foundation/Foundation.h>
-
 #include <memory>
 #include <string>
 
@@ -53,6 +51,8 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
 
   // Request permission to send notifications
   void RequestPermission();
+  // Create default categories for banners and alerts
+  void CreateDefaultCategories();
 
  private:
   // Cocoa class that receives callbacks from the UNUserNotificationCenter.
@@ -64,9 +64,6 @@ class API_AVAILABLE(macosx(10.14)) NotificationPlatformBridgeMacUNNotification
 
   // An object that keeps temp files alive long enough for macOS to pick up.
   NotificationImageRetainer image_retainer_;
-
-  // An object that carries the categories for the notifications
-  base::scoped_nsobject<NSMutableSet> categories_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UNNOTIFICATION_H_

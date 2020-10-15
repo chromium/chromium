@@ -58,16 +58,6 @@
                  isEqualToString:notification_constants::
                                      kNotificationSettingsButtonTag]) {
     operation = NotificationOperation::NOTIFICATION_SETTINGS;
-  } else if ([[response actionIdentifier]
-                 isEqualToString:notification_constants::
-                                     kNotificationButtonOne]) {
-    operation = NotificationOperation::NOTIFICATION_CLICK;
-    buttonIndex = 0;
-  } else if ([[response actionIdentifier]
-                 isEqualToString:notification_constants::
-                                     kNotificationButtonTwo]) {
-    operation = NotificationOperation::NOTIFICATION_CLICK;
-    buttonIndex = 1;
   } else {
     NOTREACHED();
   }
