@@ -9,7 +9,7 @@
 
 namespace blink {
 
-// LayoutNGTextControlSingleLine is a LayoutObject for <textarea>.
+// LayoutNGTextControlMultiLine is a LayoutObject for <textarea>.
 class LayoutNGTextControlMultiLine final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGTextControlMultiLine(Element* element);

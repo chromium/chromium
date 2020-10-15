@@ -136,10 +136,11 @@ namespace {
 
 LayoutUnit TextAreaIntrinsicInlineSize(const HTMLTextAreaElement& textarea,
                                        const LayoutBox& box) {
-  // <textarea>'s intrinsic inilne-size always contains the scrollbar thickness
-  // regardless of actual existence of a scrollbar. If a scrollbar exists, its
-  // thickness is not added.  See NGBlockLayoutAlgorithm::ComputeMinMaxSizes()
-  // and LayoutBlock::ComputeIntrinsicLogicalWidths().
+  // <textarea>'s intrinsic inline-size always contains the scrollbar thickness
+  // regardless of actual existence of a scrollbar.
+  //
+  // See |NGBlockLayoutAlgorithm::ComputeMinMaxSizes()| and |LayoutBlock::
+  // ComputeIntrinsicLogicalWidths()|.
   return LayoutUnit(ceilf(LayoutTextControl::GetAvgCharWidth(box.StyleRef()) *
                           textarea.cols())) +
          LayoutTextControl::ScrollbarThickness(box);
@@ -172,7 +173,7 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
             spin_button ? spin_button->GetLayoutBox() : nullptr) {
       result += spin_box->BorderAndPaddingLogicalWidth();
       // Since the width of spin_box is not calculated yet,
-      // spin_layout_object->LogicalWidth() returns 0. Use the computed logical
+      // spin_box->LogicalWidth() returns 0. Use the computed logical
       // width instead.
       result += spin_box->StyleRef().LogicalWidth().Value();
     }
