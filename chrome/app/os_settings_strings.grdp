@@ -2311,11 +2311,11 @@
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY" translateable="false" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
     You will receive your phone notifications on your Chromebook
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE" translateable="false" desc="The title of the Wifi Sync section on the settings page. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE"  desc="The title of the Wifi Sync section on the settings page. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone.">
     Wi-Fi Sync
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY" translateable="false" desc="Description for the 'Wifi Sync' section on the settings page. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone">
-    Sync Wi-Fi networks with your phone <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SUMMARY"  desc="Description for the 'Wifi Sync' section on the settings page. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone">
+    Sync Wi-Fi networks with your phone. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_ENABLE_WIFI_SYNC_V1_SUMMARY" desc="Description for the 'Wifi Sync' section on the settings page when the prerequisite 'Chrome Sync' setting is not activated. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone. The description contains a link that leads to the toggle where the prerequisite 'Chrome Sync' feature can be turned on and a 'Learn More' link to learn more about the 'Wifi Sync' feature.">
     Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to use Wi-Fi Sync. <ph name="LINK2_BEGIN">&lt;a id="learnMoreLink" target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK2_END">&lt;/a&gt;</ph>

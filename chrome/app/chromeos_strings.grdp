@@ -213,7 +213,7 @@
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS" desc="Tell the user that Better Together can automatically mirror notifications from their phone to their Chromebook.">
     Mirror notifications from your phone
   </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC" desc="Description of a feature that syncs Wi-Fi network configurations between Chrome OS devices and a connected Android phone" translateable="false">
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC" desc="Description of a feature that syncs Wi-Fi network configurations between Chrome OS devices and a connected Android phone">
     Sync Wi-Fi networks with your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION" desc="Tell the user that Better Together can automatically install apps on their Chromebook">
