@@ -66,8 +66,11 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
       const base::Optional<lorgnette::ScannerCapabilities>& capabilities);
 
   // Processes each |scanned_image| received after calling
-  // LorgnetteScannerManager::Scan().
-  void OnPageReceived(std::string scanned_image, uint32_t page_number);
+  // LorgnetteScannerManager::Scan(). |file_type| specifies the file type to use
+  // when saving scanned images.
+  void OnPageReceived(const scanning::mojom::FileType file_type,
+                      std::string scanned_image,
+                      uint32_t page_number);
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
   void OnScanCompleted(ScanCallback callback, bool success);

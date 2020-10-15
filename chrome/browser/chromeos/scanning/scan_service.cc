@@ -64,7 +64,7 @@ void ScanService::Scan(const base::UnguessableToken& scanner_id,
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
       base::BindRepeating(&ScanService::OnPageReceived,
-                          weak_ptr_factory_.GetWeakPtr()),
+                          weak_ptr_factory_.GetWeakPtr(), settings->file_type),
       base::BindOnce(&ScanService::OnScanCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -113,8 +113,17 @@ void ScanService::OnScannerCapabilitiesReceived(
       mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(capabilities.value()));
 }
 
-void ScanService::OnPageReceived(std::string scanned_image,
+void ScanService::OnPageReceived(const mojo_ipc::FileType file_type,
+                                 std::string scanned_image,
                                  uint32_t page_number) {
+  // TODO(jschettler): Add support for converting the scanned image to other
+  // file types.
+  if (file_type != mojo_ipc::FileType::kPng) {
+    LOG(ERROR) << "Selected file type not supported.";
+    save_failed_ = true;
+    return;
+  }
+
   // The |page_number| is 0-indexed.
   const std::string filename = base::StringPrintf(
       "scan_%02d%02d%02d-%02d%02d%02d_page_%d.png", start_time_.year,

@@ -14,6 +14,13 @@ enum ColorMode {
   kColor,
 };
 
+// The file types that can be used when saving scanned images.
+enum FileType {
+  kJpg,
+  kPdf,
+  kPng,
+};
+
 // The source types from which a scan can be obtained.
 enum SourceType {
   // An unknown source type.
@@ -49,6 +56,8 @@ struct ScannerCapabilities {
 struct ScanSettings {
   // The SANE name of the ScanSource from which to scan.
   string source_name;
+  // The file type to use when saving scanned images.
+  FileType file_type;
   // The color mode with which to scan.
   ColorMode color_mode;
   // The resolution with which to scan in DPI.

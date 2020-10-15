@@ -198,7 +198,11 @@ TEST_F(ScanServiceTest, Scan) {
   fake_lorgnette_scanner_manager_.SetScanResponse("TestData");
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
-  EXPECT_TRUE(Scan(scanners[0]->id, mojo_ipc::ScanSettings::New()));
+
+  // Saving scanned images is currently only supported for the PNG file type.
+  mojo_ipc::ScanSettings settings;
+  settings.file_type = mojo_ipc::FileType::kPng;
+  EXPECT_TRUE(Scan(scanners[0]->id, settings.Clone()));
 }
 
 }  // namespace chromeos

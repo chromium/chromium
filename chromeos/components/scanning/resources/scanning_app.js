@@ -172,8 +172,11 @@ Polymer({
     this.settingsDisabled_ = true;
     this.scanButtonDisabled_ = true;
 
+    // TODO(jschettler): Set file type using the selected value when the
+    // corresponding dropdown is added.
     const settings = {
       'sourceName': this.selectedSource,
+      'fileType': chromeos.scanning.mojom.FileType.kPng,
       'colorMode': this.selectedColorMode,
       'resolutionDpi': this.selectedResolution,
     };
