@@ -18,8 +18,7 @@ class RenderViewImpl;
 
 // Base class for objects that want to filter incoming IPCs, and also get
 // notified of changes to the frame.
-class CONTENT_EXPORT RenderViewObserver : public IPC::Listener,
-                                          public IPC::Sender {
+class CONTENT_EXPORT RenderViewObserver {
  public:
   // A subclass can use this to delete itself. If it does not, the subclass must
   // always null-check each call to render_view() because the RenderView can
@@ -34,18 +33,11 @@ class CONTENT_EXPORT RenderViewObserver : public IPC::Listener,
 
   virtual void OnPageVisibilityChanged(PageVisibilityState visibility_state) {}
 
-  // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  // IPC::Sender implementation.
-  bool Send(IPC::Message* message) override;
-
-  RenderView* render_view() const;
-  int routing_id() const { return routing_id_; }
+  RenderView* render_view();
 
  protected:
   explicit RenderViewObserver(RenderView* render_view);
-  ~RenderViewObserver() override;
+  virtual ~RenderViewObserver();
 
   // Sets |render_view_| to track.
   // Removes itself of previous (if any) |render_view_| observer list and adds
@@ -61,8 +53,6 @@ class CONTENT_EXPORT RenderViewObserver : public IPC::Listener,
   void RenderViewGone();
 
   RenderViewImpl* render_view_;
-  // The routing ID of the associated RenderView.
-  int routing_id_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewObserver);
 };

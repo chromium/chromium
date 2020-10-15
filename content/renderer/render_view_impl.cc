@@ -535,11 +535,6 @@ bool RenderViewImpl::OnMessageReceived(const IPC::Message& message) {
         active_url, main_frame->Top()->GetSecurityOrigin().ToString().Utf8());
   }
 
-  for (auto& observer : observers_) {
-    if (observer.OnMessageReceived(message))
-      return true;
-  }
-
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(RenderViewImpl, message)
     IPC_MESSAGE_HANDLER(ViewMsg_MoveOrResizeStarted, OnMoveOrResizeStarted)
