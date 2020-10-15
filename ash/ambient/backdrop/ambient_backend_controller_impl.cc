@@ -89,37 +89,19 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   return resource_request;
 }
 
-std::string BuildCuratedTopicDetails(
-    const backdrop::ScreenUpdate::Topic& topic) {
-  if (topic.has_metadata_line_1() && topic.has_metadata_line_2()) {
-    // Uses a space as the separator between.
-    return topic.metadata_line_1() + " " + topic.metadata_line_2();
-  } else if (topic.has_metadata_line_1()) {
-    return topic.metadata_line_1();
-  } else if (topic.has_metadata_line_2()) {
-    return topic.metadata_line_2();
-  } else {
-    return std::string();
-  }
-}
+std::string BuildBackdropTopicDetails(
+    const backdrop::ScreenUpdate::Topic& backdrop_topic) {
+  std::string result;
+  if (backdrop_topic.has_metadata_line_1())
+    result += backdrop_topic.metadata_line_1();
 
-std::string BuildPersonalTopicDetails(
-    const backdrop::ScreenUpdate::Topic& topic) {
-  // |metadata_line_1| contains the album name.
-  return topic.has_metadata_line_1() ? topic.metadata_line_1() : std::string();
-}
-
-void BuildBackdropTopicDetails(
-    const backdrop::ScreenUpdate::Topic& backdrop_topic,
-    AmbientModeTopic& ambient_topic) {
-  switch (backdrop_topic.topic_type()) {
-    case backdrop::TopicSource::PERSONAL_PHOTO:
-      ambient_topic.details = BuildPersonalTopicDetails(backdrop_topic);
-      break;
-    default:
-      ambient_topic.details = BuildCuratedTopicDetails(backdrop_topic);
-      break;
+  if (backdrop_topic.has_metadata_line_2()) {
+    if (!result.empty())
+      result += " ";
+    result += backdrop_topic.metadata_line_2();
   }
+  // Do not include metadata_line_3.
+  return result;
 }
 
 AmbientModeTopicType ToAmbientModeTopicType(
@@ -236,8 +218,7 @@ ScreenUpdate ToScreenUpdate(
               backdrop_topic.related_topic().url();
         }
       }
-
-      BuildBackdropTopicDetails(backdrop_topic, ambient_topic);
+      ambient_topic.details = BuildBackdropTopicDetails(backdrop_topic);
       screen_update.next_topics.emplace_back(ambient_topic);
     }
   }
