@@ -105,35 +105,6 @@ const char kEnableLocalSyncBackend[] = "sync.enable_local_sync_backend";
 // flag is present.
 const char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
-// Root dictionary pref to store the user's birth year and gender that are
-// provided by the sync server. This is a read-only syncable priority pref, sent
-// from the sync server to the client.
-const char kSyncDemographics[] = "sync.demographics";
-
-// This pref value is subordinate to the kSyncDemographics dictionary pref and
-// is synced to the client. It stores the self-reported birth year of the
-// syncing user. as provided by the sync server. This value should not be logged
-// to UMA directly; instead, it should be summed with the
-// kSyncDemographicsBirthYearNoiseOffset.
-const char kSyncDemographics_BirthYearPath[] = "birth_year";
-
-// This pref value is subordinate to the kSyncDemographics dictionary pref and
-// is synced to the client. It stores the self-reported gender of the syncing
-// user, as provided by the sync server. The gender is encoded using the Gender
-// enum defined in metrics::UserDemographicsProto
-// (see third_party/metrics_proto/user_demographics.proto).
-const char kSyncDemographics_GenderPath[] = "gender";
-
-// Stores a "secret" offset that is used to randomize the birth year for metrics
-// reporting. This value should not be logged to UMA directly; instead, it
-// should be summed with the kSyncDemographicsBirthYear. This value is generated
-// locally on the client the first time a user begins to merge birth year data
-// into their UMA reports. The value is synced to the user's other devices so
-// that the user consistently uses the same offset across login/logout events
-// and after clearing their other browser data.
-const char kSyncDemographicsBirthYearOffset[] =
-    "sync.demographics_birth_year_offset";
-
 #if defined(OS_ANDROID)
 // Stores whether sync should no longer respect the state of master toggle for
 // this user.

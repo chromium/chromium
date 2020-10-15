@@ -317,26 +317,25 @@ class ProfileSyncServiceTest : public ::testing::Test {
   void SetDemographics(int birth_year,
                        metrics::UserDemographicsProto_Gender gender) {
     base::DictionaryValue dict;
-    dict.SetIntPath(prefs::kSyncDemographics_BirthYearPath, birth_year);
-    dict.SetIntPath(prefs::kSyncDemographics_GenderPath,
-                    static_cast<int>(gender));
-    prefs()->Set(prefs::kSyncDemographics, dict);
+    dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
+    dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
+    prefs()->Set(kSyncDemographicsPrefName, dict);
   }
 
   static bool HasBirthYearDemographic(const PrefService* pref_service) {
-    return pref_service->HasPrefPath(prefs::kSyncDemographics) &&
-           pref_service->GetDictionary(prefs::kSyncDemographics)
-               ->FindIntPath(prefs::kSyncDemographics_BirthYearPath);
+    return pref_service->HasPrefPath(kSyncDemographicsPrefName) &&
+           pref_service->GetDictionary(kSyncDemographicsPrefName)
+               ->FindIntPath(kSyncDemographicsBirthYearPath);
   }
 
   static bool HasGenderDemographic(const PrefService* pref_service) {
-    return pref_service->HasPrefPath(prefs::kSyncDemographics) &&
-           pref_service->GetDictionary(prefs::kSyncDemographics)
-               ->FindIntPath(prefs::kSyncDemographics_GenderPath);
+    return pref_service->HasPrefPath(kSyncDemographicsPrefName) &&
+           pref_service->GetDictionary(kSyncDemographicsPrefName)
+               ->FindIntPath(kSyncDemographicsGenderPath);
   }
 
   static bool HasBirthYearOffset(const PrefService* pref_service) {
-    return pref_service->HasPrefPath(prefs::kSyncDemographicsBirthYearOffset);
+    return pref_service->HasPrefPath(kSyncDemographicsBirthYearOffsetPrefName);
   }
 
  private:
@@ -949,8 +948,8 @@ TEST_F(ProfileSyncServiceTest, ClearDataOnSignOut) {
                   metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
 
   // Set the birth year offset pref that would be normally set when calling
-  // SyncPrefs::GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(prefs::kSyncDemographicsBirthYearOffset, 2);
+  // GetUserNoisedBirthYearAndGenderFromPrefs().
+  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
 
   // Verify that the demographics prefs exist (i.e., that the test is set up).
   ASSERT_TRUE(HasBirthYearDemographic(prefs()));
@@ -969,7 +968,7 @@ TEST_F(ProfileSyncServiceTest, ClearDataOnSignOut) {
   EXPECT_NE(service()->GetLastSyncedTimeForDebugging(), last_synced_time);
 
   // Check that the demographic prefs are cleared.
-  EXPECT_FALSE(prefs()->HasPrefPath(prefs::kSyncDemographics));
+  EXPECT_FALSE(prefs()->HasPrefPath(kSyncDemographicsPrefName));
   EXPECT_FALSE(HasBirthYearDemographic(prefs()));
   EXPECT_FALSE(HasGenderDemographic(prefs()));
 
@@ -989,8 +988,8 @@ TEST_F(ProfileSyncServiceTest, ClearDemographicsOnInitializeWhenSignedOut) {
                   metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
 
   // Set the birth year offset pref that would be normally set when calling
-  // SyncPrefs::GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(prefs::kSyncDemographicsBirthYearOffset, 2);
+  // GetUserNoisedBirthYearAndGenderFromPrefs().
+  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
 
   // Verify that the demographics prefs exist (i.e., that the test is set up).
   ASSERT_TRUE(HasBirthYearDemographic(prefs()));
@@ -1003,7 +1002,7 @@ TEST_F(ProfileSyncServiceTest, ClearDemographicsOnInitializeWhenSignedOut) {
   InitializeForNthSync();
 
   // Verify that the demographic prefs are cleared.
-  EXPECT_FALSE(prefs()->HasPrefPath(prefs::kSyncDemographics));
+  EXPECT_FALSE(prefs()->HasPrefPath(kSyncDemographicsPrefName));
   EXPECT_FALSE(HasBirthYearDemographic(prefs()));
   EXPECT_FALSE(HasGenderDemographic(prefs()));
 
@@ -1372,7 +1371,7 @@ TEST_F(ProfileSyncServiceTest, GetUserNoisedBirthYearAndGender_SyncEnabled) {
 
   // Directly set birth year offset in demographic prefs to avoid it being set
   // with a random value when calling GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(prefs::kSyncDemographicsBirthYearOffset,
+  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
                       birth_year_offset);
 
   UserDemographicsResult user_demographics_result =
@@ -1429,8 +1428,8 @@ TEST_F(ProfileSyncServiceTest,
   SetDemographics(user_demographics_birth_year, user_demographics_gender);
 
   // Set birth year noise offset that is usually set when calling
-  // SyncPrefs::GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(prefs::kSyncDemographicsBirthYearOffset,
+  // GetUserNoisedBirthYearAndGenderFromPrefs().
+  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName,
                       static_cast<int>(birth_year_offset));
 
   // Verify that demographic prefs exist (i.e., the test is set up).
@@ -1479,8 +1478,8 @@ TEST_F(ProfileSyncServiceTest,
                   metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
 
   // Set birth year noise offset that is usually set when calling
-  // SyncPrefs::GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(prefs::kSyncDemographicsBirthYearOffset, 2);
+  // GetUserNoisedBirthYearAndGenderFromPrefs().
+  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
 
   // Verify that demographic prefs exist (i.e., the test is set up).
   ASSERT_TRUE(HasBirthYearDemographic(prefs()));
@@ -1526,8 +1525,8 @@ TEST_F(ProfileSyncServiceTest,
                   metrics::UserDemographicsProto_Gender_GENDER_FEMALE);
 
   // Set birth year noise offset that is usually set when calling
-  // SyncPrefs::GetUserNoisedBirthYearAndGender().
-  prefs()->SetInteger(prefs::kSyncDemographicsBirthYearOffset, 2);
+  // GetUserNoisedBirthYearAndGenderFromPrefs().
+  prefs()->SetInteger(kSyncDemographicsBirthYearOffsetPrefName, 2);
 
   // Verify that demographic prefs exist (i.e., the test is set up).
   ASSERT_TRUE(HasBirthYearDemographic(prefs()));

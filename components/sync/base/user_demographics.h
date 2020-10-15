@@ -5,7 +5,14 @@
 #ifndef COMPONENTS_SYNC_BASE_USER_DEMOGRAPHICS_H_
 #define COMPONENTS_SYNC_BASE_USER_DEMOGRAPHICS_H_
 
+#include "base/time/time.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
+
+class PrefService;
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
 
 namespace syncer {
 
@@ -35,6 +42,14 @@ constexpr int kUserDemographicsMinAgeInYears = 20;
 
 // Max user age to provide demopgrahics for.
 constexpr int kUserDemographicsMaxAgeInYears = 85;
+
+// Syncable preference names, exposed publicly for testing.
+extern const char kSyncDemographicsPrefName[];
+extern const char kSyncDemographicsBirthYearOffsetPrefName[];
+
+// These are not prefs, they are paths inside of kSyncDemographics.
+extern const char kSyncDemographicsBirthYearPath[];
+extern const char kSyncDemographicsGenderPath[];
 
 // Container of user demographics.
 struct UserDemographics {
@@ -101,6 +116,25 @@ class UserDemographicsResult {
   UserDemographics value_;
   UserDemographicsStatus status_ = UserDemographicsStatus::kMaxValue;
 };
+
+// Registers the profile preferences that are needed to persist demographics
+// information exposed via GetUserNoisedBirthYearAndGenderFromPrefs().
+void RegisterDemographicsProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry);
+
+// Clears the profile's demographics-related preferences containing user data.
+// This excludes the internal bith year offset.
+void ClearDemographicsPrefs(PrefService* pref_service);
+
+// Gets the synced user’s noised birth year and gender from preferences, see doc
+// of metrics::DemographicMetricsProvider in
+// components/metrics/demographic_metrics_provider.h for more details. Returns
+// an error status with an empty value when the user's birth year or gender
+// cannot be provided. You need to provide an accurate |now| time that
+// represents the current time.
+UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
+    base::Time now,
+    PrefService* pref_service);
 
 }  // namespace syncer
 

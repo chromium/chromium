@@ -1795,7 +1795,8 @@ UserDemographicsResult ProfileSyncService::GetUserNoisedBirthYearAndGender(
         UserDemographicsStatus::kSyncNotEnabled);
   }
 
-  return sync_prefs_.GetUserNoisedBirthYearAndGender(now);
+  return GetUserNoisedBirthYearAndGenderFromPrefs(
+      now, sync_client_->GetPrefService());
 }
 
 base::WeakPtr<JsController> ProfileSyncService::GetJsController() {

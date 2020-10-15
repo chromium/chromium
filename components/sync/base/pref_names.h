@@ -57,16 +57,9 @@ extern const char kSyncLastRunVersion[];
 extern const char kEnableLocalSyncBackend[];
 extern const char kLocalSyncBackendDir[];
 
-extern const char kSyncDemographics[];
-extern const char kSyncDemographicsBirthYearOffset[];
-
 #if defined(OS_ANDROID)
 extern const char kSyncDecoupledFromAndroidMasterSync[];
 #endif  // defined(OS_ANDROID)
-
-// These are not prefs, they are paths inside of kSyncDemographics.
-extern const char kSyncDemographics_BirthYearPath[];
-extern const char kSyncDemographics_GenderPath[];
 
 }  // namespace prefs
 
