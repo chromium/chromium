@@ -1371,7 +1371,8 @@ void ServiceWorkerGlobalScope::OnRequestedTermination(bool will_be_terminated) {
 
   // Push a dummy task to run all of queued tasks. This updates the
   // idle timer too.
-  event_queue_->EnqueueNormal(WTF::Bind(&ServiceWorkerEventQueue::EndEvent,
+  event_queue_->EnqueueNormal(event_queue_->NextEventId(),
+                              WTF::Bind(&ServiceWorkerEventQueue::EndEvent,
                                         WTF::Unretained(event_queue_.get())),
                               base::DoNothing(), base::nullopt);
 }
@@ -1474,7 +1475,6 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
     base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker,
     mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
         response_callback,
-    DispatchFetchEventInternalCallback callback,
     base::Optional<base::TimeTicks> created_time,
     int event_id) {
   DCHECK(IsContextThread());
@@ -1482,7 +1482,6 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
     RecordQueuingTime(created_time.value());
   }
 
-  fetch_event_callbacks_.Set(event_id, std::move(callback));
   HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback,
                  HeapMojoWrapperMode::kWithoutContextObserver>
       remote(this);
@@ -1574,19 +1573,25 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
                RequestedTermination() ? "true" : "false");
   base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker =
       controller_receivers_.current_context()->GetWeakPtr();
+
+  const int event_id = event_queue_->NextEventId();
+  fetch_event_callbacks_.Set(event_id, std::move(callback));
+
   if (RequestedTermination()) {
     event_queue_->EnqueuePending(
+        event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
                   std::move(corp_checker), std::move(response_callback),
-                  std::move(callback), base::TimeTicks::Now()),
+                  base::TimeTicks::Now()),
         CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
   } else {
     event_queue_->EnqueueNormal(
+        event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
                   std::move(corp_checker), std::move(response_callback),
-                  std::move(callback), base::TimeTicks::Now()),
+                  base::TimeTicks::Now()),
         CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
   }
 }
@@ -1675,9 +1680,13 @@ void ServiceWorkerGlobalScope::ResumeEvaluation() {
 void ServiceWorkerGlobalScope::DispatchInstallEvent(
     DispatchInstallEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  install_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartInstallEvent,
-                WrapWeakPersistent(this), std::move(callback)),
+                WrapWeakPersistent(this)),
       WTF::Bind(&ServiceWorkerGlobalScope::AbortInstallEvent,
                 WrapWeakPersistent(this)),
       base::nullopt);
@@ -1694,11 +1703,8 @@ void ServiceWorkerGlobalScope::AbortInstallEvent(
   install_event_callbacks_.erase(iter);
 }
 
-void ServiceWorkerGlobalScope::StartInstallEvent(
-    DispatchInstallEventCallback callback,
-    int event_id) {
+void ServiceWorkerGlobalScope::StartInstallEvent(int event_id) {
   DCHECK(IsContextThread());
-  install_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchInstallEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
@@ -1717,17 +1723,18 @@ void ServiceWorkerGlobalScope::StartInstallEvent(
 void ServiceWorkerGlobalScope::DispatchActivateEvent(
     DispatchActivateEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  activate_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartActivateEvent,
-                WrapWeakPersistent(this), std::move(callback)),
+                WrapWeakPersistent(this)),
       CreateAbortCallback(&activate_event_callbacks_), base::nullopt);
 }
 
-void ServiceWorkerGlobalScope::StartActivateEvent(
-    DispatchActivateEventCallback callback,
-    int event_id) {
+void ServiceWorkerGlobalScope::StartActivateEvent(int event_id) {
   DCHECK(IsContextThread());
-  activate_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchActivateEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
@@ -1745,20 +1752,21 @@ void ServiceWorkerGlobalScope::DispatchBackgroundFetchAbortEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
     DispatchBackgroundFetchAbortEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  background_fetch_abort_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartBackgroundFetchAbortEvent,
-                WrapWeakPersistent(this), std::move(registration),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(registration)),
       CreateAbortCallback(&background_fetch_abort_event_callbacks_),
       base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartBackgroundFetchAbortEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
-    DispatchBackgroundFetchAbortEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  background_fetch_abort_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchBackgroundFetchAbortEvent",
@@ -1788,20 +1796,21 @@ void ServiceWorkerGlobalScope::DispatchBackgroundFetchClickEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
     DispatchBackgroundFetchClickEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  background_fetch_click_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartBackgroundFetchClickEvent,
-                WrapWeakPersistent(this), std::move(registration),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(registration)),
       CreateAbortCallback(&background_fetch_click_event_callbacks_),
       base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartBackgroundFetchClickEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
-    DispatchBackgroundFetchClickEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  background_fetch_click_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchBackgroundFetchClickEvent",
@@ -1826,20 +1835,21 @@ void ServiceWorkerGlobalScope::DispatchBackgroundFetchFailEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
     DispatchBackgroundFetchFailEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  background_fetch_fail_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartBackgroundFetchFailEvent,
-                WrapWeakPersistent(this), std::move(registration),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(registration)),
       CreateAbortCallback(&background_fetch_fail_event_callbacks_),
       base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartBackgroundFetchFailEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
-    DispatchBackgroundFetchFailEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  background_fetch_fail_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchBackgroundFetchFailEvent",
@@ -1870,19 +1880,20 @@ void ServiceWorkerGlobalScope::DispatchBackgroundFetchSuccessEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
     DispatchBackgroundFetchSuccessEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  background_fetched_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartBackgroundFetchSuccessEvent,
-                WrapWeakPersistent(this), std::move(registration),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(registration)),
       CreateAbortCallback(&background_fetched_event_callbacks_), base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartBackgroundFetchSuccessEvent(
     mojom::blink::BackgroundFetchRegistrationPtr registration,
-    DispatchBackgroundFetchSuccessEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  background_fetched_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchBackgroundFetchSuccessEvent",
@@ -1913,19 +1924,20 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEvent(
     mojom::blink::ExtendableMessageEventPtr event,
     DispatchExtendableMessageEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  message_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartExtendableMessageEvent,
-                WrapWeakPersistent(this), std::move(event),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(event)),
       CreateAbortCallback(&message_event_callbacks_), base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartExtendableMessageEvent(
     mojom::blink::ExtendableMessageEventPtr event,
-    DispatchExtendableMessageEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  message_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchExtendableMessageEvent",
@@ -1947,22 +1959,27 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
   static const base::FeatureParam<int> kCustomTimeoutForOfflineEvent{
       &features::kCheckOfflineCapability, "timeout_second", 5 * 60};
 
+  const int event_id = event_queue_->NextEventId();
+  fetch_event_callbacks_.Set(event_id, std::move(callback));
+
   // We can use nullptr as a |corp_checker| for the main resource because it
   // must be the same origin.
   if (params->is_offline_capability_check) {
     event_queue_->EnqueueOffline(
+        event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
                   /*corp_checker=*/nullptr, std::move(response_callback),
-                  std::move(callback), base::nullopt),
+                  base::nullopt),
         CreateAbortCallback(&fetch_event_callbacks_),
         base::TimeDelta::FromSeconds(kCustomTimeoutForOfflineEvent.Get()));
   } else {
     event_queue_->EnqueueNormal(
+        event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
                   /*corp_checker=*/nullptr, std::move(response_callback),
-                  std::move(callback), base::TimeTicks::Now()),
+                  base::TimeTicks::Now()),
         CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
   }
 }
@@ -1974,11 +1991,15 @@ void ServiceWorkerGlobalScope::DispatchNotificationClickEvent(
     const String& reply,
     DispatchNotificationClickEventCallback callback) {
   DCHECK(IsContextThread());
+
+  const int event_id = event_queue_->NextEventId();
+  notification_click_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartNotificationClickEvent,
                 WrapWeakPersistent(this), notification_id,
-                std::move(notification_data), action_index, reply,
-                std::move(callback)),
+                std::move(notification_data), action_index, reply),
       CreateAbortCallback(&notification_click_event_callbacks_), base::nullopt);
 }
 
@@ -1987,9 +2008,7 @@ void ServiceWorkerGlobalScope::StartNotificationClickEvent(
     mojom::blink::NotificationDataPtr notification_data,
     int action_index,
     String reply,
-    DispatchNotificationClickEventCallback callback,
     int event_id) {
-  notification_click_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchNotificationClickEvent",
@@ -2017,20 +2036,22 @@ void ServiceWorkerGlobalScope::DispatchNotificationCloseEvent(
     mojom::blink::NotificationDataPtr notification_data,
     DispatchNotificationCloseEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  notification_close_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartNotificationCloseEvent,
                 WrapWeakPersistent(this), notification_id,
-                std::move(notification_data), std::move(callback)),
+                std::move(notification_data)),
       CreateAbortCallback(&notification_close_event_callbacks_), base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartNotificationCloseEvent(
     String notification_id,
     mojom::blink::NotificationDataPtr notification_data,
-    DispatchNotificationCloseEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  notification_close_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchNotificationCloseEvent",
@@ -2053,20 +2074,21 @@ void ServiceWorkerGlobalScope::DispatchPushEvent(
     const String& payload,
     DispatchPushEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  push_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartPushEvent,
-                WrapWeakPersistent(this), std::move(payload),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(payload)),
       CreateAbortCallback(&push_event_callbacks_),
       base::TimeDelta::FromSeconds(mojom::blink::kPushEventTimeoutSeconds));
 }
 
 void ServiceWorkerGlobalScope::StartPushEvent(
     String payload,
-    DispatchPushEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  push_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchPushEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
@@ -2085,10 +2107,14 @@ void ServiceWorkerGlobalScope::DispatchPushSubscriptionChangeEvent(
     mojom::blink::PushSubscriptionPtr new_subscription,
     DispatchPushSubscriptionChangeEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  push_subscription_change_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartPushSubscriptionChangeEvent,
                 WrapWeakPersistent(this), std::move(old_subscription),
-                std::move(new_subscription), std::move(callback)),
+                std::move(new_subscription)),
       CreateAbortCallback(&push_subscription_change_event_callbacks_),
       base::TimeDelta::FromSeconds(mojom::blink::kPushEventTimeoutSeconds));
 }
@@ -2096,10 +2122,8 @@ void ServiceWorkerGlobalScope::DispatchPushSubscriptionChangeEvent(
 void ServiceWorkerGlobalScope::StartPushSubscriptionChangeEvent(
     mojom::blink::PushSubscriptionPtr old_subscription,
     mojom::blink::PushSubscriptionPtr new_subscription,
-    DispatchPushSubscriptionChangeEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  push_subscription_change_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerGlobalScope::DispatchPushSubscriptionChangeEvent",
@@ -2127,20 +2151,21 @@ void ServiceWorkerGlobalScope::DispatchSyncEvent(
     base::TimeDelta timeout,
     DispatchSyncEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  sync_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartSyncEvent,
-                WrapWeakPersistent(this), std::move(tag), last_chance,
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(tag), last_chance),
       CreateAbortCallback(&sync_event_callbacks_), timeout);
 }
 
 void ServiceWorkerGlobalScope::StartSyncEvent(
     String tag,
     bool last_chance,
-    DispatchSyncEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  sync_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchSyncEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
@@ -2159,18 +2184,20 @@ void ServiceWorkerGlobalScope::DispatchPeriodicSyncEvent(
     base::TimeDelta timeout,
     DispatchPeriodicSyncEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  periodic_sync_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartPeriodicSyncEvent,
-                WrapWeakPersistent(this), std::move(tag), std::move(callback)),
+                WrapWeakPersistent(this), std::move(tag)),
       CreateAbortCallback(&periodic_sync_event_callbacks_), timeout);
 }
 
 void ServiceWorkerGlobalScope::StartPeriodicSyncEvent(
     String tag,
-    DispatchPeriodicSyncEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  periodic_sync_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchPeriodicSyncEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
@@ -2189,20 +2216,21 @@ void ServiceWorkerGlobalScope::DispatchAbortPaymentEvent(
         response_callback,
     DispatchAbortPaymentEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  abort_payment_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartAbortPaymentEvent,
-                WrapWeakPersistent(this), std::move(response_callback),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(response_callback)),
       CreateAbortCallback(&abort_payment_event_callbacks_), base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartAbortPaymentEvent(
     mojo::PendingRemote<payments::mojom::blink::PaymentHandlerResponseCallback>
         response_callback,
-    DispatchAbortPaymentEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  abort_payment_event_callbacks_.Set(event_id, std::move(callback));
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback,
                  HeapMojoWrapperMode::kWithoutContextObserver>
       remote(this);
@@ -2240,10 +2268,14 @@ void ServiceWorkerGlobalScope::DispatchCanMakePaymentEvent(
         response_callback,
     DispatchCanMakePaymentEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  can_make_payment_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartCanMakePaymentEvent,
                 WrapWeakPersistent(this), std::move(event_data),
-                std::move(response_callback), std::move(callback)),
+                std::move(response_callback)),
       CreateAbortCallback(&can_make_payment_event_callbacks_), base::nullopt);
 }
 
@@ -2251,10 +2283,8 @@ void ServiceWorkerGlobalScope::StartCanMakePaymentEvent(
     payments::mojom::blink::CanMakePaymentEventDataPtr event_data,
     mojo::PendingRemote<payments::mojom::blink::PaymentHandlerResponseCallback>
         response_callback,
-    DispatchCanMakePaymentEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  can_make_payment_event_callbacks_.Set(event_id, std::move(callback));
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback,
                  HeapMojoWrapperMode::kWithoutContextObserver>
       remote(this);
@@ -2294,10 +2324,14 @@ void ServiceWorkerGlobalScope::DispatchPaymentRequestEvent(
         response_callback,
     DispatchPaymentRequestEventCallback callback) {
   DCHECK(IsContextThread());
+  const int event_id = event_queue_->NextEventId();
+  payment_request_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartPaymentRequestEvent,
                 WrapWeakPersistent(this), std::move(event_data),
-                std::move(response_callback), std::move(callback)),
+                std::move(response_callback)),
       CreateAbortCallback(&payment_request_event_callbacks_), base::nullopt);
 }
 
@@ -2305,10 +2339,8 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
     payments::mojom::blink::PaymentRequestEventDataPtr event_data,
     mojo::PendingRemote<payments::mojom::blink::PaymentHandlerResponseCallback>
         response_callback,
-    DispatchPaymentRequestEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  payment_request_event_callbacks_.Set(event_id, std::move(callback));
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback,
                  HeapMojoWrapperMode::kWithoutContextObserver>
       remote(this);
@@ -2361,19 +2393,20 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
 void ServiceWorkerGlobalScope::DispatchCookieChangeEvent(
     network::mojom::blink::CookieChangeInfoPtr change,
     DispatchCookieChangeEventCallback callback) {
+  const int event_id = event_queue_->NextEventId();
+  cookie_change_event_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartCookieChangeEvent,
-                WrapWeakPersistent(this), std::move(change),
-                std::move(callback)),
+                WrapWeakPersistent(this), std::move(change)),
       CreateAbortCallback(&cookie_change_event_callbacks_), base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartCookieChangeEvent(
     network::mojom::blink::CookieChangeInfoPtr change,
-    DispatchCookieChangeEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  cookie_change_event_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchCookieChangeEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
@@ -2400,18 +2433,20 @@ void ServiceWorkerGlobalScope::StartCookieChangeEvent(
 void ServiceWorkerGlobalScope::DispatchContentDeleteEvent(
     const String& id,
     DispatchContentDeleteEventCallback callback) {
+  const int event_id = event_queue_->NextEventId();
+  content_delete_callbacks_.Set(event_id, std::move(callback));
+
   event_queue_->EnqueueNormal(
+      event_id,
       WTF::Bind(&ServiceWorkerGlobalScope::StartContentDeleteEvent,
-                WrapWeakPersistent(this), id, std::move(callback)),
+                WrapWeakPersistent(this), id),
       CreateAbortCallback(&content_delete_callbacks_), base::nullopt);
 }
 
 void ServiceWorkerGlobalScope::StartContentDeleteEvent(
     String id,
-    DispatchContentDeleteEventCallback callback,
     int event_id) {
   DCHECK(IsContextThread());
-  content_delete_callbacks_.Set(event_id, std::move(callback));
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerGlobalScope::DispatchContentDeleteEvent",
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,

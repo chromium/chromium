@@ -506,88 +506,66 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker,
       mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
           response_callback,
-      DispatchFetchEventInternalCallback callback,
       base::Optional<base::TimeTicks> created_time,
       int event_id);
-  void StartInstallEvent(DispatchInstallEventCallback callback, int event_id);
-  void StartActivateEvent(DispatchActivateEventCallback callback, int event_id);
+  void StartInstallEvent(int event_id);
+  void StartActivateEvent(int event_id);
   void StartBackgroundFetchAbortEvent(
       mojom::blink::BackgroundFetchRegistrationPtr registration,
-      DispatchBackgroundFetchAbortEventCallback callback,
       int event_id);
   void StartBackgroundFetchClickEvent(
       mojom::blink::BackgroundFetchRegistrationPtr registration,
-      DispatchBackgroundFetchClickEventCallback callback,
       int event_id);
   void StartBackgroundFetchFailEvent(
       mojom::blink::BackgroundFetchRegistrationPtr registration,
-      DispatchBackgroundFetchFailEventCallback callback,
       int event_id);
   void StartBackgroundFetchSuccessEvent(
       mojom::blink::BackgroundFetchRegistrationPtr registration,
-      DispatchBackgroundFetchSuccessEventCallback callback,
       int event_id);
   void StartExtendableMessageEvent(
       mojom::blink::ExtendableMessageEventPtr event,
-      DispatchExtendableMessageEventCallback callback,
-      int event_id);
-  void StartFetchEventForMainResource(
-      mojom::blink::DispatchFetchEventParamsPtr params,
-      mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
-          response_callback,
       int event_id);
   void StartNotificationClickEvent(
       String notification_id,
       mojom::blink::NotificationDataPtr notification_data,
       int action_index,
       String reply,
-      DispatchNotificationClickEventCallback callback,
       int event_id);
   void StartNotificationCloseEvent(
       String notification_id,
       mojom::blink::NotificationDataPtr notification_data,
-      DispatchNotificationCloseEventCallback callback,
       int event_id);
   void StartPushEvent(String payload,
-                      DispatchPushEventCallback callback,
                       int event_id);
   void StartPushSubscriptionChangeEvent(
       mojom::blink::PushSubscriptionPtr old_subscription,
       mojom::blink::PushSubscriptionPtr new_subscription,
-      DispatchPushSubscriptionChangeEventCallback callback,
       int event_id);
   void StartSyncEvent(String tag,
                       bool last_chance,
-                      DispatchSyncEventCallback callback,
                       int event_id);
   void StartPeriodicSyncEvent(String tag,
-                              DispatchPeriodicSyncEventCallback callback,
                               int event_id);
   void StartAbortPaymentEvent(
       mojo::PendingRemote<
           payments::mojom::blink::PaymentHandlerResponseCallback>
           response_callback,
-      DispatchAbortPaymentEventCallback callback,
       int event_id);
   void StartCanMakePaymentEvent(
       payments::mojom::blink::CanMakePaymentEventDataPtr event_data,
       mojo::PendingRemote<
           payments::mojom::blink::PaymentHandlerResponseCallback>
           response_callback,
-      DispatchCanMakePaymentEventCallback callback,
       int event_id);
   void StartPaymentRequestEvent(
       payments::mojom::blink::PaymentRequestEventDataPtr event_data,
       mojo::PendingRemote<
           payments::mojom::blink::PaymentHandlerResponseCallback>
           response_callback,
-      DispatchPaymentRequestEventCallback callback,
       int event_id);
   void StartCookieChangeEvent(network::mojom::blink::CookieChangeInfoPtr change,
-                              DispatchCookieChangeEventCallback callback,
                               int event_id);
   void StartContentDeleteEvent(String id,
-                               DispatchContentDeleteEventCallback callback,
                                int event_id);
 
   // Records the time that a fetch event was queued in the
