@@ -13,6 +13,18 @@ interface CastStreamingBufferReceiver {
   // from AudioStreamInfo or VideoStreamInfo.
   // This is called for every new buffer pushed in the associated |data_pipe|.
   ProvideBuffer(media.mojom.DecoderBuffer buffer);
+
+  // Signals the audio decoder configuration has changed. After this call,
+  // CastStreamingBufferReceiver.ProvideBuffer() will be called on every new
+  // frame. The buffer data itself is on |data_pipe|.
+  OnNewAudioConfig(media.mojom.AudioDecoderConfig decoder_config,
+                   handle<data_pipe_consumer> data_pipe);
+
+  // Signals the video configuration has changed. After this call,
+  // CastStreamingBufferReceiver.ProvideBuffer() will be called on every new
+  // frame. The buffer data itself is on |data_pipe|.
+  OnNewVideoConfig(media.mojom.VideoDecoderConfig decoder_config,
+                   handle<data_pipe_consumer> data_pipe);
 };
 
 // Information about a Cast Streaming audio stream.
