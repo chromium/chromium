@@ -91,29 +91,6 @@ void BrowserAccessibilityAndroid::OnLocationChanged() {
   manager->FireLocationChanged(this);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetValue() const {
-  base::string16 value = BrowserAccessibility::GetValue();
-
-  // Optionally replace entered password text with bullet characters
-  // based on a user preference.
-  if (IsPasswordField()) {
-    auto* manager =
-        static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-    if (manager->ShouldRespectDisplayedPasswordText()) {
-      // In the Chrome accessibility tree, the value of a password node is
-      // unobscured. However, if ShouldRespectDisplayedPasswordText() returns
-      // true we should try to expose whatever's actually visually displayed,
-      // whether that's the actual password or dots or whatever. To do this
-      // we rely on the password field's shadow dom.
-      value = BrowserAccessibility::GetInnerText();
-    } else if (!manager->ShouldExposePasswordText()) {
-      value = base::string16(value.size(), ui::kSecurePasswordBullet);
-    }
-  }
-
-  return value;
-}
-
 bool BrowserAccessibilityAndroid::IsCheckable() const {
   return GetData().HasCheckedState();
 }
@@ -257,14 +234,6 @@ bool BrowserAccessibilityAndroid::IsMultiselectable() const {
   return HasState(ax::mojom::State::kMultiselectable);
 }
 
-bool BrowserAccessibilityAndroid::IsRangeType() const {
-  return (GetRole() == ax::mojom::Role::kProgressIndicator ||
-          GetRole() == ax::mojom::Role::kMeter ||
-          GetRole() == ax::mojom::Role::kScrollBar ||
-          GetRole() == ax::mojom::Role::kSlider ||
-          (GetRole() == ax::mojom::Role::kSplitter && IsFocusable()));
-}
-
 bool BrowserAccessibilityAndroid::IsReportingCheckable() const {
   // To communicate kMixed state Checkboxes, we will rely on state description,
   // so we will not report node as checkable to avoid duplicate utterances.
@@ -278,7 +247,8 @@ bool BrowserAccessibilityAndroid::IsScrollable() const {
 
 bool BrowserAccessibilityAndroid::IsSeekControl() const {
   // Range types should have seek control options, except progress bars.
-  return IsRangeType() && (GetRole() != ax::mojom::Role::kProgressIndicator);
+  return GetData().IsRangeValueSupported() &&
+         (GetRole() != ax::mojom::Role::kProgressIndicator);
 }
 
 bool BrowserAccessibilityAndroid::IsSelected() const {
@@ -482,7 +452,7 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
 
   // First, always return the |value| attribute if this is an
   // input field.
-  base::string16 value = GetValue();
+  base::string16 value = GetValueForControl();
   if (ShouldExposeValueAsName())
     return value;
 
@@ -527,6 +497,29 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
   }
 
   return text;
+}
+
+base::string16 BrowserAccessibilityAndroid::GetValueForControl() const {
+  base::string16 value = BrowserAccessibility::GetValueForControl();
+
+  // Optionally replace entered password text with bullet characters
+  // based on a user preference.
+  if (IsPasswordField()) {
+    auto* manager =
+        static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
+    if (manager->ShouldRespectDisplayedPasswordText()) {
+      // In the Chrome accessibility tree, the value of a password node is
+      // unobscured. However, if ShouldRespectDisplayedPasswordText() returns
+      // true we should try to expose whatever's actually visually displayed,
+      // whether that's the actual password or dots or whatever. To do this
+      // we rely on the password field's shadow dom.
+      value = BrowserAccessibility::GetInnerText();
+    } else if (!manager->ShouldExposePasswordText()) {
+      value = base::string16(value.size(), ui::kSecurePasswordBullet);
+    }
+  }
+
+  return value;
 }
 
 base::string16 BrowserAccessibilityAndroid::GetHint() const {
@@ -1292,7 +1285,7 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
 
 int BrowserAccessibilityAndroid::GetItemIndex() const {
   int index = 0;
-  if (IsRangeType()) {
+  if (GetData().IsRangeValueSupported()) {
     // Return a percentage here for live feedback in an AccessibilityEvent.
     // The exact value is returned in RangeCurrentValue.
     float min = GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
@@ -1310,7 +1303,7 @@ int BrowserAccessibilityAndroid::GetItemIndex() const {
 
 int BrowserAccessibilityAndroid::GetItemCount() const {
   int count = 0;
-  if (IsRangeType()) {
+  if (GetData().IsRangeValueSupported()) {
     // An AccessibilityEvent can only return integer information about a
     // seek control, so we return a percentage. The real range is returned
     // in RangeMin and RangeMax.
@@ -1595,8 +1588,9 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
 }
 
 int BrowserAccessibilityAndroid::GetEditableTextLength() const {
-  base::string16 value = GetValue();
-  return value.length();
+  if (IsTextField())
+    return int{GetValueForControl().size()};
+  return 0;
 }
 
 int BrowserAccessibilityAndroid::AndroidInputType() const {
@@ -1894,7 +1888,7 @@ void BrowserAccessibilityAndroid::GetSuggestions(
 }
 
 bool BrowserAccessibilityAndroid::HasNonEmptyValue() const {
-  return IsTextField() && !GetValue().empty();
+  return IsTextField() && !GetValueForControl().empty();
 }
 
 bool BrowserAccessibilityAndroid::HasCharacterLocations() const {
@@ -1952,18 +1946,22 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
       return true;
+    case ax::mojom::Role::kColorWell:
+      return false;
     default:
       break;
   }
 
+  if (GetData().IsRangeValueSupported())
+    return false;
+
   if (IsTextField())
     return true;
 
-  if (GetValue().empty())
-    return false;
-
-  if (GetRole() == ax::mojom::Role::kPopUpButton)
+  if (GetRole() == ax::mojom::Role::kPopUpButton &&
+      !GetValueForControl().empty()) {
     return true;
+  }
 
   return false;
 }
@@ -1972,7 +1970,7 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
 
   if (IsTextField()) {
-    base::string16 value = GetValue();
+    base::string16 value = GetValueForControl();
     if (value != new_value_) {
       old_value_ = new_value_;
       new_value_ = value;

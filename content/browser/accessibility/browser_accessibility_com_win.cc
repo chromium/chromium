@@ -1428,17 +1428,12 @@ void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
   // as the MSAA role.
   if (!win_attributes_->ia2_role)
     win_attributes_->ia2_role = win_attributes_->ia_role;
-
   win_attributes_->ia2_state = ComputeIA2State();
   win_attributes_->ia2_attributes = ComputeIA2Attributes();
-
   win_attributes_->name = owner()->GetNameAsString16();
-
   win_attributes_->description =
       owner()->GetString16Attribute(ax::mojom::StringAttribute::kDescription);
-
-  win_attributes_->value = GetValue();
-
+  win_attributes_->value = GetValueForControl();
   win_attributes_->ignored = owner()->IsIgnored();
 }
 

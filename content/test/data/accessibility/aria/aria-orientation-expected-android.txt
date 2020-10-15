@@ -14,12 +14,12 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='radio group'
 ++android.view.View role_description='radio group'
 ++android.view.View role_description='radio group'
-++android.view.View role_description='scroll bar' clickable range item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.view.View role_description='scroll bar' clickable range item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.view.View role_description='scroll bar' clickable range item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.SeekBar role_description='slider' clickable range item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.SeekBar role_description='slider' clickable range item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.SeekBar role_description='slider' clickable range item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.view.View role_description='scroll bar' clickable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.view.View role_description='scroll bar' clickable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.view.View role_description='scroll bar' clickable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.SeekBar role_description='slider' clickable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.SeekBar role_description='slider' clickable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.SeekBar role_description='slider' clickable range name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
@@ -32,6 +32,6 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='tree' collection hierarchical
 ++android.view.View role_description='tree' collection hierarchical
 ++android.view.View role_description='tree' collection hierarchical
-++android.widget.GridView role_description='tree grid' collection
-++android.widget.GridView role_description='tree grid' collection
-++android.widget.GridView role_description='tree grid' collection
+++android.widget.GridView role_description='tree grid' clickable collection
+++android.widget.GridView role_description='tree grid' clickable collection
+++android.widget.GridView role_description='tree grid' clickable collection

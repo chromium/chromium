@@ -840,7 +840,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         env, obj, info, node->RowIndex(), node->RowSpan(), node->ColumnIndex(),
         node->ColumnSpan(), node->IsHeading());
   }
-  if (node->IsRangeType()) {
+  if (node->GetData().IsRangeValueSupported()) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoRangeInfo(
         env, obj, info, node->AndroidRangeType(), node->RangeMin(),
         node->RangeMax(), node->RangeCurrentValue());
@@ -1300,7 +1300,7 @@ bool WebContentsAccessibilityAndroid::SetRangeValue(
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
 
-  if (!android_node->IsRangeType())
+  if (!android_node->GetData().IsRangeValueSupported())
     return false;
 
   float min =

@@ -146,16 +146,16 @@ bool IsControl(const ax::mojom::Role role) {
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kColorWell:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kDate:
+    case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kListGrid:
-    case ax::mojom::Role::kMenu:
-    case ax::mojom::Role::kMenuBar:
     case ax::mojom::Role::kMenuItem:
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListOption:
-    case ax::mojom::Role::kMenuListPopup:
     case ax::mojom::Role::kPdfActionableHighlight:
     case ax::mojom::Role::kPopUpButton:
     case ax::mojom::Role::kRadioButton:
@@ -169,6 +169,8 @@ bool IsControl(const ax::mojom::Role role) {
     case ax::mojom::Role::kTextFieldWithComboBox:
     case ax::mojom::Role::kToggleButton:
     case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kTreeGrid:
+    case ax::mojom::Role::kTreeItem:
       return true;
     default:
       return false;

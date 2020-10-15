@@ -113,14 +113,14 @@ BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
     const std::string& name_or_value) const {
   const std::string& name =
       node->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  // Note that in the case of a text field, "BrowserAccessibility::GetValue" has
-  // the added functionality of computing the value of an ARIA text box from its
-  // inner text.
+  // Note that in the case of a text field,
+  // "BrowserAccessibility::GetValueForControl" has the added functionality of
+  // computing the value of an ARIA text box from its inner text.
   //
   // <div contenteditable="true" role="textbox">Hello world.</div>
   // Will expose no HTML value attribute, but some screen readers, such as Jaws,
   // VoiceOver and Talkback, require one to be computed.
-  const std::string& value = base::UTF16ToUTF8(node->GetValue());
+  const std::string value = base::UTF16ToUTF8(node->GetValueForControl());
   if (node->GetRole() == role &&
       (name == name_or_value || value == name_or_value)) {
     return node;

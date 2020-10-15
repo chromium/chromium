@@ -217,7 +217,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("link", android_node->IsLink());
   dict->SetBoolean("multiline", android_node->IsMultiLine());
   dict->SetBoolean("multiselectable", android_node->IsMultiselectable());
-  dict->SetBoolean("range", android_node->IsRangeType());
+  dict->SetBoolean("range", android_node->GetData().IsRangeValueSupported());
   dict->SetBoolean("password", android_node->IsPasswordField());
   dict->SetBoolean("scrollable", android_node->IsScrollable());
   dict->SetBoolean("selected", android_node->IsSelected());

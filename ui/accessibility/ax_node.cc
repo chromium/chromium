@@ -8,9 +8,12 @@
 #include <utility>
 
 #include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -483,6 +486,28 @@ void AXNode::ClearLanguageInfo() {
   language_info_.reset();
 }
 
+std::string AXNode::GetHypertext() const {
+  if (IsLeaf())
+    return GetInnerText();
+
+  // Construct the hypertext for this node, which contains the concatenation of
+  // the inner text of this node's textual children, and an embedded object
+  // character for all the other children.
+  const std::string embedded_character_str("\xEF\xBF\xBC");
+  std::string hypertext;
+  for (auto it = UnignoredChildrenBegin(); it != UnignoredChildrenEnd(); ++it) {
+    // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
+    // hypertext with the embedded object character. We copy all of their text
+    // instead.
+    if (it->IsText()) {
+      hypertext += it->GetInnerText();
+    } else {
+      hypertext += embedded_character_str;
+    }
+  }
+  return hypertext;
+}
+
 std::string AXNode::GetInnerText() const {
   // If a text field has no descendants, then we compute its inner text from its
   // value or its placeholder. Otherwise we prefer to look at its descendant
@@ -560,6 +585,18 @@ std::string AXNode::GetLanguage() const {
   }
 
   return std::string();
+}
+
+std::string AXNode::GetValueForControl() const {
+  if (data().IsTextField())
+    return GetValueForTextField();
+  if (data().IsRangeValueSupported())
+    return GetTextForRangeValue();
+  if (data().role == ax::mojom::Role::kColorWell)
+    return GetValueForColorWell();
+  if (!IsControl(data().role))
+    return std::string();
+  return data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
 }
 
 std::ostream& operator<<(std::ostream& stream, const AXNode& node) {
@@ -1094,6 +1131,44 @@ AXNode* AXNode::ComputeFirstUnignoredChildRecursive() const {
   return nullptr;
 }
 
+std::string AXNode::GetTextForRangeValue() const {
+  DCHECK(data().IsRangeValueSupported());
+  std::string range_value =
+      data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  float numeric_value;
+  if (range_value.empty() &&
+      data().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
+                               &numeric_value)) {
+    range_value = base::NumberToString(numeric_value);
+  }
+  return range_value;
+}
+
+std::string AXNode::GetValueForColorWell() const {
+  DCHECK_EQ(data().role, ax::mojom::Role::kColorWell);
+  // static cast because SkColor is a 4-byte unsigned int
+  unsigned int color = static_cast<unsigned int>(
+      data().GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
+
+  unsigned int red = SkColorGetR(color);
+  unsigned int green = SkColorGetG(color);
+  unsigned int blue = SkColorGetB(color);
+  return base::StringPrintf("%d%% red %d%% green %d%% blue", red * 100 / 255,
+                            green * 100 / 255, blue * 100 / 255);
+}
+
+std::string AXNode::GetValueForTextField() const {
+  DCHECK(data().IsTextField());
+  std::string value =
+      data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  // Some screen readers like Jaws and VoiceOver require a value to be set in
+  // text fields with rich content, even though the same information is
+  // available on the children.
+  if (value.empty() && data().IsRichTextField())
+    return GetInnerText();
+  return value;
+}
+
 bool AXNode::IsIgnored() const {
   return data().IsIgnored();
 }
@@ -1226,7 +1301,7 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   AXNode* parent = GetUnignoredParent();
 
   while (parent && parent->data().HasState(ax::mojom::State::kEditable)) {
-    if (parent->data().IsPlainTextField() || parent->data().IsRichTextField())
+    if (parent->data().IsTextField())
       return parent;
 
     parent = parent->GetUnignoredParent();

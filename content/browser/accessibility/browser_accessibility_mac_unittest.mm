@@ -172,8 +172,13 @@ TEST_F(BrowserAccessibilityMacTest, RetainedDetachedObjectsReturnNil) {
 }
 
 TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
-  BrowserAccessibility* owner = [accessibility_ owner];
-  ASSERT_NE(nullptr, owner);
+  root_ = ui::AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kTextField;
+  manager_.reset(
+      new BrowserAccessibilityManagerMac(MakeAXTreeUpdate(root_), nullptr));
+  accessibility_.reset(
+      [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
 
   // Insertion but no deletion.
 

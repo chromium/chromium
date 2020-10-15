@@ -235,21 +235,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       const ui::AXClippingBehavior clipping_behavior,
       ui::AXOffscreenResult* offscreen_result = nullptr) const;
 
-  // Returns the value of a control, such as the value of a text field, a slider
-  // or a scrollbar.
-  //
-  // For text fields, computes the value of the field from its internal
-  // representation in the accessibility tree if necessary.
-  //
-  // This is to handle the cases such as ARIA textbox, where the value should
-  // be calculated from the object's inner text, as well as all text fields
-  // originating from Blink where the HTML value attribute cannot always be
-  // trusted.
-  //
-  // TODO(nektar): Move this method to AXNode when AXNodePosition and
-  // BrowserAccessibilityPosition are merged into one class.
-  virtual base::string16 GetValue() const;
-
   // This is an approximate hit test that only uses the information in
   // the browser process to compute the correct result. It will not return
   // correct results in many cases of z-index, overflow, and absolute
@@ -449,6 +434,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   base::string16 GetHypertext() const override;
   bool SetHypertextSelection(int start_offset, int end_offset) override;
   base::string16 GetInnerText() const override;
+  base::string16 GetValueForControl() const override;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,
       const ui::AXClippingBehavior clipping_behavior,

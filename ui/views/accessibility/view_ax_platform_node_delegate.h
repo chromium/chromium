@@ -87,13 +87,10 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
-
-  // Ordered-set-like and item-like nodes.
   bool IsOrderedSetItem() const override;
   bool IsOrderedSet() const override;
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
-
   void SetPopupFocusOverride() override;
   void EndPopupFocusOverride() override;
   bool IsFocusedForTesting() override;

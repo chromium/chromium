@@ -1,7 +1,7 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.widget.EditText role_description='spin button' clickable editable_text focusable input_type=2
+++++android.widget.EditText role_description='spin button' clickable editable_text focusable range item_count=100 input_type=2
 ++++android.widget.TextView name=' + '
-++++android.widget.EditText role_description='spin button' clickable editable_text focusable input_type=2
+++++android.widget.EditText role_description='spin button' clickable editable_text focusable range item_count=100 input_type=2
 ++++android.widget.TextView name=' ='
 ++++android.view.View role_description='status' live_region_type=1
