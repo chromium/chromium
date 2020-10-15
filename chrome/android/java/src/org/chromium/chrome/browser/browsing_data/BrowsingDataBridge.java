@@ -122,7 +122,7 @@ public final class BrowsingDataBridge {
     }
 
     /**
-     * This method tests clearing of specified types of browsing data for incognito profile.
+     * This method tests clearing of specified types of browsing data for primary Incognito profile.
      * @param dataTypes An array of browsing data types to delete, represented as values from
      *                  the shared enum {@link BrowsingDataType}.
      * @param timePeriod The time period for which to delete the data.
@@ -132,7 +132,7 @@ public final class BrowsingDataBridge {
         assert mClearBrowsingDataListener == null;
         mClearBrowsingDataListener = listener;
         BrowsingDataBridgeJni.get().clearBrowsingData(BrowsingDataBridge.this,
-                getProfile().getOffTheRecordProfile(), dataTypes, timePeriod, new String[0],
+                getProfile().getPrimaryOTRProfile(), dataTypes, timePeriod, new String[0],
                 new int[0], new String[0], new int[0]);
     }
 
@@ -185,7 +185,7 @@ public final class BrowsingDataBridge {
     /**
      * Checks the state of deletion preference for a certain browsing data type.
      * @param dataType The requested browsing data type (from the shared enum
-     *      {@link org.chromium.chrome.browser.browsing_data.BrowsingDataType}).
+     *      {@link BrowsingDataType}).
      * @param clearBrowsingDataTab Indicates if this is a checkbox on the default, basic or advanced
      *      tab to apply the right preference.
      * @return The state of the corresponding deletion preference.
@@ -198,7 +198,7 @@ public final class BrowsingDataBridge {
     /**
      * Sets the state of deletion preference for a certain browsing data type.
      * @param dataType The requested browsing data type (from the shared enum
-     *      {@link org.chromium.chrome.browser.browsing_data.BrowsingDataType}).
+     *      {@link BrowsingDataType}).
      * @param clearBrowsingDataTab Indicates if this is a checkbox on the default, basic or advanced
      *      tab to apply the right preference.
      * @param value The state to be set.
