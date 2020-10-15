@@ -476,6 +476,14 @@ bool ResourceLoadScheduler::ShouldDelay(
   if (in_flight_important_requests_ == 0)
     return false;
 
+  // Hidden pages already have requests throttled/deprioritized, and delaying
+  // further can have undesirable effects on sites, and there's little benefit
+  // to try to optimize them using this feature.
+  if (frame_scheduler_lifecycle_state_ ==
+      scheduler::SchedulingLifecycleState::kHidden) {
+    return false;
+  }
+
   // We didn't find the pending request for the id.
   if (found == pending_request_map_.end())
     return false;

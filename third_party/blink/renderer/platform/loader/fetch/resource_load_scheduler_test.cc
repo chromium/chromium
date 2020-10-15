@@ -1055,5 +1055,35 @@ TEST_P(ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests,
   EXPECT_TRUE(WasDelayCompetingLowPriorityRequestsObserved());
 }
 
+// Tests that DelayCompetingLowPriorityRequests does not delay
+// requests for background pages.
+TEST_P(ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests, Hidden) {
+  ResourceLoadPriority important = ImportantPriority();
+
+  // Set up hidden lifecycle state.
+  Scheduler()->OnLifecycleStateChanged(
+      scheduler::SchedulingLifecycleState::kHidden);
+  Scheduler()->SetOutstandingLimitForTesting(
+      ResourceLoadScheduler::kOutstandingUnlimited);
+
+  // Make an important request.
+  MockClient* important_client1 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(important_client1, ThrottleOption::kThrottleable,
+                       important, 0 /* intra_priority */, &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+
+  // Make a low-priority request.
+  MockClient* low_client1 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id3 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(low_client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 0 /* intra_priority */,
+                       &id3);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id3);
+
+  // It should not have been delayed because the page is hidden.
+  EXPECT_FALSE(WasDelayCompetingLowPriorityRequestsObserved());
+}
+
 }  // namespace
 }  // namespace blink
