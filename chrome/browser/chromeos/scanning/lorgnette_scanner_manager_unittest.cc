@@ -259,8 +259,7 @@ TEST_F(LorgnetteScannerManagerTest, LorgnetteScanner) {
   GetScannerNames();
   WaitForResult();
   const auto& scanner = response.scanners()[0];
-  std::string scanner_name = scanner.manufacturer() + " " + scanner.model();
-  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner_name}));
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.model()}));
 }
 
 // Test that two detected scanners with the same IP address are deduplicated and
@@ -286,8 +285,7 @@ TEST_F(LorgnetteScannerManagerTest, LorgnetteScannerWithUrl) {
   GetScannerNames();
   WaitForResult();
   auto& scanner = response.scanners()[0];
-  std::string scanner_name = scanner.manufacturer() + " " + scanner.model();
-  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner_name}));
+  EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.model()}));
 }
 
 // Test that detecting a lorgnette USB scanner results in a scanner name ending
@@ -299,8 +297,7 @@ TEST_F(LorgnetteScannerManagerTest, LorgnetteUSBScanner) {
   GetScannerNames();
   WaitForResult();
   auto& scanner = response.scanners()[0];
-  std::string scanner_name =
-      scanner.manufacturer() + " " + scanner.model() + " (USB)";
+  const std::string scanner_name = scanner.model() + " (USB)";
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner_name}));
 }
 

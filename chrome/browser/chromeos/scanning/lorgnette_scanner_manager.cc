@@ -178,9 +178,9 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       }
 
       const bool is_usb_scanner = protocol == ScanProtocol::kLegacyUsb;
-      const std::string base_name = base::StringPrintf(
-          "%s %s%s", lorgnette_scanner.manufacturer().c_str(),
-          lorgnette_scanner.model().c_str(), is_usb_scanner ? " (USB)" : "");
+      const std::string base_name =
+          base::StringPrintf("%s%s", lorgnette_scanner.model().c_str(),
+                             is_usb_scanner ? " (USB)" : "");
       const std::string display_name = CreateUniqueDisplayName(base_name);
 
       Scanner scanner;
