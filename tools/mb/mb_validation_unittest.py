@@ -168,14 +168,11 @@ class UnitTest(unittest.TestCase):
   def test_EnsureNoProprietaryMixins(self):
     bad_configs = ast.literal_eval(mb_unittest.TEST_BAD_CONFIG)
     errs = []
-    default_config = 'fake_config_file'
-    config_file = 'fake_config_file'
     masters = bad_configs['masters']
     mixins = bad_configs['mixins']
     config_configs = bad_configs['configs']
 
-    validation.EnsureNoProprietaryMixins(errs, default_config, config_file,
-                                         masters, config_configs, mixins)
+    validation.EnsureNoProprietaryMixins(errs, masters, config_configs, mixins)
 
     self.assertIn(
         'Public artifact builder "a" '

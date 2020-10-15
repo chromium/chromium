@@ -55,32 +55,30 @@ def CheckAllConfigsAndMixinsReferenced(errs, all_configs, configs, mixins):
   return errs
 
 
-def EnsureNoProprietaryMixins(errs, default_config, config_file, masters,
-                              configs, mixins):
+def EnsureNoProprietaryMixins(errs, masters, configs, mixins):
   """If we're checking the Chromium config, check that the 'chromium' bots
   which build public artifacts do not include the chrome_with_codecs mixin.
   """
-  if config_file == default_config:
-    if 'chromium' in masters:
-      for builder in masters['chromium']:
-        config = masters['chromium'][builder]
+  if 'chromium' in masters:
+    for builder in masters['chromium']:
+      config = masters['chromium'][builder]
 
-        def RecurseMixins(current_mixin):
-          if current_mixin == 'chrome_with_codecs':
-            errs.append('Public artifact builder "%s" can not contain the '
-                        '"chrome_with_codecs" mixin.' % builder)
-            return
-          if not 'mixins' in mixins[current_mixin]:
-            return
-          for mixin in mixins[current_mixin]['mixins']:
-            RecurseMixins(mixin)
-
-        for mixin in configs[config]:
+      def RecurseMixins(current_mixin):
+        if current_mixin == 'chrome_with_codecs':
+          errs.append('Public artifact builder "%s" can not contain the '
+                      '"chrome_with_codecs" mixin.' % builder)
+          return
+        if not 'mixins' in mixins[current_mixin]:
+          return
+        for mixin in mixins[current_mixin]['mixins']:
           RecurseMixins(mixin)
-    else:
-      errs.append('Missing "chromium" master. Please update this '
-                  'proprietary codecs check with the name of the master '
-                  'responsible for public build artifacts.')
+
+      for mixin in configs[config]:
+        RecurseMixins(mixin)
+  else:
+    errs.append('Missing "chromium" master. Please update this '
+                'proprietary codecs check with the name of the master '
+                'responsible for public build artifacts.')
 
 
 def _GetConfigsByBuilder(masters):

@@ -85,8 +85,6 @@ class MetaBuildWrapper(object):
     self.chromium_src_dir = CHROMIUM_SRC_DIR
     self.default_config = os.path.join(self.chromium_src_dir, 'tools', 'mb',
                                        'mb_config.pyl')
-    self.default_expectations = os.path.join(self.chromium_src_dir, 'tools',
-                                             'mb', 'mb_config_expectations')
     self.default_isolate_map = os.path.join(self.chromium_src_dir, 'testing',
                                             'buildbot', 'gn_isolate_map.pyl')
     self.executable = sys.executable
@@ -372,10 +370,12 @@ class MetaBuildWrapper(object):
 
     self.use_luci_auth = getattr(self.args, 'luci_auth', False)
 
-    if (self.args.func != self.CmdValidate
-        and getattr(self.args, 'config_file', None) is None):
+    if 'config_file' in self.args and self.args.config_file is None:
       self.args.config_file = self.default_config
 
+    if 'expectations_dir' in self.args and self.args.expectations_dir is None:
+      self.args.expectations_dir = os.path.join(
+          os.path.dirname(self.args.config_file), 'mb_config_expectations')
 
   def DumpInputFiles(self):
 
@@ -405,7 +405,7 @@ class MetaBuildWrapper(object):
     return 0
 
   def CmdTrain(self):
-    expectations_dir = self.args.expectations_dir or self.default_expectations
+    expectations_dir = self.args.expectations_dir
     if not self.Exists(expectations_dir):
       self.Print('Expectations dir (%s) does not exist.' % expectations_dir)
       return 1
@@ -703,8 +703,7 @@ class MetaBuildWrapper(object):
     Returns:
       A dict with master -> builder -> all GN args mapping.
     """
-    self.ReadConfigFile(
-        self.args.config_file if self.args.config_file else self.default_config)
+    self.ReadConfigFile(self.args.config_file)
     obj = {}
     for master, builders in self.masters.items():
       obj[master] = {}
@@ -735,12 +734,7 @@ class MetaBuildWrapper(object):
   def CmdValidate(self, print_ok=True):
     errs = []
 
-    # Validate master config if a specific one isn't specified
-    if getattr(self.args, 'config_file', None) is None:
-      # Read the file to make sure it parses.
-      self.ReadConfigFile(self.default_config)
-    else:
-      self.ReadConfigFile(self.args.config_file)
+    self.ReadConfigFile(self.args.config_file)
 
     # Build a list of all of the configs referenced by builders.
     all_configs = validation.GetAllConfigs(self.masters)
@@ -759,19 +753,18 @@ class MetaBuildWrapper(object):
     validation.CheckAllConfigsAndMixinsReferenced(errs, all_configs,
                                                   self.configs, self.mixins)
 
-    validation.EnsureNoProprietaryMixins(errs, self.default_config,
-                                         self.args.config_file, self.masters,
-                                         self.configs, self.mixins)
+    if self.args.config_file == self.default_config:
+      validation.EnsureNoProprietaryMixins(errs, self.masters, self.configs,
+                                           self.mixins)
 
     validation.CheckDuplicateConfigs(errs, self.configs, self.mixins,
                                      self.masters, FlattenConfig)
 
     if errs:
-      raise MBErr(('mb config file %s has problems:' %
-                   (self.args.config_file if self.args.config_file else self.
-                    default_config)) + '\n  ' + '\n  '.join(errs))
+      raise MBErr(('mb config file %s has problems:\n  ' %
+                   self.args.config_file) + '\n  '.join(errs))
 
-    expectations_dir = self.args.expectations_dir or self.default_expectations
+    expectations_dir = self.args.expectations_dir
     # TODO(crbug.com/1117577): Force all versions of mb_config.pyl to have
     # expectations. For now, just ignore those that don't have them.
     if self.Exists(expectations_dir):
@@ -780,9 +773,7 @@ class MetaBuildWrapper(object):
         raise MBErr("Expectations out of date. Please run 'mb.py train'.")
 
     if print_ok:
-      self.Print('mb config file %s looks ok.' %
-                 (self.args.config_file
-                  if self.args.config_file else self.default_config))
+      self.Print('mb config file %s looks ok.' % self.args.config_file)
     return 0
 
   def GetConfig(self):
