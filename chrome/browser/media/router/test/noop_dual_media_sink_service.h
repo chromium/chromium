@@ -9,6 +9,8 @@
 
 namespace media_router {
 
+class LoggerImpl;
+
 class NoopDualMediaSinkService : public DualMediaSinkService {
  public:
   NoopDualMediaSinkService();
@@ -17,6 +19,7 @@ class NoopDualMediaSinkService : public DualMediaSinkService {
   // DualMediaSinkService
   void OnUserGesture() override {}
   void StartMdnsDiscovery() override {}
+  void BindLogger(LoggerImpl* logger_impl) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NoopDualMediaSinkService);

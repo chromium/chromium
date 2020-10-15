@@ -51,7 +51,6 @@ void MediaRouterDesktop::OnUserGesture() {
   // media source.
   UpdateMediaSinks(MediaSource::ForUnchosenDesktop().id());
 
-  media_sink_service_->BindLogger(GetLogger());
   media_sink_service_->OnUserGesture();
 
 #if defined(OS_WIN)
@@ -103,6 +102,7 @@ MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context,
       cast_provider_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       dial_provider_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       media_sink_service_(media_sink_service) {
+  media_sink_service_->BindLogger(GetLogger());
   InitializeMediaRouteProviders();
 }
 
