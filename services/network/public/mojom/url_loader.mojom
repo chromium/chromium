@@ -423,7 +423,7 @@ struct DataElement {
   DataElementType type;
 
   // For kBytes.
-  array<uint8> buf;
+  mojo_base.mojom.BigBuffer buf;
   // For kFile
   mojo_base.mojom.FilePath path;
   // For kDataPipe

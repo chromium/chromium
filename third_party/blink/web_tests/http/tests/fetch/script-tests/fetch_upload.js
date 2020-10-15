@@ -69,27 +69,57 @@ function hash256(array) {
   return crypto.subtle.digest('SHA-256', array);
 }
 
+function compare(a, b) {
+  if (a.length != b.length)
+    return [false, 'length is not equal'];
+  for (let i = 0; - 1 < i; i -= 1) {
+    if ((a[i] !== b[i]))
+      return [false, `a[${i}](${a[i]}) != b[${i}](${b[i]})`];
+  }
+  return [true, ''];
+}
+
+async function compare_long_array(a, b, description) {
+  const a_hash = await hash256(a);
+  const b_hash = await hash256(b);
+  const [eq, fail_reason] = compare(a_hash, b_hash);
+  if (eq)
+    return;
+
+  const [raw_eq, raw_fail_reason] = compare(a, b);
+  assert_false(raw_eq);
+  assert_(false, description + ': ' + raw_fail_reason);
+}
+
+async function test_echo_long_array(upload_body, expected_array) {
+  const response = await fetch_echo(upload_body);
+  const reader = response.body.getReader();
+  let index = 0;
+  while (index < expected_array.length) {
+    const chunk = await reader.read();
+    assert_false(chunk.done, `chunk.done@${index}/${expected_array.length}`);
+    const chunk_length = chunk.value.length;
+    await compare_long_array(
+        chunk.value, expected_array.subarray(index, index + chunk_length),
+        `Array of [${index}, ${index + chunk_length - 1}] should be same.`);
+    index += chunk_length;
+  }
+  const final_chunk = await reader.read();
+  assert_true(final_chunk.done, 'final_chunk.done');
+}
+
 promise_test(async () => {
   const length = 1000 * 1000;  // 1Mbytes
   const array = random_values_array(length);
   const stream = create_stream([array]);
-  const response = await fetch_echo(stream);
-  const reader = response.body.getReader();
-  let index = 0;
-  while (index < length) {
-    const chunk = await reader.read();
-    assert_false(chunk.done);
-    const chunk_length = chunk.value.length;
-    const chunk_hash = await hash256(chunk.value);
-    const src_hash = await hash256(array.subarray(index, index + chunk_length));
-    assert_array_equals(
-        new Uint8Array(chunk_hash), new Uint8Array(src_hash),
-        `Array of [${index}, ${index + length - 1}] should be same.`);
-    index += chunk_length;
-  }
-  const final_chunk = await reader.read();
-  assert_true(final_chunk.done);
-}, 'Fetch with ReadableStream body with long Uint8Array');
+  await test_echo_long_array(stream, array);
+}, 'Fetch with ReadableStream body with 1Mbytes Uint8Array');
+
+promise_test(async () => {
+  const length = 1000 * 1000;  // 1 Mbytes
+  const array = random_values_array(length);
+  await test_echo_long_array(array, array);
+}, 'Fetch with Array body with 1 Mbytes Uint8Array');
 
 promise_test(async (t) => {
   const stream = create_stream(['Foobar']);
