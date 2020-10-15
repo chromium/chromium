@@ -26,33 +26,6 @@
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
 
-extern "C" {
-typedef struct {
-  int type;
-  unsigned long serial;
-  Bool send_event;
-  Display* display;
-  Window window;
-  Window root;
-  Window subwindow;
-  Time time;
-  int x, y;
-  int x_root, y_root;
-  unsigned int state;
-  unsigned int keycode;
-  Bool same_screen;
-} XKeyEvent;
-
-// This is temporarily required to fix XKB key event processing (bugs 1125886,
-// 1136265, 1136248, 1136206).  It should be removed and replaced with an
-// XProto equivalent.
-int XLookupString(XKeyEvent* event_struct,
-                  char* buffer_return,
-                  int bytes_buffer,
-                  ::KeySym* keysym_return,
-                  void* status_in_out);
-}
-
 namespace x11 {
 
 namespace {
@@ -397,16 +370,8 @@ KeyCode Connection::KeysymToKeycode(KeySym keysym) {
 
 KeySym Connection::KeycodeToKeysym(uint32_t keycode, unsigned int modifiers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  XKeyEvent key_event{
-      .type = KeyEvent::Press,
-      .display = display_,
-      .state = modifiers,
-      .keycode = keycode,
-  };
-  ::KeySym keysym;
-  XLookupString(&key_event, nullptr, 0, &keysym, nullptr);
-  return static_cast<x11::KeySym>(keysym);
+  auto sym = TranslateKey(keycode, modifiers);
+  return sym == static_cast<KeySym>(XK_VoidSymbol) ? kNoSymbol : sym;
 }
 
 std::unique_ptr<Connection> Connection::Clone() const {
