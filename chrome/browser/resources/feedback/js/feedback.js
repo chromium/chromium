@@ -182,6 +182,36 @@ function checkForBluetoothKeywords(inputEvent) {
 }
 
 /**
+ * Updates the description-text box based on whether it was valid.
+ * If invalid, indicate an error to the user. If valid, remove indication of the
+ * error.
+ */
+function updateDescription(wasValid) {
+  // Set visibility of the alert text for users who don't use a screen
+  // reader.
+  $('description-empty-error').hidden = wasValid;
+
+  // Change the textarea's aria-labelled by to ensure the screen reader does
+  // (or doesn't) read the error, as appropriate.
+  // If it does read the error, it should do so _before_ it reads the normal
+  // description.
+  const description = $('description-text');
+  description.setAttribute(
+      'aria-labelledby',
+      (wasValid ? '' : 'description-empty-error ') + 'free-form-text');
+  // Indicate whether input is valid.
+  description.setAttribute('aria-invalid', !wasValid);
+  if (!wasValid) {
+    // Return focus to field so user can correct error.
+    description.focus();
+  }
+
+  // We may have added or removed a line of text, so make sure the app window
+  // is the right size.
+  resizeAppWindow();
+}
+
+/**
  * Sends the report; after the report is sent, we need to be redirected to
  * the landing page, but we shouldn't be able to navigate back, hence
  * we open the landing page in a new tab and sendReport closes this tab.
@@ -189,20 +219,13 @@ function checkForBluetoothKeywords(inputEvent) {
  */
 function sendReport() {
   if ($('description-text').value.length == 0) {
-    // Don't need to re-hide this or reset the aria label in the non-empty case
-    // because the report will always be sent if we get past this if statement.
-    $('description-empty-error').hidden = false;
-
-    // Return focus to the textarea but first change its aria-labelledby so that
-    // the screen reader reads the error first when describing it.
-    const description = $('description-text');
-    description.setAttribute('aria-labelledby', 'description-empty-error');
-    description.focus();
-
-    // We added a line of text, so make sure the app window is big enough.
-    resizeAppWindow();
+    updateDescription(false);
     return false;
   }
+  // This isn't strictly necessary, since if we get past this point we'll
+  // succeed, but for future-compatibility (and in case we later add more
+  // failure cases after this), re-hide the alert and reset the aria label.
+  updateDescription(true);
 
   // Prevent double clicking from sending additional reports.
   $('send-report-button').disabled = true;
