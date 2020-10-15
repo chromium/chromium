@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
-#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
+#ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_SYNC_H_
+#define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_SYNC_H_
 
 #include <array>
 #include <memory>
@@ -22,7 +22,7 @@ namespace chromeos {
 namespace local_search_service {
 
 // SearchMetricsReporter logs daily search requests to UMA.
-class SearchMetricsReporter {
+class SearchMetricsReporterSync {
  public:
   static constexpr int kNumberIndexIds =
       static_cast<int>(IndexId::kMaxValue) + 1;
@@ -42,11 +42,12 @@ class SearchMetricsReporter {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // RegisterLocalStatePrefs() must be called before instantiating this class.
-  explicit SearchMetricsReporter(PrefService* local_state_pref_service);
-  ~SearchMetricsReporter();
+  explicit SearchMetricsReporterSync(PrefService* local_state_pref_service);
+  ~SearchMetricsReporterSync();
 
-  SearchMetricsReporter(const SearchMetricsReporter&) = delete;
-  SearchMetricsReporter& operator=(const SearchMetricsReporter&) = delete;
+  SearchMetricsReporterSync(const SearchMetricsReporterSync&) = delete;
+  SearchMetricsReporterSync& operator=(const SearchMetricsReporterSync&) =
+      delete;
 
   // Sets |index_id_|.
   void SetIndexId(IndexId index_id);
@@ -83,4 +84,4 @@ class SearchMetricsReporter {
 }  // namespace local_search_service
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
+#endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_SYNC_H_

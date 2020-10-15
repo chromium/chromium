@@ -20,7 +20,7 @@ void LogIndexIdAndBackendType(const std::string& histogram_prefix,
 }
 
 std::string IndexIdBasedHistogramPrefix(IndexId index_id) {
-  const std::string prefix = "LocalSearchServiceSync.";
+  const std::string prefix = "LocalSearchService.";
   switch (index_id) {
     case IndexId::kCrosSettings:
       return prefix + "CrosSettings";
@@ -42,7 +42,7 @@ IndexSync::IndexSync(IndexId index_id,
     return;
   }
 
-  reporter_ = std::make_unique<SearchMetricsReporter>(local_state);
+  reporter_ = std::make_unique<SearchMetricsReporterSync>(local_state);
   DCHECK(reporter_);
   reporter_->SetIndexId(index_id);
 }

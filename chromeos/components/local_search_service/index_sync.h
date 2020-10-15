@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
-#include "chromeos/components/local_search_service/search_metrics_reporter.h"
+#include "chromeos/components/local_search_service/search_metrics_reporter_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
 class PrefService;
@@ -78,7 +78,7 @@ class IndexSync {
 
  private:
   std::string histogram_prefix_;
-  std::unique_ptr<SearchMetricsReporter> reporter_;
+  std::unique_ptr<SearchMetricsReporterSync> reporter_;
   base::WeakPtrFactory<IndexSync> weak_ptr_factory_{this};
 };
 

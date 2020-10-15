@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/local_search_service/search_metrics_reporter.h"
+#include "chromeos/components/local_search_service/search_metrics_reporter_sync.h"
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,33 +20,33 @@ constexpr base::TimeDelta kCheckDailyEventInternal =
     base::TimeDelta::FromMinutes(30);
 
 // Prefs corresponding to IndexId values.
-constexpr std::array<const char*, SearchMetricsReporter::kNumberIndexIds>
+constexpr std::array<const char*, SearchMetricsReporterSync::kNumberIndexIds>
     kDailyCountPrefs = {
         prefs::kLocalSearchServiceMetricsCrosSettingsCount,
         prefs::kLocalSearchServiceMetricsHelpAppCount,
 };
 
 // Histograms corresponding to IndexId values.
-constexpr std::array<const char*, SearchMetricsReporter::kNumberIndexIds>
+constexpr std::array<const char*, SearchMetricsReporterSync::kNumberIndexIds>
     kDailyCountHistograms = {
-        SearchMetricsReporter::kCrosSettingsName,
-        SearchMetricsReporter::kHelpAppName,
+        SearchMetricsReporterSync::kCrosSettingsName,
+        SearchMetricsReporterSync::kHelpAppName,
 };
 
 }  // namespace
 
-constexpr char SearchMetricsReporter::kDailyEventIntervalName[];
-constexpr char SearchMetricsReporter::kCrosSettingsName[];
-constexpr char SearchMetricsReporter::kHelpAppName[];
+constexpr char SearchMetricsReporterSync::kDailyEventIntervalName[];
+constexpr char SearchMetricsReporterSync::kCrosSettingsName[];
+constexpr char SearchMetricsReporterSync::kHelpAppName[];
 
-constexpr int SearchMetricsReporter::kNumberIndexIds;
+constexpr int SearchMetricsReporterSync::kNumberIndexIds;
 
 // This class is needed since metrics::DailyEvent requires taking ownership
 // of its observers. It just forwards events to SearchMetricsReporter.
-class SearchMetricsReporter::DailyEventObserver
+class SearchMetricsReporterSync::DailyEventObserver
     : public metrics::DailyEvent::Observer {
  public:
-  explicit DailyEventObserver(SearchMetricsReporter* reporter)
+  explicit DailyEventObserver(SearchMetricsReporterSync* reporter)
       : reporter_(reporter) {
     DCHECK(reporter_);
   }
@@ -61,11 +61,11 @@ class SearchMetricsReporter::DailyEventObserver
   }
 
  private:
-  SearchMetricsReporter* reporter_;  // Not owned.
+  SearchMetricsReporterSync* reporter_;  // Not owned.
 };
 
 // static:
-void SearchMetricsReporter::RegisterLocalStatePrefs(
+void SearchMetricsReporterSync::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   metrics::DailyEvent::RegisterPref(
       registry, prefs::kLocalSearchServiceMetricsDailySample);
@@ -74,7 +74,7 @@ void SearchMetricsReporter::RegisterLocalStatePrefs(
   }
 }
 
-SearchMetricsReporter::SearchMetricsReporter(
+SearchMetricsReporterSync::SearchMetricsReporterSync(
     PrefService* local_state_pref_service)
     : pref_service_(local_state_pref_service),
       daily_event_(std::make_unique<metrics::DailyEvent>(
@@ -91,15 +91,15 @@ SearchMetricsReporter::SearchMetricsReporter(
                &metrics::DailyEvent::CheckInterval);
 }
 
-SearchMetricsReporter::~SearchMetricsReporter() = default;
+SearchMetricsReporterSync::~SearchMetricsReporterSync() = default;
 
-void SearchMetricsReporter::SetIndexId(IndexId index_id) {
+void SearchMetricsReporterSync::SetIndexId(IndexId index_id) {
   DCHECK(!index_id_);
   index_id_ = index_id;
   DCHECK_LT(static_cast<size_t>(index_id), kDailyCountPrefs.size());
 }
 
-void SearchMetricsReporter::OnSearchPerformed() {
+void SearchMetricsReporterSync::OnSearchPerformed() {
   DCHECK(index_id_);
   const size_t index = static_cast<size_t>(*index_id_);
   const char* daily_count_pref = kDailyCountPrefs[index];
@@ -107,12 +107,12 @@ void SearchMetricsReporter::OnSearchPerformed() {
   pref_service_->SetInteger(daily_count_pref, daily_counts_[index]);
 }
 
-void SearchMetricsReporter::ReportDailyMetricsForTesting(
+void SearchMetricsReporterSync::ReportDailyMetricsForTesting(
     metrics::DailyEvent::IntervalType type) {
   ReportDailyMetrics(type);
 }
 
-void SearchMetricsReporter::ReportDailyMetrics(
+void SearchMetricsReporterSync::ReportDailyMetrics(
     metrics::DailyEvent::IntervalType type) {
   if (!index_id_)
     return;

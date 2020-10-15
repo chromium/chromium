@@ -22,8 +22,8 @@ source_set("local_search_service") {
     "local_search_service_sync_factory.h",
     "pref_names.cc",
     "pref_names.h",
-    "search_metrics_reporter.cc",
-    "search_metrics_reporter.h",
+    "search_metrics_reporter_sync.cc",
+    "search_metrics_reporter_sync.h",
     "search_utils.cc",
     "search_utils.h",
     "shared_structs.cc",
@@ -94,7 +94,7 @@ source_set("unit_tests") {
     "linear_map_search_unittest.cc",
     "local_search_service_proxy_unittest.cc",
     "local_search_service_sync_unittest.cc",
-    "search_metrics_reporter_unittest.cc",
+    "search_metrics_reporter_sync_unittest.cc",
     "search_utils_unittest.cc",
   ]
 
