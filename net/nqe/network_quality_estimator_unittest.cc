@@ -2248,8 +2248,12 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestTCPSocketRTT) {
 }
 
 TEST_F(NetworkQualityEstimatorTest, TestRecordNetworkIDAvailability) {
-  base::HistogramTester histogram_tester;
   TestNetworkQualityEstimator estimator;
+
+  // Create the histogram tester after |estimator| is constructed. This ensures
+  // that any network checks done at the time of |estimator| construction do not
+  // affect |histogram_tester|.
+  base::HistogramTester histogram_tester;
 
   // The NetworkID is recorded as available on Wi-Fi connection.
   estimator.SimulateNetworkChange(
