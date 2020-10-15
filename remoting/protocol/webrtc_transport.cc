@@ -1069,6 +1069,13 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
       std::max(CandidateTypeToTransportRouteType(local_candidate.type()),
                CandidateTypeToTransportRouteType(remote_candidate.type()));
 
+  VLOG(0) << "Selected candidate-pair changed, reason = " << event.reason;
+  VLOG(0) << "  Local IP = " << local_candidate.address().ToString()
+          << ", type = " << local_candidate.type()
+          << ", protocol = " << local_candidate.protocol();
+  VLOG(0) << "  Remote IP = " << remote_candidate.address().ToString()
+          << ", type = " << remote_candidate.type()
+          << ", protocol = " << remote_candidate.protocol();
   if (!jingle_glue::SocketAddressToIPEndPoint(remote_candidate.address(),
                                               &route.remote_address)) {
     LOG(ERROR) << "Failed to convert peer IP address.";
@@ -1080,6 +1087,7 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
     return;
   }
 
+  VLOG(0) << "Sending route-changed notification.";
   event_handler_->OnWebrtcTransportRouteChanged(route);
 }
 
