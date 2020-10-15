@@ -198,6 +198,15 @@ Polymer({
   onEnableLiveCaptionSubtitleChanged_(enableLiveCaptionSubtitle) {
     this.enableLiveCaptionSubtitle_ = enableLiveCaptionSubtitle;
   },
+
+  /**
+   * @private
+   * @param {!Event} event
+   */
+  onFocusHighlightChange_(event) {
+    chrome.metricsPrivate.recordBoolean(
+        'Accessibility.FocusHighlight.ToggleEnabled', event.target.checked);
+  },
   // </if>
 
   // <if expr="chromeos">

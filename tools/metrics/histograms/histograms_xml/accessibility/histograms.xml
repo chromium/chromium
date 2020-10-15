@@ -424,6 +424,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.FocusHighlight.ToggleEnabled"
+    enum="BooleanEnabled" expires_after="2021-03-31">
+  <owner>aboxhall@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The value of the &quot;show a quick focus highlight&quot; setting, logged
+    immediately after toggling. This will show us how often users are turning
+    the feature on, and how often they are turning it back off again.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
     expires_after="M89">
   <owner>katie@chromium.org</owner>
