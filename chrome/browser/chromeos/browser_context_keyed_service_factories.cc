@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service_factory.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
+#include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
@@ -73,6 +74,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   KerberosCredentialsManagerFactory::GetInstance();
   launcher_search_provider::ServiceFactory::GetInstance();
   nearby::NearbyConnectionsDependenciesProviderFactory::GetInstance();
+  nearby::NearbyProcessManagerFactory::GetInstance();
   OwnerSettingsServiceChromeOSFactory::GetInstance();
   phonehub::PhoneHubManagerFactory::GetInstance();
   platform_keys::KeyPermissionsServiceFactory::GetInstance();
