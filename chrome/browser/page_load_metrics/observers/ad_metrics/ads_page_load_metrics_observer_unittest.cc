@@ -312,12 +312,6 @@ void TestHistograms(const base::HistogramTester& histograms,
         SuffixedHistogram("Bytes.AdFrames.PerFrame.Network"),
         network_bytes_and_count.first, network_bytes_and_count.second);
   }
-  for (const auto& percent_network_and_count :
-       frames_with_percent_network_count) {
-    histograms.ExpectBucketCount(
-        SuffixedHistogram("Bytes.AdFrames.PerFrame.PercentNetwork2"),
-        percent_network_and_count.first, percent_network_and_count.second);
-  }
 
   histograms.ExpectUniqueSample(
       SuffixedHistogram("Bytes.AdFrames.Aggregate.Total2"), total_ad_kb, 1);
@@ -338,11 +332,6 @@ void TestHistograms(const base::HistogramTester& histograms,
         (total_ad_kb * 100) /
             (total_ad_kb + non_ad_cached_kb + non_ad_uncached_kb),
         1);
-  }
-  if (total_ad_kb > 0) {
-    histograms.ExpectUniqueSample(
-        SuffixedHistogram("Bytes.AdFrames.Aggregate.PercentNetwork2"),
-        ((total_ad_uncached_kb * 100) / total_ad_kb), 1);
   }
   if (total_ad_uncached_kb + non_ad_uncached_kb > 0) {
     histograms.ExpectUniqueSample(

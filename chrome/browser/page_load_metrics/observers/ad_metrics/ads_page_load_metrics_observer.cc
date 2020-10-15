@@ -1023,13 +1023,6 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   ADS_HISTOGRAM("Bytes.AdFrames.Aggregate.Network", PAGE_BYTES_HISTOGRAM,
                 visibility, aggregate_ad_info.network_bytes);
 
-  if (aggregate_ad_info.bytes) {
-    ADS_HISTOGRAM(
-        "Bytes.AdFrames.Aggregate.PercentNetwork2", UMA_HISTOGRAM_PERCENTAGE,
-        visibility,
-        aggregate_ad_info.network_bytes * 100 / aggregate_ad_info.bytes);
-  }
-
   if (memory_request_) {
     ADS_HISTOGRAM("Memory.Aggregate.Max", PAGE_BYTES_HISTOGRAM, visibility,
                   aggregate_ad_info.v8_max_memory_bytes);
@@ -1153,12 +1146,6 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
                   visibility, ad_frame_data.bytes());
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,
                   visibility, ad_frame_data.network_bytes());
-    if (ad_frame_data.bytes() > 0) {
-      ADS_HISTOGRAM(
-          "Bytes.AdFrames.PerFrame.PercentNetwork2", UMA_HISTOGRAM_PERCENTAGE,
-          visibility,
-          ad_frame_data.network_bytes() * 100 / ad_frame_data.bytes());
-    }
     if (memory_request_) {
       ADS_HISTOGRAM("Memory.PerFrame.Max", PAGE_BYTES_HISTOGRAM, visibility,
                     ad_frame_data.v8_max_memory_bytes_used());

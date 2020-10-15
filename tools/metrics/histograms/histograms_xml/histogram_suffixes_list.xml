@@ -523,7 +523,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="PercentNetwork2"
-      label="The percentage of bytes that were loaded over the network."/>
+      label="The percentage of bytes that were loaded over the network.">
+    <obsolete>
+      Removed 10/2020.
+    </obsolete>
+  </suffix>
   <affected-histogram name="PageLoad.Clients.Ads.Bytes.AdFrames.Aggregate"/>
   <affected-histogram name="PageLoad.Clients.Ads.Bytes.AdFrames.PerFrame"/>
   <affected-histogram
