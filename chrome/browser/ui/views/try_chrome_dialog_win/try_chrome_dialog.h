@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/installer/util/experiment_metrics.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
@@ -40,9 +39,7 @@ class Widget;
 //   +-----------------------------------------------+
 //
 // Some variants do not have body text, or only have one button.
-class TryChromeDialog : public views::ButtonListener,
-                        public views::WidgetObserver,
-                        public ui::EventHandler {
+class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
  public:
   // Receives a closure to run upon process singleton notification when the
   // modal dialog is open, or a null closure when the active dialog is
@@ -124,10 +121,8 @@ class TryChromeDialog : public views::ButtonListener,
   void GainedMouseHover();
   void LostMouseHover();
 
-  // views::ButtonListener:
-  // Updates the result_ and state_ based on which button was pressed and
-  // closes the dialog.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  // Updates the result_ and state_ based on |state| and closes the dialog.
+  void ButtonPressed(installer::ExperimentMetrics::State state);
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;

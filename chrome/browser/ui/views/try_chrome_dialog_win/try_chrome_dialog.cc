@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/try_chrome_dialog_win/try_chrome_dialog.h"
 
+#include <windows.h>
+
 #include <shellapi.h>
 
 #include <utility>
@@ -94,8 +96,6 @@ const SkColor kButtonTextColor = SkColorSetRGB(0xFF, 0xFF, 0xFF);
 const SkColor kButtonAcceptColor = SkColorSetRGB(0x00, 0x78, 0xDA);
 const SkColor kButtonNoThanksColor = SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF);
 
-enum class ButtonTag { CLOSE_BUTTON, OK_BUTTON, NO_THANKS_BUTTON };
-
 // Experiment specification information needed for layout.
 struct ExperimentVariations {
   enum class CloseStyle {
@@ -170,10 +170,10 @@ enum class TryChromeButtonType { OPEN_CHROME, NO_THANKS };
 // Builds a Win10-styled rectangular button, for this toast displayed outside of
 // the browser.
 std::unique_ptr<views::LabelButton> CreateWin10StyleButton(
-    views::ButtonListener* listener,
+    views::Button::PressedCallback callback,
     const base::string16& text,
     TryChromeButtonType button_type) {
-  auto button = std::make_unique<views::LabelButton>(listener, text,
+  auto button = std::make_unique<views::LabelButton>(std::move(callback), text,
                                                      CONTEXT_WINDOWS10_NATIVE);
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -1129,11 +1129,13 @@ void TryChromeDialog::OnContextInitialized() {
           ExperimentVariations::CloseStyle::kCloseX ||
       kExperiments[group_].close_style ==
           ExperimentVariations::CloseStyle::kNoThanksButtonAndCloseX) {
-    auto close_button = std::make_unique<views::ImageButton>(this);
+    auto close_button =
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &TryChromeDialog::ButtonPressed, base::Unretained(this),
+            installer::ExperimentMetrics::kSelectedClose));
     close_button->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(kInactiveToastCloseIcon, kBodyColor));
-    close_button->set_tag(static_cast<int>(ButtonTag::CLOSE_BUTTON));
     DCHECK_EQ(close_button->GetPreferredSize().width(), kCloseButtonWidth);
     close_button_ = layout->AddView(std::move(close_button), 1, 2);
     close_button_->SetVisible(false);
@@ -1178,9 +1180,11 @@ void TryChromeDialog::OnContextInitialized() {
 
   layout->StartRow(views::GridLayout::kFixedSize, 2);
   auto accept_button = CreateWin10StyleButton(
-      this, l10n_util::GetStringUTF16(IDS_WIN10_TOAST_OPEN_CHROME),
+      base::BindRepeating(
+          &TryChromeDialog::ButtonPressed, base::Unretained(this),
+          installer::ExperimentMetrics::kSelectedOpenChromeAndNoCrash),
+      l10n_util::GetStringUTF16(IDS_WIN10_TOAST_OPEN_CHROME),
       TryChromeButtonType::OPEN_CHROME);
-  accept_button->set_tag(static_cast<int>(ButtonTag::OK_BUTTON));
   buttons->AddChildView(accept_button.release());
 
   if (kExperiments[group_].close_style ==
@@ -1188,9 +1192,11 @@ void TryChromeDialog::OnContextInitialized() {
       kExperiments[group_].close_style ==
           ExperimentVariations::CloseStyle::kNoThanksButtonAndCloseX) {
     auto no_thanks_button = CreateWin10StyleButton(
-        this, l10n_util::GetStringUTF16(IDS_WIN10_TOAST_NO_THANKS),
+        base::BindRepeating(&TryChromeDialog::ButtonPressed,
+                            base::Unretained(this),
+                            installer::ExperimentMetrics::kSelectedNoThanks),
+        l10n_util::GetStringUTF16(IDS_WIN10_TOAST_NO_THANKS),
         TryChromeButtonType::NO_THANKS);
-    no_thanks_button->set_tag(static_cast<int>(ButtonTag::NO_THANKS_BUTTON));
     buttons->AddChildView(std::move(no_thanks_button));
   }
 
@@ -1268,8 +1274,7 @@ void TryChromeDialog::LostMouseHover() {
     close_button_->SetVisible(false);
 }
 
-void TryChromeDialog::ButtonPressed(views::Button* sender,
-                                    const ui::Event& event) {
+void TryChromeDialog::ButtonPressed(installer::ExperimentMetrics::State state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(result_, NOT_NOW);
 
@@ -1278,23 +1283,9 @@ void TryChromeDialog::ButtonPressed(views::Button* sender,
   if (state_ != installer::ExperimentMetrics::kOtherClose)
     return;
 
-  // Figure out what the subsequent action and experiment state should be based
-  // on which button was pressed.
-  switch (sender->tag()) {
-    case static_cast<int>(ButtonTag::CLOSE_BUTTON):
-      state_ = installer::ExperimentMetrics::kSelectedClose;
-      break;
-    case static_cast<int>(ButtonTag::OK_BUTTON):
-      result_ = kExperiments[group_].result;
-      state_ = installer::ExperimentMetrics::kSelectedOpenChromeAndNoCrash;
-      break;
-    case static_cast<int>(ButtonTag::NO_THANKS_BUTTON):
-      state_ = installer::ExperimentMetrics::kSelectedNoThanks;
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
+  state_ = state;
+  if (state_ == installer::ExperimentMetrics::kSelectedOpenChromeAndNoCrash)
+    result_ = kExperiments[group_].result;
 
   popup_->Close();
 }
