@@ -167,6 +167,10 @@ struct SelectFilesRequest {
 
   // Android task ID of the request sender.
   int32 task_id;
+
+  // Search query to run when the file selector is launched.
+  // Corresponds to Intent.EXTRA_CONTENT_QUERY.
+  string? search_query;
 };
 
 // Represents a path to a document served by a DocumentsProvider.
@@ -234,6 +238,9 @@ struct FileSelectorElements {
 
   // List of files in the right pane.
   array<FileSelectorElement> file_elements;
+
+  // Query text filled in the search box.
+  string? search_query;
 };
 
 // Next method ID: 9

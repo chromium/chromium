@@ -95,6 +95,7 @@ void OnGetElementsScriptResults(
     ConvertToElementVector(value.FindKey("dirNames"),
                            &result->directory_elements);
     ConvertToElementVector(value.FindKey("fileNames"), &result->file_elements);
+    // TODO(niwa): Fill result->search_query.
   }
   std::move(callback).Run(std::move(result));
 }
@@ -246,14 +247,15 @@ void ArcSelectFilesHandler::SelectFiles(
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   BuildFileTypeInfo(request, &file_type_info);
   base::FilePath default_path = GetInitialFilePath(request);
+  std::string search_query = request->search_query.value_or(std::string());
 
   // Android picker apps should be shown in GET_CONTENT mode.
   bool show_android_picker_apps =
       request->action_type == mojom::SelectFilesActionType::GET_CONTENT;
 
-  bool success =
-      dialog_holder_->SelectFile(dialog_type, default_path, &file_type_info,
-                                 request->task_id, show_android_picker_apps);
+  bool success = dialog_holder_->SelectFile(
+      dialog_type, default_path, &file_type_info, request->task_id,
+      search_query, show_android_picker_apps);
   if (!success) {
     std::move(callback_).Run(mojom::SelectFilesResult::New());
   }
@@ -376,6 +378,7 @@ bool SelectFileDialogHolder::SelectFile(
     const base::FilePath& default_path,
     const ui::SelectFileDialog::FileTypeInfo* file_types,
     int task_id,
+    const std::string& search_query,
     bool show_android_picker_apps) {
   aura::Window* owner_window = nullptr;
   for (auto* window : ChromeLauncherController::instance()->GetArcWindows()) {
@@ -389,6 +392,7 @@ bool SelectFileDialogHolder::SelectFile(
     return false;
   }
 
+  // TODO(niwa): Pass search query as well.
   SelectFileDialogExtension::Owner owner;
   owner.window = owner_window;
   owner.android_task_id = task_id;

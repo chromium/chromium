@@ -133,6 +133,7 @@ class SelectFileDialogHolder {
                           const base::FilePath& default_path,
                           const ui::SelectFileDialog::FileTypeInfo* file_types,
                           int task_id,
+                          const std::string& search_query,
                           bool show_android_picker_apps);
 
   virtual void ExecuteJavaScript(

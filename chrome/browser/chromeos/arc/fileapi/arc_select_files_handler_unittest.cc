@@ -81,11 +81,12 @@ class MockSelectFileDialogHolder : public SelectFileDialogHolder {
   explicit MockSelectFileDialogHolder(ui::SelectFileDialog::Listener* listener)
       : SelectFileDialogHolder(listener) {}
   ~MockSelectFileDialogHolder() override = default;
-  MOCK_METHOD5(SelectFile,
+  MOCK_METHOD6(SelectFile,
                bool(ui::SelectFileDialog::Type type,
                     const base::FilePath& default_path,
                     const ui::SelectFileDialog::FileTypeInfo* file_types,
                     int task_id,
+                    const std::string& search_query,
                     bool show_android_picker_apps));
   MOCK_METHOD2(ExecuteJavaScript,
                void(const std::string&, JavaScriptResultCallback));
@@ -113,7 +114,7 @@ class ArcSelectFilesHandlerTest : public testing::Test {
     mock_dialog_holder_ = mock_dialog_holder.get();
     arc_select_files_handler_->SetDialogHolderForTesting(
         std::move(mock_dialog_holder));
-    ON_CALL(*mock_dialog_holder_, SelectFile(_, _, _, _, _))
+    ON_CALL(*mock_dialog_holder_, SelectFile(_, _, _, _, _, _))
         .WillByDefault(Return(true));
   }
 
@@ -133,7 +134,7 @@ class ArcSelectFilesHandlerTest : public testing::Test {
     request->allow_multiple = request_allow_multiple;
 
     EXPECT_CALL(*mock_dialog_holder_,
-                SelectFile(expected_dialog_type, _, _, _,
+                SelectFile(expected_dialog_type, _, _, _, _,
                            expected_show_android_picker_apps))
         .Times(1);
 
@@ -204,7 +205,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo) {
       *mock_dialog_holder_,
       SelectFile(_, _,
                  testing::Pointee(FileTypeInfoMatcher(expected_file_type_info)),
-                 1234, _))
+                 1234, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;
@@ -231,7 +232,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_FileTypeInfo_Asterisk) {
       *mock_dialog_holder_,
       SelectFile(_, _,
                  testing::Pointee(FileTypeInfoMatcher(expected_file_type_info)),
-                 1234, _))
+                 1234, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;
@@ -250,7 +251,7 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_InitialDocumentPath) {
       "/special/arc-documents-provider/testing.provider/doc:root");
 
   EXPECT_CALL(*mock_dialog_holder_,
-              SelectFile(_, FilePathMatcher(expected_file_path), _, _, _))
+              SelectFile(_, FilePathMatcher(expected_file_path), _, _, _, _))
       .Times(1);
 
   base::MockCallback<SelectFilesCallback> callback;
