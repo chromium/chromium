@@ -36,7 +36,7 @@ const EventsView = (function() {
   EventsView.TAB_NAME = 'Events';
   EventsView.TAB_HASH = '#events';
 
-  // IDs for special HTML elements in dns_view.html
+  // ID for special HTML element in events_view.html
   EventsView.MAIN_BOX_ID = 'events-view-tab-content';
 
   cr.addSingletonGetter(EventsView);
@@ -46,31 +46,21 @@ const EventsView = (function() {
     __proto__: superClass.prototype,
 
     /**
-     * Called when something is dragged over the drop target.
-     *
-     * Returns false to cancel default browser behavior when a single file is
-     * being dragged.  When this happens, we may not receive a list of files for
-     * security reasons, which is why we allow the |files| array to be empty.
+     * Prevent default browser behavior when a file is dragged over the page to
+     * allow our onDrop() handler to handle the drop.
      */
     onDrag(event) {
-      // NOTE: Use Array.prototype.indexOf here is necessary while WebKit
-      // decides which type of data structure dataTransfer.types will be
-      // (currently between DOMStringList and Array). These have different APIs
-      // so assuming one type or the other was breaking things. See
-      // http://crbug.com/115433. TODO(dbeam): Remove when standardized more.
-      const indexOf = Array.prototype.indexOf;
-      return indexOf.call(event.dataTransfer.types, 'Files') == -1 ||
-          event.dataTransfer.files.length > 1;
+      if (event.dataTransfer.types.includes('Files')) {
+        event.preventDefault();
+      }
     },
 
     /**
-     * Called when something is dropped onto the drop target.  If it's a single
-     * file, redirect to the events tab to show the depreciation message.
+     * If a single file is dropped, redirect to the events tab to show the
+     * deprecation message.
      */
     onDrop(event) {
-      const indexOf = Array.prototype.indexOf;
-      if (indexOf.call(event.dataTransfer.types, 'Files') == -1 ||
-          event.dataTransfer.files.length != 1) {
+      if (event.dataTransfer.files.length !== 1) {
         return;
       }
       event.preventDefault();
