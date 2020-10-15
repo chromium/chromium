@@ -1,0 +1,34 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import './scanning.mojom-lite.js';
+
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import './strings.js';
+
+/**
+ * @fileoverview
+ * 'file-type-select' displays the available file types in a dropdown.
+ */
+Polymer({
+  is: 'file-type-select',
+
+  _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
+
+  properties: {
+    /** @type {chromeos.scanning.mojom.FileType|undefined} */
+    selectedFileType: {
+      type: chromeos.scanning.mojom.FileType,
+      notify: true,
+    },
+
+    /**
+     * Indicates whether all settings have been disabled by the parent element.
+     */
+    settingsDisabled: Boolean,
+  },
+});

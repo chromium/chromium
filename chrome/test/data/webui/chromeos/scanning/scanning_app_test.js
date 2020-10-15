@@ -17,6 +17,12 @@ const ColorMode = {
   COLOR: chromeos.scanning.mojom.ColorMode.kColor,
 };
 
+const FileType = {
+  JPG: chromeos.scanning.mojom.FileType.kJpg,
+  PDF: chromeos.scanning.mojom.FileType.kPdf,
+  PNG: chromeos.scanning.mojom.FileType.kPng,
+};
+
 const SourceType = {
   FLATBED: chromeos.scanning.mojom.SourceType.kFlatbed,
   ADF_SIMPLEX: chromeos.scanning.mojom.SourceType.kAdfSimplex,
@@ -245,6 +251,7 @@ suite('ScanningAppTest', () => {
               tokenToString(firstScannerId), scanningApp.selectedScannerId);
           assertEquals(
               firstCapabilities.sources[0].name, scanningApp.selectedSource);
+          assertEquals(FileType.PDF, scanningApp.selectedFileType);
           assertEquals(
               firstCapabilities.colorModes[0], scanningApp.selectedColorMode);
           assertEquals(
@@ -256,6 +263,8 @@ suite('ScanningAppTest', () => {
           assertFalse(scannerSelect.disabled);
           const sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
           assertFalse(sourceSelect.disabled);
+          const fileTypeSelect = scanningApp.$$('#fileTypeSelect').$$('select');
+          assertFalse(fileTypeSelect.disabled);
           const colorModeSelect =
               scanningApp.$$('#colorModeSelect').$$('select');
           assertFalse(colorModeSelect.disabled);
@@ -273,6 +282,7 @@ suite('ScanningAppTest', () => {
           // scanning is in progress.
           assertTrue(scannerSelect.disabled);
           assertTrue(sourceSelect.disabled);
+          assertTrue(fileTypeSelect.disabled);
           assertTrue(colorModeSelect.disabled);
           assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
@@ -285,6 +295,7 @@ suite('ScanningAppTest', () => {
           // complete.
           assertFalse(scanningApp.$$('#scannerSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#sourceSelect').$$('select').disabled);
+          assertFalse(scanningApp.$$('#fileTypeSelect').$$('select').disabled);
           assertFalse(scanningApp.$$('#colorModeSelect').$$('select').disabled);
           assertFalse(
               scanningApp.$$('#resolutionSelect').$$('select').disabled);
@@ -444,6 +455,42 @@ suite('SourceSelectTest', () => {
     // Verify the dropdown is enabled when there's more than one option.
     assertEquals(2, select.length);
     assertFalse(select.disabled);
+  });
+});
+
+suite('FileTypeSelectTest', () => {
+  /** @type {!FileTypeSelectElement} */
+  let fileTypeSelect;
+
+  setup(() => {
+    fileTypeSelect = document.createElement('file-type-select');
+    assertTrue(!!fileTypeSelect);
+    document.body.appendChild(fileTypeSelect);
+  });
+
+  teardown(() => {
+    fileTypeSelect.remove();
+    fileTypeSelect = null;
+  });
+
+  test('initializeFileTypeSelect', () => {
+    // The dropdown should be initialized as enabled with three options. The
+    // default option should be PDF.
+    const select = fileTypeSelect.$$('select');
+    assertTrue(!!select);
+    assertFalse(select.disabled);
+    assertEquals(3, select.length);
+    assertEquals('JPG', select.options[0].textContent.trim());
+    assertEquals('PDF', select.options[1].textContent.trim());
+    assertEquals('PNG', select.options[2].textContent.trim());
+    assertEquals(FileType.PDF.toString(), select.value);
+
+    // Selecting a different option should update the selected value.
+    select.value = FileType.JPG.toString();
+    select.dispatchEvent(new CustomEvent('change'));
+    flush();
+
+    assertEquals(FileType.JPG.toString(), fileTypeSelect.selectedFileType);
   });
 });
 

@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":color_mode_select",
+    ":file_type_select",
     ":mojo_interface_provider",
     ":resolution_select",
     ":scanner_select",
@@ -24,6 +25,14 @@ js_type_check("closure_compile_module") {
 js_library("color_mode_select") {
   deps = [
     ":scanning_app_util",
+    "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("file_type_select") {
+  deps = [
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -52,6 +61,7 @@ js_library("scanner_select") {
 js_library("scanning_app") {
   deps = [
     ":color_mode_select",
+    ":file_type_select",
     ":mojo_interface_provider",
     ":resolution_select",
     ":scanner_select",
@@ -87,6 +97,7 @@ js_library("mojo_interface_provider") {
 html_to_js("web_components") {
   js_files = [
     "color_mode_select.js",
+    "file_type_select.js",
     "resolution_select.js",
     "scanner_select.js",
     "scanning_app.js",
