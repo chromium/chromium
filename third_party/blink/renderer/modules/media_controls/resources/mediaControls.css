@@ -197,7 +197,7 @@ video::-internal-media-controls-picture-in-picture-button {
    * controls should be same.
    */
   width: 32px;
-  height: 48px;
+  height: 32px;
   min-width: 32px;
   padding: 0;
   border-width: 0;
@@ -257,7 +257,7 @@ audio::-webkit-media-controls input[pseudo="-internal-media-controls-overflow-bu
   width: 32px;
   height: 32px;
   left: 0;
-  top: 8px;
+  top: 0;
   border-radius: 16px;
 }
 
@@ -478,6 +478,7 @@ video::-webkit-media-controls-volume-control-container.closed {
  */
 video::-webkit-media-controls.audio-only div[pseudo="-webkit-media-controls-volume-control-container" i],
 audio::-webkit-media-controls-volume-control-container {
+  height: 32px;
   min-width: 100px;
 }
 
@@ -510,7 +511,7 @@ audio::-webkit-media-controls-volume-control-hover-background {
   height: 32px;
   width: 100px;
   border-radius: 16px;
-  top: 8px;
+  top: 0;
   right: 0;
   opacity: .06;
 }
@@ -631,8 +632,8 @@ video::-webkit-media-controls-timeline:disabled {
 
 audio::-webkit-media-controls-timeline,
 video::-webkit-media-controls.audio-only [pseudo="-webkit-media-controls-timeline"] {
-  padding-top: 26px;
-  padding-bottom: 26px;
+  padding-top: 14px;
+  padding-bottom: 14px;
 }
 
 video::-webkit-media-controls-timeline {
@@ -816,6 +817,11 @@ video::-webkit-media-controls-volume-slider.closed {
 
 video::-webkit-media-controls.sizing-large input[pseudo="-webkit-media-controls-volume-slider" i] {
   padding: 30px 0; /* (64px button panel height - 4px slider height) / 2  */
+}
+
+video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-volume-slider" i],
+audio::-webkit-media-controls-volume-slider {
+  padding: 14px 0; /* (32px button panel height - 4px slider height) / 2  */
 }
 
 /**
