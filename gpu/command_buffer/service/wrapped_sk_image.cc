@@ -190,7 +190,9 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     if (context_state_->context_lost())
       return false;
 
-    DCHECK(context_state_->IsCurrent(nullptr));
+    // MakeCurrent to avoid destroying another client's state because Skia may
+    // change GL state to create and upload textures (crbug.com/1095679).
+    context_state_->MakeCurrent(nullptr);
     context_state_->set_need_context_state_reset(true);
 
 #if BUILDFLAG(ENABLE_VULKAN)
