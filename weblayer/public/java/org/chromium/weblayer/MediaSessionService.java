@@ -25,12 +25,6 @@ public class MediaSessionService extends Service {
     // A helper to automatically pause the media session when a user removes headphones.
     private BroadcastReceiver mAudioBecomingNoisyReceiver;
 
-    public MediaSessionService() {
-        if (WebLayer.getSupportedMajorVersionInternal() < 85) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -39,6 +33,11 @@ public class MediaSessionService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (!WebLayer.hasWebLayerInitializationStarted()) {
+            stopSelf();
+            return;
+        }
 
         mAudioBecomingNoisyReceiver = new BroadcastReceiver() {
             @Override
@@ -61,6 +60,8 @@ public class MediaSessionService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
+        if (mAudioBecomingNoisyReceiver == null) return;
+
         try {
             getWebLayer().getImpl().onMediaSessionServiceDestroyed();
         } catch (RemoteException e) {
@@ -73,7 +74,10 @@ public class MediaSessionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            getWebLayer().getImpl().onMediaSessionServiceStarted(ObjectWrapper.wrap(this), intent);
+            if (WebLayer.hasWebLayerInitializationStarted()) {
+                getWebLayer().getImpl().onMediaSessionServiceStarted(
+                        ObjectWrapper.wrap(this), intent);
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
