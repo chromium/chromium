@@ -54,9 +54,14 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;
 
+  void ExecuteLeaveCommand();
   void OpenHelpCenter();
 
   views::Button* GetLeaveButtonForTesting() { return leave_button_; }
+
+  // WebContentsObserver:
+  void DidStartNavigation(content::NavigationHandle* handle) override;
+  void DidChangeVisibleSecurityState() override;
 
   const security_state::SafetyTipStatus safety_tip_status_;
 

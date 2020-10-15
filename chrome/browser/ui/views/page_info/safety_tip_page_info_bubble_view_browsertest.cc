@@ -532,6 +532,26 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
       GURL()));
 }
 
+// Ensure same-document navigations don't close the Safety Tip.
+// Regression test for crbug.com/1137661
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       StillShowAfterSameDocNav) {
+  auto kNavigatedUrl = GetURL("site1.com");
+  SetSafetyTipBadRepPatterns({"site1.com/"});
+
+  // Generate a Safety Tip.
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowingOrSuspiciousSitesDisabled());
+
+  // Now generate a same-document navigation and verify the tip is still there.
+  NavigateToURL(browser(), GURL(kNavigatedUrl.spec() + "#fragment"),
+                WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowingOrSuspiciousSitesDisabled());
+
+  ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
+      browser(), security_state::SafetyTipStatus::kBadReputation, GURL()));
+}
+
 // Ensure explicitly-allowed sites don't get blocked when the site is otherwise
 // blocked server-side.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,

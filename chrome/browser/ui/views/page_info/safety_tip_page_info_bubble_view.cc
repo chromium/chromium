@@ -18,6 +18,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
@@ -249,6 +250,17 @@ void SafetyTipPageInfoBubbleView::ButtonPressed(views::Button* button,
 void SafetyTipPageInfoBubbleView::OpenHelpCenter() {
   action_taken_ = SafetyTipInteraction::kLearnMore;
   OpenHelpCenterFromSafetyTip(web_contents());
+}
+
+void SafetyTipPageInfoBubbleView::DidStartNavigation(
+    content::NavigationHandle* handle) {
+  if (handle->IsInMainFrame() && !handle->IsSameDocument()) {
+    GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  }
+}
+
+void SafetyTipPageInfoBubbleView::DidChangeVisibleSecurityState() {
+  // Do nothing. (Base class closes the bubble.)
 }
 
 void ShowSafetyTipDialog(
