@@ -42,6 +42,10 @@ TEST CASE: Explicit hotspot at (5,3) logical in 1x and 2x
 Cursor Info: type=Custom hotSpot=5,3 image=25x25
 
 
+TEST CASE: Explicit hotspot at (5,24) logical in 1x
+Cursor Info: type=Custom hotSpot=5,24 image=25x25
+
+
 TEST CASE: Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
 Cursor Info: type=Custom hotSpot=10,4 image=30x30 scale=1.4
 
@@ -82,6 +86,10 @@ Cursor Info: type=Custom hotSpot=0,0 image=50x50 scale=2
 
 TEST CASE: Explicit hotspot at (5,3) logical in 1x and 2x
 Cursor Info: type=Custom hotSpot=20,12 image=60x60 scale=4
+
+
+TEST CASE: Explicit hotspot at (5,24) logical in 1x
+Cursor Info: type=Custom hotSpot=10,48 image=50x50 scale=2
 
 
 TEST CASE: Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
