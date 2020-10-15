@@ -233,10 +233,7 @@ void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
     return;
   }
 
-  TextInputType new_input_type = client_->GetTextInputType();
-  if (new_input_type == input_type_)
-    return;
-  input_type_ = new_input_type;
+  input_type_ = client_->GetTextInputType();
   TSFDocument* document = GetAssociatedDocument();
   if (!document)
     return;
@@ -245,7 +242,7 @@ void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
   // focus notifications for the same text input type so we don't
   // call AssociateFocus and SetFocus together. Just calling SetFocus
   // should be sufficient for setting focus on a textstore.
-  if (new_input_type != TEXT_INPUT_TYPE_NONE)
+  if (input_type_ != TEXT_INPUT_TYPE_NONE)
     thread_manager_->SetFocus(document->document_manager.Get());
   else
     UpdateAssociateFocus();
