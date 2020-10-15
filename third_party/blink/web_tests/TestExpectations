@@ -145,7 +145,7 @@ virtual/composite-after-paint/paint/frames/* [ Pass ]
 virtual/composite-after-paint/scrollingcoordinator/* [ Pass ]
 # --- End CompositeAfterPaint Tests --
 
-# --- BEGIN OOP-R Canvas tests --- 
+# --- BEGIN OOP-R Canvas tests ---
 crbug.com/1081534 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clearRect-first.html [ Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-clearRect-with-clip.html [ Failure ]
@@ -6193,9 +6193,6 @@ crbug.com/v8/10556 external/wpt/wasm/jsapi/instance/constructor-caching.any.work
 crbug.com/1011811 http/tests/devtools/network/network-xhr-data-received-async-response-type-blob.js [ Pass Failure ]
 crbug.com/1011811 http/tests/devtools/network/download.js [ Pass Failure ]
 crbug.com/1011811 http/tests/devtools/sxg/sxg-disable-cache.js [ Pass Failure ]
-
-crbug.com/1080609 virtual/threaded/external/wpt/scroll-animations/element-based-offset.html [ Pass Failure ]
-crbug.com/1080609 virtual/threaded/external/wpt/scroll-animations/element-based-offset-clamp.html [ Pass Failure ]
 
 # Fails when test moved to use full compositor pipe.
 crbug.com/1085832 [ Fuchsia ] images/size-failure.html [ Timeout ]
