@@ -43,14 +43,6 @@ class UmaPageLoadMetricsObserverTest
   void SetUp() override {
     page_load_metrics::PageLoadMetricsObserverContentTestHarness::SetUp();
     page_load_metrics::LargestContentfulPaintHandler::SetTestMode(true);
-
-    base::PowerMonitor::Initialize(
-        std::make_unique<base::PowerMonitorTestSource>());
-  }
-
-  void TearDown() override {
-    base::PowerMonitor::ShutdownForTesting();
-    page_load_metrics::PageLoadMetricsObserverContentTestHarness::TearDown();
   }
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
