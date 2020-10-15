@@ -972,6 +972,9 @@ Unknown properties are collapsed to zero. -->
     Promo is not shown due to sign-in being disallowed either by an enterprise
     policy or by |Allow Chrome sign-in| toggle.
   </int>
+  <int value="8" label="SignedInWithAddedAccount">
+    User has added an account and signed in with this account.
+  </int>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

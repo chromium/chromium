@@ -41,6 +41,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private final AccountsChangeObserver mAccountsChangeObserver = this::onAccountListUpdated;
     private @Nullable String mSelectedAccountName;
     private @Nullable String mDefaultAccountName;
+    private @Nullable String mAddedAccountName;
 
     AccountPickerBottomSheetMediator(Context context, AccountPickerDelegate accountPickerDelegate) {
         mAccountPickerDelegate = accountPickerDelegate;
@@ -53,6 +54,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(mAccountsChangeObserver);
+        mAddedAccountName = null;
         onAccountListUpdated();
     }
 
@@ -80,7 +82,10 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     public void addAccount() {
         AccountPickerDelegate.recordAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT);
-        mAccountPickerDelegate.addAccount(accountName -> onAccountSelected(accountName, false));
+        mAccountPickerDelegate.addAccount(accountName -> {
+            mAddedAccountName = accountName;
+            onAccountSelected(accountName, false);
+        });
     }
 
     /**
@@ -206,10 +211,16 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
     private void signIn() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
-        AccountPickerDelegate.recordAccountConsistencyPromoAction(
-                TextUtils.equals(mSelectedAccountName, mDefaultAccountName)
-                        ? AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT
-                        : AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+        if (TextUtils.equals(mSelectedAccountName, mAddedAccountName)) {
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
+        } else if (TextUtils.equals(mSelectedAccountName, mDefaultAccountName)) {
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+        } else {
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+        }
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
