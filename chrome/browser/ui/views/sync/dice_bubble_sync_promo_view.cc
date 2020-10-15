@@ -54,36 +54,30 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
     AddChildView(title);
   }
 
+  views::Button::PressedCallback callback = base::BindRepeating(
+      [](DiceBubbleSyncPromoView* promo) {
+        promo->EnableSync(true, promo->signin_button_view_->account());
+      },
+      base::Unretained(this));
   if (account.IsEmpty()) {
-    signin_button_view_ =
-        new DiceSigninButtonView(this, signin_button_prominent);
+    signin_button_view_ = AddChildView(std::make_unique<DiceSigninButtonView>(
+        std::move(callback), signin_button_prominent));
   } else {
     gfx::Image account_icon = account.account_image;
     if (account_icon.IsEmpty()) {
       account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
-    signin_button_view_ =
-        new DiceSigninButtonView(account, account_icon, this,
-                                 /*use_account_name_as_title=*/true);
+    signin_button_view_ = AddChildView(std::make_unique<DiceSigninButtonView>(
+        account, account_icon, std::move(callback),
+        /*use_account_name_as_title=*/true));
   }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
   signin_metrics::RecordSigninImpressionWithAccountUserActionForAccessPoint(
       access_point, !account.IsEmpty() /* with_account */);
-  AddChildView(signin_button_view_);
 }
 
 DiceBubbleSyncPromoView::~DiceBubbleSyncPromoView() = default;
-
-void DiceBubbleSyncPromoView::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  if (sender == signin_button_view_->signin_button()) {
-    EnableSync(true /* is_default_promo_account */,
-               signin_button_view_->account());
-    return;
-  }
-  NOTREACHED();
-}
 
 views::View* DiceBubbleSyncPromoView::GetSigninButtonForTesting() {
   return signin_button_view_ ? signin_button_view_->signin_button() : nullptr;

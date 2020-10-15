@@ -66,7 +66,10 @@ ProfileSigninConfirmationDialogViews::ProfileSigninConfirmationDialogViews(
 
   if (prompt_for_new_profile) {
     SetExtraView(std::make_unique<views::MdTextButton>(
-        this, l10n_util::GetStringUTF16(IDS_ENTERPRISE_SIGNIN_CONTINUE)));
+        base::BindRepeating(
+            &ProfileSigninConfirmationDialogViews::ContinueSigninButtonPressed,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_ENTERPRISE_SIGNIN_CONTINUE)));
   }
 
   using Delegate = ui::ProfileSigninConfirmationDelegate;
@@ -246,9 +249,7 @@ void ProfileSigninConfirmationDialogViews::ViewHierarchyChanged(
                          kPreferredWidth, explanation_label_height);
 }
 
-void ProfileSigninConfirmationDialogViews::ButtonPressed(
-    views::Button* sender,
-    const ui::Event& event) {
+void ProfileSigninConfirmationDialogViews::ContinueSigninButtonPressed() {
   DCHECK(prompt_for_new_profile_);
   if (delegate_) {
     delegate_->OnContinueSignin();

@@ -22,13 +22,13 @@
 #include "ui/views/layout/grid_layout.h"
 
 DiceSigninButtonView::DiceSigninButtonView(
-    views::ButtonListener* button_listener,
+    views::Button::PressedCallback callback,
     bool prominent)
     : account_(base::nullopt) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   // Regular MD text button when there is no account.
   auto button = std::make_unique<views::MdTextButton>(
-      button_listener,
+      std::move(callback),
       l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON));
   button->SetProminent(prominent);
   signin_button_ = AddChildView(std::move(button));
@@ -37,7 +37,7 @@ DiceSigninButtonView::DiceSigninButtonView(
 DiceSigninButtonView::DiceSigninButtonView(
     const AccountInfo& account,
     const gfx::Image& account_icon,
-    views::ButtonListener* button_listener,
+    views::Button::PressedCallback callback,
     bool use_account_name_as_title)
     : account_(account) {
   views::GridLayout* grid_layout =
@@ -57,8 +57,8 @@ DiceSigninButtonView::DiceSigninButtonView(
           ? base::UTF8ToUTF16(account.full_name)
           : l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
   auto account_card = std::make_unique<HoverButton>(
-      button_listener, std::move(account_icon_view), card_title,
-      base::ASCIIToUTF16(account_->email));
+      views::Button::PressedCallback(), std::move(account_icon_view),
+      card_title, base::ASCIIToUTF16(account_->email));
   account_card->SetBorder(nullptr);
   account_card->SetEnabled(false);
   grid_layout->AddView(std::move(account_card));
@@ -70,7 +70,7 @@ DiceSigninButtonView::DiceSigninButtonView(
   columns->AddColumn(views::GridLayout::FILL, views::GridLayout::TRAILING, 1.0,
                      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   auto signin_button = std::make_unique<views::MdTextButton>(
-      button_listener,
+      std::move(callback),
       l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON));
   signin_button->SetProminent(true);
   signin_button_ = grid_layout->AddView(std::move(signin_button));
