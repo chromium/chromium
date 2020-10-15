@@ -14176,26 +14176,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Failed VM Started"/>
 </enum>
 
-<enum name="CrostiniFailureClasses">
-  <int value="0" label="Concierge"/>
-  <int value="1" label="Cicerone"/>
-  <int value="2" label="Seneschal"/>
-  <int value="3" label="Chunneld"/>
-  <int value="4" label="VM hypervisor"/>
-  <int value="5" label="In-VM syslog daemon"/>
-  <int value="6" label="VM ssh daemon"/>
-  <int value="7" label="LXCFS daemon"/>
-  <int value="8" label="Tremplin"/>
-  <int value="9" label="Ndproxyd"/>
-  <int value="10" label="Mcastd"/>
-  <int value="11" label="Lxd"/>
-  <int value="12" label="Garcon"/>
-  <int value="13" label="Sommelier wayland proxy"/>
-  <int value="14" label="Sommelier X11 proxy"/>
-  <int value="15" label="Cros-Sftp"/>
-  <int value="16" label="Cros-Notificationd"/>
-</enum>
-
 <enum name="CrostiniImportContainerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed"/>
@@ -35420,6 +35400,26 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="GsaAccountChangeNotificationSource">
   <int value="0" label="Service"/>
   <int value="1" label="Broadcast"/>
+</enum>
+
+<enum name="GuestOsFailureClasses">
+  <int value="0" label="Concierge"/>
+  <int value="1" label="Cicerone"/>
+  <int value="2" label="Seneschal"/>
+  <int value="3" label="Chunneld"/>
+  <int value="4" label="VM hypervisor"/>
+  <int value="5" label="In-VM syslog daemon"/>
+  <int value="6" label="VM ssh daemon"/>
+  <int value="7" label="LXCFS daemon"/>
+  <int value="8" label="Tremplin"/>
+  <int value="9" label="Ndproxyd"/>
+  <int value="10" label="Mcastd"/>
+  <int value="11" label="Lxd"/>
+  <int value="12" label="Garcon"/>
+  <int value="13" label="Sommelier wayland proxy"/>
+  <int value="14" label="Sommelier X11 proxy"/>
+  <int value="15" label="Cros-Sftp"/>
+  <int value="16" label="Cros-Notificationd"/>
 </enum>
 
 <enum name="GwpAsanCrashAnalysisResult">

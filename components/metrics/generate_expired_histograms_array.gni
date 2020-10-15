@@ -46,6 +46,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms_xml/background/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/blink/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/bluetooth/histograms.xml",
+      "//tools/metrics/histograms/histograms_xml/borealis/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/browser/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/chrome/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/chromeos/histograms.xml",
