@@ -6249,6 +6249,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enhanced_clipboard", flag_descriptions::kEnhancedClipboardName,
      flag_descriptions::kEnhancedClipboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistory)},
+    {"enhanced_clipboard_simple_render",
+     flag_descriptions::kEnhancedClipboardSimpleRenderName,
+     flag_descriptions::kEnhancedClipboardSimpleRenderDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistorySimpleRender)},
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN)
