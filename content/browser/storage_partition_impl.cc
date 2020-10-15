@@ -189,6 +189,9 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemote() {
         !sandboxed_data_dir.empty() && !single_process_mode &&
         !g_force_in_process_storage_service;
     if (oop_storage_enabled) {
+      DCHECK(sandboxed_data_dir.IsAbsolute())
+          << "Storage Service data directory must be an absolute path, but \""
+          << sandboxed_data_dir << "\" is not an absolute path.";
       remote = ServiceProcessHost::Launch<storage::mojom::StorageService>(
           ServiceProcessHost::Options()
               .WithDisplayName("Storage Service")
