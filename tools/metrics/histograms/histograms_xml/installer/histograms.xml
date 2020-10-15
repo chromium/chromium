@@ -23,6 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.AttemptsCount.Total" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The number of update attempts until the update has been applied. This is
@@ -38,6 +41,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.DownloadOverheadPercentage" units="%"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The overhead in downloading extra bytes due to errors/interruptions.
@@ -48,6 +54,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.DownloadSourcesUsed"
     enum="UpdateEngineDownloadSources" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The combinations of protocol and source server that were used to complete a
@@ -57,6 +66,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.FullPayloadAttemptNumber" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The number of update attempts with a full update payload until the update
@@ -66,6 +78,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.InstallDateProvisioningSource"
     enum="UpdateEngineInstallDateProvisioningSource" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The source used to provision the install-date-days value sent to Omaha with
@@ -76,6 +91,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.NormalErrorCodes" enum="UpdateEngineErrorCode"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Errors from update_engine process when running in normal mode.
@@ -83,6 +101,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Installer.OSAgeDays" units="days" expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The age of the OS, defined as the age of the /etc/lsb-release file. This is
@@ -92,6 +113,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.PayloadAttemptNumber" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The number of update attempts until the update has been applied. This is
@@ -101,6 +125,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.PayloadFormat" enum="UpdateEnginePayloadFormat"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The type of update payload used to update the device. The difference between
@@ -113,8 +140,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Installer.PowerwashCount" units="powerwashes"
-    expires_after="M85">
-  <owner>zeuthen@chromium.org</owner>
+    expires_after="2021-12-29">
+  <owner>kimjae@chromium.org</owner>
+  <owner>chromeos-core-services@chromium.org</owner>
   <summary>
     The number of times a Chrome OS device has been powerwashed (factory reset)
     without subsequently going through recovery and/or changing the dev mode
@@ -124,6 +152,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.RebootToNewPartitionAttempt" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The number of consecutive times a device has failed to boot an update that
@@ -148,6 +179,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.SuccessfulMBsDownloadedFrom" units="MB"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Number of MBs downloaded from during an update that completed successfully.
@@ -156,6 +190,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.TimeToRebootMinutes" units="Minutes"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Wall-clock duration between when an update has successfully completed (and
@@ -167,6 +204,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.TotalMBsDownloadedFrom" units="MB"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Total number of MBs downloaded since the last successful update. This also
@@ -176,6 +216,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdateDurationMinutes" units="Minutes"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Absolute wall-clock time duration it took for the update to complete from
@@ -186,6 +229,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdateDurationUptimeMinutes" units="Minutes"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Uptime duration it took for the update to complete from the time an update
@@ -197,6 +243,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdateNumReboots" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Number of times the device was rebooted by the user since an update began
@@ -206,6 +255,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdatesAbandonedCount" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The number of update attempts that didn't complete because a newer update
@@ -216,6 +268,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdatesAbandonedEventCount" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The number of consecutive different abandoned update payloads since the last
@@ -226,6 +281,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdateTime" units="seconds"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     The time in seconds it took to update a Chrome OS system -- from completing
@@ -235,6 +293,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Installer.UpdateURLSwitches" units="count"
     expires_after="2019-01-30">
+  <obsolete>
+    Removed long time ago. Replaced by UpdateEngine metrics.
+  </obsolete>
   <owner>zeuthen@chromium.org</owner>
   <summary>
     Number of times the download URLs were switched due to failures.
