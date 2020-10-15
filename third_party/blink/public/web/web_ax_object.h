@@ -176,7 +176,6 @@ class WebAXObject {
   BLINK_EXPORT WebAXObject AriaActiveDescendant() const;
   BLINK_EXPORT WebString AutoComplete() const;
   BLINK_EXPORT ax::mojom::AriaCurrentState AriaCurrentState() const;
-  BLINK_EXPORT bool IsEditableRoot() const;
   BLINK_EXPORT bool IsEditable() const;
   BLINK_EXPORT bool AriaOwns(WebVector<WebAXObject>& owns_elements) const;
   BLINK_EXPORT WebString FontFamily() const;
@@ -257,13 +256,6 @@ class WebAXObject {
                               WebAXObject& focus_object,
                               int& focus_offset,
                               ax::mojom::TextAffinity& focus_affinity) const;
-
-  // The following selection functions return text offsets calculated starting
-  // from the current object. They only report on a selection that is placed on
-  // the current object or on any of its descendants.
-
-  BLINK_EXPORT unsigned SelectionEnd() const;
-  BLINK_EXPORT unsigned SelectionStart() const;
 
   // 1-based position in set & Size of set.
   BLINK_EXPORT int PosInSet() const;

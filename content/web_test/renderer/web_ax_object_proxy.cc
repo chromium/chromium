@@ -1169,7 +1169,8 @@ bool WebAXObjectProxy::IsRequired() {
 
 bool WebAXObjectProxy::IsEditableRoot() {
   UpdateLayout();
-  return accessibility_object_.IsEditableRoot();
+  return GetAXNodeData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kEditableRoot);
 }
 
 bool WebAXObjectProxy::IsEditable() {

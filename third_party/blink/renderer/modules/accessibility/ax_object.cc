@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -947,6 +948,33 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
         TruncateAndAddStringAttribute(node_data,
                                       ax::mojom::blink::StringAttribute::kRole,
                                       GetEquivalentAriaRoleString(RoleValue()));
+      }
+    }
+
+    if (IsEditable()) {
+      if (IsEditableRoot()) {
+        node_data->AddBoolAttribute(
+            ax::mojom::blink::BoolAttribute::kEditableRoot, true);
+      }
+
+      if (IsNativeTextControl()) {
+        // Selection offsets are only used for plain text controls, (input of a
+        // text field type, and textarea). Rich editable areas, such as
+        // contenteditables, use AXTreeData.
+        //
+        // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.
+        const auto ax_selection =
+            AXSelection::FromCurrentSelection(ToTextControl(*element));
+        int start = ax_selection.Base().IsTextPosition()
+                        ? ax_selection.Base().TextOffset()
+                        : ax_selection.Base().ChildIndex();
+        int end = ax_selection.Extent().IsTextPosition()
+                      ? ax_selection.Extent().TextOffset()
+                      : ax_selection.Extent().ChildIndex();
+        node_data->AddIntAttribute(
+            ax::mojom::blink::IntAttribute::kTextSelStart, start);
+        node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelEnd,
+                                   end);
       }
     }
   }

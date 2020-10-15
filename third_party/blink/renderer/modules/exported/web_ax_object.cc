@@ -454,13 +454,6 @@ bool WebAXObject::IsEditable() const {
   return private_->IsEditable();
 }
 
-bool WebAXObject::IsEditableRoot() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsEditableRoot();
-}
-
 int WebAXObject::PosInSet() const {
   if (IsDetached())
     return 0;
@@ -887,48 +880,6 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
   AXSelection ax_selection =
       builder.SetBase(ax_base).SetExtent(ax_extent).Build();
   return ax_selection.Select();
-}
-
-unsigned WebAXObject::SelectionEnd() const {
-  if (IsDetached() || GetDocument().IsNull())
-    return 0;
-
-  WebAXObject focus = FromWebDocumentFocused(GetDocument(), false);
-  if (focus.IsDetached())
-    return 0;
-
-  const auto ax_selection =
-      focus.private_->IsNativeTextControl()
-          ? AXSelection::FromCurrentSelection(
-                ToTextControl(*focus.private_->GetNode()))
-          : AXSelection::FromCurrentSelection(*focus.private_->GetDocument());
-  if (!ax_selection)
-    return 0;
-
-  if (ax_selection.Extent().IsTextPosition())
-    return ax_selection.Extent().TextOffset();
-  return ax_selection.Extent().ChildIndex();
-}
-
-unsigned WebAXObject::SelectionStart() const {
-  if (IsDetached() || GetDocument().IsNull())
-    return 0;
-
-  WebAXObject focus = FromWebDocumentFocused(GetDocument(), false);
-  if (focus.IsDetached())
-    return 0;
-
-  const auto ax_selection =
-      focus.private_->IsNativeTextControl()
-          ? AXSelection::FromCurrentSelection(
-                ToTextControl(*focus.private_->GetNode()))
-          : AXSelection::FromCurrentSelection(*focus.private_->GetDocument());
-  if (!ax_selection)
-    return 0;
-
-  if (ax_selection.Base().IsTextPosition())
-    return ax_selection.Base().TextOffset();
-  return ax_selection.Base().ChildIndex();
 }
 
 bool WebAXObject::Focus() const {
