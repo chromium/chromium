@@ -871,7 +871,7 @@ class FileTasks {
     const filename = util.extractFilePath(url).split('/').pop();
 
     const item = new ProgressCenterItem();
-    item.id = 'mount-' + url;
+    item.id = 'Mounting: ' + url;
     item.type = ProgressItemType.MOUNT_ARCHIVE;
     item.message = strf('ARCHIVE_MOUNT_MESSAGE', filename);
 
@@ -962,14 +962,13 @@ class FileTasks {
 
       const filename = util.extractFilePath(url).split('/').pop();
       const item = new ProgressCenterItem();
-      item.id = 'cannot-mount-' + url;
+      item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
       item.message = strf('ARCHIVE_MOUNT_FAILED', filename);
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
-      console.error(`Cannot mount '${url}':`);
-      console.error(error);
+      console.error(`Cannot mount '${url}': ${error.stack || error}`);
     }
   }
 
