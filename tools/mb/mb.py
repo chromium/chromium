@@ -723,7 +723,7 @@ class MetaBuildWrapper(object):
           args = config
         else:
           flattened_config = FlattenConfig(self.configs, self.mixins, config)
-          if 'error' in flattened_config['gn_args']:
+          if flattened_config['gn_args'] == 'error':
             continue
           args = {'gn_args': gn_helpers.FromGNArgs(flattened_config['gn_args'])}
           if flattened_config.get('args_file'):

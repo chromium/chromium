@@ -214,6 +214,43 @@
       "use_goma": true
     }
   },
+  "android-code-coverage": {
+    "gn_args": {
+      "disable_android_lint": true,
+      "enable_resource_allowlist_generation": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "is_java_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true,
+      "use_jacoco_coverage": true,
+      "use_static_angle": true
+    }
+  },
+  "android-code-coverage-native": {
+    "gn_args": {
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "is_java_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_clang_coverage": true,
+      "use_errorprone_java_compiler": false,
+      "use_goma": true,
+      "use_static_angle": true
+    }
+  },
   "chromeos-amd64-generic-lacros-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
