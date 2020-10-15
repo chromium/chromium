@@ -84,13 +84,28 @@ suite('CrMenuSelectorFocusTest', () => {
     assertEquals(element.children[2], getDeepActiveElement());
   });
 
-  test('FocusingIntoItAlwaysFocusesFirstItem', () => {
+  test('FocusingIntoByKeyboardAlwaysFocusesFirstItem', () => {
     const outsideElement = document.createElement('button');
     document.body.appendChild(outsideElement);
     outsideElement.focus();
 
+    // Mock item as having been focused by keyboard.
+    element.children[2].matches = selector => selector === ':focus-visible';
+
     element.children[2].focus();
     assertEquals(element.children[0], getDeepActiveElement());
+  });
+
+  test('FocusingIntoByClickDoesNotFocusFirstItem', () => {
+    const outsideElement = document.createElement('button');
+    document.body.appendChild(outsideElement);
+    outsideElement.focus();
+
+    // Mock item as not having been focused by keyboard.
+    element.children[2].matches = selector => selector !== ':focus-visible';
+
+    element.children[2].focus();
+    assertEquals(element.children[2], getDeepActiveElement());
   });
 
   test('TabMovesFocusToLastElement', async () => {

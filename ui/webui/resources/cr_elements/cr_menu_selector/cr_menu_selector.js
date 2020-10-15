@@ -37,12 +37,15 @@ export class CrMenuSelector extends HTMLElement {
    * @private
    */
   onFocusin_(e) {
-    // If the focus is coming in from a relatedTarget that is not within this
-    // menu, move the focus to the first menu item. This ensures that the first
-    // menu item is always the first focused item when focusing into the menu.
-    // The relatedTarget property is the last focused item before focus was
-    // moved.
-    if (!this.contains(/** @type {!HTMLElement} */ (e.relatedTarget))) {
+    // If the focus was moved by keyboard and is coming in from a relatedTarget
+    // that is not within this menu, move the focus to the first menu item. This
+    // ensures that the first menu item is always the first focused item when
+    // focusing into the menu.
+    const focusMovedWithKeyboard =
+        e.target && e.target.matches(':focus-visible');
+    const focusMovedFromOutside = e.relatedTarget &&
+        !this.contains(/** @type {!HTMLElement} */ (e.relatedTarget));
+    if (focusMovedWithKeyboard && focusMovedFromOutside) {
       this.getItems_()[0].focus();
     }
   }
