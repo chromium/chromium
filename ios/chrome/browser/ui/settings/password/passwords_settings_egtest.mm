@@ -105,6 +105,12 @@ GREYElementInteraction* GetInteractionForPasswordsExportConfirmAlert(
       inRoot:grey_accessibilityID(kPasswordsExportConfirmViewId)];
 }
 
+GREYElementInteraction* GetPasswordDetailTextFieldWithID(int detail_id) {
+  return GetInteractionForPasswordDetailItem(
+      grey_allOf(grey_accessibilityID(GetTextFieldForID(detail_id)),
+                 grey_kindOfClassName(@"UITextField"), nil));
+}
+
 // Matcher for "Saved Passwords" header in the password list.
 id<GREYMatcher> SavedPasswordsHeaderMatcher() {
   return grey_allOf(
@@ -181,6 +187,13 @@ id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
                     grey_userInteractionEnabled(), nil);
+}
+
+// Matcher for the Confirm button in Confirmation Alert for password editing.
+id<GREYMatcher> EditConfirmationButton() {
+  return grey_allOf(ButtonWithAccessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_EDIT)),
+                    grey_interactable(), nullptr);
 }
 
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
@@ -264,9 +277,7 @@ void TapEdit() {
 }
 
 void CopyPasswordDetailWithID(int detail_id) {
-  [GetInteractionForPasswordDetailItem(grey_allOf(
-      grey_accessibilityID(GetTextFieldForID(detail_id)),
-      grey_kindOfClassName(@"UITextField"), nil)) performAction:grey_tap()];
+  [GetPasswordDetailTextFieldWithID(detail_id) performAction:grey_tap()];
 
   // Tap the context menu item for copying.
   [[EarlGrey selectElementWithMatcher:PopUpMenuItemWithLabel(
@@ -304,6 +315,11 @@ void CopyPasswordDetailWithID(int detail_id) {
   // This should be removed once test config is modified.
   // TODO(crbug.com/1075494): Remove this once feature is launched.
   config.features_enabled.push_back(password_manager::features::kPasswordCheck);
+
+  if ([self isRunningTest:@selector(testEditUsername)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kEditPasswordsInSettings);
+  }
 
   return config;
 }
@@ -1389,6 +1405,90 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_notNil()];
   [GetInteractionForPasswordEntry(@"example12.com, user2")
       assertWithMatcher:grey_nil()];
+}
+
+// Checks that attempts to edit a password provide appropriate feedback.
+- (void)testEditPassword {
+  SaveExamplePasswordForm();
+
+  OpenPasswordSettings();
+
+  [GetInteractionForPasswordEntry(@"example.com, concrete username")
+      performAction:grey_tap()];
+
+  // Check the snackbar in case of successful reauthentication.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"concrete password")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"new password")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:EditConfirmationButton()]
+      performAction:grey_tap()];
+
+  TapEdit();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"new password")];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Checks that attempts to edit a username provide appropriate feedback.
+- (void)testEditUsername {
+  SaveExamplePasswordForm();
+
+  OpenPasswordSettings();
+
+  [GetInteractionForPasswordEntry(@"example.com, concrete username")
+      performAction:grey_tap()];
+
+  // Check the snackbar in case of successful reauthentication.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"concrete username")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"new username")];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:EditConfirmationButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"new username")];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  [GetInteractionForPasswordEntry(@"example.com, new username")
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 @end

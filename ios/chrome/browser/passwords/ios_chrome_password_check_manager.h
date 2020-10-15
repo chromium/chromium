@@ -69,9 +69,10 @@ class IOSChromePasswordCheckManager
   GetSavedPasswordsFor(
       const password_manager::CredentialWithPassword& credential) const;
 
-  // Edits password for |form|.
-  void EditPasswordForm(const autofill::PasswordForm& form,
-                        base::StringPiece password);
+  // Edits |username| and |password| for |form| and its duplicates.
+  bool EditPasswordForm(const autofill::PasswordForm& form,
+                        base::StringPiece new_username,
+                        base::StringPiece new_password);
 
   // Edits password form using |insecure_credentials_manager_|.
   void EditCompromisedPasswordForm(const autofill::PasswordForm& form,

@@ -62,15 +62,15 @@ using InsecureCredentialsView =
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password {
   if ([password.password length] != 0) {
-    password.compromised
-        ? _manager->EditCompromisedPasswordForm(
-              _password, base::SysNSStringToUTF8(password.password))
-        : _manager->EditPasswordForm(
-              _password, base::SysNSStringToUTF8(password.password));
-    _password.password_value = base::SysNSStringToUTF16(password.password);
-  } else {
-    [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
+    if (_manager->EditPasswordForm(
+            _password, base::SysNSStringToUTF8(password.username),
+            base::SysNSStringToUTF8(password.password))) {
+      _password.username_value = base::SysNSStringToUTF16(password.username);
+      _password.password_value = base::SysNSStringToUTF16(password.password);
+      return;
+    }
   }
+  [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
 }
 
 #pragma mark - PasswordCheckObserver

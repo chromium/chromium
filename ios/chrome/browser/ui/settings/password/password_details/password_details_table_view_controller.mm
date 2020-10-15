@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -74,6 +76,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // Whether the password is shown in plain text form or in masked form.
 @property(nonatomic, assign, getter=isPasswordShown) BOOL passwordShown;
 
+// The text item related to the username value.
+@property(nonatomic, strong) TableViewTextEditItem* usernameTextItem;
+
 // The text item related to the password value.
 @property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
 
@@ -119,12 +124,15 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
 
   if (self.tableView.editing) {
-    // If password value was changed show confirmation dialog before saving
-    // password. Editing mode will be exited only if user confirm saving.
-    if (self.password.password != self.passwordTextItem.textFieldValue) {
+    // If password or username value was changed show confirmation dialog before
+    // saving password. Editing mode will be exited only if user confirm saving.
+    if (self.password.password != self.passwordTextItem.textFieldValue ||
+        self.password.username != self.usernameTextItem.textFieldValue) {
       [self.handler showPasswordEditDialogWithOrigin:self.password.origin];
-      return;
+    } else {
+      [self passwordEditingConfirmed];
     }
+    return;
   }
 
   [super editButtonPressed];
@@ -142,7 +150,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
   // Blocked password forms don't have username value.
   if ([self.password.username length]) {
-    [model addItem:[self usernameItem]
+    self.usernameTextItem = [self usernameItem];
+    [model addItem:self.usernameTextItem
         toSectionWithIdentifier:SectionIdentifierPassword];
   }
 
@@ -184,8 +193,16 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = self.password.username;
-  item.textFieldEnabled = NO;
-  item.hideIcon = YES;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kEditPasswordsInSettings)) {
+    item.textFieldEnabled = self.tableView.editing;
+    item.hideIcon = !self.tableView.editing;
+    item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
+    item.returnKeyType = UIReturnKeyDone;
+  } else {
+    item.textFieldEnabled = NO;
+    item.hideIcon = YES;
+  }
   return item;
 }
 
@@ -243,13 +260,28 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeWebsite:
-    case ItemTypeUsername:
       [self ensureContextMenuShownForItemType:itemType
                                     tableView:tableView
                                   atIndexPath:indexPath];
       break;
     case ItemTypeChangePasswordRecommendation:
       break;
+    case ItemTypeUsername: {
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kEditPasswordsInSettings) &&
+          self.tableView.editing) {
+        UITableViewCell* cell =
+            [self.tableView cellForRowAtIndexPath:indexPath];
+        TableViewTextEditCell* textFieldCell =
+            base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+        [textFieldCell.textField becomeFirstResponder];
+      } else {
+        [self ensureContextMenuShownForItemType:itemType
+                                      tableView:tableView
+                                    atIndexPath:indexPath];
+      }
+      break;
+    }
     case ItemTypePassword: {
       if (self.tableView.editing) {
         UITableViewCell* cell =
@@ -321,6 +353,12 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   cell.tag = itemType;
 
   switch (itemType) {
+    case ItemTypeUsername: {
+      TableViewTextEditCell* textFieldCell =
+          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+      textFieldCell.textField.delegate = self;
+      break;
+    }
     case ItemTypePassword: {
       TableViewTextEditCell* textFieldCell =
           base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
@@ -335,7 +373,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       cell.selectionStyle = UITableViewCellSelectionStyleDefault;
       break;
     case ItemTypeWebsite:
-    case ItemTypeUsername:
     case ItemTypeChangePasswordRecommendation:
       break;
   }
@@ -347,8 +384,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeWebsite:
-    case ItemTypeUsername:
       return NO;
+    case ItemTypeUsername:
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kEditPasswordsInSettings);
     case ItemTypePassword:
       return YES;
   }
@@ -496,6 +535,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)passwordEditingConfirmed {
+  self.password.username = self.usernameTextItem.textFieldValue;
   self.password.password = self.passwordTextItem.textFieldValue;
   [self.delegate passwordDetailsViewController:self
                         didEditPasswordDetails:self.password];
@@ -510,10 +550,12 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
   switch (static_cast<ItemType>(itemType)) {
+    case ItemTypeUsername:
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kEditPasswordsInSettings);
     case ItemTypePassword:
       return YES;
     case ItemTypeWebsite:
-    case ItemTypeUsername:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
       return NO;

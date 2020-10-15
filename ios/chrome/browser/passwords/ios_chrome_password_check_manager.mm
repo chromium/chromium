@@ -157,10 +157,15 @@ IOSChromePasswordCheckManager::GetSavedPasswordsFor(
   return insecure_credentials_manager_.GetSavedPasswordsFor(credential);
 }
 
-void IOSChromePasswordCheckManager::EditPasswordForm(
+bool IOSChromePasswordCheckManager::EditPasswordForm(
     const autofill::PasswordForm& form,
-    base::StringPiece password) {
-  saved_passwords_presenter_.EditPassword(form, base::UTF8ToUTF16(password));
+    base::StringPiece new_username,
+    base::StringPiece new_password) {
+  auto duplicates =
+      GetDuplicatesOfForm(form, saved_passwords_presenter_.GetSavedPasswords());
+  return saved_passwords_presenter_.EditSavedPasswords(
+      duplicates, base::UTF8ToUTF16(new_username),
+      base::UTF8ToUTF16(new_password));
 }
 
 void IOSChromePasswordCheckManager::EditCompromisedPasswordForm(

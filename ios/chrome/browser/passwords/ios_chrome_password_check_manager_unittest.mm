@@ -44,6 +44,7 @@ namespace {
 constexpr char kExampleCom[] = "https://example.com";
 
 constexpr char kUsername1[] = "alice";
+constexpr char kUsername2[] = "bob";
 
 constexpr char kPassword1[] = "s3cre3t";
 constexpr char kPassword2[] = "bett3r_S3cre3t";
@@ -63,6 +64,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::StrictMock;
+using ::testing::Pair;
 
 using InsecureCredentialsView =
     password_manager::InsecureCredentialsManager::CredentialsView;
@@ -140,6 +142,19 @@ auto ExpectCompromisedCredential(const std::string& signon_realm,
       Field(&CredentialWithPassword::create_time,
             (base::Time::Now() - elapsed_time_since_compromise)),
       Field(&CredentialWithPassword::insecure_type, insecure_type));
+}
+
+// Returns vector of pairs with username, password only.
+std::vector<std::pair<std::string, std::string>> GetUsernamesAndPasswords(
+    const std::vector<password_manager::PasswordForm>& forms) {
+  std::vector<std::pair<std::string, std::string>> result;
+  result.reserve(forms.size());
+  for (const auto& form : forms) {
+    result.emplace_back(base::UTF16ToUTF8(form.username_value),
+                        base::UTF16ToUTF8(form.password_value));
+  }
+
+  return result;
 }
 
 class IOSChromePasswordCheckManagerTest : public PlatformTest {
@@ -363,15 +378,47 @@ TEST_F(IOSChromePasswordCheckManagerTest, DeleteDuplicatedPasswords) {
 
 // Tests password value is updated properly.
 TEST_F(IOSChromePasswordCheckManagerTest, EditPassword) {
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   RunUntilIdle();
 
-  manager().EditPasswordForm(store().stored_passwords().at(kExampleCom).at(0),
-                             kPassword2);
+  EXPECT_TRUE(manager().EditPasswordForm(
+      store().stored_passwords().at(kExampleCom).at(0), kUsername1,
+      kPassword2));
   RunUntilIdle();
 
-  EXPECT_EQ(base::UTF8ToUTF16(kPassword2),
-            store().stored_passwords().at(kExampleCom).at(0).password_value);
+  EXPECT_THAT(
+      GetUsernamesAndPasswords(store().stored_passwords().at(kExampleCom)),
+      ElementsAre(Pair(kUsername1, kPassword2)));
+}
+
+// Tests username value is updated properly.
+TEST_F(IOSChromePasswordCheckManagerTest, EditUsername) {
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  RunUntilIdle();
+
+  EXPECT_TRUE(manager().EditPasswordForm(
+      store().stored_passwords().at(kExampleCom).at(0), kUsername2,
+      kPassword1));
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      GetUsernamesAndPasswords(store().stored_passwords().at(kExampleCom)),
+      ElementsAre(Pair(kUsername2, kPassword1)));
+}
+
+// Tests username and password values are updated properly.
+TEST_F(IOSChromePasswordCheckManagerTest, EditUsernameAndPassword) {
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  RunUntilIdle();
+
+  EXPECT_TRUE(manager().EditPasswordForm(
+      store().stored_passwords().at(kExampleCom).at(0), kUsername2,
+      kPassword2));
+  RunUntilIdle();
+
+  EXPECT_THAT(
+      GetUsernamesAndPasswords(store().stored_passwords().at(kExampleCom)),
+      ElementsAre(Pair(kUsername2, kPassword2)));
 }
 
 // Tests compromised password value is updated properly.

@@ -24,7 +24,7 @@ struct PasswordForm;
 @property(nonatomic, copy, readonly) NSString* website;
 
 // Associated username.
-@property(nonatomic, copy, readonly) NSString* username;
+@property(nonatomic, copy) NSString* username;
 
 // Associated password.
 @property(nonatomic, copy) NSString* password;
