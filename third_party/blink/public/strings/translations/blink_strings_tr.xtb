@@ -30,6 +30,7 @@
 <translation id="1806710327868736751">alert_dialog</translation>
 <translation id="1821985195704844674">ağaç tablo</translation>
 <translation id="1822429046913737220">AM/PM</translation>
+<translation id="1823704031293214298">sayfa alt bilgisi</translation>
 <translation id="1832974991323546415">uzaktan cihazda oynat</translation>
 <translation id="190587075670221089">silme</translation>
 <translation id="1907737156431278478">örnek</translation>
@@ -105,6 +106,7 @@
 <translation id="4201051445878709314">Önceki ayı göster</translation>
 <translation id="421884353938374759">renk seçici</translation>
 <translation id="4248100235867064564">menü çubuğu</translation>
+<translation id="4293574643247337246">sayfa üstbilgisi</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384583879834880242">Soru-Cevap</translation>
 <translation id="4444765639179266822">Şöyle diyor olabilir: <ph name="OCR_TEXT" /></translation>

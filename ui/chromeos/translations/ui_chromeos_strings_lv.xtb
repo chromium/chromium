@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Franču valoda</translation>
 <translation id="3254434849914415189">Izvēlieties noklusējuma lietotni <ph name="FILE_TYPE" /> failu atvēršanai:</translation>
 <translation id="3264582393905923483">Konteksts</translation>
+<translation id="3272909651715601089">Nevarēja atvērt failu “<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Notiek sagatavošana</translation>
 <translation id="3280987981688031357">Vinila ieraksts</translation>
 <translation id="3296763833017966289">Gruzīnu valoda</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulgāru fonētiskā</translation>
 <translation id="4479812471636796472">ASV Dvoraka tastatūra</translation>
 <translation id="4522570452068850558">Informācija</translation>
+<translation id="4527800702232535228">Šī mape ir kopīgota ar Parallels Desktop</translation>
 <translation id="4552678318981539154">Iegādāties papildu vietu krātuvē</translation>
 <translation id="4559767610552730302">Izplūduma efekts</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fails</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Pērtiķis</translation>
 <translation id="4697043402264950621">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” augošā secībā.</translation>
 <translation id="4711094779914110278">Turku valoda</translation>
+<translation id="4712283082407695269">Notiek dokumenta “<ph name="PATH" />” atvēršana</translation>
 <translation id="4713544552769165154">Šis fails ir paredzēts datoram, kurā tiek izmantota Macintosh programmatūra. Tas nav saderīgs ar jūsu ierīci, kurā darbojas Chrome OS. Atbilstošu lietotni meklējiet <ph name="BEGIN_LINK" />Chrome interneta veikalā<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" />.</translation>
 <translation id="4724850507808590449">Dublēti <ph name="FILE_COUNT" /> fotoattēli</translation>
 <translation id="4725511304875193254">Korgijs</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Radās kļūda. Iespējams, netika izdzēsti daži vienumi.</translation>
 <translation id="656398493051028875">Notiek faila “<ph name="FILENAME" />” dzēšana...</translation>
 <translation id="6581162200855843583">Google diska saite</translation>
+<translation id="6594855146910089723">Šī mape ir kopīgota ar Linux un Parallels Desktop</translation>
 <translation id="6607272825297743757">Faila informācija</translation>
 <translation id="6609332149380188670">Vairākas mapes (kopā <ph name="NUMBER_OF_ITEMS" />) tika kopīgotas ar Parallels Desktop</translation>
 <translation id="6629841649550503054">Visi faili ir dublēti <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" />.</translation>

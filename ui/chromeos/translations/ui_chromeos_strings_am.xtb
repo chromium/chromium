@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">ፈረንሳይኛ</translation>
 <translation id="3254434849914415189">ለ<ph name="FILE_TYPE" /> ፋይሎች ነባሪውን መተግበሪያ ይምረጡ፦</translation>
 <translation id="3264582393905923483">አውድ</translation>
+<translation id="3272909651715601089">«<ph name="PATH" />» መክፈት አልተቻለም</translation>
 <translation id="3280431534455935878">በማዘጋጀት ላይ</translation>
 <translation id="3280987981688031357">ቪኒል መዝገብ</translation>
 <translation id="3296763833017966289">ጆርጂያኛ</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">የቡልጋሪያኛ ፎነቲክ</translation>
 <translation id="4479812471636796472">የአሜሪካ ድቮራክ ቁልፍ ሰሌዳ</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
+<translation id="4527800702232535228">ይህ አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="4552678318981539154">ተጨማሪ ማከማቻ ይግዙ</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ፋይል</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">ጦጣ</translation>
 <translation id="4697043402264950621">የፋይል ዝርዝር በ<ph name="COLUMN_NAME" /> በሽቅብታ ተደርድሯል።</translation>
 <translation id="4711094779914110278">ቱርክኛ</translation>
+<translation id="4712283082407695269">«<ph name="PATH" />»ን በመክፈት ላይ</translation>
 <translation id="4713544552769165154">ይህ ፋይል የMacintosh ሶፍትዌር ለሚጠቀም ኮምፒውተር ነው የተቀየሰው። ይሄ Chrome OS ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። ተገቢ ምትክ መተግበሪያ ለማግኘት እባክዎ <ph name="BEGIN_LINK" />የChrome ድር መደብሩን<ph name="END_LINK" /> ይፈልጉ።<ph name="BEGIN_LINK_HELP" />ተጨማሪ ለመረዳት<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ፎቶዎች በምትኬ ተቀምጠዋል</translation>
 <translation id="4725511304875193254">ኮርጂ</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">አንድ ስህተት ተከስቷል። አንዳንድ ንጥሎች አልተሰረዙ ሊሆኑ ይችላሉ።</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»ን በመሰረዝ ላይ...</translation>
 <translation id="6581162200855843583">Google Drive አገናኝ</translation>
+<translation id="6594855146910089723">ይህ አቃፊ ለLinux እና ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="6607272825297743757">የፋይል መረጃ</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለParallels ዴስክቶፕ ተጋርተዋል</translation>
 <translation id="6629841649550503054">ሁሉም ወደ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> በምትኬ ተቀምጠዋል!</translation>

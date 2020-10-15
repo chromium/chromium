@@ -872,6 +872,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> desativou a depuração do adb. O <ph name="DEVICE_TYPE" /> será redefinido em 24 horas. Faça backup dos arquivos importantes para você.</translation>
 <translation id="1977965994116744507">Aproxime o smartphone para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978006917103730774">As atualizações de software e de segurança futuras serão instaladas automaticamente.</translation>
+<translation id="1978057560491495741">Remover endereço</translation>
 <translation id="1979095679518582070">A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.</translation>
 <translation id="1979280758666859181">Você está mudando para um canal com uma versão mais antiga do <ph name="PRODUCT_NAME" />. A mudança de canal será aplicada quando a versão do canal corresponder à versão instalada atualmente no dispositivo.</translation>
 <translation id="197989455406964291">O KDC não é compatível com esse tipo de criptografia</translation>
@@ -1074,6 +1075,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2224444042887712269">Esta configuração pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nome da pasta</translation>
 <translation id="2225864335125757863">Mude estas senhas imediatamente para manter a conta protegida:</translation>
+<translation id="2226204716217107988">Usar outro perfil?</translation>
 <translation id="2226449515541314767">O controle total de dispositivos MIDI foi bloqueado neste site.</translation>
 <translation id="2226907662744526012">Desbloquear automaticamente quando o PIN for inserido</translation>
 <translation id="222704500187107962">Essa exceção será removida automaticamente quando você sair da sessão de navegação anônima atual</translation>
@@ -1143,6 +1145,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2307462900900812319">Configurar rede</translation>
 <translation id="230927227160767054">Esta página quer instalar um manipulador de serviço.</translation>
 <translation id="2309620859903500144">Este site foi impedido de acessar os sensores de luz ou movimento.</translation>
+<translation id="2312219318583366810">URL da página</translation>
 <translation id="2314165183524574721">A configuração de visibilidade atual é: oculto</translation>
 <translation id="2314774579020744484">Idioma usado ao traduzir páginas</translation>
 <translation id="2315414688463285945">Erro ao configurar arquivos do Linux. Tente novamente.</translation>
@@ -2347,6 +2350,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3713047097299026954">Essa chave de segurança não tem nenhum dado de login</translation>
 <translation id="3714195043138862580">Este dispositivo de demonstração foi colocado em um estado de desprovisionamento.</translation>
 <translation id="3714633008798122362">agenda na web</translation>
+<translation id="3715954932774762075">Apps e sites que estiverem disponíveis em vários idiomas usarão o primeiro idioma compatível desta lista. Estas preferências são sincronizadas com as configurações do navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Página inicial</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Você e o Google</translation>
@@ -2507,6 +2511,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3882165008614329320">Vídeo existente de uma câmera ou de um arquivo</translation>
 <translation id="3886446263141354045">Sua solicitação para acessar este site foi enviada para <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Tomando notas com <ph name="LOCK_SCREEN_APP_NAME" /></translation>
+<translation id="3890064827463908288">Ativar a Sincronização do Chrome para usar o recurso Sincronizar Wi-Fi</translation>
 <translation id="3892414795099177503">Adicionar OpenVPN / L2TP…</translation>
 <translation id="3893536212201235195">Ler e alterar as configurações de acessibilidade</translation>
 <translation id="3893630138897523026">ChromeVox (feedback falado)</translation>
@@ -3780,6 +3785,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5449588825071916739">Adicionar todas as guias aos favoritos</translation>
 <translation id="5449716055534515760">Fechar jan&amp;ela</translation>
 <translation id="5452974209916053028">Sessão anônima atual: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">Mover balão de legenda para <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% na horizontal, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% na vertical</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5457459357461771897">Ler e excluir fotos, músicas e outras mídias do seu computador</translation>
@@ -3923,6 +3929,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5602765853043467355">Limpar favoritos, histórico, senhas e mais deste dispositivo.</translation>
 <translation id="5605623530403479164">Outros mecanismos de pesquisa</translation>
 <translation id="5605758115928394442">Uma notificação foi enviada ao seu smartphone para confirmar sua identidade.</translation>
+<translation id="560834977503641186">Saiba mais sobre o Sincronizar Wi-Fi</translation>
 <translation id="5608580678041221894">Toque nas teclas a seguir para ajustar ou mover a área de corte</translation>
 <translation id="5609231933459083978">Este aplicativo parece ser inválido.</translation>
 <translation id="5610038042047936818">Alternar para o modo de câmera</translation>
@@ -4114,6 +4121,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5841270259333717135">Configurar ethernet</translation>
 <translation id="5842497610951477805">Ativar Bluetooth</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584451707753263735">Legenda instantânea visível. Pressione F6 para mudar o foco</translation>
 <translation id="5844574845205796324">Sugerir novos conteúdos para explorar</translation>
 <translation id="5846200638699387931">Erro de sintaxe na relação: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Instalar atualizações e apps. Ao continuar, você aceita que este dispositivo também pode fazer o download e a instalação de atualizações e apps do Google, da operadora e do fabricante do dispositivo de forma automática, possivelmente usando dados da rede celular. Alguns desses apps podem oferecer compras no aplicativo.</translation>
@@ -5371,6 +5379,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> está agora no modo de tela inteira.</translation>
 <translation id="7340650977506865820">O site está compartilhando sua tela</translation>
 <translation id="7341834142292923918">Quer ter acesso a este site</translation>
+<translation id="7343372807593926528">Descreva o problema antes de enviar feedback.</translation>
 <translation id="7345706641791090287">Confirmar sua senha</translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
 <translation id="7347452120014970266">Isso limpará todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" />, incluindo os dos apps instalados</translation>
@@ -5787,6 +5796,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7819857487979277519">Pre-shared key (PSK): WPA ou RSN</translation>
 <translation id="7819992334107904369">Sincronização do Chrome</translation>
 <translation id="782057141565633384">C&amp;opiar endereço do vídeo</translation>
+<translation id="7822187537422052256">Tem certeza de que quer remover esse endereço?</translation>
 <translation id="7824864914877854148">Ocorreu um erro e não foi possível concluir o backup</translation>
 <translation id="7825666486843191125">Todos os contatos perto de você quando a tela estiver desbloqueada</translation>
 <translation id="782590969421016895">Usar as páginas atuais</translation>
@@ -6312,6 +6322,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8419098111404128271">Resultados de pesquisa para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="8419368276599091549">Bem-vindo ao <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Editar entradas do dicionário</translation>
+<translation id="8421361468937925547">Legenda instantânea (somente em inglês)</translation>
 <translation id="8422787418163030046">Bandeja ausente</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8425492902634685834">Fixar na barra de tarefas</translation>
@@ -6340,6 +6351,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8449036207308062757">Gerenciar armazenamento</translation>
 <translation id="8452135315243592079">Chip ausente</translation>
 <translation id="8455026683977728932">Não foi possível ativar a ilustração do adb</translation>
+<translation id="8456398879271637452">Legenda instantânea visível. Pressione Ctrl + Voltar ou Ctrl + Avançar para mudar o foco.</translation>
 <translation id="845702320058262034">Não foi possível conectar. Verifique se o Bluetooth do smartphone está ativado.</translation>
 <translation id="8457451314607652708">Importar favoritos</translation>
 <translation id="8458627787104127436">Abrir todos (<ph name="URL_COUNT" />) em uma nova janela</translation>
@@ -6850,6 +6862,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9027459031423301635">Abrir link em uma nova &amp;guia</translation>
 <translation id="9030515284705930323">Sua organização não ativou a Google Play Store para sua conta. Entre em contato com seu administrador para receber mais informações.</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269">O plug-in <ph name="PLUGIN_NAME" /> não é mais compatível</translation>
 <translation id="9031549947500880805">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">&amp;Colar</translation>
@@ -6858,6 +6871,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Você só tem mais 1 tentativa.}one{Você só tem mais # tentativa.}other{Você só tem mais # tentativas.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">Atualizar senha para <ph name="ORIGIN" />?</translation>
+<translation id="9041049756004505730">Legenda instantânea visível. Pressione ⌘ + Option + seta para cima ou para baixo para mudar o foco.</translation>
 <translation id="9041692268811217999">O acesso a arquivos locais no seu computador foi desativado pelo administrador</translation>
 <translation id="904224458472510106">Não é possível desfazer essa operação</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
@@ -6896,6 +6910,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9088446193279799727">Não foi possível configurar o Linux. Conecte-se à Internet e tente novamente.</translation>
 <translation id="9088917181875854783">Confirme se esta senha está sendo mostrada em "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
+<translation id="909108997331068008">O perfil de <ph name="EXISTING_USER" /> já está conectado a <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">O backup de arquivos é recomendado quando não é possível concluir o upgrade. O início do upgrade faz com que o Linux (Beta) seja desligado. Salve os arquivos abertos antes de continuar.</translation>
 <translation id="9094033019050270033">Atualizar senha</translation>
 <translation id="9094038138851891550">Nome de usuário inválido</translation>
@@ -7069,5 +7084,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="994289308992179865">&amp;Repetir</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Estabelecendo conexão segura...</translation>
+<translation id="99731366405731005">Ative a <ph name="LINK1_BEGIN" />Sincronização do Chrome<ph name="LINK1_END" /> para usar o recurso Sincronizar Wi-Fi. <ph name="LINK2_BEGIN" />Saiba mais<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">I&amp;nspecionar</translation>
 </translationbundle>

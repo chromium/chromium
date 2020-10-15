@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Frans</translation>
 <translation id="3254434849914415189">Kies die verstekprogram vir <ph name="FILE_TYPE" />-lêers:</translation>
 <translation id="3264582393905923483">Konteks</translation>
+<translation id="3272909651715601089">Kon nie "<ph name="PATH" />" oopmaak nie</translation>
 <translation id="3280431534455935878">Berei tans voor</translation>
 <translation id="3280987981688031357">Vinielplaat</translation>
 <translation id="3296763833017966289">Georgies</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Bulgaars foneties</translation>
 <translation id="4479812471636796472">VSA Dvorak-sleutelbord</translation>
 <translation id="4522570452068850558">Besonderhede</translation>
+<translation id="4527800702232535228">Hierdie vouer is met Parallels Desktop gedeel</translation>
 <translation id="4552678318981539154">Koop meer berging</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-lêer</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Aap</translation>
 <translation id="4697043402264950621">Lêerlys is volgens <ph name="COLUMN_NAME" /> in stygende volgorde gerangskik.</translation>
 <translation id="4711094779914110278">Turks</translation>
+<translation id="4712283082407695269">Maak tans "<ph name="PATH" />" oop</translation>
 <translation id="4713544552769165154">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel, wat Chrome OS gebruik nie. Deursoek die <ph name="BEGIN_LINK" />Chrome-webwinkel<ph name="END_LINK" /> vir 'n gepaste plaasvervangerprogram.<ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto's is gerugsteun</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">'n Fout het voorgekom. Sommige items is dalk nie uitgevee nie.</translation>
 <translation id="656398493051028875">Vee tans "<ph name="FILENAME" />" uit …</translation>
 <translation id="6581162200855843583">Google Drive-skakel</translation>
+<translation id="6594855146910089723">Hierdie vouer is met Linux en Parallels Desktop gedeel</translation>
 <translation id="6607272825297743757">Lêerinligting</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> vouers is met Parallels Desktop gedeel</translation>
 <translation id="6629841649550503054">Alles is gerugsteun na <ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" /></translation>

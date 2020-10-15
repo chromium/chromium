@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Francuski</translation>
 <translation id="3254434849914415189">Odaberite zadanu aplikaciju za <ph name="FILE_TYPE" /> datoteke:</translation>
 <translation id="3264582393905923483">Kontekst</translation>
+<translation id="3272909651715601089">Nije moguće otvoriti "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Priprema</translation>
 <translation id="3280987981688031357">Gramofonska ploča</translation>
 <translation id="3296763833017966289">Gruzijski</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">bugarska (fonetska)</translation>
 <translation id="4479812471636796472">SAD Dvorak tipkovnica</translation>
 <translation id="4522570452068850558">Detalji</translation>
+<translation id="4527800702232535228">Ova se mapa dijeli s Parallels Desktopom</translation>
 <translation id="4552678318981539154">Kupite još prostora za pohranu</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> datoteka</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Majmun</translation>
 <translation id="4697043402264950621">Popis datoteka razvrstan prema "<ph name="COLUMN_NAME" />", rastućim redoslijedom.</translation>
 <translation id="4711094779914110278">Turski</translation>
+<translation id="4712283082407695269">Otvara se dokument "<ph name="PATH" />"</translation>
 <translation id="4713544552769165154">Ova datoteka predviđena je za računalo koje upotrebljava Macintosh softver. Nije kompatibilna s vašim uređajem koji radi na Chrome OS-u. Potražite odgovarajuću zamjensku aplikaciju u <ph name="BEGIN_LINK" />Chrome web-trgovini<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Izrađene su sigurnosne kopije fotografija (ukupno <ph name="FILE_COUNT" />)</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Dogodila se pogreška. Neke stavke možda nisu izbrisane.</translation>
 <translation id="656398493051028875">Brisanje datoteke "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Veza na Google disk</translation>
+<translation id="6594855146910089723">Mapa se dijeli s Linuxom i Parallels Desktopom</translation>
 <translation id="6607272825297743757">Informacije o datoteci</translation>
 <translation id="6609332149380188670">S Parallels Desktopom dijeli se sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629841649550503054">Sve je sigurnosno spremljeno na <ph name="BEGIN_LINK" />Google disk!<ph name="END_LINK" /></translation>

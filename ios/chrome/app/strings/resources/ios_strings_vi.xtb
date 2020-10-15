@@ -61,6 +61,7 @@
 <translation id="1545749641540134597">Quét mã QR</translation>
 <translation id="1552525382687785070">Quản trị viên của bạn đã tắt tính năng đồng bộ hóa</translation>
 <translation id="1554477036522844996">Cửa sổ mới</translation>
+<translation id="1580715474678097352">Luôn được bảo vệ khỏi các trang web nguy hiểm</translation>
 <translation id="1580783302095112590">Thư đã được gửi.</translation>
 <translation id="1582732959743469162">Thao tác này sẽ ngừng tất cả hoạt động tải xuống đang diễn ra.</translation>
 <translation id="1605405588277479165">Tắt – Không khuyến nghị</translation>
@@ -728,6 +729,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9087108903408689779">Mật khẩu do Chrome đề xuất:</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>
 <translation id="9100610230175265781">Yêu cầu cụm mật khẩu</translation>
+<translation id="9107664647686727385">Kiểm tra để phát hiện mật khẩu bị lộ</translation>
 <translation id="9137526406337347448">Dịch vụ của Google</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9152539721251340337">Tạo mã QR</translation>

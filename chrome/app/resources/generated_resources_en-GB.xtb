@@ -872,6 +872,7 @@
 <translation id="1976307821760494606"><ph name="DOMAIN" /> has disabled ADB debugging. This will reset your <ph name="DEVICE_TYPE" /> in 24 hours. Back up any files that you'd like to keep.</translation>
 <translation id="1977965994116744507">Bring your phone closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978006917103730774">Future software and security updates will install automatically.</translation>
+<translation id="1978057560491495741">Remove address</translation>
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
 <translation id="1979280758666859181">You are changing to a channel with an older version of <ph name="PRODUCT_NAME" />. The channel change will be applied when the channel version matches the version currently installed on your device.</translation>
 <translation id="197989455406964291">KDC does not support encryption type</translation>
@@ -1074,6 +1075,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
 <translation id="2225864335125757863">Change these passwords immediately to keep your account safe:</translation>
+<translation id="2226204716217107988">Switch to another profile?</translation>
 <translation id="2226449515541314767">This site has been blocked from having full control of MIDI devices.</translation>
 <translation id="2226907662744526012">Unlock automatically once PIN is entered</translation>
 <translation id="222704500187107962">This exception will be automatically removed after you exit the current Incognito session</translation>
@@ -1143,6 +1145,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
+<translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
 <translation id="2315414688463285945">Error configuring Linux files. Please try again.</translation>
@@ -2346,6 +2349,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3713047097299026954">This security key does not have any sign-in data</translation>
 <translation id="3714195043138862580">This demo device has been placed into a deprovisioned state.</translation>
 <translation id="3714633008798122362">web calendar</translation>
+<translation id="3715954932774762075">Apps and websites that are available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
@@ -2506,6 +2510,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3882165008614329320">Existing video from camera or file</translation>
 <translation id="3886446263141354045">Your request to access this site has been sent to <ph name="NAME" /></translation>
 <translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
+<translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
 <translation id="3892414795099177503">Add OpenVPN/L2TP...</translation>
 <translation id="3893536212201235195">Read and change your accessibility settings</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -3779,6 +3784,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5449588825071916739">Bookmark All Tabs</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
 <translation id="5452974209916053028">Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
+<translation id="5454005855577728171">Moved caption bubble to <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% across, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% down</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5457459357461771897">Read and delete photos, music and other media from your computer</translation>
@@ -3922,6 +3928,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
 <translation id="5605623530403479164">Other search engines</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
+<translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
 <translation id="5610038042047936818">Switch to camera mode</translation>
@@ -4112,6 +4119,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5841270259333717135">Configure Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
+<translation id="584451707753263735">Live Caption visible; press F6 to cycle focus</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846807460505171493">Install updates and apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
@@ -5368,6 +5376,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> is now full screen.</translation>
 <translation id="7340650977506865820">Site is sharing your screen</translation>
 <translation id="7341834142292923918">Wants access to this site</translation>
+<translation id="7343372807593926528">Please describe the problem before sending feedback.</translation>
 <translation id="7345706641791090287">Confirm your password</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7347452120014970266">This will clear all data and cookies stored by <ph name="ORIGIN_NAME" /> and its installed apps</translation>
@@ -5784,6 +5793,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7819992334107904369">Chrome sync</translation>
 <translation id="782057141565633384">C&amp;opy video address</translation>
+<translation id="7822187537422052256">Are you sure that you want to remove this address?</translation>
 <translation id="7824864914877854148">Backup couldn't be completed due to an error</translation>
 <translation id="7825666486843191125">All contacts near you when your screen is unlocked</translation>
 <translation id="782590969421016895">Use current pages</translation>
@@ -6309,6 +6319,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8419098111404128271">Search results for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="8419368276599091549">Welcome to your <ph name="DEVICE_TYPE" />!</translation>
 <translation id="8420308167132684745">Edit dictionary entries</translation>
+<translation id="8421361468937925547">Live Caption (English only)</translation>
 <translation id="8422787418163030046">Tray is missing</translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8425492902634685834">Pin to task bar</translation>
@@ -6337,6 +6348,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8449036207308062757">Manage storage</translation>
 <translation id="8452135315243592079">Missing SIM card</translation>
 <translation id="8455026683977728932">Failed to enable ADB illustration</translation>
+<translation id="8456398879271637452">Live Caption visible, press Ctrl + Back or Ctrl + Forward to cycle focus</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>
 <translation id="8458627787104127436">Open all (<ph name="URL_COUNT" />) in new window</translation>
@@ -6847,6 +6859,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9027459031423301635">Open Link in New &amp;Tab</translation>
 <translation id="9030515284705930323">Your organisation has not enabled Google Play Store for your account. Contact your administrator for more information.</translation>
 <translation id="9030785788945687215">Gmail</translation>
+<translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> is no longer supported</translation>
 <translation id="9031549947500880805">Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data.</translation>
 <translation id="9033765790910064284">Continue anyway</translation>
 <translation id="9033857511263905942">&amp;Paste</translation>
@@ -6855,6 +6868,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{You have one attempt remaining.}other{You have # attempts remaining.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>
+<translation id="9041049756004505730">Live Caption visible, press ⌘ + Option + up arrow or down arrow to cycle focus</translation>
 <translation id="9041692268811217999">Access to local files on your machine is disabled by your administrator</translation>
 <translation id="904224458472510106">This operation cannot be undone</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
@@ -6893,6 +6907,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9088446193279799727">Could not configure Linux. Connect to the Internet and try again.</translation>
 <translation id="9088917181875854783">Please confirm that  this passkey is shown on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9089416786594320554">Input methods</translation>
+<translation id="909108997331068008"><ph name="EXISTING_USER" />'s profile is already signed in to <ph name="NEW_USER" /></translation>
 <translation id="9093429538970210897">Backing up files is recommended in case the upgrade cannot be completed. Starting the upgrade will cause Linux (beta) to shut down. Please save open files before proceeding.</translation>
 <translation id="9094033019050270033">Update password</translation>
 <translation id="9094038138851891550">Username invalid</translation>
@@ -7066,5 +7081,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="994289308992179865">&amp;Loop</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Establishing secure connection...</translation>
+<translation id="99731366405731005">Turn on <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> to use Wi-Fi Sync. <ph name="LINK2_BEGIN" />Learn more<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">I&amp;nspect</translation>
 </translationbundle>

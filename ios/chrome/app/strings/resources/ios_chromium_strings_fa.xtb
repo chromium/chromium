@@ -26,7 +26,7 @@
 <translation id="3344973607274501920">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="3472200483164753384">‏در Chromium Canary پشتیبانی نمی‌شود</translation>
 <translation id="3639997914391704523">‏Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید.</translation>
-<translation id="3805899903892079518">‏Chromium به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
+<translation id="3805899903892079518">‏Chromium به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم‌خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
 <translation id="4099085513035183040">‏در «Chromium بتا» پشتیبانی نمی‌شود</translation>
 <translation id="4166206055865952171">‏Chromium را مرورگر پیش‌فرض کنید</translation>
 <translation id="4555020257205549924">‏وقتی این قابلیت روشن است، Chromium ترجمه صفحات نوشته‌شده به سایر زبان‌ها را با استفاده از مترجم Google پیشنهاد می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -58,7 +58,7 @@
 <translation id="7357211569052832586">‏داده‌های انتخاب‌‌شده از Chromium و دستگاه‌های همگام‌سازی‌شده حذف شده‌اند. ممکن است اشکال دیگری از سابقه مرورتان (مانند جستجو‌ها و فعالیت دیگر سرویس‌های Google در history.google.com) در حساب Google شما وجود داشته باشد.</translation>
 <translation id="7400689562045506105">‏استفاده از Chromium در همه‌جا</translation>
 <translation id="766897673682622022">‏گذرواژه‌تان به‌دلیل نقض داده لو رفته است. Chromium توصیه می‌کند همین‌حالا گذرواژه را تغییر دهید.</translation>
-<translation id="7674213385180944843">‏Settings (تنظیمات) &gt; Privacy (حریم خصوصی) &gt; Camera (دوربین) &gt; Chromium را باز کنید و دوربین را روشن کنید.</translation>
+<translation id="7674213385180944843">‏Settings (تنظیمات) &gt; Privacy (حریم‌خصوصی) &gt; Camera (دوربین) &gt; Chromium را باز کنید و دوربین را روشن کنید.</translation>
 <translation id="7746854981345936341">‏نکته Chromium. بعضی از دکمه‌ها مثل Back (برگشت)، Forward (به جلو) و Search (جستجو) اکنون در پایین صفحه هستند.</translation>
 <translation id="786327964234957808">‏هم‌اکنون درحال تغییر حساب‌های همگام‌سازی از <ph name="USER_EMAIL1" /> به <ph name="USER_EMAIL2" /> هستید. داده‌های موجود Chromium شما توسط <ph name="DOMAIN" /> مدیریت می‌شوند. با این کار، داده‌هایتان از این دستگاه حذف می‌شود اما همچنان در <ph name="USER_EMAIL1" /> باقی می‌ماند.</translation>
 <translation id="7890287942691234100">‏شروع استفاده از اسکنر Chromium</translation>

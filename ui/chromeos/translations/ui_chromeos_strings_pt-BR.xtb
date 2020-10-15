@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Francês</translation>
 <translation id="3254434849914415189">Escolha o aplicativo padrão para os arquivos <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">Contexto</translation>
+<translation id="3272909651715601089">Não foi possível abrir "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Preparando</translation>
 <translation id="3280987981688031357">Disco de vinil</translation>
 <translation id="3296763833017966289">Georgiano</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Búlgaro fonético</translation>
 <translation id="4479812471636796472">Teclado americano Dvorak</translation>
 <translation id="4522570452068850558">Saiba mais</translation>
+<translation id="4527800702232535228">Esta pasta está sendo compartilhada com o Parallels Desktop</translation>
 <translation id="4552678318981539154">Comprar mais espaço</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Arquivo <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Macaco</translation>
 <translation id="4697043402264950621">Lista de arquivos classificada por <ph name="COLUMN_NAME" /> em ordem crescente.</translation>
 <translation id="4711094779914110278">Turco</translation>
+<translation id="4712283082407695269">Abrindo "<ph name="PATH" />"</translation>
 <translation id="4713544552769165154">Este arquivo foi projetado para um computador que utiliza o software Macintosh. Ele não é compatível com seu dispositivo, que executa o Chrome OS. Procure um app substituto adequado na <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Foi realizado o backup de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Ocorreu um erro. Alguns itens podem não ter sido excluídos.</translation>
 <translation id="656398493051028875">Excluindo "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link do Google Drive</translation>
+<translation id="6594855146910089723">Esta pasta está sendo compartilhada com o Linux e o Parallels Desktop</translation>
 <translation id="6607272825297743757">Informações do arquivo</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> pastas compartilhadas com o Parallels Desktop</translation>
 <translation id="6629841649550503054">Backup completo para o <ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" /></translation>

@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">ഫ്രഞ്ച്</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ഫയലുകൾക്കായി ഡിഫോൾട്ട് ആപ്പ് തിരഞ്ഞെടുക്കുക:</translation>
 <translation id="3264582393905923483">സന്ദർഭം</translation>
+<translation id="3272909651715601089">"<ph name="PATH" />" തുറക്കാനായില്ല</translation>
 <translation id="3280431534455935878">തയ്യാറെടുക്കുന്നു</translation>
 <translation id="3280987981688031357">വിനൈൽ റെക്കോർഡ്</translation>
 <translation id="3296763833017966289">ജോര്‍ജ്ജിയന്‍</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">ബൾഗേറിയൻ സ്വരസൂചകം</translation>
 <translation id="4479812471636796472">യുഎസ് ഡൊറാക്ക് കീബോര്‍ഡ്</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
+<translation id="4527800702232535228">Parallels Desktop-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="4552678318981539154">കൂടുതൽ സംഭരണം വാങ്ങുക</translation>
 <translation id="4559767610552730302">ബൊക്കെ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ഫയൽ</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">കുരങ്ങൻ</translation>
 <translation id="4697043402264950621">ആരോഹണ ക്രമത്തിൽ <ph name="COLUMN_NAME" /> അടുക്കിയ ഫയൽ ലിസ്‌റ്റ്.</translation>
 <translation id="4711094779914110278">ടര്‍ക്കിഷ്</translation>
+<translation id="4712283082407695269">"<ph name="PATH" />" തുറക്കുന്നു</translation>
 <translation id="4713544552769165154">ഈ ഫയൽ, Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന ഒരു കമ്പ്യൂട്ടറിനായി രൂപകൽപ്പന ചെയ്തിരിക്കുന്നു. Chrome OS പ്രവർത്തിപ്പിക്കുന്ന നിങ്ങളുടെ ഉപകരണത്തിന് ഇത് അനുയോജ്യമല്ല. അനുയോജ്യമായ മറ്റൊരു ആപ്പിനായി <ph name="BEGIN_LINK" />Chrome വെബ് സ്റ്റോറിൽ<ph name="END_LINK" /> തിരയുക.<ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ഫോട്ടോകൾ ബാക്കപ്പുചെയ്‌തു</translation>
 <translation id="4725511304875193254">പട്ടിക്കുട്ടി</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">ഒരു പിശക് സംഭവിച്ചു. ചില ഇനങ്ങൾ ഇല്ലാതാക്കാൻ ഇടയില്ല.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ഇല്ലാതാക്കുന്നു...</translation>
 <translation id="6581162200855843583">Google ഡ്രൈവ് ലിങ്ക്</translation>
+<translation id="6594855146910089723">Linux-മായും Parallels Desktop-മായും ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="6607272825297743757">ഫയൽ വിവരം</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Parallels Desktop ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
 <translation id="6629841649550503054">എല്ലാം <ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> ബാക്കപ്പുചെയ്‌തു!</translation>

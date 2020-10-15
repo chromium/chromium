@@ -5,6 +5,7 @@
 <translation id="1383286653814676580">Digunakan untuk menjalankan halaman login Penyedia Kredensial Google.</translation>
 <translation id="2048923169632968961">Terjadi masalah saat menyinkronkan sandi akun kerja ke profil Windows Anda. Harap hubungi administrator Anda.</translation>
 <translation id="2515346402363002066">Sesi Anda telah berakhir. Login dengan akun kerja Anda.</translation>
+<translation id="2549902055700841962">Tidak dapat login ke akun kerja Anda. Harap hubungi administrator Anda.</translation>
 <translation id="2566603360883977759">Email ini tidak diizinkan untuk login. Coba lagi dengan akun yang Anda gunakan untuk kerja atau sekolah. Jika masih tidak dapat login, hubungi administrator Anda.</translation>
 <translation id="2844349213149998955">Login dengan akun pribadi di perangkat ini tidak diizinkan. Silakan login dengan akun kerja.</translation>
 <translation id="3217145568844727893">Jika Anda melanjutkan tanpa memasukkan sandi Windows saat ini, Anda dapat kehilangan data di perangkat ini secara permanen.</translation>
@@ -20,7 +21,7 @@
 <translation id="5581861273642234526">Akun kerja lain sudah dikaitkan dengan perangkat ini. Login dengan akun Windows Anda.</translation>
 <translation id="6033715878377252112">Bantuan Penyedia Kredensial Google untuk Windows</translation>
 <translation id="6149399665202317746">Penyedia Kredensial Google untuk Windows</translation>
-<translation id="6243062314475217481">Sandi akun kerja Anda tidak cocok dengan persyaratan kerumitan sandi untuk Windows. Hubungi administrator untuk meminta bantuan.</translation>
+<translation id="6243062314475217481">Sandi akun kerja Anda tidak cocok dengan persyaratan kekuatan sandi untuk Windows. Hubungi administrator untuk meminta bantuan.</translation>
 <translation id="6463752215771576050">Tidak dapat mendaftarkan komputer ini untuk pengelolaan perusahaan.  Harap login menggunakan akun kerja lain.</translation>
 <translation id="6582876473835446261">Sandi Windows salah. Coba lagi.</translation>
 <translation id="6657585470893396449">Sandi</translation>

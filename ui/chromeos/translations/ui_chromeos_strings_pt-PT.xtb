@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Francês</translation>
 <translation id="3254434849914415189">Escolha a aplicação predefinida para ficheiros <ph name="FILE_TYPE" />:</translation>
 <translation id="3264582393905923483">Contexto</translation>
+<translation id="3272909651715601089">Não foi possível abrir "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">A preparar</translation>
 <translation id="3280987981688031357">Disco de vinil</translation>
 <translation id="3296763833017966289">Georgiana</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Fonético búlgaro</translation>
 <translation id="4479812471636796472">Teclado americano (Dvorak)</translation>
 <translation id="4522570452068850558">Detalhes</translation>
+<translation id="4527800702232535228">Esta pasta é partilhada com o Parallels Desktop.</translation>
 <translation id="4552678318981539154">Comprar mais armazenamento</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984">Ficheiro <ph name="FILE_TYPE" /></translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Macaco</translation>
 <translation id="4697043402264950621">Lista de ficheiros ordenada por <ph name="COLUMN_NAME" /> por ordem ascendente.</translation>
 <translation id="4711094779914110278">Turco</translation>
+<translation id="4712283082407695269">A abrir "<ph name="PATH" />"…</translation>
 <translation id="4713544552769165154">Este ficheiro foi concebido para um computador com software Macintosh. Por isso, não é compatível com o seu dispositivo, que utiliza o Chrome OS. Procure na <ph name="BEGIN_LINK" />Web Store do Chrome<ph name="END_LINK" /> uma aplicação de substituição adequada.<ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Foi feita uma cópia de segurança de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Ocorreu um erro. É possível que alguns itens não tenham sido eliminados.</translation>
 <translation id="656398493051028875">A eliminar "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link do Google Drive</translation>
+<translation id="6594855146910089723">Esta pasta é partilhada com o Linux e o Parallels Desktop.</translation>
 <translation id="6607272825297743757">Informações do ficheiro</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com o Parallels Desktop.</translation>
 <translation id="6629841649550503054">Foi feita uma cópia de segurança de todos os ficheiros no <ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" /></translation>

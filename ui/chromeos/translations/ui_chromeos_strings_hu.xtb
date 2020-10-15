@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">francia</translation>
 <translation id="3254434849914415189">Válassza ki az alapértelmezett alkalmazást <ph name="FILE_TYPE" />-fájlokhoz:</translation>
 <translation id="3264582393905923483">Kontextus</translation>
+<translation id="3272909651715601089">A(z) „<ph name="PATH" />” fájl nem nyitható meg</translation>
 <translation id="3280431534455935878">Előkészítés</translation>
 <translation id="3280987981688031357">Bakelitlemez</translation>
 <translation id="3296763833017966289">grúz</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">bolgár fonetikus</translation>
 <translation id="4479812471636796472">Amerikai Dvorak billentyűzet</translation>
 <translation id="4522570452068850558">Részletek</translation>
+<translation id="4527800702232535228">Ez a mappa meg van osztva a Parallels Desktop rendszerrel</translation>
 <translation id="4552678318981539154">További tárhely vásárlása</translation>
 <translation id="4559767610552730302">Elmosódott</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> fájl</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Majom</translation>
 <translation id="4697043402264950621"><ph name="COLUMN_NAME" /> szerint rendezett, növekvő sorrendben lévő fájllista.</translation>
 <translation id="4711094779914110278">török</translation>
+<translation id="4712283082407695269">„<ph name="PATH" />” megnyitása folyamatban</translation>
 <translation id="4713544552769165154">Ezt a fájlt Macintosh-szoftvereket használó számítógéphez készítették. Nem kompatibilis az Ön Chrome OS-t futtató eszközével. A <ph name="BEGIN_LINK" />Chrome Internetes áruházban<ph name="END_LINK" /> kereshet megfelelő helyettesítő alkalmazást. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotó biztonsági mentése végrehajtva</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -525,6 +528,7 @@
 <translation id="6558280019477628686">Hiba történt. Előfordulhat, hogy egyes elemek nem törlődtek.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />” törlése...</translation>
 <translation id="6581162200855843583">Google Drive link</translation>
+<translation id="6594855146910089723">Ez a mappa meg van osztva a Linux és a Parallels Desktop rendszerrel</translation>
 <translation id="6607272825297743757">Fájlinformáció</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappa megosztva a Parallels Desktoppal</translation>
 <translation id="6629841649550503054">Mindenről van biztonsági másolat a <ph name="BEGIN_LINK" />Google Drive-on<ph name="END_LINK" />!</translation>

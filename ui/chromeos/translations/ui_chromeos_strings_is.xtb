@@ -207,6 +207,7 @@
 <translation id="3252266817569339921">Franskt</translation>
 <translation id="3254434849914415189">Veldu sjálfgefið forrit fyrir <ph name="FILE_TYPE" />-skrár:</translation>
 <translation id="3264582393905923483">Samhengi</translation>
+<translation id="3272909651715601089">Ekki tókst að opna „<ph name="PATH" />“</translation>
 <translation id="3280431534455935878">Verið að undirbúa</translation>
 <translation id="3280987981688031357">Vínylplata</translation>
 <translation id="3296763833017966289">Georgískt</translation>
@@ -309,6 +310,7 @@
 <translation id="4477219268485577442">Búlgarskt hljóðritunarlyklaborð</translation>
 <translation id="4479812471636796472">Bandarískt Dvorak-lyklaborð</translation>
 <translation id="4522570452068850558">Upplýsingar</translation>
+<translation id="4527800702232535228">Þessari möppu er deilt með Parallels Desktop</translation>
 <translation id="4552678318981539154">Kaupa meira geymslurými</translation>
 <translation id="4559767610552730302">Gláka</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> skrá</translation>
@@ -326,6 +328,7 @@
 <translation id="4694604912444486114">Api</translation>
 <translation id="4697043402264950621">Skráalista raðað eftir <ph name="COLUMN_NAME" /> í hækkandi röð.</translation>
 <translation id="4711094779914110278">Tyrkneskt</translation>
+<translation id="4712283082407695269">Opnar „<ph name="PATH" />“</translation>
 <translation id="4713544552769165154">Þessi skrá er þróuð fyrir tölvur sem nota Macintosh-hugbúnað. Hún er ekki samhæf við tækið þitt, sem notar Chrome OS. Leitaðu í <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> að öðru sambærilegu forriti í staðinn.<ph name="BEGIN_LINK_HELP" />Frekari upplýsingar<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> myndir afritaðar</translation>
 <translation id="4725511304875193254">Corgi-hundur</translation>
@@ -524,6 +527,7 @@
 <translation id="6558280019477628686">Villa kom upp. Hugsanlega tókst ekki að eyða einhverjum atriðum.</translation>
 <translation id="656398493051028875">Eyðir „<ph name="FILENAME" />“...</translation>
 <translation id="6581162200855843583">Google Drive tengill</translation>
+<translation id="6594855146910089723">Þessari möppu er deilt með Linux og Parallels Desktop</translation>
 <translation id="6607272825297743757">Skráarupplýsingar</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> möppum deilt með Parallels Desktop</translation>
 <translation id="6629841649550503054">Allt afritað á <ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" /></translation>

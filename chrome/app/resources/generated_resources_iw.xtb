@@ -322,7 +322,7 @@
 <translation id="1363585519747660921">‏יש להגדיר מדפסת USB</translation>
 <translation id="1364664799726141130">לחשבון המאומת אין הרשאת גישה למכשיר. עליך לוודא שהחשבון המאומת הוא <ph name="ACCOUNT" /> כדי לבטל את נעילת הפעילות.</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />הדפדפן שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1367951781824006909">בחר קובץ</translation>
+<translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1369149969991017342">גישה באמצעות מתג (שליטה במחשב בעזרת מתג אחד או שניים בלבד)</translation>
 <translation id="1372841398847029212">סנכרון עם החשבון שלך</translation>
 <translation id="1374844444528092021">האישור הנדרש על ידי הרשת "<ph name="NETWORK_NAME" />" אינו מותקן או שכבר אינו חוקי. קבל אישור חדש ונסה להתחבר שוב.</translation>
@@ -611,7 +611,7 @@
 <translation id="1682548588986054654">חלון נסתר חדש</translation>
 <translation id="1682867089915960590">להפעיל את הגלישה באמצעות סמן הטקסט?</translation>
 <translation id="1686550358074589746">הפעלה של הקלדה בהחלקה</translation>
-<translation id="168715261339224929">כדי שהסימניות שלך יופיעו בכל המכשירים, יש להפעיל סינכרון.</translation>
+<translation id="168715261339224929">כדי שהסימניות שלך יופיעו בכל המכשירים, יש להפעיל סנכרון.</translation>
 <translation id="1688867105868176567">למחוק את נתוני האתר?</translation>
 <translation id="1688935057616748272">צריך להזין אות</translation>
 <translation id="168991973552362966">הוספת מדפסת קרובה</translation>
@@ -1743,7 +1743,7 @@
 <translation id="3007771295016901659">שכפל את הכרטיסייה</translation>
 <translation id="3008232374986381779">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) של Linux ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
-<translation id="3009300415590184725">האם אתה בטוח שברצונך לבטל את תהליך ההתקנה של שירות הנתונים לנייד?</translation>
+<translation id="3009300415590184725">בטוח שברצונך לבטל את תהליך ההתקנה של שירות הנתונים לנייד?</translation>
 <translation id="3009779501245596802">מסדי נתונים שנוספו לאינדקס</translation>
 <translation id="3010279545267083280">הסיסמה נמחקה</translation>
 <translation id="3011384993885886186">אפור חם</translation>
@@ -2090,7 +2090,7 @@
 <translation id="3438633801274389918">נינג'ה</translation>
 <translation id="3439153939049640737">אפשר תמיד ל-<ph name="HOST" /> לגשת למיקרופון שלך</translation>
 <translation id="3439970425423980614">‏פתיחת PDF בתצוגה מקדימה</translation>
-<translation id="3440663250074896476">עוד פעולות לסימניה <ph name="BOOKMARK_NAME" /></translation>
+<translation id="3440663250074896476">עוד פעולות לסימנייה <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3440761377721825626">שאל כשאתר רוצה להשתמש בפלאגין כדי לגשת אל המחשב שלך</translation>
 <translation id="3441653493275994384">מסך</translation>
 <translation id="3441663102605358937">יש להיכנס שוב לחשבון <ph name="ACCOUNT" /> כדי לאמת אותו.</translation>
@@ -2480,7 +2480,7 @@
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3856800405688283469">בחירת אזור זמן</translation>
 <translation id="3857807444929313943">להרים ולגעת בחיישן שוב</translation>
-<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: הסינכרון הושהה</translation>
+<translation id="3860104611854310167"><ph name="PROFILE_NAME" />: הסנכרון הושהה</translation>
 <translation id="3861386850461794863">שפות לאפליקציות ולאתרים</translation>
 <translation id="3861638017150647085">שם המשתמש "<ph name="USERNAME" />" לא זמין</translation>
 <translation id="3862693525629180217">אימות באמצעות חיישן מובנה</translation>
@@ -3530,7 +3530,7 @@
 <translation id="5141421572306659464">חשבון ראשי</translation>
 <translation id="5142793792982256885">מהירות גלילה בלוח מגע</translation>
 <translation id="5142961317498132443">אימות</translation>
-<translation id="5143374789336132547">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג כשאתה לוחץ על הלחצן 'דף הבית'.</translation>
+<translation id="5143374789336132547">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג בלחיצה על הלחצן 'דף הבית'.</translation>
 <translation id="5143612243342258355">הקובץ הזה מסוכן</translation>
 <translation id="5143712164865402236">עבור למסך מלא</translation>
 <translation id="514575469079499857">‏קביעת המיקום באמצעות כתובת ה-IP (ברירת מחדל)</translation>
@@ -5430,7 +5430,7 @@
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">ההגדרה הושלמה</translation>
 <translation id="7416362041876611053">שגיאת רשת לא ידועה.</translation>
-<translation id="741906494724992817">אין צורך בהרשאות מיוחדות עבור היישום הזה.</translation>
+<translation id="741906494724992817">אין צורך בהרשאות מיוחדות עבור האפליקציה הזו.</translation>
 <translation id="742130257665691897">סימניות הוסרו</translation>
 <translation id="7421925624202799674">&amp;הצג את מקור הדף</translation>
 <translation id="7422192691352527311">העדפות...</translation>

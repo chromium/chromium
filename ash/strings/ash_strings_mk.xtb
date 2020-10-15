@@ -100,6 +100,7 @@
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуцијата е променета на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1919743966458266018">Кратенката за отворање на управникот со задачи се промени. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматско кликнување</translation>
+<translation id="1924640696879807758">Од телефонот</translation>
 <translation id="1928739107511554905">За да го добиете ажурирањето, користете го екранот на допир за да го рестартирате Chromebook додека тастатурата е прикачена.</translation>
 <translation id="1951012854035635156">Помошник</translation>
 <translation id="1957803754585243749">0°</translation>
@@ -687,6 +688,7 @@
 <translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
 <translation id="7933084174919150729">„Помошникот на Google“ е достапен само за примарниот профил.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>
+<translation id="793716872548410480">Притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да ја видите привремената меморија. Последните 5 ставки што сте ги копирале се зачувани во привремената меморија.</translation>
 <translation id="7955885781510802139">Режим на висок контраст</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
 <translation id="7980780401175799550">Испробајте нови начини на навигација низ Chrome OS</translation>

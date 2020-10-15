@@ -60,6 +60,7 @@
 <translation id="1538729222189715449">‏جارٍ فتح ملفات نظام التشغيل Linux...</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">تطبيق على الكل</translation>
+<translation id="1561842594491319104">‏أجهزة Chrome</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
 <translation id="158809615184981282">لوحة مفاتيح فاروية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
@@ -189,6 +190,7 @@
 <translation id="3064388234319122767">‏التحويل الصوتي (ذدرافو ← здраво)</translation>
 <translation id="3067790092342515856">‏ملفات نظام التشغيل Windows</translation>
 <translation id="3078461028045006476">مشاركة مع <ph name="EXTENSION_NAME" /></translation>
+<translation id="3083975830683400843">‏أجهزة Chromebit</translation>
 <translation id="3116361045094675131">لوحة المفاتيح البريطانية</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">تم</translation>
@@ -341,6 +343,7 @@
 <translation id="4804827417948292437">أفوكادو</translation>
 <translation id="4823651846660089135">الجهاز للقراءة فقط</translation>
 <translation id="4839847978919684242">تم اختيار <ph name="SELCTED_FILES_COUNT" /> من العناصر</translation>
+<translation id="4843566743023903107">‏أجهزة Chromebase</translation>
 <translation id="4849981557599196363">الألمانية (بلجيكا)</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485316830061041779">الألمانية</translation>
@@ -470,6 +473,7 @@
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5949281959820712067">‏يمكنك منح تطبيقات نظام التشغيل Linux الإذن لتعديل الملفات في Google Drive. وستتم مزامنة التغييرات مع الأجهزة الأخرى.</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
+<translation id="5957366693331451795">‏أجهزة Chromebox</translation>
 <translation id="5982621672636444458">خيارات التصنيف</translation>
 <translation id="6005282720244019462">لوحة مفاتيح أمريكا اللاتينية</translation>
 <translation id="6007237601604674381">تعذّر النقل. <ph name="ERROR_MESSAGE" /></translation>
@@ -629,6 +633,7 @@
     <ph name="MARKUP_4" />احذف الملفات من مجلد "المحتوى الذي تم تنزيله"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">إعداد الجهاز</translation>
 <translation id="7799329977874311193">‏مستند HTML</translation>
+<translation id="7801354353640549019">‏أجهزة Chromebook</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7821462174190887129">‏تم العثور على <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />

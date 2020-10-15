@@ -538,7 +538,7 @@
 <translation id="1604432177629086300">Nu s-a putut printa. Verifică imprimanta și încearcă din nou.</translation>
 <translation id="1605544918554600534"><ph name="PROFILE_NAME" />: sincronizarea parolelor nu funcționează</translation>
 <translation id="1607139524282324606">Șterge intrarea</translation>
-<translation id="1608626060424371292">Eliminați acest utilizator</translation>
+<translation id="1608626060424371292">Ștergeți acest utilizator</translation>
 <translation id="1608668830839595724">Mai multe acțiuni pentru elementele selectate</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Dispozitivul este blocat</translation>
@@ -2120,7 +2120,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="346431825526753">Acesta este un cont pentru copii gestionat de <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="3468298837301810372">Etichetă</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
-<translation id="3470442499439619530">Eliminați acest utilizator</translation>
+<translation id="3470442499439619530">Ștergeți acest utilizator</translation>
 <translation id="3471876058939596279">Porturile HDMI și USB Type-C nu pot fi folosite simultan pentru conținut video. Folosește alt port video.</translation>
 <translation id="3473241910002674503">Navighează la ecranul de pornire, înapoi și comută între aplicații folosind butoanele în modul tabletă.</translation>
 <translation id="3473479545200714844">Lupă de ecran</translation>
