@@ -5,6 +5,7 @@
 #include "chrome/browser/themes/theme_helper_win.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/win/titlebar_config.h"
@@ -291,6 +292,7 @@ void ThemeHelperWin::OnDwmKeyUpdated() {
 
   // Watch for future changes.
   if (!dwm_key_->StartWatching(base::BindOnce(&ThemeHelperWin::OnDwmKeyUpdated,
-                                              base::Unretained(this))))
+                                              base::Unretained(this)))) {
     dwm_key_.reset();
+  }
 }
