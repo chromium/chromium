@@ -31,13 +31,6 @@ const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
 
 }  // namespace
 
-const char kForceSigninVerificationMetricsName[] =
-    "Signin.ForceSigninVerificationRequest";
-const char kForceSigninVerificationSuccessTimeMetricsName[] =
-    "Signin.ForceSigninVerificationTime.Success";
-const char kForceSigninVerificationFailureTimeMetricsName[] =
-    "Signin.ForceSigninVerificationTime.Failure";
-
 ForceSigninVerifier::ForceSigninVerifier(
     signin::IdentityManager* identity_manager)
     : has_token_verified_(false),
@@ -45,8 +38,7 @@ ForceSigninVerifier::ForceSigninVerifier(
       creation_time_(base::TimeTicks::Now()),
       identity_manager_(identity_manager) {
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
-  UMA_HISTOGRAM_BOOLEAN(kForceSigninVerificationMetricsName,
-                        ShouldSendRequest());
+  // Most of time (~94%), sign-in token can be verified with server.
   SendRequest();
 }
 
@@ -59,8 +51,9 @@ void ForceSigninVerifier::OnAccessTokenFetchComplete(
     signin::AccessTokenInfo token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
     if (error.IsPersistentError()) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(kForceSigninVerificationFailureTimeMetricsName,
-                                 base::TimeTicks::Now() - creation_time_);
+      // Based on the obsolete UMA Signin.ForceSigninVerificationTime.Failure,
+      // about 7% verifications are failed. Most of them are finished within
+      // 113ms but some of them (<3%) could take longer than 3 minutes.
       has_token_verified_ = true;
       CloseAllBrowserWindows();
       content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
@@ -77,8 +70,9 @@ void ForceSigninVerifier::OnAccessTokenFetchComplete(
     return;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES(kForceSigninVerificationSuccessTimeMetricsName,
-                             base::TimeTicks::Now() - creation_time_);
+  // Based on the obsolete UMA Signin.ForceSigninVerificationTime.Success, about
+  // 93% verifications are succeeded. Most of them are finished ~1 second but
+  // some of them (<3%) could take longer than 3 minutes.
   has_token_verified_ = true;
   content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
   Cancel();

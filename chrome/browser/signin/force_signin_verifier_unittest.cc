@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/force_signin_verifier.h"
 
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -151,7 +150,6 @@ TEST(ForceSigninVerifierTest, OnGetTokenSuccess) {
   const AccountInfo account_info =
       identity_test_env.MakePrimaryAccountAvailable("email@test.com");
 
-  base::HistogramTester histogram_tester;
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
 
@@ -167,11 +165,6 @@ TEST(ForceSigninVerifierTest, OnGetTokenSuccess) {
   ASSERT_TRUE(verifier.HasTokenBeenVerified());
   ASSERT_FALSE(verifier.IsDelayTaskPosted());
   ASSERT_EQ(0, verifier.FailureCount());
-  histogram_tester.ExpectBucketCount(kForceSigninVerificationMetricsName, 1, 1);
-  histogram_tester.ExpectTotalCount(
-      kForceSigninVerificationSuccessTimeMetricsName, 1);
-  histogram_tester.ExpectTotalCount(
-      kForceSigninVerificationFailureTimeMetricsName, 0);
 }
 
 TEST(ForceSigninVerifierTest, OnGetTokenPersistentFailure) {
@@ -180,7 +173,6 @@ TEST(ForceSigninVerifierTest, OnGetTokenPersistentFailure) {
   const AccountInfo account_info =
       identity_test_env.MakePrimaryAccountAvailable("email@test.com");
 
-  base::HistogramTester histogram_tester;
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
 
@@ -197,11 +189,6 @@ TEST(ForceSigninVerifierTest, OnGetTokenPersistentFailure) {
   ASSERT_TRUE(verifier.HasTokenBeenVerified());
   ASSERT_FALSE(verifier.IsDelayTaskPosted());
   ASSERT_EQ(0, verifier.FailureCount());
-  histogram_tester.ExpectBucketCount(kForceSigninVerificationMetricsName, 1, 1);
-  histogram_tester.ExpectTotalCount(
-      kForceSigninVerificationSuccessTimeMetricsName, 0);
-  histogram_tester.ExpectTotalCount(
-      kForceSigninVerificationFailureTimeMetricsName, 1);
 }
 
 TEST(ForceSigninVerifierTest, OnGetTokenTransientFailure) {
@@ -210,7 +197,6 @@ TEST(ForceSigninVerifierTest, OnGetTokenTransientFailure) {
   const AccountInfo account_info =
       identity_test_env.MakePrimaryAccountAvailable("email@test.com");
 
-  base::HistogramTester histogram_tester;
   ForceSigninVerifierWithAccessToInternalsForTesting verifier(
       identity_test_env.identity_manager());
 
@@ -226,11 +212,6 @@ TEST(ForceSigninVerifierTest, OnGetTokenTransientFailure) {
   ASSERT_FALSE(verifier.HasTokenBeenVerified());
   ASSERT_TRUE(verifier.IsDelayTaskPosted());
   ASSERT_EQ(1, verifier.FailureCount());
-  histogram_tester.ExpectBucketCount(kForceSigninVerificationMetricsName, 1, 1);
-  histogram_tester.ExpectTotalCount(
-      kForceSigninVerificationSuccessTimeMetricsName, 0);
-  histogram_tester.ExpectTotalCount(
-      kForceSigninVerificationFailureTimeMetricsName, 0);
 }
 
 TEST(ForceSigninVerifierTest, OnLostConnection) {
