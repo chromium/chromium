@@ -60,7 +60,8 @@ def ParseArgs():
                       default=None,
                       help=('Path to a csv file containing links to HTML '
                             'traces in CloudStorage in chrome-telemetry-output '
-                            'bucket. '
+                            'bucket. Go to go/get-tbm-traces and follow '
+                            'instructions there to generate the CSV. '
                             'Default: {--traces-dir}/trace_links.csv'))
   parser.add_argument('--trace-processor-path',
                       type=str,
@@ -78,6 +79,8 @@ def DownloadTraceFile(trace_link, traces_dir):
   trace_link_extension = os.path.splitext(trace_link)[1]
   if trace_link.startswith('/'):
     trace_link = trace_link[1:]
+  if not os.path.exists(traces_dir):
+    os.mkdir(traces_dir, 0755)
   with tempfile.NamedTemporaryFile(dir=traces_dir,
                                    suffix='_trace%s' % trace_link_extension,
                                    delete=False) as trace_file:
@@ -86,15 +89,6 @@ def DownloadTraceFile(trace_link, traces_dir):
     logging.debug('Downloading trace to %s\ntrace_link: %s.' %
                   (trace_file.name, trace_link))
     return trace_file.name
-
-
-def GSLinkExists(link):
-  try:
-    cloud_storage.List(cloud_storage.TELEMETRY_OUTPUT, link)
-    return True
-  except Exception, e:
-    logging.info('GS link %s does not exist: %s' % (link, str(e)))
-    return False
 
 
 def GetProtoTraceLinkFromTraceEventsDir(link_prefix):
@@ -111,7 +105,7 @@ def GetProtoTraceLinkFromTraceEventsDir(link_prefix):
     raise cloud_storage.NotFoundError(
         'Proto trace link not found in cloud storage. Path: %s.' %
         proto_link_prefix)
-  except Exception, e:
+  except cloud_storage.NotFoundError, e:
     raise cloud_storage.NotFoundError('No URLs match the prefix %s: %s' %
                                       (proto_link_prefix, str(e)))
 
@@ -140,29 +134,21 @@ def ParseGSLinksFromHTTPLink(http_link):
   retry_0/trace/traceEvents/tmpTq5XNv.pb.gz
   """
   html_link_suffix = '/trace.html'
-  assert http_link.endswith(
-      html_link_suffix), ('Link passed to ParseGSLinksFromHTTPLink is invalid. '
-                          'The link must end with "%s".') % html_link_suffix
+  assert http_link.endswith(html_link_suffix), (
+      'Link passed to ParseGSLinksFromHTTPLink ("%s") is '
+      ' invalid. The link must end with "%s".') % (http_link, html_link_suffix)
 
   html_link = http_link.split('/o/')[1]
-  if not GSLinkExists(html_link):
+  if not cloud_storage.Exists(cloud_storage.TELEMETRY_OUTPUT, html_link):
     raise cloud_storage.NotFoundError(
         'HTML trace link %s not found in cloud storage.' % html_link)
 
   proto_link = os.path.splitext(html_link)[0] + '.pb'
 
-  if not GSLinkExists(proto_link):
+  if not cloud_storage.Exists(cloud_storage.TELEMETRY_OUTPUT, proto_link):
     link_prefix = html_link[:-len(html_link_suffix)]
     proto_link = GetProtoTraceLinkFromTraceEventsDir(link_prefix)
   return html_link, proto_link
-
-
-def ParseBotFromTestName(test_name):
-  return test_name.split('/')[1]
-
-
-def ParseBenchmarkFromMeasurement(measurement):
-  return measurement.split('/')[0]
 
 
 def RunTBMv2Metric(tbmv2_name, html_trace_filename, traces_dir):
@@ -214,11 +200,10 @@ def GetSortedSampleValuesFromJson(histogram_name, json_result_filename):
   return sorted(sample_values)
 
 
-def CalculateTBMv3Metric(tbmv3_name, tbmv3_histogram, tbmv3_json_filename):
+def CalculateTBMv3Metric(tbmv3_histogram, tbmv3_json_filename):
   # TODO(crbug.com/1128919): Add conversion of sample values based on their
   # units.
-  return GetSortedSampleValuesFromJson('%s::%s' % (tbmv3_name, tbmv3_histogram),
-                                       tbmv3_json_filename)
+  return GetSortedSampleValuesFromJson(tbmv3_histogram, tbmv3_json_filename)
 
 
 def CalculateTBMv2Metric(tbmv2_histogram, tbmv2_json_filename):
@@ -232,15 +217,15 @@ def ValidateTBMv3Metric(args):
   debug_info_for_failed_comparisons = []
 
   for trace_info in reader:
-    bot = ParseBotFromTestName(trace_info['test'])
-    benchmark = ParseBenchmarkFromMeasurement(trace_info['measurement'])
-    html_link, proto_link = ParseGSLinksFromHTTPLink(trace_info['trace_link'])
+    bot = trace_info['Bot']
+    benchmark = trace_info['Benchmark']
+    html_link, proto_link = ParseGSLinksFromHTTPLink(trace_info['Trace Link'])
     html_trace = DownloadTraceFile(html_link, args.traces_dir)
     proto_trace = DownloadTraceFile(proto_link, args.traces_dir)
     tbmv3_out_filename = RunTBMv3Metric(args.tbmv3_name, proto_trace,
                                         args.traces_dir,
                                         args.trace_processor_path)
-    tbmv3_metric = CalculateTBMv3Metric(args.tbmv3_name, args.tbmv3_histogram,
+    tbmv3_metric = CalculateTBMv3Metric(args.tbmv3_histogram,
                                         tbmv3_out_filename)
     tbmv2_out_filename = RunTBMv2Metric(args.tbmv2_name, html_trace,
                                         args.traces_dir)
