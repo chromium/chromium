@@ -15,21 +15,24 @@
 class DevToolsContentsResizingStrategy {
  public:
   DevToolsContentsResizingStrategy();
-  explicit DevToolsContentsResizingStrategy(
-      const gfx::Rect& bounds);
+  DevToolsContentsResizingStrategy(const gfx::Rect& bounds, bool is_docked);
 
   void CopyFrom(const DevToolsContentsResizingStrategy& strategy);
   bool Equals(const DevToolsContentsResizingStrategy& strategy);
 
   const gfx::Rect& bounds() const { return bounds_; }
   bool hide_inspected_contents() const { return hide_inspected_contents_; }
+  bool is_docked() const { return is_docked_; }
 
  private:
   // Contents bounds. When non-empty, used instead of insets.
   gfx::Rect bounds_;
 
-  // Determines whether inspected contents is visible.
-  bool hide_inspected_contents_;
+  // Whether inspected contents is hidden.
+  bool hide_inspected_contents_ = false;
+
+  // Whether devtools is docked.
+  bool is_docked_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsContentsResizingStrategy);
 };
