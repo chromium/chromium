@@ -306,6 +306,31 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
   resetNSUserDefaultsForTesting();
 }
 
+TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
+  mediator_.checkDidRun = true;
+  mediator_.passwordCheckRowState = PasswordCheckRowStateUnSafe;
+  [mediator_ resetsCheckStartItemIfNeeded];
+
+  base::Time lastCompletedCheck =
+      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+          doubleForKey:kTimestampOfLastIssueFoundKey]);
+  EXPECT_GE(lastCompletedCheck,
+            base::Time::Now() - base::TimeDelta::FromSeconds(1));
+  EXPECT_LE(lastCompletedCheck,
+            base::Time::Now() + base::TimeDelta::FromSeconds(1));
+
+  mediator_.checkDidRun = true;
+  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
+  [mediator_ resetsCheckStartItemIfNeeded];
+
+  lastCompletedCheck =
+      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+          doubleForKey:kTimestampOfLastIssueFoundKey]);
+  EXPECT_EQ(base::Time(), lastCompletedCheck);
+
+  resetNSUserDefaultsForTesting();
+}
+
 // Safe Browsing check tests.
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingEnabledReturnsSafeState) {
   mediator_.safeBrowsingPreference.value = true;

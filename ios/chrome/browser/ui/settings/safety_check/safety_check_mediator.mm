@@ -769,6 +769,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   if (self.checkDidRun && issuesFound) {
     [self updateTimestampOfLastCheck];
     self.checkDidRun = NO;
+  } else if (self.checkDidRun && !issuesFound) {
+    // Clear the timestamp if the last check found no issues.
+    [[NSUserDefaults standardUserDefaults]
+        setDouble:base::Time().ToDoubleT()
+           forKey:kTimestampOfLastIssueFoundKey];
+    self.checkDidRun = NO;
   }
   // If no checks are still running, reset |checkStartItem|.
   self.checkStartState = CheckStartStateDefault;
@@ -1164,7 +1170,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
                forKey:kTimestampOfLastIssueFoundKey];
 }
 
-// Shows the timestamp if a safety check has previously found issues.
+// Shows the timestamp if the last safety check found issues.
 - (void)showTimestampIfNeeded {
   if (PreviousSafetyCheckIssueFound()) {
     TableViewLinkHeaderFooterItem* footerItem =
@@ -1173,7 +1179,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     footerItem.text = [self formatElapsedTimeSinceLastCheck];
     [self.consumer setTimestampFooterItem:footerItem];
   } else {
-    // Hide the timestamp if safety check has never found issues.
+    // Hide the timestamp if the last safety check didn't find issues.
     [self.consumer setTimestampFooterItem:nil];
   }
 }

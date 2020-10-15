@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// Whether or not safety check previously found an issue.
+// Whether or not previous safety check run found an issue.
 bool PreviousSafetyCheckIssueFound();
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_UTILS_H_
