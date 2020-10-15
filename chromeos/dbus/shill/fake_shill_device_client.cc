@@ -16,7 +16,6 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/values.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "dbus/bus.h"
@@ -79,8 +78,9 @@ void FakeShillDeviceClient::RemovePropertyChangedObserver(
   GetObserverList(device_path).RemoveObserver(observer);
 }
 
-void FakeShillDeviceClient::GetProperties(const dbus::ObjectPath& device_path,
-                                          DictionaryValueCallback callback) {
+void FakeShillDeviceClient::GetProperties(
+    const dbus::ObjectPath& device_path,
+    DBusMethodCallback<base::Value> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillDeviceClient::PassStubDeviceProperties,
@@ -603,7 +603,7 @@ bool FakeShillDeviceClient::SimTryPuk(const std::string& device_path,
 
 void FakeShillDeviceClient::PassStubDeviceProperties(
     const dbus::ObjectPath& device_path,
-    DictionaryValueCallback callback) const {
+    DBusMethodCallback<base::Value> callback) const {
   const base::Value* device_properties =
       stub_devices_.FindDictKey(device_path.value());
   if (!device_properties) {

@@ -31,7 +31,6 @@ namespace chromeos {
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
  public:
-  typedef ShillClientHelper::DictionaryValueCallback DictionaryValueCallback;
   typedef ShillClientHelper::ListValueCallback ListValueCallback;
   typedef ShillClientHelper::ErrorCallback ErrorCallback;
   typedef ShillClientHelper::StringCallback StringCallback;
@@ -134,10 +133,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
       const dbus::ObjectPath& service_path,
       ShillPropertyChangedObserver* observer) = 0;
 
-  // Calls GetProperties method.
-  // |callback| is called after the method call succeeds.
+  // Calls the GetProperties DBus method and invokes |callback| when complete.
+  // |callback| receives a dictionary Value containing the Service properties on
+  // success or nullopt on failure.
   virtual void GetProperties(const dbus::ObjectPath& service_path,
-                             DictionaryValueCallback callback) = 0;
+                             DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call succeeds.
@@ -194,8 +194,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
   // Calls the GetLoadableProfileEntries method.
   // |callback| is called after the method call succeeds.
-  virtual void GetLoadableProfileEntries(const dbus::ObjectPath& service_path,
-                                         DictionaryValueCallback callback) = 0;
+  virtual void GetLoadableProfileEntries(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) = 0;
 
   // Retrieves the saved passphrase for the given network.
   virtual void GetWiFiPassphrase(const dbus::ObjectPath& service_path,

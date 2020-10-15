@@ -31,7 +31,6 @@ class ShillPropertyChangedObserver;
 // or returns an error response.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
  public:
-  typedef ShillClientHelper::DictionaryValueCallback DictionaryValueCallback;
   typedef ShillClientHelper::ErrorCallback ErrorCallback;
 
   struct NetworkThrottlingStatus {
@@ -146,11 +145,16 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   virtual void RemovePropertyChangedObserver(
       ShillPropertyChangedObserver* observer) = 0;
 
-  // Calls GetProperties method.
-  virtual void GetProperties(DictionaryValueCallback callback) = 0;
+  // Calls the GetProperties DBus method and invokes |callback| when complete.
+  // |callback| receives a dictionary Value containing the Manager properties on
+  // success or nullopt on failure.
+  virtual void GetProperties(DBusMethodCallback<base::Value> callback) = 0;
 
-  // Calls GetNetworksForGeolocation method.
-  virtual void GetNetworksForGeolocation(DictionaryValueCallback callback) = 0;
+  // Calls the GetNetworksForGeolocation DBus method and invokes |callback| when
+  // complete. |callback| receives a dictionary Value containing an entry for
+  // available network types. See Shill manager-api documentation for details.
+  virtual void GetNetworksForGeolocation(
+      DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   virtual void SetProperty(const std::string& name,

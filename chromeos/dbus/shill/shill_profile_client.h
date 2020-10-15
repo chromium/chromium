@@ -32,8 +32,6 @@ class ShillPropertyChangedObserver;
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
  public:
-  typedef ShillClientHelper::DictionaryValueCallbackWithoutStatus
-      DictionaryValueCallbackWithoutStatus;
   typedef ShillClientHelper::ErrorCallback ErrorCallback;
 
   // Interface for setting up services for testing. Accessed through
@@ -122,17 +120,19 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
       const dbus::ObjectPath& profile_path,
       ShillPropertyChangedObserver* observer) = 0;
 
-  // Calls GetProperties method.
-  // |callback| is called after the method call succeeds.
-  virtual void GetProperties(const dbus::ObjectPath& profile_path,
-                             DictionaryValueCallbackWithoutStatus callback,
-                             ErrorCallback error_callback) = 0;
+  // Calls the GetProperties DBus method and invokes |callback| on success or
+  // |error_callback| on failure. On success |callback| receives a dictionary
+  // Value containing the Profile properties.
+  virtual void GetProperties(
+      const dbus::ObjectPath& profile_path,
+      base::OnceCallback<void(base::Value result)> callback,
+      ErrorCallback error_callback) = 0;
 
   // Calls GetEntry method.
   // |callback| is called after the method call succeeds.
   virtual void GetEntry(const dbus::ObjectPath& profile_path,
                         const std::string& entry_path,
-                        DictionaryValueCallbackWithoutStatus callback,
+                        base::OnceCallback<void(base::Value result)> callback,
                         ErrorCallback error_callback) = 0;
 
   // Calls DeleteEntry method.

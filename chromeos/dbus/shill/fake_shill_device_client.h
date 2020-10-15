@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 
 namespace chromeos {
@@ -34,7 +35,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
       const dbus::ObjectPath& device_path,
       ShillPropertyChangedObserver* observer) override;
   void GetProperties(const dbus::ObjectPath& device_path,
-                     DictionaryValueCallback callback) override;
+                     DBusMethodCallback<base::Value> callback) override;
   void SetProperty(const dbus::ObjectPath& device_path,
                    const std::string& name,
                    const base::Value& value,
@@ -131,7 +132,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   bool SimTryPin(const std::string& device_path, const std::string& pin);
   bool SimTryPuk(const std::string& device_path, const std::string& pin);
   void PassStubDeviceProperties(const dbus::ObjectPath& device_path,
-                                DictionaryValueCallback callback) const;
+                                DBusMethodCallback<base::Value> callback) const;
 
   // Posts a task to run a void callback with status code |result|.
   void PostVoidCallback(VoidDBusMethodCallback callback, bool result);

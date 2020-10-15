@@ -32,11 +32,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
       const dbus::ObjectPath& profile_path,
       ShillPropertyChangedObserver* observer) override;
   void GetProperties(const dbus::ObjectPath& profile_path,
-                     DictionaryValueCallbackWithoutStatus callback,
+                     base::OnceCallback<void(base::Value result)> callback,
                      ErrorCallback error_callback) override;
   void GetEntry(const dbus::ObjectPath& profile_path,
                 const std::string& entry_path,
-                DictionaryValueCallbackWithoutStatus callback,
+                base::OnceCallback<void(base::Value result)> callback,
                 ErrorCallback error_callback) override;
   void DeleteEntry(const dbus::ObjectPath& profile_path,
                    const std::string& entry_path,

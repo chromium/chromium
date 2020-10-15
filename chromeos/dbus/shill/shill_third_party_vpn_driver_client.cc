@@ -14,6 +14,7 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_observer.h"
 #include "dbus/bus.h"

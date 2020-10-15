@@ -12,7 +12,6 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/values.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -37,7 +36,7 @@ void FakeShillIPConfigClient::RemovePropertyChangedObserver(
 
 void FakeShillIPConfigClient::GetProperties(
     const dbus::ObjectPath& ipconfig_path,
-    DictionaryValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   const base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
   if (!dict)
     return;

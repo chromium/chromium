@@ -35,7 +35,6 @@ class ShillPropertyChangedObserver;
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
  public:
-  typedef ShillClientHelper::DictionaryValueCallback DictionaryValueCallback;
   typedef ShillClientHelper::StringCallback StringCallback;
   typedef ShillClientHelper::ErrorCallback ErrorCallback;
 
@@ -91,10 +90,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
       const dbus::ObjectPath& device_path,
       ShillPropertyChangedObserver* observer) = 0;
 
-  // Calls GetProperties method.
-  // |callback| is called after the method call finishes.
+  // Calls the GetProperties DBus method and invokes |callback| when complete.
+  // |callback| receives a dictionary Value containing the Device properties on
+  // success or nullopt on failure.
   virtual void GetProperties(const dbus::ObjectPath& device_path,
-                             DictionaryValueCallback callback) = 0;
+                             DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call finishes.

@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/values.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
@@ -157,8 +156,9 @@ void FakeShillServiceClient::RemovePropertyChangedObserver(
   GetObserverList(service_path).RemoveObserver(observer);
 }
 
-void FakeShillServiceClient::GetProperties(const dbus::ObjectPath& service_path,
-                                           DictionaryValueCallback callback) {
+void FakeShillServiceClient::GetProperties(
+    const dbus::ObjectPath& service_path,
+    DBusMethodCallback<base::Value> callback) {
   base::DictionaryValue* nested_dict = nullptr;
   base::Optional<base::Value> result_properties;
   stub_services_.GetDictionaryWithoutPathExpansion(service_path.value(),
@@ -315,7 +315,7 @@ void FakeShillServiceClient::CompleteCellularActivation(
 
 void FakeShillServiceClient::GetLoadableProfileEntries(
     const dbus::ObjectPath& service_path,
-    DictionaryValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   ShillProfileClient::TestInterface* profile_client =
       ShillProfileClient::Get()->GetTestInterface();
   std::vector<std::string> profiles;

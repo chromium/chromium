@@ -61,11 +61,10 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
   }
 
   void GetProperties(const dbus::ObjectPath& device_path,
-                     DictionaryValueCallback callback) override {
+                     DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamDeviceInterface,
                                  shill::kGetPropertiesFunction);
-    GetHelper(device_path)
-        ->CallDictionaryValueMethod(&method_call, std::move(callback));
+    GetHelper(device_path)->CallValueMethod(&method_call, std::move(callback));
   }
 
   void SetProperty(const dbus::ObjectPath& device_path,

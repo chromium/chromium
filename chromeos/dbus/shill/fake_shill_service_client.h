@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 
 namespace chromeos {
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
       const dbus::ObjectPath& service_path,
       ShillPropertyChangedObserver* observer) override;
   void GetProperties(const dbus::ObjectPath& service_path,
-                     DictionaryValueCallback callback) override;
+                     DBusMethodCallback<base::Value> callback) override;
   void SetProperty(const dbus::ObjectPath& service_path,
                    const std::string& name,
                    const base::Value& value,
@@ -65,8 +66,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void CompleteCellularActivation(const dbus::ObjectPath& service_path,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
-  void GetLoadableProfileEntries(const dbus::ObjectPath& service_path,
-                                 DictionaryValueCallback callback) override;
+  void GetLoadableProfileEntries(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) override;
   void GetWiFiPassphrase(const dbus::ObjectPath& service_path,
                          StringCallback callback,
                          ErrorCallback error_callback) override;

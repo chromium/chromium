@@ -255,7 +255,8 @@ void FakeShillManagerClient::RemovePropertyChangedObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-void FakeShillManagerClient::GetProperties(DictionaryValueCallback callback) {
+void FakeShillManagerClient::GetProperties(
+    DBusMethodCallback<base::Value> callback) {
   VLOG(1) << "Manager.GetProperties";
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -264,7 +265,7 @@ void FakeShillManagerClient::GetProperties(DictionaryValueCallback callback) {
 }
 
 void FakeShillManagerClient::GetNetworksForGeolocation(
-    DictionaryValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubGeoNetworks,
@@ -1052,7 +1053,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 // Private methods
 
 void FakeShillManagerClient::PassStubProperties(
-    DictionaryValueCallback callback) const {
+    DBusMethodCallback<base::Value> callback) const {
   base::Value stub_properties = stub_properties_.Clone();
   stub_properties.SetKey(shill::kServiceCompleteListProperty,
                          GetEnabledServiceList());
@@ -1060,7 +1061,7 @@ void FakeShillManagerClient::PassStubProperties(
 }
 
 void FakeShillManagerClient::PassStubGeoNetworks(
-    DictionaryValueCallback callback) const {
+    DBusMethodCallback<base::Value> callback) const {
   std::move(callback).Run(stub_geo_networks_.Clone());
 }
 

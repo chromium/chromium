@@ -45,7 +45,7 @@ void FakeShillProfileClient::RemovePropertyChangedObserver(
 
 void FakeShillProfileClient::GetProperties(
     const dbus::ObjectPath& profile_path,
-    DictionaryValueCallbackWithoutStatus callback,
+    base::OnceCallback<void(base::Value result)> callback,
     ErrorCallback error_callback) {
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
@@ -68,7 +68,7 @@ void FakeShillProfileClient::GetProperties(
 void FakeShillProfileClient::GetEntry(
     const dbus::ObjectPath& profile_path,
     const std::string& entry_path,
-    DictionaryValueCallbackWithoutStatus callback,
+    base::OnceCallback<void(base::Value result)> callback,
     ErrorCallback error_callback) {
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
