@@ -2266,6 +2266,16 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
         ],
       },
+      'chromeos-betty-pi-arc-chrome-beta': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
+      'chromeos-betty-pi-arc-chrome-stable': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
       'linux-chromeos-chrome': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
