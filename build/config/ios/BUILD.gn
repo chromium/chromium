@@ -84,25 +84,19 @@ config("compiler") {
 # that is iOS-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
+  _sysroot_path = sysroot
   if (ios_enable_relative_sdk_path) {
-    common_flags = [
-      "-isysroot",
-      rebase_path(sysroot, root_build_dir),
-    ]
-    swiftflags = [
-      "-sdk",
-      rebase_path(sysroot, root_build_dir),
-    ]
-  } else {
-    common_flags = [
-      "-isysroot",
-      sysroot,
-    ]
-    swiftflags = [
-      "-sdk",
-      sysroot,
-    ]
+    _sysroot_path = rebase_path(sysroot, root_build_dir)
   }
+
+  common_flags = [
+    "-isysroot",
+    _sysroot_path,
+  ]
+  swiftflags = [
+    "-sdk",
+    _sysroot_path,
+  ]
 
   if (use_xcode_clang && enable_ios_bitcode && !use_ios_simulator) {
     if (is_debug) {
