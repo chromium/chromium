@@ -89,6 +89,7 @@ js_modulizer("modulize") {
     "timezone_selector_test.js",
     "timezone_subpage_test.js",
     "test_cups_printers_browser_proxy.js",
+    "user_page_tests.js",
     "cups_printer_page_tests.js",
     "cups_printer_test_utils.js",
     "cups_printer_landing_page_tests.js",

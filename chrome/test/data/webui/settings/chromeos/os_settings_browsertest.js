@@ -219,6 +219,30 @@ TEST_F('OSSettingsAddUsersTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Tests for settings-user-page
+// eslint-disable-next-line no-var
+var OSSettingsUserPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'accounts.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      '//ui/webui/resources/js/assert.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
+      'fake_users_private.js',
+      'user_page_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsUserPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Tests for ambient mode page.
 // eslint-disable-next-line no-var
 var OSSettingsAmbientModePageTest = class extends OSSettingsBrowserTest {

@@ -46,14 +46,18 @@ Polymer({
     }
   },
 
+  /** chrome.usersPrivate */
+  usersPrivate_: chrome.usersPrivate,
+
   /** @override */
   ready() {
     chrome.settingsPrivate.onPrefsChanged.addListener(prefs => {
       prefs.forEach(function(pref) {
         if (pref.key == 'cros.accounts.users') {
-          chrome.usersPrivate.getUsers(users => {
-            this.setUsers_(users);
-          });
+          this.usersPrivate_.getUsers(
+              (/** !Array<!chrome.usersPrivate.User> */ users) => {
+                this.setUsers_(users);
+              });
         }
       }, this);
     });
@@ -63,9 +67,10 @@ Polymer({
   currentRouteChanged() {
     if (settings.Router.getInstance().getCurrentRoute() ==
         settings.routes.ACCOUNTS) {
-      chrome.usersPrivate.getUsers(users => {
-        this.setUsers_(users);
-      });
+      this.usersPrivate_.getUsers(
+          (/** !Array<!chrome.usersPrivate.User> */ users) => {
+            this.setUsers_(users);
+          });
     }
   },
 
@@ -99,7 +104,13 @@ Polymer({
    * @param {!{model: !{item: !chrome.usersPrivate.User}}} e
    */
   removeUser_(e) {
-    chrome.usersPrivate.removeUser(
+    // Focus the add user button since, after this removal, the only user left
+    // will be the account owner.
+    if (this.users_.length === 2) {
+      this.fire('all-managed-users-removed');
+    }
+
+    this.usersPrivate_.removeUser(
         e.model.item.email, /* callback */ function() {});
   },
 

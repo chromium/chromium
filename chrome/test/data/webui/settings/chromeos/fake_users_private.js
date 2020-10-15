@@ -24,6 +24,14 @@ cr.define('settings', function() {
       this.users.push(user);
     },
 
+    getUsers: function(callback) {
+      return callback(this.users);
+    },
+
+    removeUser: function(email, callback) {
+      this.users = this.users.filter(user => user.email !== email);
+    },
+
     isUserInList: function(user, callback) {
       callback(this.users.includes(user));
     },

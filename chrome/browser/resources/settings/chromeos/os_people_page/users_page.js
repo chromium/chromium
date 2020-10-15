@@ -60,6 +60,8 @@ Polymer({
     },
   },
 
+  listeners: {'all-managed-users-removed': 'focusAddUserButton_'},
+
   /** @override */
   created() {
     chrome.usersPrivate.getCurrentUser(user => {
@@ -123,7 +125,7 @@ Polymer({
 
   /** @private */
   onAddUserDialogClose_() {
-    cr.ui.focusWithoutInk(assert(this.$$('#add-user-button a')));
+    this.focusAddUserButton_();
   },
 
   /**
@@ -151,5 +153,10 @@ Polymer({
   /** @return {boolean} */
   shouldHideModifiedByOwnerLabel_() {
     return this.isUserListManaged_ || this.isOwner_;
+  },
+
+  /** @private */
+  focusAddUserButton_() {
+    cr.ui.focusWithoutInk(assert(this.$$('#add-user-button a')));
   },
 });
