@@ -169,8 +169,10 @@ void DialogExample::CreateExampleView(View* container) {
       kFixed, kButtonsColumnId, kFixed,
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
-  show_ = layout->AddView(
-      std::make_unique<views::MdTextButton>(this, base::ASCIIToUTF16("Show")));
+  show_ = layout->AddView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&DialogExample::ShowButtonPressed,
+                          base::Unretained(this)),
+      base::ASCIIToUTF16("Show")));
 }
 
 void DialogExample::StartRowWithLabel(GridLayout* layout, const char* label) {
@@ -194,7 +196,10 @@ void DialogExample::StartTextfieldRow(GridLayout* layout,
 }
 
 void DialogExample::AddCheckbox(GridLayout* layout, Checkbox** member) {
-  auto checkbox = std::make_unique<Checkbox>(base::string16(), this);
+  auto callback = member == &bubble_ ? &DialogExample::BubbleCheckboxPressed
+                                     : &DialogExample::OtherCheckboxPressed;
+  auto checkbox = std::make_unique<Checkbox>(
+      base::string16(), base::BindRepeating(callback, base::Unretained(this)));
   checkbox->SetChecked(true);
   *member = layout->AddView(std::move(checkbox));
 }
@@ -243,49 +248,48 @@ void DialogExample::ResizeDialog() {
   widget->OnSizeConstraintsChanged();
 }
 
-void DialogExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (sender == show_) {
-    if (bubble_->GetChecked()) {
-      // |bubble| will be destroyed by its widget when the widget is destroyed.
-      Bubble* bubble = new Bubble(this, sender);
-      last_dialog_ = bubble;
-      BubbleDialogDelegateView::CreateBubble(bubble);
-    } else {
-      // |dialog| will be destroyed by its widget when the widget is destroyed.
-      Dialog* dialog = new Dialog(this);
-      last_dialog_ = dialog;
-      dialog->InitDelegate();
+void DialogExample::ShowButtonPressed() {
+  if (bubble_->GetChecked()) {
+    // |bubble| will be destroyed by its widget when the widget is destroyed.
+    Bubble* bubble = new Bubble(this, show_);
+    last_dialog_ = bubble;
+    BubbleDialogDelegateView::CreateBubble(bubble);
+  } else {
+    // |dialog| will be destroyed by its widget when the widget is destroyed.
+    Dialog* dialog = new Dialog(this);
+    last_dialog_ = dialog;
+    dialog->InitDelegate();
 
-      // constrained_window::CreateBrowserModalDialogViews() allows dialogs to
-      // be created as MODAL_TYPE_WINDOW without specifying a parent.
-      gfx::NativeView parent = nullptr;
-      if (mode_->GetSelectedIndex() != kFakeModeless)
-        parent = example_view()->GetWidget()->GetNativeView();
+    // constrained_window::CreateBrowserModalDialogViews() allows dialogs to
+    // be created as MODAL_TYPE_WINDOW without specifying a parent.
+    gfx::NativeView parent = nullptr;
+    if (mode_->GetSelectedIndex() != kFakeModeless)
+      parent = example_view()->GetWidget()->GetNativeView();
 
-      DialogDelegate::CreateDialogWidget(
-          dialog, example_view()->GetWidget()->GetNativeWindow(), parent);
-    }
-    last_dialog_->GetWidget()->Show();
-    return;
+    DialogDelegate::CreateDialogWidget(
+        dialog, example_view()->GetWidget()->GetNativeWindow(), parent);
   }
+  last_dialog_->GetWidget()->Show();
+}
 
-  if (sender == bubble_) {
-    if (bubble_->GetChecked() && GetModalType() != ui::MODAL_TYPE_CHILD) {
-      mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
-      LogStatus("You nearly always want Child Modal for bubbles.");
-    }
-    persistent_bubble_->SetEnabled(bubble_->GetChecked());
-    OnPerformAction();  // Validate the modal type.
-
-    if (!bubble_->GetChecked() && GetModalType() == ui::MODAL_TYPE_CHILD) {
-      // Do something reasonable when simply unchecking bubble and re-enable.
-      mode_->SetSelectedIndex(ui::MODAL_TYPE_WINDOW);
-      OnPerformAction();
-    }
-    return;
+void DialogExample::BubbleCheckboxPressed() {
+  if (bubble_->GetChecked() && GetModalType() != ui::MODAL_TYPE_CHILD) {
+    mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
+    LogStatus("You nearly always want Child Modal for bubbles.");
   }
+  persistent_bubble_->SetEnabled(bubble_->GetChecked());
+  OnPerformAction();  // Validate the modal type.
 
-  // Other buttons are all checkboxes. Update the dialog if there is one.
+  if (!bubble_->GetChecked() && GetModalType() == ui::MODAL_TYPE_CHILD) {
+    // Do something reasonable when simply unchecking bubble and re-enable.
+    mode_->SetSelectedIndex(ui::MODAL_TYPE_WINDOW);
+    OnPerformAction();
+  }
+}
+
+void DialogExample::OtherCheckboxPressed() {
+  // Buttons other than show and bubble are pressed. They are all checkboxes.
+  // Update the dialog if there is one.
   if (last_dialog_) {
     last_dialog_->DialogModelChanged();
     ResizeDialog();

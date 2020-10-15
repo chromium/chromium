@@ -125,21 +125,21 @@ void LabelExample::CreateExampleView(View* container) {
   AddCustomLabel(container);
 }
 
-void LabelExample::ButtonPressed(Button* button, const ui::Event& event) {
-  if (button == multiline_) {
-    custom_label_->SetMultiLine(multiline_->GetChecked());
-  } else if (button == shadows_) {
-    gfx::ShadowValues shadows;
-    if (shadows_->GetChecked()) {
-      shadows.push_back(gfx::ShadowValue(gfx::Vector2d(), 1, SK_ColorRED));
-      shadows.push_back(gfx::ShadowValue(gfx::Vector2d(2, 2), 0, SK_ColorGRAY));
-    }
-    custom_label_->SetShadows(shadows);
-  } else if (button == selectable_) {
-    custom_label_->SetSelectable(selectable_->GetChecked());
+void LabelExample::MultilineCheckboxPressed() {
+  custom_label_->SetMultiLine(multiline_->GetChecked());
+}
+
+void LabelExample::ShadowsCheckboxPressed() {
+  gfx::ShadowValues shadows;
+  if (shadows_->GetChecked()) {
+    shadows.push_back(gfx::ShadowValue(gfx::Vector2d(), 1, SK_ColorRED));
+    shadows.push_back(gfx::ShadowValue(gfx::Vector2d(2, 2), 0, SK_ColorGRAY));
   }
-  custom_label_->parent()->parent()->InvalidateLayout();
-  custom_label_->SchedulePaint();
+  custom_label_->SetShadows(shadows);
+}
+
+void LabelExample::SelectableCheckboxPressed() {
+  custom_label_->SetSelectable(selectable_->GetChecked());
 }
 
 void LabelExample::ContentsChanged(Textfield* sender,
@@ -187,12 +187,18 @@ void LabelExample::AddCustomLabel(View* container) {
   column_set->AddColumn(GridLayout::LEADING, GridLayout::LEADING, 0,
                         GridLayout::ColumnSize::kUsePreferred, 0, 0);
   layout->StartRow(0, 1);
-  multiline_ = layout->AddView(
-      std::make_unique<Checkbox>(base::ASCIIToUTF16("Multiline"), this));
-  shadows_ = layout->AddView(
-      std::make_unique<Checkbox>(base::ASCIIToUTF16("Shadows"), this));
-  selectable_ = layout->AddView(
-      std::make_unique<Checkbox>(base::ASCIIToUTF16("Selectable"), this));
+  multiline_ = layout->AddView(std::make_unique<Checkbox>(
+      base::ASCIIToUTF16("Multiline"),
+      base::BindRepeating(&LabelExample::MultilineCheckboxPressed,
+                          base::Unretained(this))));
+  shadows_ = layout->AddView(std::make_unique<Checkbox>(
+      base::ASCIIToUTF16("Shadows"),
+      base::BindRepeating(&LabelExample::ShadowsCheckboxPressed,
+                          base::Unretained(this))));
+  selectable_ = layout->AddView(std::make_unique<Checkbox>(
+      base::ASCIIToUTF16("Selectable"),
+      base::BindRepeating(&LabelExample::SelectableCheckboxPressed,
+                          base::Unretained(this))));
   layout->AddPaddingRow(0, 8);
 
   column_set = layout->AddColumnSet(2);

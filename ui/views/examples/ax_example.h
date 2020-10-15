@@ -6,16 +6,16 @@
 #define UI_VIEWS_EXAMPLES_AX_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
 
+class Button;
+
 namespace examples {
 
 // ButtonExample simply counts the number of clicks.
-class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase,
-                                        public ButtonListener {
+class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase {
  public:
   AxExample();
   ~AxExample() override;
@@ -24,9 +24,6 @@ class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase,
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
   Button* announce_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AxExample);

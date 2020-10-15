@@ -6,7 +6,6 @@
 #define UI_VIEWS_EXAMPLES_LABEL_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
@@ -20,7 +19,6 @@ class Label;
 namespace examples {
 
 class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
-                                           public ButtonListener,
                                            public TextfieldController {
  public:
   LabelExample();
@@ -29,8 +27,9 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   // ExampleBase:
   void CreateExampleView(View* container) override;
 
-  // ButtonListener:
-  void ButtonPressed(Button* button, const ui::Event& event) override;
+  void MultilineCheckboxPressed();
+  void ShadowsCheckboxPressed();
+  void SelectableCheckboxPressed();
 
   // TextfieldController:
   void ContentsChanged(Textfield* sender,

@@ -76,16 +76,17 @@ void AddLabeledRowToGridLayout(GridLayout* layout,
 // button in |*primary| is a call-to-action button, and the button in
 // |*secondary| is a regular button.
 std::vector<std::unique_ptr<MdTextButton>> MakeButtonsInState(
-    ButtonListener* listener,
     Button::ButtonState state) {
   std::vector<std::unique_ptr<MdTextButton>> buttons;
   const base::string16 button_text = base::ASCIIToUTF16("Button");
-  auto primary = std::make_unique<views::MdTextButton>(listener, button_text);
+  auto primary = std::make_unique<views::MdTextButton>(
+      Button::PressedCallback(), button_text);
   primary->SetProminent(true);
   primary->SetState(state);
   buttons.push_back(std::move(primary));
 
-  auto secondary = std::make_unique<views::MdTextButton>(listener, button_text);
+  auto secondary = std::make_unique<views::MdTextButton>(
+      Button::PressedCallback(), button_text);
   secondary->SetState(state);
   buttons.push_back(std::move(secondary));
   return buttons;
@@ -108,19 +109,15 @@ void ButtonStickerSheet::CreateExampleView(View* container) {
   AddLabeledRowToGridLayout(layout, std::string(), std::move(plainLabel));
 
   AddLabeledRowToGridLayout(layout, "Default",
-                            MakeButtonsInState(this, Button::STATE_NORMAL));
+                            MakeButtonsInState(Button::STATE_NORMAL));
   AddLabeledRowToGridLayout(layout, "Normal",
-                            MakeButtonsInState(this, Button::STATE_NORMAL));
+                            MakeButtonsInState(Button::STATE_NORMAL));
   AddLabeledRowToGridLayout(layout, "Hovered",
-                            MakeButtonsInState(this, Button::STATE_HOVERED));
+                            MakeButtonsInState(Button::STATE_HOVERED));
   AddLabeledRowToGridLayout(layout, "Pressed",
-                            MakeButtonsInState(this, Button::STATE_PRESSED));
+                            MakeButtonsInState(Button::STATE_PRESSED));
   AddLabeledRowToGridLayout(layout, "Disabled",
-                            MakeButtonsInState(this, Button::STATE_DISABLED));
-}
-
-void ButtonStickerSheet::ButtonPressed(Button* button, const ui::Event& event) {
-  // Ignore button presses.
+                            MakeButtonsInState(Button::STATE_DISABLED));
 }
 
 }  // namespace examples
