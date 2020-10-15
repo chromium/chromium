@@ -20,6 +20,8 @@
 
 #include "absl/flags/flag.h"
 #include "absl/flags/marshalling.h"
+#include "absl/flags/parse.h"
+#include "absl/flags/reflection.h"
 #include "absl/strings/string_view.h"
 #include "absl/time/time.h"
 #include "absl/types/optional.h"
@@ -103,6 +105,23 @@ std::string AbslUnparseFlag(const UDT&) { return ""; }
 
 BENCHMARKED_TYPES(FLAG_DEF)
 
+// Register thousands of flags to bloat up the size of the registry.
+// This mimics real life production binaries.
+#define DEFINE_FLAG_0(name) ABSL_FLAG(int, name, 0, "");
+#define DEFINE_FLAG_1(name) DEFINE_FLAG_0(name##0) DEFINE_FLAG_0(name##1)
+#define DEFINE_FLAG_2(name) DEFINE_FLAG_1(name##0) DEFINE_FLAG_1(name##1)
+#define DEFINE_FLAG_3(name) DEFINE_FLAG_2(name##0) DEFINE_FLAG_2(name##1)
+#define DEFINE_FLAG_4(name) DEFINE_FLAG_3(name##0) DEFINE_FLAG_3(name##1)
+#define DEFINE_FLAG_5(name) DEFINE_FLAG_4(name##0) DEFINE_FLAG_4(name##1)
+#define DEFINE_FLAG_6(name) DEFINE_FLAG_5(name##0) DEFINE_FLAG_5(name##1)
+#define DEFINE_FLAG_7(name) DEFINE_FLAG_6(name##0) DEFINE_FLAG_6(name##1)
+#define DEFINE_FLAG_8(name) DEFINE_FLAG_7(name##0) DEFINE_FLAG_7(name##1)
+#define DEFINE_FLAG_9(name) DEFINE_FLAG_8(name##0) DEFINE_FLAG_8(name##1)
+#define DEFINE_FLAG_10(name) DEFINE_FLAG_9(name##0) DEFINE_FLAG_9(name##1)
+#define DEFINE_FLAG_11(name) DEFINE_FLAG_10(name##0) DEFINE_FLAG_10(name##1)
+#define DEFINE_FLAG_12(name) DEFINE_FLAG_11(name##0) DEFINE_FLAG_11(name##1)
+DEFINE_FLAG_12(bloat_flag_);
+
 namespace {
 
 #define BM_GetFlag(T)                                            \
@@ -114,6 +133,20 @@ namespace {
   BENCHMARK(BM_GetFlag_##T);
 
 BENCHMARKED_TYPES(BM_GetFlag)
+
+void BM_ThreadedFindCommandLineFlag(benchmark::State& state) {
+  char dummy[] = "dummy";
+  char* argv[] = {dummy};
+  // We need to ensure that flags have been parsed. That is where the registry
+  // is finalized.
+  absl::ParseCommandLine(1, argv);
+
+  for (auto s : state) {
+    benchmark::DoNotOptimize(
+        absl::FindCommandLineFlag("bloat_flag_010101010101"));
+  }
+}
+BENCHMARK(BM_ThreadedFindCommandLineFlag)->ThreadRange(1, 16);
 
 }  // namespace
 

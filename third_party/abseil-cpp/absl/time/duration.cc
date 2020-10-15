@@ -356,7 +356,7 @@ namespace time_internal {
 // the remainder.  If it does not saturate, the remainder remain accurate,
 // but the returned quotient will over/underflow int64_t and should not be used.
 int64_t IDivDuration(bool satq, const Duration num, const Duration den,
-                   Duration* rem) {
+                     Duration* rem) {
   int64_t q = 0;
   if (IDivFastPath(num, den, &q, rem)) {
     return q;

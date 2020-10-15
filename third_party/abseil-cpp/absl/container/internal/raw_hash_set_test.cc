@@ -847,7 +847,8 @@ TEST(Table, EraseMaintainsValidIterator) {
 std::vector<int64_t> CollectBadMergeKeys(size_t N) {
   static constexpr int kGroupSize = Group::kWidth - 1;
 
-  auto topk_range = [](size_t b, size_t e, IntTable* t) -> std::vector<int64_t> {
+  auto topk_range = [](size_t b, size_t e,
+                       IntTable* t) -> std::vector<int64_t> {
     for (size_t i = b; i != e; ++i) {
       t->emplace(i);
     }
@@ -1001,8 +1002,8 @@ using ProbeStatsPerSize = std::map<size_t, ProbeStats>;
 // 1. Create new table and reserve it to keys.size() * 2
 // 2. Insert all keys xored with seed
 // 3. Collect ProbeStats from final table.
-ProbeStats CollectProbeStatsOnKeysXoredWithSeed(const std::vector<int64_t>& keys,
-                                                size_t num_iters) {
+ProbeStats CollectProbeStatsOnKeysXoredWithSeed(
+    const std::vector<int64_t>& keys, size_t num_iters) {
   const size_t reserve_size = keys.size() * 2;
 
   ProbeStats stats;

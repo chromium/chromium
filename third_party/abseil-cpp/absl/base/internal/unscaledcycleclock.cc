@@ -123,9 +123,7 @@ double UnscaledCycleClock::Frequency() {
 
 #pragma intrinsic(__rdtsc)
 
-int64_t UnscaledCycleClock::Now() {
-  return __rdtsc();
-}
+int64_t UnscaledCycleClock::Now() { return __rdtsc(); }
 
 double UnscaledCycleClock::Frequency() {
   return base_internal::NominalCPUFrequency();

@@ -419,8 +419,8 @@ TEST(GenerateRealTest, ExhaustiveFloat) {
   };
 
   // Rely on RandU64ToFloat generating values from greatest to least when
-  // supplied with uint64_t values from greatest (0xfff...) to least (0x0).  Thus,
-  // this algorithm stores the previous value, and if the new value is at
+  // supplied with uint64_t values from greatest (0xfff...) to least (0x0).
+  // Thus, this algorithm stores the previous value, and if the new value is at
   // greater than or equal to the previous value, then there is a collision in
   // the generation algorithm.
   //

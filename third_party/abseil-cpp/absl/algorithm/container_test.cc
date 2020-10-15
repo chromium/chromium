@@ -183,6 +183,17 @@ TEST_F(NonMutatingTest, Mismatch) {
     EXPECT_EQ(result.first, sequence_.end());
     EXPECT_EQ(result.second, std::prev(vector_.end()));
   }
+  {
+    struct NoNotEquals {
+      constexpr bool operator==(NoNotEquals) const { return true; }
+      constexpr bool operator!=(NoNotEquals) const = delete;
+    };
+    std::vector<NoNotEquals> first;
+    std::list<NoNotEquals> second;
+
+    // Check this still compiles.
+    absl::c_mismatch(first, second);
+  }
 }
 
 TEST_F(NonMutatingTest, MismatchWithPredicate) {

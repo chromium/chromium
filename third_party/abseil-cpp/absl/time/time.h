@@ -639,7 +639,7 @@ class Time {
   // Deprecated. Use `absl::TimeZone::CivilInfo`.
   struct
       Breakdown {
-    int64_t year;          // year (e.g., 2013)
+    int64_t year;        // year (e.g., 2013)
     int month;           // month of year [1:12]
     int day;             // day of month [1:31]
     int hour;            // hour of day [0:23]
@@ -1494,12 +1494,10 @@ constexpr Duration Hours(int64_t n) {
 constexpr bool operator<(Duration lhs, Duration rhs) {
   return time_internal::GetRepHi(lhs) != time_internal::GetRepHi(rhs)
              ? time_internal::GetRepHi(lhs) < time_internal::GetRepHi(rhs)
-             : time_internal::GetRepHi(lhs) ==
-                       (std::numeric_limits<int64_t>::min)()
-                   ? time_internal::GetRepLo(lhs) + 1 <
-                         time_internal::GetRepLo(rhs) + 1
-                   : time_internal::GetRepLo(lhs) <
-                         time_internal::GetRepLo(rhs);
+         : time_internal::GetRepHi(lhs) == (std::numeric_limits<int64_t>::min)()
+             ? time_internal::GetRepLo(lhs) + 1 <
+                   time_internal::GetRepLo(rhs) + 1
+             : time_internal::GetRepLo(lhs) < time_internal::GetRepLo(rhs);
 }
 
 constexpr bool operator==(Duration lhs, Duration rhs) {

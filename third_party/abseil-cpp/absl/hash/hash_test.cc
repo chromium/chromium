@@ -82,8 +82,8 @@ TYPED_TEST_P(HashValueIntTest, FastPath) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(HashValueIntTest, BasicUsage, FastPath);
-using IntTypes = testing::Types<unsigned char, char, int, int32_t, int64_t, uint32_t,
-                                uint64_t, size_t>;
+using IntTypes = testing::Types<unsigned char, char, int, int32_t, int64_t,
+                                uint32_t, uint64_t, size_t>;
 INSTANTIATE_TYPED_TEST_CASE_P(My, HashValueIntTest, IntTypes);
 
 enum LegacyEnum { kValue1, kValue2, kValue3 };
@@ -819,8 +819,8 @@ TYPED_TEST_P(HashIntTest, BasicUsage) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(HashIntTest, BasicUsage);
-using IntTypes = testing::Types<unsigned char, char, int, int32_t, int64_t, uint32_t,
-                                uint64_t, size_t>;
+using IntTypes = testing::Types<unsigned char, char, int, int32_t, int64_t,
+                                uint32_t, uint64_t, size_t>;
 INSTANTIATE_TYPED_TEST_CASE_P(My, HashIntTest, IntTypes);
 
 struct StructWithPadding {

@@ -27,7 +27,7 @@ constexpr size_t Group::kWidth;
 
 // Returns "random" seed.
 inline size_t RandomSeed() {
-#if ABSL_HAVE_THREAD_LOCAL
+#ifdef ABSL_HAVE_THREAD_LOCAL
   static thread_local size_t counter = 0;
   size_t value = ++counter;
 #else   // ABSL_HAVE_THREAD_LOCAL

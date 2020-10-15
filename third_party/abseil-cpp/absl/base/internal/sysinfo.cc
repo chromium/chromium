@@ -426,7 +426,7 @@ pid_t GetTID() {
 // userspace construct) to avoid unnecessary system calls. Without this caching,
 // it can take roughly 98ns, while it takes roughly 1ns with this caching.
 pid_t GetCachedTID() {
-#if ABSL_HAVE_THREAD_LOCAL
+#ifdef ABSL_HAVE_THREAD_LOCAL
   static thread_local pid_t thread_id = GetTID();
   return thread_id;
 #else

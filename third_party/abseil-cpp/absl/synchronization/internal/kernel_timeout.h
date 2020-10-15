@@ -26,6 +26,7 @@
 #define ABSL_SYNCHRONIZATION_INTERNAL_KERNEL_TIMEOUT_H_
 
 #include <time.h>
+
 #include <algorithm>
 #include <limits>
 
@@ -142,7 +143,7 @@ inline struct timespec KernelTimeout::MakeAbsTimespec() {
 
   struct timespec abstime;
   int64_t seconds = (std::min)(n / kNanosPerSecond,
-                             int64_t{(std::numeric_limits<time_t>::max)()});
+                               int64_t{(std::numeric_limits<time_t>::max)()});
   abstime.tv_sec = static_cast<time_t>(seconds);
   abstime.tv_nsec = static_cast<decltype(abstime.tv_nsec)>(n % kNanosPerSecond);
   return abstime;

@@ -381,6 +381,8 @@ cc_binary(
     deps = [
         ":flag",
         ":marshalling",
+        ":parse",
+        ":reflection",
         "//absl/strings",
         "//absl/time",
         "//absl/types:optional",

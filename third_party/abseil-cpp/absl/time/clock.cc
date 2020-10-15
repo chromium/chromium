@@ -74,9 +74,7 @@ ABSL_NAMESPACE_END
 #if !ABSL_USE_CYCLECLOCK_FOR_GET_CURRENT_TIME_NANOS
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-int64_t GetCurrentTimeNanos() {
-  return GET_CURRENT_TIME_NANOS_FROM_SYSTEM();
-}
+int64_t GetCurrentTimeNanos() { return GET_CURRENT_TIME_NANOS_FROM_SYSTEM(); }
 ABSL_NAMESPACE_END
 }  // namespace absl
 #else  // Use the cyclecounter-based implementation below.

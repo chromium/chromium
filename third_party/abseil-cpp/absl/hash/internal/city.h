@@ -71,7 +71,7 @@ uint64_t CityHash64WithSeed(const char *s, size_t len, uint64_t seed);
 // Hash function for a byte array.  For convenience, two seeds are also
 // hashed into the result.
 uint64_t CityHash64WithSeeds(const char *s, size_t len, uint64_t seed0,
-                           uint64_t seed1);
+                             uint64_t seed1);
 
 // Hash function for a byte array.  Most useful in 32-bit binaries.
 uint32_t CityHash32(const char *s, size_t len);

@@ -17,6 +17,7 @@
 
 #include <assert.h>
 
+#include <atomic>
 #include <map>
 #include <string>
 
@@ -56,21 +57,23 @@ class FlagRegistry {
 
   // Returns the flag object for the specified name, or nullptr if not found.
   // Will emit a warning if a 'retired' flag is specified.
-  CommandLineFlag* FindFlagLocked(absl::string_view name);
+  CommandLineFlag* FindFlag(absl::string_view name);
 
   static FlagRegistry& GlobalRegistry();  // returns a singleton registry
 
  private:
   friend class flags_internal::FlagSaverImpl;  // reads all the flags in order
                                                // to copy them
-  friend void ForEachFlagUnlocked(
-      std::function<void(CommandLineFlag&)> visitor);
+  friend void ForEachFlag(std::function<void(CommandLineFlag&)> visitor);
+  friend void FinalizeRegistry();
 
-  // The map from name to flag, for FindFlagLocked().
+  // The map from name to flag, for FindFlag().
   using FlagMap = std::map<absl::string_view, CommandLineFlag*>;
   using FlagIterator = FlagMap::iterator;
   using FlagConstIterator = FlagMap::const_iterator;
   FlagMap flags_;
+  std::vector<CommandLineFlag*> flat_flags_;
+  std::atomic<bool> finalized_flags_{false};
 
   absl::Mutex lock_;
 
@@ -78,15 +81,6 @@ class FlagRegistry {
   FlagRegistry(const FlagRegistry&);
   FlagRegistry& operator=(const FlagRegistry&);
 };
-
-CommandLineFlag* FlagRegistry::FindFlagLocked(absl::string_view name) {
-  FlagConstIterator i = flags_.find(name);
-  if (i == flags_.end()) {
-    return nullptr;
-  }
-
-  return i->second;
-}
 
 namespace {
 
@@ -101,8 +95,24 @@ class FlagRegistryLock {
 
 }  // namespace
 
+CommandLineFlag* FlagRegistry::FindFlag(absl::string_view name) {
+  if (finalized_flags_.load(std::memory_order_acquire)) {
+    // We could save some gcus here if we make `Name()` be non-virtual.
+    // We could move the `const char*` name to the base class.
+    auto it = std::partition_point(
+        flat_flags_.begin(), flat_flags_.end(),
+        [=](CommandLineFlag* f) { return f->Name() < name; });
+    if (it != flat_flags_.end() && (*it)->Name() == name) return *it;
+  }
+
+  FlagRegistryLock frl(*this);
+  auto it = flags_.find(name);
+  return it != flags_.end() ? it->second : nullptr;
+}
+
 void FlagRegistry::RegisterFlag(CommandLineFlag& flag) {
   FlagRegistryLock registry_lock(*this);
+
   std::pair<FlagIterator, bool> ins =
       flags_.insert(FlagMap::value_type(flag.Name(), &flag));
   if (ins.second == false) {  // means the name was already in the map
@@ -152,18 +162,15 @@ FlagRegistry& FlagRegistry::GlobalRegistry() {
 
 // --------------------------------------------------------------------
 
-void ForEachFlagUnlocked(std::function<void(CommandLineFlag&)> visitor) {
-  FlagRegistry& registry = FlagRegistry::GlobalRegistry();
-  for (FlagRegistry::FlagConstIterator i = registry.flags_.begin();
-       i != registry.flags_.end(); ++i) {
-    visitor(*i->second);
-  }
-}
-
 void ForEachFlag(std::function<void(CommandLineFlag&)> visitor) {
   FlagRegistry& registry = FlagRegistry::GlobalRegistry();
+
+  if (registry.finalized_flags_.load(std::memory_order_acquire)) {
+    for (const auto& i : registry.flat_flags_) visitor(*i);
+  }
+
   FlagRegistryLock frl(registry);
-  ForEachFlagUnlocked(visitor);
+  for (const auto& i : registry.flags_) visitor(*i.second);
 }
 
 // --------------------------------------------------------------------
@@ -171,6 +178,21 @@ void ForEachFlag(std::function<void(CommandLineFlag&)> visitor) {
 bool RegisterCommandLineFlag(CommandLineFlag& flag) {
   FlagRegistry::GlobalRegistry().RegisterFlag(flag);
   return true;
+}
+
+void FinalizeRegistry() {
+  auto& registry = FlagRegistry::GlobalRegistry();
+  FlagRegistryLock frl(registry);
+  if (registry.finalized_flags_.load(std::memory_order_relaxed)) {
+    // Was already finalized. Ignore the second time.
+    return;
+  }
+  registry.flat_flags_.reserve(registry.flags_.size());
+  for (const auto& f : registry.flags_) {
+    registry.flat_flags_.push_back(f.second);
+  }
+  registry.flags_.clear();
+  registry.finalized_flags_.store(true, std::memory_order_release);
 }
 
 // --------------------------------------------------------------------
@@ -298,9 +320,7 @@ CommandLineFlag* FindCommandLineFlag(absl::string_view name) {
   if (name.empty()) return nullptr;
   flags_internal::FlagRegistry& registry =
       flags_internal::FlagRegistry::GlobalRegistry();
-  flags_internal::FlagRegistryLock frl(registry);
-
-  return registry.FindFlagLocked(name);
+  return registry.FindFlag(name);
 }
 
 // --------------------------------------------------------------------

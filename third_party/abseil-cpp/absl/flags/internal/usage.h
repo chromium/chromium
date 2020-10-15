@@ -36,7 +36,8 @@ enum class HelpFormat {
   kHumanReadable,
 };
 
-// Outputs the help message describing specific flag.
+// Streams the help message describing `flag` to `out`.
+// The default value for `flag` is included in the output.
 void FlagHelp(std::ostream& out, const CommandLineFlag& flag,
               HelpFormat format = HelpFormat::kHumanReadable);
 

@@ -185,7 +185,7 @@ TEST(ExponentialBiasedTest, InitializationModes) {
   ABSL_CONST_INIT static ExponentialBiased eb_static;
   EXPECT_THAT(eb_static.GetSkipCount(2), Ge(0));
 
-#if ABSL_HAVE_THREAD_LOCAL
+#ifdef ABSL_HAVE_THREAD_LOCAL
   thread_local ExponentialBiased eb_thread;
   EXPECT_THAT(eb_thread.GetSkipCount(2), Ge(0));
 #endif

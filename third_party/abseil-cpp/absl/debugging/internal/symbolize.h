@@ -118,16 +118,14 @@ bool RemoveAllSymbolDecorators(void);
 //   filename != nullptr
 //
 // Returns true if the file was successfully registered.
-bool RegisterFileMappingHint(
-    const void* start, const void* end, uint64_t offset, const char* filename);
+bool RegisterFileMappingHint(const void* start, const void* end,
+                             uint64_t offset, const char* filename);
 
 // Looks up the file mapping registered by RegisterFileMappingHint for an
 // address range. If there is one, the file name is stored in *filename and
 // *start and *end are modified to reflect the registered mapping. Returns
 // whether any hint was found.
-bool GetFileMappingHint(const void** start,
-                        const void** end,
-                        uint64_t    *  offset,
+bool GetFileMappingHint(const void** start, const void** end, uint64_t* offset,
                         const char** filename);
 
 }  // namespace debugging_internal

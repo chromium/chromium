@@ -250,6 +250,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "synchronization/notification.h"
   "synchronization/internal/create_thread_identity.cc"
   "synchronization/internal/create_thread_identity.h"
+  "synchronization/internal/futex.h"
   "synchronization/internal/graphcycles.cc"
   "synchronization/internal/graphcycles.h"
   "synchronization/internal/kernel_timeout.h"
