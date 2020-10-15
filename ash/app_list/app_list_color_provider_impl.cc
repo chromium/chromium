@@ -52,7 +52,7 @@ SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
 SkColor AppListColorProviderImpl::GetSearchBoxPlaceholderTextColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary,
-      /*default_color*/ gfx::kGoogleGrey200);
+      /*default_color*/ SkColorSetARGB(0xDE, 0x00, 0x00, 0x00));
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxTextColor(
