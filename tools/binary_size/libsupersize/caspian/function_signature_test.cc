@@ -124,6 +124,16 @@ TEST(AnalyzeTest, ParseJavaFunctionSignature) {
   // Java field
   do_test("org.ClassName some.Type mField", "org.ClassName#mField: some.Type",
           "org.ClassName#mField", "ClassName#mField");
+
+  // Class merging: Method
+  do_test("org.NewClass int org.OldClass.readShort(int,int)",
+          "org.NewClass#org.OldClass.readShort(int,int): int",
+          "org.OldClass#readShort", "OldClass#readShort");
+
+  // Class merging: Field
+  do_test("org.NewClass some.Type org.OldClass.mField",
+          "org.NewClass#org.OldClass.mField: some.Type", "org.OldClass#mField",
+          "OldClass#mField");
 }
 
 TEST(AnalyzeTest, ParseFunctionSignature) {

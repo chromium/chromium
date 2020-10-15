@@ -52,13 +52,13 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseJava(
   // elements can be arbitrary.
   std::string maybe_member_type;
   size_t hash_idx = full_name.find('#');
-  std::string_view full_class_name;
+  std::string_view full_new_class_name;
   std::string_view member;
   std::string_view member_type;
   if (hash_idx != std::string_view::npos) {
     // Parse an already parsed full_name.
     // Format: Class#symbol: type
-    full_class_name = full_name.substr(0, hash_idx);
+    full_new_class_name = full_name.substr(0, hash_idx);
     size_t colon_idx = full_name.find(':');
     member = Slice(full_name, hash_idx + 1, colon_idx);
     if (colon_idx != std::string_view::npos) {
@@ -67,7 +67,7 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseJava(
   } else {
     // Format: Class [returntype] functionName()
     std::vector<std::string_view> parts = SplitBy(full_name, ' ');
-    full_class_name = parts[0];
+    full_new_class_name = parts[0];
     if (parts.size() >= 2) {
       member = parts.back();
     }
@@ -77,23 +77,35 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseJava(
     }
   }
 
-  std::vector<std::string_view> split = SplitBy(full_class_name, '.');
-  std::string_view short_class_name = split.back();
-
   if (member.empty()) {
+    std::vector<std::string_view> split = SplitBy(full_new_class_name, '.');
+    std::string_view short_class_name = split.back();
     return std::make_tuple(full_name, full_name, short_class_name);
   }
-  owned_strings->push_back(std::string(full_class_name) + std::string("#") +
+  owned_strings->push_back(std::string(full_new_class_name) + std::string("#") +
                            std::string(member) + std::string(member_type));
   full_name = owned_strings->back();
 
   member = member.substr(0, member.find('('));
 
+  // Class merging.
+  std::string_view full_old_class_name = full_new_class_name;
+  size_t dot_idx = member.rfind('.');
+  if (dot_idx != std::string_view::npos) {
+    full_old_class_name = Slice(member, 0, dot_idx);
+    member = member.substr(dot_idx + 1);
+  }
+
+  std::string_view short_class_name = full_old_class_name;
+  dot_idx = full_old_class_name.rfind('.');
+  if (dot_idx != std::string_view::npos)
+    short_class_name = short_class_name.substr(dot_idx + 1);
+
   owned_strings->push_back(std::string(short_class_name) + std::string("#") +
                            std::string(member));
   std::string_view name = owned_strings->back();
 
-  owned_strings->push_back(std::string(full_class_name) + std::string("#") +
+  owned_strings->push_back(std::string(full_old_class_name) + std::string("#") +
                            std::string(member));
   std::string_view template_name = owned_strings->back();
 

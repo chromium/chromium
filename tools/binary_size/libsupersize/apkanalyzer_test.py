@@ -93,6 +93,107 @@ class ApkAnalyzerTest(unittest.TestCase):
       ('C', 'name', 2),
     ], nodes)
 
+  def testLambdaNormalizer_wholeString(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex'
+    package = name
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+  def testLambdaNormalizer_prefix(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdeLqWLHzk.dex foo bar'
+    package = name.split(' ')[0]
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$0 foo bar'
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+  def testLambdaNormalizer_lambdaCounting(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex'
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$0'
+    # Ensure multiple calls to the same class maps to same number.
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(name, name))
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(name, name))
+    name = 'org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk2.dex'
+    expected_name = 'org.StackAnimation$Nested1$$Lambda$1'
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(name, name))
+
+  def testLambdaNormalizer_multiSameLine(self):
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    name = ('org.-$$Lambda$StackAnimation$Nested1$kevdDQ8V2zqCrdieLqWLHzk.dex '
+            'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk.dex.foo bar')
+    package = name.split(' ')[0]
+    expected_outer_class = 'org.StackAnimation'
+    expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
+                     'org.-$$Lambda$Other$kjevdDQ8V2zqCrdieLqWLHzk.dex.foo bar')
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+    name = expected_name
+    package = name.split(' ')[1]
+    expected_outer_class = 'org.Other'
+    expected_name = ('org.StackAnimation$Nested1$$Lambda$0 '
+                     'org.Other$$Lambda$0.foo bar')
+    self.assertEqual((expected_outer_class, expected_name),
+                     lambda_normalizer.Normalize(package, name))
+
+  def testCreateDexSymbol_normal(self):
+    name = ('org.StackAnimation org.ChromeAnimation '
+            'createReachTopAnimatorSet(org.StackTab[],float)')
+    size = 1
+    source_map = {}
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    symbol = apkanalyzer.CreateDexSymbol(name, size, source_map,
+                                         lambda_normalizer)
+    self.assertEqual('$APK/org/StackAnimation', symbol.object_path)
+
+  def testCreateDexSymbol_classMerged_noSource(self):
+    name = ('org.NewClass org.ChromeAnimation '
+            'org.OldClass.createReachTopAnimatorSet(org.StackTab[],float)')
+    size = 1
+    source_map = {}
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    symbol = apkanalyzer.CreateDexSymbol(name, size, source_map,
+                                         lambda_normalizer)
+    self.assertEqual('$APK/org/OldClass', symbol.object_path)
+
+  def testCreateDexSymbol_classMerged_withSource(self):
+    name = ('org.NewClass org.ChromeAnimation '
+            'org.OldClass.createReachTopAnimatorSet(org.StackTab[],float)')
+    size = 1
+    source_map = {'org.OldClass': 'old_path.java'}
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    symbol = apkanalyzer.CreateDexSymbol(name, size, source_map,
+                                         lambda_normalizer)
+    self.assertEqual('$APK/org/OldClass', symbol.object_path)
+    self.assertEqual('old_path.java', symbol.source_path)
+
+  def testCreateDexSymbol_classMerged_field(self):
+    name = 'org.NewClass int org.OldClass.createReachTopAnimatorSet'
+    size = 1
+    source_map = {}
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    symbol = apkanalyzer.CreateDexSymbol(name, size, source_map,
+                                         lambda_normalizer)
+    self.assertEqual('$APK/org/OldClass', symbol.object_path)
+
+  def testCreateDexSymbol_total(self):
+    name = '<TOTAL>'
+    size = 1
+    source_map = {}
+    lambda_normalizer = apkanalyzer.LambdaNormalizer()
+    symbol = apkanalyzer.CreateDexSymbol(name, size, source_map,
+                                         lambda_normalizer)
+    self.assertIsNone(symbol)
+
 
 if __name__ == '__main__':
   unittest.main()

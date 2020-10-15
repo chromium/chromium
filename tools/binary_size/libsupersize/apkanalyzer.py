@@ -10,6 +10,7 @@ Assumes that apk_path.mapping and apk_path.jar.info is available.
 import collections
 import logging
 import os
+import posixpath
 import subprocess
 import zipfile
 
@@ -143,6 +144,80 @@ def _TruncateFrom(value, delimiter, rfind=False):
   return value
 
 
+# Visible for testing.
+class LambdaNormalizer:
+  def __init__(self):
+    self._lambda_by_class_counter = collections.defaultdict(int)
+    self._lambda_name_to_nested_number = {}
+
+  def Normalize(self, package, name):
+    # Make d8 desugared lambdas look the same as Desugar ones.
+    # D8 lambda: org.-$$Lambda$Promise$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex
+    # Desugar lambda: org.Promise$Nested1$$Lambda$0
+    # 1) Need to prefix with proper class name so that they will show as nested.
+    # 2) Need to suffix with number so that they diff better.
+    # Original name will be kept as "object_path".
+    lambda_start_idx = package.find('-$$Lambda$')
+    class_path = package
+    if lambda_start_idx != -1:
+      lambda_end_idx = package.find('.dex') + len('.dex')
+      old_lambda_name = package[lambda_start_idx:lambda_end_idx]
+      class_path = package.replace('-$$Lambda$', '')
+      base_name = _TruncateFrom(class_path, '$', rfind=True)
+      # Map all methods of the lambda class to the same nested number.
+      lambda_number = self._lambda_name_to_nested_number.get(class_path)
+      if lambda_number is None:
+        # First time we've seen this lambda, increment nested class count.
+        lambda_number = self._lambda_by_class_counter[base_name]
+        self._lambda_name_to_nested_number[class_path] = lambda_number
+        self._lambda_by_class_counter[base_name] = lambda_number + 1
+
+      new_lambda_name = '{}$$Lambda${}'.format(base_name[lambda_start_idx:],
+                                               lambda_number)
+      name = name.replace(old_lambda_name, new_lambda_name)
+
+    # Map nested classes to outer class.
+    outer_class = _TruncateFrom(class_path, '$')
+    return outer_class, name
+
+
+# Visible for testing.
+def CreateDexSymbol(name, size, source_map, lambda_normalizer):
+  parts = name.split(' ')  # (class_name, return_type, method_name)
+  new_package = parts[0]
+
+  if new_package == _TOTAL_NODE_NAME:
+    return None
+
+  # Make d8 desugared lambdas look the same as Desugar ones.
+  outer_class, name = lambda_normalizer.Normalize(new_package, name)
+
+  # Look for class merging.
+  old_package = new_package
+  # len(parts) == 2 for class nodes.
+  if len(parts) > 2:
+    method = parts[2]
+    # last_idx == -1 for fields, which is fine.
+    last_idx = method.find('(')
+    last_idx = method.rfind('.', 0, last_idx)
+    if last_idx != -1:
+      old_package = method[:last_idx]
+      outer_class, name = lambda_normalizer.Normalize(old_package, name)
+
+  source_path = source_map.get(outer_class, '')
+  object_path = posixpath.join(models.APK_PREFIX_PATH, *old_package.split('.'))
+  if name.endswith(')'):
+    section_name = models.SECTION_DEX_METHOD
+  else:
+    section_name = models.SECTION_DEX
+
+  return models.Symbol(section_name,
+                       size,
+                       full_name=name,
+                       object_path=object_path,
+                       source_path=source_path)
+
+
 def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
   source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
 
@@ -161,50 +236,12 @@ def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
       total_node_size)
   # Use (DEX_METHODS, DEX) buckets to speed up sorting.
   symbols = ([], [])
-  lambda_by_class_counter = collections.defaultdict(int)
-  lambda_name_to_nested_number = {}
+  lambda_normalizer = LambdaNormalizer()
   for _, name, node_size in nodes:
-    package = _TruncateFrom(name, ' ')
-    # Make d8 desugared lambdas look the same as Desugar ones.
-    # D8 lambda: -$$Lambda$Promise$Nested1$kjevdDQ8V2zqCrdieLqWLHzk.dex
-    # Desugar lambda: Promise$Nested1$$Lambda$0
-    # 1) Need to prefix with proper class name so that they will show as nested.
-    # 2) Need to suffix with number so that they diff better.
-    # Original name will be kept as "object_path".
-    is_d8_lambda = '-$$Lambda$' in package
-    class_path = package
-    if is_d8_lambda:
-      class_path = package.replace('-$$Lambda$', '')
-      base_name = _TruncateFrom(class_path, '$', rfind=True)
-      # Map all methods of the lambda class to the same nested number.
-      lambda_number = lambda_name_to_nested_number.get(class_path)
-      if lambda_number is None:
-        # First time we've seen this lambda, increment nested class count.
-        lambda_number = lambda_by_class_counter[base_name]
-        lambda_name_to_nested_number[class_path] = lambda_number
-        lambda_by_class_counter[base_name] = lambda_number + 1
+    symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
+    if symbol:
+      symbols[int(symbol.section_name is models.SECTION_DEX)].append(symbol)
 
-      name = '{}$$Lambda${}{}'.format(base_name, lambda_number,
-                                      name[len(package):])
-    # Map all nested classes to outer class.
-    source_path = source_map.get(_TruncateFrom(class_path, '$'), '')
-    if source_path:
-      object_path = package
-    elif package == _TOTAL_NODE_NAME:
-      # Unattributed size is handled outside of this function.
-      continue
-    else:
-      object_path = os.path.join(models.APK_PREFIX_PATH, *package.split('.'))
-    if name.endswith(')'):
-      section_name = models.SECTION_DEX_METHOD
-    else:
-      section_name = models.SECTION_DEX
-    symbols[int(section_name is models.SECTION_DEX)].append(
-        models.Symbol(section_name,
-                      node_size,
-                      full_name=name,
-                      object_path=object_path,
-                      source_path=source_path))
   symbols[0].sort(key=lambda s: s.full_name)
   symbols[1].sort(key=lambda s: s.full_name)
   symbols[0].extend(symbols[1])

@@ -53,6 +53,23 @@ class AnalyzeTest(unittest.TestCase):
     self.assertEqual('org.ClassName#mField: some.Type', actual[0])
     self.assertEqual(actual, function_signature.ParseJava(actual[0]))
 
+    # Class merging: Method
+    SIG = 'org.NewClass int org.OldClass.readShort(int,int)'
+    actual = function_signature.ParseJava(SIG)
+    self.assertEqual('OldClass#readShort', actual[2])
+    self.assertEqual('org.OldClass#readShort', actual[1])
+    self.assertEqual('org.NewClass#org.OldClass.readShort(int,int): int',
+                     actual[0])
+    self.assertEqual(actual, function_signature.ParseJava(actual[0]))
+
+    # Class merging: Field
+    SIG = 'org.NewClass some.Type org.OldClass.mField'
+    actual = function_signature.ParseJava(SIG)
+    self.assertEqual('OldClass#mField', actual[2])
+    self.assertEqual('org.OldClass#mField', actual[1])
+    self.assertEqual('org.NewClass#org.OldClass.mField: some.Type', actual[0])
+    self.assertEqual(actual, function_signature.ParseJava(actual[0]))
+
   def testParseFunctionSignature(self):
     def check(ret_part, name_part, params_part, after_part='',
               name_without_templates=None):

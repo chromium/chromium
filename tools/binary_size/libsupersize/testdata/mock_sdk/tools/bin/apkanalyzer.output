@@ -11,7 +11,7 @@ C d 55	55	16417	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack
 M d 1	1	113	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack <clinit>()
 M d 1	1	225	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack <init>(android.content.Context,org.chromium.chrome.browser.compositor.layouts.phone.StackLayout)
 M d 1	1	61	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.StackLayout access$000(org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack)
-M d 1	1	100	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean allowOverscroll()
+M d 1	1	100	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.allowOverscroll()
 M d 1	1	112	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float computeDiscardAlpha(float,float)
 M d 1	1	136	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float computeDiscardScale(float,float,boolean)
 M d 1	1	88	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float computeOverscrollPercent()
@@ -64,7 +64,7 @@ M d 1	1	137	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack voi
 M d 1	1	142	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void swipeCancelled(long)
 M d 1	1	266	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack void tabClosingEffect(long,int)
 F d 0	0	12	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack boolean $assertionsDisabled
-F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float DRAG_ANGLE_THRESHOLD
+F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.DRAG_ANGLE_THRESHOLD
 F d 0	0	11	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation mAnimationFactory
 F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mBorderLeftPadding
 F d 0	0	10	org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack float mBorderTopPadding
