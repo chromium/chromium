@@ -55,6 +55,7 @@ executable("viz_demo") {
 
   deps = [
     "//base",
+    "//base:base_static",
     "//base:i18n",
     "//build/win:default_exe_manifest",
     "//components/viz/demo:host",

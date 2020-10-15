@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/macros.h"
@@ -27,7 +28,9 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_gpu_test_helper.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if defined(OS_WIN)
@@ -84,10 +87,6 @@ class InitMojo {
 class InitUI {
  public:
   InitUI() {
-#if defined(USE_X11)
-    if (!features::IsUsingOzonePlatform())
-      XInitThreads();
-#endif
     event_source_ = ui::PlatformEventSource::CreateDefault();
   }
 
@@ -207,12 +206,57 @@ int DemoMain() {
   return 0;
 }
 
+#if defined(USE_OZONE)
+std::unique_ptr<ui::OzoneGpuTestHelper> gpu_helper;
+
+static void SetupOzone(base::WaitableEvent* done) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  cmd_line->AppendSwitchASCII(switches::kUseGL, gl::kGLImplementationEGLName);
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
+  done->Signal();
+}
+#endif
+
 }  // namespace
 
 int main(int argc, char** argv) {
+#if defined(USE_OZONE)
+  base::CommandLine command_line(argc, argv);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->InitializeFromCommandLine(
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures),
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+  base::FeatureList::SetInstance(std::move(feature_list));
+
+  base::Thread rendering_thread("GLRenderingVEAClientThread");
+#endif
+
   InitBase base(argc, argv);
   InitMojo mojo;
   InitUI ui;
+
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
+
+    base::Thread::Options options;
+    options.message_pump_type = base::MessagePumpType::UI;
+    CHECK(rendering_thread.StartWithOptions(options));
+    base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED);
+    rendering_thread.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&SetupOzone, &done));
+    done.Wait();
+
+    // To create dmabuf through gbm, Ozone needs to be set up.
+    gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
+    gpu_helper->Initialize(base::ThreadTaskRunnerHandle::Get());
+  }
+#endif
 
   return DemoMain();
 }
