@@ -71,6 +71,9 @@ size_t GetAttributeValuesSize(const ipp_parser::mojom::IppAttributePtr& attr) {
     case ValueType::STRING:
       DCHECK(attr_value->is_strings());
       return attr_value->get_strings().size();
+    case ValueType::OCTET:
+      DCHECK(attr_value->is_octets());
+      return attr_value->get_octets().size();
 
     default:
       break;
@@ -246,6 +249,29 @@ ipp_t* IppValidator::ValidateIppMessage(
             static_cast<ipp_tag_t>(attribute->value_tag),
             attribute->name.c_str(), cstrings_values.size(), kLocaleEnglish,
             cstrings_values.data());
+        if (!attr) {
+          return nullptr;
+        }
+        break;
+      }
+      case ValueType::OCTET: {
+        DCHECK(attribute->value->is_octets());
+        size_t num = attribute->value->get_octets().size();
+        if (num != 1) {
+          LOG(ERROR) << "CUPS API only supports adding a single octet string "
+                        "- cannot add "
+                     << num << " octet strings.";
+          return nullptr;
+        }
+        int size = attribute->value->get_octets()[0].size();
+        if (size < 1) {
+          LOG(ERROR) << "Invalid octet string size=" << size;
+          return nullptr;
+        }
+        auto* attr = ippAddOctetString(
+            ipp.get(), static_cast<ipp_tag_t>(attribute->group_tag),
+            attribute->name.c_str(), attribute->value->get_octets()[0].data(),
+            size);
         if (!attr) {
           return nullptr;
         }

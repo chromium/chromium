@@ -106,6 +106,10 @@ base::Optional<ValueType> ValueTagToType(const int value_tag) {
     case IPP_TAG_NAMELANG:
       return ValueType::STRING;
 
+    // Octet (binary) string
+    case IPP_TAG_STRING:
+      return ValueType::OCTET;
+
     default:
       break;
   }
@@ -154,6 +158,24 @@ base::Optional<std::vector<std::string>> IppGetStrings(ipp_attribute_t* attr) {
       return base::nullopt;
     }
     ret.emplace_back(v);
+  }
+  return ret;
+}
+
+base::Optional<std::vector<std::vector<uint8_t>>> IppGetOctets(
+    ipp_attribute_t* attr) {
+  const size_t count = ippGetCount(attr);
+
+  std::vector<std::vector<uint8_t>> ret;
+  ret.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    int len = 0;
+    const uint8_t* v =
+        static_cast<const uint8_t*>(ippGetOctetString(attr, i, &len));
+    if (!v || len <= 0) {
+      return base::nullopt;
+    }
+    ret.emplace_back(v, v + len);
   }
   return ret;
 }
@@ -393,6 +415,14 @@ ipp_parser::mojom::IppMessagePtr ConvertIppToMojo(ipp_t* ipp) {
           return nullptr;
         }
         attrptr->value->set_strings(*vals);
+        break;
+      }
+      case ValueType::OCTET: {
+        auto vals = IppGetOctets(attr);
+        if (!vals.has_value()) {
+          return nullptr;
+        }
+        attrptr->value->set_octets(*vals);
         break;
       }
       default:

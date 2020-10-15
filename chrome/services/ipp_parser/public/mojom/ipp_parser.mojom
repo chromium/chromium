@@ -8,12 +8,12 @@
 
 module ipp_parser.mojom;
 
-[Extensible]
-enum ValueType {
+[Extensible] enum ValueType {
   BOOLEAN,
   DATE,
   INTEGER,
   STRING,
+  OCTET,
 };
 
 union IppAttributeValue {
@@ -25,6 +25,7 @@ union IppAttributeValue {
 
   array<int32> ints;
   array<string> strings;
+  array<array<uint8>> octets;
 };
 
 struct IppAttribute {
