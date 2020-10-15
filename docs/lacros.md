@@ -67,6 +67,12 @@ mojo crosapi connection. This requires the test target
 
 `./build/lacros/test_runner.py test out/lacros/lacros_chrome_browsertests --gtest_filter=ScreenManagerLacrosBrowserTest.*`
 
+By default, the test runner downloads a prebuilt ash-chrome, add the
+`--ash-chrome-path` command line argument to run the test against a locally
+built version of Ash:
+
+`./build/lacros/test_runner.py test --ash-chrome-path=out/ash/chrome out/lacros/lacros_chrome_browsertests --gtest_filter=ScreenManagerLacrosBrowserTest.*`
+
 If you're sshing to your desktop, please prefix the command with
 `./testing/xvfb.py`.
 
