@@ -154,6 +154,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   const gfx::Insets& margins() const { return margins_; }
   void set_margins(const gfx::Insets& margins) { margins_ = margins; }
 
+  // Set a fixed width for the dialog. Used by DialogClientView.
+  void set_fixed_width(int fixed_width) { fixed_width_ = fixed_width; }
+  int fixed_width() const { return fixed_width_; }
+
   template <typename T>
   T* SetExtraView(std::unique_ptr<T> extra_view) {
     T* view = extra_view.get();
@@ -316,6 +320,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // margins explicitly, so we set them to 0 here for now to avoid doubled
   // margins.
   gfx::Insets margins_{0};
+
+  // Use a fixed dialog width for dialog. Used by DialogClientView.
+  int fixed_width_ = 0;
 
   // The time the dialog is created.
   base::TimeTicks creation_time_;

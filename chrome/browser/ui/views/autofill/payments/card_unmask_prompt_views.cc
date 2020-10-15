@@ -73,7 +73,7 @@ CardUnmaskPromptViews::CardUnmaskPromptViews(
   UpdateButtons();
 
   SetModalType(ui::MODAL_TYPE_CHILD);
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 

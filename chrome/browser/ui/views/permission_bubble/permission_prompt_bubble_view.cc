@@ -82,7 +82,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   for (permissions::PermissionRequest* request : visible_requests_)

@@ -43,7 +43,7 @@ SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
       web_contents_(web_contents),
       controller_(controller) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   DCHECK(controller);
 }

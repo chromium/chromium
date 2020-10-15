@@ -397,7 +397,7 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
                        base::Unretained(content_setting_bubble_model_.get())));
   }
 
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 

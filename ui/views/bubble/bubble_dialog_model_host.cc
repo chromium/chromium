@@ -153,7 +153,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   set_close_on_deactivate(model_->close_on_deactivate(GetPassKey()));
 
-  SetFixedWidth(LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(LayoutProvider::Get()->GetDistanceMetric(
       anchor_view ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
                   : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 

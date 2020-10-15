@@ -122,7 +122,7 @@ SharingDialogView::SharingDialogView(views::View* anchor_view,
       data_(std::move(data)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   if (data_.type == SharingDialogType::kDialogWithoutDevicesWithApp) {

@@ -147,7 +147,7 @@ RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
       base::BindOnce(&base::RecordAction,
                      base::UserMetricsAction("RelaunchRecommended_Close")));
 
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(

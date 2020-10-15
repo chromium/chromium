@@ -89,7 +89,7 @@ CloudServicesDialogView::CloudServicesDialogView(views::View* anchor_view,
 
   set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 

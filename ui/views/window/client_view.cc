@@ -44,12 +44,15 @@ gfx::Size ClientView::CalculatePreferredSize() const {
   if (!contents_view_)
     return gfx::Size();
 
-  if (fixed_width_) {
-    return gfx::Size(fixed_width_,
-                     contents_view_->GetHeightForWidth(fixed_width_));
-  }
-
   return contents_view_->GetPreferredSize();
+}
+
+int ClientView::GetHeightForWidth(int width) const {
+  // |contents_view_| is allowed to be NULL up until the point where this view
+  // is attached to a Container.
+  if (!contents_view_)
+    return 0;
+  return contents_view_->GetHeightForWidth(width);
 }
 
 gfx::Size ClientView::GetMaximumSize() const {

@@ -225,7 +225,7 @@ CastDialogView::CastDialogView(views::View* anchor_view,
       metrics_(start_time, activation_location, profile) {
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   sources_button_ =
       SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(

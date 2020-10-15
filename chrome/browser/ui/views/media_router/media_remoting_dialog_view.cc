@@ -98,7 +98,7 @@ MediaRemotingDialogView::MediaRemotingDialogView(
   SetCancelCallback(base::BindOnce(&MediaRemotingDialogView::ReportPermission,
                                    base::Unretained(this), false));
 
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(

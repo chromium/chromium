@@ -92,7 +92,7 @@ ExtensionsMenuView::ExtensionsMenuView(
   // Let anchor view's MenuButtonController handle the highlight.
   set_highlight_button_when_shown(false);
 
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

@@ -352,7 +352,7 @@ NativeFileSystemUsageBubbleView::NativeFileSystemUsageBubbleView(
   SetCancelCallback(
       base::BindOnce(&NativeFileSystemUsageBubbleView::OnDialogCancelled,
                      base::Unretained(this)));
-  SetFixedWidth(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 

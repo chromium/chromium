@@ -121,7 +121,7 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   const bool dialog_is_bubble = anchor_view != nullptr;
   SetModalType(dialog_is_bubble ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_WINDOW);
-  SetFixedWidth(provider->GetDistanceMetric(
+  set_fixed_width(provider->GetDistanceMetric(
       dialog_is_bubble ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
                        : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
