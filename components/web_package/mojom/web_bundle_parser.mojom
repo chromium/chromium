@@ -4,7 +4,7 @@
 
 module web_package.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "url/mojom/url.mojom";
 
 // Factory interface to create WebBundleParser for the passed |file|
@@ -12,7 +12,7 @@ import "url/mojom/url.mojom";
 interface WebBundleParserFactory {
   // Constructs a parser for the passed |file|.
   GetParserForFile(pending_receiver<WebBundleParser> receiver,
-                   mojo_base.mojom.File file);
+                   mojo_base.mojom.ReadOnlyFile file);
 
   // Constructs a parser for the passed |data_source|.
   GetParserForDataSource(pending_receiver<WebBundleParser> receiver,
