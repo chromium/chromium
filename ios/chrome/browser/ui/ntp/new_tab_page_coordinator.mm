@@ -72,6 +72,9 @@
 - (void)stop {
   if (!self.started)
     return;
+  [self.viewController willMoveToParentViewController:nil];
+  [self.viewController.view removeFromSuperview];
+  [self.viewController removeFromParentViewController];
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
   self.incognitoViewController = nil;

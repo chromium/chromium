@@ -265,8 +265,8 @@
   self.suggestionsViewController.overscrollDelegate = self;
   self.suggestionsViewController.themeChangeDelegate = self;
   self.suggestionsViewController.metricsRecorder = self.metricsRecorder;
-  id<SnackbarCommands> dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  id<SnackbarCommands> dispatcher =
+      static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
   self.suggestionsViewController.discoverFeedMenuHandler = self;
   self.suggestionsViewController.discoverFeedMetricsRecorder =
