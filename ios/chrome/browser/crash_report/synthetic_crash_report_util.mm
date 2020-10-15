@@ -86,8 +86,9 @@ void CreateSyntheticCrashReportForUte(
   }
 
   if (previous_session.OSVersion) {
-    AppendConfig(config, "BreakpadServerParameterPrefix_os_version",
+    AppendConfig(config, "BreakpadServerParameterPrefix_osVersion",
                  base::SysNSStringToUTF8(previous_session.OSVersion));
+    AppendConfig(config, "BreakpadServerParameterPrefix_osName", "iOS");
   }
 
   AppendConfig(config, "BreakpadServerParameterPrefix_platform",
