@@ -194,9 +194,9 @@
     "structures": [1900],
     "includes": [1920],
   },
-  "chrome/browser/resources/welcome/welcome_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/welcome_resources.grd": {
+    "META": {"sizes": {"includes": [30]}},
     "includes": [1940],
-    "structures": [1960],
   },
   "chrome/browser/supervised_user/supervised_user_unscaled_resources.grd": {
     "includes": [1970],

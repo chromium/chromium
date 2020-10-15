@@ -3,7 +3,82 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+generate_grd("build_grd") {
+  grd_prefix = "welcome"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "images/background_svgs/blue_circle.svg",
+    "images/background_svgs/green_rectangle.svg",
+    "images/background_svgs/grey_oval.svg",
+    "images/background_svgs/grey_rounded_rectangle.svg",
+    "images/background_svgs/red_triangle.svg",
+    "images/background_svgs/yellow_dots.svg",
+    "images/background_svgs/yellow_semicircle.svg",
+    "welcome.html",
+    "welcome.css",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+}
+
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "google_apps/google_app_proxy.js",
+    "google_apps/google_apps_metrics_proxy.js",
+    "landing_view_proxy.js",
+    "navigation_behavior.js",
+    "ntp_background/ntp_background_metrics_proxy.js",
+    "ntp_background/ntp_background_proxy.js",
+    "set_as_default/nux_set_as_default_proxy.js",
+    "shared/bookmark_proxy.js",
+    "shared/module_metrics_proxy.js",
+    "shared/nux_types.js",
+    "signin_view_proxy.js",
+    "welcome_browser_proxy.js",
+    "welcome.js",
+  ]
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "google_apps/nux_google_apps.js",
+    "landing_view.js",
+    "ntp_background/nux_ntp_background.js",
+    "set_as_default/nux_set_as_default.js",
+    "shared/action_link_style_css.js",
+    "shared/animations_css.js",
+    "shared/chooser_shared_css.js",
+    "shared/navi_colors_css.js",
+    "shared/onboarding_background.js",
+    "shared/splash_pages_shared_css.js",
+    "shared/step_indicator.js",
+    "signin_view.js",
+    "welcome_app.js",
+  ]
+}
 
 group("closure_compile") {
   deps = [

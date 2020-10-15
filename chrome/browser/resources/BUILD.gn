@@ -499,15 +499,23 @@ if (is_chromeos) {
 
 if (!is_android && !is_chromeos) {
   grit("welcome_resources") {
-    source = "welcome/welcome_resources.grd"
-
-    deps = [ "//chrome/browser/resources/welcome:web_components" ]
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
     ]
 
     defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    welcome_gen_dir = "$root_gen_dir/chrome/browser/resources/welcome"
+    source = "$welcome_gen_dir/welcome_resources.grd"
+    deps = [ "//chrome/browser/resources/welcome:build_grd" ]
+
     outputs = [
       "grit/welcome_resources.h",
       "grit/welcome_resources_map.cc",
