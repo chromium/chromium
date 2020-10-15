@@ -7,10 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
-#include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
@@ -25,9 +22,6 @@ namespace phonehub {
 namespace {
 
 using multidevice_setup::mojom::HostStatus;
-
-constexpr base::TimeDelta kExpectedTimeoutSeconds(
-    base::TimeDelta::FromSeconds(15u));
 
 class FakeObserver : public ConnectionManager::Observer {
  public:
@@ -72,14 +66,12 @@ class ConnectionManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    auto timer = std::make_unique<base::MockOneShotTimer>();
-    mock_timer_ = timer.get();
     fake_device_sync_client_.set_local_device_metadata(test_local_device_);
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(HostStatus::kHostVerified, test_remote_device_));
-    connection_manager_ = base::WrapUnique(new ConnectionManagerImpl(
+    connection_manager_ = std::make_unique<ConnectionManagerImpl>(
         &fake_multidevice_setup_client_, &fake_device_sync_client_,
-        fake_secure_channel_client_.get(), std::move(timer)));
+        fake_secure_channel_client_.get());
     connection_manager_->AddObserver(&fake_observer_);
     EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
   }
@@ -115,19 +107,6 @@ class ConnectionManagerImplTest : public testing::Test {
     }
   }
 
-  void VerifyTimerSet() {
-    EXPECT_TRUE(mock_timer_->IsRunning());
-    EXPECT_EQ(kExpectedTimeoutSeconds, mock_timer_->GetCurrentDelay());
-  }
-
-  void VerifyTimerStopped() { EXPECT_FALSE(mock_timer_->IsRunning()); }
-
-  void InvokeTimerTask() {
-    VerifyTimerSet();
-    mock_timer_->Fire();
-  }
-
-  base::MockOneShotTimer* mock_timer_;
   chromeos::multidevice::RemoteDeviceRef test_remote_device_;
   chromeos::multidevice::RemoteDeviceRef test_local_device_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
@@ -279,24 +258,6 @@ TEST_F(ConnectionManagerImplTest, SuccessfullyAttemptConnectionWithBle) {
   // been called.
   EXPECT_EQ(2u, GetNumStatusObserverCalls());
   EXPECT_EQ(ConnectionManager::Status::kConnected, GetStatus());
-}
-
-TEST_F(ConnectionManagerImplTest, ConnectionTimeout) {
-  CreateFakeConnectionAttempt();
-  connection_manager_->AttemptConnection();
-
-  // Status has been updated to connecting, verify that the status observer
-  // has been called.
-  EXPECT_EQ(1u, GetNumStatusObserverCalls());
-  EXPECT_EQ(ConnectionManager::Status::kConnecting, GetStatus());
-  VerifyTimerSet();
-
-  // Simulate fast forwarding time to time out the connection request.
-  InvokeTimerTask();
-
-  VerifyTimerStopped();
-  EXPECT_EQ(2u, GetNumStatusObserverCalls());
-  EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 }
 
 }  // namespace phonehub

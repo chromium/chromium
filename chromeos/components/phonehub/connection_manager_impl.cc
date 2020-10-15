@@ -5,7 +5,6 @@
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 
 #include "base/bind_helpers.h"
-#include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -14,33 +13,19 @@
 namespace chromeos {
 namespace phonehub {
 namespace {
-constexpr char kPhoneHubFeatureName[] = "phone_hub";
-constexpr base::TimeDelta kConnectionTimeoutSeconds(
-    base::TimeDelta::FromSeconds(15u));
+const char kPhoneHubFeatureName[] = "phone_hub";
 }  // namespace
 
 ConnectionManagerImpl::ConnectionManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client) {
-  ConnectionManagerImpl(multidevice_setup_client_, device_sync_client,
-                        secure_channel_client,
-                        std::make_unique<base::OneShotTimer>());
-}
-
-ConnectionManagerImpl::ConnectionManagerImpl(
-    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    device_sync::DeviceSyncClient* device_sync_client,
-    chromeos::secure_channel::SecureChannelClient* secure_channel_client,
-    std::unique_ptr<base::OneShotTimer> timer)
+    chromeos::secure_channel::SecureChannelClient* secure_channel_client)
     : multidevice_setup_client_(multidevice_setup_client),
       device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
-      timer_(std::move(timer)) {
+      secure_channel_client_(secure_channel_client) {
   DCHECK(multidevice_setup_client_);
   DCHECK(device_sync_client_);
   DCHECK(secure_channel_client_);
-  DCHECK(timer_);
 }
 
 ConnectionManagerImpl::~ConnectionManagerImpl() {
@@ -96,10 +81,6 @@ void ConnectionManagerImpl::AttemptConnection() {
   connection_attempt_->SetDelegate(this);
 
   NotifyStatusChanged();
-
-  timer_->Start(FROM_HERE, kConnectionTimeoutSeconds,
-                base::BindOnce(&ConnectionManagerImpl::OnConnectionTimeout,
-                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ConnectionManagerImpl::SendMessage(const std::string& payload) {
@@ -115,7 +96,6 @@ void ConnectionManagerImpl::OnConnectionAttemptFailure(
     chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "AttemptConnection() failed to establish connection with "
                   << "error: " << reason << ".";
-  timer_->Stop();
   connection_attempt_.reset();
   NotifyStatusChanged();
 }
@@ -124,15 +104,12 @@ void ConnectionManagerImpl::OnConnection(
     std::unique_ptr<chromeos::secure_channel::ClientChannel> channel) {
   PA_LOG(VERBOSE) << "AttemptConnection() successfully established a "
                   << "connection between local and remote device.";
-  timer_->Stop();
   channel_ = std::move(channel);
   channel_->AddObserver(this);
   NotifyStatusChanged();
 }
 
 void ConnectionManagerImpl::OnDisconnected() {
-  // Stop timer in case we are disconnected before the connection timed out.
-  timer_->Stop();
   connection_attempt_.reset();
   channel_->RemoveObserver(this);
   channel_.reset();
@@ -141,14 +118,6 @@ void ConnectionManagerImpl::OnDisconnected() {
 
 void ConnectionManagerImpl::OnMessageReceived(const std::string& payload) {
   NotifyMessageReceived(payload);
-}
-
-void ConnectionManagerImpl::OnConnectionTimeout() {
-  PA_LOG(WARNING) << "AttemptionConnection() has timed out. Closing connection "
-                  << "attempt.";
-
-  connection_attempt_.reset();
-  NotifyStatusChanged();
 }
 
 }  // namespace phonehub
