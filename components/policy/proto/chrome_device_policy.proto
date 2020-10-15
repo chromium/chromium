@@ -1723,6 +1723,14 @@ message DeviceFamilyLinkAccountsAllowedProto {
   optional bool family_link_accounts_allowed = 1 [default = false];
 }
 
+// Setting that controls whether ARC data snapshotting is enabled for the device
+// and time intervals of updating ARC data snapshot.
+message DeviceArcDataSnapshotHoursProto {
+  // This is a JSON string, for details see
+  // "DeviceArcDataSnapshotHours" in policy_template.json
+  optional string arc_data_snapshot_hours = 1;
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1868,4 +1876,5 @@ message ChromeDeviceSettingsProto {
   optional UsbDetachableAllowlistProto usb_detachable_allowlist = 113;
   optional DeviceFamilyLinkAccountsAllowedProto family_link_accounts_allowed =
       114;
+  optional DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours = 115;
 }

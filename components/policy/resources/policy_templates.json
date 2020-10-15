@@ -1105,6 +1105,7 @@
         'ArcBackupRestoreEnabled',
         'ArcLocationServiceEnabled',
         'AppRecommendationZeroStateEnabled',
+        'DeviceArcDataSnapshotHours',
       ]
     },
     {
@@ -16739,6 +16740,58 @@
       Changes to the policy only apply while ARC isn't running, for example, while starting Chrome OS.''',
     },
     {
+      'name': 'DeviceArcDataSnapshotHours',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'dict',
+      'schema': {
+        'type': 'object',
+        'properties': {
+          'intervals': {
+            'type': 'array',
+            'items': {
+              '$ref': 'WeeklyTimeIntervals'
+            }
+          },
+          'timezone': { 'type': 'string' },
+        }
+      },
+      'supported_on': ['chrome_os:88-'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True
+      },
+      'example_value': {
+        'intervals':
+        [
+          {
+            'start': {
+              'day_of_week': 'MONDAY',
+              'time': 12840000
+            },
+            'end': {
+              'day_of_week': 'MONDAY',
+              'time': 21720000
+            }
+          },
+          {
+            'start': {
+              'day_of_week': 'FRIDAY',
+              'time': 38640000
+            },
+            'end': {
+              'day_of_week': 'FRIDAY',
+              'time': 57600000
+            }
+          }
+        ],
+        'timezone': 'GMT',
+      },
+      'id': 794,
+      'caption': '''Intervals when ARC data snapshot update process can be started for Managed Guest Sessions''',
+      'tags': [],
+      'desc': '''If "DeviceArcDataSnapshotHours" policy is set, then the ARC data snapshotting mechanism is turned on. And the ARC data snapshotting update can be started automatically during the defined time intervals. When an interval starts, ARC snapshot update is required and no user is logged-in, the ARC data snapshot update process is started without user notification. If the user session is active, the UI notification is shown and have to be accepted in order to reboot a device and start ARC data snapshot update process. Note: a device is blocked for usage during the ARC data snapshot update process.''',
+    },
+    {
       'name': 'IsolateOrigins',
       'owners': ['palmer@chromium.org', 'creis@chromium.org'],
       'type': 'string',
@@ -23918,6 +23971,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceMinimumVersionAueMessage': 'device_minimum_version_aue_message.value',
     'ManagedGuestSessionPrivacyWarningsEnabled': 'managed_guest_session_privacy_warnings.enabled',
     'DeviceFamilyLinkAccountsAllowed': 'family_link_accounts_allowed.family_link_accounts_allowed',
+    'DeviceArcDataSnapshotHours': 'arc_data_snapshot_hours.arc_data_snapshot_hours',
   },
   'policy_atomic_group_definitions': [
     {
@@ -24412,6 +24466,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578, 583, 589],
   'deleted_atomic_policy_group_ids': [],
-  'highest_id_currently_used': 793,
+  'highest_id_currently_used': 794,
   'highest_atomic_group_id_currently_used': 40
 }

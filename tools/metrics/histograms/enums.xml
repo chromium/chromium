@@ -22221,6 +22221,7 @@ Called by update_document_policy_enum.py.-->
   <int value="791" label="BrowsingDataLifetime"/>
   <int value="792" label="IntranetRedirectBehavior"/>
   <int value="793" label="LacrosAllowed"/>
+  <int value="794" label="DeviceArcDataSnapshotHours"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

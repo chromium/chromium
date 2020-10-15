@@ -1872,6 +1872,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
           nullptr);
     }
   }
+
+  if (policy.has_arc_data_snapshot_hours()) {
+    const em::DeviceArcDataSnapshotHoursProto& container(
+        policy.arc_data_snapshot_hours());
+    if (container.has_arc_data_snapshot_hours()) {
+      SetJsonDevicePolicy(key::kDeviceArcDataSnapshotHours,
+                          container.arc_data_snapshot_hours(), policies);
+    }
+  }
 }
 
 }  // namespace

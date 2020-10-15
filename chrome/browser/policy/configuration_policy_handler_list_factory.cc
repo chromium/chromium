@@ -1141,6 +1141,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRequiredClientCertificateForDevice,
     prefs::kRequiredClientCertificateForDevice,
     base::Value::Type::LIST },
+  { key::kDeviceArcDataSnapshotHours,
+    arc::prefs::kArcSnapshotHours,
+    base::Value::Type::DICTIONARY },
 
 #else  // defined(OS_CHROMEOS)
   { key::kMetricsReportingEnabled,

@@ -7265,6 +7265,43 @@
       }
     ]
   },
+  "DeviceArcDataSnapshotHours": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "DeviceArcDataSnapshotHours": {
+            "intervals": [
+              {
+                "start": {
+                  "day_of_week": 1,
+                  "time": 1284000
+                },
+                "end": {
+                  "day_of_week": 1,
+                  "time": 21720000
+                }
+              },
+              {
+                "start": {
+                  "day_of_week": 2,
+                  "time": 1284000
+                },
+                "end": {
+                  "day_of_week": 2,
+                  "time": 21720000
+                }
+              }
+            ],
+            "timezone": "GMT"
+          }
+        },
+        "prefs": {
+          "arc.snapshot_hours": { "local_state": true }
+        }
+      }
+    ]
+  },
 
   "----- Chrome Frame policies -------------------------------------------": {},
 
