@@ -144,6 +144,9 @@ CandidateView::CandidateView(views::ButtonListener* listener,
         theme.GetSystemColor(ui::NativeTheme::kColorId_FocusedBorderColor)));
     infolist_icon_ = AddChildView(std::move(infolist_icon));
   }
+
+  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 void CandidateView::GetPreferredWidths(int* shortcut_width,

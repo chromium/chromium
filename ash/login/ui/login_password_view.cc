@@ -253,6 +253,8 @@ class LoginPasswordView::EasyUnlockIcon : public views::Button,
  public:
   EasyUnlockIcon(const gfx::Size& size, int corner_radius)
       : views::Button(this) {
+    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetPreferredSize(size);
     SetLayoutManager(std::make_unique<views::FillLayout>());
     icon_ = AddChildView(

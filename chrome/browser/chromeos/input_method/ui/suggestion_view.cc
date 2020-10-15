@@ -102,6 +102,9 @@ SuggestionView::SuggestionView(views::ButtonListener* listener)
   suggestion_label_ = AddChildView(CreateSuggestionLabel());
   annotation_label_ = AddChildView(CreateAnnotationLabel());
   annotation_label_->SetVisible(false);
+
+  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 SuggestionView::~SuggestionView() = default;

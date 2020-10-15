@@ -52,6 +52,8 @@ class PageSwitcherButton : public views::Button {
  public:
   explicit PageSwitcherButton(bool is_root_app_grid_page_switcher)
       : is_root_app_grid_page_switcher_(is_root_app_grid_page_switcher) {
+    DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetInkDropMode(InkDropMode::ON);
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, is_root_app_grid_page_switcher ? kInkDropRadiusForRootGrid

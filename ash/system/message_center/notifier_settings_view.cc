@@ -312,6 +312,9 @@ NotifierSettingsView::NotifierButton::NotifierButton(
     const NotifierMetadata& notifier,
     views::ButtonListener* listener)
     : views::Button(listener), notifier_id_(notifier.notifier_id) {
+  DCHECK_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY, GetFocusBehavior());
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+
   auto icon_view = std::make_unique<views::ImageView>();
   auto name_view = std::make_unique<views::Label>(notifier.name);
   auto checkbox = std::make_unique<NotifierViewCheckbox>(base::string16(),
