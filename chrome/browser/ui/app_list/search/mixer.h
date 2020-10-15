@@ -88,12 +88,6 @@ class Mixer {
   class Group;
   typedef std::vector<std::unique_ptr<Group>> Groups;
 
-  // Removes entries from |results| with duplicate IDs. When two or more results
-  // have the same ID, the earliest one in the |results| list is kept.
-  // NOTE: This is not necessarily the one with the highest *score*, as
-  // |results| may not have been sorted yet.
-  static void RemoveDuplicates(SortedResults* results);
-
   void FetchResults(const base::string16& query);
 
   AppListModelUpdater* const model_updater_;  // Not owned.

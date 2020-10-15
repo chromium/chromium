@@ -232,28 +232,5 @@ TEST_F(MixerTest, ResultsWithDisplayIndex) {
       GetResults());
 }
 
-TEST_F(MixerTest, RemoveDuplicates) {
-  CreateMixer();
-
-  const std::string dup = "dup";
-
-  // This gives "dup0,dup1,dup2".
-  app_provider()->set_prefix(dup);
-  app_provider()->set_count(3);
-
-  // This gives "dup0,dup1".
-  omnibox_provider()->set_prefix(dup);
-  omnibox_provider()->set_count(2);
-
-  // This gives "dup0".
-  playstore_provider()->set_prefix(dup);
-  playstore_provider()->set_count(1);
-
-  RunQuery();
-
-  // Only three results with unique id are kept.
-  EXPECT_EQ("dup0,dup1,dup2", GetResults());
-}
-
 }  // namespace test
 }  // namespace app_list
