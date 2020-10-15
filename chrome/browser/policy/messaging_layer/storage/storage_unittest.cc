@@ -88,19 +88,14 @@ class MockUploadClient : public Storage::UploaderInterface {
   explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {}
 
-  void ProcessRecord(StatusOr<EncryptedRecord> encrypted_record,
+  void ProcessRecord(EncryptedRecord encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
-    if (!encrypted_record.ok()) {
-      std::move(processed_cb)
-          .Run(UploadRecordFailure(encrypted_record.status()));
-      return;
-    }
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(
-        encrypted_record.ValueOrDie().encrypted_wrapped_record()));
+        encrypted_record.encrypted_wrapped_record()));
     // Verify generation match.
     const auto& sequencing_information =
-        encrypted_record.ValueOrDie().sequencing_information();
+        encrypted_record.sequencing_information();
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)

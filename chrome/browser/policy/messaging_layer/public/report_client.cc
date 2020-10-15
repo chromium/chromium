@@ -161,9 +161,9 @@ ReportingClient::Uploader::Create(UploadCallback upload_callback) {
 }
 
 void ReportingClient::Uploader::ProcessRecord(
-    StatusOr<EncryptedRecord> data,
+    EncryptedRecord data,
     base::OnceCallback<void(bool)> processed_cb) {
-  if (completed_ || !data.ok()) {
+  if (completed_) {
     std::move(processed_cb).Run(false);
     return;
   }
@@ -176,15 +176,35 @@ void ReportingClient::Uploader::ProcessRecord(
             records->emplace_back(std::move(record));
             std::move(processed_cb).Run(true);
           },
-          base::Unretained(encrypted_records_.get()),
-          std::move(data.ValueOrDie()), std::move(processed_cb)));
+          base::Unretained(encrypted_records_.get()), std::move(data),
+          std::move(processed_cb)));
 }
 
 void ReportingClient::Uploader::ProcessGap(
     SequencingInformation start,
     uint64_t count,
     base::OnceCallback<void(bool)> processed_cb) {
-  LOG(FATAL) << "Gap not implemented yet";
+  if (completed_) {
+    std::move(processed_cb).Run(false);
+    return;
+  }
+
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<EncryptedRecord>* records, SequencingInformation start,
+             uint64_t count, base::OnceCallback<void(bool)> processed_cb) {
+            EncryptedRecord record;
+            *record.mutable_sequencing_information() = std::move(start);
+            for (uint64_t i = 0; i < count; ++i) {
+              records->emplace_back(record);
+              record.mutable_sequencing_information()->set_sequencing_id(
+                  record.sequencing_information().sequencing_id() + 1);
+            }
+            std::move(processed_cb).Run(true);
+          },
+          base::Unretained(encrypted_records_.get()), std::move(start), count,
+          std::move(processed_cb)));
 }
 
 void ReportingClient::Uploader::Completed(Status final_status) {

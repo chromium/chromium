@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -110,7 +111,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
     // to add to the network message). Expects |processed_cb| to be called after
     // the record or error status has been processed, with true if next record
     // needs to be delivered and false if the Uploader should stop.
-    virtual void ProcessRecord(StatusOr<EncryptedRecord> record,
+    virtual void ProcessRecord(EncryptedRecord record,
                                base::OnceCallback<void(bool)> processed_cb) = 0;
 
     // Makes a note of a gap [start, start + count). Expects |processed_cb| to
@@ -180,6 +181,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // should be offset to another thread to avoid locking StorageQueue.
   // Helper methods: SwitchLastFileIfNotEmpty, CollectFilesForUpload.
   void Flush();
+
+  // Test only: makes specified records fail on reading.
+  void TestInjectBlockReadErrors(std::initializer_list<uint64_t> seq_numbers);
 
   StorageQueue(const StorageQueue& other) = delete;
   StorageQueue& operator=(const StorageQueue& other) = delete;
@@ -322,12 +326,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Helper method for Upload: collects and sets aside |files| in the
   // StorageQueue that have data for the Upload (all files that have records
-  // with sequence numbers equal or higher than |seq_number|). Returns sequence
-  // number the first file actually starts from (lower or equal to
-  // |seq_number|).
-  uint64_t CollectFilesForUpload(
-      uint64_t seq_number,
-      std::vector<scoped_refptr<SingleFile>>* files) const;
+  // with sequence numbers equal or higher than |seq_number|).
+  std::map<uint64_t, scoped_refptr<SingleFile>> CollectFilesForUpload(
+      uint64_t seq_number) const;
 
   // Helper method for Confirm: Moves |first_seq_number_| to (|seq_number|+1)
   // and removes files that only have records with seq numbers below or equal to
@@ -354,12 +355,21 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // sequencing number exist in store).
   uint64_t first_seq_number_ = 0;
 
+  // First unconfirmed sequencing number (no records with lower
+  // sequencing number will be ever uploaded). Set by the first
+  // Confirm call.
+  // If first_unconfirmed_seq_number_ < first_seq_number_,
+  // [first_unconfirmed_seq_number_, first_seq_number_) is a gap
+  // that cannot be filled in and is uploaded as such.
+  base::Optional<uint64_t> first_unconfirmed_seq_number_;
+
   // Ordered map of the files by ascending sequence number.
   std::map<uint64_t, scoped_refptr<SingleFile>> files_;
 
   // Counter of the Read operations. When not 0, none of the files_ can be
-  // deleted. Incremented by Upload context OnStart(), decremented by
-  // destructor.
+  // deleted. Incremented by |ReadContext::OnStart|, decremented by
+  // |ReadContext::OnComplete|. Accessed by |RemoveConfirmedData|.
+  // All accesses take place on sequenced_task_runner_.
   int32_t active_read_operations_ = 0;
 
   // Upload timer (active only if options_.upload_period() is not 0).
@@ -370,6 +380,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Encryption module.
   scoped_refptr<EncryptionModule> encryption_module_;
+
+  // Test only: records specified to fail on reading.
+  base::flat_set<uint64_t> test_injected_fail_seq_numbers_;
 
   // Sequential task runner for all activities in this StorageQueue.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

@@ -563,6 +563,14 @@ void StorageQueue::DeleteOutdatedMetadata(uint64_t seq_number_to_keep) {
   }
 }
 
+// Context for uploading data from the queue in proper sequence.
+// Runs on a storage_queue->sequenced_task_runner_
+// Makes necessary calls to the provided |UploaderInterface|:
+// repeatedly to ProcessRecord/ProcessGap, and Completed at the end.
+// Sets references to potentially used files aside, and increments
+// active_read_operations_ to make sure confirmation will not trigger
+// files deletion. Decrements it upon completion (when this counter
+// is zero, RemoveConfirmedData can delete the unused files).
 class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
  public:
   ReadContext(std::unique_ptr<UploaderInterface> uploader,
@@ -590,7 +598,19 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
     }
-    seq_number_ = storage_queue->first_seq_number_;
+
+    // Fill in initial sequencing information to track progress:
+    // use minimum of first_seq_number_ and first_unconfirmed_seq_number_
+    // if the latter has been recorded.
+    sequencing_info_.set_generation_id(storage_queue->generation_id_);
+    if (storage_queue->first_unconfirmed_seq_number_.has_value()) {
+      sequencing_info_.set_sequencing_id(
+          std::min(storage_queue->first_unconfirmed_seq_number_.value(),
+                   storage_queue->first_seq_number_));
+    } else {
+      sequencing_info_.set_sequencing_id(storage_queue->first_seq_number_);
+    }
+
     // If the last file is not empty (has at least one record),
     // close it and create the new one, so that its records are
     // also included in the reading.
@@ -600,9 +620,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       return;
     }
 
-    // Collect and set aside the files in the set that have data for the Upload.
-    const uint64_t first_file_seq_number =
-        storage_queue->CollectFilesForUpload(seq_number_, &files_);
+    // Collect and set aside the files in the set that might have data
+    // for the Upload.
+    files_ =
+        storage_queue->CollectFilesForUpload(sequencing_info_.sequencing_id());
     if (files_.empty()) {
       Response(Status(error::OUT_OF_RANGE,
                       "Sequence number not found in StorageQueue."));
@@ -612,81 +633,126 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     // Register with storage_queue, to make sure selected files are not removed.
     ++(storage_queue->active_read_operations_);
 
-    // The first file is the current file now, and we are at its start.
+    // The first <seq.file> pair is the current file now, and we are at its
+    // start or ahead of it.
     current_file_ = files_.begin();
     current_pos_ = 0;
+
+    // If the first record we need to upload is unavailable, produce Gap record
+    // instead.
+    if (sequencing_info_.sequencing_id() < current_file_->first) {
+      CallGapUpload(/*count=*/current_file_->first -
+                    sequencing_info_.sequencing_id());
+      // Resume at ScheduleNextRecord.
+      return;
+    }
+
+    StartUploading(storage_queue);
+  }
+
+  void StartUploading(base::WeakPtr<StorageQueue> storage_queue) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
     // Read from it until the specified sequencing number is found.
-    for (uint64_t seq_number = first_file_seq_number; seq_number < seq_number_;
-         ++seq_number) {
-      const auto blob = EnsureBlob(seq_number);
+    for (uint64_t seq_number = current_file_->first;
+         seq_number < sequencing_info_.sequencing_id(); ++seq_number) {
+      auto blob = EnsureBlob(storage_queue, seq_number);
+      if (blob.status().error_code() == error::OUT_OF_RANGE) {
+        // Reached end of file, switch to the next one (if present).
+        ++current_file_;
+        if (current_file_ == files_.end()) {
+          Response(Status::StatusOK());
+          return;
+        }
+        current_pos_ = 0;
+        blob = EnsureBlob(storage_queue, sequencing_info_.sequencing_id());
+      }
       if (!blob.ok()) {
-        // File found to be corrupt.
-        Response(blob.status());
+        // File found to be corrupt. Produce Gap record till the start of next
+        // file, if present.
+        ++current_file_;
+        current_pos_ = 0;
+        uint64_t count =
+            (current_file_ == files_.end())
+                ? 1
+                : current_file_->first - sequencing_info_.sequencing_id();
+        CallGapUpload(count);
+        // Resume at ScheduleNextRecord.
         return;
       }
     }
 
-    // seq_number_ blob is ready.
-    const auto blob = EnsureBlob(seq_number_);
-    if (!blob.ok()) {
-      // File found to be corrupt.
-      Response(blob.status());
-      return;
-    }
-    CallCurrentRecord(storage_queue->generation_id_, seq_number_,
-                      blob.ValueOrDie());
+    // Read and upload sequencing_info_.sequencing_id().
+    CallRecordOrGap(storage_queue, sequencing_info_.sequencing_id());
+    // Resume at ScheduleNextRecord.
   }
 
   void OnCompletion() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
     // Unregister with storage_queue.
     if (!files_.empty()) {
       base::WeakPtr<StorageQueue> storage_queue =
           storage_queue_weakptr_factory_.GetWeakPtr();
       if (storage_queue) {
-        auto count = --(storage_queue->active_read_operations_);
+        const auto count = --(storage_queue->active_read_operations_);
         DCHECK_GE(count, 0);
       }
     }
   }
 
-  // Makes a call to UploaderInterface instance provided by user, which can
-  // place processing of the record on any thread(s). Once it returns, it will
-  // schedule NextRecord to execute on the sequential thread runner of this
-  // StorageQueue.
-  void CallCurrentRecord(uint64_t generation_id,
-                         uint64_t seq_number,
-                         base::StringPiece blob) {
+  // Prepares the |blob| for uploading.
+  void CallCurrentRecord(base::StringPiece blob) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
-    google::protobuf::io::ArrayInputStream stream(  // Zero-copy stream.
+    google::protobuf::io::ArrayInputStream blob_stream(  // Zero-copy stream.
         blob.data(), blob.size());
     EncryptedRecord encrypted_record;
-    if (!encrypted_record.ParseFromZeroCopyStream(&stream)) {
-      uploader_->ProcessRecord(
-          Status(error::DATA_LOSS,
-                 base::StrCat({"Failed to parse record, seq=",
-                               base::NumberToString(seq_number)})),
-          base::BindOnce(&ReadContext::ScheduleNextRecord,
-                         base::Unretained(this)));
+    if (!encrypted_record.ParseFromZeroCopyStream(&blob_stream)) {
+      LOG(ERROR) << "Failed to parse record, seq="
+                 << sequencing_info_.sequencing_id();
+      CallGapUpload(/*count=*/1);
+      // Resume at ScheduleNextRecord.
       return;
     }
+    CallRecordUpload(std::move(encrypted_record));
+  }
+
+  // Completes sequencing information and makes a call to UploaderInterface
+  // instance provided by user, which can place processing of the record on any
+  // thread(s). Once it returns, it will schedule NextRecord to execute on the
+  // sequential thread runner of this StorageQueue. If |encrypted_record| is
+  // empty (has no |encrypted_wrapped_record| and/or |encryption_info|), it
+  // indicates a gap notification.
+  void CallRecordUpload(EncryptedRecord encrypted_record) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
     if (encrypted_record.has_sequencing_information()) {
-      uploader_->ProcessRecord(
-          Status(error::DATA_LOSS,
-                 base::StrCat({"Sequencing information already present, seq=",
-                               base::NumberToString(seq_number)})),
-          base::BindOnce(&ReadContext::ScheduleNextRecord,
-                         base::Unretained(this)));
+      LOG(ERROR) << "Sequencing information already present, seq="
+                 << sequencing_info_.sequencing_id();
+      CallGapUpload(/*count=*/1);
+      // Resume at ScheduleNextRecord.
       return;
     }
     // Fill in sequencing information.
     // Priority is attached by the Storage layer.
-    SequencingInformation* const sequencing_info =
-        encrypted_record.mutable_sequencing_information();
-    sequencing_info->set_generation_id(generation_id);
-    sequencing_info->set_sequencing_id(seq_number);
+    *encrypted_record.mutable_sequencing_information() = sequencing_info_;
     uploader_->ProcessRecord(std::move(encrypted_record),
                              base::BindOnce(&ReadContext::ScheduleNextRecord,
                                             base::Unretained(this)));
+    // Move sequencing forward (ScheduleNextRecord will see this).
+    sequencing_info_.set_sequencing_id(sequencing_info_.sequencing_id() + 1);
+  }
+
+  void CallGapUpload(uint64_t count) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+    if (count == 0u) {
+      // No records skipped.
+      NextRecord(/*more_records=*/true);
+      return;
+    }
+    uploader_->ProcessGap(sequencing_info_, count,
+                          base::BindOnce(&ReadContext::ScheduleNextRecord,
+                                         base::Unretained(this)));
+    // Move sequencing forward (ScheduleNextRecord will see this).
+    sequencing_info_.set_sequencing_id(sequencing_info_.sequencing_id() +
+                                       count);
   }
 
   // Schedules NextRecord to execute on the StorageQueue sequential task runner.
@@ -709,31 +775,39 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
       return;
     }
-    auto blob = EnsureBlob(++seq_number_);
-    if (blob.status().error_code() == error::OUT_OF_RANGE) {
-      // Reached end of file, switch to the next one (if present).
-      ++current_file_;
-      if (current_file_ == files_.end()) {
-        Response(Status::StatusOK());
-        return;
-      }
-      current_pos_ = 0;
-      blob = EnsureBlob(seq_number_);
-    }
-    if (!blob.ok()) {
-      Response(blob.status());
+    // If reached end of the last file, finish reading.
+    if (current_file_ == files_.end()) {
+      Response(Status::StatusOK());
       return;
     }
-    CallCurrentRecord(storage_queue->generation_id_, seq_number_,
-                      blob.ValueOrDie());
+    // sequencing_info_.sequencing_id() blob is ready.
+    CallRecordOrGap(storage_queue, sequencing_info_.sequencing_id());
+    // Resume at ScheduleNextRecord.
   }
 
-  StatusOr<base::StringPiece> EnsureBlob(uint64_t seq_number) {
+  // Loads blob from the current file - reads header first, and then the body.
+  // (SingleFile::Read call makes sure all the data is in the buffer).
+  // After reading, verifies that data matches the hash stored in the header.
+  // If everything checks out, returns the reference to the data in the buffer:
+  // the buffer remains intact until the next call to SingleFile::Read.
+  // If anything goes wrong (file is shorter than expected, or record hash does
+  // not match), returns error.
+  StatusOr<base::StringPiece> EnsureBlob(
+      base::WeakPtr<StorageQueue> storage_queue,
+      uint64_t seq_number) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
+
+    // Test only: simulate error, if requested.
+    if (storage_queue->test_injected_fail_seq_numbers_.count(seq_number) > 0) {
+      return Status(error::INTERNAL,
+                    base::StrCat({"Simulated failure, seq=",
+                                  base::NumberToString(seq_number)}));
+    }
+
     // Read from the current file at the current offset.
-    RETURN_IF_ERROR((*current_file_)->Open(/*read_only=*/true));
+    RETURN_IF_ERROR(current_file_->second->Open(/*read_only=*/true));
     auto read_result =
-        (*current_file_)->Read(current_pos_, sizeof(RecordHeader));
+        current_file_->second->Read(current_pos_, sizeof(RecordHeader));
     RETURN_IF_ERROR(read_result.status());
     auto header_data = read_result.ValueOrDie();
     if (header_data.empty()) {
@@ -743,8 +817,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     current_pos_ += header_data.size();
     if (header_data.size() != sizeof(RecordHeader)) {
       // File corrupt, header incomplete.
-      return Status(error::INTERNAL,
-                    base::StrCat({"File corrupt: ", (*current_file_)->name()}));
+      return Status(
+          error::INTERNAL,
+          base::StrCat({"File corrupt: ", current_file_->second->name()}));
     }
     // Copy the header out (its memory can be overwritten when reading rest of
     // the data).
@@ -753,7 +828,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     if (header.record_seq_number != seq_number) {
       return Status(
           error::INTERNAL,
-          base::StrCat({"File corrupt: ", (*current_file_)->name(),
+          base::StrCat({"File corrupt: ", current_file_->second->name(),
                         " seq=", base::NumberToString(header.record_seq_number),
                         " expected=", base::NumberToString(seq_number)}));
     }
@@ -761,16 +836,17 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     const size_t data_size = RoundUpToFrameSize(header.record_size);
     // From this point on, header in memory is no longer used and can be
     // overwritten when reading rest of the data.
-    read_result = (*current_file_)->Read(current_pos_, data_size);
+    read_result = current_file_->second->Read(current_pos_, data_size);
     RETURN_IF_ERROR(read_result.status());
     current_pos_ += read_result.ValueOrDie().size();
     if (read_result.ValueOrDie().size() != data_size) {
       // File corrupt, blob incomplete.
       return Status(
           error::INTERNAL,
-          base::StrCat({"File corrupt: ", (*current_file_)->name(), " size=",
-                        base::NumberToString(read_result.ValueOrDie().size()),
-                        " expected=", base::NumberToString(data_size)}));
+          base::StrCat(
+              {"File corrupt: ", current_file_->second->name(),
+               " size=", base::NumberToString(read_result.ValueOrDie().size()),
+               " expected=", base::NumberToString(data_size)}));
     }
     // Verify record hash.
     uint32_t actual_record_hash = base::PersistentHash(
@@ -779,7 +855,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
       return Status(
           error::INTERNAL,
           base::StrCat(
-              {"File corrupt: ", (*current_file_)->name(), " seq=",
+              {"File corrupt: ", current_file_->second->name(), " seq=",
                base::NumberToString(header.record_seq_number), " hash=",
                base::HexEncode(
                    reinterpret_cast<const uint8_t*>(&header.record_hash),
@@ -792,11 +868,41 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     return read_result.ValueOrDie().substr(0, header.record_size);
   }
 
+  void CallRecordOrGap(base::WeakPtr<StorageQueue> storage_queue,
+                       uint64_t seq_number) {
+    auto blob = EnsureBlob(storage_queue, sequencing_info_.sequencing_id());
+    if (blob.status().error_code() == error::OUT_OF_RANGE) {
+      // Reached end of file, switch to the next one (if present).
+      ++current_file_;
+      if (current_file_ == files_.end()) {
+        Response(Status::StatusOK());
+        return;
+      }
+      current_pos_ = 0;
+      blob = EnsureBlob(storage_queue, sequencing_info_.sequencing_id());
+    }
+    if (!blob.ok()) {
+      // File found to be corrupt. Produce Gap record till the start of next
+      // file, if present.
+      ++current_file_;
+      current_pos_ = 0;
+      uint64_t count =
+          (current_file_ == files_.end())
+              ? 1
+              : current_file_->first - sequencing_info_.sequencing_id();
+      CallGapUpload(count);
+      // Resume at ScheduleNextRecord.
+      return;
+    }
+    CallCurrentRecord(blob.ValueOrDie());
+    // Resume at ScheduleNextRecord.
+  }
+
   // Files that will be read (in order of sequence numbers).
-  std::vector<scoped_refptr<SingleFile>> files_;
-  uint64_t seq_number_ = 0;  // Sequencing number of the blob being read.
+  std::map<uint64_t, scoped_refptr<SingleFile>> files_;
+  SequencingInformation sequencing_info_;
   uint32_t current_pos_;
-  std::vector<scoped_refptr<SingleFile>>::iterator current_file_;
+  std::map<uint64_t, scoped_refptr<SingleFile>>::iterator current_file_;
   const std::unique_ptr<UploaderInterface> uploader_;
   base::WeakPtrFactory<StorageQueue> storage_queue_weakptr_factory_;
 
@@ -968,11 +1074,9 @@ Status StorageQueue::SwitchLastFileIfNotEmpty() {
   return Status::StatusOK();
 }
 
-uint64_t StorageQueue::CollectFilesForUpload(
-    uint64_t seq_number,
-    std::vector<scoped_refptr<StorageQueue::SingleFile>>* files) const {
+std::map<uint64_t, scoped_refptr<StorageQueue::SingleFile>>
+StorageQueue::CollectFilesForUpload(uint64_t seq_number) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
-  uint64_t first_file_seq_number = seq_number;
   // Locate the first file based on sequencing number.
   auto file_it = files_.find(seq_number);
   if (file_it == files_.end()) {
@@ -981,17 +1085,16 @@ uint64_t StorageQueue::CollectFilesForUpload(
       --file_it;
     }
   }
+
   // Create references to the files that will be uploaded.
   // Exclude the last file (still being written).
+  std::map<uint64_t, scoped_refptr<SingleFile>> files;
   for (; file_it != files_.end() &&
          file_it->second.get() != files_.rbegin()->second.get();
        ++file_it) {
-    if (first_file_seq_number > file_it->first) {
-      first_file_seq_number = file_it->first;
-    }
-    files->emplace_back(file_it->second);  // Adding reference.
+    files.emplace(file_it->first, file_it->second);  // Adding reference.
   }
-  return first_file_seq_number;
+  return files;
 }
 
 class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
@@ -1031,6 +1134,11 @@ void StorageQueue::Confirm(uint64_t seq_number,
 
 Status StorageQueue::RemoveConfirmedData(uint64_t seq_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+  // Update first unconfirmed number, unless new one is lower.
+  if (!first_unconfirmed_seq_number_.has_value() ||
+      first_unconfirmed_seq_number_.value() <= seq_number) {
+    first_unconfirmed_seq_number_ = seq_number + 1;
+  }
   // Update first available number, if new one is higher.
   if (first_seq_number_ <= seq_number) {
     first_seq_number_ = seq_number + 1;
@@ -1077,6 +1185,11 @@ void StorageQueue::Flush() {
     return;
   }
   Start<ReadContext>(std::move(uploader.ValueOrDie()), this);
+}
+
+void StorageQueue::TestInjectBlockReadErrors(
+    std::initializer_list<uint64_t> seq_numbers) {
+  test_injected_fail_seq_numbers_ = seq_numbers;
 }
 
 //

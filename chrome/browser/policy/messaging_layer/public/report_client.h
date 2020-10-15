@@ -225,7 +225,7 @@ class ReportingClient {
     Uploader(const Uploader& other) = delete;
     Uploader& operator=(const Uploader& other) = delete;
 
-    void ProcessRecord(StatusOr<EncryptedRecord> data,
+    void ProcessRecord(EncryptedRecord data,
                        base::OnceCallback<void(bool)> processed_cb) override;
     void ProcessGap(SequencingInformation start,
                     uint64_t count,

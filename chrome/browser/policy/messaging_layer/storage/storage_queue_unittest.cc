@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
 
 #include <cstdint>
+#include <initializer_list>
 #include <utility>
 #include <vector>
 
@@ -77,26 +78,23 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
   // record is uploaded and includes last record digest, this map should have
   // that digest already recorded. Only the first record in a generation is
   // uploaded without last record digest.
+  // "Optional" is set to no-value if there was a gap record instead of a real
+  // one.
   using LastRecordDigestMap = std::map<
       std::pair<uint64_t /*generation */, uint64_t /*sequencing number*/>,
-      std::string /*digest*/>;
+      base::Optional<std::string /*digest*/>>;
 
   explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map)
       : last_record_digest_map_(last_record_digest_map) {}
 
-  void ProcessRecord(StatusOr<EncryptedRecord> encrypted_record,
+  void ProcessRecord(EncryptedRecord encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
-    if (!encrypted_record.ok()) {
-      std::move(processed_cb)
-          .Run(UploadRecordFailure(encrypted_record.status()));
-      return;
-    }
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(
-        encrypted_record.ValueOrDie().encrypted_wrapped_record()));
+        encrypted_record.encrypted_wrapped_record()));
     // Verify generation match.
     const auto& sequencing_information =
-        encrypted_record.ValueOrDie().sequencing_information();
+        encrypted_record.sequencing_information();
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
@@ -132,7 +130,8 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
             std::make_pair(sequencing_information.sequencing_id() - 1,
                            sequencing_information.generation_id()));
         if (it == last_record_digest_map_->end() ||
-            it->second != wrapped_record.last_record_digest()) {
+            (it->second.has_value() &&
+             it->second.value() != wrapped_record.last_record_digest())) {
           std::move(processed_cb)
               .Run(UploadRecordFailure(
                   Status(error::DATA_LOSS, "Last record digest mismatch")));
@@ -150,16 +149,40 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
                           wrapped_record.record().data()));
   }
 
-  void ProcessGap(SequencingInformation start,
+  void ProcessGap(SequencingInformation sequencing_information,
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
-    LOG(FATAL) << "Gap not implemented yet";
+    // Verify generation match.
+    if (generation_id_.has_value() &&
+        generation_id_.value() != sequencing_information.generation_id()) {
+      std::move(processed_cb)
+          .Run(UploadRecordFailure(Status(
+              error::DATA_LOSS,
+              base::StrCat({"Generation id mismatch, expected=",
+                            base::NumberToString(generation_id_.value()),
+                            " actual=",
+                            base::NumberToString(
+                                sequencing_information.generation_id())}))));
+      return;
+    }
+    if (!generation_id_.has_value()) {
+      generation_id_ = sequencing_information.generation_id();
+    }
+
+    last_record_digest_map_->emplace(
+        std::make_pair(sequencing_information.sequencing_id(),
+                       sequencing_information.generation_id()),
+        base::nullopt);
+
+    std::move(processed_cb)
+        .Run(UploadGap(sequencing_information.sequencing_id(), count));
   }
 
   void Completed(Status status) override { UploadComplete(status); }
 
   MOCK_METHOD(bool, UploadRecord, (uint64_t, base::StringPiece), (const));
   MOCK_METHOD(bool, UploadRecordFailure, (Status), (const));
+  MOCK_METHOD(bool, UploadGap, (uint64_t, uint64_t), (const));
   MOCK_METHOD(void, UploadComplete, (Status), (const));
 
   // Helper class for setting up mock client expectations of a successful
@@ -187,6 +210,21 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
     SetUp& Possible(uint64_t sequence_number, base::StringPiece value) {
       EXPECT_CALL(*client_,
                   UploadRecord(Eq(sequence_number), StrEq(std::string(value))))
+          .Times(Between(0, 1))
+          .InSequence(client_->test_upload_sequence_)
+          .WillRepeatedly(Return(true));
+      return *this;
+    }
+
+    SetUp& RequiredGap(uint64_t sequence_number, uint64_t count) {
+      EXPECT_CALL(*client_, UploadGap(Eq(sequence_number), Eq(count)))
+          .InSequence(client_->test_upload_sequence_)
+          .WillOnce(Return(true));
+      return *this;
+    }
+
+    SetUp& PossibleGap(uint64_t sequence_number, uint64_t count) {
+      EXPECT_CALL(*client_, UploadGap(Eq(sequence_number), Eq(count)))
           .Times(Between(0, 1))
           .InSequence(client_->test_upload_sequence_)
           .WillRepeatedly(Return(true));
@@ -222,6 +260,10 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
                                     << storage_queue_result.status();
     storage_queue_ = std::move(storage_queue_result.ValueOrDie());
+  }
+
+  void InjectFailures(std::initializer_list<uint64_t> seq_numbers) {
+    storage_queue_->TestInjectBlockReadErrors(seq_numbers);
   }
 
   StorageQueue::Options BuildStorageQueueOptionsImmediate() const {
@@ -331,6 +373,28 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUpload) {
             .Required(0, data[0])
             .Required(1, data[1])
             .Required(2, data[2]);
+      }));
+
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+  WriteStringOrDie(data[0]);
+  WriteStringOrDie(data[1]);
+  WriteStringOrDie(data[2]);
+
+  // Inject simulated failures.
+  InjectFailures({1});
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Required(0, data[0])
+            .RequiredGap(1, 1)
+            .Possible(2, data[2]);  // Depending on records binpacking
       }));
 
   // Trigger upload.
@@ -584,6 +648,91 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
+TEST_P(StorageQueueTest,
+       WriteAndRepeatedlyUploadWithConfirmationsAndReopenWithFailures) {
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  WriteStringOrDie(data[0]);
+  WriteStringOrDie(data[1]);
+  WriteStringOrDie(data[2]);
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Required(0, data[0])
+            .Required(1, data[1])
+            .Required(2, data[2]);
+      }));
+
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Confirm #0 and forward time again, removing record #0
+  ConfirmOrDie(/*seq_number=*/0);
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Required(1, data[1])
+            .Required(2, data[2]);
+      }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Confirm #1 and forward time again, removing record #1
+  ConfirmOrDie(/*seq_number=*/1);
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client).Required(2, data[2]);
+      }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  storage_queue_.reset();
+  CreateStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  // Add more data and verify that #2 and new data are returned.
+  WriteStringOrDie(more_data[0]);
+  WriteStringOrDie(more_data[1]);
+  WriteStringOrDie(more_data[2]);
+
+  // Inject simulated failures.
+  InjectFailures({4, 5});
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Possible(0, data[0])
+            .Possible(1, data[1])
+            .Required(2, data[2])
+            .Required(3, more_data[0])
+            // Gap may be 2 records at once or 2 gaps 1 record each.
+            .PossibleGap(4, 2)
+            .PossibleGap(4, 1)
+            .PossibleGap(5, 1);
+      }));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Confirm #2 and forward time again, removing record #2
+  ConfirmOrDie(/*seq_number=*/2);
+
+  // Reset simulated failures.
+  InjectFailures({});
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Required(3, more_data[0])
+            .Required(4, more_data[1])
+            .Required(5, more_data[2]);
+      }));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
 TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   CreateStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
 
@@ -700,7 +849,7 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
 INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
                          StorageQueueTest,
                          testing::Values(128 * 1024LL * 1024LL,
-                                         64 /* two data in file */,
+                                         64 /* two records in file */,
                                          32 /* single record in file */));
 
 // TODO(b/157943006): Additional tests:
