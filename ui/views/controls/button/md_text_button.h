@@ -41,7 +41,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   float GetCornerRadius() const;
 
   // See |custom_padding_|.
-  void SetCustomPadding(const gfx::Insets& padding);
+  void SetCustomPadding(const base::Optional<gfx::Insets>& padding);
+  base::Optional<gfx::Insets> GetCustomPadding() const;
 
   // LabelButton:
   void OnThemeChanged() override;
@@ -79,6 +80,13 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   DISALLOW_COPY_AND_ASSIGN(MdTextButton);
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
+VIEW_BUILDER_PROPERTY(bool, Prominent)
+VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BgColorOverride)
+VIEW_BUILDER_PROPERTY(float, CornerRadius)
+VIEW_BUILDER_PROPERTY(base::Optional<gfx::Insets>, CustomPadding)
+END_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton)
 
 }  // namespace views
 

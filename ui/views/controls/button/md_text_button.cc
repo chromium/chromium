@@ -169,9 +169,14 @@ void MdTextButton::SetEnabledTextColors(base::Optional<SkColor> color) {
   UpdateColors();
 }
 
-void MdTextButton::SetCustomPadding(const gfx::Insets& padding) {
+void MdTextButton::SetCustomPadding(
+    const base::Optional<gfx::Insets>& padding) {
   custom_padding_ = padding;
   UpdatePadding();
+}
+
+base::Optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
+  return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
 void MdTextButton::SetText(const base::string16& text) {
@@ -300,6 +305,7 @@ BEGIN_METADATA(MdTextButton, LabelButton)
 ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(float, CornerRadius)
 ADD_PROPERTY_METADATA(base::Optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(base::Optional<gfx::Insets>, CustomPadding)
 END_METADATA
 
 }  // namespace views
