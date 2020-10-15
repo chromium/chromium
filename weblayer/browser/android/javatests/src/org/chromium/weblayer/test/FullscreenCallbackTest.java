@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -44,6 +45,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1133893")
     public void testFullscreen() {
         // Second touch exits.
         EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
