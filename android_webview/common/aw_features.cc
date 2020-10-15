@@ -27,7 +27,7 @@ const base::Feature kWebViewDisplayCutout{"WebViewDisplayCutout",
 // occurs. kWebViewExtraHeadersSameOriginOnly is stricter; when that's enabled,
 // this feature has no effect.
 const base::Feature kWebViewExtraHeadersSameDomainOnly{
-    "WebViewExtraHeadersSameDomainOnly", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebViewExtraHeadersSameDomainOnly", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Only allow extra headers added via loadUrl() to be sent to the original
 // origin; strip them from the request if a cross-origin redirect occurs.

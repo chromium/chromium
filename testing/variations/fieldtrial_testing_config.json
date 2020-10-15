@@ -8056,21 +8056,6 @@
             ]
         }
     ],
-    "WebViewHeaderInjection": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "SameDomainOnly",
-                    "enable_features": [
-                        "WebViewExtraHeadersSameDomainOnly"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewZeroCopyVideo": [
         {
             "platforms": [
