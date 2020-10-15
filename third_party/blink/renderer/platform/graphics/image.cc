@@ -347,9 +347,10 @@ bool Image::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
 
 IntSize Image::Size(
     RespectImageOrientationEnum respect_image_orientation) const {
-  if (respect_image_orientation == kRespectImageOrientation)
-    return SizeRespectingOrientation();
-  return Size();
+  if (respect_image_orientation == kRespectImageOrientation) {
+    return PreferredDisplaySize();
+  }
+  return DensityCorrectedSize();
 }
 
 SkBitmap Image::AsSkBitmapForCurrentFrame(
@@ -359,9 +360,25 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
     return {};
 
   auto* bitmap_image = DynamicTo<BitmapImage>(this);
-  if (respect_image_orientation == kRespectImageOrientation && bitmap_image) {
-    ImageOrientation orientation = bitmap_image->CurrentFrameOrientation();
-    paint_image = ResizeAndOrientImage(paint_image, orientation);
+  IntSize density_corrected_size;
+  if (bitmap_image)
+    density_corrected_size = bitmap_image->DensityCorrectedSize();
+
+  if (bitmap_image && (respect_image_orientation == kRespectImageOrientation ||
+                       !density_corrected_size.IsEmpty())) {
+    ImageOrientation orientation =
+        respect_image_orientation == kRespectImageOrientation
+            ? bitmap_image->CurrentFrameOrientation()
+            : kDefaultImageOrientation;
+
+    FloatSize image_scale(1, 1);
+    if (density_corrected_size != bitmap_image->Size()) {
+      image_scale =
+          FloatSize(density_corrected_size.Width() / bitmap_image->width(),
+                    density_corrected_size.Height() / bitmap_image->height());
+    }
+
+    paint_image = ResizeAndOrientImage(paint_image, orientation, image_scale);
     if (!paint_image)
       return {};
   }

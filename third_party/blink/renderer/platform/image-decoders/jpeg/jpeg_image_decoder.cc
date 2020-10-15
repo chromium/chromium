@@ -369,13 +369,29 @@ static void ReadExifDirectory(JOCTET* dir_start,
         break;
 
       case ExifTags::kPixelXDimensionTag:
-        if (type == kUnsignedShortType && count == 1)
-          metadata.size.SetWidth(ReadUint16(value_ptr, is_big_endian));
+        if (count != 1)
+          break;
+        switch (type) {
+          case kUnsignedShortType:
+            metadata.size.SetWidth(ReadUint16(value_ptr, is_big_endian));
+            break;
+          case kUnsignedLongType:
+            metadata.size.SetWidth(ReadUint32(value_ptr, is_big_endian));
+            break;
+        }
         break;
 
       case ExifTags::kPixelYDimensionTag:
-        if (type == kUnsignedShortType && count == 1)
-          metadata.size.SetHeight(ReadUint16(value_ptr, is_big_endian));
+        if (count != 1)
+          break;
+        switch (type) {
+          case kUnsignedShortType:
+            metadata.size.SetHeight(ReadUint16(value_ptr, is_big_endian));
+            break;
+          case kUnsignedLongType:
+            metadata.size.SetHeight(ReadUint32(value_ptr, is_big_endian));
+            break;
+        }
         break;
 
       case ExifTags::kExifOffsetTag:

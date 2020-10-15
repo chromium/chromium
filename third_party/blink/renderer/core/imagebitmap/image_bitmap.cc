@@ -1087,7 +1087,7 @@ Vector<uint8_t> ImageBitmap::CopyBitmapData() {
 unsigned ImageBitmap::width() const {
   if (!image_)
     return 0;
-  IntSize size = image_->SizeRespectingOrientation();
+  IntSize size = image_->PreferredDisplaySize();
   DCHECK_GT(size.Width(), 0);
   return size.Width();
 }
@@ -1095,7 +1095,7 @@ unsigned ImageBitmap::width() const {
 unsigned ImageBitmap::height() const {
   if (!image_)
     return 0;
-  IntSize size = image_->SizeRespectingOrientation();
+  IntSize size = image_->PreferredDisplaySize();
   DCHECK_GT(size.Height(), 0);
   return size.Height();
 }
@@ -1109,7 +1109,7 @@ IntSize ImageBitmap::Size() const {
     return IntSize();
   DCHECK_GT(image_->width(), 0);
   DCHECK_GT(image_->height(), 0);
-  return image_->SizeRespectingOrientation();
+  return image_->PreferredDisplaySize();
 }
 
 ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,

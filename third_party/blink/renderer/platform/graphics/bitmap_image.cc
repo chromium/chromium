@@ -136,10 +136,15 @@ void BitmapImage::UpdateSize() const {
     return;
 
   size_ = decoder_->FrameSizeAtIndex(0);
-  if (decoder_->OrientationAtIndex(0).UsesWidthAsHeight())
+  density_corrected_size_ = decoder_->DensityCorrectedSizeAtIndex(0);
+  if (decoder_->OrientationAtIndex(0).UsesWidthAsHeight()) {
     size_respecting_orientation_ = size_.TransposedSize();
-  else
+    density_corrected_size_respecting_orientation_ =
+        density_corrected_size_.TransposedSize();
+  } else {
     size_respecting_orientation_ = size_;
+    density_corrected_size_respecting_orientation_ = density_corrected_size_;
+  }
   have_size_ = true;
 }
 
@@ -148,8 +153,14 @@ IntSize BitmapImage::Size() const {
   return size_;
 }
 
-IntSize BitmapImage::SizeRespectingOrientation() const {
+IntSize BitmapImage::DensityCorrectedSize() const {
+  return density_corrected_size_.IsEmpty() ? Size() : density_corrected_size_;
+}
+
+IntSize BitmapImage::PreferredDisplaySize() const {
   UpdateSize();
+  if (!density_corrected_size_respecting_orientation_.IsEmpty())
+    return density_corrected_size_respecting_orientation_;
   return size_respecting_orientation_;
 }
 
@@ -265,6 +276,13 @@ void BitmapImage::Draw(
   }
 
   FloatRect adjusted_src_rect = src_rect;
+  if (!density_corrected_size_.IsEmpty()) {
+    FloatSize src_size(size_);
+    adjusted_src_rect.Scale(
+        src_size.Width() / density_corrected_size_.Width(),
+        src_size.Height() / density_corrected_size_.Height());
+  }
+
   adjusted_src_rect.Intersect(SkRect::MakeWH(image.width(), image.height()));
 
   if (adjusted_src_rect.IsEmpty() || dst_rect.IsEmpty())
@@ -402,6 +420,12 @@ bool BitmapImage::CurrentFrameIsLazyDecoded() {
 ImageOrientation BitmapImage::CurrentFrameOrientation() const {
   return decoder_ ? decoder_->OrientationAtIndex(PaintImage::kDefaultFrameIndex)
                   : kDefaultImageOrientation;
+}
+
+IntSize BitmapImage::CurrentFrameDensityCorrectedSize() const {
+  return decoder_ ? decoder_->DensityCorrectedSizeAtIndex(
+                        PaintImage::kDefaultFrameIndex)
+                  : IntSize();
 }
 
 int BitmapImage::RepetitionCount() {

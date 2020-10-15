@@ -65,7 +65,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool CurrentFrameHasSingleSecurityOrigin() const override;
 
   IntSize Size() const override;
-  IntSize SizeRespectingOrientation() const override;
+  IntSize PreferredDisplaySize() const override;
   bool HasDefaultOrientation() const override;
   bool GetHotSpot(IntPoint&) const override;
   String FilenameExtension() const override;
@@ -95,6 +95,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   size_t FrameCount() override;
   PaintImage PaintImageForCurrentFrame() override;
   ImageOrientation CurrentFrameOrientation() const override;
+  IntSize CurrentFrameDensityCorrectedSize() const override;
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {
@@ -103,6 +104,8 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   void SetDecoderForTesting(std::unique_ptr<DeferredImageDecoder> decoder) {
     decoder_ = std::move(decoder);
   }
+
+  IntSize DensityCorrectedSize() const override;
 
  protected:
   bool IsSizeAvailable() override;
@@ -155,6 +158,8 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   mutable IntSize size_;  // The size to use for the overall image (will just
                           // be the size of the first image).
   mutable IntSize size_respecting_orientation_;
+  mutable IntSize density_corrected_size_;
+  mutable IntSize density_corrected_size_respecting_orientation_;
 
   // This caches the PaintImage created with the last updated encoded data to
   // ensure re-use of generated decodes. This is cleared each time the encoded

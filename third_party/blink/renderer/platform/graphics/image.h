@@ -107,8 +107,9 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool HasIntrinsicSize() const { return true; }
 
   virtual IntSize Size() const = 0;
+  virtual IntSize DensityCorrectedSize() const { return Size(); }
   IntSize Size(RespectImageOrientationEnum) const;
-  virtual IntSize SizeRespectingOrientation() const { return Size(); }
+  virtual IntSize PreferredDisplaySize() const { return Size(); }
   virtual FloatSize SizeAsFloat(
       RespectImageOrientationEnum respect_orientation) const {
     return FloatSize(Size(respect_orientation));
@@ -213,6 +214,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual ImageOrientation CurrentFrameOrientation() const {
     return kDefaultImageOrientation;
   }
+
+  virtual IntSize CurrentFrameDensityCorrectedSize() const { return IntSize(); }
 
   // Correct the src rect (rotate and maybe translate it) to account for a
   // non-default image orientation. The image must have non-default orientation

@@ -40,7 +40,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // Methods overridden by all sub-classes
   ~StaticBitmapImage() override = default;
 
-  IntSize SizeRespectingOrientation() const override;
+  IntSize PreferredDisplaySize() const override;
 
   virtual scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
       sk_sp<SkColorSpace>,
