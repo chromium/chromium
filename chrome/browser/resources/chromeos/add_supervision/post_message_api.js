@@ -3,6 +3,18 @@
 // found in the LICENSE file.
 
 /**
+ *  Initialization retry wait in milliseconds (subject to exponential backoff).
+ */
+const INITIALIZATION_ATTEMPT_RETRY_WAIT_MS = 100;
+
+/**
+ * Maximum number of initialization attempts before resetting the
+ * initialization attempt cycle.  With exponential backoff, this works out
+ * a maximum wait of 25 seconds on the 8th attempt before restarting.
+ */
+const MAX_INITIALIZATION_ATTEMPTS = 8;
+
+/**
  * Class that provides the functionality for talking to a client
  * over the PostMessageAPI.  This should be subclassed and the
  * methods provided in methodList should be implemented as methods
@@ -40,12 +52,24 @@
      */
     this.apiFns_ = new Map();
 
-    // Listen for the embedding element to finish loading, then
-    // tell it to initialize by sending it a message, which will include
-    // a handle for it to use to send messages back.
+    /**
+     *  The ID of the timeout set before checking whether initialization has
+     * taken place yet.
+     * @private {number}
+     */
+    this.initialization_timeout_id_ = 0;
+
+    /**
+     * Indicates how many attempts have been made to initialize the channel.
+     * @private {number}
+     */
+    this.numInitializationAttempts_ = 0;
+
+    // Wait for content to load before attempting to initializing the
+    // message listener.
     this.clientElement_.addEventListener('contentload', () => {
-      this.clientElement_.contentWindow.postMessage(
-          'init', this.targetURL_.toString());
+      this.numInitializationAttempts_ = 0;
+      this.initialize();
     });
 
     // Listen for events.
@@ -64,6 +88,41 @@
    */
   registerMethod(methodName, method) {
     this.apiFns_.set(methodName, method);
+  }
+
+  /**
+   * Send initialization message to client element.
+   */
+  initialize() {
+    if (this.numInitializationAttempts_ < MAX_INITIALIZATION_ATTEMPTS &&
+        this.originMatchesFilter_(this.clientElement_.src)) {
+      // Tell the embedded webviews whose src matches our origin to initialize
+      // by sending it a message, which will include a handle for it to use to
+      // send messages back.
+      console.log(
+          'Sending init message to guest content,  attempt # :' +
+          this.numInitializationAttempts_);
+
+      this.clientElement_.contentWindow.postMessage(
+          'init', this.targetURL_.toString());
+
+      // Set timeout to check if initialization message has been received using
+      // exponential backoff.
+      this.initialization_timeout_id_ = setTimeout(
+          () => {
+            // If the timeout id is non-zero, that indicates that initialization
+            // hasn't succeeded yet, so  try to initialize again.
+            this.initialize();
+          },
+          INITIALIZATION_ATTEMPT_RETRY_WAIT_MS *
+              (2 ** this.numInitializationAttempts_));
+
+      this.numInitializationAttempts_++;
+    } else {
+      // Exponential backoff has maxed out, so restart the init attempt cycle.
+      this.numInitializationAttempts_ = 0;
+      this.initialize();
+    }
   }
 
   /**
@@ -89,10 +148,22 @@
    */
   onMessage_(event) {
     if (!this.originMatchesFilter_(event.origin)) {
-      console.error(
-          'Message received from unauthorized origin: ' + event.origin);
+      console.log('Message received from unauthorized origin: ' + event.origin);
       return;
     }
+
+    if (this.initialization_timeout_id_) {
+      // Cancel the current init timeout, and signal to the initialization
+      // polling process that we have received an init message from the guest
+      // content, so it doesn't reschedule the timer.
+      clearTimeout(this.initialization_timeout_id_);
+      this.initialization_timeout_id_ = 0;
+    }
+
+    if (event.data === 'init') {
+      return;
+    }
+
     const methodId = event.data.methodId;
     const fn = event.data.fn;
     const args = event.data.args || [];
