@@ -532,7 +532,6 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   // thread safety of reaching into this class from multiple threads to
   // attain a WeakPtr.
   base::WeakPtr<DXVAVideoDecodeAccelerator> weak_ptr_;
-  base::WeakPtr<DXVAVideoDecodeAccelerator> pb_weak_ptr_;
 
   // Set to true if we are in the context of a Flush operation. Used to prevent
   // multiple flush done notifications being sent out.
@@ -613,9 +612,6 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   // WeakPtrFactory for posting tasks back to |this|.
   base::WeakPtrFactory<DXVAVideoDecodeAccelerator> weak_this_factory_{this};
-
-  // WeakPtrFactory for posting picture buffer related tasks back to |this|.
-  base::WeakPtrFactory<DXVAVideoDecodeAccelerator> pb_weak_this_factory_{this};
 
   // Function pointer for the MFCreateDXGIDeviceManager API.
   static CreateDXGIDeviceManager create_dxgi_device_manager_;
