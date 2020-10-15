@@ -2767,8 +2767,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
 // Creates a single frame within the main frame and verifies the intersection
 // with the main frame.
-// TODO(https://crbug/1085175): Main frame document intersections need to be
-// transformed into the main frame documents coordinate system.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                        MainFrameIntersectionSingleFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
