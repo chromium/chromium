@@ -81199,6 +81199,19 @@
         {}
        ]
       ],
+      "clip-path-no-content-005.svg": [
+       "e0c03d28cb0509e31ffb12034a138e0fb9b43da1",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path-svg-content/reference/clip-path-square-003-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-objectboundingbox-001.svg": [
        "d5ef03ac01166554fa573dda10496e598300c82b",
        [
@@ -152282,6 +152295,102 @@
      }
     }
    },
+   "density-size-correction": {
+    "density-corrected-image-svg-aspect-ratio.html": [
+     "fbc68de65db86477eddae60bb122a6712123a574",
+     [
+      null,
+      [
+       [
+        "/density-size-correction/density-corrected-image-svg-aspect-ratio-ref.html",
+        "=="
+       ]
+      ],
+      {
+       "fuzzy": [
+        [
+         null,
+         [
+          [
+           10,
+           10
+          ],
+          [
+           100,
+           100
+          ]
+         ]
+        ]
+       ]
+      }
+     ]
+    ],
+    "density-corrected-image-svg.html": [
+     "91c94965edd8b6abb6bd9425d7010acbc67c33fb",
+     [
+      null,
+      [
+       [
+        "/density-size-correction/density-corrected-image-svg-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "density-corrected-size-bg.html": [
+     "5a3190ebceab0fbab6072962060e3b3c87229b94",
+     [
+      null,
+      [
+       [
+        "/density-size-correction/density-corrected-size-bg-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "density-corrected-size-img.html": [
+     "7c2e788acb9661696365552922f5db721f0fc08b",
+     [
+      null,
+      [
+       [
+        "/density-size-correction/density-corrected-size-img-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "density-corrected-size-pseudo-elements.html": [
+     "34d318f1a2a4a10904c69cf3675cfd084d1cdca8",
+     [
+      null,
+      [
+       [
+        "/density-size-correction/density-corrected-size-pseudo-elements-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "density-corrected-various-elements.html": [
+     "69d80564b669abb4f59030f022688ac91225ab47",
+     [
+      null,
+      [
+       [
+        "/density-size-correction/density-corrected-various-elements-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
+   },
    "document-policy": {
     "font-display": {
      "override-to-optional.tentative.html": [
@@ -209869,7 +209978,7 @@
      ]
     },
     "historical-expected.txt": [
-     "9ba193753d494deaa6774b59d5e7632f65fd88d6",
+     "cfda088aac6a7a59d182bab359d02ff0eddeb46f",
      []
     ],
     "htmlconstructor": {
@@ -209926,6 +210035,82 @@
      "7474f86fee6cd07b722c9507de56e61347cd1a4a",
      []
     ]
+   },
+   "density-size-correction": {
+    "density-corrected-image-svg-aspect-ratio-ref.html": [
+     "fa13136876c88b8e3b32d68c2c0155862151c51b",
+     []
+    ],
+    "density-corrected-image-svg-ref.html": [
+     "6507c66982903ebbbaf2de88843de6a7f3dfed65",
+     []
+    ],
+    "density-corrected-size-bg-ref.html": [
+     "758ca8edc60adccf491f7db3aa40dbba9d75798b",
+     []
+    ],
+    "density-corrected-size-img-ref.html": [
+     "5a71863a46e9e2ce14abd717230becdea77f1c58",
+     []
+    ],
+    "density-corrected-size-pseudo-elements-ref.html": [
+     "b2c9de4114e1e69192c8436beecc7ae3d07ce061",
+     []
+    ],
+    "density-corrected-various-elements-ref.html": [
+     "a0be0ac8d80f541038d0cdd1132afa4a05220392",
+     []
+    ],
+    "resources": {
+     "exif-resolution-no-change.jpg": [
+      "04f9202cfcc5ffcf5934b42c0fff9e7c4b0c541e",
+      []
+     ],
+     "exif-resolution-none.jpg": [
+      "04f9202cfcc5ffcf5934b42c0fff9e7c4b0c541e",
+      []
+     ],
+     "exif-resolution-preapplied-lores.jpg": [
+      "ad91a1479897ca221d743bbe314798f3e73902fa",
+      []
+     ],
+     "exif-resolution-preapplied-non-uniform.jpg": [
+      "c1a607f0b041c4bd110650a6f59c7650f71ecc14",
+      []
+     ],
+     "exif-resolution-valid-hires.jpg": [
+      "757ce2d877d8ac6e2cfb777e3145fabf0d946085",
+      []
+     ],
+     "exif-resolution-valid-lores.jpg": [
+      "11a5d8b12e1df4fa984601b62e1b645278774d7d",
+      []
+     ],
+     "exif-resolution-valid-non-uniform.jpg": [
+      "a028bde2e8479532ffb37483b0cdce944c1b1a78",
+      []
+     ],
+     "exif-resolution-with-orientation.jpg": [
+      "5c914f03fffbf650a9e224691666f90cfb6583b6",
+      []
+     ],
+     "exify.js": [
+      "c16b25e8676afef23133c2b35c1c6dc5623af473",
+      []
+     ]
+    },
+    "third_party": {
+     "piexif": {
+      "LICENSE.txt": [
+       "73bd9746b25f2c7d43c2bafe57043ef306304411",
+       []
+      ],
+      "piexif.js": [
+       "01b4e8f108a34f690fd2e6cafcc0c1a7f385c309",
+       []
+      ]
+     }
+    }
    },
    "deprecation-reporting": {
     "idlharness.any-expected.txt": [
@@ -223867,7 +224052,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "bbf4c605abb3faa0e319dabc7a2ce6156bd32d67",
+       "0de722ad0eb2ccf45e2ce56ce53592e1875c2767",
        []
       ],
       "transfer-errors.window-expected.txt": [
@@ -225977,6 +226162,10 @@
         "fb8804941ba81b386e252e6f31002c5005f3b8fc",
         []
        ],
+       "iframe-loading-lazy-in-script-disabled-iframe-expected.txt": [
+        "3e45f16374002ae4a3297cc611848c7a5cfeff1a",
+        []
+       ],
        "iframe-loading-lazy-load-event-expected.txt": [
         "083da11b5c5f050bf37970286452df756b760175",
         []
@@ -226014,6 +226203,10 @@
         []
        ],
        "resources": {
+        "iframe-loading-lazy-in-viewport.html": [
+         "1efd2bd056dde80de03448a76b9bd28f94fd1795",
+         []
+        ],
         "subframe.html": [
          "07cb999afaefe344a0f8d5ac2b792b60abcd22b4",
          []
@@ -237385,7 +237578,7 @@
      []
     ],
     "testharness.js": [
-     "85ffcf726af1b634a9e5bc1fc35aca56deb74b4c",
+     "4fb8cea0bcc167c99448c5b680276ebb1413cb5e",
      []
     ],
     "testharness.js.headers": [
@@ -240455,7 +240648,7 @@
      }
     },
     "historical-expected.txt": [
-     "14ab3becdb400c3288a286a31cee5a685fa7e084",
+     "cd93b8b276f16138d4d48e882aec437803767000",
      []
     ],
     "offsetParent-across-shadow-boundaries-expected.txt": [
@@ -307565,6 +307758,22 @@
      ]
     ]
    },
+   "density-size-correction": {
+    "density-corrected-image-in-canvas.html": [
+     "25ac0954d3a588cdf51dd1df4108ecf5d0ea99e6",
+     [
+      null,
+      {}
+     ]
+    ],
+    "density-corrected-natural-size.html": [
+     "0b90b74f439b587f0aabb393c72a42db1a23ad61",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "deprecation-reporting": {
     "idlharness.any.js": [
      "720bacfa3ff3f00e2b8dcc4e061924d2dc48e876",
@@ -357444,6 +357653,13 @@
          {}
         ]
        ],
+       "iframe-loading-lazy-in-script-disabled-iframe.html": [
+        "4f191cd7842675d763079911fe9f8b80bd447506",
+        [
+         null,
+         {}
+        ]
+       ],
        "iframe-loading-lazy-load-event.html": [
         "bf98bf7585cf608e6ebb46d025663e22bce8324c",
         [
@@ -394377,7 +394593,7 @@
      ]
     ],
     "element-based-offset-clamp.html": [
-     "b140507493848688f38021573643ce7d6321e514",
+     "6467af199f10224e16f07badf16b73593270f14c",
      [
       null,
       {}
