@@ -1122,6 +1122,7 @@ test("views_unittests") {
     "layout/composite_layout_tests.cc",
     "layout/fill_layout_unittest.cc",
     "layout/flex_layout_unittest.cc",
+    "layout/flex_layout_view_unittest.cc",
     "layout/grid_layout_unittest.cc",
     "layout/layout_manager_base_unittest.cc",
     "layout/normalized_geometry_unittest.cc",

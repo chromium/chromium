@@ -7,6 +7,7 @@
 
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -54,17 +55,40 @@ class VIEWS_EXPORT FlexLayoutView : public View {
   template <class T, class U>
   void SetDefault(const ui::ClassProperty<T>* key, U&& value) {
     layout_->SetDefault(key, value);
+    InvalidateLayout();
   }
 
   // Copies and uses |value| as the default value for layout property |key|.
   template <class T, class U>
   void SetDefault(const ui::ClassProperty<T>* key, const U& value) {
     layout_->SetDefault(key, value);
+    InvalidateLayout();
   }
 
  private:
   FlexLayout* layout_;
+  LayoutOrientation orientation_;
+  LayoutAlignment main_axis_alignment_;
+  LayoutAlignment cross_axis_alignment_;
+  gfx::Insets interior_margin_;
+  int minimum_cross_axis_size_;
+  bool collapse_margins_;
+  bool include_host_insets_in_layout_;
+  bool ignore_default_main_axis_margins_;
+  FlexAllocationOrder flex_allocation_order_;
 };
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, FlexLayoutView, View)
+VIEW_BUILDER_PROPERTY(LayoutOrientation, Orientation)
+VIEW_BUILDER_PROPERTY(LayoutAlignment, MainAxisAlignment)
+VIEW_BUILDER_PROPERTY(LayoutAlignment, CrossAxisAlignment)
+VIEW_BUILDER_PROPERTY(const gfx::Insets, InteriorMargin)
+VIEW_BUILDER_PROPERTY(int, MinimumCrossAxisSize)
+VIEW_BUILDER_PROPERTY(bool, CollapseMargins)
+VIEW_BUILDER_PROPERTY(bool, IncludeHostInsetsInLayout)
+VIEW_BUILDER_PROPERTY(bool, IgnoreDefaultMainAxisMargins)
+VIEW_BUILDER_PROPERTY(FlexAllocationOrder, FlexAllocationOrder)
+END_VIEW_BUILDER(VIEWS_EXPORT, FlexLayoutView)
 
 }  // namespace views
 

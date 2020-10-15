@@ -6,47 +6,41 @@
 
 #include <memory>
 
-namespace {
-
-// An enum giving different RenderText properties unique keys for the
-// OnPropertyChanged call.
-enum LabelPropertyKey {
-  kOrientation = 1,
-  kMainAxisAlignment,
-  kCrossAxisAlignment,
-  kInteriorMargin,
-  kMinimumCrossAxisSize,
-  kCollapseMargins,
-  kIncludeHostInsetsInLayout,
-  kIgnoreMainAxisMargins,
-  kFlexAllocationOrder,
-};
-
-}  // namespace
-
 namespace views {
 
 FlexLayoutView::FlexLayoutView()
-    : layout_(SetLayoutManager(std::make_unique<FlexLayout>())) {}
+    : layout_(SetLayoutManager(std::make_unique<FlexLayout>())),
+      orientation_(layout_->orientation()),
+      main_axis_alignment_(layout_->main_axis_alignment()),
+      cross_axis_alignment_(layout_->cross_axis_alignment()),
+      interior_margin_(layout_->interior_margin()),
+      minimum_cross_axis_size_(layout_->minimum_cross_axis_size()),
+      collapse_margins_(layout_->collapse_margins()),
+      include_host_insets_in_layout_(layout_->include_host_insets_in_layout()),
+      ignore_default_main_axis_margins_(
+          layout_->ignore_default_main_axis_margins()),
+      flex_allocation_order_(layout_->flex_allocation_order()) {}
 
 FlexLayoutView::~FlexLayoutView() = default;
 
 void FlexLayoutView::SetOrientation(LayoutOrientation orientation) {
-  if (orientation == layout_->orientation())
+  if (orientation_ == orientation)
     return;
   layout_->SetOrientation(orientation);
-  OnPropertyChanged(&layout_ + kOrientation, kPropertyEffectsLayout);
+  orientation_ = orientation;
+  OnPropertyChanged(&orientation_, kPropertyEffectsLayout);
 }
 
 LayoutOrientation FlexLayoutView::GetOrientation() const {
-  return layout_->orientation();
+  return orientation_;
 }
 
 void FlexLayoutView::SetMainAxisAlignment(LayoutAlignment main_axis_alignment) {
-  if (main_axis_alignment == layout_->main_axis_alignment())
+  if (main_axis_alignment_ == main_axis_alignment)
     return;
   layout_->SetMainAxisAlignment(main_axis_alignment);
-  OnPropertyChanged(&layout_ + kMainAxisAlignment, kPropertyEffectsLayout);
+  main_axis_alignment_ = main_axis_alignment;
+  OnPropertyChanged(&main_axis_alignment_, kPropertyEffectsLayout);
 }
 
 LayoutAlignment FlexLayoutView::GetMainAxisAlignment() const {
@@ -55,86 +49,91 @@ LayoutAlignment FlexLayoutView::GetMainAxisAlignment() const {
 
 void FlexLayoutView::SetCrossAxisAlignment(
     LayoutAlignment cross_axis_alignment) {
-  if (cross_axis_alignment == layout_->cross_axis_alignment())
+  if (cross_axis_alignment_ == cross_axis_alignment)
     return;
   layout_->SetCrossAxisAlignment(cross_axis_alignment);
-  OnPropertyChanged(&layout_ + kCrossAxisAlignment, kPropertyEffectsLayout);
+  cross_axis_alignment_ = cross_axis_alignment;
+  OnPropertyChanged(&cross_axis_alignment_, kPropertyEffectsLayout);
 }
 
 LayoutAlignment FlexLayoutView::GetCrossAxisAlignment() const {
-  return layout_->cross_axis_alignment();
+  return cross_axis_alignment_;
 }
 
 void FlexLayoutView::SetInteriorMargin(const gfx::Insets& interior_margin) {
-  if (interior_margin == layout_->interior_margin())
+  if (interior_margin_ == interior_margin)
     return;
   layout_->SetInteriorMargin(interior_margin);
-  OnPropertyChanged(&layout_ + kInteriorMargin, kPropertyEffectsLayout);
+  interior_margin_ = interior_margin;
+  OnPropertyChanged(&interior_margin_, kPropertyEffectsLayout);
 }
 
 const gfx::Insets& FlexLayoutView::GetInteriorMargin() const {
-  return layout_->interior_margin();
+  return interior_margin_;
 }
 
 void FlexLayoutView::SetMinimumCrossAxisSize(int size) {
-  if (size == layout_->minimum_cross_axis_size())
+  if (minimum_cross_axis_size_ == size)
     return;
   layout_->SetMinimumCrossAxisSize(size);
-  OnPropertyChanged(&layout_ + kMinimumCrossAxisSize, kPropertyEffectsLayout);
+  minimum_cross_axis_size_ = size;
+  OnPropertyChanged(&minimum_cross_axis_size_, kPropertyEffectsLayout);
 }
 
 int FlexLayoutView::GetMinimumCrossAxisSize() const {
-  return layout_->minimum_cross_axis_size();
+  return minimum_cross_axis_size_;
 }
 
 void FlexLayoutView::SetCollapseMargins(bool collapse_margins) {
-  if (collapse_margins == layout_->collapse_margins())
+  if (collapse_margins_ == collapse_margins)
     return;
   layout_->SetCollapseMargins(collapse_margins);
-  OnPropertyChanged(&layout_ + kCollapseMargins, kPropertyEffectsLayout);
+  collapse_margins_ = collapse_margins;
+  OnPropertyChanged(&collapse_margins_, kPropertyEffectsLayout);
 }
 
 bool FlexLayoutView::GetCollapseMargins() const {
-  return layout_->collapse_margins();
+  return collapse_margins_;
 }
 
 void FlexLayoutView::SetIncludeHostInsetsInLayout(
     bool include_host_insets_in_layout) {
-  if (include_host_insets_in_layout == layout_->include_host_insets_in_layout())
+  if (include_host_insets_in_layout_ == include_host_insets_in_layout)
     return;
   layout_->SetIncludeHostInsetsInLayout(include_host_insets_in_layout);
-  OnPropertyChanged(&layout_ + kIncludeHostInsetsInLayout,
-                    kPropertyEffectsLayout);
+  include_host_insets_in_layout_ = include_host_insets_in_layout;
+  OnPropertyChanged(&include_host_insets_in_layout_, kPropertyEffectsLayout);
 }
 
 bool FlexLayoutView::GetIncludeHostInsetsInLayout() const {
-  return layout_->include_host_insets_in_layout();
+  return include_host_insets_in_layout_;
 }
 
 void FlexLayoutView::SetIgnoreDefaultMainAxisMargins(
     bool ignore_default_main_axis_margins) {
-  if (ignore_default_main_axis_margins ==
-      layout_->ignore_default_main_axis_margins()) {
+  if (ignore_default_main_axis_margins == ignore_default_main_axis_margins_) {
     return;
   }
   layout_->SetIgnoreDefaultMainAxisMargins(ignore_default_main_axis_margins);
-  OnPropertyChanged(&layout_ + kIgnoreMainAxisMargins, kPropertyEffectsLayout);
+  ignore_default_main_axis_margins_ = ignore_default_main_axis_margins;
+  OnPropertyChanged(&ignore_default_main_axis_margins_, kPropertyEffectsLayout);
 }
 
 bool FlexLayoutView::GetIgnoreDefaultMainAxisMargins() const {
-  return layout_->ignore_default_main_axis_margins();
+  return ignore_default_main_axis_margins_;
 }
 
 void FlexLayoutView::SetFlexAllocationOrder(
     FlexAllocationOrder flex_allocation_order) {
-  if (flex_allocation_order == layout_->flex_allocation_order())
+  if (flex_allocation_order_ == flex_allocation_order)
     return;
   layout_->SetFlexAllocationOrder(flex_allocation_order);
-  OnPropertyChanged(&layout_ + kFlexAllocationOrder, kPropertyEffectsLayout);
+  flex_allocation_order_ = flex_allocation_order;
+  OnPropertyChanged(&flex_allocation_order_, kPropertyEffectsLayout);
 }
 
 FlexAllocationOrder FlexLayoutView::GetFlexAllocationOrder() const {
-  return layout_->flex_allocation_order();
+  return flex_allocation_order_;
 }
 
 FlexRule FlexLayoutView::GetDefaultFlexRule() const {
