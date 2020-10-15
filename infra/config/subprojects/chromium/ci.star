@@ -2299,6 +2299,8 @@ ci.fyi_builder(
     ),
     builderless = False,
     cores = None,
+    goma_jobs = goma.jobs.J300,
+    use_java_coverage = True,
 )
 
 ci.fyi_builder(
@@ -2309,6 +2311,8 @@ ci.fyi_builder(
     ),
     builderless = False,
     cores = None,
+    goma_jobs = goma.jobs.J300,
+    use_java_coverage = True,
 )
 
 ci.fyi_builder(
@@ -2581,6 +2585,8 @@ ci.fyi_builder(
     ),
     builderless = False,
     cores = None,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
 )
 
 ci.fyi_builder(
@@ -2591,6 +2597,8 @@ ci.fyi_builder(
     ),
     builderless = False,
     cores = None,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
 )
 
 ci.fyi_builder(
@@ -2601,6 +2609,8 @@ ci.fyi_builder(
     ),
     builderless = False,
     cores = None,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
 )
 
 # This is launching & collecting entirely isolated tests.
@@ -2769,6 +2779,8 @@ ci.fyi_windows_builder(
     ),
     builderless = False,
     cores = None,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
 )
 
 ci.fyi_windows_builder(
@@ -2779,6 +2791,8 @@ ci.fyi_windows_builder(
     ),
     builderless = False,
     cores = None,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
 )
 
 ci.fyi_windows_builder(
@@ -2789,6 +2803,8 @@ ci.fyi_windows_builder(
     ),
     builderless = False,
     cores = None,
+    use_clang_coverage = True,
+    goma_jobs = goma.jobs.J150,
 )
 
 ci.fyi_celab_builder(
