@@ -2878,6 +2878,7 @@ ci.fyi_coverage_builder(
         category = "code_coverage",
         short_name = "jcr",
     ),
+    use_javascript_coverage = True,
     schedule = "triggered",
     triggered_by = [],
 )

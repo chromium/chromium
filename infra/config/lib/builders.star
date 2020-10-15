@@ -198,6 +198,7 @@ def _code_coverage_property(
         *,
         use_clang_coverage,
         use_java_coverage,
+        use_javascript_coverage,
         coverage_exclude_sources,
         coverage_test_types):
     code_coverage = {}
@@ -212,6 +213,10 @@ def _code_coverage_property(
     use_java_coverage = defaults.get_value("use_java_coverage", use_java_coverage)
     if use_java_coverage:
         code_coverage["use_java_coverage"] = True
+
+    use_javascript_coverage = defaults.get_value("use_javascript_coverage", use_javascript_coverage)
+    if use_javascript_coverage:
+        code_coverage["use_javascript_coverage"] = True
 
     coverage_exclude_sources = defaults.get_value(
         "coverage_exclude_sources",
@@ -264,6 +269,7 @@ defaults = args.defaults(
     ssd = args.COMPUTE,
     use_clang_coverage = False,
     use_java_coverage = False,
+    use_javascript_coverage = False,
     coverage_exclude_sources = None,
     coverage_test_types = None,
     resultdb_bigquery_exports = [],
@@ -303,6 +309,7 @@ def builder(
         goma_jobs = args.DEFAULT,
         use_clang_coverage = args.DEFAULT,
         use_java_coverage = args.DEFAULT,
+        use_javascript_coverage = args.DEFAULT,
         coverage_exclude_sources = args.DEFAULT,
         coverage_test_types = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
@@ -389,6 +396,9 @@ def builder(
       * use_java_coverage - a boolean indicating whether java coverage should be
         used. If True, the 'use_java_coverage" field will be set in the
         '$build/code_coverage' property. By default, considered False.
+      * use_javascript_coverage - a boolean indicating whether javascript coverage
+        should be enabled. If True the 'use_javascript_coverage' field will be set
+        in the '$build/code_coverage' property. By default, considered False.
       * coverage_exclude_sources - a string as the key to find the source file
         exclusion pattern in code_coverage recipe module. Will be copied to
         '$build/code_coverage' property if set. By default, considered None.
@@ -421,8 +431,8 @@ def builder(
              "use goma_backend, goma_dbug, goma_enable_ats and goma_jobs instead")
     if "$build/code_coverage" in properties:
         fail('Setting "$build/code_coverage" property is not supported: ' +
-             "use use_clang_coverage, use_java_coverage, coverage_exclude_sources" +
-             " and/or coverage_test_types instead")
+             "use use_clang_coverage, use_java_coverage, use_javascript_coverage " +
+             " coverage_exclude_sources and/or coverage_test_types instead")
     if "$recipe_engine/isolated" in properties:
         fail('Setting "$recipe_engine/isolated" property is not supported: ' +
              "use isolated_server instead")
@@ -508,6 +518,7 @@ def builder(
     code_coverage = _code_coverage_property(
         use_clang_coverage = use_clang_coverage,
         use_java_coverage = use_java_coverage,
+        use_javascript_coverage = use_javascript_coverage,
         coverage_exclude_sources = coverage_exclude_sources,
         coverage_test_types = coverage_test_types,
     )
