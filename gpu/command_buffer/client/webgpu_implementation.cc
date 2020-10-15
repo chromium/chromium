@@ -484,9 +484,18 @@ void WebGPUImplementation::OnGpuControlReturnData(
       const volatile char* deserialized_buffer =
           reinterpret_cast<const volatile char*>(
               returned_adapter_info->deserialized_buffer);
-      dawn_wire::DeserializeWGPUDeviceProperties(&adapter_properties,
-                                                 deserialized_buffer);
-      std::move(request_callback).Run(adapter_service_id, adapter_properties);
+      if (returned_adapter_info->adapter_properties_size > 0) {
+        dawn_wire::DeserializeWGPUDeviceProperties(&adapter_properties,
+                                                   deserialized_buffer);
+      }
+      const char* error_message =
+          returned_adapter_info->deserialized_buffer +
+          returned_adapter_info->adapter_properties_size;
+      if (strlen(error_message) == 0) {
+        error_message = nullptr;
+      }
+      std::move(request_callback)
+          .Run(adapter_service_id, adapter_properties, error_message);
       request_adapter_callback_map_.erase(request_callback_iter);
     } break;
     case DawnReturnDataType::kRequestedDeviceReturnInfo: {
@@ -663,7 +672,7 @@ DawnRequestAdapterSerial WebGPUImplementation::NextRequestAdapterSerial() {
 
 bool WebGPUImplementation::RequestAdapterAsync(
     PowerPreference power_preference,
-    base::OnceCallback<void(int32_t, const WGPUDeviceProperties&)>
+    base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
         request_adapter_callback) {
   if (lost_) {
     return false;

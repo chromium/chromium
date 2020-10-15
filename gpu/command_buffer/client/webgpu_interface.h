@@ -51,8 +51,9 @@ class WebGPUInterface : public InterfaceBase {
       DawnDeviceClientID device_client_id) = 0;
   virtual bool RequestAdapterAsync(
       PowerPreference power_preference,
-      base::OnceCallback<void(int32_t, const WGPUDeviceProperties&)>
-          request_adapter_callback) = 0;
+      base::OnceCallback<void(int32_t,
+                              const WGPUDeviceProperties&,
+                              const char*)> request_adapter_callback) = 0;
   virtual bool RequestDeviceAsync(
       uint32_t adapter_service_id,
       const WGPUDeviceProperties& requested_device_properties,

@@ -552,9 +552,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   void SendAdapterProperties(DawnRequestAdapterSerial request_adapter_serial,
                              int32_t adapter_service_id,
-                             const dawn_native::Adapter& adapter);
+                             const dawn_native::Adapter& adapter,
+                             const char* error_message = nullptr);
   void SendRequestedDeviceInfo(DawnDeviceClientID device_client_id,
                                bool is_request_device_success);
+
+  const GrContextType gr_context_type_;
 
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
@@ -602,6 +605,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences)
     : WebGPUDecoder(client, command_buffer_service, outputter),
+      gr_context_type_(gpu_preferences.gr_context_type),
       shared_image_representation_factory_(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
@@ -818,20 +822,28 @@ error::Error WebGPUDecoderImpl::DoCommands(unsigned int num_commands,
 void WebGPUDecoderImpl::SendAdapterProperties(
     DawnRequestAdapterSerial request_adapter_serial,
     int32_t adapter_service_id,
-    const dawn_native::Adapter& adapter) {
-  WGPUDeviceProperties adapter_properties =
-      (adapter) ? adapter.GetAdapterProperties() : WGPUDeviceProperties{};
+    const dawn_native::Adapter& adapter,
+    const char* error_message) {
+  WGPUDeviceProperties adapter_properties;
+  size_t serialized_adapter_properties_size = 0;
 
-  if (!adapter) {
+  if (adapter) {
+    adapter_properties = adapter.GetAdapterProperties();
+    serialized_adapter_properties_size =
+        dawn_wire::SerializedWGPUDevicePropertiesSize(&adapter_properties);
+  } else {
     // If there's no adapter, the adapter_service_id should be -1
     DCHECK_EQ(adapter_service_id, -1);
   }
 
-  size_t serialized_adapter_properties_size =
-      dawn_wire::SerializedWGPUDevicePropertiesSize(&adapter_properties);
+  size_t error_message_size =
+      error_message == nullptr ? 0 : strlen(error_message);
+
+  // Get serialization space for the return struct and variable-length data:
+  // The serialized adapter properties, the error message, and null-terminator.
   std::vector<char> serialized_buffer(
       offsetof(cmds::DawnReturnAdapterInfo, deserialized_buffer) +
-      serialized_adapter_properties_size);
+      serialized_adapter_properties_size + error_message_size + 1);
 
   cmds::DawnReturnAdapterInfo* return_adapter_info =
       reinterpret_cast<cmds::DawnReturnAdapterInfo*>(serialized_buffer.data());
@@ -843,9 +855,28 @@ void WebGPUDecoderImpl::SendAdapterProperties(
   return_adapter_info->header.request_adapter_serial = request_adapter_serial;
   return_adapter_info->header.adapter_service_id = adapter_service_id;
 
-  // Set serialized adapter properties
-  dawn_wire::SerializeWGPUDeviceProperties(
-      &adapter_properties, return_adapter_info->deserialized_buffer);
+  DCHECK(serialized_adapter_properties_size <=
+         std::numeric_limits<uint32_t>::max());
+
+  return_adapter_info->adapter_properties_size =
+      static_cast<uint32_t>(serialized_adapter_properties_size);
+
+  if (adapter) {
+    // Set serialized adapter properties
+    dawn_wire::SerializeWGPUDeviceProperties(
+        &adapter_properties, return_adapter_info->deserialized_buffer);
+  }
+
+  // Copy the error message
+  memcpy(return_adapter_info->deserialized_buffer +
+             serialized_adapter_properties_size,
+         error_message, error_message_size);
+
+  // Write the null-terminator.
+  // We don't copy (error_message_size + 1) above because |error_message| may
+  // be nullptr instead of zero-length.
+  return_adapter_info->deserialized_buffer[serialized_adapter_properties_size +
+                                           error_message_size] = '\0';
 
   client()->HandleReturnData(base::make_span(
       reinterpret_cast<const uint8_t*>(serialized_buffer.data()),
@@ -876,6 +907,15 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
       static_cast<PowerPreference>(c.power_preference);
   DawnRequestAdapterSerial request_adapter_serial =
       static_cast<DawnRequestAdapterSerial>(c.request_adapter_serial);
+
+  if (gr_context_type_ != GrContextType::kVulkan) {
+#if defined(OS_LINUX)
+    SendAdapterProperties(request_adapter_serial, -1, nullptr,
+                          "WebGPU on Linux requires command-line flag "
+                          "--enable-features=Vulkan,UseSkiaRenderer");
+    return error::kNoError;
+#endif  // defined(OS_LINUX)
+  }
 
   int32_t requested_adapter_index = GetPreferredAdapterIndex(power_preference);
   if (requested_adapter_index < 0) {
