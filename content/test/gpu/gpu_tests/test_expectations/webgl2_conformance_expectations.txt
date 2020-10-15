@@ -165,6 +165,11 @@ crbug.com/798117 [ angle-vulkan win nvidia ] conformance/glsl/bugs/assign-to-swi
 crbug.com/798117 [ linux nvidia ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
 crbug.com/792210 [ nvidia ] conformance/glsl/bugs/in-parameter-passed-as-inout-argument-and-global.html [ Failure ]
 
+# Fails everywhere
+crbug.com/1004581 [ win ] conformance/rendering/multisample-corruption.html [ RetryOnFailure ]
+crbug.com/1004581 [ linux ] conformance/rendering/multisample-corruption.html [ RetryOnFailure ]
+crbug.com/1004581 [ mac ] conformance/rendering/multisample-corruption.html [ RetryOnFailure ]
+
 ####################
 # Win failures     #
 ####################
