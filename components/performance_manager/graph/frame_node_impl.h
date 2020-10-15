@@ -121,7 +121,7 @@ class FrameNodeImpl
   const PriorityAndReason& priority_and_reason() const;
   bool had_form_interaction() const;
   bool is_audible() const;
-  const gfx::Rect& viewport_intersection() const;
+  const base::Optional<gfx::Rect>& viewport_intersection() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
@@ -192,7 +192,7 @@ class FrameNodeImpl
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool IsAudible() const override;
-  const gfx::Rect& GetViewportIntersection() const override;
+  const base::Optional<gfx::Rect>& GetViewportIntersection() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -346,7 +346,7 @@ class FrameNodeImpl
   // so there is no point in tracking it. To avoid programming mistakes, it is
   // forbidden to query this property for the main frame.
   ObservedProperty::NotifiesOnlyOnChanges<
-      gfx::Rect,
+      base::Optional<gfx::Rect>,
       &FrameNodeObserver::OnViewportIntersectionChanged>
       viewport_intersection_;
 

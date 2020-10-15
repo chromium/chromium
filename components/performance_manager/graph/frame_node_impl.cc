@@ -229,7 +229,7 @@ bool FrameNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
-const gfx::Rect& FrameNodeImpl::viewport_intersection() const {
+const base::Optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The viewport intersection of the main frame is not tracked.
   DCHECK(!IsMainFrame());
@@ -512,7 +512,8 @@ bool FrameNodeImpl::IsAudible() const {
   return is_audible();
 }
 
-const gfx::Rect& FrameNodeImpl::GetViewportIntersection() const {
+const base::Optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return viewport_intersection();
 }

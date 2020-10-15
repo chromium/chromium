@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/util/type_safety/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -174,8 +175,10 @@ class FrameNode : public Node {
   // Returns true if the frame is audible, false otherwise.
   virtual bool IsAudible() const = 0;
 
-  // Returns the intersection of this frame with the viewport.
-  virtual const gfx::Rect& GetViewportIntersection() const = 0;
+  // Returns the intersection of this frame with the viewport. This is initially
+  // null on node creation and is initialized during layout when the viewport
+  // intersection is first calculated. May only be called for a child frame.
+  virtual const base::Optional<gfx::Rect>& GetViewportIntersection() const = 0;
 
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.

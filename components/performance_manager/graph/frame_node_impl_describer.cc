@@ -48,6 +48,14 @@ base::Value PriorityAndReasonToValue(
   return priority;
 }
 
+std::string ViewportIntersectionToString(
+    const base::Optional<gfx::Rect>& viewport_intersection) {
+  if (!viewport_intersection.has_value())
+    return "Nullopt";
+
+  return viewport_intersection->ToString();
+}
+
 }  // namespace
 
 FrameNodeImplDescriber::~FrameNodeImplDescriber() = default;
@@ -98,8 +106,9 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.SetKey("priority",
              PriorityAndReasonToValue(impl->priority_and_reason_.value()));
   ret.SetBoolKey("is_audible", impl->is_audible_.value());
-  ret.SetStringKey("viewport_intersection",
-                   impl->viewport_intersection_.value().ToString());
+  ret.SetStringKey(
+      "viewport_intersection",
+      ViewportIntersectionToString(impl->viewport_intersection_.value()));
 
   return ret;
 }
