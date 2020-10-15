@@ -54,3 +54,7 @@ const CGFloat kTabGridBottomToolbarHeight = 44.0f;
 // The delay (in milliseconds) after closing the last incognito tab and before
 // automatically scrolling to the regular tabs panel.
 const int64_t kTabGridScrollAnimationDelayInMilliseconds = 300;
+
+// The distance travelled by the thumb strip thumbnails during the slide-in
+// animation of the thumb strip reveal transition.
+const CGFloat kThumbStripSlideInHeight = 40.0f;

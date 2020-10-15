@@ -445,16 +445,43 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
   self.scrollView.scrollEnabled = NO;
-}
-
-- (void)animateViewReveal:(ViewRevealState)viewRevealState {
-  switch (viewRevealState) {
+  switch (currentViewRevealState) {
     case ViewRevealState::Hidden:
-      self.foregroundView.alpha = 1;
+      self.topToolbar.transform = CGAffineTransformMakeTranslation(
+          0, [self hiddenTopToolbarYTranslation]);
+      [self gridViewControllerForPage:self.currentPage].gridView.transform =
+          CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
       break;
     case ViewRevealState::Peeked:
+      break;
+    case ViewRevealState::Revealed:
+      break;
+  }
+}
+
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  switch (nextViewRevealState) {
+    case ViewRevealState::Hidden:
+      self.foregroundView.alpha = 1;
+      self.topToolbar.transform = CGAffineTransformMakeTranslation(
+          0, [self hiddenTopToolbarYTranslation]);
+      [self gridViewControllerForPage:self.currentPage].gridView.transform =
+          CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
+      break;
+    case ViewRevealState::Peeked:
+      self.foregroundView.alpha = 0;
+      self.topToolbar.transform = CGAffineTransformMakeTranslation(
+          0, [self hiddenTopToolbarYTranslation]);
+      [self gridViewControllerForPage:self.currentPage].gridView.transform =
+          CGAffineTransformIdentity;
+      break;
     case ViewRevealState::Revealed:
       self.foregroundView.alpha = 0;
+      self.topToolbar.transform = CGAffineTransformIdentity;
+      [self gridViewControllerForPage:self.currentPage].gridView.transform =
+          CGAffineTransformMakeTranslation(
+              0, self.topToolbar.intrinsicContentSize.height);
+      [self contentWillAppearAnimated:YES];
       break;
   }
 }
@@ -466,6 +493,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - Private
+
+// Returns the ammount by which the top toolbar should be translated in the y
+// direction when hidden. Used for the slide-in animation.
+- (CGFloat)hiddenTopToolbarYTranslation {
+  return -self.topToolbar.frame.size.height -
+         self.scrollView.safeAreaInsets.top;
+}
 
 // Sets the proper insets for the Remote Tabs ViewController to accomodate for
 // the safe area, toolbar, and status bar.
@@ -513,8 +547,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                             ? self.bottomToolbar.intrinsicContentSize.height
                             : 0;
-  UIEdgeInsets inset = UIEdgeInsetsMake(
-      self.topToolbar.intrinsicContentSize.height, 0, bottomInset, 0);
+  CGFloat topInset =
+      IsThumbStripEnabled() ? 0 : self.topToolbar.intrinsicContentSize.height;
+  UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
   inset.left = self.scrollView.safeAreaInsets.left;
   inset.right = self.scrollView.safeAreaInsets.right;
   inset.top += self.scrollView.safeAreaInsets.top;

@@ -52,4 +52,8 @@ extern const CGFloat kTabGridBottomToolbarHeight;
 // automatically scrolling to the regular tabs panel.
 extern const int64_t kTabGridScrollAnimationDelayInMilliseconds;
 
+// The distance travelled by the thumb strip thumbnails during the slide-in
+// animation of the thumb strip reveal transition.
+extern const CGFloat kThumbStripSlideInHeight;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_TAB_GRID_CONSTANTS_H_

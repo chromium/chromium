@@ -185,6 +185,7 @@
   if (IsThumbStripEnabled()) {
     [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Revealed
                                            animated:animated];
+    [self.baseViewController contentWillAppearAnimated:animated];
     return;
   }
 
