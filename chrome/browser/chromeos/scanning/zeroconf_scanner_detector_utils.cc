@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
 #include "url/gurl.h"
@@ -44,6 +45,11 @@ std::string CreateDeviceName(const std::string& name,
   else if (!rs.empty())
     path = rs + "/";
 
+  // Replace colons in the instance name to prevent them from breaking
+  // sane-airscan's device name parsing logic.
+  std::string sanitized_name;
+  base::ReplaceChars(name, ":", "-", &sanitized_name);
+
   const std::string ip_address_str =
       ip_address.IsIPv6()
           ? base::StringPrintf("[%s]", ip_address.ToString().c_str())
@@ -56,7 +62,7 @@ std::string CreateDeviceName(const std::string& name,
     return "";
   }
 
-  return base::StringPrintf("airscan:escl:%s:%s", name.c_str(),
+  return base::StringPrintf("airscan:escl:%s:%s", sanitized_name.c_str(),
                             url.spec().c_str());
 }
 
