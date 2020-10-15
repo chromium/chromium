@@ -179,7 +179,7 @@ void FakeHermesProfileClient::SetCellularServicesState(
 
   base::Value service_list = manager_test->GetEnabledServiceList();
   for (const base::Value& service_path : service_list.GetList()) {
-    const base::DictionaryValue* properties =
+    const base::Value* properties =
         service_test->GetServiceProperties(service_path.GetString());
     const base::Value* type = properties->FindDictKey(shill::kTypeProperty);
     if (!type || type->GetString() != shill::kTypeCellular)

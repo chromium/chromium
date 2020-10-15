@@ -137,12 +137,14 @@ void NetworkStateTestHelper::ConfigureCallback(const dbus::ObjectPath& result) {
 std::string NetworkStateTestHelper::GetServiceStringProperty(
     const std::string& service_path,
     const std::string& key) {
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       service_test_->GetServiceProperties(service_path);
-  std::string result;
-  if (properties)
-    properties->GetStringWithoutPathExpansion(key, &result);
-  return result;
+  if (properties) {
+    const std::string* result = properties->FindStringKey(key);
+    if (result)
+      return *result;
+  }
+  return std::string();
 }
 
 void NetworkStateTestHelper::SetServiceProperty(const std::string& service_path,

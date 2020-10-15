@@ -151,15 +151,15 @@ class AppInstallEventLogCollectorTest : public testing::Test {
 
     network::mojom::ConnectionType connection_type =
         network::mojom::ConnectionType::CONNECTION_NONE;
-    std::string network_state;
-    service_test_->GetServiceProperties(kWifiServicePath)
-        ->GetString(shill::kStateProperty, &network_state);
-    if (network_state == shill::kStateOnline) {
+    const std::string* network_state =
+        service_test_->GetServiceProperties(kWifiServicePath)
+            ->FindStringKey(shill::kStateProperty);
+    if (network_state && *network_state == shill::kStateOnline) {
       connection_type = network::mojom::ConnectionType::CONNECTION_WIFI;
     }
-    service_test_->GetServiceProperties(kEthernetServicePath)
-        ->GetString(shill::kStateProperty, &network_state);
-    if (network_state == shill::kStateOnline) {
+    network_state = service_test_->GetServiceProperties(kEthernetServicePath)
+                        ->FindStringKey(shill::kStateProperty);
+    if (network_state && *network_state == shill::kStateOnline) {
       connection_type = network::mojom::ConnectionType::CONNECTION_ETHERNET;
     }
     if (observer)

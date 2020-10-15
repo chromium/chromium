@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
                    base::OnceClosure callback,
                    ErrorCallback error_callback) override;
   void SetProperties(const dbus::ObjectPath& service_path,
-                     const base::DictionaryValue& properties,
+                     const base::Value& properties,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override;
   void ClearProperty(const dbus::ObjectPath& service_path,
@@ -88,17 +88,17 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
                               const std::string& state,
                               const std::string& ipconfig_path,
                               bool visible) override;
-  base::DictionaryValue* SetServiceProperties(const std::string& service_path,
-                                              const std::string& guid,
-                                              const std::string& name,
-                                              const std::string& type,
-                                              const std::string& state,
-                                              bool visible) override;
+  base::Value* SetServiceProperties(const std::string& service_path,
+                                    const std::string& guid,
+                                    const std::string& name,
+                                    const std::string& type,
+                                    const std::string& state,
+                                    bool visible) override;
   void RemoveService(const std::string& service_path) override;
   bool SetServiceProperty(const std::string& service_path,
                           const std::string& property,
                           const base::Value& value) override;
-  const base::DictionaryValue* GetServiceProperties(
+  const base::Value* GetServiceProperties(
       const std::string& service_path) const override;
   bool ClearConfiguredServiceProperties(
       const std::string& service_path) override;

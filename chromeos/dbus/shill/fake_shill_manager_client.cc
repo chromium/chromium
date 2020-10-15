@@ -416,26 +416,21 @@ void FakeShillManagerClient::ConfigureService(const base::Value& properties,
   }
 
   // Merge the new properties with existing properties.
-  const base::DictionaryValue* existing_properties =
-      service_client->GetServiceProperties(service_path);
-  std::unique_ptr<base::DictionaryValue> merged_properties(
-      existing_properties->DeepCopy());
-  merged_properties->MergeDictionary(&properties);
+  base::Value merged_properties =
+      service_client->GetServiceProperties(service_path)->Clone();
+  merged_properties.MergeDictionary(&properties);
 
   // Now set all the properties.
-  for (base::DictionaryValue::Iterator iter(*merged_properties);
-       !iter.IsAtEnd(); iter.Advance()) {
-    service_client->SetServiceProperty(service_path, iter.key(), iter.value());
-  }
+  for (auto iter : merged_properties.DictItems())
+    service_client->SetServiceProperty(service_path, iter.first, iter.second);
 
   // If the Profile property is set, add it to ProfileClient.
-  std::string profile_path;
-  merged_properties->GetStringWithoutPathExpansion(shill::kProfileProperty,
-                                                   &profile_path);
-  if (!profile_path.empty()) {
+  const std::string* profile_path =
+      merged_properties.FindStringKey(shill::kProfileProperty);
+  if (profile_path) {
     auto* profile_client = ShillProfileClient::Get()->GetTestInterface();
-    if (!profile_client->UpdateService(profile_path, service_path))
-      profile_client->AddService(profile_path, service_path);
+    if (!profile_client->UpdateService(*profile_path, service_path))
+      profile_client->AddService(*profile_path, service_path);
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1142,15 +1137,14 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
         ShillServiceClient::Get()->GetTestInterface();
     for (const base::Value& v : service_list->GetList()) {
       std::string service_path = v.GetString();
-      const base::DictionaryValue* properties =
+      const base::Value* properties =
           service_client->GetServiceProperties(service_path);
       if (!properties) {
         LOG(ERROR) << "Properties not found for service: " << service_path;
         continue;
       }
-      std::string type;
-      properties->GetString(shill::kTypeProperty, &type);
-      if (TechnologyEnabled(type))
+      const std::string* type = properties->FindStringKey(shill::kTypeProperty);
+      if (type && TechnologyEnabled(*type))
         new_service_list.Append(v.Clone());
     }
   }

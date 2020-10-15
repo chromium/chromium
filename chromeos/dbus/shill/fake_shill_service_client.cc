@@ -194,14 +194,12 @@ void FakeShillServiceClient::SetProperty(const dbus::ObjectPath& service_path,
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
-void FakeShillServiceClient::SetProperties(
-    const dbus::ObjectPath& service_path,
-    const base::DictionaryValue& properties,
-    base::OnceClosure callback,
-    ErrorCallback error_callback) {
-  for (base::DictionaryValue::Iterator iter(properties); !iter.IsAtEnd();
-       iter.Advance()) {
-    if (!SetServiceProperty(service_path.value(), iter.key(), iter.value())) {
+void FakeShillServiceClient::SetProperties(const dbus::ObjectPath& service_path,
+                                           const base::Value& properties,
+                                           base::OnceClosure callback,
+                                           ErrorCallback error_callback) {
+  for (auto iter : properties.DictItems()) {
+    if (!SetServiceProperty(service_path.value(), iter.first, iter.second)) {
       LOG(ERROR) << "Service not found: " << service_path.value();
       std::move(error_callback).Run("Error.InvalidService", "Invalid Service");
       return;
@@ -377,7 +375,7 @@ void FakeShillServiceClient::AddServiceWithIPConfig(
     const std::string& state,
     const std::string& ipconfig_path,
     bool visible) {
-  base::DictionaryValue* properties =
+  base::Value* properties =
       SetServiceProperties(service_path, guid, name, type, state, visible);
 
   if (!ipconfig_path.empty())
@@ -387,7 +385,7 @@ void FakeShillServiceClient::AddServiceWithIPConfig(
                                                                    true);
 }
 
-base::DictionaryValue* FakeShillServiceClient::SetServiceProperties(
+base::Value* FakeShillServiceClient::SetServiceProperties(
     const std::string& service_path,
     const std::string& guid,
     const std::string& name,
@@ -559,11 +557,9 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
   return true;
 }
 
-const base::DictionaryValue* FakeShillServiceClient::GetServiceProperties(
+const base::Value* FakeShillServiceClient::GetServiceProperties(
     const std::string& service_path) const {
-  const base::DictionaryValue* properties = nullptr;
-  stub_services_.GetDictionaryWithoutPathExpansion(service_path, &properties);
-  return properties;
+  return stub_services_.FindKey(service_path);
 }
 
 bool FakeShillServiceClient::ClearConfiguredServiceProperties(
@@ -711,29 +707,27 @@ FakeShillServiceClient::GetObserverList(const dbus::ObjectPath& device_path) {
 
 void FakeShillServiceClient::SetOtherServicesOffline(
     const std::string& service_path) {
-  const base::DictionaryValue* service_properties =
-      GetServiceProperties(service_path);
+  const base::Value* service_properties = GetServiceProperties(service_path);
   if (!service_properties) {
     LOG(ERROR) << "Missing service: " << service_path;
     return;
   }
-  std::string service_type;
-  service_properties->GetString(shill::kTypeProperty, &service_type);
+  const std::string* service_type =
+      service_properties->FindStringKey(shill::kTypeProperty);
+  if (!service_type)
+    return;
+
   // Set all other services of the same type to offline (Idle).
-  for (base::DictionaryValue::Iterator iter(stub_services_); !iter.IsAtEnd();
-       iter.Advance()) {
-    std::string path = iter.key();
+  for (auto iter : stub_services_.DictItems()) {
+    const std::string& path = iter.first;
     if (path == service_path)
       continue;
-    base::DictionaryValue* properties;
-    if (!stub_services_.GetDictionaryWithoutPathExpansion(path, &properties))
-      NOTREACHED();
-
-    std::string type;
-    properties->GetString(shill::kTypeProperty, &type);
-    if (type != service_type)
+    base::Value& properties = iter.second;
+    const std::string* type = properties.FindStringKey(shill::kTypeProperty);
+    if (!type || *type != *service_type)
       continue;
-    properties->SetKey(shill::kStateProperty, base::Value(shill::kStateIdle));
+
+    properties.SetKey(shill::kStateProperty, base::Value(shill::kStateIdle));
   }
 }
 

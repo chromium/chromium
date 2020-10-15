@@ -275,9 +275,9 @@ class NetworkConfigurationHandlerTest : public testing::Test {
     GetShillProfileClient()->AddService("profile2", "/service/2");
 
     // Tie profiles and services.
-    const base::DictionaryValue* service_properties_1 =
+    const base::Value* service_properties_1 =
         GetShillServiceClient()->GetServiceProperties("/service/1");
-    const base::DictionaryValue* service_properties_2 =
+    const base::Value* service_properties_2 =
         GetShillServiceClient()->GetServiceProperties("/service/2");
     ASSERT_TRUE(service_properties_1);
     ASSERT_TRUE(service_properties_2);
@@ -298,15 +298,14 @@ class NetworkConfigurationHandlerTest : public testing::Test {
                                 std::string* result) {
     ShillServiceClient::TestInterface* service_test =
         ShillServiceClient::Get()->GetTestInterface();
-    const base::DictionaryValue* properties =
+    const base::Value* properties =
         service_test->GetServiceProperties(service_path);
     if (!properties)
       return false;
-    const base::Value* value =
-        properties->FindKeyOfType(key, base::Value::Type::STRING);
+    const std::string* value = properties->FindStringKey(key);
     if (!value)
       return false;
-    *result = value->GetString();
+    *result = *value;
     return true;
   }
 
@@ -315,11 +314,10 @@ class NetworkConfigurationHandlerTest : public testing::Test {
                                  std::string* result) {
     if (get_properties_path_ != service_path || get_properties_.is_none())
       return false;
-    const base::Value* value =
-        get_properties_.FindKeyOfType(key, base::Value::Type::STRING);
+    const std::string* value = get_properties_.FindStringKey(key);
     if (!value)
       return false;
-    *result = value->GetString();
+    *result = *value;
     return true;
   }
 
@@ -327,11 +325,10 @@ class NetworkConfigurationHandlerTest : public testing::Test {
                                         std::string* result) {
     if (!manager_get_properties_ || manager_get_properties_->is_none())
       return false;
-    const base::Value* value =
-        manager_get_properties_->FindKeyOfType(key, base::Value::Type::STRING);
+    const std::string* value = manager_get_properties_->FindStringKey(key);
     if (!value)
       return false;
-    *result = value->GetString();
+    *result = *value;
     return true;
   }
 
@@ -373,10 +370,9 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties) {
 
   ASSERT_TRUE(success);
   EXPECT_EQ(kServicePath, service_path);
-  const base::Value* ssid =
-      result.FindKeyOfType(shill::kSSIDProperty, base::Value::Type::STRING);
+  const std::string* ssid = result.FindStringKey(shill::kSSIDProperty);
   ASSERT_TRUE(ssid);
-  EXPECT_EQ(kNetworkName, ssid->GetString());
+  EXPECT_EQ(kNetworkName, *ssid);
 }
 
 TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
@@ -403,30 +399,27 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(success);
-  const base::Value* guid =
-      result.FindKeyOfType(shill::kGuidProperty, base::Value::Type::STRING);
+  const std::string* guid = result.FindStringKey(shill::kGuidProperty);
   ASSERT_TRUE(guid);
-  EXPECT_EQ(kTetherGuid, guid->GetString());
-  const base::Value* name =
-      result.FindKeyOfType(shill::kNameProperty, base::Value::Type::STRING);
+  EXPECT_EQ(kTetherGuid, *guid);
+  const std::string* name = result.FindStringKey(shill::kNameProperty);
   ASSERT_TRUE(name);
-  EXPECT_EQ(kTetherNetworkName, name->GetString());
-  const base::Value* battery_percentage = result.FindKeyOfType(
-      kTetherBatteryPercentage, base::Value::Type::INTEGER);
+  EXPECT_EQ(kTetherNetworkName, *name);
+  base::Optional<int> battery_percentage =
+      result.FindIntKey(kTetherBatteryPercentage);
   ASSERT_TRUE(battery_percentage);
-  EXPECT_EQ(kBatteryPercentage, battery_percentage->GetInt());
-  const base::Value* carrier =
-      result.FindKeyOfType(kTetherCarrier, base::Value::Type::STRING);
+  EXPECT_EQ(kBatteryPercentage, *battery_percentage);
+  const std::string* carrier = result.FindStringKey(kTetherCarrier);
   ASSERT_TRUE(carrier);
-  EXPECT_EQ(kTetherNetworkCarrier, carrier->GetString());
-  const base::Value* has_connected_to_host = result.FindKeyOfType(
-      kTetherHasConnectedToHost, base::Value::Type::BOOLEAN);
+  EXPECT_EQ(kTetherNetworkCarrier, *carrier);
+  base::Optional<bool> has_connected_to_host =
+      result.FindBoolKey(kTetherHasConnectedToHost);
   ASSERT_TRUE(has_connected_to_host);
-  EXPECT_TRUE(has_connected_to_host->GetBool());
-  const base::Value* signal_strength =
-      result.FindKeyOfType(kTetherSignalStrength, base::Value::Type::INTEGER);
+  EXPECT_TRUE(*has_connected_to_host);
+  base::Optional<int> signal_strength =
+      result.FindIntKey(kTetherSignalStrength);
   ASSERT_TRUE(signal_strength);
-  EXPECT_EQ(kSignalStrength, signal_strength->GetInt());
+  EXPECT_EQ(kSignalStrength, *signal_strength);
 }
 
 TEST_F(NetworkConfigurationHandlerTest, SetProperties) {
@@ -443,13 +436,12 @@ TEST_F(NetworkConfigurationHandlerTest, SetProperties) {
       kServicePath, value, base::DoNothing(), base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(kServicePath);
   ASSERT_TRUE(properties);
-  const base::Value* ssid = properties->FindKeyOfType(
-      shill::kSSIDProperty, base::Value::Type::STRING);
+  const std::string* ssid = properties->FindStringKey(shill::kSSIDProperty);
   ASSERT_TRUE(ssid);
-  EXPECT_EQ(kNetworkName, ssid->GetString());
+  EXPECT_EQ(kNetworkName, *ssid);
 }
 
 TEST_F(NetworkConfigurationHandlerTest, ClearProperties) {
@@ -467,11 +459,10 @@ TEST_F(NetworkConfigurationHandlerTest, ClearProperties) {
       kServicePath, names, base::DoNothing(), base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       GetShillServiceClient()->GetServiceProperties(kServicePath);
   ASSERT_TRUE(properties);
-  const base::Value* ssid = properties->FindKeyOfType(
-      shill::kSSIDProperty, base::Value::Type::STRING);
+  const std::string* ssid = properties->FindStringKey(shill::kSSIDProperty);
   EXPECT_FALSE(ssid);
 }
 

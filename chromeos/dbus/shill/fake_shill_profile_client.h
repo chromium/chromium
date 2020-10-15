@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
                   const std::string& userhash) override;
   void AddEntry(const std::string& profile_path,
                 const std::string& entry_path,
-                const base::DictionaryValue& properties) override;
+                const base::Value& properties) override;
   bool AddService(const std::string& profile_path,
                   const std::string& service_path) override;
   bool UpdateService(const std::string& profile_path,

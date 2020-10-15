@@ -111,7 +111,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
   }
 
   void SetProperties(const dbus::ObjectPath& service_path,
-                     const base::DictionaryValue& properties,
+                     const base::Value& properties,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,

@@ -43,13 +43,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
     virtual void AddProfile(const std::string& profile_path,
                             const std::string& userhash) = 0;
 
-    // Adds an entry to the profile only. |entry_path| corresponds to a
-    // 'service_path' and a corresponding entry will be added to
-    // ShillManagerClient ServiceCompleteList. No checking or updating of
-    // ShillServiceClient is performed.
+    // Adds an entry to the profile specified by |profile_path|. |properties|
+    // must be a dictionary Value of service properties. |entry_path|
+    // represents a service path and a corresponding entry will be added to the
+    // Manager's kServiceCompleteList property. This will not update the
+    // kServicesProperty (which represents 'visible' services).
     virtual void AddEntry(const std::string& profile_path,
                           const std::string& entry_path,
-                          const base::DictionaryValue& properties) = 0;
+                          const base::Value& properties) = 0;
 
     // Adds a service to the profile, copying properties from the
     // ShillServiceClient entry matching |service_path|. Returns false if no
