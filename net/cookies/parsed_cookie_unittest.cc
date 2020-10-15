@@ -48,7 +48,7 @@ TEST(ParsedCookieTest, TestSetEmptyNameValue) {
   EXPECT_EQ("value", empty_name.Value());
   EXPECT_FALSE(empty_name.SetValue(""));
   EXPECT_EQ("value", empty_name.Value());
-  EXPECT_TRUE(empty_value.IsValid());
+  EXPECT_TRUE(empty_name.IsValid());
 }
 
 TEST(ParsedCookieTest, TestQuoted) {
