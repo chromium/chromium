@@ -77,6 +77,42 @@ void NotifyThemeChanges() {
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
 }
 
+// Get the corresponding ColorName for |type|. ColorName is an enum in
+// cros_colors.h file that is generated from cros_colors.json5, which includes
+// the color IDs and colors that will be used by ChromeOS WebUI.
+ColorName TypeToColorName(AshColorProvider::ContentLayerType type) {
+  switch (type) {
+    case AshColorProvider::ContentLayerType::kTextColorPrimary:
+      return ColorName::kTextColorPrimary;
+    case AshColorProvider::ContentLayerType::kTextColorSecondary:
+      return ColorName::kTextColorSecondary;
+    case AshColorProvider::ContentLayerType::kTextColorAlert:
+      return ColorName::kTextColorAlert;
+    case AshColorProvider::ContentLayerType::kTextColorWarning:
+      return ColorName::kTextColorWarning;
+    case AshColorProvider::ContentLayerType::kTextColorPositive:
+      return ColorName::kTextColorPositive;
+    case AshColorProvider::ContentLayerType::kIconColorPrimary:
+      return ColorName::kIconColorPrimary;
+    case AshColorProvider::ContentLayerType::kIconColorAlert:
+      return ColorName::kIconColorAlert;
+    case AshColorProvider::ContentLayerType::kIconColorWarning:
+      return ColorName::kIconColorWarning;
+    case AshColorProvider::ContentLayerType::kIconColorPositive:
+      return ColorName::kIconColorPositive;
+    default:
+      DCHECK_EQ(AshColorProvider::ContentLayerType::kIconColorProminent, type);
+      return ColorName::kIconColorProminent;
+  }
+}
+
+// Get the color from cros_colors.h header file that is generated from
+// cros_colors.json5. Colors there will also be used by ChromeOS WebUI.
+SkColor ResolveColor(AshColorProvider::ContentLayerType type,
+                     bool is_dark_mode) {
+  return cros_colors::ResolveColor(TypeToColorName(type), is_dark_mode);
+}
+
 }  // namespace
 
 AshColorProvider::AshColorProvider() {
@@ -177,60 +213,27 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
   const bool is_dark_mode = IsDarkModeEnabled();
   switch (type) {
     case ContentLayerType::kSeparatorColor:
+    case ContentLayerType::kShelfHandleColor:
       return is_dark_mode ? SkColorSetA(SK_ColorWHITE, 0x24)
                           : SkColorSetA(SK_ColorBLACK, 0x24);
-    case ContentLayerType::kTextColorPrimary:
-      return cros_colors::ResolveColor(ColorName::kTextColorPrimary,
-                                       is_dark_mode);
-    case ContentLayerType::kTextColorSecondary:
-      return cros_colors::ResolveColor(ColorName::kTextColorSecondary,
-                                       is_dark_mode);
-    case ContentLayerType::kTextColorAlert:
-      return cros_colors::ResolveColor(ColorName::kTextColorAlert,
-                                       is_dark_mode);
-    case ContentLayerType::kTextColorWarning:
-      return cros_colors::ResolveColor(ColorName::kTextColorWarning,
-                                       is_dark_mode);
-    case ContentLayerType::kTextColorPositive:
-      return cros_colors::ResolveColor(ColorName::kTextColorPositive,
-                                       is_dark_mode);
-    case ContentLayerType::kIconColorPrimary:
-      return cros_colors::ResolveColor(ColorName::kIconColorPrimary,
-                                       is_dark_mode);
     case ContentLayerType::kIconColorSecondary:
       return gfx::kGoogleGrey500;
-    case ContentLayerType::kIconColorAlert:
-      return cros_colors::ResolveColor(ColorName::kIconColorAlert,
-                                       is_dark_mode);
-    case ContentLayerType::kIconColorWarning:
-      return cros_colors::ResolveColor(ColorName::kIconColorWarning,
-                                       is_dark_mode);
-    case ContentLayerType::kIconColorPositive:
-      return cros_colors::ResolveColor(ColorName::kIconColorPositive,
-                                       is_dark_mode);
-    case ContentLayerType::kIconColorProminent:
-    case ContentLayerType::kSliderThumbColorEnabled:
-      return cros_colors::ResolveColor(ColorName::kIconColorProminent,
-                                       is_dark_mode);
     case ContentLayerType::kButtonLabelColor:
     case ContentLayerType::kButtonIconColor:
+    case ContentLayerType::kAppStateIndicatorColor:
+    case ContentLayerType::kSliderColorInactive:
       return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
     case ContentLayerType::kButtonLabelColorBlue:
+    case ContentLayerType::kSliderColorActive:
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
     case ContentLayerType::kButtonLabelColorPrimary:
     case ContentLayerType::kButtonIconColorPrimary:
       return is_dark_mode ? gfx::kGoogleGrey900 : gfx::kGoogleGrey200;
-    case ContentLayerType::kSliderThumbColorDisabled:
-      return is_dark_mode ? gfx::kGoogleGrey600 : gfx::kGoogleGrey600;
-    case ContentLayerType::kAppStateIndicatorColor:
-      return is_dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
     case ContentLayerType::kAppStateIndicatorColorInactive:
       return GetDisabledColor(
           GetContentLayerColor(ContentLayerType::kAppStateIndicatorColor));
-    case ContentLayerType::kShelfHandleColor: {
-      return is_dark_mode ? SkColorSetA(SK_ColorWHITE, 0x24)
-                          : SkColorSetA(SK_ColorBLACK, 0x24);
-    }
+    default:
+      return ResolveColor(type, is_dark_mode);
   }
 }
 

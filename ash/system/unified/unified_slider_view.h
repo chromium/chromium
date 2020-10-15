@@ -29,8 +29,10 @@ class SystemSlider : public views::Slider {
   explicit SystemSlider(views::SliderListener* listener = nullptr);
 
  private:
+  // views::Slider:
   SkColor GetThumbColor() const override;
   SkColor GetTroughColor() const override;
+  void OnThemeChanged() override;
 };
 
 // A slider that ignores inputs.

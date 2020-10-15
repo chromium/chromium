@@ -106,16 +106,16 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
     kButtonIconColor,
     kButtonIconColorPrimary,
 
-    // Color for sliders (volume, brightness etc.)
-    kSliderThumbColorEnabled,
-    kSliderThumbColorDisabled,
-
     // Color for app state indicator.
     kAppStateIndicatorColor,
     kAppStateIndicatorColorInactive,
 
     // Color for the shelf drag handle in tablet mode.
     kShelfHandleColor,
+
+    // Color for slider.
+    kSliderColorActive,
+    kSliderColorInactive
   };
 
   // Types of ash styled buttons.

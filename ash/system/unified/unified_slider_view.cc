@@ -40,13 +40,17 @@ SystemSlider::SystemSlider(views::SliderListener* listener)
 SkColor SystemSlider::GetThumbColor() const {
   using Type = AshColorProvider::ContentLayerType;
   return AshColorProvider::Get()->GetContentLayerColor(
-      (style() == RenderingStyle::kMinimalStyle)
-          ? Type::kSliderThumbColorDisabled
-          : Type::kSliderThumbColorEnabled);
+      (style() == RenderingStyle::kMinimalStyle) ? Type::kSliderColorInactive
+                                                 : Type::kSliderColorActive);
 }
 
 SkColor SystemSlider::GetTroughColor() const {
-  return AshColorProvider::Get()->GetDisabledColor(GetThumbColor());
+  return AshColorProvider::Get()->GetSecondToneColor(GetThumbColor());
+}
+
+void SystemSlider::OnThemeChanged() {
+  views::Slider::OnThemeChanged();
+  SchedulePaint();
 }
 
 ReadOnlySlider::ReadOnlySlider() : SystemSlider() {}
