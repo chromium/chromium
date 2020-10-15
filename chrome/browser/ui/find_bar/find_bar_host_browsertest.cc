@@ -143,6 +143,16 @@ class FindInPageControllerTest : public InProcessBrowserTest {
     EnsureFindBoxOpenForBrowser(browser());
   }
 
+  int FindNext(WebContents* web_contents, int* ordinal) {
+    browser()->GetFindBarController()->Show(true /*find_next*/);
+    ui_test_utils::FindResultWaiter observer(web_contents);
+    observer.Wait();
+    if (ordinal) {
+      *ordinal = observer.active_match_ordinal();
+    }
+    return observer.number_of_matches();
+  }
+
   int FindInPage16(WebContents* web_contents,
                    const base::string16& search_str,
                    bool forward,
@@ -1090,9 +1100,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
 
   // Search for 'no_match'. No matches should be found.
   int ordinal = 0;
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(0, FindInPageASCII(web_contents, "no_match",
+  auto* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(0, FindInPageASCII(tab_strip->GetActiveWebContents(), "no_match",
                                kFwd, kIgnoreCase, &ordinal));
   EXPECT_EQ(0, ordinal);
 
@@ -1102,8 +1111,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
 
   // Simulate what happens when you press F3 for FindNext. We should get a
   // response here (a hang means search was aborted).
-  EXPECT_EQ(0, ui_test_utils::FindInPage(web_contents, base::string16(), kFwd,
-                                         kIgnoreCase, &ordinal, nullptr));
+  EXPECT_EQ(0, FindNext(tab_strip->GetActiveWebContents(), &ordinal));
   EXPECT_EQ(0, ordinal);
 
   // Open another tab (tab C).
@@ -1112,8 +1120,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
 
   // Simulate what happens when you press F3 for FindNext. We should get a
   // response here (a hang means search was aborted).
-  EXPECT_EQ(0, ui_test_utils::FindInPage(web_contents, base::string16(), kFwd,
-                                         kIgnoreCase, &ordinal, nullptr));
+  EXPECT_EQ(0, FindNext(tab_strip->GetActiveWebContents(), &ordinal));
   EXPECT_EQ(0, ordinal);
 }
 
@@ -1158,8 +1165,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, RestartSearchFromF3) {
 
   // Simulate what happens when you press F3 for FindNext. Still should show
   // one match. This cleared the pre-populate string at one point (see bug).
-  EXPECT_EQ(1, ui_test_utils::FindInPage(web_contents, base::string16(), kFwd,
-                                         kIgnoreCase, &ordinal, nullptr));
+  EXPECT_EQ(1, FindNext(web_contents, &ordinal));
   EXPECT_EQ(1, ordinal);
 
   // End the Find session, thereby making the next F3 start afresh.
@@ -1167,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, RestartSearchFromF3) {
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 
   // Simulate F3 while Find box is closed. Should have 1 match.
-  EXPECT_EQ(1, FindInPageASCII(web_contents, "", kFwd, kIgnoreCase, &ordinal));
+  EXPECT_EQ(1, FindNext(web_contents, &ordinal));
   EXPECT_EQ(1, ordinal);
 }
 
@@ -1211,8 +1217,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_PreferPreviousSearch) {
   browser()->GetFindBarController()->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
   // Simulate F3.
-  ui_test_utils::FindInPage(web_contents_1, base::string16(), kFwd, kIgnoreCase,
-                            &ordinal, nullptr);
+  FindNext(web_contents_1, &ordinal);
   FindBar* find_bar = browser()->GetFindBarController()->find_bar();
   if (find_bar->HasGlobalFindPasteboard()) {
     EXPECT_EQ(find_in_page::FindTabHelper::FromWebContents(web_contents_1)

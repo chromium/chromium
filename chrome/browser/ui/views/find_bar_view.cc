@@ -423,27 +423,10 @@ void FindBarView::Find(const base::string16& search_text) {
 
   controller->OnUserChangedFindText(search_text);
 
-  // When the user changes something in the text box we check the contents and
-  // if the textbox contains something we set it as the new search string and
-  // initiate search (even though old searches might be in progress).
-  if (!search_text.empty()) {
-    find_tab_helper->StartFinding(search_text, true /* forward_direction */,
-                                  false /* case_sensitive */,
-                                  true /* find_match */);
-  } else {
-    find_tab_helper->StopFinding(find_in_page::SelectionAction::kClear);
-    UpdateForResult(find_tab_helper->find_result(), base::string16());
-    find_bar_host_->MoveWindowIfNecessary();
-
-    // Clearing the text box should clear the prepopulate state so that when
-    // we close and reopen the Find box it doesn't show the search we just
-    // deleted. We can't do this on ChromeOS yet because we get ContentsChanged
-    // sent for a lot more things than just the user nulling out the search
-    // terms. See http://crbug.com/45372.
-    FindBarState* find_bar_state = FindBarStateFactory::GetForBrowserContext(
-        web_contents->GetBrowserContext());
-    find_bar_state->SetLastSearchText(base::string16());
-  }
+  // Initiate a search (even though old searches might be in progress).
+  find_tab_helper->StartFinding(search_text, true /* forward_direction */,
+                                false /* case_sensitive */,
+                                true /* find_match */);
 }
 
 void FindBarView::FindNext(bool reverse) {

@@ -19,6 +19,7 @@ class FindResultObserver : public base::CheckedObserver {
  public:
   virtual void OnFindResultAvailable(content::WebContents* web_contents) = 0;
 
+  virtual void OnFindEmptyText(content::WebContents* web_contents) {}
   virtual void OnFindTabHelperDestroyed(FindTabHelper* helper) {}
 };
 

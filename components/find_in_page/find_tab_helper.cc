@@ -51,17 +51,18 @@ void FindTabHelper::StartFinding(base::string16 search_string,
   const base::char16 kInvalidChars[] = {'\r', 0};
   base::RemoveChars(search_string, kInvalidChars, &search_string);
 
-  // If search_string is empty, it means FindNext was pressed with a keyboard
-  // shortcut so unless we have something to search for we return early.
-  if (search_string.empty() && find_text_.empty()) {
-    search_string = GetInitialSearchText();
+  // Keep track of what the last search was across the tabs.
+  if (delegate_)
+    delegate_->SetLastSearchText(search_string);
 
-    if (search_string.empty())
-      return;
+  if (search_string.empty()) {
+    StopFinding(find_in_page::SelectionAction::kClear);
+    for (auto& observer : observers_)
+      observer.OnFindEmptyText(web_contents_);
+    return;
   }
 
-  // NB: search_string will be empty when using the FindNext keyboard shortcut.
-  bool new_session = (find_text_ != search_string && !search_string.empty()) ||
+  bool new_session = find_text_ != search_string ||
                      (last_search_case_sensitive_ != case_sensitive) ||
                      find_op_aborted_;
 
@@ -70,23 +71,15 @@ void FindTabHelper::StartFinding(base::string16 search_string,
   if (!new_session && !find_match)
     return;
 
-  // Keep track of the previous search.
-  previous_find_text_ = find_text_;
-
   current_find_request_id_ = find_request_id_counter_++;
   if (new_session)
     current_find_session_id_ = current_find_request_id_;
 
-  if (!search_string.empty())
-    find_text_ = search_string;
+  previous_find_text_ = find_text_;
+  find_text_ = search_string;
   last_search_case_sensitive_ = case_sensitive;
-
   find_op_aborted_ = false;
   should_find_match_ = find_match;
-
-  // Keep track of what the last search was across the tabs.
-  if (delegate_)
-    delegate_->SetLastSearchText(find_text_);
 
   auto options = blink::mojom::FindOptions::New();
   options->forward = forward_direction;

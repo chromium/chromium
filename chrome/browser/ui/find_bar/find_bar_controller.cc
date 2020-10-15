@@ -139,6 +139,7 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
       content::Source<NavigationController>(&web_contents_->GetController()));
 
   MaybeSetPrepopulateText();
+  UpdateFindBarForCurrentResult();
 
   if (find_tab_helper && find_tab_helper->find_ui_active()) {
     // A tab with a visible find bar just got selected and we need to show the
@@ -147,14 +148,36 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     // we don't surprise the user by popping up to the left for no apparent
     // reason.
     find_bar_->Show(false);
+    // The condition below can be true on macOS if the global pasteboard changed
+    // while this tab was inactive (the find result will have been reset by
+    // FindBarPlatformHelperMac). In that case, we need to find the new text to
+    // update the results in the findbar. If condition is true due to the find
+    // text being empty, the call to StartFinding will be a harmless no-op.
+    if (find_tab_helper->find_result().number_of_matches() == -1) {
+      find_tab_helper->StartFinding(find_bar_->GetFindText(),
+                                    true /* forward_direction */,
+                                    false /* case_sensitive */,
+                                    false /* find_match */);
+    }
   }
 
-  UpdateFindBarForCurrentResult();
   find_bar_->UpdateFindBarForChangedWebContents();
 }
 
 void FindBarController::SetText(base::string16 text) {
   find_bar_->SetFindTextAndSelectedRange(text, find_bar_->GetSelectedRange());
+
+  if (!web_contents_)
+    return;
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents_);
+  if (!find_tab_helper->find_ui_active())
+    return;
+
+  find_tab_helper->StartFinding(text,
+                                true /* forward_direction */,
+                                false /* case_sensitive */,
+                                false /* find_match */);
 }
 
 void FindBarController::OnUserChangedFindText(base::string16 text) {
@@ -183,6 +206,11 @@ void FindBarController::Observe(int type,
                      find_in_page::ResultAction::kClear);
     }
   }
+}
+
+void FindBarController::OnFindEmptyText(content::WebContents* web_contents) {
+  DCHECK_EQ(web_contents, web_contents_);
+  UpdateFindBarForCurrentResult();
 }
 
 void FindBarController::OnFindResultAvailable(

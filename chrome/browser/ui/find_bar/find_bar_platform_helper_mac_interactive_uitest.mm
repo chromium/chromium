@@ -259,8 +259,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   find_bar_controller->EndFindSession(find_in_page::SelectionAction::kKeep,
                                       find_in_page::ResultAction::kKeep);
   // Simulate F3.
-  ui_test_utils::FindInPage(first_active_web_contents, base::string16(), true,
-                            false, nullptr, nullptr);
+  browser()->GetFindBarController()->Show(true /*find_next*/);
   EXPECT_EQ(
       base::ASCIIToUTF16("given"),
       find_in_page::FindTabHelper::FromWebContents(first_active_web_contents)

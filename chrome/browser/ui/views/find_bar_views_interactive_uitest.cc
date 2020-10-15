@@ -591,6 +591,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
                                GURL("data:text/html,This is some text with a "
                                     "<a href=\"about:blank\">link</a>."));
 
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* host = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
+
   browser()->GetFindBarController()->Show();
 
   // Search for "link".
@@ -602,6 +605,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
       browser(), ui::VKEY_N, false, false, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_K, false, false, false, false));
+  content::RunUntilInputProcessed(host);
+
   EXPECT_EQ(ASCIIToUTF16("link"), GetFindBarText());
 
   ui_test_utils::UrlLoadObserver observer(

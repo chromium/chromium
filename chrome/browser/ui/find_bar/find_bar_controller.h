@@ -65,6 +65,7 @@ class FindBarController : public content::NotificationObserver,
                const content::NotificationDetails& details) override;
 
   // find_in_page::FindResultObserver:
+  void OnFindEmptyText(content::WebContents* web_contents) override;
   void OnFindResultAvailable(content::WebContents* web_contents) override;
 
   void SetText(base::string16 text);
