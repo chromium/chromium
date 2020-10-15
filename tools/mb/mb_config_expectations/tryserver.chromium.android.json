@@ -78,7 +78,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-marshmallow-arm64-rel": {
@@ -105,7 +106,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-deterministic-dbg": {
@@ -580,7 +582,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android_mojo": {

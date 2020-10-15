@@ -172,7 +172,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-arm-rel": {
@@ -199,7 +200,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-arm64-dbg": {
@@ -223,7 +225,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-arm64-rel": {
@@ -249,7 +252,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-asan-arm-rel": {
@@ -277,7 +281,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-marshmallow-arm64-perf-rel": {
@@ -303,7 +308,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-x86-dbg": {
@@ -327,7 +333,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-cronet-x86-rel": {
@@ -353,7 +360,8 @@
       "use_goma": true,
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true
+      "use_platform_icu_alternatives": true,
+      "use_thin_lto": false
     }
   },
   "android-incremental-dbg": {
