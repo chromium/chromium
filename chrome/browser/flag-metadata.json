@@ -4200,11 +4200,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "shelf-hotseat",
-    "owners": [ "manucornet", "mmourgos", "newcomer" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "shelf-hover-previews",
     "owners": [ "manucornet" ],
     "expiry_milestone": 84
