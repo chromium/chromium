@@ -90,7 +90,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ShowPassphraseDialogErrorItemType,
   SyncNeedsTrustedVaultKeyErrorItemType,
   SyncDisabledByAdministratorErrorItemType,
-  SyncSettingsNotCofirmedErrorItemType,
 };
 
 // Enterprise icon.
@@ -190,7 +189,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (void)updateSyncEverythingItemNotifyConsumer:(BOOL)notifyConsumer {
   BOOL shouldSyncEverythingBeEditable =
       self.syncSetupService->IsSyncEnabled() &&
-      !self.disabledBecauseOfSyncError;
+      (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed);
   BOOL shouldSyncEverythingItemBeOn =
       self.syncSetupService->IsSyncEnabled() &&
       self.syncSetupService->IsSyncingAllDataTypes();
@@ -390,6 +389,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 #pragma mark - Properties
 
+- (BOOL)syncSettingsNotConfirmed {
+  SyncSetupService::SyncServiceState state =
+      self.syncSetupService->GetSyncServiceState();
+  return state == SyncSetupService::kSyncSettingsNotConfirmed;
+}
+
 - (BOOL)disabledBecauseOfSyncError {
   SyncSetupService::SyncServiceState state =
       self.syncSetupService->GetSyncServiceState();
@@ -401,7 +406,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (BOOL)shouldSyncDataItemEnabled {
   return (!self.syncSetupService->IsSyncingAllDataTypes() &&
           self.syncSetupService->IsSyncEnabled() &&
-          !self.disabledBecauseOfSyncError);
+          (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed));
 }
 
 - (BOOL)shouldEncryptionItemBeEnabled {
@@ -506,7 +511,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       case ShowPassphraseDialogErrorItemType:
       case SyncNeedsTrustedVaultKeyErrorItemType:
       case SyncDisabledByAdministratorErrorItemType:
-      case SyncSettingsNotCofirmedErrorItemType:
         NOTREACHED();
         break;
     }
@@ -554,7 +558,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case SettingsDataTypeItemType:
     case AutocompleteWalletItemType:
     case SyncDisabledByAdministratorErrorItemType:
-    case SyncSettingsNotCofirmedErrorItemType:
       // Nothing to do.
       break;
   }
@@ -566,22 +569,17 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 //   + ReauthDialogAsSyncIsInAuthErrorItemType
 //   + ShowPassphraseDialogErrorItemType
 //   + SyncNeedsTrustedVaultKeyErrorItemType
-//   + SyncSettingsNotCofirmedErrorItemType
 - (TableViewItem*)createSyncErrorItemWithItemType:(NSInteger)itemType {
   DCHECK(itemType == RestartAuthenticationFlowErrorItemType ||
          itemType == ReauthDialogAsSyncIsInAuthErrorItemType ||
          itemType == ShowPassphraseDialogErrorItemType ||
-         itemType == SyncNeedsTrustedVaultKeyErrorItemType ||
-         itemType == SyncSettingsNotCofirmedErrorItemType);
+         itemType == SyncNeedsTrustedVaultKeyErrorItemType);
   SettingsImageDetailTextItem* syncErrorItem =
       [[SettingsImageDetailTextItem alloc] initWithType:itemType];
   syncErrorItem.text = GetNSString(IDS_IOS_SYNC_ERROR_TITLE);
   syncErrorItem.detailText =
       GetSyncErrorDescriptionForSyncSetupService(self.syncSetupService);
-  if (itemType == SyncSettingsNotCofirmedErrorItemType) {
-    // Special case for the sync error title.
-    syncErrorItem.text = GetNSString(IDS_IOS_SYNC_SETUP_NOT_CONFIRMED_TITLE);
-  } else if (itemType == ShowPassphraseDialogErrorItemType) {
+  if (itemType == ShowPassphraseDialogErrorItemType) {
     // Special case only for the sync passphrase error message. The regular
     // error message should be still be displayed in the first settings screen.
     syncErrorItem.detailText = GetNSString(
@@ -653,9 +651,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         hasError = YES;
         break;
       case SyncSetupService::kSyncSettingsNotConfirmed:
-        type = SyncSettingsNotCofirmedErrorItemType;
-        hasError = YES;
-        break;
       case SyncSetupService::kNoSyncServiceError:
       case SyncSetupService::kSyncServiceCouldNotConnect:
       case SyncSetupService::kSyncServiceServiceUnavailable:
