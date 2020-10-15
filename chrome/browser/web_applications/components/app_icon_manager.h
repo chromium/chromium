@@ -127,6 +127,8 @@ class AppIconManager {
                                      SquareSizePx min_icon_size,
                                      ReadCompressedIconCallback callback) const;
 
+  // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
+  // found.
   virtual SkBitmap GetFavicon(const AppId& app_id) const = 0;
 
  protected:

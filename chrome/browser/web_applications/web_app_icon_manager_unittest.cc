@@ -1120,6 +1120,38 @@ TEST_F(WebAppIconManagerTest, CacheExistingAppFavicon) {
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
 }
 
+TEST_F(WebAppIconManagerTest, CacheAppFaviconWithResize) {
+  auto web_app = CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // App does not declare an icon of gfx::kFaviconSize, forcing a resize.
+  const std::vector<int> sizes_px{8, icon_size::k48, icon_size::k64};
+  ASSERT_FALSE(base::Contains(sizes_px, gfx::kFaviconSize));
+  const std::vector<SkColor> colors{SK_ColorBLACK, SK_ColorGREEN, SK_ColorRED};
+  WriteIcons(app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+
+  controller().RegisterApp(std::move(web_app));
+
+  base::RunLoop run_loop;
+  icon_manager().SetFaviconReadCallbackForTesting(
+      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
+        EXPECT_EQ(cached_app_id, app_id);
+        run_loop.Quit();
+      }));
+
+  icon_manager().Start();
+  run_loop.Run();
+
+  SkBitmap bitmap = icon_manager().GetFavicon(app_id);
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_EQ(gfx::kFaviconSize, bitmap.width());
+  EXPECT_EQ(gfx::kFaviconSize, bitmap.height());
+  // Correct size wasn't available so larger icon should be used.
+  EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
+}
+
 TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
   icon_manager().Start();
 

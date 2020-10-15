@@ -106,7 +106,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
       SquareSizePx max_size) const;
 
   void ReadFavicon(const AppId& app_id);
-  void OnReadFavicon(const AppId& app_id, const SkBitmap&);
+  void OnReadFavicon(const AppId& app_id,
+                     std::map<SquareSizePx, SkBitmap> icons);
 
   WebAppRegistrar& registrar_;
   base::FilePath web_apps_directory_;

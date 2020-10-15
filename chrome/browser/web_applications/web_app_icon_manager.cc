@@ -769,14 +769,17 @@ void WebAppIconManager::ReadFavicon(const AppId& app_id) {
   if (!HasSmallestIcon(app_id, {IconPurpose::ANY}, gfx::kFaviconSize))
     return;
 
-  ReadSmallestIconAny(app_id, gfx::kFaviconSize,
-                      base::BindOnce(&WebAppIconManager::OnReadFavicon,
-                                     weak_ptr_factory_.GetWeakPtr(), app_id));
+  ReadIconAndResize(app_id, IconPurpose::ANY, gfx::kFaviconSize,
+                    base::BindOnce(&WebAppIconManager::OnReadFavicon,
+                                   weak_ptr_factory_.GetWeakPtr(), app_id));
 }
 
-void WebAppIconManager::OnReadFavicon(const AppId& app_id,
-                                      const SkBitmap& bitmap) {
-  favicon_cache_[app_id] = bitmap;
+void WebAppIconManager::OnReadFavicon(
+    const AppId& app_id,
+    const std::map<SquareSizePx, SkBitmap> icons) {
+  const auto it = icons.find(gfx::kFaviconSize);
+  if (it != icons.end())
+    favicon_cache_[app_id] = it->second;
   if (favicon_read_callback_)
     favicon_read_callback_.Run(app_id);
 }
