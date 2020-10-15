@@ -574,7 +574,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
   EXPECT_FALSE(warnings.empty());
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 manifest_errors::kInvalidPermissionScheme,
-                "chrome://*/"),
+                manifest_keys::kPermissions, "chrome://*/"),
             warnings[0].message);
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), settings_url));
   EXPECT_EQ(DISALLOWED,

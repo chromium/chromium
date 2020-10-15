@@ -611,8 +611,7 @@ const char kInvalidPermission[] =
     "Invalid value for 'permissions[*]'.";
 const char kInvalidPermissions[] =
     "Invalid value for 'permissions'.";
-const char kInvalidPermissionScheme[] =
-    "Invalid scheme for 'permissions[*]'.";
+const char kInvalidPermissionScheme[] = "Invalid scheme for '*[*]'.";
 const char kInvalidReplacementAndroidApp[] =
     "Invalid value for 'replacement_android_app'";
 const char kInvalidReplacementWebApp[] =

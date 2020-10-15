@@ -169,7 +169,7 @@ void ParseHostPermissions(Extension* extension,
         // below).
         extension->AddInstallWarning(InstallWarning(
             ErrorUtils::FormatErrorMessage(errors::kInvalidPermissionScheme,
-                                           permission_str),
+                                           key, permission_str),
             key, permission_str));
         continue;
       }

@@ -24,10 +24,11 @@ namespace errors = manifest_errors;
 typedef ChromeManifestTest ChromePermissionManifestTest;
 
 TEST_F(ChromePermissionManifestTest, ChromeURLPermissionInvalid) {
-  LoadAndExpectWarning("permission_chrome_url_invalid.json",
-                       ErrorUtils::FormatErrorMessage(
-                           errors::kInvalidPermissionScheme,
-                           chrome::kChromeUINewTabURL));
+  LoadAndExpectWarning(
+      "permission_chrome_url_invalid.json",
+      ErrorUtils::FormatErrorMessage(errors::kInvalidPermissionScheme,
+                                     manifest_keys::kPermissions,
+                                     chrome::kChromeUINewTabURL));
 }
 
 TEST_F(ChromePermissionManifestTest, ChromeUntrustedURLPermissionInvalid) {
@@ -71,7 +72,7 @@ TEST_F(ChromePermissionManifestTest,
   LoadAndExpectWarning("permission_chrome_resources_url.json",
                        ErrorUtils::FormatErrorMessage(
                            errors::kInvalidPermissionScheme,
-                           "chrome://resources/"));
+                           manifest_keys::kPermissions, "chrome://resources/"));
   std::string error;
   LoadExtension(ManifestData("permission_chrome_resources_url.json"),
                 &error,

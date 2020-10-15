@@ -112,6 +112,16 @@ TEST_F(PermissionsParserTest, OptionalHostPermissionsAllURLs) {
               testing::UnorderedElementsAre("*://*/*"));
 }
 
+TEST_F(PermissionsParserTest, OptionalHostPermissionsInvalidScheme) {
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kInvalidPermissionScheme,
+      manifest_keys::kOptionalPermissions, "chrome://extensions/"));
+
+  scoped_refptr<Extension> extension(LoadAndExpectWarnings(
+      "optional_permissions_invalid_scheme.json", expected_warnings));
+}
+
 TEST_F(PermissionsParserTest, HostPermissionsKey) {
   std::vector<std::string> expected_warnings;
   expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
@@ -140,6 +150,18 @@ TEST_F(PermissionsParserTest, HostPermissionsKeyInvalidHosts) {
 
   scoped_refptr<Extension> extension(LoadAndExpectWarnings(
       "host_permissions_key_invalid_hosts.json", expected_warnings));
+}
+
+TEST_F(PermissionsParserTest, HostPermissionsKeyInvalidScheme) {
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kInvalidPermissionScheme,
+      manifest_keys::kHostPermissions, "chrome://extensions/"));
+
+  expected_warnings.push_back(kManifestVersionWarning);
+
+  scoped_refptr<Extension> extension(LoadAndExpectWarnings(
+      "host_permissions_key_invalid_scheme.json", expected_warnings));
 }
 
 // Tests that listing a permissions as optional when that permission cannot be
@@ -188,8 +210,13 @@ TEST_F(PermissionsParserTest, ChromeFavicon) {
   };
 
   auto has_install_warning = [](const Extension& extension) {
+    const char* permissions_key = extension.manifest_version() > 2
+                                      ? manifest_keys::kHostPermissions
+                                      : manifest_keys::kPermissions;
+
     InstallWarning expected_warning(ErrorUtils::FormatErrorMessage(
-        manifest_errors::kInvalidPermissionScheme, kFaviconPattern));
+        manifest_errors::kInvalidPermissionScheme, permissions_key,
+        kFaviconPattern));
     return base::Contains(extension.install_warnings(), expected_warning);
   };
 
