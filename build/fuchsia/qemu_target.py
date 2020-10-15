@@ -72,8 +72,9 @@ class QemuTarget(emu_target.EmuTarget):
                       'in for the change to take effect.'
         raise FuchsiaTargetException(kvm_error)
       else:
-        raise FuchsiaTargetException('KVM unavailable when CPU architecture of'\
-                                     ' host is different from that of target.')
+        raise FuchsiaTargetException('KVM unavailable when CPU architecture '\
+                                     'of host is different from that of'\
+                                     ' target. See --allow-no-kvm.')
     else:
       return False
 
@@ -146,7 +147,7 @@ class QemuTarget(emu_target.EmuTarget):
       else:
         kvm_command.append('host,migratable=no,+invtsc')
     else:
-      logging.warning('Unable to launch %s with KVM acceleration.'
+      logging.warning('Unable to launch %s with KVM acceleration. '
                       'The guest VM will be slow.' % (self.EMULATOR_NAME))
       if self._target_cpu == 'arm64':
         kvm_command = ['-cpu', 'cortex-a53']
