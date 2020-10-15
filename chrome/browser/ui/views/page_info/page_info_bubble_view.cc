@@ -240,7 +240,6 @@ void BubbleHeaderView::SetDetails(const base::string16& details_text) {
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           base::BindRepeating(&PageInfoBubbleView::SecurityDetailsClicked,
                               base::Unretained(bubble_)));
-  link_style.disable_line_wrapping = false;
 
   security_details_label_->AddStyleRange(details_range, link_style);
 }
