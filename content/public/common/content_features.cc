@@ -511,16 +511,6 @@ const base::Feature kPushSubscriptionChangeEvent{
 const base::Feature kDirectSockets{"DirectSockets",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether FileURLLoaderFactory can fetch additional files based on the
-// isolated world's origin. This feature is disabled by default because we want
-// content scripts to have the same permissions as the page they are injected
-// into. This feature makes it possible to quickly revert to earlier permissive
-// behavior if significant regressions are detected. See
-// https://crbug.com/1049604.
-const base::Feature kRelaxIsolatedWorldCorsInFileUrlLoaderFactory = {
-    "RelaxIsolatedWorldCorsInFileUrlLoaderFactory",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

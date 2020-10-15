@@ -8,11 +8,9 @@
 #include <string>
 
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/base/filename_util.h"
@@ -155,35 +153,10 @@ TEST_F(FileURLLoaderFactoryTest, MissedRequestInitiator) {
                 network::mojom::RequestMode::kCorsWithForcedPreflight)));
 }
 
-// Test whether FileURLLoaderFactory can fetch/XHR files based on the
-// request_initiator and isolated_world_origin.
-//
-// The behavior for isolated_world_origin depends on a feature, and the test is
-// parameterized to cover both enabled and disabled cases.
-class FileURLLoaderFactoryTestWithRelaxedIsolatedWorlds
-    : public FileURLLoaderFactoryTest,
-      public testing::WithParamInterface<bool> {
- public:
-  FileURLLoaderFactoryTestWithRelaxedIsolatedWorlds() {
-    const base::Feature& feature =
-        features::kRelaxIsolatedWorldCorsInFileUrlLoaderFactory;
-    if (ShouldRelaxCorsForIsolatedWorlds()) {
-      feature_list_.InitAndEnableFeature(feature);
-    } else {
-      feature_list_.InitAndDisableFeature(feature);
-    }
-  }
-
-  bool ShouldRelaxCorsForIsolatedWorlds() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Verify that FileURLLoaderFactory takes OriginAccessList into account when
 // deciding whether to exempt a request from CORS.  See also
 // https://crbug.com/1049604.
-TEST_P(FileURLLoaderFactoryTestWithRelaxedIsolatedWorlds, Test) {
+TEST_F(FileURLLoaderFactoryTest, Allowlist) {
   const url::Origin not_permitted_origin =
       url::Origin::Create(GURL("https://www.example.com"));
 
@@ -197,19 +170,11 @@ TEST_P(FileURLLoaderFactoryTestWithRelaxedIsolatedWorlds, Test) {
   EXPECT_EQ(net::OK, CreateLoaderAndRun(CreateCorsRequestWithInitiator(
                          GetPermittedSourceOrigin())));
 
-  // In the long-term, isolated world origin should *not* be used to check the
-  // permission.  In the short-term we allow consulting isolated world origin if
-  // the RelaxIsolatedWorldCorsInFileUrlLoaderFactory feature is enabled (see
-  // https://crbug.com/1049604 for more discussion and details).
+  // Isolated world origin should *not* be used to check the permission.
   auto request = CreateCorsRequestWithInitiator(not_permitted_origin);
   request->isolated_world_origin = GetPermittedSourceOrigin();
-  EXPECT_EQ(ShouldRelaxCorsForIsolatedWorlds() ? net::OK : net::ERR_FAILED,
-            CreateLoaderAndRun(std::move(request)));
+  EXPECT_EQ(net::ERR_FAILED, CreateLoaderAndRun(std::move(request)));
 }
-
-INSTANTIATE_TEST_SUITE_P(FeatureState,
-                         FileURLLoaderFactoryTestWithRelaxedIsolatedWorlds,
-                         testing::Values(true, false));
 
 }  // namespace
 

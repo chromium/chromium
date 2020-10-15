@@ -111,8 +111,6 @@ CONTENT_EXPORT extern const base::Feature
     kProcessSharingWithStrictSiteInstances;
 CONTENT_EXPORT extern const base::Feature kPushSubscriptionChangeEvent;
 CONTENT_EXPORT extern const base::Feature kDirectSockets;
-CONTENT_EXPORT extern const base::Feature
-    kRelaxIsolatedWorldCorsInFileUrlLoaderFactory;
 CONTENT_EXPORT extern const base::Feature kReloadHiddenTabsWithCrashedSubframes;
 CONTENT_EXPORT extern const base::Feature kRenderDocument;
 CONTENT_EXPORT extern const base::Feature kRequestUnbufferedDispatch;
