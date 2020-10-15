@@ -360,8 +360,20 @@ class NavigationManager {
         this.desktop_, chrome.automation.EventType.FOCUS,
         this.onFocusChange_.bind(this));
 
+    // ARC++ fires SCROLL_POSITION_CHANGED.
     new RepeatedEventHandler(
         this.desktop_, chrome.automation.EventType.SCROLL_POSITION_CHANGED,
+        this.onScrollChange_.bind(this));
+
+    // Web and Views use AXEventGenerator, which fires
+    // separate horizontal and vertical events.
+    new RepeatedEventHandler(
+        this.desktop_,
+        chrome.automation.EventType.SCROLL_HORIZONTAL_POSITION_CHANGED,
+        this.onScrollChange_.bind(this));
+    new RepeatedEventHandler(
+        this.desktop_,
+        chrome.automation.EventType.SCROLL_VERTICAL_POSITION_CHANGED,
         this.onScrollChange_.bind(this));
 
     new RepeatedTreeChangeHandler(
