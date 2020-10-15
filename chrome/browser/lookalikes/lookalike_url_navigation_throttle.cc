@@ -217,9 +217,6 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
       IsLookalikeUrl(last_url, engaged_sites, &last_match_type,
                      &last_suggested_url);
 
-  if (!first_is_lookalike && !last_is_lookalike) {
-    return content::NavigationThrottle::PROCEED;
-  }
 
   // If the first URL is a lookalike, but we ended up on the suggested site
   // anyway, don't warn.
@@ -228,6 +225,12 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     first_is_lookalike = false;
   }
 
+  if (!first_is_lookalike && !last_is_lookalike) {
+    return content::NavigationThrottle::PROCEED;
+  }
+  // IMPORTANT: Do not modify first_is_lookalike or last_is_lookalike beyond
+  // this line. See crbug.com/1138138 for an example bug.
+
   // source_id corresponds to last_url, even when first_url is what triggered.
   // TODO(crbug.com/1133598): disambiguate first_- vs. last_urls.
   ukm::SourceId source_id = ukm::ConvertToSourceId(
@@ -235,15 +238,19 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
 
   if (first_is_lookalike &&
       ShouldBlockLookalikeUrlNavigation(first_match_type)) {
+    RecordUMAFromMatchType(first_match_type);
     return ShowInterstitial(first_suggested_url, first_url, source_id,
                             first_match_type);
   }
 
   if (last_is_lookalike && ShouldBlockLookalikeUrlNavigation(last_match_type)) {
+    RecordUMAFromMatchType(last_match_type);
     return ShowInterstitial(last_suggested_url, last_url, source_id,
                             last_match_type);
   }
 
+  RecordUMAFromMatchType(first_is_lookalike ? first_match_type
+                                            : last_match_type);
   // Interstitial normally records UKM, but still record when it's not shown.
   RecordUkmForLookalikeUrlBlockingPage(
       source_id, first_is_lookalike ? first_match_type : last_match_type,
@@ -313,8 +320,6 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
                         &matched_domain, match_type)) {
     DCHECK(!matched_domain.empty());
 
-    RecordUMAFromMatchType(*match_type);
-
     // matched_domain can be a top domain or an engaged domain. Simply use its
     // eTLD+1 as the suggested domain.
     // 1. If matched_domain is a top domain: Top domain list already contains
@@ -344,7 +349,6 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
   if (ShouldBlockBySpoofCheckResult(navigated_domain)) {
     *match_type = LookalikeUrlMatchType::kFailedSpoofChecks;
     *suggested_url = GURL();
-    RecordUMAFromMatchType(*match_type);
     return true;
   }
 

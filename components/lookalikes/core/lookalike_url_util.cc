@@ -34,7 +34,7 @@
 
 namespace lookalikes {
 
-const char kHistogramName[] = "NavigationSuggestion.Event";
+const char kHistogramName[] = "NavigationSuggestion.Event2";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
