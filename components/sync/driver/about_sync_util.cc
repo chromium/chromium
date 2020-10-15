@@ -80,16 +80,19 @@ namespace {
 
 const char kUninitialized[] = "Uninitialized";
 
+const char kUninitializedCSSClass[] = "uninitialized";
+const char kBadStateCSSClass[] = "in_bad_state";
+
 // This class represents one field in chrome://sync-internals. It gets
 // serialized into a dictionary with entries for 'stat_name', 'stat_value' and
-// 'is_valid'.
+// 'stat_status'.
 class StatBase {
  public:
   base::Value ToValue() const {
     base::Value result(base::Value::Type::DICTIONARY);
     result.SetKey("stat_name", base::Value(key_));
     result.SetKey("stat_value", value_.Clone());
-    result.SetKey("is_valid", base::Value(is_valid_));
+    result.SetKey("stat_status", base::Value(status_));
     return result;
   }
 
@@ -97,15 +100,15 @@ class StatBase {
   StatBase(const std::string& key, base::Value default_value)
       : key_(key), value_(std::move(default_value)) {}
 
-  void SetFromValue(base::Value value) {
+  void SetFromValue(base::Value value, bool is_good) {
     value_ = std::move(value);
-    is_valid_ = true;
+    status_ = is_good ? "" : kBadStateCSSClass;
   }
 
  private:
   std::string key_;
   base::Value value_;
-  bool is_valid_ = false;
+  std::string status_ = kUninitializedCSSClass;
 };
 
 template <typename T>
@@ -114,7 +117,9 @@ class Stat : public StatBase {
   Stat(const std::string& key, const T& default_value)
       : StatBase(key, base::Value(default_value)) {}
 
-  void Set(const T& value) { SetFromValue(base::Value(value)); }
+  void Set(const T& value, bool is_good = true) {
+    SetFromValue(base::Value(value), is_good);
+  }
 };
 
 // A section for display on chrome://sync-internals, consisting of a title and a
@@ -470,9 +475,12 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
   std::string auth_error_str = service->GetAuthError().ToString();
-  auth_error->Set(base::StringPrintf(
-      "%s since %s", (auth_error_str.empty() ? "OK" : auth_error_str).c_str(),
-      GetTimeStr(service->GetAuthErrorTime(), "browser startup").c_str()));
+  auth_error->Set(
+      base::StringPrintf(
+          "%s since %s",
+          (auth_error_str.empty() ? "OK" : auth_error_str).c_str(),
+          GetTimeStr(service->GetAuthErrorTime(), "browser startup").c_str()),
+      /*is_good=*/auth_error_str.empty());
 
   SyncStatus full_status;
   bool is_status_valid =
@@ -502,13 +510,17 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   token_request_time->Set(GetTimeStr(token_status.token_request_time, "n/a"));
   token_response_time->Set(GetTimeStr(token_status.token_response_time, "n/a"));
   std::string err = token_status.last_get_token_error.error_message();
-  last_token_request_result->Set(err.empty() ? "OK" : err);
+  last_token_request_result->Set(err.empty() ? "OK" : err,
+                                 /*is_good=*/err.empty());
   has_token->Set(token_status.has_token);
   next_token_request->Set(
       GetTimeStr(token_status.next_token_request_time, "not scheduled"));
 
   // Local State.
-  server_connection->Set(GetConnectionStatus(token_status));
+  server_connection->Set(
+      GetConnectionStatus(token_status),
+      /*is_good=*/token_status.connection_status == CONNECTION_NOT_ATTEMPTED ||
+          token_status.connection_status == CONNECTION_OK);
   last_synced->Set(
       GetLastSyncedTimeString(service->GetLastSyncedTimeForDebugging()));
   is_setup_complete->Set(service->GetUserSettings()->IsFirstSetupComplete());
@@ -526,7 +538,9 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
                                "Scheduler is not in backoff or throttled"));
   }
   if (is_status_valid)
-    are_notifications_enabled->Set(full_status.notifications_enabled);
+    are_notifications_enabled->Set(
+        full_status.notifications_enabled,
+        /*is_good=*/full_status.notifications_enabled);
 
   // Encryption.
   if (service->IsSyncFeatureActive()) {
@@ -553,11 +567,18 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     if (snapshot.get_updates_origin() != sync_pb::SyncEnums::UNKNOWN_ORIGIN) {
       session_source->Set(ProtoEnumToString(snapshot.get_updates_origin()));
     }
-    get_key_result->Set(
-        snapshot.model_neutral_state().last_get_key_result.ToString());
-    download_result->Set(
-        snapshot.model_neutral_state().last_download_updates_result.ToString());
-    commit_result->Set(snapshot.model_neutral_state().commit_result.ToString());
+    SyncerError get_key_result_err =
+        snapshot.model_neutral_state().last_get_key_result;
+    get_key_result->Set(get_key_result_err.ToString(),
+                        /*is_good=*/!get_key_result_err.IsActualError());
+    SyncerError download_result_err =
+        snapshot.model_neutral_state().last_download_updates_result;
+    download_result->Set(download_result_err.ToString(),
+                         /*is_good=*/!download_result_err.IsActualError());
+    SyncerError commit_result_err =
+        snapshot.model_neutral_state().commit_result;
+    commit_result->Set(commit_result_err.ToString(),
+                       /*is_good=*/!commit_result_err.IsActualError());
   }
 
   // Running Totals.

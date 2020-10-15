@@ -54,7 +54,8 @@ SyncInternalsWebUITest.prototype = {
       for (let j = 0; j < details[i].data.length; ++j) {
         const obj = details[i].data[j];
         if (obj.stat_name === key) {
-          return obj.is_valid === isValid && obj.stat_value === value;
+          return (obj.stat_status !== 'uninitialized') === isValid &&
+              obj.stat_value === value;
         }
       }
     }
@@ -163,22 +164,22 @@ const HARD_CODED_ALL_NODES = [{
 HARD_CODED_ABOUT_INFO = {
   'actionable_error': [
     {
-      'is_valid': false,
+      'stat_status': 'uninitialized',
       'stat_name': 'Error Type',
       'stat_value': 'Uninitialized'
     },
     {
-      'is_valid': false,
+      'stat_status': 'uninitialized',
       'stat_name': 'Action',
       'stat_value': 'Uninitialized'
     },
     {
-      'is_valid': false,
+      'stat_status': 'uninitialized',
       'stat_name': 'URL',
       'stat_value': 'Uninitialized'
     },
     {
-      'is_valid': false,
+      'stat_status': 'uninitialized',
       'stat_name': 'Error Description',
       'stat_value': 'Uninitialized'
     }
@@ -188,7 +189,7 @@ HARD_CODED_ABOUT_INFO = {
     {
       'data': [
         {
-          'is_valid': true,
+          'stat_status': '',
           'stat_name': 'Summary',
           'stat_value': 'Sync service initialized'
         }

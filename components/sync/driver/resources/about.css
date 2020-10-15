@@ -85,6 +85,10 @@
   color: #7f7f7f;
 }
 
+.about-details .in_bad_state {
+  color: red;
+}
+
 #status {
   margin-left: auto;
   margin-right: auto;
