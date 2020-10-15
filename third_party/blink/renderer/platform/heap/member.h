@@ -463,6 +463,26 @@ class UntracedMember final
   }
 };
 
+template <typename T>
+struct MemberTraceTraits {
+  STATIC_ONLY(MemberTraceTraits);
+
+ public:
+  static TraceDescriptor GetTraceDescriptor(const T* ref) {
+    return {ref, TraceTrait<T>::Trace};
+  }
+
+  static void Trace(Visitor* visitor, const void* ref) {
+    visitor->Trace(*static_cast<const T*>(ref));
+  }
+};
+
+template <typename T>
+struct TraceTrait<Member<T>> : public MemberTraceTraits<Member<T>> {};
+
+template <typename T>
+struct TraceTrait<WeakMember<T>> : public MemberTraceTraits<WeakMember<T>> {};
+
 }  // namespace blink
 
 namespace WTF {

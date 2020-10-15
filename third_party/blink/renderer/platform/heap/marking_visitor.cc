@@ -69,19 +69,17 @@ void MarkingVisitorBase::VisitWeak(const void* object,
 }
 
 void MarkingVisitorBase::VisitEphemeron(const void* key,
-                                        const void* value,
-                                        TraceCallback value_trace_callback) {
+                                        TraceDescriptor value_desc) {
   HeapObjectHeader* key_header = HeapObjectHeader::FromPayload(key);
   if (!key_header->IsInConstruction<HeapObjectHeader::AccessMode::kAtomic>() &&
       !key_header->IsMarked<HeapObjectHeader::AccessMode::kAtomic>()) {
     // In construction keys are considered as marked because they are
     // guaranteed to be marked by the end of GC (e.g. by write barrier
     // on insertion to HashTable).
-    discovered_ephemeron_pairs_worklist_.Push(
-        {key, value, value_trace_callback});
+    discovered_ephemeron_pairs_worklist_.Push({key, value_desc});
     return;
   }
-  value_trace_callback(this, value);
+  value_desc.callback(this, value_desc.base_object_payload);
 }
 
 void MarkingVisitorBase::VisitWeakContainer(

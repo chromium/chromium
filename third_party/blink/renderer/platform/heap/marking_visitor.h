@@ -42,7 +42,7 @@ class PLATFORM_EXPORT MarkingVisitorBase : public Visitor {
                           TraceDescriptor,
                           WeakCallback,
                           const void*) final;
-  void VisitEphemeron(const void*, const void*, TraceCallback) final;
+  void VisitEphemeron(const void*, TraceDescriptor) final;
 
   // Marks an object dynamically using any address within its body and adds a
   // tracing callback for processing of the object. The object is not allowed

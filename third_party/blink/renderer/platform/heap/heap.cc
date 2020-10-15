@@ -376,8 +376,7 @@ bool ThreadHeap::InvokeEphemeronCallbacks(
   return DrainWorklistWithDeadline(
       deadline, ephemeron_pairs_to_process_worklist_.get(),
       [visitor](EphemeronPairItem& item) {
-        visitor->VisitEphemeron(item.key, item.value,
-                                item.value_trace_callback);
+        visitor->VisitEphemeron(item.key, item.value_desc);
       },
       WorklistTaskId::MutatorThread);
 }
@@ -579,14 +578,12 @@ bool ThreadHeap::AdvanceConcurrentMarking(
       // Callbacks found by the concurrent marking will be flushed eventually
       // by the mutator thread and then invoked either concurrently or by the
       // mutator thread (in the atomic pause at latest).
-      finished =
-          DrainWorklist<kDefaultConcurrentDeadlineCheckInterval>(
-              ephemeron_pairs_to_process_worklist_.get(),
-              [visitor](EphemeronPairItem& item) {
-                visitor->VisitEphemeron(item.key, item.value,
-                                        item.value_trace_callback);
-              },
-              should_yield_callback, visitor->task_id());
+      finished = DrainWorklist<kDefaultConcurrentDeadlineCheckInterval>(
+          ephemeron_pairs_to_process_worklist_.get(),
+          [visitor](EphemeronPairItem& item) {
+            visitor->VisitEphemeron(item.key, item.value_desc);
+          },
+          should_yield_callback, visitor->task_id());
       if (!finished)
         break;
     }

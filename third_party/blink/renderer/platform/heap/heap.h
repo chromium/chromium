@@ -69,8 +69,7 @@ using NotFullyConstructedItem = const void*;
 
 struct EphemeronPairItem {
   const void* key;
-  const void* value;
-  TraceCallback value_trace_callback;
+  TraceDescriptor value_desc;
 };
 
 struct CustomCallbackItem {

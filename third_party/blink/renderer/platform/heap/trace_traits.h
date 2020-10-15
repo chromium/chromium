@@ -280,31 +280,10 @@ struct TraceInCollectionTrait<kNoWeakHandling, T, Traits> {
 };
 
 template <typename T, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling, blink::Member<T>, Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info,
-                      const blink::Member<T>& t) {
-    return true;
-  }
-  static void Trace(blink::Visitor* visitor, const blink::Member<T>& t) {
-    visitor->TraceMaybeDeleted(t);
-  }
-};
-
-template <typename T, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling, blink::Member<T>, Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info,
-                      const blink::Member<T>& t) {
-    return true;
-  }
-  static void Trace(blink::Visitor* visitor, const blink::Member<T>& t) {
-    visitor->TraceMaybeDeleted(t);
-  }
-};
-
-template <typename T, typename Traits>
 struct TraceInCollectionTrait<kNoWeakHandling, blink::WeakMember<T>, Traits> {
   static void Trace(blink::Visitor* visitor, const blink::WeakMember<T>& t) {
-    visitor->TraceMaybeDeleted(t);
+    // Extract raw pointer to avoid using the WeakMember<> overload in Visitor.
+    visitor->TraceStrongly(t);
   }
 };
 

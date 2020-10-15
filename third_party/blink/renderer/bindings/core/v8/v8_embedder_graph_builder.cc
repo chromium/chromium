@@ -169,7 +169,7 @@ class GC_PLUGIN_IGNORE(
   void VisitRoot(const void*, TraceDescriptor, const base::Location&) final;
   void Visit(const TraceWrapperV8Reference<v8::Value>&) final;
   void Visit(const void*, TraceDescriptor) final;
-  void VisitEphemeron(const void*, const void*, TraceCallback) final;
+  void VisitEphemeron(const void*, TraceDescriptor) final;
   void VisitWeakContainer(const void*,
                           const void* const*,
                           TraceDescriptor,
@@ -599,10 +599,10 @@ void V8EmbedderGraphBuilder::VisitWeakContainer(
 
 void V8EmbedderGraphBuilder::VisitEphemeron(
     const void* key,
-    const void* value,
-    TraceCallback value_trace_callback) {
-  ephemeron_worklist_.push_back(
-      std::make_unique<EphemeronItem>(key, value, value_trace_callback));
+    TraceDescriptor value_trace_descriptor) {
+  ephemeron_worklist_.push_back(std::make_unique<EphemeronItem>(
+      key, value_trace_descriptor.base_object_payload,
+      value_trace_descriptor.callback));
 }
 
 void V8EmbedderGraphBuilder::VisitPendingActivities() {

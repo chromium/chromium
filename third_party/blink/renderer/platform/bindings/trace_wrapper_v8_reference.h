@@ -13,6 +13,9 @@
 
 namespace blink {
 
+template <typename T>
+struct TraceTrait;
+
 /**
  * TraceWrapperV8Reference is used to hold references from Blink to V8 that are
  * known to both garbage collectors. The reference is a regular traced reference
@@ -117,6 +120,21 @@ class TraceWrapperV8Reference {
   }
 
   v8::TracedReference<T> handle_;
+};
+
+template <typename T>
+struct TraceTrait<TraceWrapperV8Reference<T>> {
+  STATIC_ONLY(TraceTrait);
+
+ public:
+  static TraceDescriptor GetTraceDescriptor(
+      const TraceWrapperV8Reference<T>* ref) {
+    return {ref, TraceTrait<TraceWrapperV8Reference<T>>::Trace};
+  }
+
+  static void Trace(Visitor* visitor, const void* ref) {
+    visitor->Trace(*static_cast<const TraceWrapperV8Reference<T>*>(ref));
+  }
 };
 
 }  // namespace blink

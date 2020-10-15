@@ -55,12 +55,10 @@ class BackingVisitor : public Visitor {
       EXPECT_TRUE(header->TryMark());
   }
 
-  void VisitEphemeron(const void* key,
-                      const void* value,
-                      TraceCallback value_trace_callback) final {
+  void VisitEphemeron(const void* key, TraceDescriptor value_desc) final {
     if (!HeapObjectHeader::FromPayload(key)->IsMarked())
       return;
-    value_trace_callback(this, value);
+    value_desc.callback(this, value_desc.base_object_payload);
   }
 
  private:

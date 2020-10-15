@@ -339,11 +339,7 @@ struct TraceKeyValuePairInCollectionTrait {
       // The following passes on kNoWeakHandling for tracing value as the value
       // callback is only invoked to keep value alive iff key is alive,
       // following ephemeron semantics.
-      visitor->TraceEphemeron(
-          *helper.key, helper.value,
-          blink::TraceCollectionIfEnabled<
-              kNoWeakHandling, typename EphemeronHelper::ValueType,
-              typename EphemeronHelper::ValueTraits>::Trace);
+      visitor->TraceEphemeron(*helper.key, helper.value);
     }
   };
 
