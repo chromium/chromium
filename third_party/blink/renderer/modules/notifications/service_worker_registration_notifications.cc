@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 #include "third_party/blink/renderer/modules/notifications/notification_manager.h"
+#include "third_party/blink/renderer/modules/notifications/notification_metrics.h"
 #include "third_party/blink/renderer/modules/notifications/notification_resources_loader.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -40,6 +41,8 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   // If context object's active worker is null, reject the promise with a
   // TypeError exception.
   if (!registration.active()) {
+    RecordPersistentNotificationDisplayResult(
+        PersistentNotificationDisplayResult::kRegistrationNotActive);
     exception_state.ThrowTypeError(
         "No active registration available on "
         "the ServiceWorkerRegistration.");
@@ -50,6 +53,8 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   // promise with a TypeError exception, and terminate these substeps.
   if (NotificationManager::From(execution_context)->GetPermissionStatus() !=
       mojom::blink::PermissionStatus::GRANTED) {
+    RecordPersistentNotificationDisplayResult(
+        PersistentNotificationDisplayResult::kPermissionNotGranted);
     exception_state.ThrowTypeError(
         "No notification permission has been granted for this origin.");
     return ScriptPromise();

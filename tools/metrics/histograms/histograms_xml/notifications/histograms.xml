@@ -369,6 +369,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.PersistentNotificationDisplayResult"
+    enum="PersistentNotificationDisplayResult" expires_after="M91">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The result of the promise returned by showNotification. Logged whenever
+    showNotification is called.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.PersistentWebNotificationClickResult"
     enum="PlatformNotificationStatus" expires_after="M90">
   <owner>peter@chromium.org</owner>

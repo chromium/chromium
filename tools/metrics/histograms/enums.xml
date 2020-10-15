@@ -57463,6 +57463,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Could Not Create Upload Directory"/>
 </enum>
 
+<enum name="PersistentNotificationDisplayResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Registration is not active"/>
+  <int value="2" label="Permission not granted"/>
+  <int value="3" label="Silent with vibrate option"/>
+  <int value="4" label="Renotify without tag option"/>
+  <int value="5" label="Failed to serialize data option"/>
+  <int value="6" label="Button action with placeholder option"/>
+  <int value="7" label="Show trigger delay too far ahead in future"/>
+  <int value="8" label="Too much data in user defined option"/>
+  <int value="9" label="Internal error"/>
+  <int value="10" label="Permission denied"/>
+</enum>
+
 <enum name="PhoneCollectionState">
   <int value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"/>
   <int value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"/>
