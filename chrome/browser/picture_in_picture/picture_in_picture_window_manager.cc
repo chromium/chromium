@@ -11,7 +11,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/size.h"
 
-class PictureInPictureWindowManager::ContentsObserver
+class PictureInPictureWindowManager::ContentsObserver final
     : public content::WebContentsObserver {
  public:
   ContentsObserver(PictureInPictureWindowManager* owner,

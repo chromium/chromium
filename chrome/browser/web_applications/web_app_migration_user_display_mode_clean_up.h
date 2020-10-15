@@ -51,7 +51,7 @@ class WebAppSyncBridge;
 // user_display_mode for their web apps to kBrowser after migration. This clean
 // up CL will erroneously undo such a change. To mitigate this we only run the
 // clean up once per migrated device.
-class WebAppMigrationUserDisplayModeCleanUp
+class WebAppMigrationUserDisplayModeCleanUp final
     : public syncer::SyncServiceObserver {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

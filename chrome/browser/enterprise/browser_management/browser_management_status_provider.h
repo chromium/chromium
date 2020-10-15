@@ -14,7 +14,7 @@ using ManagementAuthorityTrustworthiness =
 
 class Profile;
 
-class BrowserCloudManagementStatusProvider
+class BrowserCloudManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
   BrowserCloudManagementStatusProvider();
@@ -23,7 +23,7 @@ class BrowserCloudManagementStatusProvider
   EnterpriseManagementAuthority GetAuthority() final;
 };
 
-class LocalBrowserManagementStatusProvider
+class LocalBrowserManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
   LocalBrowserManagementStatusProvider();
@@ -32,7 +32,7 @@ class LocalBrowserManagementStatusProvider
   EnterpriseManagementAuthority GetAuthority() final;
 };
 
-class ProfileCloudManagementStatusProvider
+class ProfileCloudManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
   explicit ProfileCloudManagementStatusProvider(Profile* profile);

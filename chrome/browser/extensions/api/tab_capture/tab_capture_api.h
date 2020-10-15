@@ -22,7 +22,7 @@ extern const char* const kStableChromecastExtensionId;
 // Extension ids for the chromecast.
 extern const char* const kChromecastExtensionIds[6];
 
-class TabCaptureCaptureFunction : public ExtensionFunction {
+class TabCaptureCaptureFunction final : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabCapture.capture", TABCAPTURE_CAPTURE)
 
@@ -33,7 +33,7 @@ class TabCaptureCaptureFunction : public ExtensionFunction {
   ResponseAction Run() final;
 };
 
-class TabCaptureGetCapturedTabsFunction : public ExtensionFunction {
+class TabCaptureGetCapturedTabsFunction final : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabCapture.getCapturedTabs",
                              TABCAPTURE_GETCAPTUREDTABS)
@@ -45,7 +45,7 @@ class TabCaptureGetCapturedTabsFunction : public ExtensionFunction {
   ResponseAction Run() final;
 };
 
-class TabCaptureCaptureOffscreenTabFunction : public ExtensionFunction {
+class TabCaptureCaptureOffscreenTabFunction final : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabCapture.captureOffscreenTab",
                              TABCAPTURE_CAPTUREOFFSCREENTAB)
@@ -62,7 +62,7 @@ class TabCaptureCaptureOffscreenTabFunction : public ExtensionFunction {
   ResponseAction Run() final;
 };
 
-class TabCaptureGetMediaStreamIdFunction : public ExtensionFunction {
+class TabCaptureGetMediaStreamIdFunction final : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabCapture.getMediaStreamId",
                              TABCAPTURE_GETMEDIASTREAMID)

@@ -43,9 +43,9 @@ class BrowserContext;
 //   3. Automatically, when the associated profile is destroyed.
 //
 // This class operates exclusively on the UI thread and so is not thread-safe.
-class OffscreenTab : public ProfileObserver,
-                     protected content::WebContentsDelegate,
-                     protected content::WebContentsObserver {
+class OffscreenTab final : public ProfileObserver,
+                           protected content::WebContentsDelegate,
+                           protected content::WebContentsObserver {
  public:
   class Owner {
    public:

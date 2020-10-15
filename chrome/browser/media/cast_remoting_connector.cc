@@ -37,7 +37,8 @@ using media::mojom::RemotingStartFailReason;
 using media::mojom::RemotingStopReason;
 using media::mojom::RemotingSinkMetadata;
 
-class CastRemotingConnector::RemotingBridge : public media::mojom::Remoter {
+class CastRemotingConnector::RemotingBridge final
+    : public media::mojom::Remoter {
  public:
   // Constructs a "bridge" to delegate calls between the given |source| and
   // |connector|. |connector| must be valid at the time of construction, but is

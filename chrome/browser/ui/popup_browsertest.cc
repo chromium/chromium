@@ -63,7 +63,7 @@ class PopupBrowserTest : public InProcessBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All, PopupBrowserTest, ::testing::Bool());
 
 // A helper class to wait for widget bounds changes beyond given thresholds.
-class WidgetBoundsChangeWaiter : public views::WidgetObserver {
+class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
  public:
   WidgetBoundsChangeWaiter(views::Widget* widget, int move_by, int resize_by)
       : widget_(widget),

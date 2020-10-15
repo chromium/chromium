@@ -27,7 +27,7 @@ namespace {
 // An implementation of the BrowsingDataMediaLicenseHelper interface that
 // determine data on media licenses in a given |filesystem_context| and
 // returns a list of MediaLicenseInfo items to a client.
-class BrowsingDataMediaLicenseHelperImpl
+class BrowsingDataMediaLicenseHelperImpl final
     : public BrowsingDataMediaLicenseHelper {
  public:
   // BrowsingDataMediaLicenseHelper implementation

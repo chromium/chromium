@@ -19,7 +19,7 @@ namespace media_router {
 class StartPresentationContext;
 }  // namespace media_router
 
-class PresentationRequestNotificationItem
+class PresentationRequestNotificationItem final
     : public media_message_center::MediaNotificationItem {
  public:
   PresentationRequestNotificationItem(

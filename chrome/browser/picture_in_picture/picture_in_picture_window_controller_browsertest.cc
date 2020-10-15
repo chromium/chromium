@@ -157,7 +157,7 @@ class PictureInPictureWindowControllerBrowserTest
     EXPECT_FALSE(in_picture_in_picture);
   }
 
-  class WidgetBoundsChangeWaiter : public views::WidgetObserver {
+  class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
    public:
     explicit WidgetBoundsChangeWaiter(views::Widget* widget)
         : widget_(widget), initial_bounds_(widget->GetWindowBoundsInScreen()) {

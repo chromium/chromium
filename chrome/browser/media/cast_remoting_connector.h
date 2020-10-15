@@ -75,8 +75,8 @@ class MediaRouter;
 // Please see the unit tests in cast_remoting_connector_unittest.cc as a
 // reference for how CastRemotingConnector and a MediaRemoter interact to
 // start/execute/stop remoting sessions.
-class CastRemotingConnector : public base::SupportsUserData::Data,
-                              public media::mojom::RemotingSource {
+class CastRemotingConnector final : public base::SupportsUserData::Data,
+                                    public media::mojom::RemotingSource {
  public:
   ~CastRemotingConnector() final;
 

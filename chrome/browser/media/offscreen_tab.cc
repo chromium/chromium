@@ -48,7 +48,7 @@ constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromSeconds(1);
 // capture functionality. The WebContents native view, although attached to the
 // window tree, does not become visible on-screen (until it is properly made
 // visible by the user, for example by switching to the tab).
-class OffscreenTab::WindowAdoptionAgent : protected aura::WindowObserver {
+class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
  public:
   explicit WindowAdoptionAgent(aura::Window* content_window)
       : content_window_(content_window) {

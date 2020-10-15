@@ -38,7 +38,7 @@
 // Once a Cast/Presentation session has been created, this class is no longer
 // involved; at that point CastMediaNotificationProvider become responsible for
 // managing the notification for an active session.
-class PresentationRequestNotificationProvider
+class PresentationRequestNotificationProvider final
     : public media_router::WebContentsPresentationManager::Observer,
       public MediaNotificationServiceObserver {
  public:
