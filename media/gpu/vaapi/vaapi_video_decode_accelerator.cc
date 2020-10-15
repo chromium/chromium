@@ -1195,9 +1195,12 @@ VaapiVideoDecodeAccelerator::GetSupportedProfiles(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
   VideoDecodeAccelerator::SupportedProfiles profiles =
       VaapiWrapper::GetSupportedDecodeProfiles(workarounds);
-  // VaVDA never supported VP9 Profile 2, but VaapiWrapper does. Filter it out.
+  // VaVDA never supported VP9 Profile 2 and AV1, but VaapiWrapper does. Filter
+  // them out.
   base::EraseIf(profiles, [](const auto& profile) {
-    return profile.profile == VP9PROFILE_PROFILE2;
+    return profile.profile == VP9PROFILE_PROFILE2 ||
+           VideoCodecProfileToVideoCodec(profile.profile) ==
+               VideoCodec::kCodecAV1;
   });
   return profiles;
 }

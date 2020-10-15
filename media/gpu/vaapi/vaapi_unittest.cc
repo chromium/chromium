@@ -31,13 +31,19 @@ namespace {
 base::Optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
   // A map between VideoCodecProfile and VAProfile.
   const std::map<VideoCodecProfile, VAProfile> kProfileMap = {
-      // VAProfileH264Baseline is deprecated in <va/va.h> from libva 2.0.0.
-      {H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline},
-      {H264PROFILE_MAIN, VAProfileH264Main},
-      {H264PROFILE_HIGH, VAProfileH264High},
-      {VP8PROFILE_ANY, VAProfileVP8Version0_3},
-      {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
-      {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
+    // VAProfileH264Baseline is deprecated in <va/va.h> from libva 2.0.0.
+    {H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline},
+    {H264PROFILE_MAIN, VAProfileH264Main},
+    {H264PROFILE_HIGH, VAProfileH264High},
+    {VP8PROFILE_ANY, VAProfileVP8Version0_3},
+    {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
+    {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
+#if defined(OS_CHROMEOS)
+    // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved to
+    // 2.9.0 or newer.
+    // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
+    {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
+#endif
   };
   auto it = kProfileMap.find(profile);
   return it != kProfileMap.end() ? base::make_optional<VAProfile>(it->second)
@@ -47,17 +53,23 @@ base::Optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
 // Converts the given string to VAProfile
 base::Optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
   const std::map<std::string, VAProfile> kStringToVAProfile = {
-      {"VAProfileNone", VAProfileNone},
-      {"VAProfileH264ConstrainedBaseline", VAProfileH264ConstrainedBaseline},
-      // Even though it's deprecated, we leave VAProfileH264Baseline's
-      // translation here to assert we never encounter it.
-      {"VAProfileH264Baseline", VAProfileH264Baseline},
-      {"VAProfileH264Main", VAProfileH264Main},
-      {"VAProfileH264High", VAProfileH264High},
-      {"VAProfileJPEGBaseline", VAProfileJPEGBaseline},
-      {"VAProfileVP8Version0_3", VAProfileVP8Version0_3},
-      {"VAProfileVP9Profile0", VAProfileVP9Profile0},
-      {"VAProfileVP9Profile2", VAProfileVP9Profile2},
+    {"VAProfileNone", VAProfileNone},
+    {"VAProfileH264ConstrainedBaseline", VAProfileH264ConstrainedBaseline},
+    // Even though it's deprecated, we leave VAProfileH264Baseline's
+    // translation here to assert we never encounter it.
+    {"VAProfileH264Baseline", VAProfileH264Baseline},
+    {"VAProfileH264Main", VAProfileH264Main},
+    {"VAProfileH264High", VAProfileH264High},
+    {"VAProfileJPEGBaseline", VAProfileJPEGBaseline},
+    {"VAProfileVP8Version0_3", VAProfileVP8Version0_3},
+    {"VAProfileVP9Profile0", VAProfileVP9Profile0},
+    {"VAProfileVP9Profile2", VAProfileVP9Profile2},
+#if defined(OS_CHROMEOS)
+    // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved to
+    // 2.9.0 or newer.
+    // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
+    {"VAProfileAV1Profile0", VAProfileAV1Profile0},
+#endif
   };
 
   auto it = kStringToVAProfile.find(va_profile);
