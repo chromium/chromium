@@ -53,6 +53,13 @@ function runTests() {
         checkCursors();
         // Repeat in high-dpi mode
         testRunner.setBackingScaleFactor(2, function() {
+            // Flush style (and layout) to ensure that requests for the (cursor) resources
+            // referenced by style has been issued. This means that the ordering request performed
+            // below will be able to re-use the same (internal) resource if it is still pending.
+            // If the actual cursor request has already completed before the ordering request is
+            // issued then the ordering request will not re-use the same resource, but ordering is
+            // still guaranteed in that case.
+            testContainer.offsetTop;
             // Failed images are apparently reset on scale factor change.
             loadImages([{ url: 'doesntexist.png', error: true }],
                         function() {
