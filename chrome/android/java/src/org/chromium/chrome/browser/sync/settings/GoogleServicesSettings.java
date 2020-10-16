@@ -40,6 +40,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -190,23 +192,34 @@ public class GoogleServicesSettings
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         if (PREF_ALLOW_SIGNIN.equals(key)) {
+            IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                    Profile.getLastUsedRegularProfile());
             boolean shouldSignUserOut =
-                    IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)
-                            != null
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) != null
                     && !((boolean) newValue);
-            if (shouldSignUserOut) {
-                SignOutDialogFragment signOutFragment =
-                        SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-                signOutFragment.setTargetFragment(this, 0);
-                signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
-                // Don't change the preference state yet, it will be updated by onSignOutClicked if
-                // the user actually confirms the sign-out.
-                return false;
-            } else {
+            if (!shouldSignUserOut) {
                 mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, (boolean) newValue);
+                return true;
             }
+
+            boolean shouldShowSignOutDialog =
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null;
+            if (!shouldShowSignOutDialog) {
+                // Don't show signout dialog if there's no sync consent, as it never wipes the data.
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile())
+                        .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, null, false);
+                mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
+                return true;
+            }
+
+            SignOutDialogFragment signOutFragment =
+                    SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+            signOutFragment.setTargetFragment(this, 0);
+            signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
+            // Don't change the preference state yet, it will be updated by onSignOutClicked
+            // if the user actually confirms the sign-out.
+            return false;
         } else if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
             mPrefService.setBoolean(Pref.SEARCH_SUGGEST_ENABLED, (boolean) newValue);
         } else if (PREF_SAFE_BROWSING.equals(key)) {
@@ -359,8 +372,7 @@ public class GoogleServicesSettings
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                .signOut(org.chromium.components.signin.metrics.SignoutReason
-                                 .USER_CLICKED_SIGNOUT_SETTINGS,
+                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                         new SigninManager.SignOutCallback() {
                             @Override
                             public void preWipeData() {
