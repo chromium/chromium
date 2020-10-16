@@ -169,6 +169,8 @@ constexpr uint32_t kFakeScalingCurFrequency = 2400000;
 // Since this number is divided by the result of the sysconf(_SC_CLK_TCK)
 // syscall, we need it to be 0 to avoid flaky tests,
 constexpr uint32_t kFakeIdleTime = 0;
+constexpr uint64_t kFakeUserTime = 789;
+constexpr uint64_t kFakeSystemTime = 4680;
 constexpr char kFakeCStateName[] = "fake_c_state_name";
 constexpr uint64_t kFakeTimeInStateSinceLastBoot = 87;
 // CPU Temperature test values:
@@ -538,7 +540,7 @@ std::vector<cros_healthd::LogicalCpuInfoPtr> CreateLogicalCpu() {
   std::vector<cros_healthd::LogicalCpuInfoPtr> logical_cpus;
   logical_cpus.push_back(cros_healthd::LogicalCpuInfo::New(
       kFakeMaxClockSpeed, kFakeScalingMaxFrequency, kFakeScalingCurFrequency,
-      kFakeIdleTime, CreateCStateInfo()));
+      kFakeUserTime, kFakeSystemTime, kFakeIdleTime, CreateCStateInfo()));
   return logical_cpus;
 }
 

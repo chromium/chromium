@@ -304,6 +304,12 @@ struct LogicalCpuInfo {
   uint32 scaling_max_frequency_khz;
   // Current frequency the CPU is running at.
   uint32 scaling_current_frequency_khz;
+  // Time spent in user mode since last boot. USER_HZ can be converted to
+  // seconds with the conversion factor given by sysconf(_SC_CLK_TCK).
+  uint64 user_time_user_hz;
+  // Time spent in system mode since last boot. USER_HZ can be converted to
+  // seconds with the conversion factor given by sysconf(_SC_CLK_TCK).
+  uint64 system_time_user_hz;
   // Idle time since last boot. USER_HZ can be converted to seconds with the
   // conversion factor given by sysconf(_SC_CLK_TCK).
   uint32 idle_time_user_hz;
