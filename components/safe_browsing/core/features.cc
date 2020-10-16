@@ -87,7 +87,7 @@ const base::Feature kPasswordProtectionForSignedInUsers{
 };
 
 const base::Feature kPromptAppForDeepScanning{
-    "SafeBrowsingPromptAppForDeepScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingPromptAppForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRealTimeUrlLookupEnabled{
   "SafeBrowsingRealTimeUrlLookupEnabled",
