@@ -36,10 +36,6 @@
 // Expects a Close_ACK message when finished.
 IPC_MESSAGE_ROUTED0(WidgetMsg_Close)
 
-// Activate/deactivate the RenderWidget (i.e., set its controls' tint
-// accordingly, etc.).
-IPC_MESSAGE_ROUTED1(WidgetMsg_SetActive, bool /* active */)
-
 // Reply to WidgetHostMsg_RequestSetBounds, WidgetHostMsg_ShowWidget, and
 // FrameHostMsg_ShowCreatedWindow, to inform the renderer that the browser has
 // processed the bounds-setting.  The browser may have ignored the new bounds,
