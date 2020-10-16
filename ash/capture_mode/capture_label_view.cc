@@ -149,7 +149,7 @@ void CaptureLabelView::UpdateIconAndText() {
 }
 
 bool CaptureLabelView::ShouldHandleEvent() {
-  return label_button_->GetVisible();
+  return label_button_->GetVisible() && !IsInCountDownAnimation();
 }
 
 void CaptureLabelView::StartCountDown(
@@ -164,6 +164,10 @@ void CaptureLabelView::StartCountDown(
                                  : kCountDownDuration;
   count_down_timer_.Start(FROM_HERE, duration, this,
                           &CaptureLabelView::CountDown);
+}
+
+bool CaptureLabelView::IsInCountDownAnimation() const {
+  return !!countdown_finished_callback_;
 }
 
 void CaptureLabelView::Layout() {

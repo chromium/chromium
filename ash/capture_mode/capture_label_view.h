@@ -46,6 +46,9 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   // Called when starting 3-seconds count down before recording video.
   void StartCountDown(base::OnceClosure countdown_finished_callback);
 
+  // Returns true if count down animation is in progress.
+  bool IsInCountDownAnimation() const;
+
   // views::View:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;

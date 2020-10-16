@@ -159,9 +159,13 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // anchor points if |position| is an edge.
   std::vector<gfx::Point> GetAnchorPointsForPosition(FineTunePosition position);
 
-  // Updates the capture label widget.
+  // Updates the capture label widget's icon/text and bounds.
   void UpdateCaptureLabelWidget();
-  void UpdateCaptureLabelWidgetBounds();
+  // Updates the capture label widget's bounds. If |animate| is true, do bounds
+  // animation.
+  void UpdateCaptureLabelWidgetBounds(bool animate);
+  // Calculates the targeted capture label widget bounds in screen coordinates.
+  gfx::Rect CalculateCaptureLabelWidgetBounds();
 
   // Returns true if the capture label should handle the event. |event_target|
   // is the window which is receiving the event. The capture label should handle

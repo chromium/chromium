@@ -25,6 +25,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/types/event_type.h"
@@ -37,6 +38,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/gfx/transform_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -98,6 +100,23 @@ constexpr gfx::ShadowValue kRegionAffordanceCircleShadow2(
 // cannot be placed in the center of the capture region and maintain this
 // padding, it will be placed below or above the capture region.
 constexpr int kCaptureRegionMinimumPaddingDp = 16;
+
+// Animation parameters needed when countdown starts.
+// The animation duration that the label fades out and scales down before count
+// down starts.
+constexpr base::TimeDelta kCaptureLabelAnimationDuration =
+    base::TimeDelta::FromMilliseconds(267);
+// The animation duration that the capture bar fades out before count down
+// starts.
+constexpr base::TimeDelta kCaptureBarFadeOutDuration =
+    base::TimeDelta::FromMilliseconds(167);
+// The animation duration that the fullscreen shield fades out before count down
+// starts.
+constexpr base::TimeDelta kCaptureShieldFadeOutDuration =
+    base::TimeDelta::FromMilliseconds(333);
+// If there is no text message was showing when count down starts, the label
+// widget will shrink down from 120% -> 100% and fade in.
+constexpr float kLabelScaleUpOnCountdown = 1.2;
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -236,7 +255,27 @@ void CaptureModeSession::StartCountDown(
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   label_view->StartCountDown(std::move(countdown_finished_callback));
-  UpdateCaptureLabelWidgetBounds();
+  UpdateCaptureLabelWidgetBounds(/*animate=*/true);
+
+  // Fade out toolbar.
+  ui::Layer* toolbar_layer = capture_mode_bar_widget_.GetLayer();
+  ui::ScopedLayerAnimationSettings toolbar_settings(
+      toolbar_layer->GetAnimator());
+  toolbar_settings.SetTransitionDuration(kCaptureBarFadeOutDuration);
+  toolbar_settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+  toolbar_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  toolbar_layer->SetOpacity(0.f);
+
+  // Fade out the shield if it's recording fullscreen.
+  if (controller_->source() == CaptureModeSource::kFullscreen) {
+    ui::ScopedLayerAnimationSettings shield_settings(layer()->GetAnimator());
+    shield_settings.SetTransitionDuration(kCaptureShieldFadeOutDuration);
+    shield_settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+    shield_settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    layer()->SetOpacity(0.f);
+  }
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
@@ -762,11 +801,62 @@ void CaptureModeSession::UpdateCaptureLabelWidget() {
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   label_view->UpdateIconAndText();
-  UpdateCaptureLabelWidgetBounds();
+  UpdateCaptureLabelWidgetBounds(/*animate=*/false);
 }
 
-void CaptureModeSession::UpdateCaptureLabelWidgetBounds() {
+void CaptureModeSession::UpdateCaptureLabelWidgetBounds(bool animate) {
   DCHECK(capture_label_widget_);
+
+  const gfx::Rect bounds = CalculateCaptureLabelWidgetBounds();
+  const gfx::Rect old_bounds =
+      capture_label_widget_->GetNativeWindow()->GetBoundsInScreen();
+  if (old_bounds == bounds)
+    return;
+
+  if (!animate) {
+    capture_label_widget_->SetBounds(bounds);
+    return;
+  }
+
+  ui::Layer* layer = capture_label_widget_->GetLayer();
+  if (!old_bounds.IsEmpty()) {
+    // This happens if there is a label or a label button showing when count
+    // down starts. In this case we'll do a bounds change animation.
+    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    settings.SetTransitionDuration(kCaptureLabelAnimationDuration);
+    capture_label_widget_->SetBounds(bounds);
+  } else {
+    // This happens when no text message was showing when count down starts, in
+    // this case we'll do a fade in + shrinking down animation.
+    capture_label_widget_->SetBounds(bounds);
+    const gfx::Point center_point = bounds.CenterPoint();
+    layer->SetTransform(
+        gfx::GetScaleTransform(gfx::Point(center_point.x() - bounds.x(),
+                                          center_point.y() - bounds.y()),
+                               kLabelScaleUpOnCountdown));
+    layer->SetOpacity(0.f);
+
+    // Fade in.
+    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    settings.SetTransitionDuration(kCaptureLabelAnimationDuration);
+    settings.SetTweenType(gfx::Tween::LINEAR);
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    layer->SetOpacity(1.f);
+
+    // Scale down from 120% -> 100%.
+    settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
+    layer->SetTransform(gfx::Transform());
+  }
+}
+
+gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
+  DCHECK(capture_label_widget_);
+  CaptureLabelView* label_view =
+      static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
 
   // For fullscreen and window capture mode, the capture label is placed in the
   // middle of the screen. For region capture mode, if it's in select phase, the
@@ -776,49 +866,57 @@ void CaptureModeSession::UpdateCaptureLabelWidgetBounds() {
   // below the capture region.
   gfx::Rect bounds(current_root_->bounds());
   const gfx::Rect capture_region = controller_->user_capture_region();
-  const gfx::Size preferred_size =
-      capture_label_widget_->GetContentsView()->GetPreferredSize();
+  const gfx::Size preferred_size = label_view->GetPreferredSize();
   if (controller_->source() == CaptureModeSource::kRegion &&
       !is_selecting_region_ && !capture_region.IsEmpty()) {
-    bounds = capture_region;
-
-    // The capture region must be at least the size of |preferred_size| plus
-    // some padding for the capture label to be centered inside it.
-    gfx::Size capture_region_min_size = preferred_size;
-    capture_region_min_size.Enlarge(kCaptureRegionMinimumPaddingDp,
-                                    kCaptureRegionMinimumPaddingDp);
-    if (bounds.width() > capture_region_min_size.width() &&
-        bounds.height() > capture_region_min_size.height()) {
+    if (label_view->IsInCountDownAnimation()) {
+      // If countdown starts, calculate the bounds based on the old capture
+      // label's position, otherwise, since the countdown label bounds is
+      // smaller than the label bounds and may fit into the capture region even
+      // if the old capture label doesn't fit thus was place outside of the
+      // capture region, it's possible that we see the countdown label animates
+      // to inside of the capture region from outside of the capture region.
+      bounds = capture_label_widget_->GetNativeWindow()->bounds();
       bounds.ClampToCenteredSize(preferred_size);
     } else {
-      // The capture region is too small for the capture label to be inside it.
-      // Align |bounds| so that its horizontal centerpoint aligns with the
-      // capture regions centerpoint.
-      bounds.set_size(preferred_size);
-      bounds.set_x(capture_region.CenterPoint().x() -
-                   preferred_size.width() / 2);
-
-      // Try to put the capture label slightly below the capture region. If it
-      // does not fully fit in the root window bounds, place the capture label
-      // slightly above.
-      const int under_region_label_y =
-          capture_region.bottom() + kCaptureButtonDistanceFromRegionDp;
-      if (under_region_label_y + preferred_size.height() <
-          current_root_->bounds().bottom()) {
-        bounds.set_y(under_region_label_y);
+      bounds = capture_region;
+      // The capture region must be at least the size of |preferred_size| plus
+      // some padding for the capture label to be centered inside it.
+      gfx::Size capture_region_min_size = preferred_size;
+      capture_region_min_size.Enlarge(kCaptureRegionMinimumPaddingDp,
+                                      kCaptureRegionMinimumPaddingDp);
+      if (bounds.width() > capture_region_min_size.width() &&
+          bounds.height() > capture_region_min_size.height()) {
+        bounds.ClampToCenteredSize(preferred_size);
       } else {
-        bounds.set_y(capture_region.y() - kCaptureButtonDistanceFromRegionDp -
-                     preferred_size.height());
+        // The capture region is too small for the capture label to be inside
+        // it. Align |bounds| so that its horizontal centerpoint aligns with the
+        // capture regions centerpoint.
+        bounds.set_size(preferred_size);
+        bounds.set_x(capture_region.CenterPoint().x() -
+                     preferred_size.width() / 2);
+
+        // Try to put the capture label slightly below the capture region. If it
+        // does not fully fit in the root window bounds, place the capture label
+        // slightly above.
+        const int under_region_label_y =
+            capture_region.bottom() + kCaptureButtonDistanceFromRegionDp;
+        if (under_region_label_y + preferred_size.height() <
+            current_root_->bounds().bottom()) {
+          bounds.set_y(under_region_label_y);
+        } else {
+          bounds.set_y(capture_region.y() - kCaptureButtonDistanceFromRegionDp -
+                       preferred_size.height());
+        }
       }
     }
   } else {
     bounds.ClampToCenteredSize(preferred_size);
   }
-
   // User capture region bounds are in root window coordinates so convert them
   // here.
   wm::ConvertRectToScreen(current_root_, &bounds);
-  capture_label_widget_->SetBounds(bounds);
+  return bounds;
 }
 
 bool CaptureModeSession::ShouldCaptureLabelHandleEvent(
@@ -860,7 +958,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   // bounds, moving it onto the correct display, but will early return if the
   // region is already empty.
   if (controller_->user_capture_region().IsEmpty())
-    UpdateCaptureLabelWidgetBounds();
+    UpdateCaptureLabelWidgetBounds(/*animate=*/false);
 
   // Start with a new region when we switch displays.
   is_selecting_region_ = true;
