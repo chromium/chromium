@@ -123,6 +123,7 @@ class WifiSyncFeatureManagerImpl
       device_sync::mojom::NetworkRequestResult result_code);
   bool ShouldEnableOnVerify();
   void ProcessEnableOnVerifyAttempt();
+  bool ShouldAttemptToEnableAfterHostVerified();
 
   HostStatusProvider* host_status_provider_;
   PrefService* pref_service_;

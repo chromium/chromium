@@ -15,6 +15,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -96,11 +97,8 @@ void WifiSyncFeatureManagerImpl::OnHostStatusChange(
       !ShouldEnableOnVerify()) {
     ResetPendingWifiSyncHostNetworkRequest();
   }
-  // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
-  // setup flow has been completed on the local device.
-  if (host_status_with_device.host_status() ==
-          mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation &&
-      features::IsWifiSyncAndroidEnabled()) {
+
+  if (ShouldAttemptToEnableAfterHostVerified()) {
     SetPendingWifiSyncHostNetworkRequest(
         PendingState::kSetPendingEnableOnVerify);
     return;
@@ -315,6 +313,33 @@ void WifiSyncFeatureManagerImpl::ProcessEnableOnVerifyAttempt() {
   }
 
   SetIsWifiSyncEnabled(true);
+}
+
+bool WifiSyncFeatureManagerImpl::ShouldAttemptToEnableAfterHostVerified() {
+  HostStatusProvider::HostStatusWithDevice host_status_with_device =
+      host_status_provider_->GetHostWithStatus();
+
+  // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
+  // setup flow has been completed on the local device.
+  if (host_status_with_device.host_status() !=
+      mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation) {
+    return false;
+  }
+
+  // Check if enterprise policy prohibits Wifi Sync or if feature flag is
+  // disabled.
+  if (!IsFeatureAllowed(mojom::Feature::kWifiSync, pref_service_)) {
+    return false;
+  }
+
+  // Check if wifi sync is supported by host device.
+  if (host_status_with_device.host_device()->GetSoftwareFeatureState(
+          multidevice::SoftwareFeature::kWifiSyncHost) ==
+      multidevice::SoftwareFeatureState::kNotSupported) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace multidevice_setup

@@ -18,6 +18,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_host_status_provider.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +71,9 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     WifiSyncFeatureManagerImpl::RegisterPrefs(test_pref_service_->registry());
-
+    // Allow Wifi Sync by policy
+    test_pref_service_->registry()->RegisterBooleanPref(
+        kWifiSyncAllowedPrefName, true);
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client_->set_synced_devices(test_devices_);
@@ -780,6 +783,47 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   false /* enable_wifi_sync */);
   CreateDelegate(base::nullopt /* initial_host */);
+
+  // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
+  // setup flow has been completed on the local device.
+  SetHostInDeviceSyncClient(test_devices()[0]);
+  fake_host_status_provider()->SetHostWithStatus(
+      mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
+      test_devices()[0]);
+  EXPECT_EQ(
+      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
+      kPendingNone);
+  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+}
+
+TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+       SetPendingEnableOnVerify_WifiSyncNotAllowedByPolicy) {
+  SetFeatureFlags(GetParam() /* use_v1_devicesync */,
+                  true /* enable_wifi_sync */);
+  // Disable by policy
+  test_pref_service()->SetBoolean(kWifiSyncAllowedPrefName, false);
+  CreateDelegate(base::nullopt /* initial_host */);
+
+  // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
+  // setup flow has been completed on the local device.
+  SetHostInDeviceSyncClient(test_devices()[0]);
+  fake_host_status_provider()->SetHostWithStatus(
+      mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
+      test_devices()[0]);
+  EXPECT_EQ(
+      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
+      kPendingNone);
+  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+}
+
+TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+       SetPendingEnableOnVerify_WifiSyncNotSupportedOnHostDevice) {
+  SetFeatureFlags(GetParam() /* use_v1_devicesync */,
+                  true /* enable_wifi_sync */);
+  CreateDelegate(base::nullopt /* initial_host */);
+  GetMutableRemoteDevice(test_devices()[0])
+      ->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
+      multidevice::SoftwareFeatureState::kNotSupported;
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
   // setup flow has been completed on the local device.
