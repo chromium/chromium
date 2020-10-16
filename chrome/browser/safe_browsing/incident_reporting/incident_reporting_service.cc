@@ -342,6 +342,12 @@ IncidentReportingService::~IncidentReportingService() {
 
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
+
+  for (const auto& profile_and_context : profiles_) {
+    Profile* profile = profile_and_context.first;
+    if (profile)
+      profile->RemoveObserver(this);
+  }
 }
 
 std::unique_ptr<IncidentReceiver>
@@ -478,6 +484,28 @@ void IncidentReportingService::OnProfileAdded(Profile* profile) {
   BeginDownloadCollection();
 }
 
+void IncidentReportingService::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  profile->RemoveObserver(this);
+
+  auto it = profiles_.find(profile);
+  DCHECK(it != profiles_.end());
+
+  // Take ownership of the context.
+  std::unique_ptr<ProfileContext> context = std::move(it->second);
+
+  // TODO(grt): Persist incidents for upload on future profile load.
+
+  // Remove the association with this profile context from all pending uploads.
+  for (const auto& upload : uploads_)
+    upload->profiles_to_state.erase(context.get());
+
+  // Forget about this profile. Incidents not yet sent for upload are lost.
+  // No new incidents will be accepted for it.
+  profiles_.erase(it);
+}
+
 std::unique_ptr<LastDownloadFinder>
 IncidentReportingService::CreateDownloadFinder(
     const LastDownloadFinder::LastDownloadCallback& callback) {
@@ -502,8 +530,11 @@ bool IncidentReportingService::IsProcessingReport() const {
 IncidentReportingService::ProfileContext*
 IncidentReportingService::GetOrCreateProfileContext(Profile* profile) {
   std::unique_ptr<ProfileContext>& context = profiles_[profile];
-  if (!context)
+  if (!context) {
     context = std::make_unique<ProfileContext>();
+    if (profile)
+      profile->AddObserver(this);
+  }
   return context.get();
 }
 

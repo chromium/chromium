@@ -74,7 +74,8 @@ class SafeBrowsingService;
 // the initial incident. Finally, already-reported incidents are pruned and any
 // remaining are uploaded in an incident report.
 // Lives on the UI thread.
-class IncidentReportingService : public ProfileManagerObserver {
+class IncidentReportingService : public ProfileManagerObserver,
+                                 public ProfileObserver {
  public:
   explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
 
@@ -106,6 +107,9 @@ class IncidentReportingService : public ProfileManagerObserver {
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
  protected:
   // A pointer to a function that populates a protobuf with environment data.

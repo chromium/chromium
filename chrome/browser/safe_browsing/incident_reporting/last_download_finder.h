@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/incident_reporting/download_metadata_manager.h"
 #include "components/history/core/browser/download_row.h"
 #include "components/history/core/browser/history_service.h"
@@ -31,6 +32,7 @@ class ClientIncidentReport_NonBinaryDownloadDetails;
 // any on-the-record profile with history that participates in safe browsing
 // extended reporting.
 class LastDownloadFinder : public ProfileManagerObserver,
+                           public ProfileObserver,
                            public history::HistoryServiceObserver {
  public:
   typedef base::Callback<void(
@@ -100,6 +102,9 @@ class LastDownloadFinder : public ProfileManagerObserver,
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // history::HistoryServiceObserver:
   void OnHistoryServiceLoaded(history::HistoryService* service) override;

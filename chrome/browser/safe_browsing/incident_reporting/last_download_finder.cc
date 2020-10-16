@@ -236,6 +236,8 @@ void PopulateNonBinaryDetailsFromRow(
 
 LastDownloadFinder::~LastDownloadFinder() {
   g_browser_process->profile_manager()->RemoveObserver(this);
+  for (const auto& state : profile_states_)
+    state.first->RemoveObserver(this);
 }
 
 // static
@@ -277,6 +279,8 @@ void LastDownloadFinder::SearchInProfile(Profile* profile) {
   // OnHistoryServiceLoaded.
   if (profile_states_.count(profile))
     return;
+
+  profile->AddObserver(this);
 
   // Initiate a metadata search. As with IncidentReportingService, it's assumed
   // that all passed profiles will outlive |this|.
@@ -361,6 +365,7 @@ void LastDownloadFinder::OnDownloadQuery(
 void LastDownloadFinder::RemoveProfileAndReportIfDone(
     std::map<Profile*, ProfileWaitState>::iterator iter) {
   DCHECK(iter != profile_states_.end());
+  iter->first->RemoveObserver(this);
   profile_states_.erase(iter);
 
   // Finish processing if all results are in.
@@ -398,6 +403,13 @@ void LastDownloadFinder::ReportResults() {
 
 void LastDownloadFinder::OnProfileAdded(Profile* profile) {
   SearchInProfile(profile);
+}
+
+void LastDownloadFinder::OnProfileWillBeDestroyed(Profile* profile) {
+  // |profile| may not be present in the set of profiles.
+  auto iter = profile_states_.find(profile);
+  DCHECK(iter != profile_states_.end());
+  RemoveProfileAndReportIfDone(iter);
 }
 
 void LastDownloadFinder::OnHistoryServiceLoaded(
