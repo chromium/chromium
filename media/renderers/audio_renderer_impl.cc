@@ -959,7 +959,7 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
       first_packet_timestamp_ = buffer->timestamp();
 
 #if !defined(OS_ANDROID)
-    if (transcribe_audio_callback_)
+    if (transcribe_audio_callback_ && volume_ > 0)
       transcribe_audio_callback_.Run(buffer);
 #endif
 
