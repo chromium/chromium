@@ -6,12 +6,13 @@ import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
 import './percent_bar_chart.js';
+import './strings.m.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import './strings.js';
 
 /**
  * @fileoverview
