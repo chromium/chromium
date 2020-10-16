@@ -328,8 +328,8 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
   if (stats.compressed_original_size != 0) {
     size_t ratio_percentage =
         (100 * stats.compressed_size) / stats.compressed_original_size;
-    base::UmaHistogramPercentage("Memory.ParkableString.CompressionRatio.5min",
-                                 ratio_percentage);
+    base::UmaHistogramPercentageObsoleteDoNotUse(
+        "Memory.ParkableString.CompressionRatio.5min", ratio_percentage);
   }
 
   // May not be usable, e.g. Incognito, permission or write failure.

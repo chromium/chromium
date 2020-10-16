@@ -373,7 +373,7 @@ void CrostiniExportImport::OnExportComplete(
           base::UmaHistogramCustomCounts("Crostini.BackupCompressedSizeLog2",
                                          std::round(std::log2(compressed_size)),
                                          0, 50, 50);
-          base::UmaHistogramPercentage(
+          base::UmaHistogramPercentageObsoleteDoNotUse(
               "Crostini.BackupSizeRatio",
               std::round(compressed_size * 100.0 / container_size));
         }

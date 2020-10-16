@@ -52,8 +52,8 @@ void ReportQuality(const std::string& category_name, double quality) {
   DCHECK_GT(quality, 0);
   // Report quality from 0 to 100%.
   const int sample = (int)(quality * 100.0);
-  base::UmaHistogramPercentage(GetHistogramName(category_name, "RenderQuality"),
-                               sample);
+  base::UmaHistogramPercentageObsoleteDoNotUse(
+      GetHistogramName(category_name, "RenderQuality"), sample);
 }
 
 }  // namespace

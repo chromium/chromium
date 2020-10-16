@@ -12,12 +12,12 @@ namespace {
 
 void Record(const PageRenderData& data) {
   if (data.all_layout_block_count > 0) {
-    base::UmaHistogramPercentage(
+    base::UmaHistogramPercentageObsoleteDoNotUse(
         "Blink.Layout.NGRatio.Blocks",
         data.ng_layout_block_count * 100 / data.all_layout_block_count);
   }
   if (data.all_layout_call_count) {
-    base::UmaHistogramPercentage(
+    base::UmaHistogramPercentageObsoleteDoNotUse(
         "Blink.Layout.NGRatio.Calls",
         data.ng_layout_call_count * 100 / data.all_layout_call_count);
   }

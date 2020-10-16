@@ -151,7 +151,7 @@ void AXLanguageInfoStats::ReportMetrics() {
 
   int percentage_detected =
       count_detection_results_ * 100 / count_detection_attempted_;
-  base::UmaHistogramPercentage(
+  base::UmaHistogramPercentageObsoleteDoNotUse(
       "Accessibility.LanguageDetection.PercentageLanguageDetected",
       percentage_detected);
 
@@ -165,12 +165,12 @@ void AXLanguageInfoStats::ReportMetrics() {
   if (count_labelled_) {
     int percentage_top =
         count_labelled_with_top_result_ * 100 / count_labelled_;
-    base::UmaHistogramPercentage(
+    base::UmaHistogramPercentageObsoleteDoNotUse(
         "Accessibility.LanguageDetection.PercentageLabelledWithTop",
         percentage_top);
 
     int percentage_overridden = count_overridden_ * 100 / count_labelled_;
-    base::UmaHistogramPercentage(
+    base::UmaHistogramPercentageObsoleteDoNotUse(
         "Accessibility.LanguageDetection.PercentageOverridden",
         percentage_overridden);
   }

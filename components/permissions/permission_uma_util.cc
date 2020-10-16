@@ -116,7 +116,7 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
 
   double engagement_score = PermissionsClient::Get()->GetSiteEngagementScore(
       web_contents->GetBrowserContext(), requests[0]->GetOrigin());
-  base::UmaHistogramPercentage(name, engagement_score);
+  base::UmaHistogramPercentageObsoleteDoNotUse(name, engagement_score);
 }
 
 void RecordPermissionActionUkm(

@@ -211,14 +211,16 @@ class IconAnimationMetricsReporter : public ui::AnimationMetricsReporter {
   void Report(int value) override {
     switch (type_) {
       case IconAnimationType::kMoveAnimation:
-        base::UmaHistogramPercentage(kShelfIconMoveAnimationHistogram, value);
+        base::UmaHistogramPercentageObsoleteDoNotUse(
+            kShelfIconMoveAnimationHistogram, value);
         break;
       case IconAnimationType::kFadeInAnimation:
-        base::UmaHistogramPercentage(kShelfIconFadeInAnimationHistogram, value);
+        base::UmaHistogramPercentageObsoleteDoNotUse(
+            kShelfIconFadeInAnimationHistogram, value);
         break;
       case IconAnimationType::kFadeOutAnimation:
-        base::UmaHistogramPercentage(kShelfIconFadeOutAnimationHistogram,
-                                     value);
+        base::UmaHistogramPercentageObsoleteDoNotUse(
+            kShelfIconFadeOutAnimationHistogram, value);
         break;
     }
   }

@@ -201,7 +201,8 @@ void LogModelCurveError(double error, bool model_updated) {
   const std::string histogram_name =
       std::string("AutoScreenBrightness.ModelTraining.Inaccuracy.") +
       (model_updated ? "Update" : "NoUpdate");
-  base::UmaHistogramPercentage(histogram_name, std::round(error));
+  base::UmaHistogramPercentageObsoleteDoNotUse(histogram_name,
+                                               std::round(error));
   VLOG(1) << "ABTrainer model error " << (model_updated ? "with " : "without ")
           << "model updated: " << FormatToPrint(error);
 }

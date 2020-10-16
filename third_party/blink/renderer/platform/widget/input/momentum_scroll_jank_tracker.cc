@@ -24,8 +24,8 @@ MomentumScrollJankTracker::~MomentumScrollJankTracker() {
   uint32_t jank_percentage =
       (jank_count_ * 100 + rounding_factor) / total_event_count_;
 
-  base::UmaHistogramPercentage("Renderer4.MomentumScrollJankPercentage",
-                               jank_percentage);
+  base::UmaHistogramPercentageObsoleteDoNotUse(
+      "Renderer4.MomentumScrollJankPercentage", jank_percentage);
 }
 
 void MomentumScrollJankTracker::OnDispatchedInputEvent(

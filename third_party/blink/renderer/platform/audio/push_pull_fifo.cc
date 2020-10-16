@@ -40,7 +40,7 @@ PushPullFIFO::~PushPullFIFO() {
   // Capture the percentage of underflow happened based on the total pull count.
   // (100 buckets of size 1) This is equivalent of
   // "Media.AudioRendererMissedDeadline" metric for WebAudio.
-  base::UmaHistogramPercentage(
+  base::UmaHistogramPercentageObsoleteDoNotUse(
       "WebAudio.PushPullFIFO.UnderflowPercentage",
       static_cast<int32_t>(100.0 * underflow_count_ / pull_count_));
 

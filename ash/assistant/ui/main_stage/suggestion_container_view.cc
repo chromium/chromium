@@ -60,7 +60,7 @@ class SuggestionChipAnimator : public ElementAnimator {
     StartLayerAnimationSequence(
         layer()->GetAnimator(), CreateAnimateInAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
-            base::UmaHistogramPercentage,
+            base::UmaHistogramPercentageObsoleteDoNotUse,
             assistant::ui::kAssistantSuggestionChipHistogram));
   }
 
@@ -68,7 +68,7 @@ class SuggestionChipAnimator : public ElementAnimator {
     StartLayerAnimationSequence(
         layer()->GetAnimator(), CreateAnimateOutAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
-            base::UmaHistogramPercentage,
+            base::UmaHistogramPercentageObsoleteDoNotUse,
             assistant::ui::kAssistantSuggestionChipHistogram));
   }
 

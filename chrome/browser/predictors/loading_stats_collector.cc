@@ -71,11 +71,11 @@ size_t ReportPreconnectPredictionAccuracy(
   size_t recall_percentage =
       (100 * correctly_predicted_count) / actual_origins.size();
 
-  base::UmaHistogramPercentage(
+  base::UmaHistogramPercentageObsoleteDoNotUse(
       GetHistogramNameForHintOrigin(
           hint_origin, internal::kLoadingPredictorPreconnectLearningPrecision),
       precision_percentage);
-  base::UmaHistogramPercentage(
+  base::UmaHistogramPercentageObsoleteDoNotUse(
       GetHistogramNameForHintOrigin(
           hint_origin, internal::kLoadingPredictorPreconnectLearningRecall),
       recall_percentage);

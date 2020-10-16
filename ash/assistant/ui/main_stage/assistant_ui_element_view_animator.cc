@@ -37,7 +37,8 @@ AssistantUiElementViewAnimator::AssistantUiElementViewAnimator(
 AssistantUiElementViewAnimator::AnimationSmoothnessCallback
 AssistantUiElementViewAnimator::GetAnimationSmoothnessCallback() const {
   return base::BindRepeating<void(const std::string&, int value)>(
-      base::UmaHistogramPercentage, animation_smoothness_histogram_);
+      base::UmaHistogramPercentageObsoleteDoNotUse,
+      animation_smoothness_histogram_);
 }
 
 // ElementAnimator:

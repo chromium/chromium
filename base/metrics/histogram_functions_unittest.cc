@@ -67,12 +67,25 @@ TEST(HistogramFunctionsTest, Boolean) {
 TEST(HistogramFunctionsTest, Percentage) {
   std::string histogram("Testing.UMA.HistogramPercentage");
   HistogramTester tester;
+  UmaHistogramPercentage(histogram, 1);
+  tester.ExpectBucketCount(histogram, 1, 1);
+  tester.ExpectTotalCount(histogram, 1);
+
   UmaHistogramPercentage(histogram, 50);
-  tester.ExpectUniqueSample(histogram, 50, 1);
-  // Test overflows.
-  UmaHistogramPercentage(histogram, 110);
-  tester.ExpectBucketCount(histogram, 101, 1);
+  tester.ExpectBucketCount(histogram, 50, 1);
   tester.ExpectTotalCount(histogram, 2);
+
+  UmaHistogramPercentage(histogram, 100);
+  tester.ExpectBucketCount(histogram, 100, 1);
+  tester.ExpectTotalCount(histogram, 3);
+  // Test overflows.
+  UmaHistogramPercentage(histogram, 101);
+  tester.ExpectBucketCount(histogram, 101, 1);
+  tester.ExpectTotalCount(histogram, 4);
+
+  UmaHistogramPercentage(histogram, 500);
+  tester.ExpectBucketCount(histogram, 101, 2);
+  tester.ExpectTotalCount(histogram, 5);
 }
 
 TEST(HistogramFunctionsTest, Counts) {

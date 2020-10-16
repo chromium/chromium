@@ -71,7 +71,8 @@ void QuicConnectivityMonitor::RecordConnectivityStatsToHistograms(
       "Net.QuicConnectivityMonitor.PercentageAllDegradedSessions." +
       notification;
 
-  base::UmaHistogramPercentage(percentage_histogram_name1, percentage);
+  base::UmaHistogramPercentageObsoleteDoNotUse(percentage_histogram_name1,
+                                               percentage);
 
   // Skip degrading session collection if there are less than two sessions.
   if (active_sessions_.size() < 2u)
@@ -89,7 +90,8 @@ void QuicConnectivityMonitor::RecordConnectivityStatsToHistograms(
   const std::string percentage_histogram_name =
       "Net.QuicConnectivityMonitor.PercentageActiveDegradingSessions." +
       notification;
-  base::UmaHistogramPercentage(percentage_histogram_name, percentage);
+  base::UmaHistogramPercentageObsoleteDoNotUse(percentage_histogram_name,
+                                               percentage);
 }
 
 size_t QuicConnectivityMonitor::GetNumDegradingSessions() const {

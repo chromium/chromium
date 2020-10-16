@@ -69,7 +69,7 @@ void CollectFreeResizeAreaMetric(const char* metric_name,
   if (root_window_area != 0) {
     const int percentage =
         std::round(float(window_area) / float(root_window_area) * 100.f);
-    base::UmaHistogramPercentage(metric_name, percentage);
+    base::UmaHistogramPercentageObsoleteDoNotUse(metric_name, percentage);
   }
 }
 

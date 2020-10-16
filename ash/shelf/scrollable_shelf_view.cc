@@ -107,21 +107,22 @@ int64_t GetDisplayIdForView(const views::View* view) {
 }
 
 void ReportSmoothness(bool tablet_mode, bool launcher_visible, int smoothness) {
-  base::UmaHistogramPercentage(kAnimationSmoothnessHistogram, smoothness);
+  base::UmaHistogramPercentageObsoleteDoNotUse(kAnimationSmoothnessHistogram,
+                                               smoothness);
   if (tablet_mode) {
     if (launcher_visible) {
-      base::UmaHistogramPercentage(
+      base::UmaHistogramPercentageObsoleteDoNotUse(
           kAnimationSmoothnessTabletLauncherVisibleHistogram, smoothness);
     } else {
-      base::UmaHistogramPercentage(
+      base::UmaHistogramPercentageObsoleteDoNotUse(
           kAnimationSmoothnessTabletLauncherHiddenHistogram, smoothness);
     }
   } else {
     if (launcher_visible) {
-      base::UmaHistogramPercentage(
+      base::UmaHistogramPercentageObsoleteDoNotUse(
           kAnimationSmoothnessClamshellLauncherVisibleHistogram, smoothness);
     } else {
-      base::UmaHistogramPercentage(
+      base::UmaHistogramPercentageObsoleteDoNotUse(
           kAnimationSmoothnessClamshellLauncherHiddenHistogram, smoothness);
     }
   }

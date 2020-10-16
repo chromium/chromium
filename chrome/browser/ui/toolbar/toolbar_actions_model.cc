@@ -521,7 +521,7 @@ void ToolbarActionsModel::InitializeActionList() {
       double percentage_double = double{pinned_action_ids_.size()} /
                                  double{action_ids_.size()} * 100.0;
       int percentage = int{percentage_double};
-      base::UmaHistogramPercentage(
+      base::UmaHistogramPercentageObsoleteDoNotUse(
           "Extensions.Toolbar.PinnedExtensionPercentage3", percentage);
     }
   }

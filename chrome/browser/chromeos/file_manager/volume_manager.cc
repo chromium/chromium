@@ -214,7 +214,7 @@ void RecordDownloadsDiskUsageStats(base::FilePath downloads_path) {
     int percentage_space_used = std::lround(
         (download_directory_size_in_bytes * 100.0) / total_disk_space_in_bytes);
 
-    base::UmaHistogramPercentage(
+    base::UmaHistogramPercentageObsoleteDoNotUse(
         "FileBrowser.Downloads.DirectoryPercentageOfDiskUsage",
         percentage_space_used);
   }

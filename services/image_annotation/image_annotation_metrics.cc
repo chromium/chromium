@@ -53,7 +53,7 @@ void ReportDescAnnotation(const mojom::AnnotationType type,
 
   // We use function variants here since our histogram name is not a "runtime
   // constant".
-  base::UmaHistogramPercentage(
+  base::UmaHistogramPercentageObsoleteDoNotUse(
       base::StringPrintf(kAnnotationConfidence, type_name.c_str()),
       confidence_percent);
   base::UmaHistogramBoolean(

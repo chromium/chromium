@@ -17,7 +17,7 @@ void UnsentLogStoreMetricsImpl::RecordLogReadStatus(
 
 void UnsentLogStoreMetricsImpl::RecordCompressionRatio(
     size_t compressed_size, size_t original_size) {
-  base::UmaHistogramPercentage(
+  base::UmaHistogramPercentageObsoleteDoNotUse(
       "UMA.ProtoCompressionRatio",
       static_cast<int>(100 * compressed_size / original_size));
 }
@@ -50,9 +50,10 @@ void UnsentLogStoreMetricsImpl::RecordLastUnsentLogMetadataMetrics(
                                 persisted_size_in_kb);
 
   if (sent_samples_count == 0 && unsent_samples_count == 0) {
-    base::UmaHistogramPercentage("UMA.UnsentLogs.UnsentPercentage", 0);
+    base::UmaHistogramPercentageObsoleteDoNotUse(
+        "UMA.UnsentLogs.UnsentPercentage", 0);
   } else {
-    base::UmaHistogramPercentage(
+    base::UmaHistogramPercentageObsoleteDoNotUse(
         "UMA.UnsentLogs.UnsentPercentage",
         100 * unsent_samples_count /
             (unsent_samples_count + sent_samples_count));

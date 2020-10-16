@@ -125,12 +125,18 @@ void UmaHistogramEnumeration(const char* name, T sample, T enum_size) {
 BASE_EXPORT void UmaHistogramBoolean(const std::string& name, bool sample);
 BASE_EXPORT void UmaHistogramBoolean(const char* name, bool sample);
 
-// For adding histogram with percent.
-// Percents are integer between 1 and 100.
+// For adding histogram sample denoting a percentage.
+// Percents are integers between 1 and 100, inclusively.
 // Sample usage:
 //   base::UmaHistogramPercentage("My.Percent", 69)
 BASE_EXPORT void UmaHistogramPercentage(const std::string& name, int percent);
 BASE_EXPORT void UmaHistogramPercentage(const char* name, int percent);
+
+// Obsolete. Use |UmaHistogramPercentage| instead. See crbug/1121318.
+BASE_EXPORT void UmaHistogramPercentageObsoleteDoNotUse(const std::string& name,
+                                                        int percent);
+BASE_EXPORT void UmaHistogramPercentageObsoleteDoNotUse(const char* name,
+                                                        int percent);
 
 // For adding counts histogram.
 // Sample usage:
