@@ -18,7 +18,7 @@ import tarfile
 from common import GetHostOsFromPlatform, GetHostArchFromPlatform, \
                    DIR_SOURCE_ROOT, IMAGES_ROOT
 from update_sdk import DownloadAndUnpackFromCloudStorage, \
-                       GetCloudStorageBucket, GetSdkHash, \
+                       GetOverrideCloudStorageBucket, GetSdkHash, \
                        MakeCleanDirectory, SDK_SIGNATURE_FILE
 
 
@@ -89,10 +89,11 @@ def main():
       help='List of boot images to download, represented as a comma separated '
       'list. Wildcards are allowed. ')
   parser.add_argument(
-      '--bucket-override',
+      '--default-bucket',
       type=str,
-      help='Overrides the cloud bucket in which the Fuchsia images are stored. '
-      'If not specified, get the bucket from sdk-bucket.txt.')
+      default='fuchsia',
+      help='The Google Cloud Storage bucket in which the Fuchsia images are '
+      'stored. Entry in sdk-bucket.txt will override this flag.')
   parser.add_argument(
       '--image-root-dir',
       default=IMAGES_ROOT,
@@ -108,10 +109,9 @@ def main():
   # Check whether there's SDK support for this platform.
   GetHostOsFromPlatform()
 
-  if args.bucket_override:
-    bucket = args.bucket_override
-  else:
-    bucket = GetCloudStorageBucket()
+  # Use the bucket in sdk-bucket.txt if an entry exists.
+  # Otherwise use the default bucket.
+  bucket = GetOverrideCloudStorageBucket() or args.default_bucket
 
   sdk_hash = GetSdkHash(bucket)
   if not sdk_hash:

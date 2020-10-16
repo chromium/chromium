@@ -162,6 +162,12 @@ vars = {
   # Download prebuilt ash-chrome to test lacros build.
   'checkout_prebuilt_ash_chrome': False,
 
+  # By default, download the fuchsia sdk from the fuchsia GCS bucket.
+  'fuchsia_sdk_bucket': 'fuchsia',
+
+  # By default, download the fuchsia images from the fuchsia GCS bucket.
+  'fuchsia_images_bucket': 'fuchsia',
+
   # Default to the empty board. Desktop Chrome OS builds don't need cros SDK
   # dependencies. Other Chrome OS builds should always define this explicitly.
   'cros_boards': Str(''),
@@ -4953,6 +4959,7 @@ hooks = [
     'action': [
       'python',
       'src/build/fuchsia/update_sdk.py',
+      '--default-bucket={fuchsia_sdk_bucket}',
     ],
   },
 
@@ -4964,6 +4971,7 @@ hooks = [
       'python',
       'src/build/fuchsia/update_images.py',
       '--boot-images={checkout_fuchsia_boot_images}',
+      '--default-bucket={fuchsia_images_bucket}',
     ],
   },
 

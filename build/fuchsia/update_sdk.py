@@ -31,7 +31,10 @@ def ReadFile(filename):
     return f.read()
 
 
-def GetCloudStorageBucket():
+# TODO(crbug.com/1138433): Investigate whether we can deprecate
+# use of sdk_bucket.txt.
+def GetOverrideCloudStorageBucket():
+  """Read bucket entry from sdk_bucket.txt"""
   return ReadFile('sdk-bucket.txt').strip()
 
 
@@ -118,6 +121,12 @@ def main():
   parser.add_argument('--verbose', '-v',
     action='store_true',
     help='Enable debug-level logging.')
+  parser.add_argument(
+      '--default-bucket',
+      type=str,
+      default='fuchsia',
+      help='The Google Cloud Storage bucket in which the Fuchsia SDK is '
+      'stored. Entry in sdk-bucket.txt will override this flag.')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -128,7 +137,9 @@ def main():
   except:
     return 0
 
-  bucket = GetCloudStorageBucket()
+  # Use the bucket in sdk-bucket.txt if an entry exists.
+  # Otherwise use the default bucket.
+  bucket = GetOverrideCloudStorageBucket() or args.default_bucket
 
   sdk_hash = GetSdkHash(bucket)
   if not sdk_hash:
