@@ -14,14 +14,8 @@
 
 namespace views {
 
-DesktopNativeCursorManager::DesktopNativeCursorManager() {
-#if BUILDFLAG(IS_LACROS)
-  const bool use_platform_cursors = false;
-#else
-  const bool use_platform_cursors = true;
-#endif
-  cursor_loader_ = ui::CursorLoader::Create(use_platform_cursors);
-}
+DesktopNativeCursorManager::DesktopNativeCursorManager()
+    : cursor_loader_(ui::CursorLoader::Create()) {}
 
 DesktopNativeCursorManager::~DesktopNativeCursorManager() = default;
 
@@ -43,8 +37,9 @@ void DesktopNativeCursorManager::RemoveHost(aura::WindowTreeHost* host) {
 void DesktopNativeCursorManager::SetDisplay(
     const display::Display& display,
     wm::NativeCursorManagerDelegate* delegate) {
-  cursor_loader_->SetDisplayData(display.rotation(),
-                                 display.device_scale_factor());
+  cursor_loader_->UnloadAll();
+  cursor_loader_->set_rotation(display.rotation());
+  cursor_loader_->set_scale(display.device_scale_factor());
 
   SetCursor(delegate->GetCursor(), delegate);
 }

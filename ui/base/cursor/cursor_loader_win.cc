@@ -122,14 +122,27 @@ const wchar_t* GetCursorId(gfx::NativeCursor native_cursor) {
 
 }  // namespace
 
-std::unique_ptr<CursorLoader> CursorLoader::Create(bool use_platform_cursors) {
-  return std::make_unique<CursorLoaderWin>();
+CursorLoader* CursorLoader::Create() {
+  return new CursorLoaderWin;
 }
 
 CursorLoaderWin::CursorLoaderWin() {
 }
 
 CursorLoaderWin::~CursorLoaderWin() {
+}
+
+void CursorLoaderWin::LoadImageCursor(mojom::CursorType id,
+                                      int resource_id,
+                                      const gfx::Point& hot) {
+  // NOTIMPLEMENTED();
+}
+
+void CursorLoaderWin::LoadAnimatedCursor(mojom::CursorType id,
+                                         int resource_id,
+                                         const gfx::Point& hot,
+                                         int frame_delay_ms) {
+  // NOTIMPLEMENTED();
 }
 
 void CursorLoaderWin::UnloadAll() {

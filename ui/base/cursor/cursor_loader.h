@@ -5,70 +5,71 @@
 #ifndef UI_BASE_CURSOR_CURSOR_LOADER_H_
 #define UI_BASE_CURSOR_CURSOR_LOADER_H_
 
-#include <memory>
-
 #include "base/component_export.h"
-#include "ui/base/cursor/cursor_size.h"
+#include "base/macros.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/display/display.h"
 #include "ui/gfx/native_widget_types.h"
+
+namespace gfx {
+class Point;
+}
 
 namespace ui {
 
 class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader {
  public:
-  CursorLoader() = default;
-  CursorLoader(const CursorLoader&) = delete;
-  CursorLoader& operator=(const CursorLoader&) = delete;
-  virtual ~CursorLoader() = default;
+  CursorLoader() : scale_(1.f), rotation_(display::Display::ROTATE_0) {}
+  virtual ~CursorLoader() {}
 
-  // Returns the rotation and scale of the currently loaded cursor.
   display::Display::Rotation rotation() const { return rotation_; }
-  float scale() const { return scale_; }
 
-  // Sets the rotation and scale the cursors are loaded for.
-  // Returns true if the cursor image was reloaded.
-  bool SetDisplayData(display::Display::Rotation rotation, float scale) {
-    if (rotation_ == rotation && scale_ == scale)
-      return false;
-
+  void set_rotation(display::Display::Rotation rotation) {
     rotation_ = rotation;
+  }
+
+  // Returns the current scale of the mouse cursor icon.
+  float scale() const {
+    return scale_;
+  }
+
+  // Sets the scale of the mouse cursor icon.
+  void set_scale(const float scale) {
     scale_ = scale;
-    UnloadAll();
-    return true;
   }
 
-  // Returns the size of the currently loaded cursor.
-  CursorSize size() { return size_; }
+  // Creates a cursor from an image resource and puts it in the cursor map.
+  virtual void LoadImageCursor(mojom::CursorType id,
+                               int resource_id,
+                               const gfx::Point& hot) = 0;
 
-  // Sets the size of the mouse cursor icon.
-  void set_size(CursorSize size) {
-    if (size_ == size)
-      return;
+  // Creates an animated cursor from an image resource and puts it in the
+  // cursor map. The image is assumed to be a concatenation of animation frames
+  // from left to right. Also, each frame is assumed to be square
+  // (width == height).
+  // |frame_delay_ms| is the delay between frames in millisecond.
+  virtual void LoadAnimatedCursor(mojom::CursorType id,
+                                  int resource_id,
+                                  const gfx::Point& hot,
+                                  int frame_delay_ms) = 0;
 
-    size_ = size;
-    UnloadAll();
-  }
+  // Unloads all the cursors.
+  virtual void UnloadAll() = 0;
 
   // Sets the platform cursor based on the native type of |cursor|.
   virtual void SetPlatformCursor(gfx::NativeCursor* cursor) = 0;
 
   // Creates a CursorLoader.
-  static std::unique_ptr<CursorLoader> Create(bool use_platform_cursors = true);
-
- protected:
-  // Resets the cursor cache.
-  virtual void UnloadAll() = 0;
+  static CursorLoader* Create();
 
  private:
   // The current scale of the mouse cursor icon.
-  float scale_ = 1.0f;
+  float scale_;
 
   // The current rotation of the mouse cursor icon.
-  display::Display::Rotation rotation_ = display::Display::ROTATE_0;
+  display::Display::Rotation rotation_;
 
-  // The preferred size of the mouse cursor icon.
-  CursorSize size_ = CursorSize::kNormal;
+  DISALLOW_COPY_AND_ASSIGN(CursorLoader);
 };
 
 }  // namespace ui

@@ -46,7 +46,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // cursors are referenced counted and have an initial refcount of 1.
   // Therefore, each CreateAnimatedCursor call must be matched with a call to
   // UnrefImageCursor.
-  // |frame_delay_ms| is the delay between frames in millisecond.
   virtual PlatformCursor CreateAnimatedCursor(
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
