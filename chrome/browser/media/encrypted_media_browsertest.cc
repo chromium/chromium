@@ -372,7 +372,7 @@ class ECKEncryptedMediaOutputProtectionTest
     // Make sure the Clear Key CDM is properly registered in CdmRegistry.
     EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
 
-#if defined(OS_LINUX) && defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS)
     // QueryOutputProtectionStatus() is known to fail on Linux Chrome OS builds.
     std::string expected_title = kEmeUnitTestFailure;
 #else
