@@ -1,0 +1,7 @@
+monorail {
+  component: "Upboarding>QueryTiles"
+}
+
+team_email: "chrome-upboarding@google.com"
+
+os: ANDROID

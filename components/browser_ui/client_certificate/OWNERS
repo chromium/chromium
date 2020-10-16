@@ -3,5 +3,3 @@ dmcardle@chromium.org
 
 # Secondary:
 file://chrome/android/OWNERS
-
-# COMPONENT: Internals>Network>Auth

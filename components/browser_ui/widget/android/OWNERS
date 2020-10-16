@@ -1,7 +1,3 @@
 twellington@chromium.org
 
 file://chrome/android/OWNERS
-
-# COMPONENT: UI>Browser>Mobile
-# TEAM: chrome-android-app@chromium.org
-# OS: Android

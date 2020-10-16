@@ -5,7 +5,3 @@ xingliu@chromium.org
 
 # Common notification owners
 file://chrome/browser/notifications/OWNERS
-
-# COMPONENT: UI>Notifications
-# TEAM: chrome-notifications@google.com
-# OS: Android
