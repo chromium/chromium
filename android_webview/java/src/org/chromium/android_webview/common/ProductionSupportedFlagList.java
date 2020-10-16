@@ -96,5 +96,7 @@ public final class ProductionSupportedFlagList {
                     "Enables display cutout (notch) support in WebView for Android P and above."),
             Flag.commandLine(AwSwitches.WEBVIEW_FORCE_LITTLE_CORES,
                     "Forces WebView to do rendering work in little cores"),
+            Flag.baseFeature(BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
+                    "Accelerate all canvases in webview."),
     };
 }
