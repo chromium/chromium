@@ -24,7 +24,7 @@ class VideoFrame;
 namespace media {
 namespace cast {
 
-class Vp8Encoder : public SoftwareVideoEncoder {
+class Vp8Encoder final : public SoftwareVideoEncoder {
  public:
   explicit Vp8Encoder(const FrameSenderConfig& video_config);
 

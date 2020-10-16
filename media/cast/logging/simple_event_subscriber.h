@@ -19,7 +19,7 @@ namespace cast {
 // in std::vector's.
 // The user of this class can call the GetXXXEventsAndReset functions to get
 // list of events that have acccumulated since last inovcation.
-class SimpleEventSubscriber : public RawEventSubscriber {
+class SimpleEventSubscriber final : public RawEventSubscriber {
  public:
   SimpleEventSubscriber();
 

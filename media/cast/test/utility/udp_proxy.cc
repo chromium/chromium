@@ -670,7 +670,7 @@ std::unique_ptr<InterruptedPoissonProcess> DefaultInterruptedPoissonProcess() {
   return ipp;
 }
 
-class UDPProxyImpl : public UDPProxy {
+class UDPProxyImpl final : public UDPProxy {
  public:
   UDPProxyImpl(const net::IPEndPoint& local_port,
                const net::IPEndPoint& destination,

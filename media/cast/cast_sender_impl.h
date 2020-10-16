@@ -21,7 +21,7 @@ class VideoSender;
 
 // This class combines all required sending objects such as the audio and video
 // senders, pacer, packet receiver and frame input.
-class CastSenderImpl : public CastSender {
+class CastSenderImpl final : public CastSender {
  public:
   CastSenderImpl(scoped_refptr<CastEnvironment> cast_environment,
                  CastTransport* const transport_sender);

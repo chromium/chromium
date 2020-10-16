@@ -36,7 +36,8 @@ const size_t kClockDriftSpeed = 500;
 // There is a causal relationship between these events in that these events
 // must happen in order. This class obtains the lower and upper bounds for
 // the offset by taking the difference of timestamps.
-class ReceiverTimeOffsetEstimatorImpl : public ReceiverTimeOffsetEstimator {
+class ReceiverTimeOffsetEstimatorImpl final
+    : public ReceiverTimeOffsetEstimator {
  public:
   ReceiverTimeOffsetEstimatorImpl();
 

@@ -45,7 +45,7 @@ using PacketEventList =
 // to a storage vector. This helps keep the size of the map small and
 // lookup times fast. The storage itself is a circular buffer that will
 // overwrite old entries once it has reached the size configured by user.
-class EncodingEventSubscriber : public RawEventSubscriber {
+class EncodingEventSubscriber final : public RawEventSubscriber {
  public:
   // |event_media_type|: The subscriber will only process events that
   // corresponds to this type.

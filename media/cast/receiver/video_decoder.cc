@@ -104,7 +104,7 @@ class VideoDecoder::ImplBase
   DISALLOW_COPY_AND_ASSIGN(ImplBase);
 };
 
-class VideoDecoder::Vp8Impl : public VideoDecoder::ImplBase {
+class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
  public:
   explicit Vp8Impl(const scoped_refptr<CastEnvironment>& cast_environment)
       : ImplBase(cast_environment, CODEC_VIDEO_VP8) {
@@ -180,7 +180,7 @@ class VideoDecoder::Vp8Impl : public VideoDecoder::ImplBase {
 
 #ifndef OFFICIAL_BUILD
 // A fake video decoder that always output 2x2 black frames.
-class VideoDecoder::FakeImpl : public VideoDecoder::ImplBase {
+class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
  public:
   explicit FakeImpl(const scoped_refptr<CastEnvironment>& cast_environment)
       : ImplBase(cast_environment, CODEC_VIDEO_FAKE),

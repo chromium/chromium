@@ -17,7 +17,8 @@ namespace test {
 
 // This class is used for testing. It will always return the |offset| value
 // provided during construction as offset bounds.
-class FakeReceiverTimeOffsetEstimator : public ReceiverTimeOffsetEstimator {
+class FakeReceiverTimeOffsetEstimator final
+    : public ReceiverTimeOffsetEstimator {
  public:
   FakeReceiverTimeOffsetEstimator(base::TimeDelta offset);
 

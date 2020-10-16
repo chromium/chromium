@@ -84,7 +84,7 @@ struct InProgressExternalVideoFrameEncode {
 // to encode media::VideoFrames and emit media::cast::EncodedFrames.  All
 // methods must be called on the thread associated with the given
 // SingleThreadTaskRunner, except for the task_runner() accessor.
-class ExternalVideoEncoder::VEAClientImpl
+class ExternalVideoEncoder::VEAClientImpl final
     : public VideoEncodeAccelerator::Client,
       public base::RefCountedThreadSafe<VEAClientImpl> {
  public:

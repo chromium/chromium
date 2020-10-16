@@ -24,7 +24,7 @@ namespace cast {
 // Cast MAIN thread proxy to the internal media::VideoEncodeAccelerator
 // implementation running on a separate thread.  Encodes media::VideoFrames and
 // emits media::cast::EncodedFrames.
-class ExternalVideoEncoder : public VideoEncoder {
+class ExternalVideoEncoder final : public VideoEncoder {
  public:
   // Returns true if the current platform and system configuration supports
   // using ExternalVideoEncoder with the given |video_config|.
@@ -85,7 +85,8 @@ class ExternalVideoEncoder : public VideoEncoder {
 
 // An implementation of SizeAdaptableVideoEncoderBase to proxy for
 // ExternalVideoEncoder instances.
-class SizeAdaptableExternalVideoEncoder : public SizeAdaptableVideoEncoderBase {
+class SizeAdaptableExternalVideoEncoder final
+    : public SizeAdaptableVideoEncoderBase {
  public:
   SizeAdaptableExternalVideoEncoder(
       const scoped_refptr<CastEnvironment>& cast_environment,

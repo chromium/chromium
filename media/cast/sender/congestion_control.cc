@@ -28,7 +28,7 @@
 namespace media {
 namespace cast {
 
-class AdaptiveCongestionControl : public CongestionControl {
+class AdaptiveCongestionControl final : public CongestionControl {
  public:
   AdaptiveCongestionControl(const base::TickClock* clock,
                             int max_bitrate_configured,
@@ -104,7 +104,7 @@ class AdaptiveCongestionControl : public CongestionControl {
   DISALLOW_COPY_AND_ASSIGN(AdaptiveCongestionControl);
 };
 
-class FixedCongestionControl : public CongestionControl {
+class FixedCongestionControl final : public CongestionControl {
  public:
   explicit FixedCongestionControl(int bitrate) : bitrate_(bitrate) {}
   ~FixedCongestionControl() final = default;

@@ -232,7 +232,7 @@ class AudioEncoder::ImplBase
 };
 
 #if !defined(OS_IOS)
-class AudioEncoder::OpusImpl : public AudioEncoder::ImplBase {
+class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
  public:
   OpusImpl(const scoped_refptr<CastEnvironment>& cast_environment,
            int num_channels,
@@ -705,7 +705,7 @@ class AudioEncoder::AppleAacImpl : public AudioEncoder::ImplBase {
 };
 #endif  // defined(OS_MAC)
 
-class AudioEncoder::Pcm16Impl : public AudioEncoder::ImplBase {
+class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
  public:
   Pcm16Impl(const scoped_refptr<CastEnvironment>& cast_environment,
             int num_channels,

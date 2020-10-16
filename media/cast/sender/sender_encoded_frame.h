@@ -13,7 +13,7 @@ namespace cast {
 
 // Extends EncodedFrame with additional fields used within the sender-side of
 // the library.
-struct SenderEncodedFrame : public EncodedFrame {
+struct SenderEncodedFrame final : public EncodedFrame {
   SenderEncodedFrame();
   ~SenderEncodedFrame() final;
 

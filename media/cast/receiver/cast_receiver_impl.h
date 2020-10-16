@@ -26,7 +26,7 @@ class VideoDecoder;
 // This is a pure owner class that groups all required receiver-related objects
 // together, such as the paced packet sender, audio/video RTP frame receivers,
 // and software decoders (created on-demand).
-class CastReceiverImpl : public CastReceiver {
+class CastReceiverImpl final : public CastReceiver {
  public:
   CastReceiverImpl(scoped_refptr<CastEnvironment> cast_environment,
                    const FrameReceiverConfig& audio_config,

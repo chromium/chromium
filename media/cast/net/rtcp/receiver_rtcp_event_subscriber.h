@@ -33,7 +33,7 @@ static const size_t kMaxEventsPerRTCP = 20;
 // - Internally, the map is capped at a maximum size configurable by the caller.
 //   The subscriber only keeps the most recent events (determined by RTP
 //   timestamp) up to the size limit.
-class ReceiverRtcpEventSubscriber : public RawEventSubscriber {
+class ReceiverRtcpEventSubscriber final : public RawEventSubscriber {
  public:
   typedef std::pair<RtpTimeTicks, RtcpEvent> RtcpEventPair;
   typedef std::vector<std::pair<RtpTimeTicks, RtcpEvent>> RtcpEvents;

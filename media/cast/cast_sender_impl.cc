@@ -18,7 +18,7 @@ namespace cast {
 
 // The LocalVideoFrameInput class posts all incoming video frames to the main
 // cast thread for processing.
-class LocalVideoFrameInput : public VideoFrameInput {
+class LocalVideoFrameInput final : public VideoFrameInput {
  public:
   LocalVideoFrameInput(scoped_refptr<CastEnvironment> cast_environment,
                        base::WeakPtr<VideoSender> video_sender)
@@ -62,7 +62,7 @@ class LocalVideoFrameInput : public VideoFrameInput {
 
 // The LocalAudioFrameInput class posts all incoming audio frames to the main
 // cast thread for processing. Therefore frames can be inserted from any thread.
-class LocalAudioFrameInput : public AudioFrameInput {
+class LocalAudioFrameInput final : public AudioFrameInput {
  public:
   LocalAudioFrameInput(scoped_refptr<CastEnvironment> cast_environment,
                        base::WeakPtr<AudioSender> audio_sender)

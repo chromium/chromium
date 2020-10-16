@@ -14,7 +14,7 @@
 namespace media {
 namespace cast {
 
-class FakeSoftwareVideoEncoder : public SoftwareVideoEncoder {
+class FakeSoftwareVideoEncoder final : public SoftwareVideoEncoder {
  public:
   FakeSoftwareVideoEncoder(const FrameSenderConfig& video_config);
   ~FakeSoftwareVideoEncoder() final;

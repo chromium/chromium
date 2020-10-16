@@ -30,7 +30,7 @@ class StatsEventSubscriberTest;
 
 // A RawEventSubscriber implementation that subscribes to events,
 // and aggregates them into stats.
-class StatsEventSubscriber : public RawEventSubscriber {
+class StatsEventSubscriber final : public RawEventSubscriber {
  public:
   StatsEventSubscriber(EventMediaType event_media_type,
                        const base::TickClock* clock,

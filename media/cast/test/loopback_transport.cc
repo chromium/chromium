@@ -17,7 +17,7 @@ namespace {
 
 // Shim that turns forwards packets from a test::PacketPipe to a
 // PacketReceiverCallback.
-class LoopBackPacketPipe : public test::PacketPipe {
+class LoopBackPacketPipe final : public test::PacketPipe {
  public:
   explicit LoopBackPacketPipe(const PacketReceiverCallback& packet_receiver)
       : packet_receiver_(packet_receiver) {}

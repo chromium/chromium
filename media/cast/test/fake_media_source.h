@@ -50,7 +50,7 @@ class AudioFrameInput;
 class VideoFrameInput;
 class TestAudioBusFactory;
 
-class FakeMediaSource : public media::AudioConverter::InputCallback {
+class FakeMediaSource final : public media::AudioConverter::InputCallback {
  public:
   // |task_runner| is to schedule decoding tasks.
   // |clock| is used by this source but is not owned.

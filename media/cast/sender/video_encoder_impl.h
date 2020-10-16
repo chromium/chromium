@@ -20,7 +20,7 @@ namespace cast {
 
 // This object is called external from the main cast thread and internally from
 // the video encoder thread.
-class VideoEncoderImpl : public VideoEncoder {
+class VideoEncoderImpl final : public VideoEncoder {
  public:
   struct CodecDynamicConfig {
     bool key_frame_requested;

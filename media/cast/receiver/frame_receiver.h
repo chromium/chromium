@@ -57,7 +57,7 @@ using ReceiveEncodedFrameCallback =
 //
 // This class is not thread safe.  Should only be called from the Main cast
 // thread.
-class FrameReceiver : public RtpPayloadFeedback {
+class FrameReceiver final : public RtpPayloadFeedback {
  public:
   FrameReceiver(const scoped_refptr<CastEnvironment>& cast_environment,
                 const FrameReceiverConfig& config,
