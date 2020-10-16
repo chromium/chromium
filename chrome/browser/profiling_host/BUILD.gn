@@ -45,4 +45,12 @@ source_set("profiling_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    # For `AndroidBrowserTest`.
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    # For `InProcessBrowserTest`.
+    deps += [ "//chrome/test:test_support_ui" ]
+  }
 }
