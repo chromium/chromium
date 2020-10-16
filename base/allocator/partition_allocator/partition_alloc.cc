@@ -320,10 +320,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // this operation is idempotent, so there is no harm.
   InitBucketIndexLookup(this);
 
-  // Temporarily disabled for PartitionAlloc-Everywhere builds on Windows, as it
-  // breaks the build.
-#if !defined(PA_THREAD_CACHE_SUPPORTED) || \
-    (defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+#if !defined(PA_THREAD_CACHE_SUPPORTED)
   // TLS in ThreadCache not supported on other OSes.
   with_thread_cache = false;
 #else
@@ -332,8 +329,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 
   if (with_thread_cache)
     internal::ThreadCache::Init(this);
-#endif  // !defined(PA_THREAD_CACHE_SUPPORTED) || \
-        // (defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+#endif  // !defined(PA_THREAD_CACHE_SUPPORTED)
 
   initialized = true;
 }
