@@ -5,6 +5,7 @@
 #include "chrome/installer/util/registry_entry.h"
 
 #include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/work_item.h"
