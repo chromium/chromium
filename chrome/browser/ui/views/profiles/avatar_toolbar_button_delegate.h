@@ -95,8 +95,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // Initiates showing the identity.
   void OnUserIdentityChanged();
 
+  void OnIdentityAnimationTimeout(CoreAccountId account_id);
   // Called after the user interacted with the button or after some timeout.
-  void OnIdentityAnimationTimeout();
   void MaybeHideIdentityAnimation();
   void HideHighlightAnimation();
 
