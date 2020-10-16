@@ -437,12 +437,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_HISTORY_SIGN_IN_PROMO_DESC" desc="Description of the sign-in promo. Further tells users to sign in to Chrome to see synced tabs from other devices.">
         To get your tabs from your other devices, sign in to Chrome.
       </message>
-      <message name="IDS_HISTORY_MENU_PROMO" desc="Text body of a promotional tooltip that shows up the first time a user runs the Material Design History UI in narrow mode to help find 'Clear Browsing Data' and the side navigation.">
-        You can clear your browsing data from this menu
-      </message>
-      <message name="IDS_HISTORY_CLOSE_MENU_PROMO" desc="Title text of the close button of a promotional tooltip that shows up the first time a user runs the Material Design History UI in narrow mode to help find 'Clear Browsing Data' and the side navigation.">
-        Close
-      </message>
 
       <!-- Generic terms -->
       <message name="IDS_EDIT" desc="Edit menu item">

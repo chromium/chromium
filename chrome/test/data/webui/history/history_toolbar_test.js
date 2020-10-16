@@ -90,11 +90,4 @@ suite('history-toolbar', function() {
         });
   });
 
-  test('menu promo hides when drawer is opened', function() {
-    app.showMenuPromo_ = true;
-    app.hasDrawer_ = true;
-    flush();
-    toolbar.$['main-toolbar'].$$('#menuButton').click();
-    assertFalse(app.showMenuPromo_);
-  });
 });

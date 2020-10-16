@@ -86,10 +86,6 @@ import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
       chrome.send('metricsHandler:recordTime', [histogram, time]);
     }
 
-    menuPromoShown() {
-      chrome.send('menuPromoShown');
-    }
-
     /**
      * @param {string} url
      * @param {string} target
@@ -126,4 +122,3 @@ import {ForeignSession, HistoryEntry, HistoryQuery} from './externs.js';
   }
 
   addSingletonGetter(BrowserService);
-

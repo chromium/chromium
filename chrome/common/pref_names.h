@@ -351,9 +351,6 @@ extern const char kEduCoexistenceArcMigrationCompleted[];
 extern const char kShowHomeButton[];
 extern const char kSpeechRecognitionFilterProfanities[];
 extern const char kAllowDeletingBrowserHistory[];
-#if !defined(OS_ANDROID)
-extern const char kHistoryMenuPromoShown[];
-#endif
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kAllowedDomainsForApps[];

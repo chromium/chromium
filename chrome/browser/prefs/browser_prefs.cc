@@ -239,7 +239,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
-#include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -478,6 +477,9 @@ const char kPasswordManagerOnboardingState[] =
 const char kWasOnboardingFeatureCheckedBefore[] =
     "profile.was_pwm_onboarding_feature_checked_before";
 
+// Deprecated 10/2020
+const char kHistoryMenuPromoShown[] = "history.menu_promo_shown";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -541,6 +543,8 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
   registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
+
+  registry->RegisterBooleanPref(kHistoryMenuPromoShown, true);
 }
 
 }  // namespace
@@ -885,7 +889,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   first_run::RegisterProfilePrefs(registry);
   gcm::RegisterProfilePrefs(registry);
   HatsService::RegisterProfilePrefs(registry);
-  HistoryUI::RegisterProfilePrefs(registry);
   InstantService::RegisterProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
   NewTabPageHandler::RegisterProfilePrefs(registry);
@@ -1119,4 +1122,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPluginsDeprecationInfobarLastShown);
   profile_prefs->ClearPref(kPasswordManagerOnboardingState);
   profile_prefs->ClearPref(kWasOnboardingFeatureCheckedBefore);
+
+  // Added 10/2020
+  profile_prefs->ClearPref(kHistoryMenuPromoShown);
 }

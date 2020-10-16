@@ -11,12 +11,7 @@
 #include "ui/base/layout.h"
 
 namespace base {
-class ListValue;
 class RefCountedMemory;
-}
-
-namespace user_prefs {
-class PrefRegistrySyncable;
 }
 
 class HistoryUI : public content::WebUIController {
@@ -24,16 +19,11 @@ class HistoryUI : public content::WebUIController {
   explicit HistoryUI(content::WebUI* web_ui);
   ~HistoryUI() override;
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ScaleFactor scale_factor);
 
  private:
   void UpdateDataSource();
-
-  // Handler for the "menuPromoShown" message from the page. No arguments.
-  void HandleMenuPromoShown(const base::ListValue* args);
 
   DISALLOW_COPY_AND_ASSIGN(HistoryUI);
 };

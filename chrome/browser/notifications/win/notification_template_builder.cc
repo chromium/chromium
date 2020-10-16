@@ -26,6 +26,7 @@
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -341,10 +342,7 @@ void EnsureReminderHasButton(XmlWriter* xml_writer,
 
   xml_writer->StartElement(kActionElement);
   xml_writer->AddAttribute(kActivationType, kBackground);
-  // TODO(finnur): Add our own string here (we're past string-freeze so we're
-  // re-using the already translated "Close" from elsewhere).
-  xml_writer->AddAttribute(
-      kContent, l10n_util::GetStringUTF8(IDS_HISTORY_CLOSE_MENU_PROMO));
+  xml_writer->AddAttribute(kContent, l10n_util::GetStringUTF8(IDS_APP_CLOSE));
   copied_launch_id.set_is_for_dismiss_button();
   xml_writer->AddAttribute(kArguments, copied_launch_id.Serialize());
   xml_writer->EndElement();

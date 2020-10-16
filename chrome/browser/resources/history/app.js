@@ -141,13 +141,6 @@ import './strings.js';
         notify: true,
       },
 
-      showMenuPromo_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showMenuPromo');
-        },
-      },
-
       /** @type {!QueryState} */
       queryState_: Object,
 
@@ -170,8 +163,6 @@ import './strings.js';
     },
 
     listeners: {
-      'cr-toolbar-menu-promo-close': 'onCrToolbarMenuPromoClose_',
-      'cr-toolbar-menu-promo-shown': 'onCrToolbarMenuPromoShown_',
       'cr-toolbar-menu-tap': 'onCrToolbarMenuTap_',
       'delete-selected': 'deleteSelected',
       'history-checkbox-select': 'checkboxSelected',
@@ -249,20 +240,9 @@ import './strings.js';
     },
 
     /** @private */
-    onCrToolbarMenuPromoClose_() {
-      this.showMenuPromo_ = false;
-    },
-
-    /** @private */
-    onCrToolbarMenuPromoShown_() {
-      this.browserService_.menuPromoShown();
-    },
-
-    /** @private */
     onCrToolbarMenuTap_() {
       const drawer = /** @type {!CrDrawerElement} */ (this.$.drawer.get());
       drawer.toggle();
-      this.showMenuPromo_ = false;
     },
 
     /**

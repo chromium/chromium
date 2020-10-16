@@ -38,8 +38,7 @@ polymer_modulizer("cr_toolbar") {
   js_file = "cr_toolbar.js"
   html_file = "cr_toolbar.html"
   html_type = "dom-module"
-  auto_imports =
-      [ "ui/webui/resources/html/polymer.html|afterNextRender,html,Polymer" ]
+  auto_imports = [ "ui/webui/resources/html/polymer.html|html,Polymer" ]
 }
 
 polymer_modulizer("cr_toolbar_search_field") {

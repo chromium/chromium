@@ -104,72 +104,15 @@
         flex: 1 1 0;
         text-align: end;
       }
-
-      #menuPromo {
-        align-items: center;
-        background: #616161;
-        border-radius: 2px;
-        color: white;
-        display: flex;
-        font-size: 92.3%;
-        font-weight: 500;
-        opacity: 0;
-        padding-bottom: 6px;
-        padding-inline-end: 12px;
-        padding-inline-start: 8px;
-        padding-top: 6px;
-        position: absolute;
-        top: var(--cr-toolbar-height);
-        white-space: nowrap;
-        z-index: 2;
-      }
-
-      #menuPromo::before {
-        background: inherit;
-        /* Up arrow. 105% in Y coordinates fixes glitch at 110/125% zoom. */
-        clip-path: polygon(0 105%, 100% 105%, 50% 0);
-        content: '';
-        display: block;
-        height: 6px;
-        left: 10px;
-        position: absolute;
-        top: -6px;
-        width: 12px;
-      }
-
-      :host-context([dir=rtl]) #menuPromo::before {
-        left: auto;
-        right: 10px;
-      }
-
-      #closePromo {
-        -webkit-appearance: none;
-        background: none;
-        border: none;
-        color: inherit;
-        font-size: 20px;  /* Shouldn't change if default font-size changes. */
-        line-height: 20px;
-        margin-inline-start: 12px;
-        padding: 0;
-        width: 20px;
-      }
     </style>
     <div id="leftContent">
       <div id="leftSpacer">
-        <!-- Note: showing #menuPromo relies on this dom-if being [restamp]. -->
         <template is="dom-if" if="[[showMenu]]" restamp>
           <cr-icon-button id="menuButton" class="no-overlap"
               iron-icon="cr20:menu" on-click="onMenuTap_"
               aria-label$="[[menuLabel]]"
-              title="[[titleIfNotShowMenuPromo_(menuLabel, showMenuPromo)]]">
+              title="[[menuLabel]]">
           </cr-icon-button>
-          <template is="dom-if" if="[[showMenuPromo]]">
-            <div id="menuPromo" role="tooltip">
-              [[menuPromo]]
-              <button id="closePromo" on-click="onClosePromoTap_"
-                  aria-label$="[[closeMenuPromo]]">&#x2715;</button>
-            </paper-tooltip>
-          </template>
         </template>
         <h1>[[pageName]]</h1>
       </div>

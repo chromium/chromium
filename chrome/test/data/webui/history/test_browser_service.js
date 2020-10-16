@@ -94,9 +94,6 @@ export class TestBrowserService extends TestBrowserProxy {
   }
 
   /** @override */
-  menuPromoShown() {}
-
-  /** @override */
   navigateToUrl(url, target, e) {
     this.methodCalled('navigateToUrl', url);
   }
