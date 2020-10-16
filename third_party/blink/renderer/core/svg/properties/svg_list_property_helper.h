@@ -100,9 +100,9 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
     SVGListPropertyBase::Replace(index, new_item);
   }
 
-  virtual Derived* Clone() {
+  virtual Derived* Clone() const {
     auto* svg_list = MakeGarbageCollected<Derived>();
-    svg_list->DeepCopy(static_cast<Derived*>(this));
+    svg_list->DeepCopy(To<Derived>(this));
     return svg_list;
   }
 

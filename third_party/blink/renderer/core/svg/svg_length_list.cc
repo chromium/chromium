@@ -30,7 +30,7 @@ SVGLengthList::SVGLengthList(SVGLengthMode mode) : mode_(mode) {}
 
 SVGLengthList::~SVGLengthList() = default;
 
-SVGLengthList* SVGLengthList::Clone() {
+SVGLengthList* SVGLengthList::Clone() const {
   auto* ret = MakeGarbageCollected<SVGLengthList>(mode_);
   ret->DeepCopy(this);
   return ret;

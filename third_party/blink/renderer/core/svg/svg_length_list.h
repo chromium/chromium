@@ -52,7 +52,7 @@ class SVGLengthList final
 
   // SVGPropertyBase:
   SVGPropertyBase* CloneForAnimation(const String&) const override;
-  SVGLengthList* Clone() override;
+  SVGLengthList* Clone() const override;
   SVGLengthMode UnitMode() const { return mode_; }
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
