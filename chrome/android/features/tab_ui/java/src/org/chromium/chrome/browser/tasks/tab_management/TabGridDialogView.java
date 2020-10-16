@@ -624,8 +624,9 @@ public class TabGridDialogView extends FrameLayout {
 
         ((TextView) (mAnimationCardView.findViewById(R.id.tab_title)))
                 .setText(((TextView) (view.findViewById(R.id.tab_title))).getText());
-        ((TextView) (mAnimationCardView.findViewById(R.id.tab_title)))
-                .setTextColor(((TextView) (view.findViewById(R.id.tab_title))).getTextColors());
+        ApiCompatibilityUtils.setTextAppearance(
+                (TextView) (mAnimationCardView.findViewById(R.id.tab_title)),
+                R.style.TextAppearance_TextMediumThick_Primary);
 
         ((ImageView) (mAnimationCardView.findViewById(R.id.tab_thumbnail)))
                 .setImageDrawable(
