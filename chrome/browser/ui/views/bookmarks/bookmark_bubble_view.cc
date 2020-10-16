@@ -55,7 +55,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 
   void RemoveBookmark() {
     base::RecordAction(UserMetricsAction("BookmarkBubble_Unstar"));
-    should_apply_edits_ = false;
+    can_apply_edits_ = false;
     bookmarks::BookmarkModel* model =
         BookmarkModelFactory::GetForBrowserContext(profile_);
     const bookmarks::BookmarkNode* node =
@@ -65,8 +65,6 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   }
 
   void OnWindowClosing() {
-    if (should_apply_edits_)
-      ApplyEdits();
     bookmark_bubble_ = nullptr;
     if (observer_)
       observer_->OnBookmarkBubbleHidden();
@@ -88,8 +86,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     DCHECK(native_parent);
 
     Profile* const profile = profile_;
-    // Note that closing the dialog with |should_apply_edits_| still true will
-    // synchronously save any pending changes.
+    ApplyEdits();
     dialog_model()->host()->Close();
 
     if (node && native_parent) {
@@ -111,9 +108,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   }
 
   void ApplyEdits() {
-    DCHECK(should_apply_edits_);
+    DCHECK(can_apply_edits_);
     // Set this to make sure we don't attempt to apply edits again.
-    should_apply_edits_ = false;
+    can_apply_edits_ = false;
 
     bookmarks::BookmarkModel* const model =
         BookmarkModelFactory::GetForBrowserContext(profile_);
@@ -151,7 +148,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   Profile* const profile_;
   const GURL url_;
 
-  bool should_apply_edits_ = true;
+  bool can_apply_edits_ = true;
 };
 
 // static
