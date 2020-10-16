@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -159,7 +160,8 @@ Status StorageQueue::Init() {
   }
   // Enumerate data files and scan the last one to determine what sequence
   // numbers do we have (first and last).
-  RETURN_IF_ERROR(EnumerateDataFiles());
+  base::flat_set<base::FilePath> used_files_set;
+  RETURN_IF_ERROR(EnumerateDataFiles(&used_files_set));
   RETURN_IF_ERROR(ScanLastFile());
   generation_id_ = base::RandUint64();  // reset it in case of inavaliability.
   if (next_seq_number_ > 0) {
@@ -171,8 +173,10 @@ Status StorageQueue::Init() {
     // last sequencing number and load both digest and generation id from there.
     // If there is no match, we bail out for now; later on we will instead
     // start a new generation from the next sequencing number (with no digest!)
-    RETURN_IF_ERROR(RestoreMetadata());
+    RETURN_IF_ERROR(RestoreMetadata(&used_files_set));
   }
+  // Delete all files except used ones.
+  DeleteUnusedFiles(used_files_set);
   // Initiate periodic uploading, if needed.
   if (!options_.upload_period().is_zero()) {
     upload_timer_.Start(FROM_HERE, options_.upload_period(), this,
@@ -201,7 +205,35 @@ void StorageQueue::UpdateRecordDigest(WrappedRecord* wrapped_record) {
   last_record_digest_ = wrapped_record->record_digest();
 }
 
-Status StorageQueue::EnumerateDataFiles() {
+StatusOr<uint64_t> StorageQueue::AddDataFile(
+    const base::FilePath& full_name,
+    const base::FileEnumerator::FileInfo& file_info) {
+  const auto extension = full_name.Extension();
+  if (extension.empty()) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"File has no extension: '",
+                                full_name.MaybeAsASCII(), "'"}));
+  }
+  uint64_t file_seq_number = 0;
+  bool success = base::StringToUint64(extension.substr(1), &file_seq_number);
+  if (!success) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"File extension does not parse: '",
+                                full_name.MaybeAsASCII(), "'"}));
+  }
+  if (!files_
+           .emplace(file_seq_number, base::MakeRefCounted<SingleFile>(
+                                         full_name, file_info.GetSize()))
+           .second) {
+    return Status(error::ALREADY_EXISTS,
+                  base::StrCat({"Sequencing duplicated: '",
+                                full_name.MaybeAsASCII(), "'"}));
+  }
+  return file_seq_number;
+}
+
+Status StorageQueue::EnumerateDataFiles(
+    base::flat_set<base::FilePath>* used_files_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   // We need to set first_seq_number_ to 0 if this is the initialization
   // of an empty StorageQueue, and to the lowest seq number among all
@@ -213,31 +245,17 @@ Status StorageQueue::EnumerateDataFiles() {
       base::StrCat({options_.file_prefix(), FILE_PATH_LITERAL(".*")}));
   base::FilePath full_name;
   while (full_name = dir_enum.Next(), !full_name.empty()) {
-    const auto extension = dir_enum.GetInfo().GetName().Extension();
-    if (extension.empty()) {
-      return Status(error::INTERNAL,
-                    base::StrCat({"File has no extension: '",
-                                  full_name.MaybeAsASCII(), "'"}));
+    const auto file_seq_number_result =
+        AddDataFile(full_name, dir_enum.GetInfo());
+    if (!file_seq_number_result.ok()) {
+      LOG(WARNING) << "Failed to add file " << full_name.MaybeAsASCII()
+                   << ", status=" << file_seq_number_result.status();
+      continue;
     }
-    uint64_t file_seq_number = 0;
-    bool success = base::StringToUint64(extension.substr(1), &file_seq_number);
-    if (!success) {
-      return Status(error::INTERNAL,
-                    base::StrCat({"File extension does not parse: '",
-                                  full_name.MaybeAsASCII(), "'"}));
-    }
-    if (!files_
-             .emplace(file_seq_number,
-                      base::MakeRefCounted<SingleFile>(
-                          full_name, dir_enum.GetInfo().GetSize()))
-             .second) {
-      return Status(error::ALREADY_EXISTS,
-                    base::StrCat({"Sequencing duplicated: '",
-                                  full_name.MaybeAsASCII(), "'"}));
-    }
+    used_files_set->emplace(full_name);  // File is in use.
     if (!first_seq_number.has_value() ||
-        first_seq_number.value() > file_seq_number) {
-      first_seq_number = file_seq_number;
+        first_seq_number.value() > file_seq_number_result.ValueOrDie()) {
+      first_seq_number = file_seq_number_result.ValueOrDie();
     }
   }
   // first_seq_number.has_value() is true only if we found some files.
@@ -467,7 +485,8 @@ Status StorageQueue::WriteMetadata() {
   return Status::StatusOK();
 }
 
-Status StorageQueue::RestoreMetadata() {
+Status StorageQueue::RestoreMetadata(
+    base::flat_set<base::FilePath>* used_files_set) {
   // Enumerate all meta-files into a map seq_number->file_path.
   std::map<uint64_t, base::FilePath> meta_files_paths;
   base::FileEnumerator dir_enum(
@@ -499,11 +518,11 @@ Status StorageQueue::RestoreMetadata() {
                                 base::NumberToString(next_seq_number_ - 1)}));
   }
   // Match found. Load the metadata.
-  auto meta_file = base::MakeRefCounted<SingleFile>(
+  const base::FilePath meta_file_path =
       options_.directory()
           .Append(METADATA_NAME)
-          .AddExtensionASCII(base::NumberToString(next_seq_number_ - 1)),
-      /*size=*/0);
+          .AddExtensionASCII(base::NumberToString(next_seq_number_ - 1));
+  auto meta_file = base::MakeRefCounted<SingleFile>(meta_file_path, /*size=*/0);
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/true));
   // Read generation id.
   auto read_result = meta_file->Read(/*pos=*/0, sizeof(generation_id_));
@@ -525,14 +544,23 @@ Status StorageQueue::RestoreMetadata() {
                                 " status=", read_result.status().ToString()}));
   }
   last_record_digest_ = std::string(read_result.ValueOrDie());
-  // Delete other metadata files.
-  for (const auto& file_path : meta_files_paths) {
-    if (file_path.first == next_seq_number_ - 1) {
-      continue;  // Skip the file we just used.
-    }
-    base::DeleteFile(file_path.second);  // Ignore any errors.
-  }
+  // Store used metadata file.
+  used_files_set->emplace(meta_file_path);
   return Status::StatusOK();
+}
+
+void StorageQueue::DeleteUnusedFiles(
+    const base::flat_set<base::FilePath>& used_files_setused_files_set) {
+  base::FileEnumerator dir_enum(options_.directory(),
+                                /*recursive=*/true,
+                                base::FileEnumerator::FILES);
+  base::FilePath full_name;
+  while (full_name = dir_enum.Next(), !full_name.empty()) {
+    if (used_files_setused_files_set.count(full_name) > 0) {
+      continue;  // File is used, keep it.
+    }
+    DeleteFile(full_name);
+  }
 }
 
 void StorageQueue::DeleteOutdatedMetadata(uint64_t seq_number_to_keep) {

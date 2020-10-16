@@ -279,7 +279,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Helper method for Init(): enumerates all data files in the directory.
   // Valid file names are <prefix>.<seq_number>, any other names are ignored.
-  Status EnumerateDataFiles();
+  // Adds used data files to the set.
+  Status EnumerateDataFiles(base::flat_set<base::FilePath>* used_files_set);
 
   // Helper method for Init(): scans the last file in StorageQueue, if there are
   // files at all, and learns the latest sequencing number. Otherwise (if there
@@ -308,7 +309,12 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Helper method for Init(): locates file with metadata that matches the
   // last sequencing number and loads metadat from it.
-  Status RestoreMetadata();
+  // Adds used metadata file to the set.
+  Status RestoreMetadata(base::flat_set<base::FilePath>* used_files_set);
+
+  // Delete all files except those listed in the set.
+  void DeleteUnusedFiles(
+      const base::flat_set<base::FilePath>& used_files_setused_files_set);
 
   // Helper method for Write(): deletes meta files up to, but not including
   // |seq_number_to_keep|. Any errors are ignored.
