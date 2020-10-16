@@ -1,0 +1,54 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/optimize_webui.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/webui_features.gni")
+
+js_library("webui_js_exception") {
+}
+
+if (optimize_webui) {
+  grit("flattened_resources") {
+    source = "webui_js_exception_resources.grd"
+
+    deps = [ ":webui_js_exception" ]
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    outputs = [
+      "grit/webui_js_exception_resources.h",
+      "grit/webui_js_exception_resources_map.cc",
+      "grit/webui_js_exception_resources_map.h",
+      "webui_js_exception_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome/browser/resources/webui_js_exception"
+  }
+
+  unpak("unpak") {
+    pak_file = "webui_js_exception_resources.pak"
+    out_folder = "unpak"
+    deps = [ ":flattened_resources" ]
+  }
+
+  optimize_webui("build") {
+    host = "webui_js_exception"
+    input = rebase_path("$target_gen_dir/unpak", root_build_dir)
+    deps = [
+      ":unpak",
+      "//ui/webui/resources:modulize",
+    ]
+    js_module_in_files = [ "webui_js_exception.js" ]
+    js_out_files = [ "webui_js_exception.rollup.js" ]
+    excludes = [ "chrome://resources/js/cr.m.js" ]
+  }
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":webui_js_exception" ]
+}

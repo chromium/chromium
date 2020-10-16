@@ -230,6 +230,10 @@
 #include "chrome/browser/ui/webui/app_launcher_page_ui.h"
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "chrome/browser/ui/webui/webui_js_exception/webui_js_exception_ui.h"
+#endif
+
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
@@ -751,6 +755,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  if (url.host_piece() == chrome::kChromeUIWebUIJsExceptionHost)
+    return &NewWebUI<WebUIJsExceptionUI>;
+#endif
 #if defined(OS_ANDROID)
   if (url.host_piece() == chrome::kChromeUIExploreSitesInternalsHost &&
       !profile->IsOffTheRecord())

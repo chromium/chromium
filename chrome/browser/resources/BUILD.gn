@@ -60,6 +60,9 @@ if (enable_js_type_check) {
     if (is_win || is_android || is_linux || is_chromeos) {
       deps += [ "sandbox_internals:closure_compile" ]
     }
+    if (is_linux || is_chromeos) {
+      deps += [ "webui_js_exception:closure_compile" ]
+    }
     if (is_chromeos) {
       deps += [
         "chromeos:closure_compile",
@@ -685,6 +688,33 @@ if (enable_webui_tab_strip) {
       "grit/tab_strip_resources_map.cc",
       "grit/tab_strip_resources_map.h",
       "tab_strip_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+}
+
+if (is_linux || is_chromeos) {
+  grit("webui_js_exception_resources") {
+    if (optimize_webui) {
+      source = "webui_js_exception/webui_js_exception_resources_vulcanized.grd"
+      deps = [ "//chrome/browser/resources/webui_js_exception:build" ]
+    } else {
+      source = "webui_js_exception/webui_js_exception_resources.grd"
+      deps =
+          [ "//chrome/browser/resources/webui_js_exception:webui_js_exception" ]
+    }
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/webui_js_exception_resources.h",
+      "grit/webui_js_exception_resources_map.cc",
+      "grit/webui_js_exception_resources_map.h",
+      "webui_js_exception_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

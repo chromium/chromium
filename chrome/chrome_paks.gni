@@ -221,6 +221,10 @@ template("chrome_extra_paks") {
         ]
       }
     }
+    if (is_linux || is_chromeos) {
+      sources += [ "$root_gen_dir/chrome/webui_js_exception_resources.pak" ]
+      deps += [ "//chrome/browser/resources:webui_js_exception_resources" ]
+    }
     if (!is_android && !is_chromeos) {
       sources += [
         "$root_gen_dir/chrome/profile_picker_resources.pak",

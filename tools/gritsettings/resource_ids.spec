@@ -265,6 +265,13 @@
   "chrome/browser/resources/webapks/webapks_ui_resources.grd": {
     "includes": [2220],
   },
+  "chrome/browser/resources/webui_js_exception/webui_js_exception_resources.grd": {
+    "includes": [2230],
+    "structures": [2231],
+  },
+  "chrome/browser/resources/webui_js_exception/webui_js_exception_resources_vulcanized.grd": {
+    "includes": [2232],
+  },
   "components/sync/driver/resources.grd": {
     "includes": [2240],
   },

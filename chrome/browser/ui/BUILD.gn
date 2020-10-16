@@ -3296,6 +3296,8 @@ static_library("ui") {
       "webui/certificate_viewer_ui.h",
       "webui/certificate_viewer_webui.cc",
       "webui/certificate_viewer_webui.h",
+      "webui/webui_js_exception/webui_js_exception_ui.cc",
+      "webui/webui_js_exception/webui_js_exception_ui.h",
     ]
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]

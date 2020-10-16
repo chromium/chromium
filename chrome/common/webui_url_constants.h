@@ -291,6 +291,11 @@ bool IsSystemWebUIHost(base::StringPiece host);
 
 #endif  // defined(OS_CHROMEOS)
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+extern const char kChromeUIWebUIJsExceptionHost[];
+extern const char kChromeUIWebUIJsExceptionURL[];
+#endif
+
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 extern const char kChromeUIDiscardsHost[];
