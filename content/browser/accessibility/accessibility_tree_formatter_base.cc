@@ -347,7 +347,7 @@ bool AccessibilityTreeFormatter::MatchesPropertyFilters(
 }
 
 bool AccessibilityTreeFormatter::MatchesNodeFilters(
-    const std::vector<NodeFilter>& node_filters,
+    const std::vector<AXNodeFilter>& node_filters,
     const base::DictionaryValue& dict) {
   for (const auto& filter : node_filters) {
     std::string value;
@@ -438,7 +438,7 @@ void AccessibilityTreeFormatterBase::SetPropertyFilters(
 }
 
 void AccessibilityTreeFormatterBase::SetNodeFilters(
-    const std::vector<NodeFilter>& node_filters) {
+    const std::vector<AXNodeFilter>& node_filters) {
   node_filters_ = node_filters;
 }
 

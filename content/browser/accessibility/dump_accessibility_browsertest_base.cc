@@ -77,7 +77,6 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
 }  // namespace
 
 using ui::AXPropertyFilter;
-typedef AccessibilityTreeFormatter::NodeFilter NodeFilter;
 
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
     : formatter_factory_(nullptr),

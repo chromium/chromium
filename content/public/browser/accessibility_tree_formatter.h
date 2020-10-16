@@ -58,21 +58,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
  public:
   using AXTreeSelector = ui::AXTreeSelector;
   using AXPropertyFilter = ui::AXPropertyFilter;
-
-  // A single node filter specification  which will exclude any node where the
-  // value of the named property matches the given pattern.
-  //
-  // This can be used to exclude nodes based on properties like role, for
-  // example to exclude all inlineTextBox nodes under blink we would use a
-  // NodeFilter of the form:
-  //   {property='internalRole', pattern='inlineTextBox'};
-  struct NodeFilter {
-    std::string property;
-    std::string pattern;
-
-    NodeFilter(const std::string& property, const std::string& pattern)
-        : property(property), pattern(pattern) {}
-  };
+  using AXNodeFilter = ui::AXNodeFilter;
 
   // Create the appropriate native subclass of AccessibilityTreeFormatter.
   static std::unique_ptr<AccessibilityTreeFormatter> Create();
@@ -99,8 +85,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
       const std::string& text,
       bool default_result);
 
-  // Check if the given dictionary matches any of the supplied NodeFilter(s).
-  static bool MatchesNodeFilters(const std::vector<NodeFilter>& node_filters,
+  // Check if the given dictionary matches any of the supplied AXNodeFilter(s).
+  static bool MatchesNodeFilters(const std::vector<AXNodeFilter>& node_filters,
                                  const base::DictionaryValue& dict);
 
   // Build an accessibility tree for any window.
@@ -133,7 +119,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
       const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Set regular expression filters that apply to every node before output.
-  virtual void SetNodeFilters(const std::vector<NodeFilter>& node_filters) = 0;
+  virtual void SetNodeFilters(
+      const std::vector<AXNodeFilter>& node_filters) = 0;
 
   // If true, the internal accessibility id of each node will be included
   // in its output.

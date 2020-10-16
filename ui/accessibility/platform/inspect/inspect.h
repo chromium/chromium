@@ -62,6 +62,21 @@ struct AX_EXPORT AXPropertyFilter {
   AXPropertyFilter(const AXPropertyFilter&);
 };
 
+// A single node filter specification  which will exclude any node where the
+// value of the named property matches the given pattern.
+//
+// This can be used to exclude nodes based on properties like role, for
+// example to exclude all inlineTextBox nodes under blink we would use a
+// NodeFilter of the form:
+//   {property='internalRole', pattern='inlineTextBox'};
+struct AX_EXPORT AXNodeFilter {
+  std::string property;
+  std::string pattern;
+
+  AXNodeFilter(const std::string& property, const std::string& pattern)
+      : property(property), pattern(pattern) {}
+};
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_INSPECT_H_

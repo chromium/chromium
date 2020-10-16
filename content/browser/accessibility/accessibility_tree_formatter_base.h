@@ -151,7 +151,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
                                          std::string* contents) override;
   void SetPropertyFilters(
       const std::vector<AXPropertyFilter>& property_filters) override;
-  void SetNodeFilters(const std::vector<NodeFilter>& node_filters) override;
+  void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
   void set_show_ids(bool show_ids) override;
   base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() override;
 
@@ -222,7 +222,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // Node filters used when formatting the accessibility tree as text.
   // Any node which matches a node wilder will be skipped, along with all its
   // children.
-  std::vector<NodeFilter> node_filters_;
+  std::vector<AXNodeFilter> node_filters_;
 
   // Whether or not node ids should be included in the dump.
   bool show_ids_ = false;
