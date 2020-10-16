@@ -39,6 +39,8 @@ component("color_utils") {
 component("geometry_skia") {
   sources = [
     "geometry_skia_export.h",
+    "mask_filter_info.cc",
+    "mask_filter_info.h",
     "rrect_f.cc",
     "rrect_f.h",
     "rrect_f_builder.cc",

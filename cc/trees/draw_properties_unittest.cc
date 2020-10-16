@@ -8122,12 +8122,12 @@ TEST_F(DrawPropertiesTestWithLayerTree, RoundedCornerOnRenderSurface) {
   UpdateMainDrawProperties();
   CommitAndActivate();
 
-  EXPECT_FALSE(
-      GetRenderSurfaceImpl(child_1)->rounded_corner_bounds().IsEmpty());
-  EXPECT_FALSE(
-      GetRenderSurfaceImpl(child_2)->rounded_corner_bounds().IsEmpty());
-  EXPECT_FALSE(
-      GetRenderSurfaceImpl(child_3)->rounded_corner_bounds().IsEmpty());
+  EXPECT_TRUE(
+      GetRenderSurfaceImpl(child_1)->mask_filter_info().HasRoundedCorners());
+  EXPECT_TRUE(
+      GetRenderSurfaceImpl(child_2)->mask_filter_info().HasRoundedCorners());
+  EXPECT_TRUE(
+      GetRenderSurfaceImpl(child_3)->mask_filter_info().HasRoundedCorners());
 }
 
 }  // namespace

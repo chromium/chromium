@@ -237,7 +237,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
                gfx::Transform());
 
   viz::SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-  sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::RRectF(), bounds,
+  sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::MaskFilterInfo(), bounds,
               is_clipped, is_opaque, 1.f, SkBlendMode::kSrcOver, 0);
 
   viz::TransferableResource resource;

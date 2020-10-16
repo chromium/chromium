@@ -639,7 +639,7 @@ void PropertyTreeManager::EmitClipMaskLayer() {
   DCHECK(mask_isolation);
   bool needs_layer =
       !pending_synthetic_mask_layers_.Contains(mask_isolation->id) &&
-      mask_isolation->rounded_corner_bounds.IsEmpty();
+      mask_isolation->mask_filter_info.IsEmpty();
 
   CompositorElementId mask_isolation_id, mask_effect_id;
   SynthesizedClip& clip = client_.CreateOrReuseSynthesizedClipLayer(
@@ -984,9 +984,9 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
       // is used. See PropertyTreeManager::EmitClipMaskLayer().
       if (SupportsShaderBasedRoundedCorner(*pending_clip.clip,
                                            pending_clip.type, next_effect)) {
-        synthetic_effect.rounded_corner_bounds =
-            gfx::RRectF(pending_clip.clip->PixelSnappedClipRect());
-        synthetic_effect.is_fast_rounded_corner = true;
+        synthetic_effect.mask_filter_info = gfx::MaskFilterInfo(
+            gfx::RRectF(pending_clip.clip->PixelSnappedClipRect()),
+            /*is_fast_rounded_corner=*/true);
 
         // Nested rounded corner clips need to force render surfaces for
         // clips other than the leaf ones, because the compositor doesn't

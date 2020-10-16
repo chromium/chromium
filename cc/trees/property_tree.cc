@@ -1137,7 +1137,7 @@ bool EffectTree::HitTestMayBeAffectedByMask(int effect_id) const {
   const EffectNode* effect_node = Node(effect_id);
   for (; effect_node->id != kContentsRootNodeId;
        effect_node = Node(effect_node->parent_id)) {
-    if (!effect_node->rounded_corner_bounds.IsEmpty() ||
+    if (!effect_node->mask_filter_info.IsEmpty() ||
         effect_node->has_masking_child)
       return true;
   }

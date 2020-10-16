@@ -1383,7 +1383,8 @@ static cc::RenderSurfaceReason GetRenderSurfaceCandidateReason(
   // of antialiasing issues on the rounded corner edges.
   // is_fast_rounded_corner means to intentionally prefer faster compositing
   // and less memory over highest quality.
-  if (!effect.rounded_corner_bounds.IsEmpty() && !effect.is_fast_rounded_corner)
+  if (effect.mask_filter_info.HasRoundedCorners() &&
+      !effect.mask_filter_info.is_fast_rounded_corner())
     return cc::RenderSurfaceReason::kRoundedCorner;
   return cc::RenderSurfaceReason::kNone;
 }
