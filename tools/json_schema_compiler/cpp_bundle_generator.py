@@ -171,8 +171,8 @@ class CppBundleGenerator(object):
         namespace_name, function.name)
     c.Sblock('{')
     c.Append('&NewExtensionFunction<%s>,' % function_name)
-    c.Append('%s::function_name(),' % function_name)
-    c.Append('%s::histogram_value(),' % function_name)
+    c.Append('%s::static_function_name(),' % function_name)
+    c.Append('%s::static_histogram_value(),' % function_name)
     c.Eblock('},')
 
     if function_ifdefs is not None:

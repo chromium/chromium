@@ -61,8 +61,8 @@ class ExtensionFunctionRegistry {
   void Register(const FactoryEntry& entry);
   template <class T>
   void RegisterFunction() {
-    Register(FactoryEntry(&NewExtensionFunction<T>, T::function_name(),
-                          T::histogram_value()));
+    Register(FactoryEntry(&NewExtensionFunction<T>, T::static_function_name(),
+                          T::static_histogram_value()));
   }
 
   const FactoryMap& GetFactoriesForTesting() const { return factories_; }

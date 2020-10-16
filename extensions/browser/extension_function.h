@@ -73,13 +73,21 @@ class ExtensionFunctionDispatcher;
 // supply a unique |histogramvalue| used for histograms of extension function
 // invocation (add new ones at the end of the enum in
 // extension_function_histogram_value.h).
-#define DECLARE_EXTENSION_FUNCTION(name, histogramvalue)                     \
- public:                                                                     \
-  static constexpr const char* function_name() { return name; }              \
-                                                                             \
- public:                                                                     \
-  static constexpr extensions::functions::HistogramValue histogram_value() { \
-    return extensions::functions::histogramvalue;                            \
+// TODO(devlin): This would be nicer if instead we defined the constructor
+// for the ExtensionFunction since the histogram value and name should never
+// change. Then, we could get rid of the set_ methods for those values on
+// ExtensionFunction, and there'd be no possibility of having them be
+// "wrong" for a given function. Unfortunately, that would require updating
+// each ExtensionFunction and construction site, which, while possible, is
+// quite costly.
+#define DECLARE_EXTENSION_FUNCTION(name, histogramvalue)               \
+ public:                                                               \
+  static constexpr const char* static_function_name() { return name; } \
+                                                                       \
+ public:                                                               \
+  static constexpr extensions::functions::HistogramValue               \
+  static_histogram_value() {                                           \
+    return extensions::functions::histogramvalue;                      \
   }
 
 // Abstract base class for extension functions the ExtensionFunctionDispatcher

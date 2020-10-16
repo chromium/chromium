@@ -327,7 +327,7 @@ ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
   InputMethodEngineBase* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
-    return RespondNow(Error(InformativeError(error, function_name())));
+    return RespondNow(Error(InformativeError(error, static_function_name())));
 
   engine->KeyEventHandled(extension_id(), params->request_id, params->response);
   return RespondNow(NoArguments());
@@ -338,7 +338,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   InputMethodEngineBase* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
-    return RespondNow(Error(InformativeError(error, function_name())));
+    return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SetComposition::Params> parent_params(
       SetComposition::Params::Create(*args_));
@@ -374,7 +374,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
         std::make_unique<base::ListValue>();
     results->Append(std::make_unique<base::Value>(false));
     return RespondNow(ErrorWithArguments(
-        std::move(results), InformativeError(error, function_name())));
+        std::move(results), InformativeError(error, static_function_name())));
   }
   return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
 }
@@ -384,7 +384,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   InputMethodEngineBase* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
-    return RespondNow(Error(InformativeError(error, function_name())));
+    return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<CommitText::Params> parent_params(
       CommitText::Params::Create(*args_));
@@ -394,7 +394,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
         std::make_unique<base::ListValue>();
     results->Append(std::make_unique<base::Value>(false));
     return RespondNow(ErrorWithArguments(
-        std::move(results), InformativeError(error, function_name())));
+        std::move(results), InformativeError(error, static_function_name())));
   }
   return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
 }
@@ -404,7 +404,7 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   InputMethodEngineBase* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
-    return RespondNow(Error(InformativeError(error, function_name())));
+    return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SendKeyEvents::Params> parent_params(
       SendKeyEvents::Params::Create(*args_));
@@ -430,7 +430,7 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   if (!engine->SendKeyEvents(params.context_id, key_data_out, &error))
     return RespondNow(Error(InformativeError(
         base::StringPrintf("%s %s", kErrorSetKeyEventsFail, error.c_str()),
-        function_name())));
+        static_function_name())));
   return RespondNow(NoArguments());
 }
 

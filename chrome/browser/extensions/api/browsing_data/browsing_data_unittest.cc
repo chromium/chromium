@@ -124,7 +124,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   template <class ShortcutFunction>
   void RunAndCompareRemovalMask(uint64_t expected_mask) {
     scoped_refptr<ShortcutFunction> function = new ShortcutFunction();
-    SCOPED_TRACE(ShortcutFunction::function_name());
+    SCOPED_TRACE(ShortcutFunction::static_function_name());
     EXPECT_EQ(NULL,
               RunFunctionAndReturnSingleResult(
                   function.get(), std::string("[{\"since\": 1}]"), browser()));

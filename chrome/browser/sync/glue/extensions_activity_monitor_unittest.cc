@@ -53,8 +53,8 @@ template <class T>
 void FireBookmarksApiEvent(
     const scoped_refptr<Extension>& extension, int repeats) {
   scoped_refptr<extensions::BookmarksFunction> bookmarks_function(new T());
-  bookmarks_function->set_histogram_value(T::histogram_value());
-  bookmarks_function->SetName(T::function_name());
+  bookmarks_function->set_histogram_value(T::static_histogram_value());
+  bookmarks_function->SetName(T::static_function_name());
   // |bookmarks_function| won't be run, just passed to Notify(), so calling
   // ignore_did_respond_for_testing() is needed to avoid a DCHECK failure.
   bookmarks_function->ignore_did_respond_for_testing();
