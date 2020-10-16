@@ -1,0 +1,6 @@
+include_rules = [
+  "+base/metrics/histogram_functions.h",
+  "+components/search_engines/search_engine_utils.h",
+  "+services/metrics/public",
+  "+url",
+]
