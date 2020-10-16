@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -9,9 +11,12 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/version.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
+#import "chrome/updater/mac/util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/prefs.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_version.h"
@@ -29,7 +34,7 @@ base::FilePath GetExecutablePath() {
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
   return test_executable.DirName()
-      .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".App"))
+      .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app"))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"))
       .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
@@ -40,7 +45,7 @@ base::FilePath GetTestAppExecutablePath() {
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
   return test_executable.DirName()
-      .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING ".App"))
+      .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING ".app"))
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"))
       .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING));
@@ -59,6 +64,8 @@ base::FilePath GetDataDirPath() {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
+}  // namespace
+
 bool Run(base::CommandLine command_line, int* exit_code) {
   auto process = base::LaunchProcess(command_line, {});
   if (!process.IsValid())
@@ -68,8 +75,6 @@ bool Run(base::CommandLine command_line, int* exit_code) {
     return false;
   return true;
 }
-
-}  // namespace
 
 void Clean() {
   EXPECT_TRUE(base::DeletePathRecursively(GetProductPath()));
@@ -151,14 +156,17 @@ void RegisterTestApp() {
   EXPECT_EQ(0, exit_code);
 }
 
-void RunWake(int expected_exit_code) {
-  const base::FilePath path = GetExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
-  command_line.AppendSwitch(kWakeSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(command_line, &exit_code));
-  EXPECT_EQ(exit_code, expected_exit_code);
+base::FilePath GetInstalledExecutablePath() {
+  return GetUpdaterExecutablePath();
+}
+
+void ExpectCandidateUninstalled() {
+  base::FilePath versioned_folder_path = GetVersionedUpdaterFolderPath();
+  EXPECT_FALSE(base::PathExists(versioned_folder_path));
+  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
+      Launchd::User, Launchd::Agent, CopyWakeLaunchdName()));
+  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
+      Launchd::User, Launchd::Agent, CopyControlLaunchdName()));
 }
 
 void Uninstall() {
@@ -169,6 +177,10 @@ void Uninstall() {
   int exit_code = -1;
   ASSERT_TRUE(Run(command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
+}
+
+base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
+  return GetExecutableFolderPathForVersion(version);
 }
 
 }  // namespace test

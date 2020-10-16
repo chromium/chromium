@@ -92,7 +92,9 @@ void AppServerMac::ActiveDuty() {
 }
 
 void AppServerMac::UninstallSelf() {
-  UninstallCandidate();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&UninstallCandidate),
+      base::BindOnce(&AppServerMac::Shutdown, this));
 }
 
 bool AppServerMac::SwapRPCInterfaces() {

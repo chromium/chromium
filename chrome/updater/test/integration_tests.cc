@@ -4,9 +4,15 @@
 
 #include "chrome/updater/test/integration_tests.h"
 
+#include <cstdlib>
+
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/test_app/constants.h"
@@ -32,6 +38,57 @@ void ExpectActiveVersion(std::string expected) {
 }
 
 }  // namespace
+
+#if defined(OS_MAC)
+// TODO(crbug.com/1138014): These functions should be enabled on Win too.
+void RunWake(int expected_exit_code) {
+  const base::FilePath installed_executable_path = GetInstalledExecutablePath();
+  EXPECT_TRUE(base::PathExists(installed_executable_path));
+  base::CommandLine command_line(installed_executable_path);
+  command_line.AppendSwitch(kWakeSwitch);
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
+  int exit_code = -1;
+  ASSERT_TRUE(Run(command_line, &exit_code));
+  EXPECT_EQ(exit_code, expected_exit_code);
+}
+
+void SetupFakeUpdaterPrefs(const base::Version& version) {
+  std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+  global_prefs->SetActiveVersion(version.GetString());
+  global_prefs->SetSwapping(false);
+  PrefsCommitPendingWrites(global_prefs->GetPrefService());
+
+  ASSERT_EQ(version.GetString(), global_prefs->GetActiveVersion());
+}
+
+void SetupFakeUpdaterInstallFolder(const base::Version& version) {
+  const base::FilePath folder_path = GetFakeUpdaterInstallFolderPath(version);
+  ASSERT_TRUE(base::CreateDirectory(folder_path));
+}
+
+void SetupFakeUpdater(const base::Version& version) {
+  SetupFakeUpdaterPrefs(version);
+  SetupFakeUpdaterInstallFolder(version);
+}
+
+void SetupFakeUpdaterVersion(int offset) {
+  ASSERT_TRUE(offset != 0);
+  base::Version self_version = base::Version(UPDATER_VERSION_STRING);
+  std::vector<uint32_t> components = self_version.components();
+  ASSERT_FALSE(offset < 0 && components[0] <= uint32_t{abs(offset)});
+  components[0] += offset;
+  SetupFakeUpdater(base::Version(components));
+}
+
+void SetupFakeUpdaterLowerVersion() {
+  SetupFakeUpdaterVersion(-1);
+}
+
+void SetupFakeUpdaterHigherVersion() {
+  SetupFakeUpdaterVersion(1);
+}
+#endif  // OS_MAC
 
 class IntegrationTest : public ::testing::Test {
  protected:
@@ -59,6 +116,17 @@ TEST_F(IntegrationTest, InstallUninstall) {
 }
 
 #if defined(OS_MAC)
+TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
+  Install();
+  ExpectInstalled();
+  SetupFakeUpdaterHigherVersion();
+  EXPECT_NE(CreateGlobalPrefs()->GetActiveVersion(), UPDATER_VERSION_STRING);
+
+  RunWake(0);
+  ExpectCandidateUninstalled();
+  Uninstall();
+}
+
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
@@ -66,7 +134,7 @@ TEST_F(IntegrationTest, RegisterTestApp) {
   ExpectActive();
   Uninstall();
 }
-#endif
+#endif  // OS_MAC
 
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 

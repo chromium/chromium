@@ -194,6 +194,7 @@ if (is_win || is_mac) {
         "//chrome/updater/mac:installer_sources",
         "//chrome/updater/mac:network_fetcher_sources",
         "//chrome/updater/mac:updater_setup_sources",
+        "//chrome/updater/mac:util",
         "//chrome/updater/mac:xpc_names",
       ]
     }
@@ -327,6 +328,7 @@ if (is_win || is_mac) {
         "//chrome/updater/mac:updater_bundle",
         "//chrome/updater/mac:updater_setup_tests",
         "//chrome/updater/mac:updater_tests",
+        "//chrome/updater/mac:util",
         "//chrome/updater/mac:xpc_names",
         "//third_party/ocmock",
       ]

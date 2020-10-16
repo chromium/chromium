@@ -5,7 +5,6 @@
 #include "chrome/updater/app/app_wake.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/control_service.h"

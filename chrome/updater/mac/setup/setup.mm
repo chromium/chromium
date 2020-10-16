@@ -27,6 +27,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
+#import "chrome/updater/mac/util.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
@@ -39,49 +40,12 @@ namespace {
 constexpr char kLoggingModuleSwitchValue[] = "*/updater/*=2";
 
 #pragma mark Helpers
-const base::FilePath GetUpdateFolderName() {
-  return base::FilePath(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
 const base::FilePath GetUpdaterAppName() {
   return base::FilePath(PRODUCT_FULLNAME_STRING ".app");
 }
 
 const base::FilePath GetUpdaterAppExecutablePath() {
   return base::FilePath("Contents/MacOS").AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
-bool IsSystemInstall() {
-  return geteuid() == 0;
-}
-
-const base::FilePath GetLibraryFolderPath() {
-  // For user installations: the "~/Library" for the logged in user.
-  // For system installations: "/Library".
-  if (IsSystemInstall()) {
-    base::FilePath local_library_path;
-    if (!base::mac::GetLocalDirectory(NSLibraryDirectory,
-                                      &local_library_path)) {
-      VLOG(1) << "Could not get local library path";
-    }
-    return local_library_path;
-  }
-  return base::mac::GetUserLibraryPath();
-}
-
-const base::FilePath GetUpdaterFolderPath() {
-  // For user installations:
-  // ~/Library/COMPANY_SHORTNAME_STRING/PRODUCT_FULLNAME_STRING.
-  // e.g. ~/Library/Google/GoogleUpdater
-  // For system installations:
-  // /Library/COMPANY_SHORTNAME_STRING/PRODUCT_FULLNAME_STRING.
-  // e.g. /Library/Google/GoogleUpdater
-  return GetLibraryFolderPath().Append(GetUpdateFolderName());
-}
-
-const base::FilePath GetVersionedUpdaterFolderPath() {
-  return GetUpdaterFolderPath().AppendASCII(UPDATER_VERSION_STRING);
 }
 
 const base::FilePath GetUpdaterExecutablePath(
@@ -139,6 +103,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
       MakeProgramArgument(kServerSwitch),
       MakeProgramArgumentWithValue(kServerServiceSwitch,
                                    kServerUpdateServiceSwitchValue),
+      MakeProgramArgument(kEnableLoggingSwitch),
       MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                    kLoggingModuleSwitchValue),
     ],
@@ -159,7 +124,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
       [NSMutableArray<NSString*> array];
   [program_arguments addObjectsFromArray:@[
     base::SysUTF8ToNSString(updater_path.value()),
-    MakeProgramArgument(kWakeSwitch)
+    MakeProgramArgument(kWakeSwitch), MakeProgramArgument(kEnableLoggingSwitch)
   ]];
   if (IsSystemInstall())
     [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
@@ -187,6 +152,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateControlLaunchdPlist(
       MakeProgramArgument(kServerSwitch),
       MakeProgramArgumentWithValue(kServerServiceSwitch,
                                    kServerControlServiceSwitchValue),
+      MakeProgramArgument(kEnableLoggingSwitch),
       MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                    kLoggingModuleSwitchValue),
     ],
@@ -362,14 +328,18 @@ int PromoteCandidate() {
 
 #pragma mark Uninstall
 int UninstallCandidate() {
+  if (!DeleteCandidateInstallFolder())
+    return setup_exit_codes::kFailedToDeleteFolder;
+
   if (!RemoveUpdateWakeJobFromLaunchd())
     return setup_exit_codes::kFailedToRemoveWakeJobFromLaunchd;
 
+  // Removing the Control job has to be the last step because launchd is likely
+  // to terminate the current process. Clients should expect the connection to
+  // invalidate (possibly with an interruption beforehand) as a result of
+  // service uninstallation.
   if (!RemoveUpdateControlJobFromLaunchd())
     return setup_exit_codes::kFailedToRemoveControlJobFromLaunchd;
-
-  if (!DeleteCandidateInstallFolder())
-    return setup_exit_codes::kFailedToDeleteFolder;
 
   return setup_exit_codes::kSuccess;
 }

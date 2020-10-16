@@ -5,6 +5,12 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TESTS_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TESTS_H_
 
+namespace base {
+class CommandLine;
+class FilePath;
+class Version;
+}  // namespace base
+
 namespace updater {
 
 namespace test {
@@ -44,6 +50,31 @@ void RunWake(int exit_code);
 // Registers the test app. As a result, the bundled updater is installed,
 // promoted and registered.
 void RegisterTestApp();
+
+// Runs the command and waits for it to exit or time out.
+bool Run(base::CommandLine command_line, int* exit_code);
+
+// Returns the path of the Updater executable.
+base::FilePath GetInstalledExecutablePath();
+
+// Returns the folder path under which the executable for the fake updater
+// should reside.
+base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version);
+
+// Creates Prefs with the fake updater version set as active.
+void SetupFakeUpdaterPrefs(const base::Version& version);
+
+// Creates an install folder on the system with the fake updater version.
+void SetupFakeUpdaterInstallFolder(const base::Version& version);
+
+// Sets up a fake updater on the system at a version lower than the test.
+void SetupFakeUpdaterLowerVersion();
+
+// Sets up a fake updater on the system at a version higher than the test.
+void SetupFakeUpdaterHigherVersion();
+
+// Expects that this version of updater is uninstalled from the system.
+void ExpectCandidateUninstalled();
 
 }  // namespace test
 
