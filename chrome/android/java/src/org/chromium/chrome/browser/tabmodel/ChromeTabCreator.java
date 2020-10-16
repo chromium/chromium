@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -30,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -129,7 +129,7 @@ public class ChromeTabCreator extends TabCreator {
             int position, Intent intent) {
         if (mOverviewNTPCreator != null
                 && mOverviewNTPCreator.handleCreateNTPIfNeeded(
-                        NewTabPage.isNTPUrl(loadUrlParams.getUrl()), mIncognito)) {
+                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()), mIncognito)) {
             return null;
         }
         try {

@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -216,7 +216,7 @@ public class HomeButton extends ChromeImageButton
             // NTP but homepage is not NTP.
             isEnabled = !isTabNTP(getActiveTab())
                     || (isHomepageEnabled
-                            && !NewTabPage.isNTPUrl(HomepageManager.getHomepageUri()));
+                            && !UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri()));
         } else {
             // There is no active tab, which means tab is in transition, ex tab swither view to tab
             // view, or from one tab to another tab.
@@ -236,7 +236,7 @@ public class HomeButton extends ChromeImageButton
      *         change is likely.
      */
     private boolean isTabNTP(Tab tab) {
-        return tab != null && NewTabPage.isNTPUrl(tab.getUrlString());
+        return tab != null && UrlUtilities.isNTPUrl(tab.getUrlString());
     }
 
     /**

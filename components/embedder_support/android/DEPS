@@ -5,6 +5,7 @@ include_rules = [
 
   "+cc",
   "+components/embedder_support/android/web_contents_delegate_jni_headers",
+  "+components/url_formatter/android/java",
   "+content/public/browser",
   "+content/public/common",
   "+ui/android",

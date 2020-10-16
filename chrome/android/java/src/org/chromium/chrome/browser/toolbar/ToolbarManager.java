@@ -97,6 +97,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -439,7 +440,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
                 NewTabPage ntp = mLocationBarModel.getNewTabPageForCurrentTab();
                 if (ntp == null) return;
-                if (!NewTabPage.isNTPUrl(params.getUrl())
+                if (!UrlUtilities.isNTPUrl(params.getUrl())
                         && loadType != TabLoadStatus.PAGE_LOAD_FAILED) {
                     ntp.setUrlFocusAnimationsDisabled(true);
                     mToolbar.onTabOrModelChanged();
@@ -456,7 +457,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 NavigationEntry pendingEntry = navigationController.getPendingEntry();
                 if (pendingEntry == null) return false;
 
-                return !NewTabPage.isNTPUrl(pendingEntry.getUrl());
+                return !UrlUtilities.isNTPUrl(pendingEntry.getUrl());
             }
 
             @Override

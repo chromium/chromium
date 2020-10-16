@@ -22,7 +22,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -440,7 +439,7 @@ public class PartnerBrowserCustomizations {
         if (url == null) {
             return false;
         }
-        if (!UrlUtilities.isHttpOrHttps(url) && !NewTabPage.isNTPUrl(url)) {
+        if (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNTPUrl(url)) {
             Log.w(TAG,
                     "Partner homepage must be HTTP(S) or NewTabPage. "
                             + "Got invalid URL \"%s\"",

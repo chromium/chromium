@@ -150,7 +150,7 @@ public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPrope
         if (!hasTab()) return UrlBarData.EMPTY;
 
         String url = getCurrentUrl();
-        if (NativePageFactory.isNativePageUrl(url, isIncognito()) || NewTabPage.isNTPUrl(url)) {
+        if (NativePageFactory.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)) {
             return UrlBarData.EMPTY;
         }
 

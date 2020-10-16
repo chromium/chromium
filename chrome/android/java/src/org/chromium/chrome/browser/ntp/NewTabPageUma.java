@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.NetworkChangeNotifier;
@@ -292,7 +293,7 @@ public class NewTabPageUma {
     private static class TabCreationRecorder extends EmptyTabModelSelectorObserver {
         @Override
         public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-            if (!NewTabPage.isNTPUrl(tab.getUrlString())) return;
+            if (!UrlUtilities.isNTPUrl(tab.getUrlString())) return;
             RecordUserAction.record("MobileNTPOpenedInNewTab");
         }
     }

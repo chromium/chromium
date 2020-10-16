@@ -19,7 +19,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.Navsugg
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -179,7 +179,7 @@ public class AutocompleteController {
         // process does not impact the Omnibox initialization. Note that there's a small chance the
         // renderer will be started after the next navigation if the delay is too long, but the
         // spare renderer will probably get used anyways by a later navigation.
-        if (!profile.isOffTheRecord() && !NewTabPage.isNTPUrl(url)
+        if (!profile.isOffTheRecord() && !UrlUtilities.isNTPUrl(url)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
             PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
                     ()

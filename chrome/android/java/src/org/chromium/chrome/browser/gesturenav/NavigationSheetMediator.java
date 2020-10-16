@@ -14,13 +14,13 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -142,7 +142,7 @@ class NavigationSheetMediator {
             if (TextUtils.equals(pageUrl, mHistory.getEntryAtIndex(i).getUrl())) {
                 Drawable drawable;
                 if (favicon == null) {
-                    drawable = NewTabPage.isNTPUrl(pageUrl)
+                    drawable = UrlUtilities.isNTPUrl(pageUrl)
                             ? mDefaultIcon
                             : new BitmapDrawable(mIconGenerator.generateIconForUrl(pageUrl));
                 } else {
@@ -155,7 +155,7 @@ class NavigationSheetMediator {
 
     private String getEntryText(NavigationEntry entry) {
         String entryText = entry.getTitle();
-        if (NewTabPage.isNTPUrl(entry.getUrl())) entryText = mNewTabText;
+        if (UrlUtilities.isNTPUrl(entry.getUrl())) entryText = mNewTabText;
         if (TextUtils.isEmpty(entryText)) entryText = entry.getVirtualUrl();
         if (TextUtils.isEmpty(entryText)) entryText = entry.getUrl();
         return entryText;

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -209,6 +210,31 @@ public class UrlUtilities {
             noScheme = noScheme.substring(7);
         }
         return noScheme;
+    }
+
+    /**
+     * @param gurl The GURL to check whether it is for the NTP.
+     * @return Whether the passed in URL is used to render the NTP.
+     */
+    public static boolean isNTPUrl(GURL gurl) {
+        // TODO(crbug.com/1139437): isNTPUrl(new GURL("about:newtab")) returns false though
+        // it should return true for this legacy URL.
+        if (!gurl.isValid() || !isInternalScheme(gurl)) return false;
+        return UrlConstants.NTP_HOST.equals(gurl.getHost());
+    }
+
+    /**
+     * @param url The URL to check whether it is for the NTP.
+     * @return Whether the passed in URL is used to render the NTP.
+     */
+    public static boolean isNTPUrl(String url) {
+        // Also handle the legacy chrome://newtab and about:newtab URLs since they will redirect to
+        // chrome-native://newtab natively.
+        if (TextUtils.isEmpty(url)) return false;
+        // We need to fixup the URL to handle about: schemes and transform them into the equivalent
+        // chrome:// scheme so that GURL parses the host correctly.
+        GURL gurl = UrlFormatter.fixupUrl(url);
+        return isNTPUrl(gurl);
     }
 
     @NativeMethods

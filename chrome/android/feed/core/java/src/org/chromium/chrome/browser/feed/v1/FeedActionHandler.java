@@ -15,11 +15,11 @@ import org.chromium.chrome.browser.feed.library.api.host.action.ActionApi;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.NavigationRecorder;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -207,7 +207,7 @@ public class FeedActionHandler implements ActionApi {
             NavigationRecorder.record(loadingTab,
                     visitData
                     -> mLoggingBridge.onContentTargetVisited(
-                            visitData.duration, NewTabPage.isNTPUrl(visitData.endUrl)));
+                            visitData.duration, UrlUtilities.isNTPUrl(visitData.endUrl)));
         }
         mSuggestionConsumedObserver.run();
     }

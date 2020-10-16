@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.metrics.PackageMetrics;
 import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
@@ -84,6 +83,7 @@ import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_capture.ContentCaptureController;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -304,7 +304,7 @@ public class ProcessInitializationHandler {
                                 String homepageUrl = HomepageManager.getHomepageUri();
                                 LaunchMetrics.recordHomePageLaunchMetrics(
                                         HomepageManager.isHomepageEnabled(),
-                                        NewTabPage.isNTPUrl(homepageUrl), homepageUrl);
+                                        UrlUtilities.isNTPUrl(homepageUrl), homepageUrl);
                             }
                         });
 

@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansio
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -1743,7 +1744,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean hideShadowForRegularNtpTextureCapture() {
-        return !isIncognito() && NewTabPage.isNTPUrl(getToolbarDataProvider().getCurrentUrl())
+        return !isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl())
                 && mNtpSearchBoxScrollFraction < 1.f;
     }
 
@@ -2359,7 +2360,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean hideShadowForIncognitoNtp() {
-        return isIncognito() && NewTabPage.isNTPUrl(getToolbarDataProvider().getCurrentUrl());
+        return isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl());
     }
 
     private boolean hideShadowForInterstitial() {

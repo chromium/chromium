@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.toolbar.load_progress;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -62,7 +62,7 @@ public class LoadProgressMediator {
 
             @Override
             public void onLoadProgressChanged(Tab tab, float progress) {
-                if (NewTabPage.isNTPUrl(tab.getUrlString())
+                if (UrlUtilities.isNTPUrl(tab.getUrlString())
                         || NativePageFactory.isNativePageUrl(
                                 tab.getUrlString(), tab.isIncognito())) {
                     return;

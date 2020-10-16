@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,13 +71,11 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -155,29 +152,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
          * @param scrollPercentage The percentage the search box has been scrolled off the page.
          */
         void onNtpScrollChanged(float scrollPercentage);
-    }
-
-    /**
-     * @param gurl The GURL to check whether it is for the NTP.
-     * @return Whether the passed in URL is used to render the NTP.
-     */
-    public static boolean isNTPUrl(GURL gurl) {
-        if (!gurl.isValid() || !UrlUtilities.isInternalScheme(gurl)) return false;
-        return UrlConstants.NTP_HOST.equals(gurl.getHost());
-    }
-
-    /**
-     * @param url The URL to check whether it is for the NTP.
-     * @return Whether the passed in URL is used to render the NTP.
-     */
-    public static boolean isNTPUrl(String url) {
-        // Also handle the legacy chrome://newtab and about:newtab URLs since they will redirect to
-        // chrome-native://newtab natively.
-        if (TextUtils.isEmpty(url)) return false;
-        // We need to fixup the URL to handle about: schemes and transform them into the equivalent
-        // chrome:// scheme so that GURL parses the host correctly.
-        GURL gurl = UrlFormatter.fixupUrl(url);
-        return isNTPUrl(gurl);
     }
 
     protected class NewTabPageManagerImpl
@@ -335,7 +309,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
             @Override
             public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                mNewTabPageLayout.onLoadUrl(isNTPUrl(tab.getUrl()));
+                mNewTabPageLayout.onLoadUrl(UrlUtilities.isNTPUrl(tab.getUrl()));
             }
         };
         mTab.addObserver(mTabObserver);
@@ -461,7 +435,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         // NTP itself, at which point the last committed entry is not for the NTP yet. This method
         // will then be called a second time when the user navigates away, at which point the last
         // committed entry is for the NTP. The extra data must only be set in the latter case.
-        if (!isNTPUrl(entry.getUrl())) return;
+        if (!UrlUtilities.isNTPUrl(entry.getUrl())) return;
 
         controller.setEntryExtraData(index, key, value);
     }

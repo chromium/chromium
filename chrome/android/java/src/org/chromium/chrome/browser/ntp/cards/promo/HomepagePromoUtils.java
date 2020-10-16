@@ -11,9 +11,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -93,7 +93,7 @@ final class HomepagePromoUtils {
     }
 
     private static boolean isHomepageNTP() {
-        return !sBypassUrlIsNTPForTests && NewTabPage.isNTPUrl(HomepageManager.getHomepageUri());
+        return !sBypassUrlIsNTPForTests && UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri());
     }
 
     static void recordHomepagePromoEvent(@HomepagePromoAction int action) {

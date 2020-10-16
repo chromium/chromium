@@ -11,11 +11,11 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -125,7 +125,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
 
-        if (NewTabPage.isNTPUrl(homepageUrl)) {
+        if (UrlUtilities.isNTPUrl(homepageUrl)) {
             tracker.notifyEvent(EventConstants.NTP_HOME_BUTTON_CLICKED);
         }
     }

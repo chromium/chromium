@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
@@ -566,7 +566,7 @@ public class LayoutManagerChrome
 
         // Close the previous tab if the previous tab is a NTP.
         Tab lastTab = getTabById(lastTabId);
-        if (NewTabPage.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
+        if (UrlUtilities.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
                 && !lastTab.canGoForward()) {
             getTabModelSelector()
                     .getModel(lastTab.isIncognito())

@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.url.GURL;
 
 /**
  * Unit tests for {@link UrlUtilities}.
@@ -188,5 +189,35 @@ public class UrlUtilitiesUnitTest {
         String url = "http://www.example.com/path";
         Assert.assertFalse(UrlUtilities.urlsFragmentsDiffer(url, url));
         Assert.assertTrue(UrlUtilities.urlsFragmentsDiffer(url + "#fragment", url));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsNtpUrlString() {
+        Assert.assertTrue(UrlUtilities.isNTPUrl("chrome-native://newtab"));
+        Assert.assertTrue(UrlUtilities.isNTPUrl("chrome://newtab"));
+        Assert.assertTrue(UrlUtilities.isNTPUrl("about:newtab"));
+
+        Assert.assertFalse(UrlUtilities.isNTPUrl("http://www.example.com"));
+        Assert.assertFalse(UrlUtilities.isNTPUrl("chrome://history"));
+        Assert.assertFalse(UrlUtilities.isNTPUrl("chrome-native://newtabz"));
+        Assert.assertFalse(UrlUtilities.isNTPUrl("newtab"));
+        Assert.assertFalse(UrlUtilities.isNTPUrl(""));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsNtpUrlGurl() {
+        Assert.assertTrue(UrlUtilities.isNTPUrl(new GURL("chrome-native://newtab")));
+        Assert.assertTrue(UrlUtilities.isNTPUrl(new GURL("chrome://newtab")));
+
+        // TODO(crbug.com/1139437): Differs from UrlUtilities#isNTPUrl(String)
+        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("about:newtab")));
+
+        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("http://www.example.com")));
+        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("chrome://history")));
+        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("chrome-native://newtabz")));
+        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("newtab")));
+        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("")));
     }
 }

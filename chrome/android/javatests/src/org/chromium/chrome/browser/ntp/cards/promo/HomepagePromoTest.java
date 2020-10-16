@@ -75,6 +75,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -457,7 +458,7 @@ public class HomepagePromoTest {
         Mockito.verify(mTracker, times(1)).dismissed(FeatureConstants.HOMEPAGE_PROMO_CARD_FEATURE);
 
         Assert.assertTrue("Homepage should be set to NTP after clicking on promo primary button.",
-                NewTabPage.isNTPUrl(HomepageManager.getHomepageUri()));
+                UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri()));
 
         // Verifications on snackbar, and click on "undo".
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();

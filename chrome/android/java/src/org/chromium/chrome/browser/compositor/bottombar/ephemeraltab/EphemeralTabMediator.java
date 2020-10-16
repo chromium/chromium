@@ -10,10 +10,10 @@ import android.os.Handler;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -106,7 +106,7 @@ public class EphemeralTabMediator {
                     // The link Back to Safety on the interstitial page will go to the previous
                     // page. If there is no previous page, i.e. previous page is NTP, the preview
                     // tab will be closed.
-                    if (mIsOnErrorPage && NewTabPage.isNTPUrl(url)) {
+                    if (mIsOnErrorPage && UrlUtilities.isNTPUrl(url)) {
                         mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                         mCurrentUrl = null;
                         return;

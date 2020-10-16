@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
@@ -55,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -295,7 +295,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         tabAddedCallback.waitForCallback(0);
         Tab tab = TestThreadUtils.runOnUiThreadBlocking(
                 () -> mTabbedActivityTestRule.getActivity().getActivityTab());
-        Assert.assertTrue(NewTabPage.isNTPUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
+        Assert.assertTrue(UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
         Assert.assertFalse(tab.isIncognito());
         Assert.assertEquals(initialTabCount + 1,
                 mTabbedActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());

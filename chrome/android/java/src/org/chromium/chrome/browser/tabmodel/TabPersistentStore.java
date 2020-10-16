@@ -33,7 +33,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -586,7 +586,7 @@ public class TabPersistentStore extends TabPersister {
                 Log.w(TAG, "Failed to restore tab: not enough info about its type was available.");
                 return;
             } else if (isIncognito) {
-                boolean isNtp = NewTabPage.isNTPUrl(tabToRestore.url);
+                boolean isNtp = UrlUtilities.isNTPUrl(tabToRestore.url);
                 boolean isNtpFromMerge = isNtp && tabToRestore.fromMerge;
 
                 if (!isNtpFromMerge && (!isNtp || !setAsActive || mCancelIncognitoTabLoads)) {
@@ -632,7 +632,8 @@ public class TabPersistentStore extends TabPersister {
                     .createFrozenTab(tabState, serializedCriticalPersistedTabData, tabToRestore.id,
                             restoredIndex);
         } else {
-            if (NewTabPage.isNTPUrl(tabToRestore.url) && !setAsActive && !tabToRestore.fromMerge) {
+            if (UrlUtilities.isNTPUrl(tabToRestore.url) && !setAsActive
+                    && !tabToRestore.fromMerge) {
                 Log.i(TAG, "Skipping restore of non-selected NTP.");
                 return;
             }
@@ -751,7 +752,7 @@ public class TabPersistentStore extends TabPersister {
             return;
         }
 
-        if (NewTabPage.isNTPUrl(tab.getUrlString()) && !tab.canGoBack() && !tab.canGoForward()) {
+        if (UrlUtilities.isNTPUrl(tab.getUrlString()) && !tab.canGoBack() && !tab.canGoForward()) {
             return;
         }
         mTabsToSave.addLast(tab);

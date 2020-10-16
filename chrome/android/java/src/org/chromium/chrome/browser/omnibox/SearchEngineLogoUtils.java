@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.toolbar.ToolbarCommonPropertiesModel;
@@ -170,7 +169,7 @@ public class SearchEngineLogoUtils {
     public static boolean currentlyOnNTP(
             ToolbarCommonPropertiesModel toolbarCommonPropertiesModel) {
         return toolbarCommonPropertiesModel != null
-                && NewTabPage.isNTPUrl(toolbarCommonPropertiesModel.getCurrentUrl());
+                && UrlUtilities.isNTPUrl(toolbarCommonPropertiesModel.getCurrentUrl());
     }
 
     /**

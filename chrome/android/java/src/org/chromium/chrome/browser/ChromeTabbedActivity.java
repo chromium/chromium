@@ -103,7 +103,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.cards.promo.HomepagePromoVariationManager;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -161,6 +160,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1136,7 +1136,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             } else {
                 // Migrate legacy NTP URLs (chrome://newtab) to the newer format
                 // (chrome-native://newtab)
-                if (NewTabPage.isNTPUrl(url)) {
+                if (UrlUtilities.isNTPUrl(url)) {
                     url = UrlConstants.NTP_URL;
                 }
             }
@@ -1687,7 +1687,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public boolean onMenuOrKeyboardAction(final int id, boolean fromMenu) {
         final Tab currentTab = getActivityTab();
         boolean currentTabIsNtp =
-                currentTab != null && NewTabPage.isNTPUrl(currentTab.getUrlString());
+                currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrlString());
         if (id == R.id.new_tab_menu_id) {
             getTabModelSelector().getModel(false).commitAllTabClosures();
             RecordUserAction.record("MobileMenuNewTab");
@@ -1952,7 +1952,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private Tab launchIntent(String url, String referer, String headers, String externalAppId,
             boolean forceNewTab, boolean isRendererInitiated, @Nullable Origin initiatorOrigin,
             Intent intent) {
-        if (mUIWithNativeInitialized && !NewTabPage.isNTPUrl(url)) {
+        if (mUIWithNativeInitialized && !UrlUtilities.isNTPUrl(url)) {
             mOverviewModeController.hideOverview(false);
             getToolbarManager().finishAnimations();
         }

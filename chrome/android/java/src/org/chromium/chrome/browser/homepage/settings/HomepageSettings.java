@@ -18,11 +18,11 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.homepage.settings.RadioButtonGroupHomepagePreference.HomepageOption;
 import org.chromium.chrome.browser.homepage.settings.RadioButtonGroupHomepagePreference.PreferenceValues;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 
 /**
@@ -178,10 +178,10 @@ public class HomepageSettings extends PreferenceFragmentCompat {
         String defaultUrl = HomepageManager.getDefaultHomepageUri();
         String customUrl = mHomepageManager.getPrefHomepageCustomUri();
         if (mHomepageManager.getPrefHomepageUseDefaultUri()) {
-            return NewTabPage.isNTPUrl(defaultUrl) ? "" : defaultUrl;
+            return UrlUtilities.isNTPUrl(defaultUrl) ? "" : defaultUrl;
         }
 
-        if (TextUtils.isEmpty(customUrl) && !NewTabPage.isNTPUrl(defaultUrl)) {
+        if (TextUtils.isEmpty(customUrl) && !UrlUtilities.isNTPUrl(defaultUrl)) {
             return defaultUrl;
         }
 
@@ -196,11 +196,11 @@ public class HomepageSettings extends PreferenceFragmentCompat {
         // URL, we don't check Chrome's Homepage radio button.
         boolean shouldCheckNTP;
         if (isPolicyEnabled) {
-            shouldCheckNTP = NewTabPage.isNTPUrl(HomepagePolicyManager.getHomepageUrl());
+            shouldCheckNTP = UrlUtilities.isNTPUrl(HomepagePolicyManager.getHomepageUrl());
         } else {
             shouldCheckNTP = mHomepageManager.getPrefHomepageUseChromeNTP()
                     || (mHomepageManager.getPrefHomepageUseDefaultUri()
-                            && NewTabPage.isNTPUrl(HomepageManager.getDefaultHomepageUri()));
+                            && UrlUtilities.isNTPUrl(HomepageManager.getDefaultHomepageUri()));
         }
 
         @HomepageOption

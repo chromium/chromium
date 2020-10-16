@@ -280,6 +280,7 @@ android_library("chrome_java_test_support") {
     "//components/bookmarks/common/android:bookmarks_java",
     "//components/browser_ui/notifications/android:test_support_java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",

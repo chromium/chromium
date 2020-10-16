@@ -13,11 +13,11 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /**
  * Provides information regarding homepage enabled states and URI.
@@ -103,7 +103,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     public static boolean shouldCloseAppWithZeroTabs() {
         return HomepageManager.isHomepageEnabled()
-                && !NewTabPage.isNTPUrl(HomepageManager.getHomepageUri());
+                && !UrlUtilities.isNTPUrl(HomepageManager.getHomepageUri());
     }
 
     /**
@@ -262,7 +262,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     @VisibleForTesting
     public @HomepageLocationType int getHomepageLocationType() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return NewTabPage.isNTPUrl(HomepagePolicyManager.getHomepageUrl())
+            return UrlUtilities.isNTPUrl(HomepagePolicyManager.getHomepageUrl())
                     ? HomepageLocationType.POLICY_NTP
                     : HomepageLocationType.POLICY_OTHER;
         }
@@ -275,12 +275,13 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
                 return HomepageLocationType.DEFAULT_NTP;
             }
 
-            return NewTabPage.isNTPUrl(PartnerBrowserCustomizations.getInstance().getHomePageUrl())
+            return UrlUtilities.isNTPUrl(
+                           PartnerBrowserCustomizations.getInstance().getHomePageUrl())
                     ? HomepageLocationType.PARTNER_PROVIDED_NTP
                     : HomepageLocationType.PARTNER_PROVIDED_OTHER;
         }
         // If user type NTP URI as their customized homepage, we'll record user is using NTP
-        return NewTabPage.isNTPUrl(getPrefHomepageCustomUri())
+        return UrlUtilities.isNTPUrl(getPrefHomepageCustomUri())
                 ? HomepageLocationType.USER_CUSTOMIZED_NTP
                 : HomepageLocationType.USER_CUSTOMIZED_OTHER;
     }
