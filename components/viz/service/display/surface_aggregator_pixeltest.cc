@@ -381,7 +381,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
   bool discard_alpha = false;
-  cc::ExactPixelComparator pixel_comparator(discard_alpha);
+  cc::FuzzyPixelOffByOneComparator pixel_comparator(discard_alpha);
   auto* pass_list = &aggregated_frame.render_pass_list;
   EXPECT_TRUE(this->RunPixelTest(
       pass_list, base::FilePath(FILE_PATH_LITERAL("delegated_ink_trail.png")),

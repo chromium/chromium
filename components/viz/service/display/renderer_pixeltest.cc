@@ -5279,6 +5279,10 @@ TEST_P(DelegatedInkTest, DrawTwoTrailsAndErase) {
 
 // Confirm that the trail can't be drawn beyond the presentation area.
 TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
+  // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
+  if (renderer_type() == RendererType::kSkiaDawn)
+    return;
+
   const gfx::RectF kPresentationArea(30, 30, 100, 100);
   CreateAndSendMetadata(gfx::PointF(50.2f, 89.999f), 15.22f, SK_ColorCYAN,
                         kPresentationArea);
@@ -5334,7 +5338,7 @@ TEST_P(DelegatedInkTest, DelegatedInkTrailAfterBatchedQuads) {
       &pass_list,
       base::FilePath(
           FILE_PATH_LITERAL("delegated_ink_trail_on_batched_quads.png")),
-      cc::ExactPixelComparator(true)));
+      cc::FuzzyPixelOffByOneComparator(true)));
 }
 #endif  // !defined(OS_ANDROID)
 
