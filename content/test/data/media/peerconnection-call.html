@@ -761,13 +761,13 @@
   }
 
   async function CanSetupH264VideoCallOnSupportedDevice() {
+    // Setup one way video call, prioritize H264 and verify that it used.
     createConnections(null);
     setOfferSdpTransform(maybePreferH264SendCodec);
     navigator.mediaDevices.getUserMedia({audio: false, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
+        .then(addStreamToTheFirstConnectionAndNegotiate)
         .catch(failTest);
 
-    await detectVideoPlaying('remote-view-1');
     await detectVideoPlaying('remote-view-2');
 
     assertEquals(gLocalStream.getVideoTracks().length, 1);

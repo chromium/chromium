@@ -24,3 +24,6 @@
 
 # crbug.com/954217
 -RenderFrameHostImplBrowserTest.VisibilityScrolledOutOfView
+
+# crbug.com/1047994
+-WebRtcBrowserTest.CanSetupH264VideoCallOnSupportedDevice

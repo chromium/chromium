@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_FACTORY_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
@@ -34,7 +35,11 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
 
  private:
+  void CheckAndWaitDecoderSupportStatusIfNeeded() const;
+
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+
+  GpuCodecSupportWaiter gpu_codec_support_waiter_;
 
   DISALLOW_COPY_AND_ASSIGN(RTCVideoDecoderFactory);
 };

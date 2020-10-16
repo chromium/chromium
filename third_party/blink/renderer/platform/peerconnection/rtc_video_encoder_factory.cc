@@ -193,13 +193,25 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
 
 RTCVideoEncoderFactory::RTCVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories)
-    : gpu_factories_(gpu_factories) {}
+    : gpu_factories_(gpu_factories), gpu_codec_support_waiter_(gpu_factories) {}
 
 RTCVideoEncoderFactory::~RTCVideoEncoderFactory() {}
+
+void RTCVideoEncoderFactory::CheckAndWaitEncoderSupportStatusIfNeeded() const {
+  if (!gpu_codec_support_waiter_.IsEncoderSupportKnown()) {
+    DLOG(WARNING) << "Encoder support is unknown. Timeout "
+                  << gpu_codec_support_waiter_.wait_timeout_ms()
+                         .value_or(base::TimeDelta())
+                         .InMilliseconds()
+                  << "ms. Encoders might not be available.";
+  }
+}
 
 std::unique_ptr<webrtc::VideoEncoder>
 RTCVideoEncoderFactory::CreateVideoEncoder(
     const webrtc::SdpVideoFormat& format) {
+  CheckAndWaitEncoderSupportStatusIfNeeded();
+
   std::unique_ptr<webrtc::VideoEncoder> encoder;
   bool is_constrained_h264 = IsConstrainedH264(format);
   auto supported_formats = GetSupportedFormatsInternal(gpu_factories_);
@@ -218,11 +230,14 @@ RTCVideoEncoderFactory::CreateVideoEncoder(
                                                   gpu_factories_);
     }
   }
+
   return encoder;
 }
 
 std::vector<webrtc::SdpVideoFormat>
 RTCVideoEncoderFactory::GetSupportedFormats() const {
+  CheckAndWaitEncoderSupportStatusIfNeeded();
+
   return GetSupportedFormatsInternal(gpu_factories_).sdp_formats;
 }
 

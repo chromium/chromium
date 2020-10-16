@@ -57,3 +57,6 @@
 
 # crbug.com/1120813
 -P/CompositorImplBrowserTestRefreshRate.VideoPreference/*
+
+# crbug.com/1047994
+-WebRtcBrowserTest.CanSetupH264VideoCallOnSupportedDevice

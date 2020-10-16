@@ -1265,6 +1265,8 @@ component("platform") {
     "p2p/socket_dispatcher.h",
     "peerconnection/audio_codec_factory.cc",
     "peerconnection/audio_codec_factory.h",
+    "peerconnection/gpu_codec_support_waiter.cc",
+    "peerconnection/gpu_codec_support_waiter.h",
     "peerconnection/rtc_answer_options_platform.h",
     "peerconnection/rtc_api_name.h",
     "peerconnection/rtc_dtmf_sender_handler.cc",
