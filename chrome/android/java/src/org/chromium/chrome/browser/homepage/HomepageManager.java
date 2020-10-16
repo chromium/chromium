@@ -12,9 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonPreferenceState;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -175,9 +172,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     public void setPrefHomepageEnabled(boolean enabled) {
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, enabled);
-        RecordHistogram.recordBooleanHistogram(
-                "Settings.ShowHomeButtonPreferenceStateChanged", enabled);
-        recordHomeButtonPreferenceState();
         notifyHomepageUpdated();
     }
 
@@ -238,7 +232,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         }
 
         if (wasUseDefaultUri != useDefaultUri) {
-            recordHomepageIsCustomized(!useDefaultUri);
             mSharedPreferencesManager.writeBoolean(
                     ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI, useDefaultUri);
         }
@@ -250,31 +243,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
 
         RecordUserAction.record("Settings.Homepage.LocationChanged_V2");
         notifyHomepageUpdated();
-    }
-
-    /**
-     * Get the homepage button preference state.
-     */
-    public static void recordHomeButtonPreferenceState() {
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Settings.ShowHomeButtonPreferenceState", HomepageManager.isHomepageEnabled());
-            return;
-        }
-
-        int state = HomeButtonPreferenceState.USER_DISABLED;
-        if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            state = HomeButtonPreferenceState.MANAGED_ENABLED;
-        } else if (isHomepageEnabled()) {
-            state = HomeButtonPreferenceState.USER_ENABLED;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram("Settings.ShowHomeButtonPreferenceStateManaged",
-                state, HomeButtonPreferenceState.NUM_ENTRIES);
-    }
-
-    public static void recordHomepageIsCustomized(boolean isCustomized) {
-        RecordHistogram.recordBooleanHistogram("Settings.HomePageIsCustomized", isCustomized);
     }
 
     /**
@@ -320,11 +288,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     @Override
     public void onHomepagePolicyUpdate() {
         notifyHomepageUpdated();
-
-        boolean isPolicyEnabled = HomepagePolicyManager.isHomepageManagedByPolicy();
-        if (isPolicyEnabled) {
-            recordHomepageIsCustomized(false);
-        }
     }
 
     @Override

@@ -342,8 +342,6 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(new Runnable() {
             @Override
             public void run() {
-                HomepageManager.recordHomeButtonPreferenceState();
-                HomepageManager.recordHomepageIsCustomized(HomepageManager.isHomepageCustomized());
                 HomepageManager.recordHomepageLocationTypeIfEnabled();
             }
         });

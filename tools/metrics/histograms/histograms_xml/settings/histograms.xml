@@ -85,6 +85,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Settings.HomePageIsCustomized" enum="Boolean"
     expires_after="2020-08-28">
+  <obsolete>
+    Expired and removed from code as of 10/2020.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -272,6 +275,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Settings.ShowHomeButtonPreferenceState" enum="BooleanEnabled"
     expires_after="M85">
+  <obsolete>
+    Expired and removed from code as of 10/2020.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -287,6 +293,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Settings.ShowHomeButtonPreferenceStateChanged"
     enum="BooleanEnabled" expires_after="M88">
+  <obsolete>
+    Removed from code as of 10/2020.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -297,6 +306,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Settings.ShowHomeButtonPreferenceStateManaged"
     enum="HomeButtonPreferenceStateType" expires_after="M88">
+  <obsolete>
+    Removed from code as of 10/2020.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>

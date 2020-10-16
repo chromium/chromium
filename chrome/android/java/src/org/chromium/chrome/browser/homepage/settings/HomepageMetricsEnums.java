@@ -16,25 +16,6 @@ public final class HomepageMetricsEnums {
     private HomepageMetricsEnums() {}
 
     /**
-     * Possible states for HomeButton. Used for Histogram
-     * Settings.ShowHomeButtonPreferenceStateManaged. Currently {@link
-     * HomeButtonPreferenceState.MANAGED_DISABLED } is not used.
-     *
-     * These values are persisted to logs, and should therefore never be renumbered nor reused.
-     */
-    @IntDef({HomeButtonPreferenceState.USER_DISABLED, HomeButtonPreferenceState.USER_ENABLED,
-            HomeButtonPreferenceState.MANAGED_DISABLED, HomeButtonPreferenceState.MANAGED_ENABLED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface HomeButtonPreferenceState {
-        int USER_DISABLED = 0;
-        int USER_ENABLED = 1;
-        int MANAGED_DISABLED = 2;
-        int MANAGED_ENABLED = 3;
-
-        int NUM_ENTRIES = 4;
-    }
-
-    /**
      * Possible location type for homepage. Used for Histogram "Settings.Homepage.LocationType"
      * recorded in {@link HomepageManager#recordHomepageLocationType()}.
      *

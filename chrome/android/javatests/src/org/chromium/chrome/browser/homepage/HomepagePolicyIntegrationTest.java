@@ -28,7 +28,6 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomeButtonPreferenceState;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -67,9 +66,6 @@ public class HomepagePolicyIntegrationTest {
     public static final String TEST_URL = "http://127.0.0.1:8000/foo.html";
     public static final String GOOGLE_HTML = "/chrome/test/data/android/google.html";
 
-    private static final String METRICS_HOME_BUTTON_STATE_ENUM =
-            "Settings.ShowHomeButtonPreferenceStateManaged";
-    private static final String METRICS_HOMEPAGE_IS_CUSTOMIZED = "Settings.HomePageIsCustomized";
     private static final String METRICS_HOMEPAGE_LOCATION_TYPE = "Settings.Homepage.LocationType";
 
     private EmbeddedTestServer mTestServer;
@@ -118,18 +114,6 @@ public class HomepagePolicyIntegrationTest {
                 TEST_URL,
                 SharedPreferencesManager.getInstance().readString(
                         ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, ""));
-
-        // METRICS_HOMEPAGE_IS_CUSTOMIZED Should be collected twice it is called in:
-        // 1. ProcessInitializationHandler#handleDeferredStartupTasksInitialization;
-        // 2. HomepageManager#onHomepagePolicyUpdate, which will be called when native initialized.
-        Assert.assertEquals(
-                "Settings.HomepageIsCustomized should be recorded twice when policy enabled", 2,
-                RecordHistogram.getHistogramTotalCountForTesting(METRICS_HOMEPAGE_IS_CUSTOMIZED));
-
-        // METRICS_HOME_BUTTON_STATE_ENUM should be collected once in deferred start up tasks.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        METRICS_HOME_BUTTON_STATE_ENUM, HomeButtonPreferenceState.MANAGED_ENABLED));
 
         // METRICS_HOMEPAGE_LOCATION_TYPE is recorded once in deferred start up tasks.
         Assert.assertEquals("Settings.Homepage.LocationType should record POLICY_OTHER once.", 1,

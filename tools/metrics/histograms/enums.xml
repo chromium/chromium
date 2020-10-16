@@ -35971,6 +35971,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="HomeButtonPreferenceStateType">
+  <obsolete>
+    Removed from code as of 10/2020.
+  </obsolete>
   <int value="0" label="User Disabled"/>
   <int value="1" label="User Enabled"/>
   <int value="2" label="Managed Disabled"/>
