@@ -220,12 +220,27 @@ const GURL ExtractInnerURL(const GURL& url) {
     return GURL(url.path());
 }
 
-bool ShouldBypassContentSecurityPolicy(CSPContext* context, const GURL& url) {
-  if (url.SchemeIsFileSystem() || url.SchemeIsBlob()) {
-    return context->SchemeShouldBypassCSP(ExtractInnerURL(url).scheme());
-  } else {
-    return context->SchemeShouldBypassCSP(url.scheme());
-  }
+std::string InnermostScheme(const GURL& url) {
+  if (url.SchemeIsFileSystem() || url.SchemeIsBlob())
+    return ExtractInnerURL(url).scheme();
+  return url.scheme();
+}
+
+// Extensions can load their own internal content into the document. They
+// shouldn't be blocked by the document's CSP.
+//
+// There is an exception: CSP:frame-ancestors. This one is not about allowing a
+// document to embed other resources. This is about being embedded. As such
+// this shouldn't be bypassed. A document should be able to deny being embedded
+// inside an extension.
+// See https://crbug.com/1115590
+bool ShouldBypassContentSecurityPolicy(CSPContext* context,
+                                       CSPDirectiveName directive,
+                                       const GURL& url) {
+  if (directive == CSPDirectiveName::FrameAncestors)
+    return false;
+
+  return context->SchemeShouldBypassCSP(InnermostScheme(url));
 }
 
 // Parses a "Content-Security-Policy" header.
@@ -982,7 +997,7 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
                                 CSPContext* context,
                                 const mojom::SourceLocationPtr& source_location,
                                 bool is_form_submission) {
-  if (ShouldBypassContentSecurityPolicy(context, url))
+  if (ShouldBypassContentSecurityPolicy(context, directive_name, url))
     return true;
 
   // 'navigate-to' has no effect when doing a form submission and a

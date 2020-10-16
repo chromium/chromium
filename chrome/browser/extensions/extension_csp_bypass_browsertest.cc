@@ -179,4 +179,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   EXPECT_TRUE(WasFrameWithScriptLoaded(frame));
 }
 
+// CSP:frame-ancestor is not bypassed by extensions.
+IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
+  std::string manifest = R"(
+    {
+      "name": "CSP frame-ancestors",
+      "manifest_version": 2,
+      "version": "0.1",
+      "browser_action": {
+       "default_popup": "popup.html"
+      }
+    }
+  )";
+
+  std::string popup = R"(
+    <!doctype html>
+    <html>
+      <iframe src = "$1"></iframe>
+    </html>
+  )";
+
+  GURL iframe_url = embedded_test_server()->GetURL(
+      "/extensions/csp/frame-ancestors-none.html");
+  popup = base::ReplaceStringPlaceholders(popup, {iframe_url.spec()}, nullptr);
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(manifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), popup);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Refused to frame * because an ancestor violates *");
+
+  GURL popup_url = extension->GetResourceURL("popup.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), popup_url));
+
+  // The iframe must be blocked because of CSP.
+  console_observer.Wait();
+  std::vector<content::RenderFrameHost*> render_frame_hosts =
+      web_contents()->GetAllFrames();
+  ASSERT_EQ(2u, render_frame_hosts.size());
+  EXPECT_EQ(popup_url, render_frame_hosts[0]->GetLastCommittedURL());
+  EXPECT_EQ(iframe_url, render_frame_hosts[1]->GetLastCommittedURL());
+  EXPECT_TRUE(render_frame_hosts[1]->GetLastCommittedOrigin().opaque());
+}
+
 }  // namespace extensions
