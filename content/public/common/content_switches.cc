@@ -584,12 +584,6 @@ const char kNumRasterThreads[]              = "num-raster-threads";
 const char kOverridePluginPowerSaverForTesting[] =
     "override-plugin-power-saver-for-testing";
 
-// Argument to the process type that indicates a PPAPI broker process type.
-const char kPpapiBrokerProcess[]            = "ppapi-broker";
-
-// "Command-line" arguments for the PPAPI Flash; used for debugging options.
-const char kPpapiFlashArgs[]                = "ppapi-flash-args";
-
 // Runs PPAPI (Pepper) plugins in-process.
 const char kPpapiInProcess[]                = "ppapi-in-process";
 

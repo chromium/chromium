@@ -70,18 +70,6 @@ void WillLoadPluginsCallback(base::SequenceChecker* sequence_checker) {
 }  // namespace
 
 // static
-void PluginServiceImpl::RecordBrokerUsage(int render_process_id,
-                                          int render_frame_id) {
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-  if (!rfh)
-    return;
-
-  ukm::SourceId source_id = rfh->GetPageUkmSourceId();
-  ukm::builders::Pepper_Broker(source_id).Record(ukm::UkmRecorder::Get());
-}
-
-// static
 PluginService* PluginService::GetInstance() {
   return PluginServiceImpl::GetInstance();
 }
@@ -154,16 +142,6 @@ int PluginServiceImpl::CountPpapiPluginProcessesForProfile(
     }
   }
   return count;
-}
-
-PpapiPluginProcessHost* PluginServiceImpl::FindPpapiBrokerProcess(
-    const base::FilePath& broker_path) {
-  for (PpapiBrokerProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (iter->plugin_path() == broker_path)
-      return *iter;
-  }
-
-  return nullptr;
 }
 
 PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
@@ -268,29 +246,6 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
   return plugin_host;
 }
 
-PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiBrokerProcess(
-    int render_process_id,
-    const base::FilePath& plugin_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (filter_ && !filter_->CanLoadPlugin(render_process_id, plugin_path))
-    return nullptr;
-
-  PpapiPluginProcessHost* plugin_host = FindPpapiBrokerProcess(plugin_path);
-  if (plugin_host)
-    return plugin_host;
-
-  // Validate that the plugin is actually registered.
-  const PepperPluginInfo* info = GetRegisteredPpapiPluginInfo(plugin_path);
-  if (!info)
-    return nullptr;
-
-  DCHECK(info->is_out_of_process);
-
-  // This broker isn't loaded by any broker process, so create a new process.
-  return PpapiPluginProcessHost::CreateBrokerHost(*info);
-}
-
 void PluginServiceImpl::OpenChannelToPpapiPlugin(
     int render_process_id,
     const url::Origin& embedder_origin,
@@ -301,25 +256,6 @@ void PluginServiceImpl::OpenChannelToPpapiPlugin(
   PpapiPluginProcessHost* plugin_host = FindOrStartPpapiPluginProcess(
       render_process_id, embedder_origin, plugin_path, profile_data_directory,
       origin_lock);
-  if (plugin_host) {
-    plugin_host->OpenChannelToPlugin(client);
-  } else {
-    // Send error.
-    client->OnPpapiChannelOpened(IPC::ChannelHandle(), base::kNullProcessId, 0);
-  }
-}
-
-void PluginServiceImpl::OpenChannelToPpapiBroker(
-    int render_process_id,
-    int render_frame_id,
-    const base::FilePath& path,
-    PpapiPluginProcessHost::BrokerClient* client) {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&PluginServiceImpl::RecordBrokerUsage,
-                                render_process_id, render_frame_id));
-
-  PpapiPluginProcessHost* plugin_host = FindOrStartPpapiBrokerProcess(
-      render_process_id, path);
   if (plugin_host) {
     plugin_host->OpenChannelToPlugin(client);
   } else {

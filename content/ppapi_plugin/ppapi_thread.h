@@ -19,7 +19,6 @@
 #include "content/child/child_thread_impl.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "ppapi/c/pp_module.h"
-#include "ppapi/c/trusted/ppp_broker.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/plugin_globals.h"
@@ -51,8 +50,7 @@ class PpapiThread : public ChildThreadImpl,
                     public ppapi::proxy::PluginProxyDelegate {
  public:
   PpapiThread(base::RepeatingClosure quit_closure,
-              const base::CommandLine& command_line,
-              bool is_broker);
+              const base::CommandLine& command_line);
   ~PpapiThread() override;
   void Shutdown() override;
 
@@ -113,9 +111,6 @@ class PpapiThread : public ChildThreadImpl,
   // Sets up the name of the plugin for logging using the given path.
   void SavePluginName(const base::FilePath& path);
 
-  // True if running in a broker process rather than a normal plugin process.
-  bool is_broker_;
-
   base::ScopedNativeLibrary library_;
 
   ppapi::PpapiPermissions permissions_;
@@ -125,10 +120,6 @@ class PpapiThread : public ChildThreadImpl,
 
   // Storage for plugin entry points.
   PepperPluginInfo::EntryPoints plugin_entry_points_;
-
-  // Callback to call when a new instance connects to the broker.
-  // Used only when is_broker_.
-  PP_ConnectInstance_Func connect_instance_func_;
 
   // Local concept of the module ID. Some functions take this. It's necessary
   // for the in-process PPAPI to handle this properly, but for proxied it's
@@ -147,11 +138,6 @@ class PpapiThread : public ChildThreadImpl,
 
   // The BlinkPlatformImpl implementation.
   std::unique_ptr<PpapiBlinkPlatformImpl> blink_platform_impl_;
-
-#if defined(OS_WIN)
-  // Caches the handle to the peer process if this is a broker.
-  base::win::ScopedHandle peer_handle_;
-#endif
 
   std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;

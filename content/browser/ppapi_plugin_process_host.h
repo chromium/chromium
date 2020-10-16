@@ -30,8 +30,7 @@ namespace content {
 class BrowserChildProcessHostImpl;
 struct PepperPluginInfo;
 
-// Process host for PPAPI plugin and broker processes.
-// When used for the broker, interpret all references to "plugin" with "broker".
+// Process host for PPAPI plugin processes.
 class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
                                public IPC::Sender {
  public:
@@ -65,20 +64,12 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
     ~PluginClient() override {}
   };
 
-  class BrokerClient : public Client {
-   protected:
-    ~BrokerClient() override {}
-  };
-
   ~PpapiPluginProcessHost() override;
 
   static PpapiPluginProcessHost* CreatePluginHost(
       const PepperPluginInfo& info,
       const base::FilePath& profile_data_directory,
       const base::Optional<url::Origin>& origin_lock);
-
-  static PpapiPluginProcessHost* CreateBrokerHost(
-      const PepperPluginInfo& info);
 
   // Notification that a PP_Instance has been created and the associated
   // renderer related data including the RenderView/Process pair for the given
@@ -126,12 +117,11 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
  private:
   class PluginNetworkObserver;
 
-  // Constructors for plugin and broker process hosts, respectively.
+  // Constructors for plugin process hosts.
   // You must call Init before doing anything else.
   PpapiPluginProcessHost(const PepperPluginInfo& info,
                          const base::FilePath& profile_data_directory,
                          const base::Optional<url::Origin>& origin_lock);
-  PpapiPluginProcessHost();
 
   // Actually launches the process with the given plugin info. Returns true
   // on success (the process was spawned).
@@ -178,8 +168,6 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   // re-use the plugin host.
   const base::Optional<url::Origin> origin_lock_;
 
-  const bool is_broker_;
-
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
 
   DISALLOW_COPY_AND_ASSIGN(PpapiPluginProcessHost);
@@ -192,15 +180,6 @@ class PpapiPluginProcessHostIterator
   PpapiPluginProcessHostIterator()
       : BrowserChildProcessHostTypeIterator<
           PpapiPluginProcessHost>(PROCESS_TYPE_PPAPI_PLUGIN) {}
-};
-
-class PpapiBrokerProcessHostIterator
-    : public BrowserChildProcessHostTypeIterator<
-          PpapiPluginProcessHost> {
- public:
-  PpapiBrokerProcessHostIterator()
-      : BrowserChildProcessHostTypeIterator<
-          PpapiPluginProcessHost>(PROCESS_TYPE_PPAPI_BROKER) {}
 };
 
 }  // namespace content

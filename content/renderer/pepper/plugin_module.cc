@@ -118,7 +118,6 @@
 #include "ppapi/c/private/ppb_udp_socket_private.h"
 #include "ppapi/c/private/ppb_uma_private.h"
 #include "ppapi/c/private/ppb_x509_certificate_private.h"
-#include "ppapi/c/trusted/ppb_broker_trusted.h"
 #include "ppapi/c/trusted/ppb_browser_font_trusted.h"
 #include "ppapi/c/trusted/ppb_char_set_trusted.h"
 #include "ppapi/c/trusted/ppb_file_chooser_trusted.h"
@@ -485,7 +484,6 @@ PluginModule::PluginModule(const std::string& name,
     : callback_tracker_(new ppapi::CallbackTracker),
       is_in_destructor_(false),
       is_crashed_(false),
-      broker_(nullptr),
       library_(nullptr),
       name_(name),
       version_(version),
@@ -689,13 +687,6 @@ bool PluginModule::ReserveInstanceID(PP_Instance instance) {
     return PP_ToBool(reserve_instance_id_(pp_module_, instance));
   return true;  // Instance ID is usable.
 }
-
-void PluginModule::SetBroker(PepperBroker* broker) {
-  DCHECK(!broker_ || !broker);
-  broker_ = broker;
-}
-
-PepperBroker* PluginModule::GetBroker() { return broker_; }
 
 RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
     RenderFrameImpl* render_frame,

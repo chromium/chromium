@@ -117,9 +117,6 @@ class PPAPI_SHARED_EXPORT PpapiGlobals {
   // in-process plugins.
   virtual base::TaskRunner* GetFileTaskRunner() = 0;
 
-  // Returns the command line for the process.
-  virtual std::string GetCmdLine() = 0;
-
   // Preloads the font on Windows, does nothing on other platforms.
   // TODO(brettw) remove this by passing the instance into the API so we don't
   // have to have it on the globals.

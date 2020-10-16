@@ -178,8 +178,6 @@ SandboxType SandboxTypeFromCommandLine(const base::CommandLine& command_line) {
       return SandboxType::kNoSandbox;
     return SandboxType::kGpu;
   }
-  if (process_type == switches::kPpapiBrokerProcess)
-    return SandboxType::kNoSandbox;
 
   if (process_type == switches::kPpapiPluginProcess)
     return SandboxType::kPpapi;

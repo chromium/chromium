@@ -1143,17 +1143,7 @@ bool WebContentsImpl::OnMessageReceived(RenderViewHostImpl* render_view_host,
       return true;
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(WebContentsImpl, message, render_view_host)
-    IPC_MESSAGE_HANDLER(ViewHostMsg_RequestPpapiBrokerPermission,
-                        OnRequestPpapiBrokerPermission)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-#else
   return false;
-#endif
 }
 
 bool WebContentsImpl::OnMessageReceived(RenderFrameHostImpl* render_frame_host,
@@ -6176,40 +6166,6 @@ void WebContentsImpl::OnPluginCrashed(RenderFrameHostImpl* source,
   });
 }
 
-void WebContentsImpl::OnRequestPpapiBrokerPermission(
-    RenderViewHostImpl* source,
-    int ppb_broker_route_id,
-    const GURL& url,
-    const base::FilePath& plugin_path) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::OnRequestPpapiBrokerPermission",
-                        "render_view_host", source);
-  base::OnceCallback<void(bool)> permission_result_callback = base::BindOnce(
-      &WebContentsImpl::SendPpapiBrokerPermissionResult, base::Unretained(this),
-      source->GetProcess()->GetID(), ppb_broker_route_id);
-  if (!delegate_) {
-    std::move(permission_result_callback).Run(false);
-    return;
-  }
-
-  delegate_->RequestPpapiBrokerPermission(
-      this, url, plugin_path, std::move(permission_result_callback));
-}
-
-void WebContentsImpl::SendPpapiBrokerPermissionResult(int process_id,
-                                                      int ppb_broker_route_id,
-                                                      bool result) {
-  OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::SendPpapiBrokerPermissionResult",
-      "process_id", process_id, "ppb_broker_route_id", ppb_broker_route_id);
-  RenderProcessHost* rph = RenderProcessHost::FromID(process_id);
-  if (rph) {
-    // TODO(nick): Convert this from ViewMsg_ to a Ppapi msg, since it
-    // is not routed to a RenderView.
-    rph->Send(
-        new ViewMsg_PpapiBrokerPermissionResult(ppb_broker_route_id, result));
-  }
-}
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void WebContentsImpl::UpdateFaviconURL(

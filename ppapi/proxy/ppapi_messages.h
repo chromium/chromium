@@ -640,11 +640,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_LogInterfaceUsage,
 IPC_MESSAGE_CONTROL1(PpapiMsg_SetNetworkState,
                      bool /* online */)
 
-// Broker Process.
-IPC_SYNC_MESSAGE_CONTROL2_1(PpapiMsg_ConnectToPlugin,
-                            PP_Instance /* instance */,
-                            IPC::PlatformFileForTransit /* handle */,
-                            int32_t /* result */)
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
 
 // PPB_Audio.
@@ -869,13 +864,6 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPTextInput_RequestSurroundingText,
                    uint32_t /* desired_number_of_characters */)
 
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
-// PPB_Broker.
-IPC_MESSAGE_ROUTED3(
-    PpapiMsg_PPBBroker_ConnectComplete,
-    ppapi::HostResource /* broker */,
-    IPC::PlatformFileForTransit /* handle */,
-    int32_t /* result */)
-
 // PPP_Instance_Private.
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPInstancePrivate_GetInstanceObject,
                            PP_Instance /* instance */,
@@ -1207,13 +1195,6 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBVar_CreateObjectDeprecated,
                            ppapi::proxy::SerializedVar /* result */)
 
 #if !defined(OS_NACL) && !defined(NACL_WIN64)
-// PPB_Broker.
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiHostMsg_PPBBroker_Create,
-                           PP_Instance /* instance */,
-                           ppapi::HostResource /* result_resource */)
-IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBBroker_Connect,
-                    ppapi::HostResource /* broker */)
-
 // PPB_Buffer.
 IPC_SYNC_MESSAGE_ROUTED2_2(
     PpapiHostMsg_PPBBuffer_Create,
@@ -1398,14 +1379,6 @@ IPC_MESSAGE_ROUTED2(
 
 //-----------------------------------------------------------------------------
 // Messages for resources using call/reply above.
-
-// Broker ----------------------------------------------------------------------
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Broker_Create)
-
-// Queries whether the plugin has permission to connect to the Pepper broker.
-// The response is contained in the error value of the
-// ResourceMessageReplyParams in the reply message.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_Broker_IsAllowed)
 
 // UMA
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_UMA_Create)

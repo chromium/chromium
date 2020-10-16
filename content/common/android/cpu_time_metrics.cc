@@ -74,8 +74,6 @@ ProcessTypeForUma CurrentProcessType() {
     return ProcessTypeForUma::kGpu;
   if (process_type == switches::kPpapiPluginProcess)
     return ProcessTypeForUma::kPpapiPlugin;
-  if (process_type == switches::kPpapiBrokerProcess)
-    return ProcessTypeForUma::kPpapiBroker;
   NOTREACHED() << "Unexpected process type: " << process_type;
   return ProcessTypeForUma::kUnknown;
 }

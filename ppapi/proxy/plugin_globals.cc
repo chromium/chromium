@@ -138,10 +138,6 @@ PP_Module PluginGlobals::GetModuleForInstance(PP_Instance instance) {
   return 0;
 }
 
-std::string PluginGlobals::GetCmdLine() {
-  return command_line_;
-}
-
 void PluginGlobals::PreCacheFontForFlash(const void* logfontw) {
   ProxyAutoUnlock unlock;
   plugin_proxy_delegate_->PreCacheFontForFlash(logfontw);

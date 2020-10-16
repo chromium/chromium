@@ -86,32 +86,22 @@ static void WarmupWindowsLocales(const ppapi::PpapiPermissions& permissions) {
 
 namespace content {
 
-typedef int32_t (*InitializeBrokerFunc)
-    (PP_ConnectInstance_Func* connect_instance_func);
-
 PpapiThread::PpapiThread(base::RepeatingClosure quit_closure,
-                         const base::CommandLine& command_line,
-                         bool is_broker)
+                         const base::CommandLine& command_line)
     : ChildThreadImpl(std::move(quit_closure)),
-      is_broker_(is_broker),
       plugin_globals_(GetIOTaskRunner()),
-      connect_instance_func_(nullptr),
       local_pp_module_(base::RandInt(0, std::numeric_limits<PP_Module>::max())),
       next_plugin_dispatcher_id_(1) {
   plugin_globals_.SetPluginProxyDelegate(this);
-  plugin_globals_.set_command_line(
-      command_line.GetSwitchValueASCII(switches::kPpapiFlashArgs));
 
   blink_platform_impl_.reset(new PpapiBlinkPlatformImpl);
   blink::Platform::CreateMainThreadAndInitialize(blink_platform_impl_.get());
 
-  if (!is_broker_) {
-    scoped_refptr<ppapi::proxy::PluginMessageFilter> plugin_filter(
-        new ppapi::proxy::PluginMessageFilter(
-            nullptr, plugin_globals_.resource_reply_thread_registrar()));
-    channel()->AddFilter(plugin_filter.get());
-    plugin_globals_.RegisterResourceMessageFilters(plugin_filter.get());
-  }
+  scoped_refptr<ppapi::proxy::PluginMessageFilter> plugin_filter(
+      new ppapi::proxy::PluginMessageFilter(
+          nullptr, plugin_globals_.resource_reply_thread_registrar()));
+  channel()->AddFilter(plugin_filter.get());
+  plugin_globals_.RegisterResourceMessageFilters(plugin_filter.get());
 
   // In single process, browser main loop set up the discardable memory
   // allocator.
@@ -167,10 +157,6 @@ bool PpapiThread::OnControlMessageReceived(const IPC::Message& msg) {
 
 void PpapiThread::OnChannelConnected(int32_t peer_pid) {
   ChildThreadImpl::OnChannelConnected(peer_pid);
-#if defined(OS_WIN)
-  if (is_broker_)
-    peer_handle_.Set(::OpenProcess(PROCESS_DUP_HANDLE, FALSE, peer_pid));
-#endif
 }
 
 base::SingleThreadTaskRunner* PpapiThread::GetIPCTaskRunner() {
@@ -313,23 +299,18 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
       return;
     }
 
-    // The ShutdownModule/ShutdownBroker function is optional.
+    // The ShutdownModule function is optional.
     plugin_entry_points_.shutdown_module =
-        is_broker_ ?
-        reinterpret_cast<PP_ShutdownModule_Func>(
-            library.GetFunctionPointer("PPP_ShutdownBroker")) :
         reinterpret_cast<PP_ShutdownModule_Func>(
             library.GetFunctionPointer("PPP_ShutdownModule"));
 
-    if (!is_broker_) {
-      // Get the InitializeModule function (required for non-broker code).
-      plugin_entry_points_.initialize_module =
-          reinterpret_cast<PP_InitializeModule_Func>(
-              library.GetFunctionPointer("PPP_InitializeModule"));
-      if (!plugin_entry_points_.initialize_module) {
-        LOG(WARNING) << "No PPP_InitializeModule in plugin library";
-        return;
-      }
+    // Get the InitializeModule function.
+    plugin_entry_points_.initialize_module =
+        reinterpret_cast<PP_InitializeModule_Func>(
+            library.GetFunctionPointer("PPP_InitializeModule"));
+    if (!plugin_entry_points_.initialize_module) {
+      LOG(WARNING) << "No PPP_InitializeModule in plugin library";
+      return;
     }
   }
 
@@ -372,32 +353,11 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   }
 #endif
 
-  if (is_broker_) {
-    // Get the InitializeBroker function (required).
-    InitializeBrokerFunc init_broker =
-        reinterpret_cast<InitializeBrokerFunc>(
-            library.GetFunctionPointer("PPP_InitializeBroker"));
-    if (!init_broker) {
-      LOG(WARNING) << "No PPP_InitializeBroker in plugin library";
-      return;
-    }
-
-    int32_t init_error = init_broker(&connect_instance_func_);
-    if (init_error != PP_OK) {
-      LOG(WARNING) << "InitBroker failed with error " << init_error;
-      return;
-    }
-    if (!connect_instance_func_) {
-      LOG(WARNING) << "InitBroker did not provide PP_ConnectInstance_Func";
-      return;
-    }
-  } else {
-    int32_t init_error = plugin_entry_points_.initialize_module(
-        local_pp_module_, &ppapi::proxy::PluginDispatcher::GetBrowserInterface);
-    if (init_error != PP_OK) {
-      LOG(WARNING) << "InitModule failed with error " << init_error;
-      return;
-    }
+  int32_t init_error = plugin_entry_points_.initialize_module(
+      local_pp_module_, &ppapi::proxy::PluginDispatcher::GetBrowserInterface);
+  if (init_error != PP_OK) {
+    LOG(WARNING) << "InitModule failed with error " << init_error;
+    return;
   }
 
   // Initialization succeeded, so keep the plugin DLL loaded.
@@ -453,12 +413,10 @@ bool PpapiThread::SetupChannel(base::ProcessId renderer_pid,
                                int renderer_child_id,
                                bool incognito,
                                IPC::ChannelHandle* handle) {
-  DCHECK(is_broker_ == (connect_instance_func_ != nullptr));
   mojo::MessagePipe pipe;
 
   ppapi::proxy::ProxyChannel* dispatcher = nullptr;
   bool init_result = false;
-  DCHECK(!is_broker_);
   DCHECK_NE(base::kNullProcessId, renderer_pid);
   PluginProcessDispatcher* plugin_dispatcher = new PluginProcessDispatcher(
       plugin_entry_points_.get_interface, permissions_, incognito);

@@ -1512,16 +1512,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnPluginCrashed(RenderFrameHostImpl* source,
                        const base::FilePath& plugin_path,
                        base::ProcessId plugin_pid);
-  void OnRequestPpapiBrokerPermission(RenderViewHostImpl* source,
-                                      int ppb_broker_route_id,
-                                      const GURL& url,
-                                      const base::FilePath& plugin_path);
-
-  // Callback function when requesting permission to access the PPAPI broker.
-  // |result| is true if permission was granted.
-  void SendPpapiBrokerPermissionResult(int process_id,
-                                       int ppb_broker_route_id,
-                                       bool result);
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
   void OnShowValidationMessage(RenderViewHostImpl* source,
                                const gfx::Rect& anchor_in_root_view,

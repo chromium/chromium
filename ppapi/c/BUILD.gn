@@ -143,11 +143,9 @@ source_set("c") {
     "dev/ppp_class_deprecated.h",
 
     # Trusted interfaces.
-    "trusted/ppb_broker_trusted.h",
     "trusted/ppb_browser_font_trusted.h",
     "trusted/ppb_char_set_trusted.h",
     "trusted/ppb_file_chooser_trusted.h",
     "trusted/ppb_url_loader_trusted.h",
-    "trusted/ppp_broker.h",
   ]
 }

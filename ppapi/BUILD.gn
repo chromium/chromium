@@ -163,8 +163,6 @@ copy("copy_test_files2") {
 source_set("ppapi_tests_sources") {
   sources = test_common_source_files
   sources += [
-    "tests/test_broker.cc",
-    "tests/test_broker.h",
     "tests/test_browser_font.cc",
     "tests/test_browser_font.h",
     "tests/test_buffer.cc",

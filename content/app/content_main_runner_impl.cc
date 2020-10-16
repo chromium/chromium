@@ -172,7 +172,6 @@ namespace content {
 extern int GpuMain(const content::MainFunctionParams&);
 #if BUILDFLAG(ENABLE_PLUGINS)
 extern int PpapiPluginMain(const MainFunctionParams&);
-extern int PpapiBrokerMain(const MainFunctionParams&);
 #endif
 extern int RendererMain(const content::MainFunctionParams&);
 extern int UtilityMain(const MainFunctionParams&);
@@ -515,7 +514,6 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
   static const MainFunction kMainFunctions[] = {
 #if BUILDFLAG(ENABLE_PLUGINS)
     {switches::kPpapiPluginProcess, PpapiPluginMain},
-    {switches::kPpapiBrokerProcess, PpapiBrokerMain},
 #endif  // ENABLE_PLUGINS
     {switches::kUtilityProcess, UtilityMain},
     {switches::kRendererProcess, RendererMain},

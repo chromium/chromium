@@ -134,19 +134,6 @@ TEST(SandboxTypeTest, GPU) {
   EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }
 
-TEST(SandboxTypeTest, PPAPIBroker) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kProcessType,
-                                 switches::kPpapiBrokerProcess);
-  EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));
-
-  command_line.AppendSwitchASCII(switches::kServiceSandboxType, "network");
-  EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));
-
-  command_line.AppendSwitch(switches::kNoSandbox);
-  EXPECT_EQ(SandboxType::kNoSandbox, SandboxTypeFromCommandLine(command_line));
-}
-
 TEST(SandboxTypeTest, PPAPIPlugin) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kProcessType,

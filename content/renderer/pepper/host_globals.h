@@ -40,7 +40,6 @@ class HostGlobals : public ppapi::PpapiGlobals {
   ppapi::thunk::ResourceCreationAPI* GetResourceCreationAPI(
       PP_Instance instance) override;
   PP_Module GetModuleForInstance(PP_Instance instance) override;
-  std::string GetCmdLine() override;
   void PreCacheFontForFlash(const void* logfontw) override;
   void LogWithSource(PP_Instance instance,
                      PP_LogLevel level,

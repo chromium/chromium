@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
 #include "content/renderer/pepper/ppb_audio_impl.h"
-#include "content/renderer/pepper/ppb_broker_impl.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
@@ -70,10 +69,6 @@ PP_Resource ResourceCreationImpl::CreateAudioInput(PP_Instance instance) {
 
 PP_Resource ResourceCreationImpl::CreateAudioOutput(PP_Instance instance) {
   return 0;  // Not supported in-process.
-}
-
-PP_Resource ResourceCreationImpl::CreateBroker(PP_Instance instance) {
-  return (new PPB_Broker_Impl(instance))->GetReference();
 }
 
 PP_Resource ResourceCreationImpl::CreateBuffer(PP_Instance instance,

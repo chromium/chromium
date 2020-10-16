@@ -135,39 +135,6 @@ class RenderMessageCompletionCallback {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 
-class RenderFrameMessageFilter::OpenChannelToPpapiBrokerCallback
-    : public PpapiPluginProcessHost::BrokerClient {
- public:
-  OpenChannelToPpapiBrokerCallback(RenderFrameMessageFilter* filter,
-                                   int routing_id)
-      : filter_(filter), routing_id_(routing_id) {}
-
-  ~OpenChannelToPpapiBrokerCallback() override {}
-
-  void GetPpapiChannelInfo(base::ProcessHandle* renderer_handle,
-                           int* renderer_id) override {
-    // base::kNullProcessHandle indicates that the channel will be used by the
-    // browser itself. Make sure we never output that value here.
-    CHECK_NE(base::kNullProcessHandle, filter_->PeerHandle());
-    *renderer_handle = filter_->PeerHandle();
-    *renderer_id = filter_->render_process_id_;
-  }
-
-  void OnPpapiChannelOpened(const IPC::ChannelHandle& channel_handle,
-                            base::ProcessId plugin_pid,
-                            int /* plugin_child_id */) override {
-    filter_->Send(new ViewMsg_PpapiBrokerChannelCreated(routing_id_, plugin_pid,
-                                                        channel_handle));
-    delete this;
-  }
-
-  bool Incognito() override { return filter_->incognito_; }
-
- private:
-  scoped_refptr<RenderFrameMessageFilter> filter_;
-  int routing_id_;
-};
-
 class RenderFrameMessageFilter::OpenChannelToPpapiPluginCallback
     : public RenderMessageCompletionCallback,
       public PpapiPluginProcessHost::PluginClient {
@@ -236,8 +203,6 @@ bool RenderFrameMessageFilter::OnMessageReceived(const IPC::Message& message) {
                         OnDidCreateOutOfProcessPepperInstance)
     IPC_MESSAGE_HANDLER(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
                         OnDidDeleteOutOfProcessPepperInstance)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_OpenChannelToPpapiBroker,
-                        OnOpenChannelToPpapiBroker)
     IPC_MESSAGE_HANDLER(FrameHostMsg_PluginInstanceThrottleStateChange,
                         OnPluginInstanceThrottleStateChange)
 #endif  // ENABLE_PLUGINS
@@ -372,14 +337,6 @@ void RenderFrameMessageFilter::OnDidDeleteOutOfProcessPepperInstance(
     PpapiPluginProcessHost::DidDeleteOutOfProcessInstance(plugin_child_id,
                                                           pp_instance);
   }
-}
-
-void RenderFrameMessageFilter::OnOpenChannelToPpapiBroker(
-    int routing_id,
-    const base::FilePath& path) {
-  plugin_service_->OpenChannelToPpapiBroker(
-      render_process_id_, routing_id, path,
-      new OpenChannelToPpapiBrokerCallback(this, routing_id));
 }
 
 void RenderFrameMessageFilter::OnPluginInstanceThrottleStateChange(

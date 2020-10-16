@@ -55,8 +55,5 @@ metrics::CallStackProfileParams::Process GetProfileParamsProcess(
   if (process_type == switches::kPpapiPluginProcess)
     return metrics::CallStackProfileParams::PPAPI_PLUGIN_PROCESS;
 
-  if (process_type == switches::kPpapiBrokerProcess)
-    return metrics::CallStackProfileParams::PPAPI_BROKER_PROCESS;
-
   return metrics::CallStackProfileParams::UNKNOWN_PROCESS;
 }

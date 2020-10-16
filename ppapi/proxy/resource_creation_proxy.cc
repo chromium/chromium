@@ -27,7 +27,6 @@
 #include "ppapi/proxy/plugin_resource_tracker.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/ppb_audio_proxy.h"
-#include "ppapi/proxy/ppb_broker_proxy.h"
 #include "ppapi/proxy/ppb_buffer_proxy.h"
 #include "ppapi/proxy/ppb_graphics_3d_proxy.h"
 #include "ppapi/proxy/ppb_image_data_proxy.h"
@@ -389,10 +388,6 @@ PP_Resource ResourceCreationProxy::CreateAudioInput(
 
 PP_Resource ResourceCreationProxy::CreateAudioOutput(PP_Instance instance) {
   return (new AudioOutputResource(GetConnection(), instance))->GetReference();
-}
-
-PP_Resource ResourceCreationProxy::CreateBroker(PP_Instance instance) {
-  return PPB_Broker_Proxy::CreateProxyResource(instance);
 }
 
 PP_Resource ResourceCreationProxy::CreateBrowserFont(

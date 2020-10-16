@@ -128,9 +128,8 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
 
   ChildProcess ppapi_process;
   base::RunLoop run_loop;
-  ppapi_process.set_main_thread(new PpapiThread(run_loop.QuitClosure(),
-                                                parameters.command_line,
-                                                false /* Not a broker */));
+  ppapi_process.set_main_thread(
+      new PpapiThread(run_loop.QuitClosure(), parameters.command_line));
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
   // Startup tracing is usually enabled earlier, but if we forked from a zygote,

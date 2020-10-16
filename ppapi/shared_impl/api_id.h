@@ -13,7 +13,6 @@ enum ApiID {
   // Zero is reserved for control messages.
   API_ID_NONE = 0,
   API_ID_PPB_AUDIO = 1,
-  API_ID_PPB_BROKER,
   API_ID_PPB_BUFFER,
   API_ID_PPB_CORE,
   API_ID_PPB_FLASH_MESSAGELOOP,

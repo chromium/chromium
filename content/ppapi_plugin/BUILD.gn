@@ -31,7 +31,6 @@ source_set("ppapi_plugin_sources") {
     "plugin_process_dispatcher.h",
     "ppapi_blink_platform_impl.cc",
     "ppapi_blink_platform_impl.h",
-    "ppapi_broker_main.cc",
     "ppapi_plugin_main.cc",
     "ppapi_thread.cc",
     "ppapi_thread.h",

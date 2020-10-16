@@ -88,10 +88,3 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfileParamsProcess_PpapiPlugin) {
   EXPECT_EQ(metrics::CallStackProfileParams::PPAPI_PLUGIN_PROCESS,
             GetProfileParamsProcess(command_line()));
 }
-
-TEST_F(ThreadProfilerProcessTypeTest, GetProfileParamsProcess_PpapiBroker) {
-  command_line().AppendSwitchASCII(switches::kProcessType,
-                                   switches::kPpapiBrokerProcess);
-  EXPECT_EQ(metrics::CallStackProfileParams::PPAPI_BROKER_PROCESS,
-            GetProfileParamsProcess(command_line()));
-}

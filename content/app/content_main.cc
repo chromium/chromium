@@ -135,7 +135,6 @@ bool IsSubprocess() {
   auto type = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
       switches::kProcessType);
   return type == switches::kGpuProcess ||
-         type == switches::kPpapiBrokerProcess ||
          type == switches::kPpapiPluginProcess ||
          type == switches::kRendererProcess ||
          type == switches::kUtilityProcess || type == switches::kZygoteProcess;

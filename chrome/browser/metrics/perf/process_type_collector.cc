@@ -105,8 +105,6 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
       process = Process::ZYGOTE_PROCESS;
     } else if (type == switches::kPpapiPluginProcess) {
       process = Process::PPAPI_PLUGIN_PROCESS;
-    } else if (type == switches::kPpapiBrokerProcess) {
-      process = Process::PPAPI_BROKER_PROCESS;
     }
 
     process_types.emplace(pid, process);

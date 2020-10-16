@@ -2359,7 +2359,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       embedder_support::kOriginTrialDisabledFeatures,
       embedder_support::kOriginTrialDisabledTokens,
       embedder_support::kOriginTrialPublicKey,
-      switches::kPpapiFlashArgs,
       switches::kPpapiFlashPath,
       switches::kPpapiFlashVersion,
       switches::kReaderModeHeuristics,

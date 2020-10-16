@@ -2285,7 +2285,6 @@ test("content_unittests") {
   if (enable_plugins) {
     sources += [
       "../browser/plugin_content_origin_allowlist_unittest.cc",
-      "../browser/plugin_service_impl_unittest.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.h",
       "../browser/renderer_host/pepper/pepper_file_system_browser_host_unittest.cc",
@@ -2296,7 +2295,6 @@ test("content_unittests") {
       "../renderer/pepper/event_conversion_unittest.cc",
       "../renderer/pepper/host_var_tracker_unittest.cc",
       "../renderer/pepper/mock_resource.h",
-      "../renderer/pepper/pepper_broker_unittest.cc",
       "../renderer/pepper/plugin_instance_throttler_impl_unittest.cc",
       "../renderer/pepper/v8_var_converter_unittest.cc",
     ]

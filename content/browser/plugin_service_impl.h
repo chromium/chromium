@@ -91,8 +91,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
       const base::Optional<url::Origin>& origin_lock);
-  PpapiPluginProcessHost* FindOrStartPpapiBrokerProcess(
-      int render_process_id, const base::FilePath& plugin_path);
 
   // Opens a channel to a plugin process for the given mime type, starting
   // a new plugin process if necessary.  This must be called on the IO thread
@@ -103,10 +101,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                                 const base::FilePath& profile_data_directory,
                                 const base::Optional<url::Origin>& origin_lock,
                                 PpapiPluginProcessHost::PluginClient* client);
-  void OpenChannelToPpapiBroker(int render_process_id,
-                                int render_frame_id,
-                                const base::FilePath& path,
-                                PpapiPluginProcessHost::BrokerClient* client);
 
   // Used to monitor plugin stability.
   void RegisterPluginCrash(const base::FilePath& plugin_path);
@@ -122,9 +116,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // Pulled out of the air, seems reasonable.
   static constexpr int kDefaultMaxPpapiProcessesPerProfile = 15;
 
-  // Helper for recording URLs to UKM.
-  static void RecordBrokerUsage(int render_process_id, int render_frame_id);
-
   // Creates the PluginServiceImpl object, but doesn't actually build the plugin
   // list yet.  It's generated lazily.
   PluginServiceImpl();
@@ -137,8 +128,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
       const base::Optional<url::Origin>& origin_lock);
-  PpapiPluginProcessHost* FindPpapiBrokerProcess(
-      const base::FilePath& broker_path);
 
   void RegisterPepperPlugins();
 

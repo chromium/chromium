@@ -31,7 +31,6 @@ source_set("thunk") {
     "ppb_audio_input_api.h",
     "ppb_audio_output_api.h",
     "ppb_audio_thunk.cc",
-    "ppb_broker_api.h",
     "ppb_browser_font_singleton_api.h",
     "ppb_browser_font_trusted_api.h",
     "ppb_buffer_api.h",
@@ -143,7 +142,6 @@ source_set("thunk") {
     sources += [
       "ppb_audio_input_dev_thunk.cc",
       "ppb_audio_output_dev_thunk.cc",
-      "ppb_broker_thunk.cc",
       "ppb_browser_font_trusted_thunk.cc",
       "ppb_buffer_thunk.cc",
       "ppb_char_set_thunk.cc",

@@ -22,7 +22,6 @@ void GetExampleProcessTypeDataset(std::string* ps_output,
     4000 /opt/google/chrome/chrome --log-level=1 --type=utility
     5000 /opt/google/chrome/chrome --type=zygote
     6000 /opt/google/chrome/chrome --type=ppapi
-    7000 /opt/google/chrome/chrome --type=ppapi-broker
     7100 /opt/google/chrome/chrome --type=random-type
     7200 /opt/google/chrome/chrome --no_type
   129000 /opt/google/chrome/chrome --ppapi-flash-path=..../libpepflashplayer.so
@@ -41,8 +40,6 @@ void GetExampleProcessTypeDataset(std::string* ps_output,
       5000, Process::ZYGOTE_PROCESS));
   process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
       6000, Process::PPAPI_PLUGIN_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      7000, Process::PPAPI_BROKER_PROCESS));
   process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
       7100, Process::OTHER_PROCESS));
   process_types->insert(google::protobuf::MapPair<uint32_t, Process>(

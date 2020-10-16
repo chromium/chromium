@@ -2453,10 +2453,6 @@ static void Pnacl_M14_PPP_Messaging_HandleMessage(PP_Instance instance, struct P
 
 /* Not generating wrapper methods for PPP_MouseLock_1_0 */
 
-/* Not generating wrapper methods for PPB_BrokerTrusted_0_2 */
-
-/* Not generating wrapper methods for PPB_BrokerTrusted_0_3 */
-
 /* Not generating wrapper methods for PPB_BrowserFont_Trusted_1_0 */
 
 /* Not generating wrapper methods for PPB_CharSet_Trusted_1_0 */
@@ -4398,10 +4394,6 @@ static const struct PPP_Messaging_1_0 Pnacl_Wrappers_PPP_Messaging_1_0 = {
 };
 
 /* Not generating wrapper interface for PPP_MouseLock_1_0 */
-
-/* Not generating wrapper interface for PPB_BrokerTrusted_0_2 */
-
-/* Not generating wrapper interface for PPB_BrokerTrusted_0_3 */
 
 /* Not generating wrapper interface for PPB_BrowserFont_Trusted_1_0 */
 

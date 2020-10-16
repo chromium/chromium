@@ -39,7 +39,6 @@ class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
                                 uint32_t sample_frame_count) override;
   PP_Resource CreateAudioInput(PP_Instance instance) override;
   PP_Resource CreateAudioOutput(PP_Instance instance) override;
-  PP_Resource CreateBroker(PP_Instance instance) override;
   PP_Resource CreateBuffer(PP_Instance instance, uint32_t size) override;
   PP_Resource CreateCameraDevicePrivate(PP_Instance instance) override;
   PP_Resource CreateFlashFontFile(

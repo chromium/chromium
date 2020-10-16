@@ -70,7 +70,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   thunk::ResourceCreationAPI* GetResourceCreationAPI(
       PP_Instance instance) override;
   PP_Module GetModuleForInstance(PP_Instance instance) override;
-  std::string GetCmdLine() override;
   void PreCacheFontForFlash(const void* logfontw) override;
   void LogWithSource(PP_Instance instance,
                      PP_LogLevel level,
@@ -140,9 +139,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   // is known. This will be used for error logging.
   void set_plugin_name(const std::string& name) { plugin_name_ = name; }
 
-  // The embedder should call this function when the command line is known.
-  void set_command_line(const std::string& c) { command_line_ = c; }
-
   ResourceReplyThreadRegistrar* resource_reply_thread_registrar() {
     return resource_reply_thread_registrar_.get();
   }
@@ -176,10 +172,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   // Name of the plugin used for error logging. This will be empty until
   // set_plugin_name is called.
   std::string plugin_name_;
-
-  // Command line for the plugin. This will be empty until set_command_line is
-  // called.
-  std::string command_line_;
 
   std::unique_ptr<BrowserSender> browser_sender_;
 

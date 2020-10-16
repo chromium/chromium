@@ -5825,8 +5825,6 @@ static_library("browser") {
       "renderer_host/pepper/device_id_fetcher.h",
       "renderer_host/pepper/monitor_finder_mac.h",
       "renderer_host/pepper/monitor_finder_mac.mm",
-      "renderer_host/pepper/pepper_broker_message_filter.cc",
-      "renderer_host/pepper/pepper_broker_message_filter.h",
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.cc",
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.h",
     ]

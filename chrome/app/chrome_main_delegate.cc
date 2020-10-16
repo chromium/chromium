@@ -266,8 +266,7 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
     score = content::kPluginOomScore;
   } else if (process_type == switches::kUtilityProcess ||
              process_type == switches::kGpuProcess ||
-             process_type == switches::kCloudPrintServiceProcess ||
-             process_type == switches::kPpapiBrokerProcess) {
+             process_type == switches::kCloudPrintServiceProcess) {
     score = content::kMiscOomScore;
 #if BUILDFLAG(ENABLE_NACL)
   } else if (process_type == switches::kNaClLoaderProcess ||
@@ -311,7 +310,6 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
       process_type == switches::kNaClLoaderProcess ||
 #endif
       process_type == switches::kPpapiPluginProcess ||
-      process_type == switches::kPpapiBrokerProcess ||
       process_type == switches::kGpuProcess ||
 #endif
       process_type == switches::kRendererProcess ||
@@ -980,14 +978,12 @@ void ChromeMainDelegate::PreSandboxStartup() {
     DCHECK(command_line.HasSwitch(switches::kLang) ||
            process_type == switches::kZygoteProcess ||
            process_type == switches::kGpuProcess ||
-           process_type == switches::kPpapiBrokerProcess ||
            process_type == switches::kPpapiPluginProcess);
 #else
     DCHECK(command_line.HasSwitch(switches::kLang) ||
            process_type == switches::kZygoteProcess ||
            process_type == switches::kGpuProcess ||
            process_type == switches::kNaClLoaderProcess ||
-           process_type == switches::kPpapiBrokerProcess ||
            process_type == switches::kPpapiPluginProcess);
 #endif
 

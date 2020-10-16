@@ -27,8 +27,6 @@ Process ToExecutionContextProcess(CallStackProfileParams::Process process) {
       return SANDBOX_HELPER_PROCESS;
     case CallStackProfileParams::PPAPI_PLUGIN_PROCESS:
       return PPAPI_PLUGIN_PROCESS;
-    case CallStackProfileParams::PPAPI_BROKER_PROCESS:
-      return PPAPI_BROKER_PROCESS;
   }
   NOTREACHED();
   return UNKNOWN_PROCESS;
