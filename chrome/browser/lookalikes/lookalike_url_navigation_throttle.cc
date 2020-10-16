@@ -143,8 +143,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::ShowInterstitial(
       web_contents, url, safe_url);
 
   std::unique_ptr<LookalikeUrlBlockingPage> blocking_page(
-      new LookalikeUrlBlockingPage(web_contents, safe_url, url, source_id,
-                                   match_type, std::move(controller)));
+      new LookalikeUrlBlockingPage(
+          web_contents, safe_url, url, source_id, match_type,
+          handle->IsSignedExchangeInnerResponse(), std::move(controller)));
 
   base::Optional<std::string> error_page_contents =
       blocking_page->GetHTMLContents();
@@ -222,6 +223,28 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   // anyway, don't warn.
   if (first_is_lookalike &&
       last_url.DomainIs(GetETLDPlusOne(first_suggested_url.host()))) {
+    first_is_lookalike = false;
+  }
+
+  // Allow signed exchange cache URLs such as
+  // https://example-com.site.test/package.sxg.
+  // Navigation throttles see signed exchanges as a redirect chain where
+  // Url 0: Cache URL (i.e. outer URL)
+  // Url 1: URL of the sgx package
+  // Url 2: Inner URL (the URL whose contents the sgx package contains)
+  //
+  // We want to allow lookalike cache URLs but not lookalike inner URLs, so we
+  // make an exception for this condition.
+  // TODO(meacer): Confirm that the assumption about cache URL being the 1st
+  // and inner URL being the last URL in the redirect chain is correct.
+  //
+  // Note that the signed exchange logic can still redirect the initial
+  // navigation to the fallback URL even if SGX checks fail (invalid cert,
+  // missing headers etc, see crbug.com/874323 for an example). Such navigations
+  // are not considered SGX navigations and IsSignedExchangeInnerResponse()
+  // will return false. We treat such navigations as simple redirects.
+  if (first_is_lookalike &&
+      navigation_handle()->IsSignedExchangeInnerResponse()) {
     first_is_lookalike = false;
   }
 

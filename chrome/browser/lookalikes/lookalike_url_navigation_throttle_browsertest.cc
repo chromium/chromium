@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,20 +29,26 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -281,7 +288,8 @@ class LookalikeUrlNavigationThrottleBrowserTest
       Browser* browser,
       const GURL& navigated_url,
       const GURL& expected_suggested_url,
-      NavigationSuggestionEvent expected_event) {
+      NavigationSuggestionEvent expected_event,
+      bool expect_signed_exchange = false) {
     base::HistogramTester histograms;
 
     history::HistoryService* const history_service =
@@ -290,6 +298,14 @@ class LookalikeUrlNavigationThrottleBrowserTest
     ui_test_utils::WaitForHistoryToLoad(history_service);
 
     LoadAndCheckInterstitialAt(browser, navigated_url);
+
+    if (expect_signed_exchange) {
+      LookalikeUrlBlockingPage* interstitial =
+          static_cast<LookalikeUrlBlockingPage*>(GetCurrentInterstitial(
+              browser->tab_strip_model()->GetActiveWebContents()));
+      EXPECT_TRUE(interstitial->is_signed_exchange_for_testing());
+    }
+
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_DONT_PROCEED);
     EXPECT_EQ(expected_suggested_url,
@@ -1293,18 +1309,56 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                            embedded_test_server()->GetURL("example.net", "/"));
 }
 
+scoped_refptr<net::X509Certificate> LoadCertificate() {
+  constexpr char kCertFileName[] = "prime256v1-sha256-google-com.public.pem";
+
+  base::ScopedAllowBlockingForTesting allow_io;
+  base::FilePath dir_path;
+  base::PathService::Get(content::DIR_TEST_DATA, &dir_path);
+  dir_path = dir_path.Append(FILE_PATH_LITERAL("sxg"));
+
+  return net::CreateCertificateChainFromFile(
+      dir_path, kCertFileName, net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+}
+
 // Tests for Signed Exchanges.
 class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
     : public LookalikeUrlNavigationThrottleBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    sxg_test_helper_.SetUp();
+  LookalikeUrlNavigationThrottleSignedExchangeBrowserTest() {
+    net::EmbeddedTestServer::RegisterTestCerts();
+  }
 
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // HTTPS server only serves a valid cert for localhost, so this is needed
+    // to load pages from other hosts without an error.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetUp() override {
+    sxg_test_helper_.SetUp();
+    LookalikeUrlNavigationThrottleBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    https_server_.ServeFilesFromSourceDirectory("content/test/data");
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
         &LookalikeUrlNavigationThrottleSignedExchangeBrowserTest::
             MonitorRequest,
         base::Unretained(this)));
+    ASSERT_TRUE(https_server_.Start());
+
     LookalikeUrlNavigationThrottleBrowserTest::SetUpOnMainThread();
   }
 
@@ -1319,8 +1373,34 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
     return it->second.find("application/signed-exchange") != std::string::npos;
   }
 
+  void InstallMockCert() {
+    sxg_test_helper_.InstallMockCert(mock_cert_verifier_.mock_cert_verifier());
+
+    // Make the MockCertVerifier treat the certificate
+    // "prime256v1-sha256-google-com.public.pem" as valid for
+    // "google-com.example.org".
+    scoped_refptr<net::X509Certificate> original_cert = LoadCertificate();
+    net::CertVerifyResult dummy_result;
+    dummy_result.verified_cert = original_cert;
+    dummy_result.cert_status = net::OK;
+    dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
+    dummy_result.ocsp_result.revocation_status =
+        net::OCSPRevocationStatus::GOOD;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
+        original_cert, "google-com.example.org", dummy_result, net::OK);
+  }
+
+  void InstallMockCertChainInterceptor() {
+    sxg_test_helper_.InstallMockCertChainInterceptor();
+    sxg_test_helper_.InstallUrlInterceptor(
+        GURL("https://google-com.example.org/cert.msg"),
+        "content/test/data/sxg/google-com.example.org.public.pem.cbor");
+  }
+
  protected:
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
 
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
@@ -1337,7 +1417,8 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
-    testing::Combine(testing::Bool(), testing::Bool()));
+    testing::Combine(testing::Bool() /* target_embedding_enabled */,
+                     testing::Bool() /* punycode_interstitial_enabled */));
 
 // Navigates to a 127.0.0.1 URL that serves a signed exchange for
 // google-com.example.org. This navigation should be blocked by the target
@@ -1346,47 +1427,117 @@ INSTANTIATE_TEST_SUITE_P(
 // code). Testing an ETLD+1 such as googlé.com would require generating a custom
 // cert.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
-                       SignedExchange_ShouldBlockTarget) {
+                       InnerUrlIsLookalike_ShouldBlock) {
   if (!target_embedding_enabled()) {
     return;
   }
+  InstallMockCert();
+  InstallMockCertChainInterceptor();
+
   sxg_test_helper_.InstallUrlInterceptor(
       GURL("https://google-com.example.org/test/"),
       "content/test/data/sxg/fallback.html");
   const GURL kNavigatedUrl =
-      embedded_test_server()->GetURL("/sxg/google-com.example.org_test.sxg");
+      https_server_.GetURL("/sxg/google-com.example.org_test.sxg");
   const GURL kExpectedSuggestedUrl("https://google.com");
 
   TestMetricsRecordedAndInterstitialShown(
       browser(), kNavigatedUrl, kExpectedSuggestedUrl,
-      NavigationSuggestionEvent::kMatchTargetEmbedding);
+      NavigationSuggestionEvent::kMatchTargetEmbedding,
+      true /* expect_signed_exchange */);
 
   // Check that the SXG file was handled as a Signed Exchange.
   ASSERT_TRUE(HadSignedExchangeInAcceptHeader(kNavigatedUrl));
 }
 
-// Navigates to a lookalike URL that serves a signed exchange for
-// test.example.org. This should also be blocked by the lookalike interstitial,
-// even though the URL that serves the signed exchange is never visible to
-// the user.
+// Navigates to a lookalike URL (google-com.test.com) that serves a signed
+// exchange for test.example.org. This should not be blocked.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
-                       SignedExchange_ShouldBlockCacheUrl) {
+                       OuterUrlIsLookalike_ShouldNotBlock) {
   if (!target_embedding_enabled()) {
     return;
   }
+
+  InstallMockCert();
+  InstallMockCertChainInterceptor();
+
   const GURL kSgxTargetUrl("https://test.example.org/test/");
   sxg_test_helper_.InstallUrlInterceptor(kSgxTargetUrl,
                                          "content/test/data/sxg/fallback.html");
-  const GURL kNavigatedUrl = embedded_test_server()->GetURL(
+  const GURL kNavigatedUrl = https_server_.GetURL(
       "google-com.test.com", "/sxg/test.example.org_test.sxg");
-  const GURL kExpectedSuggestedUrl =
-      embedded_test_server()->GetURL("google.com", "/");
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+
+  // Check that the SXG file was handled as a Signed Exchange.
+  // MonitorRequest() sees kNavigatedUrl with an IP address instead of
+  // domain name, so check it instead.
+  const GURL kResolvedNavigatedUrl =
+      https_server_.GetURL("/sxg/test.example.org_test.sxg");
+  ASSERT_TRUE(HadSignedExchangeInAcceptHeader(kResolvedNavigatedUrl));
+}
+
+// Navigates to a lookalike URL (google-com.test.com) that serves a signed
+// exchange for test.example.org. This should not be blocked.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
+                       OuterUrlIsLookalikeButNotSignedExchange_ShouldNotBlock) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+
+  InstallMockCert();
+  InstallMockCertChainInterceptor();
+
+  const GURL kSgxTargetUrl("https://test.example.org/test/");
+  sxg_test_helper_.InstallUrlInterceptor(kSgxTargetUrl,
+                                         "content/test/data/sxg/fallback.html");
+  const GURL kSgxCacheUrl = https_server_.GetURL(
+      "google-com.test.com", "/sxg/test.example.org_test.sxg");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL(
+      "apple-com.site.com", "/server-redirect?" + kSgxCacheUrl.spec());
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+
+  // Check that the SXG file was handled as a Signed Exchange.
+  // MonitorRequest() sees kNavigatedUrl with an IP address instead of
+  // domain name, so check it instead.
+  const GURL kResolvedNavigatedUrl =
+      https_server_.GetURL("/sxg/test.example.org_test.sxg");
+  ASSERT_TRUE(HadSignedExchangeInAcceptHeader(kResolvedNavigatedUrl));
+}
+
+// Navigates to a lookalike URL (google-com.test.com) that serves a signed
+// exchange for google-com.example.org.
+// Both the outer URL (i.e. cache) and the inner URL are lookalikes so this
+// should be blocked.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
+                       InnerAndOuterUrlsAreLookalikes_ShouldBlock) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+  InstallMockCert();
+  InstallMockCertChainInterceptor();
+
+  sxg_test_helper_.InstallUrlInterceptor(
+      GURL("https://google-com.example.org/test/"),
+      "content/test/data/sxg/fallback.html");
+  const GURL kNavigatedUrl = https_server_.GetURL(
+      "google-com.test.com", "/sxg/google-com.example.org_test.sxg");
+  const GURL kExpectedSuggestedUrl("https://google.com");
 
   TestMetricsRecordedAndInterstitialShown(
       browser(), kNavigatedUrl, kExpectedSuggestedUrl,
-      NavigationSuggestionEvent::kMatchTargetEmbedding);
+      NavigationSuggestionEvent::kMatchTargetEmbedding,
+      true /* expect_signed_exchange */);
 
-  // Check that no SXG response was handled.
-  ASSERT_FALSE(HadSignedExchangeInAcceptHeader(kNavigatedUrl));
-  ASSERT_FALSE(HadSignedExchangeInAcceptHeader(kSgxTargetUrl));
+  // Check that the SXG file was handled as a Signed Exchange.
+  // MonitorRequest() sees kNavigatedUrl with an IP address instead of
+  // domain name, so check it instead.
+  const GURL kResolvedNavigatedUrl =
+      https_server_.GetURL("/sxg/google-com.example.org_test.sxg");
+  ASSERT_TRUE(HadSignedExchangeInAcceptHeader(kResolvedNavigatedUrl));
 }
+
+// TODO(meacer): Add a test for a failed SGX response. It should be treated
+// as a normal redirect. In fact, InnerAndOuterUrlsLookalikes_ShouldBlock
+// is actually testing this right now, fix it.

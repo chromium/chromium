@@ -32,6 +32,7 @@ class LookalikeUrlBlockingPage
       const GURL& request_url,
       ukm::SourceId source_id,
       LookalikeUrlMatchType match_type,
+      bool is_signed_exchange,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller);
@@ -41,6 +42,8 @@ class LookalikeUrlBlockingPage
   // SecurityInterstitialPage method:
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
+
+  bool is_signed_exchange_for_testing() const { return is_signed_exchange_; }
 
  protected:
   // SecurityInterstitialPage implementation:
@@ -59,6 +62,9 @@ class LookalikeUrlBlockingPage
   const GURL safe_url_;
   ukm::SourceId source_id_;
   LookalikeUrlMatchType match_type_;
+  // True if the throttle encountered a response with
+  // is_signed_exchange_inner_response flag. Only checked in tests.
+  const bool is_signed_exchange_;
 
   DISALLOW_COPY_AND_ASSIGN(LookalikeUrlBlockingPage);
 };

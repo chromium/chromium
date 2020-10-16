@@ -24,6 +24,11 @@ openssl ecparam -out prime256v1.key -name prime256v1 -genkey
 openssl req -new -sha256 -key prime256v1.key -out prime256v1-sha256.csr \
   -subj '/CN=test.example.org/O=Test/C=US'
 
+openssl req -new -sha256 -key prime256v1.key -out \
+  prime256v1-sha256-google-com.csr \
+  -subj '/CN=google-com.example.org/O=Test/C=US'
+
+
 # Generate a certificate whose validity period starts at 2019-06-01 and
 # valid for 90 days.
 openssl ca -batch \
@@ -33,6 +38,17 @@ openssl ca -batch \
   -enddate   190830000000Z \
   -in  prime256v1-sha256.csr \
   -out prime256v1-sha256.public.pem
+
+# Generate a certificate whose validity period starts at 2019-06-01 and
+# valid for 90 days. Same as above, but for google-com.example.org.
+openssl ca -batch \
+  -config google-com-ca.cnf \
+  -extensions sxg_cert \
+  -startdate 190601000000Z \
+  -enddate   190830000000Z \
+  -in  prime256v1-sha256-google-com.csr \
+  -out prime256v1-sha256-google-com.public.pem
+
 
 # Generate a certificate without CanSignHttpExchangesDraft extension.
 openssl ca -batch \

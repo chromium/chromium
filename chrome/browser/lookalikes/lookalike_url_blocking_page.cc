@@ -30,6 +30,7 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
     const GURL& request_url,
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
+    bool is_signed_exchange,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -39,7 +40,8 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
           std::move(controller_client)),
       safe_url_(safe_url),
       source_id_(source_id),
-      match_type_(match_type) {
+      match_type_(match_type),
+      is_signed_exchange_(is_signed_exchange) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
