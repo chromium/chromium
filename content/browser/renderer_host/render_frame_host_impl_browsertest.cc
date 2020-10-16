@@ -4165,9 +4165,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
-// TODO(https://crbug.com/1134601): `file:` URLs are all treated as `kUnknown`
-// today. This is ~incorrect, but safe, as their web-facing behavior will be
-// equivalent to "public".
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
     CommitsClientSecurityStateForFileURL) {
@@ -4177,10 +4174,10 @@ IN_PROC_BROWSER_TEST_F(
       root_frame_host()->last_committed_client_security_state();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 
-  EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
+  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
 IN_PROC_BROWSER_TEST_F(

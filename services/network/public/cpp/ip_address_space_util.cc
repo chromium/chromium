@@ -5,6 +5,9 @@
 #include "services/network/public/cpp/ip_address_space_util.h"
 
 #include "net/base/ip_address.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -39,6 +42,33 @@ bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
   // works just fine. The comment on IPAddressSpace's definition notes that the
   // enum values' ordering matters.
   return CollapseUnknown(lhs) < CollapseUnknown(rhs);
+}
+
+IPAddressSpace CalculateClientAddressSpace(
+    const GURL& url,
+    const mojom::URLResponseHead* response_head) {
+  if (url.SchemeIsFile()) {
+    // See: https://wicg.github.io/cors-rfc1918/#file-url.
+    return IPAddressSpace::kLocal;
+  }
+
+  if (!response_head) {
+    return IPAddressSpace::kUnknown;
+  }
+
+  // First, check whether the response forces itself into a public address space
+  // as per https://wicg.github.io/cors-rfc1918/#csp.
+  DCHECK(response_head->parsed_headers)
+      << "CalculateIPAddressSpace() called for URL " << url
+      << " with null parsed_headers.";
+  if (response_head->parsed_headers &&
+      ShouldTreatAsPublicAddress(
+          response_head->parsed_headers->content_security_policy)) {
+    return IPAddressSpace::kPublic;
+  }
+
+  // Otherwise, calculate the address space via the provided IP address.
+  return IPAddressToIPAddressSpace(response_head->remote_endpoint.address());
 }
 
 }  // namespace network

@@ -4,15 +4,30 @@
 
 #include "services/network/public/cpp/ip_address_space_util.h"
 
+#include <utility>
+
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace network {
 namespace {
 
+using mojom::ContentSecurityPolicy;
 using mojom::IPAddressSpace;
+using mojom::ParsedHeaders;
+using mojom::URLResponseHead;
 using net::IPAddress;
 using net::IPAddressBytes;
+using net::IPEndPoint;
+
+IPAddress PrivateIPv4Address() {
+  return IPAddress(192, 168, 1, 1);
+}
 
 TEST(IPAddressSpaceTest, IPAddressToIPAddressSpacev4) {
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress()), IPAddressSpace::kUnknown);
@@ -20,12 +35,12 @@ TEST(IPAddressSpaceTest, IPAddressToIPAddressSpacev4) {
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(64, 233, 160, 0)),
             IPAddressSpace::kPublic);
 
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(192, 168, 1, 1)),
+  EXPECT_EQ(IPAddressToIPAddressSpace(PrivateIPv4Address()),
             IPAddressSpace::kPrivate);
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(10, 1, 1, 1)),
             IPAddressSpace::kPrivate);
 
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(127, 0, 0, 1)),
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress::IPv4Localhost()),
             IPAddressSpace::kLocal);
 }
 
@@ -91,6 +106,49 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
                                         IPAddressSpace::kPublic));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
                                         IPAddressSpace::kUnknown));
+}
+
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceFileURL) {
+  EXPECT_EQ(IPAddressSpace::kLocal,
+            CalculateClientAddressSpace(GURL("file:///foo"), nullptr));
+}
+
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceNullResponseHead) {
+  EXPECT_EQ(IPAddressSpace::kUnknown,
+            CalculateClientAddressSpace(GURL("http://foo.test"), nullptr));
+}
+
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceEmptyResponseHead) {
+  URLResponseHead response_head;
+  response_head.parsed_headers = ParsedHeaders::New();
+  EXPECT_EQ(
+      IPAddressSpace::kUnknown,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceIPAddress) {
+  URLResponseHead response_head;
+  response_head.remote_endpoint = IPEndPoint(PrivateIPv4Address(), 1234);
+  response_head.parsed_headers = ParsedHeaders::New();
+
+  EXPECT_EQ(
+      IPAddressSpace::kPrivate,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
+}
+
+TEST(IPAddressSpaceTest, CalculateClientAddressSpaceTreatAsPublicAddress) {
+  URLResponseHead response_head;
+  response_head.remote_endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 1234);
+
+  auto csp = ContentSecurityPolicy::New();
+  csp->treat_as_public_address = true;
+  response_head.parsed_headers = ParsedHeaders::New();
+  response_head.parsed_headers->content_security_policy.push_back(
+      std::move(csp));
+
+  EXPECT_EQ(
+      IPAddressSpace::kPublic,
+      CalculateClientAddressSpace(GURL("http://foo.test"), &response_head));
 }
 
 }  // namespace

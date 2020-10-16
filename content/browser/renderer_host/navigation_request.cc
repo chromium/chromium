@@ -549,29 +549,6 @@ void RecordReadyToCommitMetrics(
   }
 }
 
-// Given an net::IPAddress and a CSP set, this function calculates the
-// IPAddressSpace which should be associated with the document this navigation
-// eventually commits into.
-//
-// https://wicg.github.io/cors-rfc1918/#address-space
-//
-// TODO(mkwst): This implementation treats requests that don't use a URL loader
-// (`about:blank`), as well as requests whose IP address is invalid
-// (`about:srcdoc`, `blob:`, etc.) as `kUnknown`. This is incorrect (as we'll
-// eventually want to make sure we inherit from the navigation's initiator in
-// some cases), but safe, as `kUnknown` is treated the same as `kPublic`.
-network::mojom::IPAddressSpace CalculateIPAddressSpace(
-    const net::IPAddress& ip,
-    const std::vector<network::mojom::ContentSecurityPolicyPtr>& csp_policies) {
-  // First, check whether the response forces itself into a public address space
-  // as per https://wicg.github.io/cors-rfc1918/#csp.
-  if (network::ShouldTreatAsPublicAddress(csp_policies))
-    return network::mojom::IPAddressSpace::kPublic;
-
-  // Otherwise, calculate the address space via the provided IP address.
-  return network::IPAddressToIPAddressSpace(ip);
-}
-
 // Convert the navigation type to the appropriate cross-document one.
 //
 // This is currently used when:
@@ -4252,12 +4229,9 @@ void NavigationRequest::UpdateClientSecurityState() {
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
 
-  // See: https://wicg.github.io/cors-rfc1918/#address-space
-  const std::vector<network::mojom::ContentSecurityPolicyPtr> empty_csp;
-  client_security_state_->ip_address_space = CalculateIPAddressSpace(
-      GetSocketAddress().address(),
-      response_head_ ? response_head_->parsed_headers->content_security_policy
-                     : empty_csp);
+  client_security_state_->ip_address_space =
+      network::CalculateClientAddressSpace(common_params_->url,
+                                           response_head_.get());
 
   client_security_state_->is_web_secure_context = IsWebSecureContext();
 
