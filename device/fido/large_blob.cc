@@ -83,6 +83,7 @@ LargeBlobsRequest::~LargeBlobsRequest() = default;
 
 void LargeBlobsRequest::SetPinParam(
     const pin::TokenResponse& pin_uv_auth_token) {
+  DCHECK(set_) << "SetPinParam should only be used for write requests";
   std::vector<uint8_t> pin_auth(pin::kPinUvAuthTokenSafetyPadding.begin(),
                                 pin::kPinUvAuthTokenSafetyPadding.end());
   pin_auth.insert(pin_auth.end(), kLargeBlobPinPrefix.begin(),

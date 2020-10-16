@@ -2281,7 +2281,11 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
   const size_t max_fragment_length = kLargeBlobDefaultMaxFragmentLength;
 
   if (get_it != request_map.end()) {
-    if (length_it != request_map.end()) {
+    if (length_it != request_map.end() ||
+        request_map.find(cbor::Value(static_cast<uint8_t>(
+            LargeBlobsRequestKey::kPinUvAuthParam))) != request_map.end() ||
+        request_map.find(cbor::Value(static_cast<uint8_t>(
+            LargeBlobsRequestKey::kPinUvAuthProtocol))) != request_map.end()) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
     const uint64_t get = get_it->second.GetUnsigned();

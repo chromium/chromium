@@ -757,9 +757,6 @@ void FidoDeviceAuthenticator::FetchLargeBlobArray(
   size_t bytes_to_read = max_large_blob_fragment_length();
   LargeBlobsRequest request =
       LargeBlobsRequest::ForRead(bytes_to_read, large_blob_array_reader.size());
-  if (pin_uv_auth_token) {
-    request.SetPinParam(*pin_uv_auth_token);
-  }
   RunOperation<LargeBlobsRequest, LargeBlobsResponse>(
       std::move(request),
       base::BindOnce(&FidoDeviceAuthenticator::OnReadLargeBlobFragment,
