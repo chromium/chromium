@@ -894,14 +894,6 @@ void FrameImpl::SetPermissionState(
     return;
   }
 
-  auto web_origin = ParseAndValidateWebOrigin(web_origin_string);
-  if (!web_origin) {
-    LOG(ERROR) << "SetPermissionState() called with invalid web_origin: "
-               << web_origin_string;
-    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
-    return;
-  }
-
   content::PermissionType type =
       FidlPermissionTypeToContentPermissionType(fidl_permission.type());
 
@@ -909,6 +901,23 @@ void FrameImpl::SetPermissionState(
       (fidl_state == fuchsia::web::PermissionState::GRANTED)
           ? blink::mojom::PermissionStatus::GRANTED
           : blink::mojom::PermissionStatus::DENIED;
+
+  // TODO(crbug.com/1136994): Remove this once the PermissionManager API is
+  // available.
+  if (web_origin_string == "*" &&
+      type == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
+    permission_controller_.SetDefaultPermissionState(type, state);
+    return;
+  }
+
+  // Handle per-origin permissions specifications.
+  auto web_origin = ParseAndValidateWebOrigin(web_origin_string);
+  if (!web_origin) {
+    LOG(ERROR) << "SetPermissionState() called with invalid web_origin: "
+               << web_origin_string;
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
+    return;
+  }
 
   permission_controller_.SetPermissionState(type, web_origin.value(), state);
 }

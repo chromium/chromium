@@ -5,10 +5,11 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_FRAME_PERMISSION_CONTROLLER_H_
 #define FUCHSIA_ENGINE_BROWSER_FRAME_PERMISSION_CONTROLLER_H_
 
-#include <map>
+#include <array>
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -31,6 +32,14 @@ class FramePermissionController {
                           const url::Origin& origin,
                           blink::mojom::PermissionStatus state);
 
+  // Sets the default |state| for the specified |permission|. Setting |state| to
+  // ASK causes the |default_permissions_| state to be used for |permission| for
+  // this origin.
+  // TODO(crbug.com/1063094): Allow ASK to be the default state, to indicate
+  // that the user should be prompted.
+  void SetDefaultPermissionState(content::PermissionType permission,
+                                 blink::mojom::PermissionStatus state);
+
   // Returns current permission state of the specified |permission| and
   // |origin|.
   blink::mojom::PermissionStatus GetPermissionState(
@@ -41,8 +50,8 @@ class FramePermissionController {
   // is resolved, the |callback| is called with a list of status values, one for
   // each value in |permissions|, in the same order.
   //
-  // TODO(crbug.com/922833): Current implementation doesn't actually prompt the
-  // user: all permissions in the PROMPT state are denied silently. Define
+  // TODO(crbug.com/1063094): Current implementation doesn't actually prompt the
+  // user: all permissions in the ASK state are denied silently. Define
   // fuchsia.web.PermissionManager protocol and use it to request permissions.
   void RequestPermissions(
       const std::vector<content::PermissionType>& permissions,
@@ -53,13 +62,26 @@ class FramePermissionController {
 
  private:
   struct PermissionSet {
-    PermissionSet();
+    // Initializes all permissions with |initial_state|.
+    explicit PermissionSet(blink::mojom::PermissionStatus initial_state);
 
-    blink::mojom::PermissionStatus
-        permission_state[static_cast<int>(content::PermissionType::NUM)];
+    PermissionSet(const PermissionSet& other);
+    PermissionSet& operator=(const PermissionSet& other);
+
+    std::array<blink::mojom::PermissionStatus,
+               static_cast<int>(content::PermissionType::NUM)>
+        permission_states;
   };
 
-  std::map<url::Origin, PermissionSet> per_origin_permissions_;
+  // Returns the effective PermissionStatus for |origin|. If the per-|origin|
+  // state is ASK, or there are no specific permissions set for |origin|, then
+  // the default permission status takes effect. This means that it is not
+  // currently possible to set a default of GRANTED/DENIED, and to override that
+  // to ASK for specific origins.
+  PermissionSet GetEffectivePermissionsForOrigin(const url::Origin& origin);
+
+  base::flat_map<url::Origin, PermissionSet> per_origin_permissions_;
+  PermissionSet default_permissions_{blink::mojom::PermissionStatus::DENIED};
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FRAME_PERMISSION_CONTROLLER_H_

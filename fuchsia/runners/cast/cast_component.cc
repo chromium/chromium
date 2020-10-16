@@ -140,14 +140,22 @@ void CastComponent::StartComponent() {
   application_controller_ = std::make_unique<ApplicationControllerImpl>(
       frame(), application_context_.get());
 
-  // Pass application permissions to the frame.
+  // Apply application-specific web permissions to the fuchsia.web.Frame.
   if (application_config_.has_permissions()) {
-    std::string origin = GURL(application_config_.web_url()).GetOrigin().spec();
+    // TODO(crbug.com/1136994): Replace this with the PermissionManager API
+    // when available.
+    const std::string origin =
+        GURL(application_config_.web_url()).GetOrigin().spec();
     for (auto& permission : application_config_.permissions()) {
       fuchsia::web::PermissionDescriptor permission_clone;
       zx_status_t status = permission.Clone(&permission_clone);
       ZX_DCHECK(status == ZX_OK, status);
-      frame()->SetPermissionState(std::move(permission_clone), origin,
+      const bool all_origins =
+          permission_clone.has_type() &&
+          (permission_clone.type() ==
+           fuchsia::web::PermissionType::PROTECTED_MEDIA_IDENTIFIER);
+      frame()->SetPermissionState(std::move(permission_clone),
+                                  all_origins ? "*" : origin,
                                   fuchsia::web::PermissionState::GRANTED);
     }
   }
