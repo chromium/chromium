@@ -313,7 +313,7 @@ QUIC_FLAG(bool,
 // If true, QuicStream::kDefaultUrgency is 3, otherwise 1.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_http3_new_default_urgency_value,
-          false)
+          true)
 
 // If true, close connection on packet serialization failures
 QUIC_FLAG(

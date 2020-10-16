@@ -2111,9 +2111,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   // TODO(https://crbug.com/1059250): Implement PRIORITY_UPDATE in
   // BidirectionalStreamQuicImpl.
   spdy::SpdyPriority priority =
-      version().UsesHttp3()
-          ? 1
-          : ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+      ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_length;
   int packet_num = 1;
   if (VersionUsesHttp3(version().transport_version)) {
@@ -2248,9 +2246,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   // TODO(https://crbug.com/1059250): Implement PRIORITY_UPDATE in
   // BidirectionalStreamQuicImpl.
   spdy::SpdyPriority priority =
-      version().UsesHttp3()
-          ? 1
-          : ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+      ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_length;
   int packet_num = 1;
   if (VersionUsesHttp3(version().transport_version)) {

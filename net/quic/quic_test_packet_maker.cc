@@ -15,6 +15,7 @@
 #include "net/third_party/quiche/src/quic/core/crypto/null_encrypter.h"
 #include "net/third_party/quiche/src/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quic/core/quic_framer.h"
+#include "net/third_party/quiche/src/quic/core/quic_stream.h"
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
@@ -558,7 +559,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
   if (quic::VersionUsesHttp3(version_.transport_version)) {
     MaybeAddHttp3SettingsFrames();
 
-    if (priority != 1) {
+    if (priority != quic::QuicStream::DefaultUrgency()) {
       std::string priority_data =
           GenerateHttp3PriorityData(priority, stream_id);
       AddQuicStreamFrame(2, false, priority_data);
@@ -606,7 +607,7 @@ QuicTestPacketMaker::MakeRequestHeadersPacket(
   if (quic::VersionUsesHttp3(version_.transport_version)) {
     MaybeAddHttp3SettingsFrames();
 
-    if (priority != 1) {
+    if (priority != quic::QuicStream::DefaultUrgency()) {
       std::string priority_data =
           GenerateHttp3PriorityData(priority, stream_id);
       AddQuicStreamFrame(2, false, priority_data);
@@ -645,8 +646,11 @@ QuicTestPacketMaker::MakeRequestHeadersAndRstPacket(
   if (quic::VersionUsesHttp3(version_.transport_version)) {
     MaybeAddHttp3SettingsFrames();
 
-    std::string priority_data = GenerateHttp3PriorityData(priority, stream_id);
-    AddQuicStreamFrame(2, false, priority_data);
+    if (priority != quic::QuicStream::DefaultUrgency()) {
+      std::string priority_data =
+          GenerateHttp3PriorityData(priority, stream_id);
+      AddQuicStreamFrame(2, false, priority_data);
+    }
 
     std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                           spdy_headers_frame_length);
