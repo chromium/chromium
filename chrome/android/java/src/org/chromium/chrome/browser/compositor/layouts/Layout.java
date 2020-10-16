@@ -39,6 +39,19 @@ import java.util.List;
 
 public abstract class Layout implements TabContentManager.ThumbnailChangeListener {
     /**
+     * The type info of the Layout.
+     */
+    @IntDef({LayoutType.BROWSING, LayoutType.TAB_SWITCHER, LayoutType.TOOLBAR_SWIPE,
+            LayoutType.SIMPLE_ANIMATION})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LayoutType {
+        int BROWSING = 0;
+        int TAB_SWITCHER = 1;
+        int TOOLBAR_SWIPE = 2;
+        int SIMPLE_ANIMATION = 3;
+    }
+
+    /**
      * The orientation of the device.
      */
     @IntDef({Orientation.UNSET, Orientation.PORTRAIT, Orientation.LANDSCAPE})
@@ -800,4 +813,10 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
             LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
             ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {}
+
+    /**
+     * @return The {@link LayoutType}.
+     */
+    @LayoutType
+    public abstract int getLayoutType();
 }

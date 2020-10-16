@@ -451,6 +451,11 @@ public class StaticLayout extends Layout {
     }
 
     @Override
+    public int getLayoutType() {
+        return LayoutType.BROWSING;
+    }
+
+    @Override
     public void destroy() {
         if (mSceneLayer != null) {
             mSceneLayer.destroy();

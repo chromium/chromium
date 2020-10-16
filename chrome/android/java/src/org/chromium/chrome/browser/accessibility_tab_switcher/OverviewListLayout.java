@@ -259,4 +259,9 @@ public class OverviewListLayout extends Layout
             mTabModelWrapper.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
         }
     }
+
+    @Override
+    public int getLayoutType() {
+        return LayoutType.TAB_SWITCHER;
+    }
 }

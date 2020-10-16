@@ -393,6 +393,11 @@ public class ToolbarSwipeLayout extends Layout {
                 SceneLayer.INVALID_RESOURCE_ID, 0, 0);
     }
 
+    @Override
+    public int getLayoutType() {
+        return LayoutType.TOOLBAR_SWIPE;
+    }
+
     /**
      * Perform the tabs sliding animations. If the new tab's index is smaller than the old one, new
      * tab slide in from left, and old one slide out to right, and vice versa.

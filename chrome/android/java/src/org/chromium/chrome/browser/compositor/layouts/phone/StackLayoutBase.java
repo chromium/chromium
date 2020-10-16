@@ -1678,6 +1678,11 @@ public abstract class StackLayoutBase extends Layout {
                 0, 0);
     }
 
+    @Override
+    public int getLayoutType() {
+        return LayoutType.TAB_SWITCHER;
+    }
+
     /**
      * Creates an {@link CompositorAnimator} and adds it to the animation.
      * Automatically sets the start value at the beginning of the animation.

@@ -504,6 +504,11 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     }
 
     @Override
+    public int getLayoutType() {
+        return LayoutType.TAB_SWITCHER;
+    }
+
+    @Override
     public boolean onUpdateAnimation(long time, boolean jumpToEnd) {
         return mTabToSwitcherAnimation == null && !mIsAnimating;
     }

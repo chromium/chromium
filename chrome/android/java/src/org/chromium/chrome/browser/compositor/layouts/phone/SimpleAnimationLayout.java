@@ -465,4 +465,9 @@ public class SimpleAnimationLayout extends Layout {
                 layerTitleCache, tabContentManager, resourceManager, browserControls,
                 SceneLayer.INVALID_RESOURCE_ID, 0, 0);
     }
+
+    @Override
+    public int getLayoutType() {
+        return LayoutType.SIMPLE_ANIMATION;
+    }
 }
