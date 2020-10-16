@@ -4983,6 +4983,16 @@
     ]
   },
 
+  "WifiSyncAndroidAllowed": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "WifiSyncAndroidAllowed": false },
+        "prefs": { "wifi_sync.allowed": {} }
+      }
+    ]
+  },
+
   "SmartLockSigninAllowed": {
     "os": ["chromeos"],
     "policy_pref_mapping_test": [

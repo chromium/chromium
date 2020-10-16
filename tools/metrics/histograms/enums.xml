@@ -22253,6 +22253,7 @@ Called by update_document_policy_enum.py.-->
   <int value="795" label="PhoneHubAllowed"/>
   <int value="796" label="PhoneHubNotificationsAllowed"/>
   <int value="797" label="PhoneHubTaskContinuationAllowed"/>
+  <int value="798" label="WifiSyncAndroidAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

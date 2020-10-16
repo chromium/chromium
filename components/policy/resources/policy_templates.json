@@ -16215,6 +16215,29 @@
       Leaving the policy unset means that by default, the feature isn't allowed for managed users but is allowed for other users.''',
     },
     {
+      'name': 'WifiSyncAndroidAllowed',
+      'owners': ['jonmann@chromium.org', 'cvandermerwe@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'default_for_enterprise_users': False,
+      'id': 798,
+      'caption': '''Allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> devices and a connected Android phone.''',
+      'tags': ['local-data-access', 'google-sharing'],
+      'desc': '''If this setting is enabled, users will be allowed to sync Wi-Fi network configurations between their <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> device(s) and a connected Android phone. Before Wi-Fi network configurations can sync, users must explicitly opt in to this feature by completing a setup flow.
+
+      If this setting is disabled, users will not be allowed to sync Wi-Fi network configurations.
+
+      This feature depends on the <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> datatype in Chrome Sync being enabled. If <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> is disabled in the <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME">SyncTypesListDisabled</ph> policy, or Chrome Sync is disabled in the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy this feature will not be enabled.
+
+      If this policy is left not set, the default is not allowed for managed users.''',
+    },
+    {
       'name': 'SmartLockSigninAllowed',
       'owners': ['hansberry@chromium.org', 'jhawkins@chromium.org'],
       'type': 'main',
@@ -24530,6 +24553,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578, 583, 589],
   'deleted_atomic_policy_group_ids': [],
-  'highest_id_currently_used': 797,
+  'highest_id_currently_used': 798,
   'highest_atomic_group_id_currently_used': 40
 }
