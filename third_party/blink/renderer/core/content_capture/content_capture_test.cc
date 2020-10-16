@@ -194,7 +194,8 @@ class ContentCaptureTest : public PageTestBase,
         "<p id='p6'>6</p>"
         "<p id='p7'>7</p>"
         "<p id='p8'>8</p>"
-        "<div id='d1'></div>");
+        "<div id='d1'></div>"
+        "<p id='invisible'>invisible</p>");
     platform()->SetAutoAdvanceNowToPendingTasks(false);
     // TODO(michaelbai): ContentCaptureManager should be get from LocalFrame.
     content_capture_manager_ =
@@ -279,6 +280,8 @@ class ContentCaptureTest : public PageTestBase,
   const Vector<cc::NodeInfo>& NodeIds() const { return node_ids_; }
   const Vector<Persistent<Node>> Nodes() const { return nodes_; }
 
+  Node& invisible_node() const { return *invisible_node_; }
+
  private:
   void ResetResult() {
     GetWebContentCaptureClient()->ResetResults();
@@ -298,10 +301,13 @@ class ContentCaptureTest : public PageTestBase,
       node_ids_.push_back(
           cc::NodeInfo(DOMNodeIds::IdForNode(node), GetRect(layout_object)));
     }
+    invisible_node_ = GetElementById("invisible")->firstChild();
+    DCHECK(invisible_node_.Get());
   }
 
   Vector<Persistent<Node>> nodes_;
   Vector<cc::NodeInfo> node_ids_;
+  Persistent<Node> invisible_node_;
   std::unique_ptr<WebContentCaptureClientTestHelper> content_capture_client_;
   Persistent<ContentCaptureManagerTestHelper> content_capture_manager_;
   Persistent<ContentCaptureLocalFrameClientHelper> local_frame_client_;
@@ -370,6 +376,30 @@ TEST_P(ContentCaptureTest, NodeOnlySendOnce) {
   GetContentCaptureManager()->OnScrollPositionChanged();
   RunContentCaptureTask();
   EXPECT_TRUE(GetWebContentCaptureClient()->Data().empty());
+  EXPECT_TRUE(GetWebContentCaptureClient()->RemovedData().empty());
+}
+
+TEST_P(ContentCaptureTest, UnsentNode) {
+  // Send all nodes expect |invisible_node_|.
+  RunContentCaptureTask();
+  EXPECT_FALSE(GetWebContentCaptureClient()->Data().empty());
+  EXPECT_EQ(GetExpectedSecondResultSize(),
+            GetWebContentCaptureClient()->Data().size());
+
+  // Simulates the |invisible_node_| being changed, and verifies no content
+  // change because |invisible_node_| wasn't captured.
+  GetContentCaptureManager()->OnNodeTextChanged(invisible_node());
+  RunContentCaptureTask();
+  EXPECT_TRUE(GetWebContentCaptureClient()->Data().empty());
+  EXPECT_TRUE(GetWebContentCaptureClient()->UpdatedData().empty());
+  EXPECT_TRUE(GetWebContentCaptureClient()->RemovedData().empty());
+
+  // Simulates the |invisible_node_| being removed, and verifies no content
+  // change because |invisible_node_| wasn't captured.
+  GetContentCaptureManager()->OnLayoutTextWillBeDestroyed(invisible_node());
+  RunContentCaptureTask();
+  EXPECT_TRUE(GetWebContentCaptureClient()->Data().empty());
+  EXPECT_TRUE(GetWebContentCaptureClient()->UpdatedData().empty());
   EXPECT_TRUE(GetWebContentCaptureClient()->RemovedData().empty());
 }
 
