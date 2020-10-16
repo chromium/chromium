@@ -4,7 +4,7 @@
 
 module spellcheck.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // Render process interface exposed to the browser for receiving process-
@@ -25,7 +25,7 @@ interface SpellChecker {
 };
 
 struct SpellCheckBDictLanguage {
-  mojo_base.mojom.File? file;
+  mojo_base.mojom.ReadOnlyFile? file;
   string language;
 };
 
