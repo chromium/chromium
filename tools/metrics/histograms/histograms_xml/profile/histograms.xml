@@ -235,7 +235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.Menu.OpenedAfterAvatarAnimation" units="ms"
-    expires_after="2020-09-27">
+    expires_after="2021-04-15">
   <owner>droger@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
