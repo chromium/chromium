@@ -104,7 +104,6 @@
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/tracked_child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
@@ -183,6 +182,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
@@ -448,7 +448,7 @@ void FillNavigationParamsRequest(
 
   if (common_params.post_data) {
     navigation_params->http_body =
-        GetWebHTTPBodyForRequestBody(*common_params.post_data);
+        blink::GetWebHTTPBodyForRequestBody(*common_params.post_data);
     if (!commit_params.post_content_type.empty()) {
       navigation_params->http_content_type =
           WebString::FromASCII(commit_params.post_content_type);
@@ -588,7 +588,7 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       GURL(),
       static_cast<blink::PreviewsState>(info->url_request.GetPreviewsState()),
       base::TimeTicks::Now(), info->url_request.HttpMethod().Latin1(),
-      GetRequestBodyForWebURLRequest(info->url_request),
+      blink::GetRequestBodyForWebURLRequest(info->url_request),
       std::move(source_location), false /* started_from_context_menu */,
       info->url_request.HasUserGesture(),
       info->url_request.HasTextFragmentToken(), std::move(initiator_csp_info),
@@ -5892,9 +5892,10 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   auto params = mojom::OpenURLParams::New();
   params->url = info->url_request.Url();
   params->initiator_origin = info->url_request.RequestorOrigin();
-  params->post_body = GetRequestBodyForWebURLRequest(info->url_request);
+  params->post_body = blink::GetRequestBodyForWebURLRequest(info->url_request);
   DCHECK_EQ(!!params->post_body, IsHttpPost(info->url_request));
-  params->extra_headers = GetWebURLRequestHeadersAsString(info->url_request);
+  params->extra_headers =
+      blink::GetWebURLRequestHeadersAsString(info->url_request).Latin1();
 
   params->referrer = blink::mojom::Referrer::New(
       blink::WebStringToGURL(info->url_request.ReferrerString()),
@@ -6253,11 +6254,11 @@ void RenderFrameImpl::BeginNavigationInternal(
   mojom::BeginNavigationParamsPtr begin_navigation_params =
       mojom::BeginNavigationParams::New(
           initiator_frame_routing_id,
-          GetWebURLRequestHeadersAsString(info->url_request), load_flags,
-          info->url_request.GetSkipServiceWorker(),
-          GetRequestContextTypeForWebURLRequest(info->url_request),
-          GetRequestDestinationForWebURLRequest(info->url_request),
-          GetMixedContentContextTypeForWebURLRequest(info->url_request),
+          blink::GetWebURLRequestHeadersAsString(info->url_request).Latin1(),
+          load_flags, info->url_request.GetSkipServiceWorker(),
+          blink::GetRequestContextTypeForWebURLRequest(info->url_request),
+          blink::GetRequestDestinationForWebURLRequest(info->url_request),
+          blink::GetMixedContentContextTypeForWebURLRequest(info->url_request),
           is_form_submission, was_initiated_by_link_click, searchable_form_url,
           searchable_form_encoding, client_side_redirect_url,
           initiator ? base::make_optional<base::Value>(std::move(*initiator))

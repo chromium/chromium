@@ -27,7 +27,6 @@
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/child_frame_compositing_helper.h"
 #include "content/renderer/impression_conversions.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -637,9 +637,10 @@ void RenderFrameProxy::Navigate(
   auto params = mojom::OpenURLParams::New();
   params->url = request.Url();
   params->initiator_origin = request.RequestorOrigin();
-  params->post_body = GetRequestBodyForWebURLRequest(request);
+  params->post_body = blink::GetRequestBodyForWebURLRequest(request);
   DCHECK_EQ(!!params->post_body, request.HttpMethod().Utf8() == "POST");
-  params->extra_headers = GetWebURLRequestHeadersAsString(request);
+  params->extra_headers =
+      blink::GetWebURLRequestHeadersAsString(request).Latin1();
   params->referrer = blink::mojom::Referrer::New(
       blink::WebStringToGURL(request.ReferrerString()),
       request.GetReferrerPolicy());

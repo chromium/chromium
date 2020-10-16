@@ -101,8 +101,6 @@ target(link_target_type, "renderer") {
     "loader/url_loader_client_impl.h",
     "loader/web_url_loader_impl.cc",
     "loader/web_url_loader_impl.h",
-    "loader/web_url_request_util.cc",
-    "loader/web_url_request_util.h",
     "loader/web_worker_fetch_context_impl.cc",
     "loader/web_worker_fetch_context_impl.h",
     "media/audio_decoder.cc",

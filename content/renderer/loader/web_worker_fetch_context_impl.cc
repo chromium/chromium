@@ -24,7 +24,6 @@
 #include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"

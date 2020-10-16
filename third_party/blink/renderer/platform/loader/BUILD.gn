@@ -135,6 +135,7 @@ blink_platform_sources("loader") {
     "static_data_navigation_body_loader.h",
     "subresource_integrity.cc",
     "subresource_integrity.h",
+    "web_url_request_util.cc",
   ]
 
   sources += get_target_outputs(

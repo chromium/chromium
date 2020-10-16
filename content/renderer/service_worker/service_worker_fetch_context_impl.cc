@@ -13,7 +13,6 @@
 #include "content/renderer/loader/request_extra_data.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"

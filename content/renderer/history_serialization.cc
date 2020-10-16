@@ -9,12 +9,12 @@
 
 #include "base/strings/nullable_string16.h"
 #include "content/renderer/history_entry.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
@@ -60,7 +60,8 @@ void GenerateFrameStateFromItem(const WebHistoryItem& item,
       WebString::ToOptionalString16(item.HttpContentType());
   const WebHTTPBody& http_body = item.HttpBody();
   if (!http_body.IsNull()) {
-    state->http_body.request_body = GetRequestBodyForWebHTTPBody(http_body);
+    state->http_body.request_body =
+        blink::GetRequestBodyForWebHTTPBody(http_body);
     state->http_body.contains_passwords = http_body.ContainsPasswordData();
   }
 
@@ -109,7 +110,7 @@ void RecursivelyGenerateHistoryItem(const blink::ExplodedFrameState& state,
       WebString::FromUTF16(state.http_body.http_content_type));
   if (state.http_body.request_body != nullptr) {
     item.SetHttpBody(
-        GetWebHTTPBodyForRequestBody(*state.http_body.request_body));
+        blink::GetWebHTTPBodyForRequestBody(*state.http_body.request_body));
   }
 
   item.SetScrollAnchorData({WebString::FromUTF16(state.scroll_anchor_selector),

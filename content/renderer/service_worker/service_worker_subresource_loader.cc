@@ -16,7 +16,6 @@
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "content/common/service_worker/service_worker_loader_helpers.h"
 #include "content/common/service_worker/service_worker_utils.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"

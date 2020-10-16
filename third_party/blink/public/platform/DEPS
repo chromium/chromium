@@ -39,6 +39,7 @@ include_rules = [
     "+net/url_request/redirect_info.h",
     "+services/network/public/cpp/cors/cors_error_status.h",
     "+services/network/public/cpp/cors/preflight_result.h",
+    "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
 
     # Enforce to use mojom-shared.h in blink/public so that it can compile

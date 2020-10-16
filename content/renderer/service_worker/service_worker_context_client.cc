@@ -31,7 +31,6 @@
 #include "content/public/renderer/worker_thread.h"
 #include "content/renderer/loader/child_url_loader_factory_bundle.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
-#include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
 #include "content/renderer/service_worker/navigation_preload_request.h"
