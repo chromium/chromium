@@ -9,14 +9,12 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 // A view containing just one credential that was used for for automatic signing
 // in.
-class PasswordAutoSignInView : public PasswordBubbleViewBase,
-                               public views::ButtonListener {
+class PasswordAutoSignInView : public PasswordBubbleViewBase {
  public:
   PasswordAutoSignInView(content::WebContents* web_contents,
                          views::View* anchor_view);
@@ -37,9 +35,6 @@ class PasswordAutoSignInView : public PasswordBubbleViewBase,
   // LocationBarBubbleDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   void OnTimer();
   static base::TimeDelta GetTimeout();

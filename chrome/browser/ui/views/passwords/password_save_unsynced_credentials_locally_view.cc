@@ -59,10 +59,9 @@ void PasswordSaveUnsyncedCredentialsLocallyView::ButtonPressed(
     const ui::Event&) {
   auto* checkbox = static_cast<views::Checkbox*>(sender);
   num_selected_checkboxes_ += checkbox->GetChecked() ? 1 : -1;
-  if (num_selected_checkboxes_ == 0)
-    GetOkButton()->SetState(views::Button::ButtonState::STATE_DISABLED);
-  else
-    GetOkButton()->SetState(views::Button::ButtonState::STATE_NORMAL);
+  GetOkButton()->SetState(num_selected_checkboxes_
+                              ? views::Button::ButtonState::STATE_NORMAL
+                              : views::Button::ButtonState::STATE_DISABLED);
 }
 
 const PasswordBubbleControllerBase*
@@ -88,7 +87,8 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
   AddChildView(std::move(description));
 
   DCHECK(!controller_.unsynced_credentials().empty());
-  for (const autofill::PasswordForm& row : controller_.unsynced_credentials()) {
+  for (const autofill::PasswordForm& form :
+       controller_.unsynced_credentials()) {
     auto* row_view = AddChildView(std::make_unique<views::View>());
     auto* checkbox = row_view->AddChildView(
         std::make_unique<views::Checkbox>(base::string16(), this));
@@ -99,10 +99,9 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
     // Usually all passwords should be saved, so they're selected by default.
     checkbox->SetChecked(true);
     num_selected_checkboxes_++;
-    auto* username_label = row_view->AddChildView(CreateUsernameLabel(row));
+    auto* username_label = row_view->AddChildView(CreateUsernameLabel(form));
     checkbox->SetAssociatedLabel(username_label);
-    auto* password_label = row_view->AddChildView(
-        CreatePasswordLabel(row, IDS_PASSWORDS_VIA_FEDERATION, false));
+    auto* password_label = row_view->AddChildView(CreatePasswordLabel(form));
     auto* row_layout =
         row_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal));

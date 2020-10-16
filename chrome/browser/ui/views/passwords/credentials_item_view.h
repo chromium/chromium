@@ -58,7 +58,7 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
-  const autofill::PasswordForm* form_;
+  const autofill::PasswordForm* const form_;
 
   views::ImageView* image_view_;
 

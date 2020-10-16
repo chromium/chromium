@@ -11,9 +11,18 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
+namespace autofill {
+struct PasswordForm;
+}
+
 namespace content {
 class WebContents;
 }
+
+namespace views {
+class Label;
+}
+
 class PasswordBubbleControllerBase;
 
 // Base class for all manage-passwords bubbles. Provides static methods for
@@ -65,6 +74,11 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
                          bool easily_dismissable);
 
   ~PasswordBubbleViewBase() override;
+
+  static std::unique_ptr<views::Label> CreateUsernameLabel(
+      const autofill::PasswordForm& form);
+  static std::unique_ptr<views::Label> CreatePasswordLabel(
+      const autofill::PasswordForm& form);
 
  private:
   // views::BubbleDialogDelegateView:

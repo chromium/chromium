@@ -36,55 +36,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
-// Maximum height of the credential list. The unit is one row's height.
-constexpr double kMaxHeightAccounts = 3.5;
-
-// Creates a list view of credentials in |forms|.
-views::ScrollView* CreateCredentialsView(
-    const CredentialManagerDialogController::FormsVector& forms,
-    views::ButtonListener* button_listener,
-    network::mojom::URLLoaderFactory* loader_factory) {
-  auto list_view = std::make_unique<views::View>();
-  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  int item_height = 0;
-  for (const auto& form : forms) {
-    std::pair<base::string16, base::string16> titles =
-        GetCredentialLabelsForAccountChooser(*form);
-    CredentialsItemView* credential_view =
-        new CredentialsItemView(button_listener, titles.first, titles.second,
-                                form.get(), loader_factory);
-    credential_view->SetStoreIndicatorIcon(form->in_store);
-    ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-    gfx::Insets insets =
-        layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
-    const int vertical_padding = layout_provider->GetDistanceMetric(
-        views::DISTANCE_RELATED_CONTROL_VERTICAL);
-    credential_view->SetBorder(views::CreateEmptyBorder(
-        vertical_padding, insets.left(), vertical_padding, insets.right()));
-    item_height = std::max(item_height, credential_view->GetPreferredHeight());
-    list_view->AddChildView(credential_view);
-  }
-  views::ScrollView* scroll_view = new views::ScrollView;
-  scroll_view->ClipHeightTo(0, kMaxHeightAccounts * item_height);
-  scroll_view->SetContents(std::move(list_view));
-  return scroll_view;
-}
-
-std::unique_ptr<views::View> CreateGoogleAccountFooter() {
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
-      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY);
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return label;
-}
-
-}  // namespace
-
 AccountChooserDialogView::AccountChooserDialogView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents)
@@ -96,8 +47,14 @@ AccountChooserDialogView::AccountChooserDialogView(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   set_close_on_deactivate(false);
-  if (controller_->ShouldShowFooter())
-    SetFootnoteView(CreateGoogleAccountFooter());
+  if (controller_->ShouldShowFooter()) {
+    auto* label = SetFootnoteView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
+        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+    label->SetMultiLine(true);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
   SetArrow(views::BubbleBorder::NONE);
   set_margins(gfx::Insets(margins().top(), 0, margins().bottom(), 0));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ACCOUNT_CHOOSER);
@@ -151,7 +108,7 @@ void AccountChooserDialogView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
   CredentialsItemView* view = static_cast<CredentialsItemView*>(sender);
   // On Mac the button click event may be dispatched after the dialog was
-  // hidden. Thus, the controller can be NULL.
+  // hidden. Thus, the controller can be null.
   if (controller_) {
     controller_->OnChooseCredentials(
         *view->form(),
@@ -161,12 +118,34 @@ void AccountChooserDialogView::ButtonPressed(views::Button* sender,
 
 void AccountChooserDialogView::InitWindow() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(CreateCredentialsView(
-      controller_->GetLocalForms(), this,
-      content::BrowserContext::GetDefaultStoragePartition(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get()));
+
+  views::ScrollView* scroll_view =
+      AddChildView(std::make_unique<views::ScrollView>());
+  auto* list_view = scroll_view->SetContents(std::make_unique<views::View>());
+  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  int item_height = 0;
+  for (const auto& form : controller_->GetLocalForms()) {
+    const auto titles = GetCredentialLabelsForAccountChooser(*form);
+    auto* credential_view =
+        list_view->AddChildView(std::make_unique<CredentialsItemView>(
+            this, titles.first, titles.second, form.get(),
+            content::BrowserContext::GetDefaultStoragePartition(
+                Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
+                ->GetURLLoaderFactoryForBrowserProcess()
+                .get()));
+    credential_view->SetStoreIndicatorIcon(form->in_store);
+    ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+    gfx::Insets insets =
+        layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
+    const int vertical_padding = layout_provider->GetDistanceMetric(
+        views::DISTANCE_RELATED_CONTROL_VERTICAL);
+    credential_view->SetBorder(views::CreateEmptyBorder(
+        vertical_padding, insets.left(), vertical_padding, insets.right()));
+    item_height = std::max(item_height, credential_view->GetPreferredHeight());
+  }
+  constexpr float kMaxVisibleItems = 3.5;
+  scroll_view->ClipHeightTo(0, kMaxVisibleItems * item_height);
 }
 
 AccountChooserPrompt* CreateAccountChooserPromptView(

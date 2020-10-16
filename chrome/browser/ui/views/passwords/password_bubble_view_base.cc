@@ -6,7 +6,9 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/views/passwords/password_save_update_with_account_store_view.h"
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/views/controls/button/button.h"
@@ -146,6 +149,36 @@ PasswordBubbleViewBase::PasswordBubbleViewBase(
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {
   if (g_manage_passwords_bubble_ == this)
     g_manage_passwords_bubble_ = nullptr;
+}
+
+// static
+std::unique_ptr<views::Label> PasswordBubbleViewBase::CreateUsernameLabel(
+    const autofill::PasswordForm& form) {
+  auto label = std::make_unique<views::Label>(
+      GetDisplayUsername(form), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
+}
+
+// static
+std::unique_ptr<views::Label> PasswordBubbleViewBase::CreatePasswordLabel(
+    const autofill::PasswordForm& form) {
+  std::unique_ptr<views::Label> label;
+  if (form.federation_origin.opaque()) {
+    label = std::make_unique<views::Label>(
+        form.password_value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        STYLE_SECONDARY_MONOSPACED);
+    label->SetObscured(true);
+  } else {
+    label = std::make_unique<views::Label>(
+        l10n_util::GetStringFUTF16(IDS_PASSWORDS_VIA_FEDERATION,
+                                   GetDisplayFederation(form)),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
+    label->SetElideBehavior(gfx::ELIDE_HEAD);
+  }
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
 }
 
 void PasswordBubbleViewBase::Init() {

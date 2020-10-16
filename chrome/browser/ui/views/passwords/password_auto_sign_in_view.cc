@@ -41,17 +41,17 @@ PasswordAutoSignInView::PasswordAutoSignInView(
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
 
-  CredentialsItemView* credential = new CredentialsItemView(
-      this,
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD),
-      form.username_value, &form,
-      content::BrowserContext::GetDefaultStoragePartition(
-          controller_.GetProfile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get(),
-      views::style::STYLE_HINT, views::style::STYLE_PRIMARY);
+  CredentialsItemView* credential =
+      AddChildView(std::make_unique<CredentialsItemView>(
+          nullptr,
+          l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD),
+          form.username_value, &form,
+          content::BrowserContext::GetDefaultStoragePartition(
+              controller_.GetProfile())
+              ->GetURLLoaderFactoryForBrowserProcess()
+              .get(),
+          views::style::STYLE_HINT, views::style::STYLE_PRIMARY));
   credential->SetEnabled(false);
-  AddChildView(credential);
 
   // Setup the observer and maybe start the timer.
   Browser* browser = chrome::FindBrowserWithWebContents(GetWebContents());
@@ -89,11 +89,6 @@ gfx::Size PasswordAutoSignInView::CalculatePreferredSize() const {
                         views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
-}
-
-void PasswordAutoSignInView::ButtonPressed(views::Button* sender,
-                                           const ui::Event& event) {
-  NOTREACHED();
 }
 
 void PasswordAutoSignInView::OnTimer() {

@@ -15,18 +15,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
-namespace views {
-class Label;
-}  // namespace views
-
-// Standalone functions for creating username and password views.
-std::unique_ptr<views::Label> CreateUsernameLabel(
-    const autofill::PasswordForm& form);
-std::unique_ptr<views::Label> CreatePasswordLabel(
-    const autofill::PasswordForm& form,
-    int federation_message_id,
-    bool is_password_visible);
-
 // A dialog for managing stored password and federated login information for a
 // specific site. A user can remove managed credentials for the site via this
 // dialog.
