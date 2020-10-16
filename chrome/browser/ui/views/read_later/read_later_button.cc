@@ -29,6 +29,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+  SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // We don't want to use ToolbarButton::SetHighlight here because it adds a
   // border around the button.
   LabelButton::SetText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
