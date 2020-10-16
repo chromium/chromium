@@ -1342,6 +1342,10 @@ test("views_unittests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+
+  if (is_linux || is_chromeos) {
+    sources += [ "color_chooser/color_chooser_unittest.cc" ]
+  }
 }
 
 # This target is added as a dependency of browser interactive_ui_tests. It must

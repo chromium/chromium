@@ -42,6 +42,17 @@ class VIEWS_EXPORT ColorChooserView : public WidgetDelegateView,
   float value() const { return hsv_[2]; }
   void set_listener(ColorChooserListener* listener) { listener_ = listener; }
 
+  View* hue_view_for_testing();
+  View* saturation_value_view_for_testing();
+  Textfield* textfield_for_testing();
+  View* selected_color_patch_for_testing();
+
+  // TextfieldController overrides:
+  void ContentsChanged(Textfield* sender,
+                       const base::string16& new_contents) override;
+  bool HandleKeyEvent(Textfield* sender,
+                      const ui::KeyEvent& key_event) override;
+
  private:
   class HueView;
   class SaturationValueView;
@@ -51,12 +62,6 @@ class VIEWS_EXPORT ColorChooserView : public WidgetDelegateView,
   bool CanMinimize() const override;
   View* GetInitiallyFocusedView() override;
   void WindowClosing() override;
-
-  // TextfieldController overrides:
-  void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
-  bool HandleKeyEvent(Textfield* sender,
-                      const ui::KeyEvent& key_event) override;
 
   // The current color in HSV coordinate.
   SkScalar hsv_[3];
