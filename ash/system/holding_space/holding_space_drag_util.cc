@@ -22,6 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -38,6 +39,7 @@ constexpr int kDragImageItemChipViewIconSize = 24;
 constexpr gfx::Insets kDragImageItemChipViewInsets(0, 13);
 constexpr gfx::Size kDragImageItemChipViewPreferredSize(160, 40);
 constexpr int kDragImageItemChipViewSpacing = 13;
+constexpr gfx::Size kDragImageItemScreenshotViewPreferredSize(104, 80);
 constexpr int kDragImageViewChildOffset = 8;
 
 // Helpers ---------------------------------------------------------------------
@@ -50,12 +52,6 @@ void AssertNoLayers(const views::View* view) {
     AssertNoLayers(child);
 }
 #endif  // DCHECK_IS_ON()
-
-// Returns an empty border with space to accommodate the specified `shadow`.
-std::unique_ptr<views::Border> CreateEmptyBorderForShadow(
-    const gfx::ShadowDetails& shadow) {
-  return views::CreateEmptyBorder(-gfx::ShadowValue::GetMargin(shadow.values));
-}
 
 // Returns the holding space items associated with the specified `views`.
 std::vector<const HoldingSpaceItem*> GetHoldingSpaceItems(
@@ -140,10 +136,13 @@ class DragImageItemView : public views::View {
   ~DragImageItemView() override = default;
 
  protected:
-  DragImageItemView() {
-    // Add an empty border to accommodate the shadow so that the view's content
-    // will be laid out within the appropriate shadow margins.
-    SetBorder(CreateEmptyBorderForShadow(GetShadowDetails()));
+  DragImageItemView() = default;
+
+  // views::View:
+  gfx::Insets GetInsets() const final {
+    // Add insets to accommodate the shadow so that the view's content will be
+    // laid out within the appropriate shadow margins.
+    return gfx::Insets(-gfx::ShadowValue::GetMargin(GetShadowDetails().values));
   }
 
  private:
@@ -165,6 +164,7 @@ class DragImageItemView : public views::View {
 
 // DragImageItemChipView -------------------------------------------------------
 
+// TODO(crbug.com/1139113): Support theming.
 // A `DragImageItemView` which represents a single holding space `item` as a
 // chip in the drag image for a collection of holding space item views.
 class DragImageItemChipView : public DragImageItemView {
@@ -210,6 +210,35 @@ class DragImageItemChipView : public DragImageItemView {
   }
 };
 
+// DragImageItemScreenshotView -------------------------------------------------
+
+// A `DragImageItemView` which represents a single holding space screenshot
+// `item` in the drag image for a collection of holding space item views.
+class DragImageItemScreenshotView : public DragImageItemView {
+ public:
+  explicit DragImageItemScreenshotView(const HoldingSpaceItem* item) {
+    DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kScreenshot);
+    InitLayout(item);
+  }
+
+ private:
+  void InitLayout(const HoldingSpaceItem* item) {
+    // NOTE: We enlarge `preferred_size` to accommodate the view's shadow.
+    gfx::Size preferred_size(kDragImageItemScreenshotViewPreferredSize);
+    preferred_size.Enlarge(GetInsets().width(), GetInsets().height());
+    SetPreferredSize(preferred_size);
+
+    // Layout.
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+
+    // Image.
+    auto* image = AddChildView(std::make_unique<RoundedImageView>(
+        kDragImageItemViewCornerRadius, RoundedImageView::Alignment::kCenter));
+    image->SetPreferredSize(kDragImageItemScreenshotViewPreferredSize);
+    image->SetImage(item->image().image_skia(), image->GetPreferredSize());
+  }
+};
+
 // DragImageView ---------------------------------------------------------------
 
 // A `views::View` for use as a drag image for a collection of holding space
@@ -245,11 +274,18 @@ class DragImageView : public views::View {
     SetLayoutManager(
         std::make_unique<DragImageLayoutManager>(kDragImageViewChildOffset));
 
-    // TODO(crbug.com/1139113): Support theming.
-    // TODO(crbug.com/1139113): Paint screenshot items differently.
+    const bool contains_only_screenshots = std::all_of(
+        items.begin(), items.end(), [](const HoldingSpaceItem* item) {
+          return item->type() == HoldingSpaceItem::Type::kScreenshot;
+        });
+
     // TODO(crbug.com/1139113): Limit number of items and add overflow badge.
-    for (const HoldingSpaceItem* item : items)
-      AddChildView(std::make_unique<DragImageItemChipView>(item));
+    for (const HoldingSpaceItem* item : items) {
+      if (contains_only_screenshots)
+        AddChildView(std::make_unique<DragImageItemScreenshotView>(item));
+      else
+        AddChildView(std::make_unique<DragImageItemChipView>(item));
+    }
   }
 };
 
