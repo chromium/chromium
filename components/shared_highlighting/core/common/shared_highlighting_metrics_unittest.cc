@@ -26,15 +26,23 @@ TEST(SharedHighlightingMetricsTest, LogTextFragmentAmbiguousMatch) {
 TEST(SharedHighlightingMetricsTest, LogTextFragmentLinkOpenSource) {
   base::HistogramTester histogram_tester;
 
-  GURL search_engine_url = GURL("https://google.com");
-  GURL non_search_engine_url = GURL("https://example.com");
-
+  GURL search_engine_url("https://google.com");
   LogTextFragmentLinkOpenSource(search_engine_url);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource", 1, 1);
+  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                     TextFragmentLinkOpenSource::kSearchEngine,
+                                     1);
 
+  GURL non_search_engine_url("https://example.com");
   LogTextFragmentLinkOpenSource(non_search_engine_url);
-  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource", 0, 1);
+  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                     TextFragmentLinkOpenSource::kUnknown, 1);
   histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 2);
+
+  GURL empty_gurl("");
+  LogTextFragmentLinkOpenSource(empty_gurl);
+  histogram_tester.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                     TextFragmentLinkOpenSource::kUnknown, 2);
+  histogram_tester.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 3);
 }
 
 TEST(SharedHighlightingMetricsTest, LogTextFragmentMatchRate) {
