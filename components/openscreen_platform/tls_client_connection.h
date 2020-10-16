@@ -17,7 +17,7 @@
 
 namespace openscreen_platform {
 
-class TlsClientConnection : public openscreen::TlsConnection {
+class TlsClientConnection final : public openscreen::TlsConnection {
  public:
   TlsClientConnection(
       openscreen::TaskRunner* task_runner,

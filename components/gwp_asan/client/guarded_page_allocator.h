@@ -111,7 +111,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // SimpleFreeList is specifically designed to pre-allocate data in Initialize
   // so that it never recurses into malloc/free during Allocate/Free.
   template <typename T>
-  class SimpleFreeList : public FreeList<T> {
+  class SimpleFreeList final : public FreeList<T> {
    public:
     ~SimpleFreeList() final = default;
     void Initialize(T max_entries) final;
@@ -139,7 +139,8 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // first-come first-serve basis, this makes it likely that all slots will be
   // used up by common types first. Set aside a fixed amount of slots (~5%) for
   // one-off partitions so that we make sure to sample rare types as well.
-  class PartitionAllocSlotFreeList : public FreeList<AllocatorState::SlotIdx> {
+  class PartitionAllocSlotFreeList final
+      : public FreeList<AllocatorState::SlotIdx> {
    public:
     PartitionAllocSlotFreeList();
     ~PartitionAllocSlotFreeList() final;

@@ -71,7 +71,7 @@ class ContextProvider;
 // planar image data is packed into GL_RGBA textures, how the output textures
 // should be sized, and why there are alignment requirements when specifying the
 // output rect.
-class VIZ_COMMON_EXPORT GLI420Converter : public ContextLostObserver {
+class VIZ_COMMON_EXPORT GLI420Converter final : public ContextLostObserver {
  public:
   // GLI420Converter uses the exact same parameters as GLScaler.
   using Parameters = GLScaler::Parameters;

@@ -40,7 +40,7 @@ class ContextProvider;
 // can be configured to operate at different quality levels, manages/converts
 // color spaces, and optionally re-arranges/formats data in output textures for
 // use with more-efficient texture readback pipelines.
-class VIZ_COMMON_EXPORT GLScaler : public ContextLostObserver {
+class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
  public:
   struct VIZ_COMMON_EXPORT Parameters {
     // Relative scale from/to factors. Both of these must be non-zero.

@@ -387,7 +387,7 @@ namespace {
 // it has been destroyed in the meantime. We use the WeakPtr to the
 // GLRendererCopier as an indicator that the GLContext is still alive. If the
 // access to the GLContext is lost, we treat the copy output as failed.
-class GLPixelBufferRGBAResult : public CopyOutputResult {
+class GLPixelBufferRGBAResult final : public CopyOutputResult {
  public:
   GLPixelBufferRGBAResult(const gfx::Rect& result_rect,
                           const gfx::ColorSpace& color_space,
@@ -636,7 +636,7 @@ namespace {
 // pixel buffer object, and automatically deletes the pixel buffer object at
 // destruction time. This provides an optimal one-copy data flow, from the pixel
 // buffer into client-provided memory.
-class GLPixelBufferI420Result : public CopyOutputResult {
+class GLPixelBufferI420Result final : public CopyOutputResult {
  public:
   // |aligned_rect| identifies the region of result pixels in the pixel buffer,
   // while the |result_rect| is the subregion that is exposed to the client.

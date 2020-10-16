@@ -15,7 +15,7 @@ namespace viz {
 // Represents an in-flight frame delivery to the consumer. Its main purpose is
 // to proxy callbacks from the consumer back to the relevant capturer
 // components owned and operated by FrameSinkVideoCapturerImpl.
-class VIZ_SERVICE_EXPORT InFlightFrameDelivery
+class VIZ_SERVICE_EXPORT InFlightFrameDelivery final
     : public mojom::FrameSinkVideoConsumerFrameCallbacks {
  public:
   InFlightFrameDelivery(

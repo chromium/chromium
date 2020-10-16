@@ -31,7 +31,7 @@ struct TlsListenOptions;
 
 namespace openscreen_platform {
 
-class TlsConnectionFactory : public openscreen::TlsConnectionFactory {
+class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
  public:
   TlsConnectionFactory(openscreen::TlsConnectionFactory::Client* client,
                        openscreen::TaskRunner* task_runner);

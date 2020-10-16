@@ -39,7 +39,7 @@ class V8ContextTrackerDataStore;
 //
 // Note that this component relies on the ExecutionContextRegistry having been
 // added to the Graph.
-class V8ContextTracker
+class V8ContextTracker final
     : public execution_context::ExecutionContextObserverDefaultImpl,
       public GraphObserver,
       public GraphOwned,

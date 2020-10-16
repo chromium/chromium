@@ -38,7 +38,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
     : private mojom::FrameSinkVideoConsumer {
  public:
   // A re-connectable FrameSinkVideoCaptureOverlay. See CreateOverlay().
-  class VIZ_HOST_EXPORT Overlay : public mojom::FrameSinkVideoCaptureOverlay {
+  class VIZ_HOST_EXPORT Overlay final
+      : public mojom::FrameSinkVideoCaptureOverlay {
    public:
     Overlay(base::WeakPtr<ClientFrameSinkVideoCapturer> client_capturer,
             int32_t stacking_index);

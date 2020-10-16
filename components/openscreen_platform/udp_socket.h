@@ -23,8 +23,8 @@ class IPEndPoint;
 
 namespace openscreen_platform {
 
-class UdpSocket : public openscreen::UdpSocket,
-                  network::mojom::UDPSocketListener {
+class UdpSocket final : public openscreen::UdpSocket,
+                        network::mojom::UDPSocketListener {
  public:
   UdpSocket(Client* client,
             const openscreen::IPEndpoint& local_endpoint,

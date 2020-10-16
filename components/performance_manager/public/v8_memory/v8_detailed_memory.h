@@ -462,7 +462,7 @@ class V8DetailedMemoryRequest {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-class V8DetailedMemoryRequestOneShot : public V8DetailedMemoryObserver {
+class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
  public:
   // A callback that will be passed the results of the measurement. |process|
   // will always match the value passed to the V8DetailedMemoryRequestOneShot
