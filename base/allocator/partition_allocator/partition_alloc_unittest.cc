@@ -1962,120 +1962,114 @@ TEST_F(PartitionAllocTest, PreferActiveOverEmpty) {
 // Tests the API to purge discardable memory.
 TEST_F(PartitionAllocTest, PurgeDiscardableSecondPage) {
   // Free the second of two 4096 byte allocations and then purge.
+  void* ptr1 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  char* ptr2 = reinterpret_cast<char*>(
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
+  allocator.root()->Free(ptr2);
+  SlotSpanMetadata<base::internal::ThreadSafe>* slot_span =
+      SlotSpanMetadata<base::internal::ThreadSafe>::FromPointer(
+          PartitionPointerAdjustSubtract(true, ptr1));
+  EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
   {
-    void* ptr1 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    char* ptr2 = reinterpret_cast<char*>(
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
-    allocator.root()->Free(ptr2);
-    SlotSpanMetadata<base::internal::ThreadSafe>* slot_span =
-        SlotSpanMetadata<base::internal::ThreadSafe>::FromPointer(
-            PartitionPointerAdjustSubtract(true, ptr1));
-    EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(SystemPageSize());
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
-      EXPECT_EQ(SystemPageSize(), stats->active_bytes);
-      EXPECT_EQ(2 * SystemPageSize(), stats->resident_bytes);
-    }
-    CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, false);
-    EXPECT_EQ(3u, slot_span->num_unprovisioned_slots);
-
-    allocator.root()->Free(ptr1);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(SystemPageSize());
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+    EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(SystemPageSize(), stats->active_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->resident_bytes);
   }
+  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, false);
+  EXPECT_EQ(3u, slot_span->num_unprovisioned_slots);
+
+  allocator.root()->Free(ptr1);
 }
 
 TEST_F(PartitionAllocTest, PurgeDiscardableFirstPage) {
   // Free the first of two 4096 byte allocations and then purge.
+  char* ptr1 = reinterpret_cast<char*>(
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
+  void* ptr2 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  allocator.root()->Free(ptr1);
   {
-    char* ptr1 = reinterpret_cast<char*>(
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
-    void* ptr2 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    allocator.root()->Free(ptr1);
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(SystemPageSize());
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(SystemPageSize());
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
 #if defined(OS_WIN)
-      EXPECT_EQ(0u, stats->discardable_bytes);
+    EXPECT_EQ(0u, stats->discardable_bytes);
 #else
-      EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
 #endif
-      EXPECT_EQ(SystemPageSize(), stats->active_bytes);
-      EXPECT_EQ(2 * SystemPageSize(), stats->resident_bytes);
-    }
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, false);
-
-    allocator.root()->Free(ptr2);
+    EXPECT_EQ(SystemPageSize(), stats->active_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->resident_bytes);
   }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, false);
+
+  allocator.root()->Free(ptr2);
 }
 
 TEST_F(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
+  const size_t requested_size = 2.25 * SystemPageSize();
+  char* ptr1 = reinterpret_cast<char*>(
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name));
+  void* ptr2 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  void* ptr3 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  void* ptr4 =
+      allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
+  memset(ptr1, 'A', requested_size - kExtraAllocSize);
+  memset(ptr2, 'A', requested_size - kExtraAllocSize);
+  allocator.root()->Free(ptr2);
+  allocator.root()->Free(ptr1);
   {
-    const size_t requested_size = 2.25 * SystemPageSize();
-    char* ptr1 = reinterpret_cast<char*>(
-        allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name));
-    void* ptr2 =
-        allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
-    void* ptr3 =
-        allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
-    void* ptr4 =
-        allocator.root()->Alloc(requested_size - kExtraAllocSize, type_name);
-    memset(ptr1, 'A', requested_size - kExtraAllocSize);
-    memset(ptr2, 'A', requested_size - kExtraAllocSize);
-    allocator.root()->Free(ptr2);
-    allocator.root()->Free(ptr1);
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(requested_size);
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
-      EXPECT_EQ(requested_size * 2, stats->active_bytes);
-      EXPECT_EQ(9 * SystemPageSize(), stats->resident_bytes);
-    }
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), true);
-
-    allocator.root()->Free(ptr3);
-    allocator.root()->Free(ptr4);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(requested_size);
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(requested_size * 2, stats->active_bytes);
+    EXPECT_EQ(9 * SystemPageSize(), stats->resident_bytes);
   }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 4), true);
+
+  allocator.root()->Free(ptr3);
+  allocator.root()->Free(ptr4);
 }
 
 TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
@@ -2086,71 +2080,67 @@ TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
 // TODO(palmer): Refactor this to branch on page size instead of architecture,
 // for clarity of purpose and for applicability to more architectures.
 #if defined(_MIPS_ARCH_LOONGSON)
+  char* ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
+      (32 * SystemPageSize()) - kExtraAllocSize, type_name));
+  memset(ptr1, 'A', (32 * SystemPageSize()) - kExtraAllocSize);
+  allocator.root()->Free(ptr1);
+  ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
+      (31 * SystemPageSize()) - kExtraAllocSize, type_name));
   {
-    char* ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-        (32 * SystemPageSize()) - kExtraAllocSize, type_name));
-    memset(ptr1, 'A', (32 * SystemPageSize()) - kExtraAllocSize);
-    allocator.root()->Free(ptr1);
-    ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-        (31 * SystemPageSize()) - kExtraAllocSize, type_name));
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(32 * SystemPageSize());
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
-      EXPECT_EQ(31 * SystemPageSize(), stats->active_bytes);
-      EXPECT_EQ(32 * SystemPageSize(), stats->resident_bytes);
-    }
-    CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 30), true);
-    CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 31), true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 30), true);
-    CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 31), false);
-
-    allocator.root()->Free(ptr1);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(32 * SystemPageSize());
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+    EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(31 * SystemPageSize(), stats->active_bytes);
+    EXPECT_EQ(32 * SystemPageSize(), stats->resident_bytes);
   }
+  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 30), true);
+  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 31), true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 30), true);
+  CheckPageInCore(ptr1 - kPointerOffset + (SystemPageSize() * 31), false);
+
+  allocator.root()->Free(ptr1);
 #else
+  char* ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
+      (64 * SystemPageSize()) - kExtraAllocSize, type_name));
+  memset(ptr1, 'A', (64 * SystemPageSize()) - kExtraAllocSize);
+  allocator.root()->Free(ptr1);
+  ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
+      (61 * SystemPageSize()) - kExtraAllocSize, type_name));
   {
-    char* ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-        (64 * SystemPageSize()) - kExtraAllocSize, type_name));
-    memset(ptr1, 'A', (64 * SystemPageSize()) - kExtraAllocSize);
-    allocator.root()->Free(ptr1);
-    ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(
-        (61 * SystemPageSize()) - kExtraAllocSize, type_name));
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(64 * SystemPageSize());
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
-      EXPECT_EQ(61 * SystemPageSize(), stats->active_bytes);
-      EXPECT_EQ(64 * SystemPageSize(), stats->resident_bytes);
-    }
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 60), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 61), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 62), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 63), true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 60), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 61), false);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 62), false);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 63), false);
-
-    allocator.root()->Free(ptr1);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(64 * SystemPageSize());
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+    EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(61 * SystemPageSize(), stats->active_bytes);
+    EXPECT_EQ(64 * SystemPageSize(), stats->resident_bytes);
   }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 60), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 61), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 62), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 63), true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 60), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 61), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 62), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 63), false);
+
+  allocator.root()->Free(ptr1);
 #endif
 }
 
@@ -2158,126 +2148,122 @@ TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   // This sub-test tests truncation of the provisioned slots in a trickier
   // case where the freelist is rewritten.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
+  char* ptr1 = reinterpret_cast<char*>(
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
+  void* ptr2 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  void* ptr3 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  void* ptr4 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  ptr1[0] = 'A';
+  ptr1[SystemPageSize()] = 'A';
+  ptr1[SystemPageSize() * 2] = 'A';
+  ptr1[SystemPageSize() * 3] = 'A';
+  SlotSpanMetadata<base::internal::ThreadSafe>* slot_span =
+      SlotSpanMetadata<base::internal::ThreadSafe>::FromPointer(
+          PartitionPointerAdjustSubtract(true, ptr1));
+  allocator.root()->Free(ptr2);
+  allocator.root()->Free(ptr4);
+  allocator.root()->Free(ptr1);
+  EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+
   {
-    char* ptr1 = reinterpret_cast<char*>(
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
-    void* ptr2 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    void* ptr3 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    void* ptr4 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    ptr1[0] = 'A';
-    ptr1[SystemPageSize()] = 'A';
-    ptr1[SystemPageSize() * 2] = 'A';
-    ptr1[SystemPageSize() * 3] = 'A';
-    SlotSpanMetadata<base::internal::ThreadSafe>* slot_span =
-        SlotSpanMetadata<base::internal::ThreadSafe>::FromPointer(
-            PartitionPointerAdjustSubtract(true, ptr1));
-    allocator.root()->Free(ptr2);
-    allocator.root()->Free(ptr4);
-    allocator.root()->Free(ptr1);
-    EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
-
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(SystemPageSize());
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(SystemPageSize());
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
 #if defined(OS_WIN)
-      EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
 #else
-      EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
 #endif
-      EXPECT_EQ(SystemPageSize(), stats->active_bytes);
-      EXPECT_EQ(4 * SystemPageSize(), stats->resident_bytes);
-    }
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    EXPECT_EQ(1u, slot_span->num_unprovisioned_slots);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
-
-    // Let's check we didn't brick the freelist.
-    void* ptr1b =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    EXPECT_EQ(ptr1, ptr1b);
-    void* ptr2b =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    EXPECT_EQ(ptr2, ptr2b);
-    EXPECT_FALSE(slot_span->freelist_head);
-
-    allocator.root()->Free(ptr1);
-    allocator.root()->Free(ptr2);
-    allocator.root()->Free(ptr3);
+    EXPECT_EQ(SystemPageSize(), stats->active_bytes);
+    EXPECT_EQ(4 * SystemPageSize(), stats->resident_bytes);
   }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  EXPECT_EQ(1u, slot_span->num_unprovisioned_slots);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
+
+  // Let's check we didn't brick the freelist.
+  void* ptr1b =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  EXPECT_EQ(ptr1, ptr1b);
+  void* ptr2b =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  EXPECT_EQ(ptr2, ptr2b);
+  EXPECT_FALSE(slot_span->freelist_head);
+
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr2);
+  allocator.root()->Free(ptr3);
 }
 
 TEST_F(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   // This sub-test is similar, but tests a double-truncation.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
+  char* ptr1 = reinterpret_cast<char*>(
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
+  void* ptr2 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  void* ptr3 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  void* ptr4 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  ptr1[0] = 'A';
+  ptr1[SystemPageSize()] = 'A';
+  ptr1[SystemPageSize() * 2] = 'A';
+  ptr1[SystemPageSize() * 3] = 'A';
+  SlotSpanMetadata<base::internal::ThreadSafe>* slot_span =
+      SlotSpanMetadata<base::internal::ThreadSafe>::FromPointer(
+          PartitionPointerAdjustSubtract(true, ptr1));
+  allocator.root()->Free(ptr4);
+  allocator.root()->Free(ptr3);
+  EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+
   {
-    char* ptr1 = reinterpret_cast<char*>(
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
-    void* ptr2 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    void* ptr3 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    void* ptr4 =
-        allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
-    ptr1[0] = 'A';
-    ptr1[SystemPageSize()] = 'A';
-    ptr1[SystemPageSize() * 2] = 'A';
-    ptr1[SystemPageSize() * 3] = 'A';
-    SlotSpanMetadata<base::internal::ThreadSafe>* slot_span =
-        SlotSpanMetadata<base::internal::ThreadSafe>::FromPointer(
-            PartitionPointerAdjustSubtract(true, ptr1));
-    allocator.root()->Free(ptr4);
-    allocator.root()->Free(ptr3);
-    EXPECT_EQ(0u, slot_span->num_unprovisioned_slots);
+    MockPartitionStatsDumper dumper;
+    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+                                &dumper);
+    EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-    {
-      MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
-      EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
-
-      const PartitionBucketMemoryStats* stats =
-          dumper.GetBucketStats(SystemPageSize());
-      EXPECT_TRUE(stats);
-      EXPECT_TRUE(stats->is_valid);
-      EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
-      EXPECT_EQ(2 * SystemPageSize(), stats->active_bytes);
-      EXPECT_EQ(4 * SystemPageSize(), stats->resident_bytes);
-    }
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
-    allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
-    EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), false);
-    CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
-
-    EXPECT_FALSE(slot_span->freelist_head);
-
-    allocator.root()->Free(ptr1);
-    allocator.root()->Free(ptr2);
+    const PartitionBucketMemoryStats* stats =
+        dumper.GetBucketStats(SystemPageSize());
+    EXPECT_TRUE(stats);
+    EXPECT_TRUE(stats->is_valid);
+    EXPECT_EQ(0u, stats->decommittable_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
+    EXPECT_EQ(2 * SystemPageSize(), stats->active_bytes);
+    EXPECT_EQ(4 * SystemPageSize(), stats->resident_bytes);
   }
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), true);
+  allocator.root()->PurgeMemory(PartitionPurgeDiscardUnusedSystemPages);
+  EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset, true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + SystemPageSize(), true);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 2), false);
+  CHECK_PAGE_IN_CORE(ptr1 - kPointerOffset + (SystemPageSize() * 3), false);
+
+  EXPECT_FALSE(slot_span->freelist_head);
+
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr2);
 }
 
 TEST_F(PartitionAllocTest, ReallocMovesCookies) {
