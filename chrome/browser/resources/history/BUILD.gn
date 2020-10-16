@@ -6,10 +6,15 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../optimize_webui.gni")
 
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
 if (optimize_webui) {
-  preprocess_folder = "preprocess"
+  build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "history"
@@ -23,6 +28,7 @@ if (optimize_webui) {
       "lazy_load.rollup.js",
       "shared.rollup.js",
     ]
+    out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
       ":preprocess",
@@ -31,38 +37,65 @@ if (optimize_webui) {
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }
+}
 
-  preprocess_grit("preprocess") {
-    in_folder = "./"
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "browser_service.js",
-      "constants.js",
-      "externs.js",
-      "history.js",
-      "lazy_load.js",
-      "query_manager.js",
-      "searched_label.js",
+generate_grd("build_grd") {
+  grd_prefix = "history"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "history.html",
+    "images/sign_in_promo_dark.svg",
+    "images/sign_in_promo.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
     ]
   }
+}
 
-  preprocess_grit("preprocess_generated") {
-    deps = [ ":web_components" ]
-    in_folder = target_gen_dir
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "app.js",
-      "history_item.js",
-      "history_list.js",
-      "history_toolbar.js",
-      "router.js",
-      "shared_style.js",
-      "shared_vars.js",
-      "side_bar.js",
-      "synced_device_card.js",
-      "synced_device_manager.js",
-    ]
-  }
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "browser_service.js",
+    "constants.js",
+    "externs.js",
+    "history.js",
+    "lazy_load.js",
+    "query_manager.js",
+    "searched_label.js",
+  ]
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "app.js",
+    "history_item.js",
+    "history_list.js",
+    "history_toolbar.js",
+    "router.js",
+    "shared_style.js",
+    "shared_vars.js",
+    "side_bar.js",
+    "synced_device_card.js",
+    "synced_device_manager.js",
+  ]
 }
 
 js_type_check("closure_compile") {

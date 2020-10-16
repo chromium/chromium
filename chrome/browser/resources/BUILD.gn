@@ -181,19 +181,20 @@ if (!is_android) {
     grit_flags = [
       "-E",
       "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      "-E",
+      "root_src_dir=" + rebase_path("//", root_build_dir),
     ]
 
-    if (optimize_webui) {
-      source = "history/history_resources_vulcanized.grd"
-
-      deps = [ "//chrome/browser/resources/history:build" ]
-    } else {
-      source = "history/history_resources.grd"
-
-      deps = [ "//chrome/browser/resources/history:web_components" ]
-    }
-
     defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    defines += [ "SHARED_INTERMEDIATE_DIR=" +
+                 rebase_path(root_gen_dir, root_build_dir) ]
+    history_gen_dir = "$root_gen_dir/chrome/browser/resources/history"
+    source = "$history_gen_dir/history_resources.grd"
+    deps = [ "//chrome/browser/resources/history:build_grd" ]
+
     outputs = [
       "grit/history_resources.h",
       "grit/history_resources_map.cc",

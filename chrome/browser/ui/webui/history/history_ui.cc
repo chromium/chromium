@@ -43,11 +43,6 @@
 
 namespace {
 
-#if !BUILDFLAG(OPTIMIZE_WEBUI)
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/history/";
-#endif
-
 constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
 constexpr char kShowMenuPromoKey[] = "showMenuPromo";
 
@@ -125,21 +120,9 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  webui::SetupBundledWebUIDataSource(source, "history.js",
-                                     IDR_HISTORY_HISTORY_ROLLUP_JS,
-                                     IDR_HISTORY_HISTORY_HTML);
-  source->AddResourcePath("lazy_load.js", IDR_HISTORY_LAZY_LOAD_ROLLUP_JS);
-  source->AddResourcePath("shared.rollup.js", IDR_HISTORY_SHARED_ROLLUP_JS);
-  source->AddResourcePath("images/sign_in_promo.svg",
-                          IDR_HISTORY_IMAGES_SIGN_IN_PROMO_SVG);
-  source->AddResourcePath("images/sign_in_promo_dark.svg",
-                          IDR_HISTORY_IMAGES_SIGN_IN_PROMO_DARK_SVG);
-#else
   webui::SetupWebUIDataSource(
-      source, base::make_span(kHistoryResources, kHistoryResourcesSize),
-      kGeneratedPath, IDR_HISTORY_HISTORY_HTML);
-#endif
+      source, base::make_span(kHistoryResources, kHistoryResourcesSize), "",
+      IDR_HISTORY_HISTORY_HTML);
 
   return source;
 }

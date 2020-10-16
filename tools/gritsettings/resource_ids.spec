@@ -132,11 +132,9 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [1540],
   },
-  "chrome/browser/resources/history/history_resources_vulcanized.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/history/history_resources.grd": {
+    "META": {"sizes": {"includes": [30]}},
     "includes": [1580],
-  },
-  "chrome/browser/resources/history/history_resources.grd": {
-    "includes": [1600],
   },
   "chrome/browser/resources/local_ntp/local_ntp_resources.grd": {
     "includes": [1620],
