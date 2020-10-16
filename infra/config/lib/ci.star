@@ -339,7 +339,6 @@ def ci_builder(
         tree_closing = False,
         notifies = None,
         resultdb_bigquery_exports = None,
-        experiments = None,
         **kwargs):
     """Define a CI builder.
 
@@ -394,11 +393,6 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    if not experiments or experiments.get("chromium.resultdb.result_sink") == None:
-        # Enable "chromium.resultdb.result_sink" on all ci builders for 10% by default.
-        experiments = experiments or {}
-        experiments["chromium.resultdb.result_sink"] = 10
-
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
@@ -406,7 +400,6 @@ def ci_builder(
         branch_selector = branch_selector,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         notifies = notifies,
-        experiments = experiments,
         **kwargs
     )
 
