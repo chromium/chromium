@@ -114,7 +114,7 @@ class UkmService : public UkmRecorderImpl {
 
   // Enables adding the synced user's noised birth year and gender to the UKM
   // report. For more details, see doc of metrics::DemographicMetricsProvider in
-  // components/metrics/demographic_metrics_provider.h.
+  // components/metrics/demographics/demographic_metrics_provider.h.
   static const base::Feature kReportUserNoisedUserBirthYearAndGender;
 
   // Makes sure that the serialized ukm report can be parsed.
@@ -158,7 +158,7 @@ class UkmService : public UkmRecorderImpl {
   // Adds the user's birth year and gender to the UKM |report| only if (1) the
   // provider is registered and (2) the feature is enabled. For more details,
   // see doc of metrics::DemographicMetricsProvider in
-  // components/metrics/demographic_metrics_provider.h.
+  // components/metrics/demographics/demographic_metrics_provider.h.
   void AddSyncedUserNoiseBirthYearAndGenderToReport(Report* report);
 
   void SetInitializationCompleteCallbackForTesting(base::OnceClosure callback);

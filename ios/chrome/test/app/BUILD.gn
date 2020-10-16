@@ -42,7 +42,7 @@ source_set("test_support") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/metrics",
-    "//components/metrics:demographics_test_support",
+    "//components/metrics/demographics:test_support",
     "//components/prefs",
     "//components/previous_session_info",
     "//components/signin/public/base",

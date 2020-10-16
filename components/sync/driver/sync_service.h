@@ -373,10 +373,10 @@ class SyncService : public KeyedService {
 
   // Gets the synced user’s noised birth year and gender, see doc of
   // metrics::DemographicMetricsProvider in
-  // components/metrics/demographic_metrics_provider.h for more details. Returns
-  // an error status with an empty value when the user's birth year or gender
-  // cannot be provided. You need to provide an accurate |now| time that
-  // represents the current time.
+  // components/metrics/demographics/demographic_metrics_provider.h for more
+  // details. Returns an error status with an empty value when the user's birth
+  // year or gender cannot be provided. You need to provide an accurate |now|
+  // time that represents the current time.
   virtual UserDemographicsResult GetUserNoisedBirthYearAndGender(
       base::Time now) = 0;
 

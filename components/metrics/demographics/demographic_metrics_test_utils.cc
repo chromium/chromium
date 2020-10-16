@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/test/demographic_metrics_test_utils.h"
+#include "components/metrics/demographics/demographic_metrics_test_utils.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"

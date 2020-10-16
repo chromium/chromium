@@ -527,7 +527,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java",
       "//components/crash/android:crashpad_main",
       "//components/games/core/test:test_support",
-      "//components/metrics:demographics_test_support",
+      "//components/metrics/demographics:test_support",
       "//components/ukm:ukm_test_helper",
 
       # TODO(crbug.com/961849): This is needed for ShellManager which is what
@@ -774,7 +774,7 @@ if (!is_android) {
       "//components/enterprise:test_support",
       "//components/error_page/content/browser",
       "//components/feature_engagement/test:test_support",
-      "//components/metrics:demographics_test_support",
+      "//components/metrics/demographics:test_support",
       "//components/nacl/common:buildflags",
       "//components/offline_items_collection/core/test_support",
       "//components/optimization_guide:test_support",

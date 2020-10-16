@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/network_time",
+  "+components/prefs",
+  "+components/sync",
+]

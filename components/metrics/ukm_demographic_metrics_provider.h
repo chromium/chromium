@@ -20,7 +20,7 @@ namespace metrics {
 // Interface of the provider of the synced user’s noised birth year and gender
 // to the UKM metrics server. For more details, see the documentation of
 // DemographicMetricsProvider at
-// components/metrics/demographic_metrics_provider.h.
+// components/metrics/demographics/demographic_metrics_provider.h.
 class UkmDemographicMetricsProvider {
  public:
   virtual ~UkmDemographicMetricsProvider() = default;

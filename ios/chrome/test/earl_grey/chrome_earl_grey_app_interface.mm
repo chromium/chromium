@@ -13,7 +13,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/metrics/demographic_metrics_provider.h"
+#include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #import "components/ukm/ios/features.h"
 #include "components/unified_consent/unified_consent_service.h"

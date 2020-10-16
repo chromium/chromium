@@ -64,7 +64,8 @@ int GetBirthYearOffset(PrefService* pref_service) {
 // Determines whether the synced user has provided a birth year to Google which
 // is eligible, once aggregated and anonymized, to measure usage of Chrome
 // features by age groups. See doc of metrics::DemographicMetricsProvider in
-// components/metrics/demographic_metrics_provider.h for more details.
+// components/metrics/demographics/demographic_metrics_provider.h for more
+// details.
 bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
   // Compute user age.
   base::Time::Exploded exploded_now_time;
@@ -100,7 +101,8 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 
 // Gets the synced user's birth year from synced prefs, see doc of
 // metrics::DemographicMetricsProvider in
-// components/metrics/demographic_metrics_provider.h for more details.
+// components/metrics/demographics/demographic_metrics_provider.h for more
+// details.
 base::Optional<int> GetUserBirthYear(
     const base::DictionaryValue* demographics) {
   const base::Value* value =
@@ -118,7 +120,8 @@ base::Optional<int> GetUserBirthYear(
 
 // Gets the synced user's gender from synced prefs, see doc of
 // metrics::DemographicMetricsProvider in
-// components/metrics/demographic_metrics_provider.h for more details.
+// components/metrics/demographics/demographic_metrics_provider.h for more
+// details.
 base::Optional<metrics::UserDemographicsProto_Gender> GetUserGender(
     const base::DictionaryValue* demographics) {
   const base::Value* value =

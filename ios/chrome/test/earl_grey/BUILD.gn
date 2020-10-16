@@ -61,7 +61,7 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/core/browser",
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
-    "//components/metrics:demographic_metrics_provider",
+    "//components/metrics/demographics",
     "//components/prefs",
     "//components/strings",
     "//components/sync/base",

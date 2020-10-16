@@ -8,22 +8,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("demographic_metrics_provider") {
-  sources = [
-    "demographic_metrics_provider.cc",
-    "demographic_metrics_provider.h",
-  ]
-
-  public_deps = [ "//third_party/metrics_proto" ]
-
-  deps = [
-    ":metrics",
-    "//base",
-    "//components/sync/base",
-    "//components/sync/driver",
-  ]
-}
-
 static_library("metrics") {
   sources = [
     "android_metrics_provider.cc",
@@ -397,26 +381,6 @@ static_library("test_support") {
   deps = [ "//base" ]
 }
 
-static_library("demographics_test_support") {
-  testonly = true
-  sources = [
-    "test/demographic_metrics_test_utils.cc",
-    "test/demographic_metrics_test_utils.h",
-  ]
-
-  deps = [
-    ":metrics",
-    "//base",
-    "//components/network_time",
-    "//components/prefs",
-    "//components/sync",
-    "//components/sync/base",
-    "//components/sync/test/fake_server",
-    "//third_party/metrics_proto",
-    "//third_party/zlib/google:compression_utils",
-  ]
-}
-
 if (is_linux || is_chromeos) {
   static_library("serialization") {
     sources = [
@@ -442,7 +406,6 @@ source_set("unit_tests") {
     "daily_event_unittest.cc",
     "data_use_tracker_unittest.cc",
     "date_changed_helper_unittest.cc",
-    "demographic_metrics_provider_unittest.cc",
     "drive_metrics_provider_unittest.cc",
     "entropy_state_provider_unittest.cc",
     "entropy_state_unittest.cc",
@@ -474,7 +437,6 @@ source_set("unit_tests") {
   deps = [
     ":call_stack_profile_builder",
     ":component_metrics",
-    ":demographic_metrics_provider",
     ":library_support",
     ":metrics",
     ":net",
@@ -545,6 +507,7 @@ test("metrics_unittests") {
   sources = [ "//components/test/run_all_unittests.cc" ]
   deps = [
     ":unit_tests",
+    "//components/metrics/demographics:unit_tests",
     "//components/test:test_support",
   ]
 }
