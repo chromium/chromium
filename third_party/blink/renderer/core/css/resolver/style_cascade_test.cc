@@ -125,12 +125,12 @@ class TestCascade {
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
-    EnsureAtLeast(CascadeOrigin::kAnimation);
+    EnsureAtLeast(CascadeOrigin::kAuthor);
     cascade_.Apply(filter);
   }
 
   void ApplySingle(const CSSProperty& property) {
-    EnsureAtLeast(CascadeOrigin::kAnimation);
+    EnsureAtLeast(CascadeOrigin::kAuthor);
     cascade_.AnalyzeIfNeeded();
     TestCascadeResolver resolver(++cascade_.generation_);
     cascade_.LookupAndApply(property, resolver.InnerResolver());
@@ -234,12 +234,6 @@ class TestCascade {
         current_origin_ = CascadeOrigin::kAuthor;
         break;
       case CascadeOrigin::kAuthor:
-        cascade_.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
-            GetDocument());
-        current_origin_ = CascadeOrigin::kAnimation;
-        break;
-      case CascadeOrigin::kAnimation:
-        break;
       default:
         NOTREACHED();
         break;

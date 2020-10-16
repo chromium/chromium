@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
@@ -146,9 +145,8 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     Length before;
     Length after;
     DCHECK(LengthPropertyFunctions::GetLength(CssProperty(), style, before));
-    StyleBuilder::ApplyProperty(
-        GetProperty().GetCSSProperty(), state,
-        ScopedCSSValue(*CSSValue::Create(length, zoom), nullptr));
+    StyleBuilder::ApplyProperty(GetProperty().GetCSSProperty(), state,
+                                *CSSValue::Create(length, zoom));
     DCHECK(LengthPropertyFunctions::GetLength(CssProperty(), style, after));
     DCHECK(before.IsSpecified());
     DCHECK(after.IsSpecified());
@@ -164,9 +162,8 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
 #endif
     return;
   }
-  StyleBuilder::ApplyProperty(
-      GetProperty().GetCSSProperty(), state,
-      ScopedCSSValue(*CSSValue::Create(length, zoom), nullptr));
+  StyleBuilder::ApplyProperty(GetProperty().GetCSSProperty(), state,
+                              *CSSValue::Create(length, zoom));
 }
 
 }  // namespace blink

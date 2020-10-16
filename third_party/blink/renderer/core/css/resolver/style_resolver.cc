@@ -62,7 +62,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -1083,8 +1082,6 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     cascade.MutableMatchResult().FinishAddingUARules();
     cascade.MutableMatchResult().FinishAddingUserRules();
     cascade.MutableMatchResult().AddMatchedProperties(set);
-    cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
-        element.GetTreeScope());
     cascade.Apply();
   }
   return CompositorKeyframeValueFactory::Create(property, *state.Style());
@@ -1663,8 +1660,6 @@ const CSSValue* StyleResolver::ComputeValue(
   cascade.MutableMatchResult().FinishAddingUARules();
   cascade.MutableMatchResult().FinishAddingUserRules();
   cascade.MutableMatchResult().AddMatchedProperties(set);
-  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
-      element->GetTreeScope());
   cascade.Apply();
 
   CSSPropertyRef property_ref(property_name, element->GetDocument());
@@ -1790,14 +1785,9 @@ void StyleResolver::ComputeFont(Element& element,
   for (const CSSProperty* property : properties) {
     if (property->IDEquals(CSSPropertyID::kLineHeight))
       UpdateFont(state);
-    // TODO(futhark): If we start supporting fonts on ShadowRoot.fonts in
-    // addition to Document.fonts, we need to pass the correct TreeScope instead
-    // of GetDocument() in the ScopedCSSValue below.
     StyleBuilder::ApplyProperty(
         *property, state,
-        ScopedCSSValue(
-            *property_set.GetPropertyCSSValue(property->PropertyID()),
-            &GetDocument()));
+        *property_set.GetPropertyCSSValue(property->PropertyID()));
   }
 }
 

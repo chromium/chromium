@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
@@ -366,9 +365,8 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
                                       filter_style.get(), filter_style.get());
     resolver_state.SetStyle(filter_style);
 
-    StyleBuilder::ApplyProperty(
-        GetCSSPropertyFilter(), resolver_state,
-        ScopedCSSValue(*filter_value_, &style_resolution_host->GetDocument()));
+    StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), resolver_state,
+                                *filter_value_);
     resolver_state.LoadPendingResources();
 
     // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these

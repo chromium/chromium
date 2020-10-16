@@ -186,8 +186,4 @@ CSSPropertyValueSet::PropertyReference CascadeExpansion::PropertyAt(
   return matched_properties_.properties->PropertyAt(index_);
 }
 
-uint16_t CascadeExpansion::TreeOrder() const {
-  return matched_properties_.types_.tree_order;
-}
-
 }  // namespace blink

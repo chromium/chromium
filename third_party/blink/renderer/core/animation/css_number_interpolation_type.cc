@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 
 namespace blink {
 
@@ -111,10 +110,8 @@ void CSSNumberInterpolationType::ApplyStandardPropertyValue(
                                           clamped_number)) {
     StyleBuilder::ApplyProperty(
         GetProperty().GetCSSProperty(), state,
-        ScopedCSSValue(
-            *CSSNumericLiteralValue::Create(
-                clamped_number, CSSPrimitiveValue::UnitType::kNumber),
-            nullptr));
+        *CSSNumericLiteralValue::Create(clamped_number,
+                                        CSSPrimitiveValue::UnitType::kNumber));
   }
 }
 
