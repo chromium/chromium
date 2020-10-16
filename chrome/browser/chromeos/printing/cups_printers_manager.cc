@@ -174,6 +174,7 @@ class CupsPrintersManagerImpl
   // Public API function.
   void RemoveSavedPrinter(const std::string& printer_id) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    installed_printer_fingerprints_.erase(printer_id);
     auto existing = synced_printers_manager_->GetPrinter(printer_id);
     if (existing) {
       event_tracker_->RecordPrinterRemoved(*existing);
@@ -780,7 +781,8 @@ void CupsPrintersManager::RegisterProfilePrefs(
 }
 
 // static
-void CupsPrintersManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+void CupsPrintersManager::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   PrintServersProvider::RegisterLocalStatePrefs(registry);
 }
 
