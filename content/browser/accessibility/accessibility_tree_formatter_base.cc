@@ -287,14 +287,6 @@ PropertyNode::iterator PropertyNode::Parse(PropertyNode* node,
 // AccessibilityTreeFormatter
 //
 
-AccessibilityTreeFormatter::TestPass AccessibilityTreeFormatter::GetTestPass(
-    size_t index) {
-  std::vector<content::AccessibilityTreeFormatter::TestPass> passes =
-      content::AccessibilityTreeFormatter::GetTestPasses();
-  CHECK_LT(index, passes.size());
-  return passes[index];
-}
-
 // static
 std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     BrowserAccessibilityManager* ax_mgr,

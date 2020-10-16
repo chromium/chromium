@@ -3121,13 +3121,13 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          PDFExtensionAccessibilityTextExtractionTest,
                          testing::Bool());
 
+using AXTestPass = content::AccessibilityTreeFormatter::TestPass;
+
 class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionTest,
-      public ::testing::WithParamInterface<std::pair<bool, size_t>> {
+      public ::testing::WithParamInterface<std::pair<bool, AXTestPass>> {
  public:
-  PDFExtensionAccessibilityTreeDumpTest()
-      : test_pass_(content::AccessibilityTreeFormatter::GetTestPass(
-            GetParam().second)) {}
+  PDFExtensionAccessibilityTreeDumpTest() : test_pass_(GetParam().second) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3291,19 +3291,30 @@ class PDFExtensionAccessibilityTreeDumpTest
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::pair<bool, size_t>>& i) const {
-    std::string result =
-        content::AccessibilityTreeFormatter::GetTestPass(i.param.second).name;
+      const ::testing::TestParamInfo<std::pair<bool, AXTestPass>>& i) const {
+    std::string result = i.param.second.name;
     return result + (i.param.first ? "_updateEnabled" : "_updateDisabled");
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PDFExtensionAccessibilityTreeDumpTest,
-    testing::ValuesIn(GetTestPairValues(
-        content::AccessibilityTreeFormatter::GetTestPasses().size())),
-    DumpAccessibilityTreeTestPassToString());
+// Constructs a list of accessibility tests, two for each accessibility tree
+// formatter testpasses: one when pdf update is enabled and the second one when
+// pdf update is disabled.
+const std::vector<std::pair<bool, AXTestPass>> GetAXTestPairValues() {
+  std::vector<std::pair<bool, AXTestPass>> values;
+  std::vector<AXTestPass> passes =
+      content::AccessibilityTreeFormatter::GetTestPasses();
+  for (auto pass : passes) {
+    values.emplace_back(std::make_pair(true, pass));
+    values.emplace_back(std::make_pair(false, pass));
+  }
+  return values;
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionAccessibilityTreeDumpTest,
+                         testing::ValuesIn(GetAXTestPairValues()),
+                         DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
   RunPDFTest(FILE_PATH_LITERAL("hello-world.pdf"));
