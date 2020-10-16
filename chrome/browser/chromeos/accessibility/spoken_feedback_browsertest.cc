@@ -23,7 +23,12 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,6 +38,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -936,13 +942,7 @@ class OobeSpokenFeedbackTest : public OobeBaseTest {
   DISALLOW_COPY_AND_ASSIGN(OobeSpokenFeedbackTest);
 };
 
-#if defined(MEMORY_SANITIZER)
-// Times out under MSan: https://crbug.com/1071693
-#define MAYBE_SpokenFeedbackInOobe DISABLED_SpokenFeedbackInOobe
-#else
-#define MAYBE_SpokenFeedbackInOobe SpokenFeedbackInOobe
-#endif
-IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, MAYBE_SpokenFeedbackInOobe) {
+IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
@@ -957,6 +957,47 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, MAYBE_SpokenFeedbackInOobe) {
   sm_.ExpectSpeech("Shut down");
   sm_.ExpectSpeech("Button");
 
+  sm_.Replay();
+}
+
+class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
+ public:
+  // OobeSpokenFeedbackTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OobeSpokenFeedbackTest::SetUpCommandLine(command_line);
+    // Force the help app to launch in the background.
+    command_line->AppendSwitch(switches::kForceFirstRunUI);
+  }
+
+ protected:
+  LoginManagerMixin login_manager_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+};
+
+// Verifies that spoken feedback correctly handles profile switch (signin ->
+// user) and announces the sync consent screen correctly.
+IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, LoginAsNewUser) {
+  // Force sync screen.
+  auto reset = SyncConsentScreen::ForceBrandedBuildForTesting(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  sm_.ExpectSpeechPattern("*");
+
+  sm_.Call([this]() {
+    ASSERT_EQ(chromeos::AccessibilityManager::Get()->profile(),
+              ProfileHelper::GetSigninProfile());
+    login_manager_.LoginAsNewRegularUser();
+  });
+
+  std::string button_title =
+      features::IsSplitSettingsSyncEnabled() ? "Got it" : "Accept and continue";
+  sm_.ExpectSpeech(button_title);
+
+  // Check that profile switched to the active user.
+  sm_.Call([]() {
+    ASSERT_EQ(chromeos::AccessibilityManager::Get()->profile(),
+              ProfileManager::GetActiveUserProfile());
+  });
   sm_.Replay();
 }
 
