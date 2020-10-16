@@ -891,6 +891,11 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
   views::ImageView* message_icon_;
 };
 
+LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata() = default;
+LoginAuthUserView::AuthMethodsMetadata::~AuthMethodsMetadata() = default;
+LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata(
+    const AuthMethodsMetadata&) = default;
+
 struct LoginAuthUserView::UiState {
   explicit UiState(const LoginAuthUserView* view) {
     has_password = view->ShouldShowPasswordField();
@@ -901,7 +906,8 @@ struct LoginAuthUserView::UiState {
     has_challenge_response =
         view->HasAuthMethod(LoginAuthUserView::AUTH_CHALLENGE_RESPONSE);
     auth_disabled = view->HasAuthMethod(LoginAuthUserView::AUTH_DISABLED);
-    tpm_is_locked = view->tpm_is_locked();
+    tpm_is_locked =
+        view->HasAuthMethod(LoginAuthUserView::AUTH_DISABLED_TPM_LOCKED);
     force_online_sign_in =
         view->HasAuthMethod(LoginAuthUserView::AUTH_ONLINE_SIGN_IN);
 
@@ -1187,8 +1193,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
 
 LoginAuthUserView::~LoginAuthUserView() = default;
 
-void LoginAuthUserView::SetAuthMethods(uint32_t auth_methods,
-                                       AuthMethodsMetadata auth_metadata) {
+void LoginAuthUserView::SetAuthMethods(
+    uint32_t auth_methods,
+    const AuthMethodsMetadata& auth_metadata) {
   // It is an error to call this method without storing the previous state.
   DCHECK(previous_state_);
 
@@ -1201,6 +1208,10 @@ void LoginAuthUserView::SetAuthMethods(uint32_t auth_methods,
   online_sign_in_message_->SetVisible(current_state.force_online_sign_in);
   disabled_auth_message_->SetVisible(current_state.auth_disabled);
   locked_tpm_message_view_->SetVisible(current_state.tpm_is_locked);
+  if (current_state.tpm_is_locked &&
+      auth_metadata.time_until_tpm_unlock.has_value())
+    locked_tpm_message_view_->SetRemainingTime(
+        auth_metadata.time_until_tpm_unlock.value());
 
   // Adjust the PIN keyboard visibility before the password textfield's one, so
   // that when both are about to be hidden the focus doesn't jump to the "1"
@@ -1469,17 +1480,6 @@ void LoginAuthUserView::SetAuthDisabledMessage(
   Layout();
 }
 
-void LoginAuthUserView::SetTpmLockedState(bool is_locked,
-                                          base::TimeDelta time_left) {
-  if (is_locked)
-    locked_tpm_message_view_->SetRemainingTime(time_left);
-  if (tpm_is_locked_ != is_locked) {
-    tpm_is_locked_ = is_locked;
-    // Update auth methods which are available.
-    SetAuthMethods(auth_methods_, auth_metadata_);
-  }
-}
-
 const LoginUserInfo& LoginAuthUserView::current_user() const {
   return user_view_->current_user();
 }
@@ -1620,7 +1620,7 @@ void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
 }
 
 bool LoginAuthUserView::HasAuthMethod(AuthMethods auth_method) const {
-  return (auth_methods_ & auth_method) != 0 && !tpm_is_locked_;
+  return (auth_methods_ & auth_method) != 0;
 }
 
 void LoginAuthUserView::AttemptAuthenticateWithChallengeResponse() {

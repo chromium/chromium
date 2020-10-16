@@ -247,8 +247,10 @@ class ASH_EXPORT LockContentsView
     bool disable_auth = false;
     bool show_pin_pad_for_password = false;
     size_t autosubmit_pin_length = 0;
-    base::Optional<EasyUnlockIconOptions> easy_unlock_state;
+    base::Optional<EasyUnlockIconOptions> easy_unlock_state = base::nullopt;
     FingerprintState fingerprint_state;
+    // When present, indicates that the TPM is locked.
+    base::Optional<base::TimeDelta> time_until_tpm_unlock = base::nullopt;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(UserState);
