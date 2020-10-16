@@ -3001,9 +3001,30 @@
           'shards': 6,
         },
       },
+      # TODO(crbug.com/1132206): Apply this to all of the bot's tests if the
+      # cache affinity works.
       'chromeos-amd64-generic-rel': {
         'swarming': {
           'shards': 12,
+          'dimension_sets': [
+            {
+              'cpu': 'x86',
+              'pool': 'chromium.tests',
+            }
+          ],
+          'optional_dimensions': {
+            '60': [
+              {
+                'caches': 'cros_vm',
+              }
+            ],
+          },
+          'named_caches': [
+            {
+              'name': 'cros_vm',
+              'path': 'magic_cros_vm_cache',
+            },
+          ],
         },
       },
     },

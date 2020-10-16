@@ -32,6 +32,7 @@ def ChromeOSTelemetryRemote(test_config):
         return True
     return False
   VM_POOLS = [
+    'chromium.tests',
     'chromium.tests.cros.vm',
     'chrome.tests.cros-vm',
   ]
@@ -47,7 +48,8 @@ def ChromeOSTelemetryRemote(test_config):
         'No pool set for CrOS test, unable to determine whether running on '
         'a VM or physical hardware.')
 
-  if StringContainsSubstring(pool, VM_POOLS):
+  if (StringContainsSubstring(pool, VM_POOLS) and
+      'device_type' not in dimensions[0]):
     return [
       '--remote=127.0.0.1',
       # By default, CrOS VMs' ssh servers listen on local port 9222.

@@ -8,8 +8,8 @@ import unittest
 import buildbot_json_magic_substitutions as magic_substitutions
 
 
-def CreateConfigWithPool(pool):
-  return {
+def CreateConfigWithPool(pool, device_type=None):
+  dims = {
     'swarming': {
       'dimension_sets': [
         {
@@ -18,6 +18,9 @@ def CreateConfigWithPool(pool):
       ],
     },
   }
+  if device_type:
+    dims['swarming']['dimension_sets'][0]['device_type'] = device_type
+  return dims
 
 
 class ChromeOSTelemetryRemoteTest(unittest.TestCase):
@@ -31,7 +34,7 @@ class ChromeOSTelemetryRemoteTest(unittest.TestCase):
                      ])
 
   def testPhysicalHardwareSubstitutions(self):
-    test_config = CreateConfigWithPool('chromium.tests')
+    test_config = CreateConfigWithPool('chromium.tests', device_type='eve')
     self.assertEqual(magic_substitutions.ChromeOSTelemetryRemote(test_config),
                      ['--remote=variable_chromeos_device_hostname'])
 
