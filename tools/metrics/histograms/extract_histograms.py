@@ -476,6 +476,7 @@ def _ExtractTokens(histogram, variants_dict):
       continue
 
     token = dict(key=token_key)
+    token['variants'] = []
 
     # If 'variants' attribute is set for the <token>, get the list of Variant
     # objects from from the |variants_dict|. Else, extract the <variant>
@@ -484,7 +485,7 @@ def _ExtractTokens(histogram, variants_dict):
       variants_name = token_node.getAttribute('variants')
       variant_list = variants_dict.get(variants_name)
       if variant_list:
-        token['variants'] = variant_list
+        token['variants'] = variant_list[:]
       else:
         logging.error(
             "The variants attribute %s of token key %s of histogram %s does "
@@ -492,8 +493,8 @@ def _ExtractTokens(histogram, variants_dict):
             (variants_name, token_key, histogram_name))
         token['variants'] = []
         have_error = True
-    else:
-      token['variants'] = _ExtractVariantNodes(token_node)
+    # Inline and out-of-line variants can be combined.
+    token['variants'].extend(_ExtractVariantNodes(token_node))
 
     tokens.append(token)
 

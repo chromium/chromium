@@ -243,6 +243,43 @@ TEST_HISTOGRAM_VARIANTS_DUPLICATE = """
 """
 
 
+TEST_HISTOGRAM_WITH_MIXED_VARIANTS = """
+<histogram-configuration>
+<histograms>
+<variants name="HistogramNameSize">
+  <variant name=".medium" summary="medium"/>
+  <variant name=".large" summary="large"/>
+</variants>
+
+<histogram name="HistogramName.{Color}{Size}" expires_after="2017-10-16">
+  <owner>me@chromium.org</owner>
+  <summary>
+    This is a histogram for button of {Color} color and {Size} size.
+  </summary>
+  <token key="Color">
+    <variant name="red">
+      <obsolete>
+        Obsolete red
+      </obsolete>
+    </variant>
+    <variant name="green">
+      <owner>green@chromium.org</owner>
+    </variant>
+  </token>
+  <token key="Size" variants="HistogramNameSize">
+    <variant name="" summary="all"/>
+    <variant name=".small" summary="small">
+      <owner>small@chromium.org</owner>
+      <obsolete>
+        Obsolete small
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+</histograms>
+</histogram-configuration>
+"""
+
 class ExtractHistogramsTest(unittest.TestCase):
 
   def testSuffixObsoletion(self):
@@ -701,6 +738,7 @@ class ExtractHistogramsTest(unittest.TestCase):
   @parameterized.expand([
       ('InlineTokens', TEST_HISTOGRAM_WITH_TOKENS),
       ('InlineTokenAndOutOfLineVariants', TEST_HISTOGRAM_WITH_VARIANTS),
+      ('MixedVariants', TEST_HISTOGRAM_WITH_MIXED_VARIANTS),
   ])
   def testUpdateNameWithTokens(self, _, input_xml):
     histogram_with_token = xml.dom.minidom.parseString(input_xml)
@@ -725,6 +763,7 @@ class ExtractHistogramsTest(unittest.TestCase):
   @parameterized.expand([
       ('InlineTokens', TEST_HISTOGRAM_WITH_TOKENS),
       ('InlineTokenAndOutOfLineVariants', TEST_HISTOGRAM_WITH_VARIANTS),
+      ('MixedVariants', TEST_HISTOGRAM_WITH_MIXED_VARIANTS),
   ])
   def testUpdateSummaryWithTokens(self, _, input_xml):
     histogram_with_token = xml.dom.minidom.parseString(input_xml)
@@ -762,6 +801,7 @@ class ExtractHistogramsTest(unittest.TestCase):
   @parameterized.expand([
       ('InlineTokens', TEST_HISTOGRAM_WITH_TOKENS),
       ('InlineTokenAndOutOfLineVariants', TEST_HISTOGRAM_WITH_VARIANTS),
+      ('MixedVariants', TEST_HISTOGRAM_WITH_MIXED_VARIANTS),
   ])
   def testUpdateWithTokenOwner(self, _, input_xml):
     histogram_with_token = xml.dom.minidom.parseString(input_xml)
@@ -790,6 +830,7 @@ class ExtractHistogramsTest(unittest.TestCase):
   @parameterized.expand([
       ('InlineTokens', TEST_HISTOGRAM_WITH_TOKENS),
       ('InlineTokenAndOutOfLineVariants', TEST_HISTOGRAM_WITH_VARIANTS),
+      ('MixedVariants', TEST_HISTOGRAM_WITH_MIXED_VARIANTS),
   ])
   def testUpdateWithTokenObsolete(self, _, input_xml):
     histogram_with_token = xml.dom.minidom.parseString(input_xml)
