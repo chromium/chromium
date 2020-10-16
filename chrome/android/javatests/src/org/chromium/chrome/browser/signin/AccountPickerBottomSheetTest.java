@@ -164,6 +164,7 @@ public class AccountPickerBottomSheetTest {
 
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_continue_as_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -207,6 +208,20 @@ public class AccountPickerBottomSheetTest {
         Assert.assertTrue(controller.isSheetOpen());
         Assert.assertEquals(2, mFakeProfileDataSource.getNumberOfObservers());
         onView(isRoot()).perform(pressBack());
+        Assert.assertFalse(controller.isSheetOpen());
+        verify(mAccountPickerDelegateMock).onDismiss();
+        Assert.assertEquals(0, mFakeProfileDataSource.getNumberOfObservers());
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissCollapsedSheetWithDismissButton() {
+        buildAndShowCollapsedBottomSheet();
+        onView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
+        BottomSheetController controller = getBottomSheetController();
+        Assert.assertTrue(controller.isSheetOpen());
+        Assert.assertEquals(2, mFakeProfileDataSource.getNumberOfObservers());
+        onView(withId(R.id.account_picker_dismiss_button)).perform(click());
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onDismiss();
         Assert.assertEquals(0, mFakeProfileDataSource.getNumberOfObservers());
@@ -360,6 +375,7 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_signin_spinner_view)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -387,6 +403,7 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_signin_spinner_view)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -502,14 +519,17 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_bottom_sheet_title))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(R.string.incognito_interstitial_title)));
-        onView(withId(R.id.account_picker_bottom_sheet_subtitle))
-                .check(matches(not(isDisplayed())));
-        onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.incognito_interstitial_bottom_sheet_view)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_message)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_learn_more)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_interstitial_continue_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.account_picker_bottom_sheet_subtitle))
+                .check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_continue_as_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     private void clickContinueButtonAndWaitForErrorSheet() {
@@ -552,6 +572,7 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_continue_as_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     private void checkZeroAccountBottomSheet() {
@@ -587,6 +608,7 @@ public class AccountPickerBottomSheetTest {
                         profileData.getGivenName() != null ? profileData.getGivenName()
                                                            : profileData.getAccountName());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
+        onView(withId(R.id.account_picker_dismiss_button)).check(matches(isDisplayed()));
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
     }
 

@@ -51,6 +51,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final View mIncognitoInterstitialView;
     private final ProgressBar mSpinnerView;
     private final ButtonCompat mContinueAsButton;
+    private final ButtonCompat mDismissButton;
 
     AccountPickerBottomSheetView(Context context, BackPressListener backPressListener) {
         mContext = context;
@@ -71,6 +72,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mSelectedAccountView = mContentView.findViewById(R.id.account_picker_selected_account);
         mSpinnerView = mContentView.findViewById(R.id.account_picker_signin_spinner_view);
         mContinueAsButton = mContentView.findViewById(R.id.account_picker_continue_as_button);
+        mDismissButton = mContentView.findViewById(R.id.account_picker_dismiss_button);
     }
 
     /**
@@ -99,6 +101,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      */
     ButtonCompat getContinueAsButton() {
         return mContinueAsButton;
+    }
+
+    /**
+     * The button to dismiss the bottom sheet.
+     */
+    ButtonCompat getDismissButton() {
+        return mDismissButton;
     }
 
     /**
@@ -131,6 +140,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
         mSelectedAccountView.setVisibility(View.GONE);
         mContinueAsButton.setVisibility(View.GONE);
+        mDismissButton.setVisibility(View.GONE);
         mIncognitoInterstitialView.setVisibility(View.GONE);
     }
 
@@ -144,6 +154,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mHorizontalDivider.setVisibility(View.VISIBLE);
         mSelectedAccountView.setVisibility(View.VISIBLE);
         mContinueAsButton.setVisibility(View.VISIBLE);
+        mDismissButton.setVisibility(View.VISIBLE);
 
         mAccountListView.setVisibility(View.GONE);
         mSpinnerView.setVisibility(View.GONE);
@@ -155,6 +166,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     void collapseToNoAccountView() {
         mContinueAsButton.setText(R.string.signin_add_account_to_device);
         mContinueAsButton.setVisibility(View.VISIBLE);
+        mDismissButton.setVisibility(View.VISIBLE);
 
         mAccountListView.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
@@ -171,6 +183,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
         mSpinnerView.setVisibility(View.VISIBLE);
         mContinueAsButton.setVisibility(View.INVISIBLE);
+        mDismissButton.setVisibility(View.INVISIBLE);
 
         mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
@@ -200,6 +213,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
         mSpinnerView.setVisibility(View.GONE);
+        mDismissButton.setVisibility(View.GONE);
     }
 
     /**
@@ -216,6 +230,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
         mSpinnerView.setVisibility(View.GONE);
+        mDismissButton.setVisibility(View.GONE);
     }
 
     @Override

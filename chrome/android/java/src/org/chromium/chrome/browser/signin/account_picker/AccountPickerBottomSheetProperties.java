@@ -110,15 +110,18 @@ class AccountPickerBottomSheetProperties {
             new WritableObjectPropertyKey<>("selected_account_data");
 
     // PropertyKey for the button |Continue as ...|
-    // The button is visible during all the lifecycle of the bottom sheet
     static final ReadableObjectPropertyKey<OnClickListener> ON_CONTINUE_AS_CLICKED =
             new ReadableObjectPropertyKey<>("on_continue_as_clicked");
+
+    // PropertyKey for the button to dismiss the bottom sheet
+    static final ReadableObjectPropertyKey<OnClickListener> ON_DISMISS_CLICKED =
+            new ReadableObjectPropertyKey<>("on_dismiss_clicked");
 
     // PropertyKey indicates the view state of the account picker bottom sheet
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey("view_state");
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            ON_SELECTED_ACCOUNT_CLICKED, SELECTED_ACCOUNT_DATA, ON_CONTINUE_AS_CLICKED, VIEW_STATE};
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ON_SELECTED_ACCOUNT_CLICKED,
+            SELECTED_ACCOUNT_DATA, ON_CONTINUE_AS_CLICKED, ON_DISMISS_CLICKED, VIEW_STATE};
 
     /**
      * Creates a default model for the AccountPickerBottomSheet.
@@ -126,12 +129,13 @@ class AccountPickerBottomSheetProperties {
      * In the default model, as the selected account data is null, the bottom sheet is in the
      * state {@link ViewState#NO_ACCOUNTS}.
      */
-    static PropertyModel createModel(
-            Runnable onSelectedAccountClicked, Runnable onContinueAsClicked) {
+    static PropertyModel createModel(Runnable onSelectedAccountClicked,
+            Runnable onContinueAsClicked, Runnable onDismissClicked) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
+                .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .build();
     }

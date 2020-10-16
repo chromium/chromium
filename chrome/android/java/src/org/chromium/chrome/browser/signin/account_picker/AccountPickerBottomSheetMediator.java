@@ -43,13 +43,14 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private @Nullable String mDefaultAccountName;
     private @Nullable String mAddedAccountName;
 
-    AccountPickerBottomSheetMediator(Context context, AccountPickerDelegate accountPickerDelegate) {
+    AccountPickerBottomSheetMediator(Context context, AccountPickerDelegate accountPickerDelegate,
+            Runnable dismissBottomSheetRunnable) {
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = new ProfileDataCache(
                 context, context.getResources().getDimensionPixelSize(R.dimen.user_picture_size));
 
-        mModel = AccountPickerBottomSheetProperties.createModel(
-                this::onSelectedAccountClicked, this::onContinueAsClicked);
+        mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
+                this::onContinueAsClicked, dismissBottomSheetRunnable);
         mProfileDataCache.addObserver(mProfileDataSourceObserver);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();

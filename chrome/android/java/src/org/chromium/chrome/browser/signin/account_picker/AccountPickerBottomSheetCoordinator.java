@@ -65,8 +65,8 @@ public class AccountPickerBottomSheetCoordinator {
         AccountPickerDelegate.recordAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.SHOWN);
 
-        mAccountPickerBottomSheetMediator =
-                new AccountPickerBottomSheetMediator(context, accountPickerDelegate);
+        mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
+                context, accountPickerDelegate, this::dismissBottomSheet);
         mView = new AccountPickerBottomSheetView(context, mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(mView.getAccountListView(),
                 mAccountPickerBottomSheetMediator, /* selectedAccountName= */ null,
@@ -90,6 +90,11 @@ public class AccountPickerBottomSheetCoordinator {
         mAccountPickerBottomSheetMediator.destroy();
 
         mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
+
+    @MainThread
+    private void dismissBottomSheet() {
+        mBottomSheetController.hideContent(mView, true);
     }
 
     @VisibleForTesting
