@@ -233,6 +233,7 @@ def _angle_perftests(estimated_runtime=1988):
                           flags=[
                               '--test-launcher-retry-limit=0',
                               '--test-launcher-jobs=1',
+                              '--test-launcher-batch-limit=1',
                           ],
                           estimated_runtime=estimated_runtime)
 
