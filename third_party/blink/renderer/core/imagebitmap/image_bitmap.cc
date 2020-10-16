@@ -892,6 +892,7 @@ scoped_refptr<StaticBitmapImage> ImageBitmap::Transfer() {
   DCHECK(!IsNeutered());
   is_neutered_ = true;
   image_->Transfer();
+  UpdateImageBitmapMemoryUsage();
   return std::move(image_);
 }
 
@@ -902,7 +903,7 @@ void ImageBitmap::UpdateImageBitmapMemoryUsage() {
 
   int32_t new_memory_usage = 0;
 
-  if (image_) {
+  if (!is_neutered_ && image_) {
     base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
     memory_usage_checked *= image_->width();
     memory_usage_checked *= image_->height();
@@ -1052,6 +1053,7 @@ void ImageBitmap::close() {
     return;
   image_ = nullptr;
   is_neutered_ = true;
+  UpdateImageBitmapMemoryUsage();
 }
 
 // static
