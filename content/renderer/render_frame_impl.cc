@@ -6532,7 +6532,9 @@ void RenderFrameImpl::PepperInstanceDeleted(
 
   RenderFrameImpl* const render_frame = instance->render_frame();
   if (render_frame) {
-    render_frame->Send(new FrameHostMsg_PepperInstanceDeleted(
+    // TODO(crbug.com/1137580): In some cases, using the RenderFrame to send the
+    // message causes UB, so for now avoid that by calling RT::Send directly.
+    RenderThread::Get()->Send(new FrameHostMsg_PepperInstanceDeleted(
         render_frame->GetRoutingID(), instance->pp_instance()));
   }
 }
