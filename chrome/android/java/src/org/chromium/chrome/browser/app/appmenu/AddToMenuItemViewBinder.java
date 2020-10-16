@@ -201,9 +201,8 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
         Resources resources = mContext.getResources();
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, this)
-                .with(ModalDialogProperties.TITLE, resources, R.string.menu_add_to_dialog_title)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.close)
-                .with(ModalDialogProperties.CUSTOM_VIEW, createAddToList())
+                .with(ModalDialogProperties.CUSTOM_VIEW, createAddToMenu())
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                 .build();
     }
@@ -213,11 +212,12 @@ class AddToMenuItemViewBinder extends ArrayAdapter<MenuItem>
         mModalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.APP);
     }
 
-    private ListView createAddToList() {
+    private View createAddToMenu() {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        ListView addToMenu = (ListView) inflater.inflate(R.layout.add_to_menu_dialog, null);
-        addToMenu.setAdapter(this);
-        addToMenu.setOnItemClickListener(this);
+        View addToMenu = inflater.inflate(R.layout.add_to_menu_dialog, null);
+        ListView list = addToMenu.findViewById(R.id.list);
+        list.setAdapter(this);
+        list.setOnItemClickListener(this);
         return addToMenu;
     }
 

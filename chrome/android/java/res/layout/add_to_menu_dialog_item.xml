@@ -11,5 +11,6 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeightSmall"
     android:background="?android:attr/listChoiceBackgroundIndicator"
+    android:gravity="center_vertical"
     android:paddingStart="16dp"
     android:paddingEnd="16dp" />

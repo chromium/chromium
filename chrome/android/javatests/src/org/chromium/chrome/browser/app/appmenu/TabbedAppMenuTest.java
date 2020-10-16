@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
@@ -459,9 +460,15 @@ public class TabbedAppMenuTest {
         View addToItem = getListView().getChildAt(addToIndex);
         PropertyModel dialogModel = clickAndGetCurrentDialog(addToItem);
         Assert.assertNotNull("No add to dialog found.", dialogModel);
-        ListView addToCustomView = (ListView) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Assert.assertEquals(3, addToCustomView.getChildCount());
-        mRenderTestRule.render(addToCustomView, "add_to_dialog_not_bookmarked");
+        LinearLayout addToCustomView =
+                (LinearLayout) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Assert.assertEquals("The dialog should have 2 children, one is title, another is ListView.",
+                2, addToCustomView.getChildCount());
+        TextView addToTitle = (TextView) addToCustomView.getChildAt(0);
+        mRenderTestRule.render(addToTitle, "add_to_dialog_title");
+        ListView addToList = (ListView) addToCustomView.getChildAt(1);
+        Assert.assertEquals(3, addToList.getChildCount());
+        mRenderTestRule.render(addToList, "add_to_dialog_not_bookmarked");
     }
 
     @Test
@@ -489,9 +496,15 @@ public class TabbedAppMenuTest {
         View addToItem = getListView().getChildAt(addToIndex);
         PropertyModel dialogModel = clickAndGetCurrentDialog(addToItem);
         Assert.assertNotNull("No add to dialog found.", dialogModel);
-        ListView addToCustomView = (ListView) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Assert.assertEquals(3, addToCustomView.getChildCount());
-        mRenderTestRule.render(addToCustomView, "add_to_dialog_bookmarked");
+        LinearLayout addToCustomView =
+                (LinearLayout) dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Assert.assertEquals("The dialog should have 2 children, one is title, another is ListView.",
+                2, addToCustomView.getChildCount());
+        TextView addToTitle = (TextView) addToCustomView.getChildAt(0);
+        mRenderTestRule.render(addToTitle, "add_to_dialog_title");
+        ListView addToList = (ListView) addToCustomView.getChildAt(1);
+        Assert.assertEquals(3, addToList.getChildCount());
+        mRenderTestRule.render(addToList, "add_to_dialog_bookmarked");
 
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
