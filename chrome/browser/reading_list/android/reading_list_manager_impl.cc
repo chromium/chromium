@@ -114,7 +114,13 @@ bool ReadingListManagerImpl::IsReadingListBookmark(
   if (root_.get() == node)
     return true;
 
-  return Get(node->url());
+  // Not recursive since there is only one level of children.
+  for (const auto& child : root_->children()) {
+    if (node == child.get())
+      return true;
+  }
+
+  return false;
 }
 
 void ReadingListManagerImpl::Delete(const GURL& url) {

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
@@ -141,6 +142,11 @@ TEST_F(ReadingListManagerImplTest, GetNodeByIDIsReadingListBookmark) {
   node = manager()->GetNodeByID(12345);
   EXPECT_FALSE(node);
   EXPECT_FALSE(manager()->IsReadingListBookmark(node));
+
+  // Node with the same URL but not in the tree.
+  auto node_same_url =
+      std::make_unique<BookmarkNode>(0, base::GenerateGUID(), url);
+  EXPECT_FALSE(manager()->IsReadingListBookmark(node_same_url.get()));
 }
 
 // Verifies Add() the same URL twice will not invalidate returned pointers, and
