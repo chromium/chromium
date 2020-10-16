@@ -7,16 +7,10 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor_loader.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-
-#if BUILDFLAG(IS_LACROS)
-#include "ui/base/layout.h"
-#include "ui/base/resource/scale_factor.h"
-#endif
 
 namespace views {
 
@@ -49,14 +43,8 @@ void DesktopNativeCursorManager::RemoveHost(aura::WindowTreeHost* host) {
 void DesktopNativeCursorManager::SetDisplay(
     const display::Display& display,
     wm::NativeCursorManagerDelegate* delegate) {
-  float cursor_scale = display.device_scale_factor();
-#if BUILDFLAG(IS_LACROS)
-  // Use the nearest resource scale factor, as Ash does, so that the cursor
-  // doesn't change its size when hovering a Lacros window.
-  cursor_scale =
-      ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(cursor_scale));
-#endif
-  cursor_loader_->SetDisplayData(display.rotation(), cursor_scale);
+  cursor_loader_->SetDisplayData(display.rotation(),
+                                 display.device_scale_factor());
 
   SetCursor(delegate->GetCursor(), delegate);
 }
