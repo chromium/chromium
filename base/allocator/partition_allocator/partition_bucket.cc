@@ -603,7 +603,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   } else if (LIKELY(SetNewActiveSlotSpan())) {
     // First, did we find an active slot span in the active list?
     new_slot_span = active_slot_spans_head;
-    PA_DCHECK(new_slot_span->is_active());
+    PA_CHECK(new_slot_span);
+    PA_CHECK(new_slot_span->is_active());
   } else if (LIKELY(empty_slot_spans_head != nullptr) ||
              LIKELY(decommitted_slot_spans_head != nullptr)) {
     // Second, look in our lists of empty and decommitted slot spans.
@@ -634,7 +635,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       new_slot_span->Reset();
       *is_already_zeroed = kDecommittedPagesAreAlwaysZeroed;
     }
-    PA_DCHECK(new_slot_span);
+    PA_CHECK(new_slot_span);
   } else {
     // Third. If we get here, we need a brand new slot span.
     uint16_t num_partition_pages = get_pages_per_slot_span();
