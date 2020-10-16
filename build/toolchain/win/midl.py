@@ -57,7 +57,8 @@ def ZapTimestamp(filename):
     # First: Type string (0x8), followed by 0x3e characters.
     assert contents[custom_off:custom_off + 6] == b'\x08\x00\x3e\x00\x00\x00'
     assert re.match(
-        br'Created by MIDL version 8\.\d\d\.\d{4} at ... Jan 1. ..:..:.. 2038\n',
+        br'Created by MIDL version 8\.\d\d\.\d{4} '
+        br'at ... Jan 1. ..:..:.. 2038\n',
         contents[custom_off + 6:custom_off + 6 + 0x3e])
     # Second: Type uint32 (0x13) storing 0x7fffffff (followed by WW / 0x57 pad)
     assert contents[custom_off+6+0x3e:custom_off+6+0x3e+8] == \
@@ -121,32 +122,27 @@ def overwrite_cls_guid_iid(iid_file, dynamic_guid):
   open(iid_file, 'wb').write(contents)
 
 
-def overwrite_cls_guid_tlb(tlb_file, dynamic_guid):
-  # See ZapTimestamp() for a short overview of the .tlb format.  The 1st
-  # section contains type descriptions, and the first type should be our
-  # coclass.  It points to the type's GUID in section 6, the GUID section.
+def get_tlb_contents(tlb_file):
+  # See ZapTimestamp() for a short overview of the .tlb format.
   contents = open(tlb_file, 'rb').read()
   assert contents[0:8] == b'MSFT\x02\x00\x01\x00'
   ntypes, = struct.unpack_from('<I', contents, 0x20)
   type_off, type_len = struct.unpack_from('<II', contents, 0x54 + 4*ntypes)
 
-  # contents is a bytestring in Python 3, but a normal string in Py2.
-  if sys.version_info.major == 2:
-    coclass = ord(contents[type_off])
-  else:
-    coclass = contents[type_off]
-  assert coclass == 0x25, "expected coclass"
-
-  guidind = struct.unpack_from('<I', contents, type_off + 0x2c)[0]
   guid_off, guid_len = struct.unpack_from(
       '<II', contents, 0x54 + 4*ntypes + 5*16)
-  assert guidind + 14 <= guid_len
+  assert guid_len % 24 == 0
+
   contents = array.array('B', contents)
-  struct.pack_into('<IHH8s', contents, guid_off + guidind,
-                   *(dynamic_guid.fields[0:3] + (dynamic_guid.bytes[8:],)))
-  # The GUID is correct now, but there's also a GUID hashtable in section 5.
-  # Need to recreate that too.  Since the hash table uses chaining, it's
-  # easiest to recompute it from scratch rather than trying to patch it up.
+
+  return contents, ntypes, type_off, guid_off, guid_len
+
+
+def recreate_guid_hashtable(contents, ntypes, guid_off, guid_len):
+  # This function is called after changing guids in section 6 (the "guid"
+  # section). This function recreates the GUID hashtable in section 5. Since the
+  # hash table uses chaining, it's easiest to recompute it from scratch rather
+  # than trying to patch it up.
   hashtab = [0xffffffff] * (0x80 // 4)
   for guidind in range(guid_off, guid_off + guid_len, 24):
     guidbytes, typeoff, nextguid = struct.unpack_from(
@@ -161,16 +157,138 @@ def overwrite_cls_guid_tlb(tlb_file, dynamic_guid):
       '<II', contents, 0x54 + 4*ntypes + 4*16)
   for i, hashval in enumerate(hashtab):
     struct.pack_into('<I', contents, hash_off + 4*i, hashval)
+
+
+def overwrite_cls_guid_tlb(tlb_file, dynamic_guid):
+  contents, ntypes, type_off, guid_off, guid_len = get_tlb_contents(tlb_file)
+
+  # The first type should be a coclass.  It points to the type's GUID in
+  # section 6, the GUID section.
+  coclass, = struct.unpack_from('<B', contents, type_off)
+  assert coclass == 0x25, "expected coclass"
+
+  guidind = struct.unpack_from('<I', contents, type_off + 0x2c)[0]
+  assert guidind + 14 <= guid_len
+  struct.pack_into('<IHH8s', contents, guid_off + guidind,
+                   *(dynamic_guid.fields[0:3] + (dynamic_guid.bytes[8:], )))
+
+  recreate_guid_hashtable(contents, ntypes, guid_off, guid_len)
   open(tlb_file, 'wb').write(contents)
 
 
+# Handle a single clsid substitution where |dynamic_guid| is of the form
+# "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
 def overwrite_cls_guid(h_file, iid_file, tlb_file, dynamic_guid):
-  # Fix up GUID in .h, _i.c, and .tlb.  This currently assumes that there's
-  # only one coclass in the idl file, and that that's the type with the
-  # dynamic type.
+  # Fix up GUID in .h, _i.c, and .tlb.  This function assumes that there is only
+  # one coclass in the idl file, and that that's the type with the dynamic type.
   overwrite_cls_guid_h(h_file, dynamic_guid)
   overwrite_cls_guid_iid(iid_file, dynamic_guid)
   overwrite_cls_guid_tlb(tlb_file, dynamic_guid)
+
+
+def overwrite_guids_h(h_file, dynamic_guids):
+  contents = open(h_file, 'rb').read()
+  for key in dynamic_guids:
+    contents = re.sub(key, dynamic_guids[key], contents, flags=re.IGNORECASE)
+  open(h_file, 'wb').write(contents)
+
+
+def get_uuid_format(guid, prefix, suffix):
+  formatted_uuid = '%s0x%s,0x%s,0x%s,' % (prefix, guid[0:8], guid[9:13],
+                                          guid[14:18])
+  formatted_uuid += '%s0x%s,0x%s' % (prefix, guid[19:21], guid[21:23])
+  for i in range(24, len(guid), 2):
+    formatted_uuid += ',0x' + guid[i:i + 2]
+  formatted_uuid += '%s%s' % (suffix, suffix)
+  return formatted_uuid
+
+
+def get_uuid_format_iid_file(guid):
+  # Convert from "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83" to
+  # 0xD0E1CACC,0xC63C,0x4192,0x94,0xAB,0xBF,0x8E,0xAD,0x0E,0x3B,0x83.
+  return get_uuid_format(guid, '', '')
+
+
+def overwrite_guids_iid(iid_file, dynamic_guids):
+  contents = open(iid_file, 'rb').read()
+  for key in dynamic_guids:
+    contents = re.sub(get_uuid_format_iid_file(key),
+                      get_uuid_format_iid_file(dynamic_guids[key]),
+                      contents,
+                      flags=re.IGNORECASE)
+  open(iid_file, 'wb').write(contents)
+
+
+def get_uuid_format_proxy_file(guid):
+  # Convert from "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83" to
+  # {0xD0E1CACC,0xC63C,0x4192,{0x94,0xAB,0xBF,0x8E,0xAD,0x0E,0x3B,0x83}}.
+  return get_uuid_format(guid, '{', '}')
+
+
+def overwrite_guids_proxy(proxy_file, dynamic_guids):
+  contents = open(proxy_file, 'rb').read()
+  for key in dynamic_guids:
+    contents = re.sub(get_uuid_format_proxy_file(key),
+                      get_uuid_format_proxy_file(dynamic_guids[key]),
+                      contents,
+                      flags=re.IGNORECASE)
+  open(proxy_file, 'wb').write(contents)
+
+
+def getguid(contents, offset):
+  # Returns a guid string of the form "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
+  g0, g1, g2, g3 = struct.unpack_from('<IHH8s', contents, offset)
+  g3 = ''.join(['%02X' % ord(g) for g in g3])
+  return '%08X-%04X-%04X-%s-%s' % (g0, g1, g2, g3[0:4], g3[4:])
+
+
+def setguid(contents, offset, guid):
+  guid = uuid.UUID(guid)
+  struct.pack_into('<IHH8s', contents, offset,
+                   *(guid.fields[0:3] + (guid.bytes[8:], )))
+
+
+def overwrite_guids_tlb(tlb_file, dynamic_guids):
+  contents, ntypes, type_off, guid_off, guid_len = get_tlb_contents(tlb_file)
+
+  for i in range(0, guid_len, 24):
+    current_guid = getguid(contents, guid_off + i)
+    for key in dynamic_guids:
+      if key.lower() == current_guid.lower():
+        setguid(contents, guid_off + i, dynamic_guids[key])
+
+  recreate_guid_hashtable(contents, ntypes, guid_off, guid_len)
+  open(tlb_file, 'wb').write(contents)
+
+
+# Handle multiple guid substitutions, where |dynamic_guid| is of the form
+# "158428a4-6014-4978-83ba-9fad0dabe791=3d852661-c795-4d20-9b95-5561e9a1d2d9,"
+# "63B8FFB1-5314-48C9-9C57-93EC8BC6184B=D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83".
+#
+# Before specifying |dynamic_guid| in the build, the IDL file is first compiled
+# with "158428a4-6014-4978-83ba-9fad0dabe791" and
+# "63B8FFB1-5314-48C9-9C57-93EC8BC6184B". These are the "replaceable" guids,
+# i.e., guids that can be replaced in future builds. The resulting MIDL outputs
+# are copied over to src\third_party\win_build_output\.
+#
+# Then, in the future, any changes to these guids can be accomplished by
+# providing a |dynamic_guid| of the format above in the build file. These
+# "dynamic" guid changes by themselves will not require the MIDL compiler and
+# therefore will not require copying output over to
+# src\third_party\win_build_output\.
+#
+# The pre-generated src\third_party\win_build_output\ files are used for
+# cross-compiling on other platforms, since the MIDL compiler is Windows-only.
+def overwrite_guids(h_file, iid_file, proxy_file, tlb_file, dynamic_guids):
+  n = len(dynamic_guids)
+  dynamic_guids = dynamic_guids.split(',')
+  dynamic_guids = dict(s.split('=') for s in dynamic_guids)
+
+  # Fix up GUIDs in .h, _i.c, _p.c, and .tlb.
+  overwrite_guids_h(h_file, dynamic_guids)
+  overwrite_guids_iid(iid_file, dynamic_guids)
+  overwrite_guids_proxy(proxy_file, dynamic_guids)
+  overwrite_guids_tlb(tlb_file, dynamic_guids)
 
 
 def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
@@ -183,10 +301,13 @@ def main(arch, gendir, outdir, dynamic_guid, tlb, h, dlldata, iid, proxy, clang,
   source = os.path.normpath(source)
   distutils.dir_util.copy_tree(source, outdir, preserve_times=False)
   if dynamic_guid != 'none':
-    overwrite_cls_guid(os.path.join(outdir, h),
-                       os.path.join(outdir, iid),
-                       os.path.join(outdir, tlb),
-                       uuid.UUID(dynamic_guid))
+    if '=' not in dynamic_guid:
+      overwrite_cls_guid(os.path.join(outdir, h), os.path.join(outdir, iid),
+                         os.path.join(outdir, tlb), uuid.UUID(dynamic_guid))
+    else:
+      overwrite_guids(os.path.join(outdir, h), os.path.join(outdir, iid),
+                      os.path.join(outdir, proxy), os.path.join(outdir, tlb),
+                      dynamic_guid)
 
   # On non-Windows, that's all we can do.
   if sys.platform != 'win32':

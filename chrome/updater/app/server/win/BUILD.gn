@@ -4,10 +4,14 @@
 
 import("//build/toolchain/win/midl.gni")
 
+UpdaterClass_replaceable_uuid = "158428a4-6014-4978-83ba-9fad0dabe791"
+IUpdater_replaceable_uuid = "63B8FFB1-5314-48C9-9C57-93EC8BC6184B"
+
 # TODO(crbug.com/1099904): this CLSID needs to be regenerated for every build.
 # TODO(crbug.com/1099904): we need to use an indirection mechanism for the
 # common GUIDs in the SxS versions.
-updater_clsid = "158428a4-6014-4978-83ba-9fad0dabe791"
+updater_clsid = "3d852661-c795-4d20-9b95-5561e9a1d2d9"
+IUPDATER_IID = "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83"
 
 action("generate_updater_idl") {
   script = "//build/util/version.py"
@@ -17,14 +21,17 @@ action("generate_updater_idl") {
 
   args = [
     "-e",
-    "UPDATER_CLSID='$updater_clsid'",
+    "$UpdaterClass_replaceable_uuid='$updater_clsid'",
+    "-e",
+    "$IUpdater_replaceable_uuid='$IUPDATER_IID'",
     rebase_path(inputs[0], root_build_dir),
     rebase_path(outputs[0], root_build_dir),
   ]
 }
 
 midl("updater_idl_idl") {
-  dynamic_guid = updater_clsid
+  dynamic_guid = "$UpdaterClass_replaceable_uuid=$updater_clsid," +
+                 "$IUpdater_replaceable_uuid=$IUPDATER_IID"
   deps = [ ":generate_updater_idl" ]
   header_file = "updater_idl.h"
   sources = get_target_outputs(":generate_updater_idl")
@@ -33,7 +40,7 @@ midl("updater_idl_idl") {
     "IUPDATESTATE_IID=46ACF70B-AC13-406D-B53B-B2C4BF091FF6",
     "ICOMPLETESTATUS_IID=2FCD14AF-B645-4351-8359-E80A0E202A0B",
     "IUPDATEROBSERVER_IID=7B416CFD-4216-4FD6-BD83-7C586054676E",
-    "IUPDATER_IID=63B8FFB1-5314-48C9-9C57-93EC8BC6184B",
+    "IUPDATER_IID=$IUPDATER_IID",
     "IUPDATERCONTROL_IID=526DA036-9BD3-4697-865A-DA12D37DFFCA",
     "UPDATER_LIB_UUID=69464FF0-D9EC-4037-A35F-8AE4358106CC",
     "ICURRENTSTATE_IID=247954F9-9EDC-4E68-8CC3-150C2B89EADF",
