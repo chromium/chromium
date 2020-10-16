@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry"
-    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M88">
+    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M90">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -548,7 +548,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Password"
-    enum="PasswordManagerAndroidPasswordActions" expires_after="M88">
+    enum="PasswordManagerAndroidPasswordActions" expires_after="M90">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -558,7 +558,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Username"
-    enum="PasswordManagerAndroidUsernameActions" expires_after="M88">
+    enum="PasswordManagerAndroidUsernameActions" expires_after="M90">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -568,7 +568,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Website"
-    enum="PasswordManagerAndroidWebsiteActions" expires_after="M88">
+    enum="PasswordManagerAndroidWebsiteActions" expires_after="M90">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -578,7 +578,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordExceptionEntry"
-    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M88">
+    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M90">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -588,7 +588,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordExceptionEntry.Website"
-    enum="PasswordManagerAndroidWebsiteActions" expires_after="M88">
+    enum="PasswordManagerAndroidWebsiteActions" expires_after="M90">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
