@@ -43,7 +43,7 @@ PasswordAutoSignInView::PasswordAutoSignInView(
 
   CredentialsItemView* credential =
       AddChildView(std::make_unique<CredentialsItemView>(
-          nullptr,
+          views::Button::PressedCallback(),
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD),
           form.username_value, &form,
           content::BrowserContext::GetDefaultStoragePartition(

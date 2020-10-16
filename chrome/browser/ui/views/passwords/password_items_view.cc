@@ -46,9 +46,6 @@
 
 namespace {
 
-constexpr int kDeleteButtonTag = 1;
-constexpr int kUndoButtonTag = 2;
-
 // Column set identifiers for displaying or undoing removal of credentials.
 // All of them allocate space differently.
 enum PasswordItemsViewColumnSetType {
@@ -139,7 +136,7 @@ void StartRow(views::GridLayout* layout,
 
 // An entry for each credential. Relays delete/undo actions associated with
 // this password row to parent dialog.
-class PasswordItemsView::PasswordRow : public views::ButtonListener {
+class PasswordItemsView::PasswordRow {
  public:
   PasswordRow(PasswordItemsView* parent,
               const autofill::PasswordForm* password_form);
@@ -152,8 +149,8 @@ class PasswordItemsView::PasswordRow : public views::ButtonListener {
   void AddPasswordRow(views::GridLayout* layout,
                       PasswordItemsViewColumnSetType type_id);
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void DeleteButtonPressed();
+  void UndoButtonPressed();
 
   PasswordItemsView* const parent_;
   const autofill::PasswordForm* const password_form_;
@@ -184,8 +181,9 @@ void PasswordItemsView::PasswordRow::AddUndoRow(views::GridLayout* layout) {
           views::style::CONTEXT_DIALOG_BODY_TEXT))
       ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   auto* undo_button = layout->AddView(std::make_unique<views::MdTextButton>(
-      this, l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UNDO)));
-  undo_button->set_tag(kUndoButtonTag);
+      base::BindRepeating(&PasswordRow::UndoButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UNDO)));
   undo_button->SetFocusForPlatform();
   undo_button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_UNDO_TOOLTIP, GetDisplayUsername(*password_form_)));
@@ -233,22 +231,28 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
     separator->SetCanProcessEventsWithinSubtree(false);
   }
 
-  auto* delete_button = layout->AddView(
-      views::CreateVectorImageButtonWithNativeTheme(this, kTrashCanIcon));
-  delete_button->set_tag(kDeleteButtonTag);
+  auto* delete_button =
+      layout->AddView(views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(&PasswordRow::DeleteButtonPressed,
+                              base::Unretained(this)),
+          kTrashCanIcon));
   delete_button->SetFocusForPlatform();
   delete_button->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_DELETE, GetDisplayUsername(*password_form_)));
 }
 
-void PasswordItemsView::PasswordRow::ButtonPressed(views::Button* sender,
-                                                   const ui::Event& event) {
-  DCHECK(sender->tag() == kDeleteButtonTag || sender->tag() == kUndoButtonTag);
-  deleted_ = sender->tag() == kDeleteButtonTag;
+void PasswordItemsView::PasswordRow::DeleteButtonPressed() {
+  deleted_ = true;
   parent_->NotifyPasswordFormAction(
       *password_form_,
-      deleted_ ? PasswordBubbleControllerBase::PasswordAction::kRemovePassword
-               : PasswordBubbleControllerBase::PasswordAction::kAddPassword);
+      PasswordBubbleControllerBase::PasswordAction::kRemovePassword);
+}
+
+void PasswordItemsView::PasswordRow::UndoButtonPressed() {
+  deleted_ = false;
+  parent_->NotifyPasswordFormAction(
+      *password_form_,
+      PasswordBubbleControllerBase::PasswordAction::kAddPassword);
 }
 
 PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
@@ -259,7 +263,14 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetExtraView(std::make_unique<views::MdTextButton>(
-      this,
+      base::BindRepeating(
+          [](PasswordItemsView* items) {
+            items->controller_.OnManageClicked(
+                password_manager::ManagePasswordsReferrer::
+                    kManagePasswordsBubble);
+            items->CloseBubble();
+          },
+          base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON)));
 
   if (controller_.local_credentials().empty()) {
@@ -339,13 +350,6 @@ gfx::Size PasswordItemsView::CalculatePreferredSize() const {
                         views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                     margins().width();
   return gfx::Size(width, GetHeightForWidth(width));
-}
-
-void PasswordItemsView::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  controller_.OnManageClicked(
-      password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
-  CloseBubble();
 }
 
 void PasswordItemsView::OnFaviconReady(const gfx::Image& favicon) {

@@ -34,7 +34,7 @@ class Label;
 class CredentialsItemView : public AccountAvatarFetcherDelegate,
                             public views::Button {
  public:
-  CredentialsItemView(views::ButtonListener* button_listener,
+  CredentialsItemView(PressedCallback callback,
                       const base::string16& upper_text,
                       const base::string16& lower_text,
                       const autofill::PasswordForm* form,
@@ -47,8 +47,6 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
   // to the view. If |store| is kProfileStore, removes any existing icon.
   void SetStoreIndicatorIcon(autofill::PasswordForm::Store store);
 
-  const autofill::PasswordForm* form() const { return form_; }
-
   // AccountAvatarFetcherDelegate:
   void UpdateAvatar(const gfx::ImageSkia& image) override;
 
@@ -57,8 +55,6 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
  private:
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
-
-  const autofill::PasswordForm* const form_;
 
   views::ImageView* image_view_;
 

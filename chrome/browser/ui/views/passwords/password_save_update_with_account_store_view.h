@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_with_account_store_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/view.h"
 
@@ -31,7 +30,6 @@ class FeaturePromoBubbleView;
 // button.
 class PasswordSaveUpdateWithAccountStoreView
     : public PasswordBubbleViewBase,
-      public views::ButtonListener,
       public views::WidgetObserver,
       public views::AnimatingLayoutManager::Observer {
  public:
@@ -59,9 +57,6 @@ class PasswordSaveUpdateWithAccountStoreView
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

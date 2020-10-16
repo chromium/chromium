@@ -104,18 +104,6 @@ bool AccountChooserDialogView::Accept() {
   return false;
 }
 
-void AccountChooserDialogView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  CredentialsItemView* view = static_cast<CredentialsItemView*>(sender);
-  // On Mac the button click event may be dispatched after the dialog was
-  // hidden. Thus, the controller can be null.
-  if (controller_) {
-    controller_->OnChooseCredentials(
-        *view->form(),
-        password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
-  }
-}
-
 void AccountChooserDialogView::InitWindow() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -129,7 +117,10 @@ void AccountChooserDialogView::InitWindow() {
     const auto titles = GetCredentialLabelsForAccountChooser(*form);
     auto* credential_view =
         list_view->AddChildView(std::make_unique<CredentialsItemView>(
-            this, titles.first, titles.second, form.get(),
+            base::BindRepeating(
+                &AccountChooserDialogView::CredentialsItemPressed,
+                base::Unretained(this), base::Unretained(form.get())),
+            titles.first, titles.second, form.get(),
             content::BrowserContext::GetDefaultStoragePartition(
                 Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
                 ->GetURLLoaderFactoryForBrowserProcess()
@@ -146,6 +137,16 @@ void AccountChooserDialogView::InitWindow() {
   }
   constexpr float kMaxVisibleItems = 3.5;
   scroll_view->ClipHeightTo(0, kMaxVisibleItems * item_height);
+}
+
+void AccountChooserDialogView::CredentialsItemPressed(
+    const autofill::PasswordForm* form) {
+  // On Mac the button click event may be dispatched after the dialog was
+  // hidden. Thus, the controller can be null.
+  if (controller_) {
+    controller_->OnChooseCredentials(
+        *form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
+  }
 }
 
 AccountChooserPrompt* CreateAccountChooserPromptView(
