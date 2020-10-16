@@ -142,7 +142,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
                           uint32_t ng_call_count) override;
   void DidObserveLazyLoadBehavior(
       WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) override;
-  bool ShouldTrackUseCounter(const KURL&) override;
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;
 

@@ -213,10 +213,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidObserveLazyLoadBehavior(
       WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
 
-  // Will be called by a Page upon DidCommitLoad, deciding whether to track
-  // UseCounter usage or not based on its url.
-  virtual bool ShouldTrackUseCounter(const KURL&) { return true; }
-
   // Transmits the change in the set of watched CSS selectors property that
   // match any element on the frame.
   virtual void SelectorMatchChanged(
