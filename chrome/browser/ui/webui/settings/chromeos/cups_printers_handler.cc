@@ -1022,6 +1022,7 @@ void CupsPrintersHandler::OnPrintersChanged(
 
 void CupsPrintersHandler::UpdateDiscoveredPrinters() {
   if (!discovery_active_) {
+    PRINTER_LOG(DEBUG) << "Discovered printers update skipped";
     return;
   }
 
@@ -1037,6 +1038,9 @@ void CupsPrintersHandler::UpdateDiscoveredPrinters() {
     discovered_printers_list->Append(GetCupsPrinterInfo(printer));
   }
 
+  PRINTER_LOG(DEBUG) << "Discovered printers updating. Automatic: "
+                     << automatic_printers_list->GetSize()
+                     << " Discovered: " << discovered_printers_list->GetSize();
   FireWebUIListener("on-nearby-printers-changed", *automatic_printers_list,
                     *discovered_printers_list);
 }

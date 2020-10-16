@@ -7,6 +7,7 @@
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -43,6 +44,21 @@ std::string ToString(Uri::ParserStatus status) {
   return "unknown error";
 }
 }  // namespace
+
+std::string ToString(PrinterClass pclass) {
+  switch (pclass) {
+    case PrinterClass::kEnterprise:
+      return "Enterprise";
+    case PrinterClass::kAutomatic:
+      return "Automatic";
+    case PrinterClass::kDiscovered:
+      return "Discovered";
+    case PrinterClass::kSaved:
+      return "Saved";
+  }
+  NOTREACHED();
+  return "";
+}
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
   static const base::flat_set<std::string> kKnownSchemes = {

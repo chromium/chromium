@@ -263,11 +263,13 @@ class CupsPrintersManagerImpl
   void OnActiveNetworksChanged(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks) override {
+    PRINTER_LOG(DEBUG) << "Network change.  Refresh printers list.";
     // Clear the network detected printers when the active network changes.
     // This ensures that connecting to a new network will give us only newly
     // detected printers.
     ClearNetworkDetectedPrinters();
   }
+
   void OnNetworkStateChanged(
       chromeos::network_config::mojom::NetworkStatePropertiesPtr /* network */)
       override {}
@@ -464,9 +466,13 @@ class CupsPrintersManagerImpl
 
   // Notify observers on the given classes the the relevant lists have changed.
   void NotifyObservers(const std::vector<PrinterClass>& printer_classes) {
-    for (auto& observer : observer_list_) {
-      for (auto printer_class : printer_classes) {
-        observer.OnPrintersChanged(printer_class, printers_.Get(printer_class));
+    for (auto printer_class : printer_classes) {
+      auto printers = printers_.Get(printer_class);
+      PRINTER_LOG(DEBUG) << "Sending notification for " << printers.size()
+                         << " printers in class (" << ToString(printer_class)
+                         << ")";
+      for (auto& observer : observer_list_) {
+        observer.OnPrintersChanged(printer_class, printers);
       }
     }
   }
@@ -652,6 +658,7 @@ class CupsPrintersManagerImpl
 
   // Resets all network detected printer lists.
   void ClearNetworkDetectedPrinters() {
+    PRINTER_LOG(DEBUG) << "Clear network printers";
     zeroconf_detections_.clear();
 
     ResetNearbyPrintersLists();

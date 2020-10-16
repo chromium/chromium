@@ -28,6 +28,8 @@ enum class CHROMEOS_EXPORT PrinterClass {
   kSaved
 };
 
+CHROMEOS_EXPORT std::string ToString(PrinterClass pclass);
+
 // This function checks if the given URI is a valid printer URI. |uri| is
 // considered to be a valid printer URI if it has one of the scheme listed in
 // the table below and meets the criteria defined there.
