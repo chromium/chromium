@@ -124,6 +124,10 @@ class PhoneHubNotificationController::NotificationDelegate
 };
 
 PhoneHubNotificationController::PhoneHubNotificationController() {
+  if (message_center::MessageViewFactory::HasCustomNotificationViewFactory(
+          kNotificationCustomViewType))
+    return;
+
   message_center::MessageViewFactory::SetCustomNotificationViewFactory(
       kNotificationCustomViewType,
       base::BindRepeating(&CreateCustomNotificationView));

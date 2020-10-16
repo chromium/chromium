@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/interstitial_view_button.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
@@ -27,6 +28,10 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+using phone_hub_metrics::InterstitialScreen;
+using phone_hub_metrics::InterstitialScreenEvent;
+using phone_hub_metrics::LogInterstitialScreenEvent;
 
 namespace {
 
@@ -54,6 +59,8 @@ NotificationOptInView::NotificationOptInView(TrayBubbleView* bubble_view)
     : bubble_view_(bubble_view) {
   SetID(PhoneHubViewID::kNotificationOptInView);
   InitLayout();
+  LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
+                             InterstitialScreenEvent::kShown);
 }
 
 NotificationOptInView::~NotificationOptInView() = default;
@@ -63,12 +70,16 @@ void NotificationOptInView::ButtonPressed(views::Button* sender,
   switch (sender->tag()) {
     case kDismissButtonTag:
       // Dismiss this view if user chose to opt out and update the bubble size.
+      LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
+                                 InterstitialScreenEvent::kDismiss);
       SetVisible(false);
       bubble_view_->UpdateBubble();
       break;
     case kSetUpButtonTag:
       // Opens the notification set up dialog in settings to start the opt in
       // flow.
+      LogInterstitialScreenEvent(InterstitialScreen::kNotificationOptIn,
+                                 InterstitialScreenEvent::kConfirm);
       NewWindowDelegate::GetInstance()->NewTabWithUrl(
           GURL(kMultideviceSettingsUrl), /*from_user_interaction=*/true);
       break;

@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -16,6 +17,10 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
+
+using phone_hub_metrics::InterstitialScreen;
+using phone_hub_metrics::InterstitialScreenEvent;
+using phone_hub_metrics::LogInterstitialScreenEvent;
 
 namespace {
 
@@ -62,6 +67,9 @@ BluetoothDisabledView::BluetoothDisabledView() {
       /*paint_background=*/true);
   refresh->set_tag(kOkButtonTag);
   content_view_->AddButton(std::move(refresh));
+
+  LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+                             InterstitialScreenEvent::kShown);
 }
 
 BluetoothDisabledView::~BluetoothDisabledView() = default;
@@ -69,6 +77,13 @@ BluetoothDisabledView::~BluetoothDisabledView() = default;
 void BluetoothDisabledView::ButtonPressed(views::Button* sender,
                                           const ui::Event& event) {
   // TODO(crbug.com/1126208): implement button pressed actions.
+  if (sender->tag() == kLearnMoreButtonTag) {
+    LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+                               InterstitialScreenEvent::kLearnMore);
+  } else if (sender->tag() == kOkButtonTag) {
+    LogInterstitialScreenEvent(InterstitialScreen::kBluetoothOrWifiDisabled,
+                               InterstitialScreenEvent::kConfirm);
+  }
 }
 
 BEGIN_METADATA(BluetoothDisabledView, views::View)

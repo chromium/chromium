@@ -10,6 +10,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,6 +19,10 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
+
+using phone_hub_metrics::InterstitialScreen;
+using phone_hub_metrics::InterstitialScreenEvent;
+using phone_hub_metrics::LogInterstitialScreenEvent;
 
 InitialConnectingView::InitialConnectingView() {
   SetID(PhoneHubViewID::kInitialConnectingView);
@@ -34,6 +39,9 @@ InitialConnectingView::InitialConnectingView() {
       IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_TITLE));
   content_view_->SetDescription(l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_INITIAL_CONNECTING_DIALOG_DESCRIPTION));
+
+  LogInterstitialScreenEvent(InterstitialScreen::kInitialConnecting,
+                             InterstitialScreenEvent::kShown);
 }
 
 InitialConnectingView::~InitialConnectingView() = default;

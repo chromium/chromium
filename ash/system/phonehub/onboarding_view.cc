@@ -16,6 +16,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/phonehub/interstitial_view_button.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/strings/string16.h"
@@ -28,6 +29,10 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
+
+using phone_hub_metrics::InterstitialScreen;
+using phone_hub_metrics::InterstitialScreenEvent;
+using phone_hub_metrics::LogInterstitialScreenEvent;
 
 OnboardingView::OnboardingView(
     chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker)
@@ -66,6 +71,10 @@ OnboardingView::OnboardingView(
       /*paint_background=*/true);
   get_started->SetID(PhoneHubViewID::kOnboardingGetStartedButton);
   content_view_->AddButton(std::move(get_started));
+
+  // TODO(tengs): Distinguish between the two different onboarding flows.
+  LogInterstitialScreenEvent(InterstitialScreen::kOnboardingNewMultideviceUser,
+                             InterstitialScreenEvent::kShown);
 }
 
 OnboardingView::~OnboardingView() = default;
@@ -74,9 +83,17 @@ void OnboardingView::ButtonPressed(views::Button* sender,
                                    const ui::Event& event) {
   switch (sender->GetID()) {
     case PhoneHubViewID::kOnboardingGetStartedButton:
+      // TODO(tengs): Distinguish between the two different onboarding flows.
+      LogInterstitialScreenEvent(
+          InterstitialScreen::kOnboardingNewMultideviceUser,
+          InterstitialScreenEvent::kConfirm);
       onboarding_ui_tracker_->HandleGetStarted();
       return;
     case PhoneHubViewID::kOnboardingDismissButton:
+      // TODO(tengs): Distinguish between the two different onboarding flows.
+      LogInterstitialScreenEvent(
+          InterstitialScreen::kOnboardingNewMultideviceUser,
+          InterstitialScreenEvent::kDismiss);
       onboarding_ui_tracker_->DismissSetupUi();
       return;
   }
