@@ -1,6 +1,7 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package org.chromium.components.media_router.caf.remoting;
 
 import android.content.Context;
@@ -26,9 +27,13 @@ import java.io.UnsupportedEncodingException;
 public class RemotingMediaSource implements MediaSource {
     private static final String TAG = "MediaRemoting";
 
-    // Need to be in sync with third_party/WebKit/Source/modules/remoteplayback/RemotePlayback.cpp.
+    // Needs to be in sync with
+    // third_party/blink/renderer/modules/remoteplayback/remote_playback.cc.
     // TODO(avayvod): Find a way to share the constants somehow.
     private static final String SOURCE_PREFIX = "remote-playback://";
+
+    // Needs to be in sync with AndroidManifest meta-data key (used both by Clank and WebLayer
+    // clients).
     private static final String REMOTE_PLAYBACK_APP_ID_KEY =
             "org.chromium.content.browser.REMOTE_PLAYBACK_APP_ID";
 
