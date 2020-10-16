@@ -9,26 +9,31 @@
 
 namespace shared_highlighting {
 
-// Update corresponding |LinkGenerationError| in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The type of errors that can happen during link generation.
 enum class LinkGenerationError {
-  kIncorrectSelector,
-  kNoRange,
-  kNoContext,
-  kContextExhausted,
-  kContextLimitReached,
-  kEmptySelection,
+  kIncorrectSelector = 0,
+  kNoRange = 1,
+  kNoContext = 2,
+  kContextExhausted = 3,
+  kContextLimitReached = 4,
+  kEmptySelection = 5,
 
-  kTabHidden,
-  kOmniboxNavigation,
-  kTabCrash,
+  // Android specific.
+  kTabHidden = 5,
+  kOmniboxNavigation = 6,
+  kTabCrash = 7,
 
   kMaxValue = kTabCrash
 };
 
-// Update corresponding |TextFragmentLinkOpenSource| in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The different sources from which a text fragment URL can come from.
 enum class TextFragmentLinkOpenSource {
-  kUnknown,
-  kSearchEngine,
+  kUnknown = 0,
+  kSearchEngine = 1,
 
   kMaxValue = kSearchEngine,
 };
