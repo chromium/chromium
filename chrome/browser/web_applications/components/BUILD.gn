@@ -110,8 +110,7 @@ source_set("components") {
   if (is_win) {
     sources += [
       "web_app_file_handler_registration_win.cc",
-      "web_app_handler_registration_utils_win.cc",
-      "web_app_handler_registration_utils_win.h",
+      "web_app_file_handler_registration_win.h",
       "web_app_run_on_os_login_win.cc",
       "web_app_shortcut_win.cc",
       "web_app_shortcut_win.h",
@@ -177,7 +176,6 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [
       "web_app_file_handler_registration_win_unittest.cc",
-      "web_app_handler_registration_utils_win_unittest.cc",
       "web_app_run_on_os_login_win_unittest.cc",
     ]
   }

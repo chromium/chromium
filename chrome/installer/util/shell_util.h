@@ -660,31 +660,6 @@ class ShellUtil {
   // with this name will be deleted.
   static bool DeleteFileAssociations(const base::string16& prog_id);
 
-  // Adds an application entry and metadata sub-entries to
-  // HKCU\SOFTWARE\classes\<prog_id> capable of handling file type /
-  // protocol associations.
-  //
-  // |prog_id| is the ProgId used by Windows to uniquely identity this
-  // application. Must not be empty or start with a '.'.
-  // |shell_open_command_line| is the command to execute when opening the app
-  // via association.
-  // |application_name| is the friendly name displayed for this application in
-  // the Open With menu.
-  // |application_description| is the description for this application to be
-  // displayed by certain Windows settings dialogs.
-  // |icon_path| is the path of the icon displayed for this application in the
-  // Open With menu, and used for default files / protocols associated with this
-  // application.
-  static bool AddApplicationClass(
-      const base::string16& prog_id,
-      const base::CommandLine& shell_open_command_line,
-      const base::string16& application_name,
-      const base::string16& application_description,
-      const base::FilePath& icon_path);
-
-  // Removes all entries of an application at HKCU\SOFTWARE\classes\<prog_id>.
-  static bool DeleteApplicationClass(const base::string16& prog_id);
-
   // Returns the app name and file associations registered for a particular
   // application in the Windows registry. If there is no entry in the registry
   // for |prog_id|, nothing will be returned.

@@ -2512,79 +2512,38 @@ bool ShellUtil::DeleteFileAssociations(const base::string16& prog_id) {
 }
 
 // static
-bool ShellUtil::AddApplicationClass(
-    const base::string16& prog_id,
-    const base::CommandLine& shell_open_command_line,
-    const base::string16& application_name,
-    const base::string16& application_description,
-    const base::FilePath& icon_path) {
-  ApplicationInfo app_info;
-
-  app_info.prog_id = prog_id;
-  app_info.file_type_name = application_description;
-  app_info.file_type_icon_path = icon_path;
-  app_info.command_line =
-      shell_open_command_line.GetCommandLineStringForShell();
-  app_info.application_name = application_name;
-  app_info.application_icon_path = icon_path;
-  app_info.application_icon_index = 0;
-
-  std::vector<std::unique_ptr<RegistryEntry>> entries;
-  GetProgIdEntries(app_info, &entries);
-
-  return AreEntriesAsDesired(entries, RegistryEntry::LOOK_IN_HKCU) ||
-         AddRegistryEntries(HKEY_CURRENT_USER, entries);
-}
-
-// static
-bool ShellUtil::DeleteApplicationClass(const base::string16& prog_id) {
-  base::string16 prog_id_path(kRegClasses);
-  prog_id_path.push_back(base::FilePath::kSeparators[0]);
-  prog_id_path.append(prog_id);
-
-  // Delete the key HKEY_CURRENT_USER\Software\Classes\|prog_id|.
-  return InstallUtil::DeleteRegistryKey(HKEY_CURRENT_USER, prog_id_path,
-                                        WorkItem::kWow64Default);
-}
-
-// static
 ShellUtil::FileAssociationsAndAppName ShellUtil::GetFileAssociationsAndAppName(
     const base::string16& prog_id) {
   FileAssociationsAndAppName file_associations_and_app_name;
 
+  // Get list of handled file extensions from value FileExtensions at
+  // HKEY_CURRENT_USER\Software\Classes\|prog_id|.
   base::string16 prog_id_path(kRegClasses);
   prog_id_path.push_back(base::FilePath::kSeparators[0]);
   prog_id_path.append(prog_id);
-
-  // Get the app name from value ApplicationName at
-  // HKEY_CURRENT_USER\Software\Classes\|prog_id|\Application.
-  base::string16 application_path = prog_id_path + kRegApplication;
-  RegKey application_key(HKEY_CURRENT_USER, application_path.c_str(),
-                         KEY_QUERY_VALUE);
-  if (application_key.ReadValue(kRegApplicationName,
-                                &file_associations_and_app_name.app_name) !=
-      ERROR_SUCCESS) {
-    return file_associations_and_app_name;
-  }
-
-  // If present, Get list of handled file extensions from value FileExtensions
-  // at HKEY_CURRENT_USER\Software\Classes\|prog_id|.
   RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
                              KEY_QUERY_VALUE);
   base::string16 handled_file_extensions;
   if (file_extensions_key.ReadValue(
-          L"FileExtensions", &handled_file_extensions) == ERROR_SUCCESS) {
-    std::vector<base::StringPiece16> file_associations_vec =
-        base::SplitStringPiece(base::StringPiece16(handled_file_extensions),
-                               base::StringPiece16(STRING16_LITERAL(";")),
-                               base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    for (const auto& file_extension : file_associations_vec) {
-      // Skip over the leading '.' so that we return the same
-      // extensions as were passed to AddFileAssociations.
-      file_associations_and_app_name.file_associations.emplace(
-          file_extension.substr(1));
-    }
+          L"FileExtensions", &handled_file_extensions) != ERROR_SUCCESS) {
+    return FileAssociationsAndAppName();
+  }
+  std::vector<base::StringPiece16> file_associations_vec =
+      base::SplitStringPiece(base::StringPiece16(handled_file_extensions),
+                             base::StringPiece16(L";"), base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  for (const auto& file_extension : file_associations_vec) {
+    // Skip over the leading '.' so that we return the same
+    // extensions as were passed to AddFileAssociations.
+    file_associations_and_app_name.file_associations.emplace(
+        file_extension.substr(1));
+  }
+  prog_id_path.append(kRegApplication);
+  RegKey prog_id_key(HKEY_CURRENT_USER, prog_id_path.c_str(), KEY_QUERY_VALUE);
+  if (prog_id_key.ReadValue(kRegApplicationName,
+                            &file_associations_and_app_name.app_name) !=
+      ERROR_SUCCESS) {
+    return FileAssociationsAndAppName();
   }
   return file_associations_and_app_name;
 }
