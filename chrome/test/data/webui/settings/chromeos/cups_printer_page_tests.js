@@ -605,6 +605,27 @@ suite('CupsAddPrinterDialogTests', function() {
           assertFalse(addButton.disabled);
         });
   });
+
+  test('Queue input is hidden when protocol is App Socket', () => {
+    const addDialog = dialog.$$('add-printer-manually-dialog');
+    let printerQueueInput = addDialog.$$('#printerQueueInput');
+    const select = addDialog.shadowRoot.querySelector('select');
+    assertTrue(!!printerQueueInput);
+
+    select.value = 'socket';
+    select.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    Polymer.dom.flush();
+
+    printerQueueInput = addDialog.$$('#printerQueueInput');
+    assertFalse(!!printerQueueInput);
+
+    select.value = 'http';
+    select.dispatchEvent(new CustomEvent('change'), {'bubbles': true});
+    Polymer.dom.flush();
+
+    printerQueueInput = addDialog.$$('#printerQueueInput');
+    assertTrue(!!printerQueueInput);
+  });
 });
 
 suite('EditPrinterDialog', function() {

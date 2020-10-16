@@ -52,6 +52,12 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @private */
+    showPrinterQueue_: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   observers: [
@@ -162,6 +168,8 @@ Polymer({
    * @private
    */
   onProtocolChange_(event) {
+    // Queue input should be hidden when protocol is set to "App Socket".
+    this.showPrinterQueue_ = event.target.value !== 'socket';
     this.set('newPrinter.printerProtocol', event.target.value);
   },
 

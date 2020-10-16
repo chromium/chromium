@@ -55,12 +55,14 @@
             </div>
           </div>
         </div>
-        <div class="settings-box two-line">
-          <cr-input id="printerQueueInput" label="$i18n{printerQueue}"
-              value="{{newPrinter.printerQueue}}" maxlength=64
-              on-keypress="onKeypress_">
-          </cr-input>
-        </div>
+        <template is="dom-if" if="[[showPrinterQueue_]]" restamp>
+          <div class="settings-box two-line">
+            <cr-input id="printerQueueInput" label="$i18n{printerQueue}"
+                value="{{newPrinter.printerQueue}}" maxlength=64
+                on-keypress="onKeypress_">
+            </cr-input>
+          </div>
+        </template>
       </div>
       <div slot="dialog-buttons">
         <!-- Left Group -->
