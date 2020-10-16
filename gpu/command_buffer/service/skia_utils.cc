@@ -219,8 +219,6 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
   image_info.fImageTiling = image->image_tiling();
   image_info.fImageLayout = image->image_layout();
   image_info.fFormat = image->format();
-  image_info.fImageUsageFlags = image->usage();
-  image_info.fSampleCount = 1;
   image_info.fLevelCount = 1;
   image_info.fCurrentQueueFamily = image->queue_family_index();
   image_info.fProtected = is_protected ? GrProtected::kYes : GrProtected::kNo;

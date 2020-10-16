@@ -227,12 +227,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   }
 
-  if (usage & SHARED_IMAGE_USAGE_DISPLAY) {
-    // Skia currently requires all VkImages it uses to support transfers
-    vk_usage |=
-        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  }
-
   auto* vulkan_implementation =
       context_state->vk_context_provider()->GetVulkanImplementation();
   VkImageCreateFlags vk_flags = 0;
