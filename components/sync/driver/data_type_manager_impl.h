@@ -29,10 +29,6 @@ class DataTypeEncryptionHandler;
 class DataTypeManagerObserver;
 struct DataTypeConfigurationStats;
 
-// List of data types grouped by priority and ordered from high priority to
-// low priority.
-using TypeSetPriorityList = base::queue<ModelTypeSet>;
-
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelAssociationManagerDelegate {
  public:
@@ -131,7 +127,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Divide |types| into sets by their priorities and return the sets from
   // high priority to low priority.
-  TypeSetPriorityList PrioritizeTypes(const ModelTypeSet& types);
+  base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types);
 
   // Update precondition state of types in data_type_status_table_ to match
   // value of DataTypeController::GetPreconditionState().
@@ -149,9 +145,10 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ForceReconfiguration();
 
   void Restart();
-  void DownloadReady(ModelTypeSet types_to_download,
-                     ModelTypeSet first_sync_types,
-                     ModelTypeSet failed_configuration_types);
+
+  void DownloadCompleted(ModelTypeSet downloaded_types,
+                         ModelTypeSet first_sync_types,
+                         ModelTypeSet failed_configuration_types);
 
   void NotifyStart();
   void NotifyDone(const ConfigureResult& result);
@@ -230,7 +227,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   DataTypeStatusTable data_type_status_table_;
 
   // Types waiting to be downloaded.
-  TypeSetPriorityList download_types_queue_;
+  base::queue<ModelTypeSet> download_types_queue_;
 
   // Types waiting for association and related time tracking info.
   struct AssociationTypesInfo {

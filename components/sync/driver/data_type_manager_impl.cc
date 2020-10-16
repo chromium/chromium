@@ -96,7 +96,7 @@ DataTypeManagerImpl::DataTypeManagerImpl(
   data_type_status_table_.UpdateFailedDataTypes(existing_errors);
 }
 
-DataTypeManagerImpl::~DataTypeManagerImpl() {}
+DataTypeManagerImpl::~DataTypeManagerImpl() = default;
 
 void DataTypeManagerImpl::Configure(ModelTypeSet desired_types,
                                     const ConfigureContext& context) {
@@ -296,7 +296,6 @@ void DataTypeManagerImpl::Restart() {
       reason == CONFIGURE_REASON_NEW_CLIENT ||
       reason == CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE) {
     for (ModelType type : last_requested_types_) {
-      // TODO(wychen): enum uma should be strongly typed. crbug.com/661401
       UMA_HISTOGRAM_ENUMERATION("Sync.ConfigureDataTypes",
                                 ModelTypeHistogramValue(type));
     }
@@ -349,14 +348,14 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // have failed loading and should be excluded from configuration. I need to
   // adjust |download_types_queue_| for such types.
   ActivateDataTypes();
-  StartNextDownload(ModelTypeSet());
+  StartNextDownload(/*high_priority_types_before=*/ModelTypeSet());
 }
 
 ModelTypeSet DataTypeManagerImpl::GetPriorityTypes() const {
   return PriorityUserTypes();
 }
 
-TypeSetPriorityList DataTypeManagerImpl::PrioritizeTypes(
+base::queue<ModelTypeSet> DataTypeManagerImpl::PrioritizeTypes(
     const ModelTypeSet& types) {
   // Control types are usually downloaded before all other types during
   // initialization of sync engine even before data type manager gets
@@ -373,7 +372,7 @@ TypeSetPriorityList DataTypeManagerImpl::PrioritizeTypes(
   ModelTypeSet regular_types =
       Difference(types, Union(control_types, priority_types));
 
-  TypeSetPriorityList result;
+  base::queue<ModelTypeSet> result;
   if (!control_types.Empty())
     result.push(control_types);
   if (!priority_types.Empty())
@@ -468,15 +467,15 @@ void DataTypeManagerImpl::ProcessReconfigure() {
   ConfigureImpl(last_requested_types_, last_requested_context_);
 }
 
-void DataTypeManagerImpl::DownloadReady(
-    ModelTypeSet types_to_download,
+void DataTypeManagerImpl::DownloadCompleted(
+    ModelTypeSet downloaded_types,
     ModelTypeSet first_sync_types,
     ModelTypeSet failed_configuration_types) {
   DCHECK_EQ(CONFIGURING, state_);
 
   // Persistence errors are reset after each backend configuration attempt
   // during which they would have been purged.
-  data_type_status_table_.ResetPersistenceErrorsFrom(types_to_download);
+  data_type_status_table_.ResetPersistenceErrorsFrom(downloaded_types);
 
   if (!failed_configuration_types.Empty()) {
     DataTypeStatusTable::TypeErrorMap errors;
@@ -490,7 +489,7 @@ void DataTypeManagerImpl::DownloadReady(
   }
 
   if (needs_reconfigure_) {
-    download_types_queue_ = TypeSetPriorityList();
+    download_types_queue_ = base::queue<ModelTypeSet>();
     ProcessReconfigure();
     return;
   }
@@ -518,7 +517,7 @@ void DataTypeManagerImpl::DownloadReady(
     return;
   }
 
-  StartNextDownload(types_to_download);
+  StartNextDownload(/*high_priority_types_before=*/downloaded_types);
 }
 
 void DataTypeManagerImpl::StartNextDownload(
@@ -652,7 +651,7 @@ ModelTypeSet DataTypeManagerImpl::PrepareConfigureParams(
   params->disabled_types = disabled_types;
   params->to_download = types_to_download;
   params->to_purge = types_to_purge;
-  params->ready_task = base::BindOnce(&DataTypeManagerImpl::DownloadReady,
+  params->ready_task = base::BindOnce(&DataTypeManagerImpl::DownloadCompleted,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       download_types_queue_.front());
   params->is_sync_feature_enabled =

@@ -48,11 +48,6 @@ static_assert(base::size(kStartOrder) ==
                   ModelType::NUM_ENTRIES - FIRST_REAL_MODEL_TYPE,
               "When adding a new type, update kStartOrder.");
 
-// The amount of time we wait for association to finish. If some types haven't
-// finished association by the time, DataTypeManager is notified of the
-// unfinished types.
-const int64_t kAssociationTimeOutInSeconds = 600;
-
 }  // namespace
 
 ModelAssociationManager::ModelAssociationManager(
@@ -205,6 +200,8 @@ void ModelAssociationManager::LoadDesiredTypes() {
 void ModelAssociationManager::StartAssociationAsync(
     const ModelTypeSet& types_to_associate) {
   DCHECK_EQ(INITIALIZED, state_);
+  DCHECK(notified_about_ready_for_configure_);
+
   DVLOG(1) << "Starting association for "
            << ModelTypeSetToString(types_to_associate);
   state_ = ASSOCIATING;
@@ -215,6 +212,8 @@ void ModelAssociationManager::StartAssociationAsync(
   associating_types_.RetainAll(desired_types_);
   associating_types_.RemoveAll(associated_types_);
 
+  DCHECK(loaded_types_.HasAll(associating_types_));
+
   // Assume success.
   configure_status_ = DataTypeManager::OK;
 
@@ -224,16 +223,13 @@ void ModelAssociationManager::StartAssociationAsync(
     return;
   }
 
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromSeconds(kAssociationTimeOutInSeconds),
-               base::BindOnce(&ModelAssociationManager::ModelAssociationDone,
-                              weak_ptr_factory_.GetWeakPtr(), INITIALIZED));
-
   // Associate types that are already loaded in specified order.
   for (ModelType type : kStartOrder) {
     if (associating_types_.Has(type) && loaded_types_.Has(type))
       MarkDataTypeAssociationDone(type);
   }
+  DCHECK(associating_types_.Empty());
+  DCHECK_NE(ASSOCIATING, state_);
 }
 
 void ModelAssociationManager::Stop(ShutdownReason shutdown_reason) {
@@ -272,6 +268,8 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
   DVLOG(1) << "ModelAssociationManager: ModelLoadCallback for "
            << ModelTypeToString(type);
 
+  DCHECK(associating_types_.Empty());
+
   if (error.IsSet()) {
     DVLOG(1) << "ModelAssociationManager: Type encountered an error.";
     desired_types_.Remove(type);
@@ -289,23 +287,6 @@ void ModelAssociationManager::ModelLoadCallback(ModelType type,
   DCHECK(!loaded_types_.Has(type));
   loaded_types_.Put(type);
   NotifyDelegateIfReadyForConfigure();
-  if (associating_types_.Has(type)) {
-    const DataTypeController* dtc = controllers_->find(type)->second.get();
-    // If initial sync was done for this datatype then
-    // NotifyDelegateIfReadyForConfigure possibly already triggered model
-    // association and StartAssociating was already called for this type. To
-    // ensure StartAssociating is called only once only make a call if state is
-    // MODEL_LOADED (i.e. not RUNNING yet).
-    // TODO(pavely): Add test for this scenario in DataTypeManagerImpl
-    // unittests.
-    // TODO(crbug.com/647505): The above sounds quite broken (will
-    // MarkDataTypeAssociationDone never get called in that case?!), and also
-    // outdated (StartAssociating doesn't exist anymore). Can we just move the
-    // NotifyDelegateIfReadyForConfigure call below?
-    if (dtc->state() == DataTypeController::MODEL_LOADED) {
-      MarkDataTypeAssociationDone(type);
-    }
-  }
 }
 
 void ModelAssociationManager::MarkDataTypeAssociationDone(ModelType type) {
@@ -332,8 +313,6 @@ void ModelAssociationManager::ModelAssociationDone(State new_state) {
   DVLOG(1) << "Model association complete for "
            << ModelTypeSetToString(requested_types_);
 
-  timer_.Stop();
-
   // Treat any unfinished types as having errors.
   desired_types_.RemoveAll(associating_types_);
   for (const auto& type_and_dtc : *controllers_) {
@@ -358,10 +337,6 @@ void ModelAssociationManager::ModelAssociationDone(State new_state) {
   state_ = new_state;
 
   delegate_->OnModelAssociationDone(result);
-}
-
-base::OneShotTimer* ModelAssociationManager::GetTimerForTesting() {
-  return &timer_;
 }
 
 void ModelAssociationManager::NotifyDelegateIfReadyForConfigure() {

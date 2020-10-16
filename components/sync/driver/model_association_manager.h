@@ -5,13 +5,8 @@
 #ifndef COMPONENTS_SYNC_DRIVER_MODEL_ASSOCIATION_MANAGER_H__
 #define COMPONENTS_SYNC_DRIVER_MODEL_ASSOCIATION_MANAGER_H__
 
-#include <map>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
-
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/driver/data_type_manager.h"
@@ -88,7 +83,8 @@ class ModelAssociationManager {
   // Can be called at any time. Synchronously stops all datatypes.
   void Stop(ShutdownReason shutdown_reason);
 
-  // Should only be called after Initialize to start the actual association.
+  // Must only be called after all data type models have been loaded, i.e. after
+  // OnAllDataTypesReadyForConfigure() has been called on the delegate.
   // |types_to_associate| should be subset of |desired_types| in Initialize().
   // When this is completed, |OnModelAssociationDone| will be invoked.
   void StartAssociationAsync(const ModelTypeSet& types_to_associate);
@@ -98,8 +94,6 @@ class ModelAssociationManager {
   void StopDatatype(ModelType type,
                     ShutdownReason shutdown_reason,
                     SyncError error);
-
-  base::OneShotTimer* GetTimerForTesting();
 
   State state() const { return state_; }
 
@@ -156,10 +150,6 @@ class ModelAssociationManager {
   // Data types that are associated, i.e. no more action needed during
   // reconfiguration if not disabled.
   ModelTypeSet associated_types_;
-
-  // Timer to track and limit how long a data type still takes to load after
-  // StartAssociationAsync is called.
-  base::OneShotTimer timer_;
 
   DataTypeManager::ConfigureStatus configure_status_;
 

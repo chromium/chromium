@@ -126,29 +126,6 @@ TEST_F(SyncModelAssociationManagerTest, StopAfterFinish) {
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
-TEST_F(SyncModelAssociationManagerTest, SlowTypeAsFailedType) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  GetController(BOOKMARKS)->model()->EnableManualModelStart();
-  ModelAssociationManager model_association_manager(&controllers_, &delegate_);
-  ModelTypeSet types;
-  types.Put(BOOKMARKS);
-  types.Put(APPS);
-
-  EXPECT_CALL(delegate_, OnModelAssociationDone(
-                             MatchesResult(DataTypeManager::OK, types)));
-
-  model_association_manager.Initialize(/*desired_types=*/types,
-                                       /*preferred_types=*/types,
-                                       BuildConfigureContext());
-  model_association_manager.StartAssociationAsync(types);
-
-  EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
-  model_association_manager.GetTimerForTesting()->FireNow();
-
-  EXPECT_EQ(DataTypeController::STOPPING, GetController(BOOKMARKS)->state());
-}
-
 // Test that model that failed to load between initialization and association
 // is reported and stopped properly.
 TEST_F(SyncModelAssociationManagerTest, ModelLoadFailBeforeAssociationStart) {
