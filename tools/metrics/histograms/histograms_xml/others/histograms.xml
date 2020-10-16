@@ -8249,9 +8249,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ManagedUsers.SafeSitesDelay" units="ms"
-    expires_after="2020-11-20">
+    expires_after="2021-10-15">
   <owner>agawronska@chromium.org</owner>
-  <owner>cros-families@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     The extra page load delays introduced by network requests due to the
     supervised user SafeSites feature, measured once per page load.
@@ -14319,9 +14319,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.Action"
-    enum="ParentAccessCodeAction" expires_after="M88">
+    enum="ParentAccessCodeAction" expires_after="2021-10-15">
   <owner>agawronska@chromium.org</owner>
-  <owner>cros-families@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     Action originated in parent access code dialog. Logged every time the action
     happens.
@@ -14329,9 +14329,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.Usage"
-    enum="ParentAccessCodeUsage" expires_after="M88">
+    enum="ParentAccessCodeUsage" expires_after="2021-10-15">
   <owner>agawronska@chromium.org</owner>
-  <owner>cros-families@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     The context in which parent access code was used. Logged every time the new
     parent access dialog is shown.
