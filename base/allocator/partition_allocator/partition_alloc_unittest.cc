@@ -1960,7 +1960,7 @@ TEST_F(PartitionAllocTest, PreferActiveOverEmpty) {
 }
 
 // Tests the API to purge discardable memory.
-TEST_F(PartitionAllocTest, PurgeDiscardable) {
+TEST_F(PartitionAllocTest, PurgeDiscardableSecondPage) {
   // Free the second of two 4096 byte allocations and then purge.
   {
     void* ptr1 =
@@ -1994,6 +1994,9 @@ TEST_F(PartitionAllocTest, PurgeDiscardable) {
 
     allocator.root()->Free(ptr1);
   }
+}
+
+TEST_F(PartitionAllocTest, PurgeDiscardableFirstPage) {
   // Free the first of two 4096 byte allocations and then purge.
   {
     char* ptr1 = reinterpret_cast<char*>(
@@ -2026,6 +2029,9 @@ TEST_F(PartitionAllocTest, PurgeDiscardable) {
 
     allocator.root()->Free(ptr2);
   }
+}
+
+TEST_F(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
   {
     const size_t requested_size = 2.25 * SystemPageSize();
     char* ptr1 = reinterpret_cast<char*>(
@@ -2070,7 +2076,9 @@ TEST_F(PartitionAllocTest, PurgeDiscardable) {
     allocator.root()->Free(ptr3);
     allocator.root()->Free(ptr4);
   }
+}
 
+TEST_F(PartitionAllocTest, PurgeDiscardableManyPages) {
 // When SystemPageSize() = 16384 (as on _MIPS_ARCH_LOONGSON), 64 *
 // SystemPageSize() (see the #else branch below) caused this test to OOM.
 // Therefore, for systems with 16 KiB pages, use 32 * SystemPageSize().
@@ -2144,6 +2152,9 @@ TEST_F(PartitionAllocTest, PurgeDiscardable) {
     allocator.root()->Free(ptr1);
   }
 #endif
+}
+
+TEST_F(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   // This sub-test tests truncation of the provisioned slots in a trickier
   // case where the freelist is rewritten.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
@@ -2211,6 +2222,9 @@ TEST_F(PartitionAllocTest, PurgeDiscardable) {
     allocator.root()->Free(ptr2);
     allocator.root()->Free(ptr3);
   }
+}
+
+TEST_F(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   // This sub-test is similar, but tests a double-truncation.
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans);
   {
