@@ -415,15 +415,6 @@ void InstantService::UpdateMostVisitedInfo() {
   NotifyAboutMostVisitedInfo();
 }
 
-void InstantService::SendNewTabPageURLToRenderer(
-    content::RenderProcessHost* rph) {
-  if (auto* channel = rph->GetChannel()) {
-    mojo::AssociatedRemote<search::mojom::SearchBouncer> client;
-    channel->GetRemoteAssociatedInterface(&client);
-    client->SetNewTabPageURL(search::GetNewTabPageURL(profile_));
-  }
-}
-
 void InstantService::ResetCustomBackgroundInfo() {
   SetCustomBackgroundInfo(GURL(), std::string(), std::string(), GURL(),
                           std::string());
@@ -550,12 +541,6 @@ void InstantService::Observe(int type,
                              const content::NotificationDetails& details) {
   switch (type) {
     case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      content::RenderProcessHost* rph =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      Profile* renderer_profile =
-          static_cast<Profile*>(rph->GetBrowserContext());
-      if (profile_ == renderer_profile)
-        SendNewTabPageURLToRenderer(rph);
       break;
     }
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {

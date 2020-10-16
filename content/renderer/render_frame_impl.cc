@@ -4921,10 +4921,6 @@ void RenderFrameImpl::DidObserveLazyLoadBehavior(
     observer.DidObserveLazyLoadBehavior(lazy_load_behavior);
 }
 
-bool RenderFrameImpl::ShouldTrackUseCounter(const blink::WebURL& url) {
-  return GetContentClient()->renderer()->ShouldTrackUseCounter(url);
-}
-
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
                                              int world_id) {
   if (((enabled_bindings_ & BINDINGS_POLICY_MOJO_WEB_UI) ||

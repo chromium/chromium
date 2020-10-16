@@ -489,10 +489,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Blink exhibited a certain loading behavior that the browser process will
   // use for segregated histograms.
   virtual void DidObserveLoadingBehavior(LoadingBehaviorFlag) {}
-  // Blink UseCounter should only track feature usage for non NTP activities.
-  // ShouldTrackUseCounter checks the url of a page's main frame is not a new
-  // tab page url.
-  virtual bool ShouldTrackUseCounter(const WebURL&) { return true; }
 
   // Blink hits the code path for a certain web feature for the first time on
   // this frame. As a performance optimization, features already hit on other

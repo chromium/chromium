@@ -238,10 +238,3 @@ interface EmbeddedSearchClient {
   // A background image was selected from the file upload dialog.
   LocalBackgroundSelected();
 };
-
-// SearchBouncer tracks the NTP URL specified by the default search provider,
-// which should be transferred back to the browser process for potential
-// reassignment to an Instant renderer process.
-interface SearchBouncer {
-  SetNewTabPageURL(url.mojom.Url new_tab_page_url);
-};

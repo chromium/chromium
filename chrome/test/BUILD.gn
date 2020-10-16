@@ -4627,7 +4627,6 @@ test("unit_tests") {
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../common/multi_process_lock_unittest.cc",
-      "../renderer/searchbox/search_bouncer_unittest.cc",
       "../renderer/searchbox/searchbox_unittest.cc",
       "../test/base/browser_with_test_window_test.cc",
       "../test/base/browser_with_test_window_test.h",

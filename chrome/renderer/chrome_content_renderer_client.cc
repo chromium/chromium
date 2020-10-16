@@ -166,7 +166,6 @@
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #else
 #include "chrome/renderer/media/chrome_speech_recognition_client.h"
-#include "chrome/renderer/searchbox/search_bouncer.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #endif
@@ -371,10 +370,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
   thread->AddObserver(chrome_observer_.get());
   thread->AddObserver(subresource_filter_ruleset_dealer_.get());
-
-#if !defined(OS_ANDROID)
-  thread->AddObserver(SearchBouncer::GetInstance());
-#endif
 
   thread->RegisterExtension(extensions_v8::LoadTimesExtension::Get());
 
@@ -1215,14 +1210,6 @@ bool ChromeContentRendererClient::HasErrorPage(int http_status_code) {
   // Use an internal error page, if we have one for the status code.
   return error_page::LocalizedError::HasStrings(
       error_page::Error::kHttpErrorDomain, http_status_code);
-}
-
-bool ChromeContentRendererClient::ShouldTrackUseCounter(const GURL& url) {
-  bool is_instant_ntp = false;
-#if !defined(OS_ANDROID)
-  is_instant_ntp = SearchBouncer::GetInstance()->IsNewTabPage(url);
-#endif
-  return !is_instant_ntp;
 }
 
 void ChromeContentRendererClient::PrepareErrorPage(

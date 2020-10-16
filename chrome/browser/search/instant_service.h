@@ -137,9 +137,6 @@ class InstantService : public KeyedService,
   // NTP.
   void UpdateMostVisitedInfo();
 
-  // Sends the current NTP URL to a renderer process.
-  void SendNewTabPageURLToRenderer(content::RenderProcessHost* rph);
-
   // Invoked when the background is reset on the NTP.
   void ResetCustomBackgroundInfo();
 

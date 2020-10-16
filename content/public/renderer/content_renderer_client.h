@@ -131,10 +131,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // status code.
   virtual bool HasErrorPage(int http_status_code);
 
-  // Returns false for new tab page activities, which should be filtered out in
-  // UseCounter; returns true otherwise.
-  virtual bool ShouldTrackUseCounter(const GURL& url);
-
   // Returns the information to display when a navigation error occurs.
   // |error_html| should be set to null if this is a custom error page that will
   // set its own html content, otherwise if |error_html| is not null then it may

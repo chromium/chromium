@@ -346,8 +346,6 @@ static_library("renderer") {
     sources += [
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
-      "searchbox/search_bouncer.cc",
-      "searchbox/search_bouncer.h",
       "searchbox/searchbox.cc",
       "searchbox/searchbox.h",
       "searchbox/searchbox_extension.cc",

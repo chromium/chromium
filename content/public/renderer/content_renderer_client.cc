@@ -53,10 +53,6 @@ bool ContentRendererClient::HasErrorPage(int http_status_code) {
   return false;
 }
 
-bool ContentRendererClient::ShouldTrackUseCounter(const GURL& url) {
-  return true;
-}
-
 bool ContentRendererClient::DeferMediaLoad(RenderFrame* render_frame,
                                            bool has_played_media_before,
                                            base::OnceClosure closure) {
