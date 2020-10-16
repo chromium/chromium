@@ -7,6 +7,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_entry_builder.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
@@ -80,6 +83,15 @@ void KaleidoscopeTabHelper::ReadyToCommitNavigation(
   if (IsOpenedFromKaleidoscope(handle)) {
     base::UmaHistogramEnumeration(kKaleidoscopeNavigationHistogramName,
                                   KaleidoscopeNavigation::kNormal);
+
+    ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+    if (!ukm_recorder)
+      return;
+
+    ukm::builders::Media_Kaleidoscope_Navigation(
+        handle->GetNextPageUkmSourceId())
+        .SetWasFromKaleidoscope(true)
+        .Record(ukm_recorder);
   }
 }
 
