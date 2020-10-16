@@ -10,6 +10,10 @@ namespace weblayer {
 // This enum represents actions or UI conditions that affect the visibility of
 // top UI, and is used to track concurrent concerns and to allow native and Java
 // code to coordinate.
+//
+// WARNING: only a subset of these are used if OnlyExpandTopControlsAtPageTop
+// is true.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.weblayer_private
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ImplControlsVisibilityReason
 enum class ControlsVisibilityReason {

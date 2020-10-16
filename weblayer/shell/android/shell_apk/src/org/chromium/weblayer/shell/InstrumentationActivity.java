@@ -43,6 +43,8 @@ import java.util.List;
 /**
  * Activity for running instrumentation tests.
  */
+// This isn't part of Chrome, so using explicit colors/sizes is ok.
+@SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
 public class InstrumentationActivity extends FragmentActivity {
     private static final String TAG = "WLInstrumentation";
     private static final String KEY_MAIN_VIEW_ID = "mainViewId";
@@ -54,6 +56,10 @@ public class InstrumentationActivity extends FragmentActivity {
     // Used in tests to specify whether WebLayer should be created automatically on launch.
     // True by default. If set to false, the test should call loadWebLayerSync.
     public static final String EXTRA_CREATE_WEBLAYER = "EXTRA_CREATE_WEBLAYER";
+
+    public static final String EXTRA_TOP_VIEW_MIN_HEIGHT = "EXTRA_TOP_VIEW_MIN_HEIGHT";
+    public static final String EXTRA_ONLY_EXPAND_CONTROLS_AT_TOP =
+            "EXTRA_ONLY_EXPAND_CONTROLS_AT_TOP";
 
     // Used in tests to specify whether WebLayer URL bar should set default click listeners
     // that show Page Info UI on its TextView.
@@ -266,7 +272,18 @@ public class InstrumentationActivity extends FragmentActivity {
         mBrowser = Browser.fromFragment(mFragment);
         mProfile = mBrowser.getProfile();
 
-        mBrowser.setTopView(mTopContentsContainer);
+        final boolean onlyExpandControlsAtTop =
+                getIntent().getBooleanExtra(EXTRA_ONLY_EXPAND_CONTROLS_AT_TOP, false);
+        final int minTopViewHeight = getIntent().getIntExtra(EXTRA_TOP_VIEW_MIN_HEIGHT, -1);
+
+        if (onlyExpandControlsAtTop || minTopViewHeight != -1) {
+            // This was added in 86.
+            mBrowser.setTopView(mTopContentsContainer, Math.max(0, minTopViewHeight),
+                    onlyExpandControlsAtTop,
+                    /* animate */ false);
+        } else {
+            mBrowser.setTopView(mTopContentsContainer);
+        }
 
         mRendererCrashListener = new TabCallback() {
             @Override

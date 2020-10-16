@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,16 +21,17 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.BrowserControlsOffsetCallback;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -88,8 +90,7 @@ public class BrowserControlsTest {
         });
     }
 
-    @Before
-    public void setUp() throws Throwable {
+    private void createActivityWithTopView() throws Exception {
         final String url = mActivityTestRule.getTestDataURL("tall_page.html");
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(url);
 
@@ -106,6 +107,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testTopAndBottom() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
         View bottomView = TestThreadUtils.runOnUiThreadBlocking(() -> {
             TextView view = new TextView(activity);
@@ -164,6 +166,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testBottomOnly() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
         // Remove the top-view.
         TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
@@ -219,6 +222,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testTopOnly() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
         View topView = activity.getTopContentsContainer();
 
@@ -249,6 +253,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testTopMinHeight() throws Exception {
+        createActivityWithTopView();
         final int minHeight = 20;
         InstrumentationActivity activity = mActivityTestRule.getActivity();
         View topContents = activity.getTopContentsContainer();
@@ -288,6 +293,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testOnlyExpandTopControlsAtPageTop() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
         View topContents = activity.getTopContentsContainer();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -333,6 +339,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testAlertDoesntShowTopControlsIfOnlyExpandTopControlsAtPageTop() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
         View topContents = activity.getTopContentsContainer();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -371,6 +378,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testAlertShowsTopControls() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
 
         // Move by the size of the top-controls.
@@ -400,6 +408,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testAccessibility() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
 
         // Scroll such that top-controls are hidden.
@@ -434,6 +443,7 @@ public class BrowserControlsTest {
     @Test
     @SmallTest
     public void testRemoveAllFromTopView() throws Exception {
+        createActivityWithTopView();
         InstrumentationActivity activity = mActivityTestRule.getActivity();
 
         // Install a different top-view.
@@ -464,5 +474,65 @@ public class BrowserControlsTest {
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(getVisiblePageHeight(), Matchers.not(mPageHeightWithTopView));
         });
+    }
+
+    private void registerBrowserControlsOffsetCallbackForOffset(
+            CallbackHelper helper, int targetOffset) {
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getBrowser().registerBrowserControlsOffsetCallback(
+                    new BrowserControlsOffsetCallback() {
+                        @Override
+                        public void onTopViewOffsetChanged(int offset) {
+                            if (offset == targetOffset) {
+                                activity.getBrowser().unregisterBrowserControlsOffsetCallback(this);
+                                helper.notifyCalled();
+                            }
+                        }
+                    });
+        });
+    }
+
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @Test
+    @SmallTest
+    public void testTopExpandedWhenOnlyExpandAtTop() throws Exception {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_ONLY_EXPAND_CONTROLS_AT_TOP, true);
+        final String url = mActivityTestRule.getTestDataURL("tall_page.html");
+        InstrumentationActivity activity = mActivityTestRule.launchShell(extras);
+        CallbackHelper helper = new CallbackHelper();
+        registerBrowserControlsOffsetCallbackForOffset(helper, 0);
+        mActivityTestRule.navigateAndWait(url);
+        helper.waitForFirst();
+    }
+
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @Test
+    @SmallTest
+    public void testTopExpandedOnLoadWhenOnlyExpandAtTop() throws Exception {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_ONLY_EXPAND_CONTROLS_AT_TOP, true);
+        InstrumentationActivity activity = mActivityTestRule.launchShell(extras);
+        CallbackHelper helper = new CallbackHelper();
+        registerBrowserControlsOffsetCallbackForOffset(helper, 0);
+        mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("tall_page.html"));
+        int callCount = 0;
+        helper.waitForCallback(callCount++);
+
+        mTopViewHeight = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return activity.getTopContentsContainer().getHeight(); });
+        Assert.assertNotEquals(mTopViewHeight, 0);
+
+        // Scroll such that top-controls are hidden.
+        registerBrowserControlsOffsetCallbackForOffset(helper, -mTopViewHeight);
+        EventUtils.simulateDragFromCenterOfView(
+                activity.getWindow().getDecorView(), 0, -mTopViewHeight);
+        helper.waitForCallback(callCount++);
+
+        // Load a new page. The top-controls should be shown again.
+        registerBrowserControlsOffsetCallbackForOffset(helper, 0);
+        mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("simple_page.html"));
+        helper.waitForCallback(callCount++);
     }
 }

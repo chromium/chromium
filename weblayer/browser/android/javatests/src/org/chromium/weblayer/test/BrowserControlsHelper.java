@@ -32,7 +32,7 @@ public final class BrowserControlsHelper {
 
     // Blocks until browser controls are fully initialized. Should only be created in a test's
     // setUp() method; see BrowserControlsHelper#createInSetUp().
-    private BrowserControlsHelper(InstrumentationActivity activity) throws Throwable {
+    private BrowserControlsHelper(InstrumentationActivity activity) throws Exception {
         Assert.assertTrue(CommandLine.isInitialized());
         Assert.assertTrue(CommandLine.getInstance().hasSwitch("enable-features"));
         String enabledFeatures = CommandLine.getInstance().getSwitchValue("enable-features");
@@ -73,7 +73,7 @@ public final class BrowserControlsHelper {
     }
 
     // Ensures that browser controls are fully initialized and ready for scrolls to be processed.
-    private void waitForBrowserControlsInitialization() throws Throwable {
+    private void waitForBrowserControlsInitialization() throws Exception {
         // Poll until the top view becomes visible.
         waitForBrowserControlsViewToBeVisible(mActivity.getTopContentsContainer());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -88,7 +88,7 @@ public final class BrowserControlsHelper {
     // Creates a BrowserControlsHelper instance and blocks until browser controls are fully
     // initialized. Should be called from a test's setUp() method.
     static BrowserControlsHelper createAndBlockUntilBrowserControlsInitializedInSetUp(
-            InstrumentationActivity activity) throws Throwable {
+            InstrumentationActivity activity) throws Exception {
         return new BrowserControlsHelper(activity);
     }
 

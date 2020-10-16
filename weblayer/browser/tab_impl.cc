@@ -1194,6 +1194,30 @@ void TabImpl::OnUpdateBrowserControlsStateBecauseOfProcessSwitch(
     // bounce around.
     UpdateBrowserControlsState(content::BROWSER_CONTROLS_STATE_SHOWN, false);
   } else {
+    if (did_commit && current_browser_controls_visibility_constraint_ ==
+                          content::BROWSER_CONTROLS_STATE_BOTH) {
+      // If the current state is BROWSER_CONTROLS_STATE_BOTH, then
+      // TabImpl::UpdateBrowserControlsState() is going to call
+      // WebContents::UpdateBrowserControlsState() with both current and
+      // constraints set to BROWSER_CONTROLS_STATE_BOTH. cc does
+      // nothing in this case. During a navigation the top-view needs to be
+      // shown. To force the top-view to show, supply
+      // BROWSER_CONTROLS_STATE_SHOWN. This path is only hit if top-view
+      // is configured to only-expand-at-top, as in this case the top-view isn't
+      // forced shown during a page load.
+      //
+      // It's entirely possible the scroll offset is changed as part of the
+      // loading process (such as happens with back/forward navigation or
+      // links part way down a page). Trying to detect this and compensate
+      // here is likely to be racy, so the top-view is always shown.
+      const bool animate =
+          !base::FeatureList::IsEnabled(kImmediatelyHideBrowserControlsForTest);
+      web_contents_->GetMainFrame()->UpdateBrowserControlsState(
+          content::BROWSER_CONTROLS_STATE_BOTH,
+          content::BROWSER_CONTROLS_STATE_SHOWN, animate);
+      // This falls through to call UpdateBrowserControlsState() again to
+      // ensure the constraint is set back to BOTH.
+    }
     UpdateBrowserControlsState(
         content::BROWSER_CONTROLS_STATE_BOTH,
         current_browser_controls_visibility_constraint_ !=
