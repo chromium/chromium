@@ -533,15 +533,14 @@ class SandboxSymbolizeHelper {
 
 #if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
     if (file_path) {
-      // The assumption here is that iterating over std::map<std::string, int>
-      // using a const_iterator does not allocate dynamic memory, hense it is
+      // The assumption here is that iterating over std::map<std::string,
+      // base::ScopedFD> does not allocate dynamic memory, hence it is
       // async-signal-safe.
-      std::map<std::string, int>::const_iterator it;
-      for (it = modules_.begin(); it != modules_.end(); ++it) {
-        if (strcmp((it->first).c_str(), file_path) == 0) {
+      for (const auto& filepath_fd : modules_) {
+        if (strcmp(filepath_fd.first.c_str(), file_path) == 0) {
           // POSIX.1-2004 requires an implementation to guarantee that dup()
           // is async-signal-safe.
-          fd = HANDLE_EINTR(dup(it->second));
+          fd = HANDLE_EINTR(dup(filepath_fd.second.get()));
           break;
         }
       }
@@ -710,7 +709,7 @@ class SandboxSymbolizeHelper {
         if (modules_.find(region.path) == modules_.end()) {
           int fd = open(region.path.c_str(), O_RDONLY | O_CLOEXEC);
           if (fd >= 0) {
-            modules_.insert(std::make_pair(region.path, fd));
+            modules_.emplace(region.path, base::ScopedFD(fd));
           } else {
             LOG(WARNING) << "Failed to open file: " << region.path
                          << "\n  Error: " << strerror(errno);
@@ -741,12 +740,6 @@ class SandboxSymbolizeHelper {
   // Closes all file descriptors owned by this instance.
   void CloseObjectFiles() {
 #if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
-    std::map<std::string, int>::iterator it;
-    for (it = modules_.begin(); it != modules_.end(); ++it) {
-      int ret = IGNORE_EINTR(close(it->second));
-      DCHECK(!ret);
-      it->second = -1;
-    }
     modules_.clear();
 #endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
   }
@@ -758,7 +751,7 @@ class SandboxSymbolizeHelper {
   // Mapping from file name to file descriptor.  Includes file descriptors
   // for all successfully opened object files and the file descriptor for
   // /proc/self/maps.  This code is not safe for production builds.
-  std::map<std::string, int> modules_;
+  std::map<std::string, base::ScopedFD> modules_;
 #endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
 
   // Cache for the process memory regions.  Produced by parsing the contents
