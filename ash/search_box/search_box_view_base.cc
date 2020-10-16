@@ -119,9 +119,15 @@ class SearchBoxImageButton : public views::ImageButton {
     return Button::OnKeyPressed(event);
   }
 
-  void OnFocus() override { SchedulePaint(); }
+  void OnFocus() override {
+    views::ImageButton::OnFocus();
+    SchedulePaint();
+  }
 
-  void OnBlur() override { SchedulePaint(); }
+  void OnBlur() override {
+    views::ImageButton::OnBlur();
+    SchedulePaint();
+  }
 
   // views::InkDropHostView:
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override {
