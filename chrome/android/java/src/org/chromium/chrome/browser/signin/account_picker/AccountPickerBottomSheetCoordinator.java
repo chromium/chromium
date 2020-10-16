@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialC
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerCoordinator.AccountPickerAccessPoint;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -27,6 +28,22 @@ public class AccountPickerBottomSheetCoordinator {
     private final AccountPickerCoordinator mAccountPickerCoordinator;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
+        @Override
+        public void onSheetClosed(@StateChangeReason int reason) {
+            super.onSheetClosed(reason);
+            final @AccountConsistencyPromoAction int promoAction;
+            if (reason == StateChangeReason.SWIPE) {
+                promoAction = AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN;
+            } else if (reason == StateChangeReason.BACK_PRESS) {
+                promoAction = AccountConsistencyPromoAction.DISMISSED_BACK;
+            } else if (reason == StateChangeReason.TAP_SCRIM) {
+                promoAction = AccountConsistencyPromoAction.DISMISSED_SCRIM;
+            } else {
+                promoAction = AccountConsistencyPromoAction.DISMISSED_OTHER;
+            }
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(promoAction);
+        }
+
         @Override
         public void onSheetStateChanged(int newState) {
             super.onSheetStateChanged(newState);
