@@ -33,17 +33,18 @@
     <oobe-dialog id="marketingOptInOverviewDialog" role="dialog" has-buttons
         hidden="[[isAccessibilitySettingsShown_]]"
         title-key="marketingOptInScreenTitle"
-        aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]">
+        aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
+        aria-describedby="marketing-opt-in-subtitle">
       <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:checkmark"
           icon2x="oobe-32:checkmark">
       </hd-iron-icon>
-      <div slot="subtitle" id="marketing-opt-in-subtitle"
-          hidden="[[!marketingOptInVisible_]]">
-        [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
-      </div>
-      <div slot="subtitle" id="marketing-opt-in-subtitle"
-          hidden="[[marketingOptInVisible_]]">
-        [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
+      <div slot="subtitle" id="marketing-opt-in-subtitle">
+        <div hidden="[[!marketingOptInVisible_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
+        </div>
+        <div hidden="[[marketingOptInVisible_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
+        </div>
       </div>
       <div slot="footer" class="layout vertical flex">
         <div class="marketing-option layout horizontal center"
@@ -51,11 +52,11 @@
             id="marketing-opt-in-toggle">
           <hd-iron-icon icon1x="oobe-32:chromebook" icon2x="oobe-64:chromebook">
           </hd-iron-icon>
-          <div id="chromebookUpdatesOptionLabel" class="flex">
+          <div id="chromebookUpdatesOptionLabel" class="flex" aria-hidden="true">
             [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
           </div>
           <cr-toggle id="chromebookUpdatesOption" checked
-              aria-labelledby="chromebookUpdatesOption">
+              aria-labelledby="chromebookUpdatesOptionLabel">
           </cr-toggle>
         </div>
         <div class="marketing-animation-container">

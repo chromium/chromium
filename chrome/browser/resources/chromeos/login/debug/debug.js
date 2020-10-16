@@ -913,6 +913,20 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'WithOptionToSubscribe',
+          trigger: (screen) => {
+            screen.setOptInVisibility(true);
+          },
+        },
+        {
+          id: 'NoOptionToSubscribe',
+          trigger: (screen) => {
+            screen.setOptInVisibility(false);
+          },
+        },
+      ],
     },
   ];
 

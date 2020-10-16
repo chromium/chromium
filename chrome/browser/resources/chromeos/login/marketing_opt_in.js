@@ -70,6 +70,13 @@ Polymer({
   },
 
   /**
+   * Returns the control which should receive initial focus.
+   */
+  get defaultControl() {
+    return this.$.marketingOptInOverviewDialog;
+  },
+
+  /**
    * This is 'on-tap' event handler for 'AcceptAndContinue/Next' buttons.
    * @private
    */
