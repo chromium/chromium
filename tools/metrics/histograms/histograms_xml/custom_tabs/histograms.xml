@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
-    units="ms" expires_after="M87">
+    units="ms" expires_after="M92">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="M87">
+    enum="NetErrorCodes" expires_after="M92">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -113,7 +113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.RedirectsCount"
-    units="redirects" expires_after="M87">
+    units="redirects" expires_after="M92">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ParallelRequestStatusOnStart"
-    enum="CustomTabsParallelRequestStatusOnStart" expires_after="M87">
+    enum="CustomTabsParallelRequestStatusOnStart" expires_after="M92">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
