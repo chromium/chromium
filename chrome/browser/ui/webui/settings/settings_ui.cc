@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/appearance_handler.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
-#include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/downloads_handler.h"
 #include "chrome/browser/ui/webui/settings/extension_control_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
@@ -119,6 +118,7 @@
 #else  // !defined(OS_CHROMEOS)
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
+#include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 #include "chrome/browser/ui/webui/settings/system_handler.h"
@@ -181,12 +181,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           CreateForProfile(profile));
 #endif
 
-#if defined(OS_CHROMEOS)
   AddSettingsPageUIHandler(std::make_unique<AccessibilityMainHandler>());
-#else
-  AddSettingsPageUIHandler(
-      std::make_unique<AccessibilityMainHandler>(profile->GetPrefs()));
-#endif  // defined(OS_CHROMEOS)
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());
   AddSettingsPageUIHandler(
       std::make_unique<ClearBrowsingDataHandler>(web_ui, profile));
@@ -225,13 +220,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(
       std::make_unique<SecurityKeysBioEnrollmentHandler>());
 
-#if defined(OS_WIN) || defined(OS_MAC)
-  AddSettingsPageUIHandler(std::make_unique<CaptionsHandler>());
-#endif
-
 #if defined(OS_CHROMEOS)
   InitBrowserSettingsWebUIHandlers();
 #else
+  AddSettingsPageUIHandler(
+      std::make_unique<CaptionsHandler>(profile->GetPrefs()));
   AddSettingsPageUIHandler(std::make_unique<DefaultBrowserHandler>());
   AddSettingsPageUIHandler(std::make_unique<ManageProfileHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());

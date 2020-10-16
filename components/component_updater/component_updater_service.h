@@ -27,7 +27,7 @@ class ComponentUpdaterPolicyTest;
 }
 
 namespace settings {
-class AccessibilityMainHandler;
+class CaptionsHandler;
 }
 
 namespace update_client {
@@ -147,7 +147,7 @@ class ComponentUpdateService {
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
-  friend class settings::AccessibilityMainHandler;
+  friend class settings::CaptionsHandler;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
 };

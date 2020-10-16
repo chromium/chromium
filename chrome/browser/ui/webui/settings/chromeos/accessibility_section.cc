@@ -15,6 +15,7 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
@@ -591,6 +592,7 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<::settings::TtsHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<::settings::FontHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<CaptionsHandler>());
 }
 
 int AccessibilitySection::GetSectionNameMessageId() const {
