@@ -602,15 +602,6 @@
       },
     },
   },
-  'browser_tests_x11': {
-    'modifications': {
-      'Linux Ozone Tester (X11)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_browser_tests.filter',
-        ],
-      },
-    },
-  },
   'cc_unittests': {
     'modifications': {
       'Linux TSan Tests': {
