@@ -4328,6 +4328,9 @@ ci.thin_tester(
         category = "mac",
         short_name = "a64",
     ),
+    # TODO(gbeaty) Once we have sufficient test capacity to not need to
+    # serialize tests, use the default execution_timout
+    execution_timeout = 6 * time.hour,
     tree_closing = False,
     triggered_by = [builder_name("mac-arm64-rel")],
 )
