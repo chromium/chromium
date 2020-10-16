@@ -107,22 +107,36 @@ public class ConfirmImportSyncDataDialog extends DialogFragment
         mConfirmImportOption.setRadioButtonGroup(radioGroup);
         mKeepSeparateOption.setRadioButtonGroup(radioGroup);
 
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        boolean isManagedAccount = IdentityServicesProvider.get()
+                                           .getSigninManager(Profile.getLastUsedRegularProfile())
+                                           .getManagementDomain()
+                != null;
+        final AlertDialog alertDialog =
+                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                        .setPositiveButton(R.string.continue_button, this)
+                        .setNegativeButton(R.string.cancel, this)
+                        .setView(v)
+                        .create();
+        // For non-managed accounts, the confirmation button starts out disabled, since none of the
+        // options are chosen by default.
+        alertDialog.setOnShowListener(dialog
+                -> alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(isManagedAccount));
+
         // If the account is managed, disallow merging information.
-        if (signinManager.getManagementDomain() != null) {
+        if (isManagedAccount) {
             mKeepSeparateOption.setChecked(true);
             mConfirmImportOption.setOnClickListener(
                     view -> ManagedPreferencesUtils.showManagedByAdministratorToast(getActivity()));
         } else {
-            mConfirmImportOption.setChecked(true);
+            // The confirmation button gets enabled as soon as either of the radio button options
+            // was selected.
+            mConfirmImportOption.setOnCheckedChangeListener(radioButton
+                    -> alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true));
+            mKeepSeparateOption.setOnCheckedChangeListener(radioButton
+                    -> alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true));
         }
 
-        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                .setPositiveButton(R.string.continue_button, this)
-                .setNegativeButton(R.string.cancel, this)
-                .setView(v)
-                .create();
+        return alertDialog;
     }
 
     @Override

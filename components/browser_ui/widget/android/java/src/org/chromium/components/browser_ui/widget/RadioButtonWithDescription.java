@@ -57,7 +57,7 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
     /**
      * Interface to listen to radio button changes.
      */
-    interface ButtonCheckedStateChangedListener {
+    public interface ButtonCheckedStateChangedListener {
         /**
          * Invoked when a {@link RadioButtonWithDescription} is selected.
          * @param checkedRadioButton The radio button that was selected.

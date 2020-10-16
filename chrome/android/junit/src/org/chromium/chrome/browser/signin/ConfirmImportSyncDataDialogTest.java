@@ -68,6 +68,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     public void testPositiveButtonWhenAccountIsNotManaged() {
         AlertDialog alertDialog = getConfirmImportSyncDataDialog();
+        alertDialog.findViewById(R.id.sync_confirm_import_choice).performClick();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
         verify(mMockListener).onConfirm(false);
     }
@@ -91,6 +92,7 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     public void testListenerOnCancelNotCalledOnDismissWhenButtonClicked() {
         AlertDialog dialog = getConfirmImportSyncDataDialog();
+        dialog.findViewById(R.id.sync_confirm_import_choice).performClick();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
         dialog.dismiss();
         verify(mMockListener, never()).onCancel();
