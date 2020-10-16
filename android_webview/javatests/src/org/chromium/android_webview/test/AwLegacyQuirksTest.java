@@ -210,6 +210,7 @@ public class AwLegacyQuirksTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1133535")
     public void testMetaMergeContentQuirk() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -246,6 +247,7 @@ public class AwLegacyQuirksTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1133535")
     public void testMetaMergeContentQuirkOverrides() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
