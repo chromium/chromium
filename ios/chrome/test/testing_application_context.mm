@@ -213,3 +213,9 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
   // unittesting and return a mock or fake here.
   return nullptr;
 }
+
+BreadcrumbPersistentStorageManager*
+TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return nullptr;
+}

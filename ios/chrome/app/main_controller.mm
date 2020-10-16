@@ -49,8 +49,7 @@
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_keyed_service.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_keyed_service_factory.h"
+#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -689,14 +688,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
     if (self.appState.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
-      breakpad::StopMonitoringBreadcrumbManagerService(
+      BreadcrumbManagerKeyedService* service =
           BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
               self.appState.mainBrowserState
-                  ->GetOffTheRecordChromeBrowserState()));
+                  ->GetOffTheRecordChromeBrowserState());
+      service->StopPersisting();
+      breakpad::StopMonitoringBreadcrumbManagerService(service);
     }
-    breakpad::StopMonitoringBreadcrumbManagerService(
+
+    BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            self.appState.mainBrowserState));
+            self.appState.mainBrowserState);
+    service->StopPersisting();
+    breakpad::StopMonitoringBreadcrumbManagerService(service);
   }
 
   _extensionSearchEngineDataUpdater = nullptr;
@@ -949,29 +953,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           self.appState.mainBrowserState);
   breakpad::MonitorBreadcrumbManagerService(breadcrumbService);
 
-  __weak __typeof(self) weakSelf = self;
-  BreadcrumbPersistentStorageKeyedService* persistentStorageService =
-      BreadcrumbPersistentStorageKeyedServiceFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
-  // Get stored persistent breadcrumbs from last run and set them on the
-  // breadcrumb manager.
-  persistentStorageService->GetStoredEvents(
+  BreadcrumbPersistentStorageManager* persistentStorageManager =
+      GetApplicationContext()->GetBreadcrumbPersistentStorageManager();
+
+  // Application context can return a null persistent storage manager if
+  // breadcrumbs are not being persisted.
+  if (persistentStorageManager) {
+    breadcrumbService->StartPersisting(persistentStorageManager);
+  }
+
+  // Get stored persistent breadcrumbs from last run to set on crash reports.
+  persistentStorageManager->GetStoredEvents(
       base::BindOnce(^(std::vector<std::string> events) {
-        __strong __typeof(weakSelf) strongSelf = weakSelf;
-        if (!strongSelf || !strongSelf.appState.mainBrowserState) {
-          return;
-        }
-
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            strongSelf.appState.mainBrowserState)
-            ->SetPreviousEvents(events);
         breakpad::SetPreviousSessionEvents(events);
-
-        // Notify persistent breadcrumb service to clear old breadcrumbs and
-        // start storing breadcrumbs for this session.
-        BreadcrumbPersistentStorageKeyedServiceFactory::GetForBrowserState(
-            strongSelf.appState.mainBrowserState)
-            ->StartStoringEvents();
       }));
 }
 

@@ -46,10 +46,8 @@ source_set("breadcrumbs") {
     "breadcrumb_manager_observer_bridge.mm",
     "breadcrumb_manager_tab_helper.h",
     "breadcrumb_manager_tab_helper.mm",
-    "breadcrumb_persistent_storage_keyed_service.cc",
-    "breadcrumb_persistent_storage_keyed_service.h",
-    "breadcrumb_persistent_storage_keyed_service_factory.cc",
-    "breadcrumb_persistent_storage_keyed_service_factory.h",
+    "breadcrumb_persistent_storage_manager.h",
+    "breadcrumb_persistent_storage_manager.mm",
     "breadcrumb_persistent_storage_util.cc",
     "breadcrumb_persistent_storage_util.h",
   ]
@@ -114,7 +112,7 @@ source_set("unit_tests") {
     "breadcrumb_manager_observer_unittest.mm",
     "breadcrumb_manager_tab_helper_unittest.mm",
     "breadcrumb_manager_unittest.mm",
-    "breadcrumb_persistent_storage_keyed_service_unittest.mm",
+    "breadcrumb_persistent_storage_manager_unittest.mm",
     "breadcrumb_persistent_storage_util_unittest.mm",
   ]
 }

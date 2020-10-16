@@ -73,29 +73,6 @@ const std::list<std::string> BreadcrumbManager::GetEvents(
   return events;
 }
 
-void BreadcrumbManager::SetPreviousEvents(
-    const std::vector<std::string>& events) {
-  if (events.empty()) {
-    return;
-  }
-
-  // Create a new bucket with a fake timestamp before the application started.
-  // This ensures that these initial events will be dropped before new events
-  // from the current session.
-  base::TimeDelta time_since_construction = base::Time::Now() - start_time_;
-  base::Time previous_events_bucket_time =
-      base::Time::Now() -
-      base::TimeDelta::FromSeconds(60 + time_since_construction.InSeconds());
-  std::pair<base::Time, std::list<std::string>> bucket(
-      EventBucket(previous_events_bucket_time), std::list<std::string>());
-
-  for (auto event_it = events.rbegin(); event_it != events.rend(); ++event_it) {
-    std::string event = *event_it;
-    bucket.second.push_front(event);
-  }
-  event_buckets_.push_front(bucket);
-}
-
 void BreadcrumbManager::AddEvent(const std::string& event) {
   base::Time time = base::Time::Now();
   base::Time bucket_time = EventBucket(time);

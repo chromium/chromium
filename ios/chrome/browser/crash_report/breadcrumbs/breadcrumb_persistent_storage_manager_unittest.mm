@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_keyed_service.h"
+#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 
 #include <string>
 #include <vector>
@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_keyed_service_factory.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
 #import "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
@@ -40,13 +39,6 @@ constexpr unsigned long kEventCountTooManyForPersisting =
 std::unique_ptr<KeyedService> BuildBreadcrumbManagerKeyedService(
     web::BrowserState* browser_state) {
   return std::make_unique<BreadcrumbManagerKeyedService>(browser_state);
-}
-
-// Creates a new BreadcrumbPersistentStorageKeyedService for |browser_state|.
-std::unique_ptr<KeyedService> BuildBreadcrumbPersistentStorageKeyedService(
-    web::BrowserState* browser_state) {
-  return std::make_unique<BreadcrumbPersistentStorageKeyedService>(
-      browser_state);
 }
 
 // Validates that the events in |persisted_events| are contiguous and that the
@@ -87,9 +79,9 @@ bool ValidatePersistedEvents(std::string last_logged_event,
 
 }  // namespace
 
-class BreadcrumbPersistentStorageKeyedServiceTest : public PlatformTest {
+class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
  protected:
-  BreadcrumbPersistentStorageKeyedServiceTest()
+  BreadcrumbPersistentStorageManagerTest()
       : scoped_browser_state_manager_(
             std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
     EXPECT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
@@ -100,19 +92,19 @@ class BreadcrumbPersistentStorageKeyedServiceTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         BreadcrumbManagerKeyedServiceFactory::GetInstance(),
         base::BindRepeating(&BuildBreadcrumbManagerKeyedService));
-    test_cbs_builder.AddTestingFactory(
-        BreadcrumbPersistentStorageKeyedServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildBreadcrumbPersistentStorageKeyedService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
     breadcrumb_manager_service_ = static_cast<BreadcrumbManagerKeyedService*>(
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
-    persistent_storage_ = static_cast<BreadcrumbPersistentStorageKeyedService*>(
-        BreadcrumbPersistentStorageKeyedServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+    persistent_storage_ =
+        std::make_unique<BreadcrumbPersistentStorageManager>(directory_name);
+    breadcrumb_manager_service_->StartPersisting(persistent_storage_.get());
   }
-  ~BreadcrumbPersistentStorageKeyedServiceTest() override = default;
+
+  ~BreadcrumbPersistentStorageManagerTest() override {
+    breadcrumb_manager_service_->StopPersisting();
+  }
 
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::Options::DEFAULT,
@@ -121,13 +113,15 @@ class BreadcrumbPersistentStorageKeyedServiceTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::ScopedTempDir scoped_temp_directory_;
   BreadcrumbManagerKeyedService* breadcrumb_manager_service_;
-  BreadcrumbPersistentStorageKeyedService* persistent_storage_;
+  std::unique_ptr<BreadcrumbPersistentStorageManager> persistent_storage_;
 };
 
-// Ensures that logged events are persisted.
-TEST_F(BreadcrumbPersistentStorageKeyedServiceTest, PersistEvents) {
-  persistent_storage_->StartStoringEvents();
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
+// Ensures that logged events are persisted.
+TEST_F(BreadcrumbPersistentStorageManagerTest, PersistEvents) {
   breadcrumb_manager_service_->AddEvent("event");
 
   // Advance clock to trigger writing final events.
@@ -149,9 +143,7 @@ TEST_F(BreadcrumbPersistentStorageKeyedServiceTest, PersistEvents) {
 
 // Ensures that persisted events do not grow too large for a single large event
 // bucket when events are logged very quickly one after the other.
-TEST_F(BreadcrumbPersistentStorageKeyedServiceTest, PersistLargeBucket) {
-  persistent_storage_->StartStoringEvents();
-
+TEST_F(BreadcrumbPersistentStorageManagerTest, PersistLargeBucket) {
   std::string event;
   unsigned long event_count = 0;
   while (event_count < kEventCountTooManyForPersisting) {
@@ -182,9 +174,7 @@ TEST_F(BreadcrumbPersistentStorageKeyedServiceTest, PersistLargeBucket) {
 
 // Ensures that persisted events do not grow too large for events logged a few
 // seconds apart from each other.
-TEST_F(BreadcrumbPersistentStorageKeyedServiceTest, PersistManyEventsOverTime) {
-  persistent_storage_->StartStoringEvents();
-
+TEST_F(BreadcrumbPersistentStorageManagerTest, PersistManyEventsOverTime) {
   std::string event;
   unsigned long event_count = 0;
   while (event_count < kEventCountTooManyForPersisting) {
@@ -217,10 +207,8 @@ TEST_F(BreadcrumbPersistentStorageKeyedServiceTest, PersistManyEventsOverTime) {
 
 // Ensures that old events are removed from the persisted file when old buckets
 // are dropped.
-TEST_F(BreadcrumbPersistentStorageKeyedServiceTest,
+TEST_F(BreadcrumbPersistentStorageManagerTest,
        OldEventsRemovedFromPersistedFile) {
-  persistent_storage_->StartStoringEvents();
-
   std::string event;
   unsigned long event_counter = 0;
   const int kNumEventsPerBucket = 200;
@@ -259,12 +247,12 @@ TEST_F(BreadcrumbPersistentStorageKeyedServiceTest,
 }
 
 // Ensures that events are read correctly if the persisted file becomes
-// corrupted by losing the EOF token or if kPersistedFilesizeInBytes is reduced.
-TEST_F(BreadcrumbPersistentStorageKeyedServiceTest,
+// corrupted by losing the EOF token or if kPersistedFilesizeInBytes is
+// reduced.
+TEST_F(BreadcrumbPersistentStorageManagerTest,
        GetStoredEventsAfterFilesizeReduction) {
   const base::FilePath breadcrumbs_file_path =
-      breadcrumb_persistent_storage_util::
-          GetBreadcrumbPersistentStorageFilePath(chrome_browser_state_.get());
+      GetBreadcrumbPersistentStorageFilePath(scoped_temp_directory_.GetPath());
 
   auto file = std::make_unique<base::File>(
       breadcrumbs_file_path,

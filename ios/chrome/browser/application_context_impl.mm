@@ -49,6 +49,7 @@
 #include "ios/chrome/browser/component_updater/ios_component_updater_configurator.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -229,6 +230,15 @@ void ApplicationContextImpl::OnAppEnterForeground() {
     application_breadcrumbs_logger_ =
         std::make_unique<ApplicationBreadcrumbsLogger>(
             breadcrumb_manager_.get());
+
+    base::FilePath storage_dir;
+    bool result = base::PathService::Get(ios::DIR_USER_DATA, &storage_dir);
+    DCHECK(result);
+    breadcrumb_persistent_storage_manager_ =
+        std::make_unique<BreadcrumbPersistentStorageManager>(storage_dir);
+
+    application_breadcrumbs_logger_->SetPersistentStorageManager(
+        breadcrumb_persistent_storage_manager_.get());
   }
 }
 
@@ -453,6 +463,12 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
     }
   }
   return browser_policy_connector_.get();
+}
+
+BreadcrumbPersistentStorageManager*
+ApplicationContextImpl::GetBreadcrumbPersistentStorageManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return breadcrumb_persistent_storage_manager_.get();
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {

@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_keyed_service.h"
+#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 
-#include <string>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -16,8 +16,11 @@
 #include "base/task/thread_pool.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -106,85 +109,115 @@ using breadcrumb_persistent_storage_util::
 using breadcrumb_persistent_storage_util::
     GetBreadcrumbPersistentStorageTempFilePath;
 
-BreadcrumbPersistentStorageKeyedService::
-    BreadcrumbPersistentStorageKeyedService(web::BrowserState* browser_state)
+BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
+    base::FilePath directory)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
-      browser_state_(browser_state),
-      breadcrumbs_file_path_(
-          GetBreadcrumbPersistentStorageFilePath(browser_state_)),
+      breadcrumbs_file_path_(GetBreadcrumbPersistentStorageFilePath(directory)),
+      breadcrumbs_temp_file_path_(
+          GetBreadcrumbPersistentStorageTempFilePath(directory)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      weak_factory_(this) {}
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
-BreadcrumbPersistentStorageKeyedService::
-    ~BreadcrumbPersistentStorageKeyedService() = default;
+BreadcrumbPersistentStorageManager::~BreadcrumbPersistentStorageManager() =
+    default;
 
-void BreadcrumbPersistentStorageKeyedService::GetStoredEvents(
+void BreadcrumbPersistentStorageManager::GetStoredEvents(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetStoredEvents, breadcrumbs_file_path_),
       std::move(callback));
 }
 
-void BreadcrumbPersistentStorageKeyedService::StartStoringEvents() {
-  RewriteAllExistingBreadcrumbs();
+void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManager(
+    BreadcrumbManager* manager) {
+  // Write already existing events.
+  std::list<std::string> events = manager->GetEvents(/*event_count_limit=*/0);
+  for (auto event : events) {
+    WriteEvent(event);
+  }
 
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(browser_state_)
-      ->AddObserver(this);
+  manager->AddObserver(this);
 }
 
-void BreadcrumbPersistentStorageKeyedService::RewriteAllExistingBreadcrumbs() {
-  // Cancel writing out individual breadcrumbs as they are all being re-written.
+void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManagerService(
+    BreadcrumbManagerKeyedService* service) {
+  // Write already existing events.
+  std::list<std::string> events = service->GetEvents(/*event_count_limit=*/0);
+  for (auto event : events) {
+    WriteEvent(event);
+  }
+
+  service->AddObserver(this);
+}
+
+void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManager(
+    BreadcrumbManager* manager) {
+  manager->RemoveObserver(this);
+}
+
+void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManagerService(
+    BreadcrumbManagerKeyedService* service) {
+  service->RemoveObserver(this);
+}
+
+void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
+  // Collect breadcrumbs which haven't been written yet to include in this full
+  // re-write.
+  std::vector<std::string> pending_breadcrumbs =
+      base::SplitString(pending_breadcrumbs_, kEventSeparator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   pending_breadcrumbs_.clear();
   write_timer_.Stop();
 
   last_written_time_ = base::TimeTicks::Now();
-
   current_mapped_file_position_ = 0;
 
-  std::list<std::string> events =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(browser_state_)
-          ->GetEvents(/*event_count_limit=*/0);
-
-  std::vector<std::string> breadcrumbs;
-  for (auto event_it = events.rbegin(); event_it != events.rend(); ++event_it) {
-    // Reduce saved events to only fill the amount which would be included on
-    // a crash log. This allows future events to be appended individually up to
-    // |kPersistedFilesizeInBytes|, which is more efficient than writing out the
-    const int event_with_seperator_size =
-        event_it->size() + strlen(kEventSeparator);
-    if (event_with_seperator_size + current_mapped_file_position_ >=
-        kMaxBreadcrumbsDataLength) {
-      break;
+  // Load persisted events directly from file because the correct order can not
+  // be reconstructed from the multiple BreadcrumbManagers with the partial
+  // timestamps embedded in each event.
+  GetStoredEvents(base::BindOnce(^(std::vector<std::string> events) {
+    // Add events which had not yet been written.
+    for (auto event : pending_breadcrumbs) {
+      events.push_back(event);
     }
 
-    breadcrumbs.push_back(kEventSeparator);
-    breadcrumbs.push_back(*event_it);
-    current_mapped_file_position_ += event_with_seperator_size;
-  }
+    std::vector<std::string> breadcrumbs;
+    for (auto event_it = events.rbegin(); event_it != events.rend();
+         ++event_it) {
+      // Reduce saved events to only fill the amount which would be included on
+      // a crash log. This allows future events to be appended individually up
+      // to |kPersistedFilesizeInBytes|, which is more efficient than writing
+      // out the
+      const int event_with_seperator_size =
+          event_it->size() + strlen(kEventSeparator);
+      if (event_with_seperator_size + current_mapped_file_position_ >=
+          kMaxBreadcrumbsDataLength) {
+        break;
+      }
 
-  std::reverse(breadcrumbs.begin(), breadcrumbs.end());
-  std::string breadcrumbs_string = base::JoinString(breadcrumbs, "");
+      breadcrumbs.push_back(kEventSeparator);
+      breadcrumbs.push_back(*event_it);
+      current_mapped_file_position_ += event_with_seperator_size;
+    }
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DoWriteEventsToFile,
-                     base::Passed(GetBreadcrumbPersistentStorageTempFilePath(
-                         browser_state_)),
-                     std::string(breadcrumbs_string)));
+    std::reverse(breadcrumbs.begin(), breadcrumbs.end());
+    std::string breadcrumbs_string = base::JoinString(breadcrumbs, "");
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DoReplaceFile,
-                     base::Passed(GetBreadcrumbPersistentStorageTempFilePath(
-                         browser_state_)),
-                     breadcrumbs_file_path_));
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DoWriteEventsToFile, breadcrumbs_temp_file_path_,
+                       std::string(breadcrumbs_string)));
+
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DoReplaceFile, breadcrumbs_temp_file_path_,
+                                  breadcrumbs_file_path_));
+  }));
 }
 
-void BreadcrumbPersistentStorageKeyedService::WritePendingBreadcrumbs() {
+void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
   if (pending_breadcrumbs_.empty()) {
     return;
   }
@@ -201,40 +234,43 @@ void BreadcrumbPersistentStorageKeyedService::WritePendingBreadcrumbs() {
   pending_breadcrumbs_.clear();
 }
 
-void BreadcrumbPersistentStorageKeyedService::EventAdded(
-    BreadcrumbManager* manager,
-    const std::string& event) {
-  // If the event doesn not fit within |kPersistedFilesizeInBytes|, rewrite the
-  // file to trim old events.
-  if ((current_mapped_file_position_ + pending_breadcrumbs_.size() +
-       // Use >= here instead of > to allow space for \0 to terminate file.
-       event.size()) >= kPersistedFilesizeInBytes) {
-    RewriteAllExistingBreadcrumbs();
-    return;
-  }
+void BreadcrumbPersistentStorageManager::EventAdded(BreadcrumbManager* manager,
+                                                    const std::string& event) {
+  WriteEvent(event);
+}
 
-  write_timer_.Stop();
-
+void BreadcrumbPersistentStorageManager::WriteEvent(const std::string& event) {
   pending_breadcrumbs_ += event + kEventSeparator;
+
+  WriteEvents();
+}
+
+void BreadcrumbPersistentStorageManager::WriteEvents() {
+  write_timer_.Stop();
 
   const base::TimeDelta time_delta_since_last_write =
       base::TimeTicks::Now() - last_written_time_;
   // Delay writing the event to disk if an event was just written.
   if (time_delta_since_last_write < kMinDelayBetweenWrites) {
-    write_timer_.Start(
-        FROM_HERE, kMinDelayBetweenWrites - time_delta_since_last_write, this,
-        &BreadcrumbPersistentStorageKeyedService::WritePendingBreadcrumbs);
+    write_timer_.Start(FROM_HERE,
+                       kMinDelayBetweenWrites - time_delta_since_last_write,
+                       this, &BreadcrumbPersistentStorageManager::WriteEvents);
   } else {
+    // If the event does not fit within |kPersistedFilesizeInBytes|, rewrite the
+    // file to trim old events.
+    if ((current_mapped_file_position_ + pending_breadcrumbs_.size())
+        // Use >= here instead of > to allow space for \0 to terminate file.
+        >= kPersistedFilesizeInBytes) {
+      RewriteAllExistingBreadcrumbs();
+      return;
+    }
+
+    // Otherwise, simply append the pending breadcrumbs.
     WritePendingBreadcrumbs();
   }
 }
 
-void BreadcrumbPersistentStorageKeyedService::OldEventsRemoved(
+void BreadcrumbPersistentStorageManager::OldEventsRemoved(
     BreadcrumbManager* manager) {
   RewriteAllExistingBreadcrumbs();
-}
-
-void BreadcrumbPersistentStorageKeyedService::Shutdown() {
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(browser_state_)
-      ->RemoveObserver(this);
 }

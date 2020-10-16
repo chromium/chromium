@@ -14,7 +14,6 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_keyed_service_factory.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
@@ -106,7 +105,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   suggestions::SuggestionsServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
   BreadcrumbManagerKeyedServiceFactory::GetInstance();
-  BreadcrumbPersistentStorageKeyedServiceFactory::GetInstance();
   BrowserDownloadServiceFactory::GetInstance();
   BrowsingDataRemoverFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();

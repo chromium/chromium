@@ -13,6 +13,7 @@
 
 class BreadcrumbManager;
 class BreadcrumbManagerObserver;
+class BreadcrumbPersistentStorageManager;
 
 namespace web {
 class BrowserState;
@@ -23,9 +24,6 @@ class BreadcrumbManagerKeyedService : public KeyedService {
  public:
   explicit BreadcrumbManagerKeyedService(web::BrowserState* browser_state);
   ~BreadcrumbManagerKeyedService() override;
-
-  // Sets previous events by inserting them before all existing events.
-  void SetPreviousEvents(const std::vector<std::string>& events);
 
   // Logs a breadcrumb |event| associated with the BrowserState passed in at
   // initialization of this instance. Prepends the |browsing_mode_| identifier
@@ -45,6 +43,19 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   // details.
   const std::list<std::string> GetEvents(size_t event_count_limit) const;
 
+  // Persists all events logged to |breadcrumb_manager_| to
+  // |persistent_storage_manager|. If StartPersisting has already been called,
+  // breadcrumbs will no longer be persisted to the previous
+  // |persistent_storage_manager|.
+  // NOTE: |persistent_storage_manager| must be non-null.
+  void StartPersisting(
+      BreadcrumbPersistentStorageManager* persistent_storage_manager);
+  // Stops persisting events to |persistent_storage_manager_|. No-op if
+  // |persistent_storage_manager_| is not set.
+  void StopPersisting();
+  // Returns the current |persistent_storage_manager_|.
+  BreadcrumbPersistentStorageManager* GetPersistentStorageManager();
+
  private:
   // A short string identifying the browser state used to initialize the
   // receiver. For example, "I" for "I"ncognito browsing mode. This value is
@@ -56,6 +67,10 @@ class BreadcrumbManagerKeyedService : public KeyedService {
 
   // The associated BreadcrumbManager to store events added with |AddEvent|.
   std::unique_ptr<BreadcrumbManager> breadcrumb_manager_;
+
+  // The current BreadcrumbPersistentStorageManager persisting events logged to
+  // |breadcrumb_manager_|, set by StartPersisting. May be null.
+  BreadcrumbPersistentStorageManager* persistent_storage_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BreadcrumbManagerKeyedService);
 };

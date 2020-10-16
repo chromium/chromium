@@ -32,6 +32,7 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
@@ -2363,10 +2364,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     [sceneController willDestroyIncognitoBrowserState];
   }
 
+  BreadcrumbPersistentStorageManager* persistentStorageManager = nullptr;
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
-    breakpad::StopMonitoringBreadcrumbManagerService(
+    BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            mainBrowserState->GetOffTheRecordChromeBrowserState()));
+            mainBrowserState->GetOffTheRecordChromeBrowserState());
+    persistentStorageManager = service->GetPersistentStorageManager();
+    breakpad::StopMonitoringBreadcrumbManagerService(service);
+    service->StopPersisting();
   }
 
   // Record off-the-record metrics before detroying the BrowserState.
@@ -2387,9 +2392,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   if (base::FeatureList::IsEnabled(kLogBreadcrumbs)) {
-    breakpad::MonitorBreadcrumbManagerService(
+    BreadcrumbManagerKeyedService* service =
         BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            mainBrowserState->GetOffTheRecordChromeBrowserState()));
+            mainBrowserState->GetOffTheRecordChromeBrowserState());
+
+    if (persistentStorageManager) {
+      service->StartPersisting(persistentStorageManager);
+    }
+    breakpad::MonitorBreadcrumbManagerService(service);
   }
 
   // This seems the best place to deem the destroying and rebuilding the

@@ -63,6 +63,8 @@ class TestingApplicationContext : public ApplicationContext {
   SafeBrowsingService* GetSafeBrowsingService() override;
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
+  BreadcrumbPersistentStorageManager* GetBreadcrumbPersistentStorageManager()
+      override;
 
  private:
   base::ThreadChecker thread_checker_;

@@ -64,6 +64,7 @@ class VariationsService;
 }
 
 class ApplicationContext;
+class BreadcrumbPersistentStorageManager;
 class BrowserPolicyConnectorIOS;
 class IOSChromeIOThread;
 class PrefService;
@@ -154,6 +155,11 @@ class ApplicationContext {
   // Returns the BrowserPolicyConnectorIOS that starts and manages the policy
   // system. May be |nullptr| if policy is not enabled.
   virtual BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() = 0;
+
+  // Returns the BreadcrumbPersistentStorageManager writing breadcrumbs to disk.
+  // Will be null if breadcrumb collection is not enabled.
+  virtual BreadcrumbPersistentStorageManager*
+  GetBreadcrumbPersistentStorageManager() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

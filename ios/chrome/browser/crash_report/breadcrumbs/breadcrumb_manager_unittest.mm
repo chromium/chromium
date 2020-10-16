@@ -86,19 +86,3 @@ TEST_F(BreadcrumbManagerTest, MinimumEventsReturned) {
   std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
   EXPECT_EQ(2ul, events.size());
 }
-
-// Tests that previous events are set as expected.
-TEST_F(BreadcrumbManagerTest, SetPreviousEvents) {
-  breadcrumb_manager_.SetPreviousEvents({"event1", "event2"});
-  ASSERT_EQ(2ul, breadcrumb_manager_.GetEvents(0).size());
-
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(3));
-  breadcrumb_manager_.AddEvent("event3");
-
-  std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
-  EXPECT_NE(std::string::npos, events.front().find("event1"));
-  events.pop_front();
-  EXPECT_NE(std::string::npos, events.front().find("event2"));
-  events.pop_front();
-  EXPECT_NE(std::string::npos, events.front().find("event3"));
-}

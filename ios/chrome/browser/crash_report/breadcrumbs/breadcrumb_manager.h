@@ -34,9 +34,6 @@ class BreadcrumbManager {
   // even if no new events have been added, but time has passed.
   const std::list<std::string> GetEvents(size_t event_count_limit);
 
-  // Sets previous events by inserting them before all existing events.
-  void SetPreviousEvents(const std::vector<std::string>& events);
-
   // Logs a breadcrumb event with message data |event|.
   // NOTE: |event| must not include newline characters as newlines are used by
   // BreadcrumbPersistentStore as a deliminator.
