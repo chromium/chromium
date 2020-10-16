@@ -48,14 +48,7 @@ VideoFrameCallbackRequesterImpl::VideoFrameCallbackRequesterImpl(
           MakeGarbageCollected<VideoFrameRequestCallbackCollection>(
               element.GetExecutionContext())) {}
 
-VideoFrameCallbackRequesterImpl::~VideoFrameCallbackRequesterImpl() {
-  if (!observing_immersive_session_)
-    return;
-
-  auto* frame_provider = GetXRFrameProvider();
-  if (frame_provider)
-    frame_provider->RemoveImmersiveSessionObserver(this);
-}
+VideoFrameCallbackRequesterImpl::~VideoFrameCallbackRequesterImpl() = default;
 
 // static
 VideoFrameCallbackRequesterImpl& VideoFrameCallbackRequesterImpl::From(

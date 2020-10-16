@@ -65,11 +65,6 @@ void XRFrameProvider::AddImmersiveSessionObserver(
   immersive_observers_.insert(observer);
 }
 
-void XRFrameProvider::RemoveImmersiveSessionObserver(
-    ImmersiveSessionObserver* observer) {
-  immersive_observers_.erase(observer);
-}
-
 void XRFrameProvider::OnSessionStarted(
     XRSession* session,
     device::mojom::blink::XRSessionPtr session_ptr) {
