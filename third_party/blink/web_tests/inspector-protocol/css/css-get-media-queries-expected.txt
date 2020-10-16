@@ -180,7 +180,7 @@ mediaRule #14
             unit: in
             computed length: 816
 mediaRule #15
-    text: screen and (device-aspect-ratio: 16/9), screen and (device-aspect-ratio: 16/10)
+    text: screen and (device-aspect-ratio: 16 / 9), screen and (device-aspect-ratio: 16 / 10)
     source: mediaRule
     range: {"endColumn":86,"endLine":1,"startColumn":7,"startLine":1}
     computedText: screen and (device-aspect-ratio: 16/9), screen and (device-aspect-ratio: 16/10)

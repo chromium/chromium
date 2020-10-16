@@ -420,7 +420,7 @@ String MediaQueryExpValue::CssText() const {
     output.Append(CSSPrimitiveValue::UnitTypeToString(unit));
   } else if (is_ratio) {
     output.Append(PrintNumber(numerator));
-    output.Append('/');
+    output.Append(" / ");
     output.Append(PrintNumber(denominator));
   } else if (is_id) {
     output.Append(getValueName(id));

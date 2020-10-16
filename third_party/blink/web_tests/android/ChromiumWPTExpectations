@@ -1506,7 +1506,6 @@ crbug.com/1050754 external/wpt/css/filter-effects/animation/filter-interpolation
 crbug.com/1050754 external/wpt/css/filter-effects/animation/filter-interpolation-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/filter-effects/idlharness.any.html [ Failure ]
 crbug.com/1050754 external/wpt/css/geometry/DOMMatrix2DInit-validate-fixup.html [ Failure ]
-crbug.com/1050754 external/wpt/css/mediaqueries/aspect-ratio-serialization.html [ Failure ]
 crbug.com/1050754 external/wpt/css/mediaqueries/forced-colors.html [ Failure ]
 crbug.com/1050754 external/wpt/css/mediaqueries/navigation-controls.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/css/mediaqueries/prefers-reduced-data.html [ Failure ]
