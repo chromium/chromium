@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/resolution_units.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -368,8 +367,6 @@ static void DeleteTypefaceStream(void* stream_asset_ptr) {
 hb_face_t* HarfBuzzFace::CreateFace() {
   hb_face_t* face = nullptr;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BooleanHistogram, zero_copy_success_histogram,
-                                  ("Blink.Fonts.HarfBuzzFaceZeroCopyAccess"));
   SkTypeface* typeface = platform_data_->Typeface();
   CHECK(typeface);
   // The attempt of doing zero copy-mmaped memory access to the font blobs does
@@ -394,9 +391,6 @@ hb_face_t* HarfBuzzFace::CreateFace() {
   if (!face) {
     face = hb_face_create_for_tables(HarfBuzzSkiaGetTable,
                                      platform_data_->Typeface(), nullptr);
-    zero_copy_success_histogram.Count(false);
-  } else {
-    zero_copy_success_histogram.Count(true);
   }
 
   DCHECK(face);
