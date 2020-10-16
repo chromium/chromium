@@ -27,6 +27,7 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -189,12 +190,10 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void PressButton(TranslateBubbleView::ButtonID id) {
-    views::LabelButton button(nullptr, base::ASCIIToUTF16("hello"));
-    button.SetID(id);
-
-    bubble_->ButtonPressed(&button,
-                           ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
-                                        ui::DomCode::ENTER, ui::EF_NONE));
+    views::Button* button =
+        static_cast<views::Button*>(bubble_->GetViewByID(id));
+    views::test::ButtonTestApi(button).NotifyClick(ui::KeyEvent(
+        ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::DomCode::ENTER, ui::EF_NONE));
   }
 
   void TearDown() override {
@@ -207,12 +206,7 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   bool denial_button_clicked() { return mock_model_->translation_declined_; }
 
   void TriggerOptionsMenu() {
-    views::Button* button = static_cast<views::Button*>(
-        bubble_->GetViewByID(TranslateBubbleView::BUTTON_ID_OPTIONS_MENU));
-    LOG(INFO) << button->GetID();
-    bubble_->ButtonPressed(button,
-                           ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
-                                        ui::DomCode::ENTER, ui::EF_NONE));
+    PressButton(TranslateBubbleView::BUTTON_ID_OPTIONS_MENU);
   }
 
   ui::SimpleMenuModel* options_menu_model() {
@@ -283,7 +277,6 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxShortcut) {
   EXPECT_FALSE(bubble_->always_translate_checkbox_->GetChecked());
 
   // Click the checkbox. The state is saved.
-  bubble_->always_translate_checkbox_->SetChecked(true);
   PressButton(TranslateBubbleView::BUTTON_ID_ALWAYS_TRANSLATE);
   EXPECT_TRUE(mock_model_->should_always_translate_);
   EXPECT_EQ(1, mock_model_->set_always_translate_called_count_);
@@ -327,7 +320,6 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndDoneButton) {
   EXPECT_FALSE(bubble_->advanced_always_translate_checkbox_->GetChecked());
 
   // Click the checkbox. The state is not saved yet.
-  bubble_->advanced_always_translate_checkbox_->SetChecked(true);
   PressButton(TranslateBubbleView::BUTTON_ID_ALWAYS_TRANSLATE);
   EXPECT_FALSE(mock_model_->should_always_translate_);
   EXPECT_EQ(0, mock_model_->set_always_translate_called_count_);

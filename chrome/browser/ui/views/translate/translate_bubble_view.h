@@ -24,7 +24,6 @@
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -42,7 +41,6 @@ class View;
 }  // namespace views
 
 class TranslateBubbleView : public LocationBarBubbleDelegateView,
-                            public views::ButtonListener,
                             public ui::SimpleMenuModel::Delegate,
                             public views::TabbedPaneListener {
  public:
@@ -90,9 +88,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetClosing(views::Widget* widget) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* source, const ui::Event& event) override;
-
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
@@ -107,7 +102,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
  private:
   enum ButtonID {
-    BUTTON_ID_DONE,
+    BUTTON_ID_DONE = 1,
     BUTTON_ID_TRY_AGAIN,
     BUTTON_ID_ALWAYS_TRANSLATE,
     BUTTON_ID_OPTIONS_MENU,
@@ -164,6 +159,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // Handles the event when the user changes an index of a combobox.
   void SourceLanguageChanged();
   void TargetLanguageChanged();
+
+  void AlwaysTranslatePressed();
 
   // Updates the visibilities of child views according to the current view type.
   void UpdateChildVisibilities();
