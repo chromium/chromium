@@ -30,5 +30,9 @@ template("generate_grd") {
       ]
       args += [ "--input-files" ] + invoker.input_files
     }
+
+    if (defined(invoker.resource_path_rewrites)) {
+      args += [ "--resource-path-rewrites" ] + invoker.resource_path_rewrites
+    }
   }
 }

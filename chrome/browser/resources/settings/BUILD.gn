@@ -70,6 +70,10 @@ generate_grd("build_grd") {
   if (optimize_webui) {
     deps = [ ":build" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [
+      "settings.rollup.js|settings.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
   } else {
     deps = [
       ":preprocess",

@@ -73,19 +73,16 @@ GRD_END_TEMPLATE = '    </includes>\n'\
 
 
 # Generates an <include .... /> row for the given file.
-def _generate_include_row(grd_prefix, filename, pathname):
+def _generate_include_row(grd_prefix, filename, pathname, \
+                          resource_path_rewrites):
   name_suffix = filename.upper().replace('/', '_').replace('.', '_'). \
           replace('-', '_')
   name = 'IDR_%s_%s' % (grd_prefix.upper(), name_suffix)
   extension = os.path.splitext(filename)[1]
   type = 'chrome_html' if extension == '.html' or extension == '.js' \
           else 'BINDATA'
-  resource_path = filename
-  # Remove 'rollup' from *.rollup.js paths, except for shared.rollup.js.
-  # Possibly pass such replacements from the gni file, if this ends up not being
-  # sufficient for all cases.
-  if ('rollup' in resource_path and 'shared' not in resource_path):
-    resource_path = resource_path.replace('rollup.', '')
+  resource_path = resource_path_rewrites[filename] \
+      if filename in resource_path_rewrites else filename
   return GRD_INCLUDE_TEMPLATE.format(
       file=pathname,
       path=resource_path,
@@ -101,10 +98,17 @@ def main(argv):
   parser.add_argument('--root-gen-dir', required=True)
   parser.add_argument('--input-files', nargs="*")
   parser.add_argument('--input-files-base-dir')
+  parser.add_argument('--resource-path-rewrites', nargs="*")
   args = parser.parse_args(argv)
 
   grd_file = open(os.path.normpath(os.path.join(_CWD, args.out_grd)), 'w')
   grd_file.write(GRD_BEGIN_TEMPLATE.format(prefix=args.grd_prefix))
+
+  resource_path_rewrites = {}
+  if args.resource_path_rewrites != None:
+    for r in args.resource_path_rewrites:
+      [original, rewrite] = r.split("|")
+      resource_path_rewrites[original] = rewrite
 
   if args.input_files != None:
     assert(args.input_files_base_dir)
@@ -112,7 +116,8 @@ def main(argv):
       filepath = os.path.join(
           args.input_files_base_dir, filename).replace('\\', '/')
       grd_file.write(_generate_include_row(
-          args.grd_prefix, filename, '${root_src_dir}/' + filepath))
+          args.grd_prefix, filename, '${root_src_dir}/' + filepath,
+          resource_path_rewrites))
 
   for manifest_file in args.manifest_files:
     manifest_path = os.path.normpath(os.path.join(_CWD, manifest_file))
@@ -123,7 +128,8 @@ def main(argv):
         filepath = os.path.join(base_dir, filename).replace('\\', '/')
         rebased_path = os.path.relpath(filepath, args.root_gen_dir)
         grd_file.write(_generate_include_row(
-            args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path))
+            args.grd_prefix, filename, '${root_gen_dir}/' + rebased_path,
+            resource_path_rewrites))
 
   grd_file.write(GRD_END_TEMPLATE)
   return

@@ -38,6 +38,7 @@ generate_grd("build_grd") {
   if (optimize_webui) {
     deps = [ ":build" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [ "bookmarks.rollup.js|bookmarks.js" ]
   } else {
     deps = [
       ":preprocess",
