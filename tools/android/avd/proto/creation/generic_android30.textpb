@@ -1,0 +1,32 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-30 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "lcFZFeb_iFtXXguUl1Bq-NOl9zqYh1urBlxF924akmcC"
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-30/google_apis/x86"
+  version: "VlHrJlRzoBJr_TnKKVh6d22nJ_9lXE6GeVMNPXix5AkC"
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-30;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-30/google_apis/x86"
+  dest_path: ".android"
+}
+avd_name: "android_30_google_apis_x86"
+
+avd_settings {
+  screen {
+    density: 480
+    height: 1920
+    width: 1080
+  }
+}
