@@ -52,31 +52,4 @@ Note: The port passed to debugpy.listen() should match the port configured in (3
 
 ## Locally
 
-1. On the debug tab, on the drop-down next to the play button, select “Add
-   Config”
-2. Add the following to the configurations array in “launch”:
-
-```
-{
-    "name":"Python: Local",
-    "type":"python",
-    "request":"attach",
-    "processId":"${command:pickProcess}"
-}
-```
-
-3. Add the following to your program:
-
-```
-import debugpy
-
-# Your code here!
-
-print("Wait for attach...")
-debugpy.wait_for_attach()
-debugpy.brerakpoint()
-```
-
-4. Start your program.
-5. Start the debugger. A dialog box will pop up asking you to select your
-   running program.
+Follow the same steps as above, but start from step 5.
