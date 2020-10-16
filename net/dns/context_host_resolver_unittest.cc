@@ -96,7 +96,7 @@ TEST_F(ContextHostResolverTest, Resolve) {
 
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
                      false /* delay */, &context);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -126,7 +126,7 @@ TEST_F(ContextHostResolverTest, DestroyRequest) {
   // Set up delayed results for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", IPAddress(1, 2, 3, 4))),
                      true /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -222,14 +222,14 @@ TEST_F(ContextHostResolverTest, DestroyResolver) {
   // Set up delayed results for "example.com" and "google.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", IPAddress(2, 3, 4, 5))),
                      true /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
                      MockDnsClientRule::Result(MockDnsClientRule::EMPTY),
                      false /* delay */);
   rules.emplace_back("google.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "google.com", kEndpoint.address())),
                      true /* delay */);
   rules.emplace_back("google.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -278,7 +278,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver) {
 TEST_F(ContextHostResolverTest, DestroyResolver_CompletedRequests) {
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
                      false /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -334,7 +334,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartRequest) {
   // Set up delayed result for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", IPAddress(2, 3, 4, 5))),
                      true /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -384,7 +384,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_PendingRequest) {
   // Set up delayed result for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", IPAddress(2, 3, 4, 5))),
                      true /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -440,7 +440,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_DohProbeRequest) {
 TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
                      false /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -526,7 +526,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartRequest) {
   // Set up delayed result for "example.com".
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", IPAddress(2, 3, 4, 5))),
                      true /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -621,7 +621,7 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
 TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
                      false /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,
@@ -670,7 +670,7 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCacheWithNetworkIsolationKey) {
 
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
                      false /* delay */);
   rules.emplace_back("example.com", dns_protocol::kTypeAAAA, false /* secure */,

@@ -150,11 +150,16 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // Constructs a response from |data|. Used for testing purposes only!
   DnsResponse(const void* data, size_t length, size_t answer_offset);
 
+  // Move-only.
+  DnsResponse(DnsResponse&& other);
+  DnsResponse& operator=(DnsResponse&& other);
+
   ~DnsResponse();
 
   // Internal buffer accessor into which actual bytes of response will be
   // read.
   IOBuffer* io_buffer() { return io_buffer_.get(); }
+  const IOBuffer* io_buffer() const { return io_buffer_.get(); }
 
   // Size of the internal buffer.
   size_t io_buffer_size() const { return io_buffer_size_; }
@@ -229,8 +234,6 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // It is never updated afterwards, so can be used in accessors.
   DnsRecordParser parser_;
   bool id_available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsResponse);
 };
 
 }  // namespace net

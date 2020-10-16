@@ -3991,10 +3991,10 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
                          uint16_t qtype,
                          const IPAddress& result_ip,
                          bool delay) {
-    rules->emplace_back(
-        prefix, qtype, false /* secure */,
-        MockDnsClientRule::Result(BuildTestDnsResponse(prefix, result_ip)),
-        delay);
+    rules->emplace_back(prefix, qtype, false /* secure */,
+                        MockDnsClientRule::Result(
+                            BuildTestDnsAddressResponse(prefix, result_ip)),
+                        delay);
   }
 
   static void AddDnsRule(MockDnsClientRuleList* rules,
@@ -4003,10 +4003,11 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
                          IPAddress result_ip,
                          std::string cannonname,
                          bool delay) {
-    rules->emplace_back(prefix, qtype, false /* secure */,
-                        MockDnsClientRule::Result(BuildTestDnsResponseWithCname(
-                            prefix, result_ip, std::move(cannonname))),
-                        delay);
+    rules->emplace_back(
+        prefix, qtype, false /* secure */,
+        MockDnsClientRule::Result(BuildTestDnsAddressResponseWithCname(
+            prefix, result_ip, std::move(cannonname))),
+        delay);
   }
 
   static void AddSecureDnsRule(MockDnsClientRuleList* rules,
@@ -6898,7 +6899,7 @@ TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {
 
     rules.emplace_back(
         "duplicate", dns_protocol::kTypeA, false /* secure */,
-        MockDnsClientRule::Result(std::make_unique<DnsResponse>(
+        MockDnsClientRule::Result(DnsResponse(
             0, false, std::move(answers),
             std::vector<DnsResourceRecord>() /* authority_records */,
             std::vector<DnsResourceRecord>() /* additional_records */, query)),
@@ -6915,7 +6916,7 @@ TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {
 
     rules.emplace_back(
         "duplicate", dns_protocol::kTypeAAAA, false /* secure */,
-        MockDnsClientRule::Result(std::make_unique<DnsResponse>(
+        MockDnsClientRule::Result(DnsResponse(
             0, false, std::move(answers),
             std::vector<DnsResourceRecord>() /* authority_records */,
             std::vector<DnsResourceRecord>() /* additional_records */, query)),
@@ -8165,8 +8166,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery_WrongType) {
   // Respond to a TXT query with an A response.
   MockDnsClientRuleList rules;
   rules.emplace_back("host", dns_protocol::kTypeTXT, false /* secure */,
-                     MockDnsClientRule::Result(
-                         BuildTestDnsResponse("host", IPAddress(1, 2, 3, 4))),
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                         "host", IPAddress(1, 2, 3, 4))),
                      false /* delay */);
 
   CreateResolver();
@@ -8469,8 +8470,8 @@ TEST_F(HostResolverManagerDnsTest, PtrQuery_WrongType) {
   // Respond to a TXT query with an A response.
   MockDnsClientRuleList rules;
   rules.emplace_back("host", dns_protocol::kTypePTR, false /* secure */,
-                     MockDnsClientRule::Result(
-                         BuildTestDnsResponse("host", IPAddress(1, 2, 3, 4))),
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                         "host", IPAddress(1, 2, 3, 4))),
                      false /* delay */);
 
   CreateResolver();
@@ -8761,8 +8762,8 @@ TEST_F(HostResolverManagerDnsTest, SrvQuery_WrongType) {
   // Respond to a SRV query with an A response.
   MockDnsClientRuleList rules;
   rules.emplace_back("host", dns_protocol::kTypeSRV, false /* secure */,
-                     MockDnsClientRule::Result(
-                         BuildTestDnsResponse("host", IPAddress(1, 2, 3, 4))),
+                     MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                         "host", IPAddress(1, 2, 3, 4))),
                      false /* delay */);
 
   CreateResolver();

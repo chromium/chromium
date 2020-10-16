@@ -3730,11 +3730,11 @@ TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
   net::IPAddress result;
   CHECK(result.AssignFromIPLiteral(kResult));
   net::MockDnsClientRuleList rules;
-  rules.emplace_back(kQueryHostname, net::dns_protocol::kTypeA,
-                     false /* secure */,
-                     net::MockDnsClientRule::Result(
-                         net::BuildTestDnsResponse(kQueryHostname, result)),
-                     false /* delay */);
+  rules.emplace_back(
+      kQueryHostname, net::dns_protocol::kTypeA, false /* secure */,
+      net::MockDnsClientRule::Result(
+          net::BuildTestDnsAddressResponse(kQueryHostname, result)),
+      false /* delay */);
   rules.emplace_back(
       kQueryHostname, net::dns_protocol::kTypeAAAA, false /* secure */,
       net::MockDnsClientRule::Result(net::MockDnsClientRule::ResultType::EMPTY),

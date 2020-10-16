@@ -38,8 +38,7 @@ const uint8_t kMalformedResponseHeader[] = {
 
 // Create a response containing a valid question (as would normally be validated
 // in DnsTransaction) but completely missing a header-declared answer.
-std::unique_ptr<DnsResponse> CreateMalformedResponse(std::string hostname,
-                                                     uint16_t type) {
+DnsResponse CreateMalformedResponse(std::string hostname, uint16_t type) {
   std::string dns_name;
   CHECK(DNSDomainFromDot(hostname, &dns_name));
   DnsQuery query(0x14 /* id */, dns_name, type);
@@ -53,8 +52,8 @@ std::unique_ptr<DnsResponse> CreateMalformedResponse(std::string hostname,
   memcpy(buffer->data() + sizeof(kMalformedResponseHeader),
          query.question().data(), query.question().size());
 
-  auto response = std::make_unique<DnsResponse>(buffer, buffer->size());
-  CHECK(response->InitParseWithoutQuery(buffer->size()));
+  DnsResponse response(buffer, buffer->size());
+  CHECK(response.InitParseWithoutQuery(buffer->size()));
 
   return response;
 }
@@ -206,9 +205,7 @@ DnsResourceRecord BuildTestAddressRecord(std::string name,
   return record;
 }
 
-
-std::unique_ptr<DnsResponse> BuildTestDnsResponse(std::string name,
-                                                  const IPAddress& ip) {
+DnsResponse BuildTestDnsAddressResponse(std::string name, const IPAddress& ip) {
   DCHECK(ip.IsValid());
 
   std::vector<DnsResourceRecord> answers = {BuildTestAddressRecord(name, ip)};
@@ -217,16 +214,15 @@ std::unique_ptr<DnsResponse> BuildTestDnsResponse(std::string name,
   base::Optional<DnsQuery> query(
       base::in_place, 0, dns_name,
       ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA);
-  return std::make_unique<DnsResponse>(
-      0, false, std::move(answers),
-      std::vector<DnsResourceRecord>() /* authority_records */,
-      std::vector<DnsResourceRecord>() /* additional_records */, query);
+  return DnsResponse(0, false, std::move(answers),
+                     std::vector<DnsResourceRecord>() /* authority_records */,
+                     std::vector<DnsResourceRecord>() /* additional_records */,
+                     query);
 }
 
-std::unique_ptr<DnsResponse> BuildTestDnsResponseWithCname(
-    std::string name,
-    const IPAddress& ip,
-    std::string cannonname) {
+DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
+                                                 const IPAddress& ip,
+                                                 std::string cannonname) {
   DCHECK(ip.IsValid());
   DCHECK(!cannonname.empty());
 
@@ -238,13 +234,13 @@ std::unique_ptr<DnsResponse> BuildTestDnsResponseWithCname(
   base::Optional<DnsQuery> query(
       base::in_place, 0, dns_name,
       ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA);
-  return std::make_unique<DnsResponse>(
-      0, false, std::move(answers),
-      std::vector<DnsResourceRecord>() /* authority_records */,
-      std::vector<DnsResourceRecord>() /* additional_records */, query);
+  return DnsResponse(0, false, std::move(answers),
+                     std::vector<DnsResourceRecord>() /* authority_records */,
+                     std::vector<DnsResourceRecord>() /* additional_records */,
+                     query);
 }
 
-std::unique_ptr<DnsResponse> BuildTestDnsTextResponse(
+DnsResponse BuildTestDnsTextResponse(
     std::string name,
     std::vector<std::vector<std::string>> text_records,
     std::string answer_name) {
@@ -261,16 +257,15 @@ std::unique_ptr<DnsResponse> BuildTestDnsTextResponse(
   base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
                                  dns_protocol::kTypeTXT);
 
-  return std::make_unique<DnsResponse>(
-      0, false, std::move(answers),
-      std::vector<DnsResourceRecord>() /* authority_records */,
-      std::vector<DnsResourceRecord>() /* additional_records */, query);
+  return DnsResponse(0, false, std::move(answers),
+                     std::vector<DnsResourceRecord>() /* authority_records */,
+                     std::vector<DnsResourceRecord>() /* additional_records */,
+                     query);
 }
 
-std::unique_ptr<DnsResponse> BuildTestDnsPointerResponse(
-    std::string name,
-    std::vector<std::string> pointer_names,
-    std::string answer_name) {
+DnsResponse BuildTestDnsPointerResponse(std::string name,
+                                        std::vector<std::string> pointer_names,
+                                        std::string answer_name) {
   if (answer_name.empty())
     answer_name = name;
 
@@ -284,13 +279,13 @@ std::unique_ptr<DnsResponse> BuildTestDnsPointerResponse(
   base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
                                  dns_protocol::kTypePTR);
 
-  return std::make_unique<DnsResponse>(
-      0, false, std::move(answers),
-      std::vector<DnsResourceRecord>() /* authority_records */,
-      std::vector<DnsResourceRecord>() /* additional_records */, query);
+  return DnsResponse(0, false, std::move(answers),
+                     std::vector<DnsResourceRecord>() /* authority_records */,
+                     std::vector<DnsResourceRecord>() /* additional_records */,
+                     query);
 }
 
-std::unique_ptr<DnsResponse> BuildTestDnsServiceResponse(
+DnsResponse BuildTestDnsServiceResponse(
     std::string name,
     std::vector<TestServiceRecord> service_records,
     std::string answer_name) {
@@ -308,13 +303,13 @@ std::unique_ptr<DnsResponse> BuildTestDnsServiceResponse(
   base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
                                  dns_protocol::kTypeSRV);
 
-  return std::make_unique<DnsResponse>(
-      0, false, std::move(answers),
-      std::vector<DnsResourceRecord>() /* authority_records */,
-      std::vector<DnsResourceRecord>() /* additional_records */, query);
+  return DnsResponse(0, false, std::move(answers),
+                     std::vector<DnsResourceRecord>() /* authority_records */,
+                     std::vector<DnsResourceRecord>() /* additional_records */,
+                     query);
 }
 
-std::unique_ptr<DnsResponse> BuildTestDnsIntegrityResponse(
+DnsResponse BuildTestDnsIntegrityResponse(
     std::string hostname,
     const std::vector<uint8_t>& serialized_rdata) {
   CHECK(!hostname.empty());
@@ -327,17 +322,17 @@ std::unique_ptr<DnsResponse> BuildTestDnsIntegrityResponse(
   base::Optional<DnsQuery> query(base::in_place, 0, dns_name,
                                  dns_protocol::kExperimentalTypeIntegrity);
 
-  return std::make_unique<DnsResponse>(
-      0, false, std::move(answers),
-      std::vector<DnsResourceRecord>() /*  authority_records  */,
-      std::vector<DnsResourceRecord>() /*  additional_records */, query);
+  return DnsResponse(0, false, std::move(answers),
+                     std::vector<DnsResourceRecord>() /*  authority_records  */,
+                     std::vector<DnsResourceRecord>() /*  additional_records */,
+                     query);
 }
 
 MockDnsClientRule::Result::Result(ResultType type,
-                                  std::unique_ptr<DnsResponse> response)
+                                  base::Optional<DnsResponse> response)
     : type(type), response(std::move(response)) {}
 
-MockDnsClientRule::Result::Result(std::unique_ptr<DnsResponse> response)
+MockDnsClientRule::Result::Result(DnsResponse response)
     : type(OK), response(std::move(response)) {}
 
 MockDnsClientRule::Result::Result(Result&& result) = default;
@@ -412,7 +407,7 @@ class MockDnsTransactionFactory::MockTransaction
             case MockDnsClientRule::EMPTY:
               DCHECK(!result->response);  // Not expected to be provided.
               authority_records = {BuildSoaRecord(hostname_)};
-              result_.response = std::make_unique<DnsResponse>(
+              result_.response = DnsResponse(
                   22 /* id */, false /* is_authoritative */,
                   std::vector<DnsResourceRecord>() /* answers */,
                   authority_records,
@@ -472,18 +467,22 @@ class MockDnsTransactionFactory::MockTransaction
     if (result->response) {
       // Copy response in case |result| is destroyed before the transaction
       // completes.
-      result_.response = std::make_unique<DnsResponse>(
-          result->response->io_buffer(), result->response->io_buffer_size());
+      auto buffer_copy =
+          base::MakeRefCounted<IOBuffer>(result->response->io_buffer_size());
+      memcpy(buffer_copy->data(), result->response->io_buffer()->data(),
+             result->response->io_buffer_size());
+      result_.response = DnsResponse(std::move(buffer_copy),
+                                     result->response->io_buffer_size());
       CHECK(result_.response->InitParseWithoutQuery(
           result->response->io_buffer_size()));
     } else {
       // Generated response only available for address types.
       DCHECK(qtype_ == dns_protocol::kTypeA ||
              qtype_ == dns_protocol::kTypeAAAA);
-      result_.response =
-          BuildTestDnsResponse(hostname_, qtype_ == dns_protocol::kTypeA
-                                              ? IPAddress::IPv4Localhost()
-                                              : IPAddress::IPv6Localhost());
+      result_.response = BuildTestDnsAddressResponse(
+          hostname_, qtype_ == dns_protocol::kTypeA
+                         ? IPAddress::IPv4Localhost()
+                         : IPAddress::IPv6Localhost());
     }
   }
 
@@ -491,14 +490,17 @@ class MockDnsTransactionFactory::MockTransaction
     switch (result_.type) {
       case MockDnsClientRule::NODOMAIN:
       case MockDnsClientRule::FAIL:
-        std::move(callback_).Run(this, ERR_NAME_NOT_RESOLVED,
-                                 result_.response.get(), base::nullopt);
+        std::move(callback_).Run(
+            this, ERR_NAME_NOT_RESOLVED,
+            result_.response ? &result_.response.value() : nullptr,
+            base::nullopt);
         break;
       case MockDnsClientRule::EMPTY:
       case MockDnsClientRule::OK:
       case MockDnsClientRule::MALFORMED:
-        std::move(callback_).Run(this, OK, result_.response.get(),
-                                 base::nullopt);
+        std::move(callback_).Run(
+            this, OK, result_.response ? &result_.response.value() : nullptr,
+            base::nullopt);
         break;
       case MockDnsClientRule::TIMEOUT:
         std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
@@ -506,8 +508,9 @@ class MockDnsTransactionFactory::MockTransaction
         break;
       case MockDnsClientRule::SLOW:
         if (result_.response) {
-          std::move(callback_).Run(this, OK, result_.response.get(),
-                                   base::nullopt);
+          std::move(callback_).Run(
+              this, OK, result_.response ? &result_.response.value() : nullptr,
+              base::nullopt);
         } else {
           std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
                                    base::nullopt);

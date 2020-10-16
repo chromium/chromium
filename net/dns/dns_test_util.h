@@ -16,6 +16,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "net/dns/dns_client.h"
@@ -195,23 +196,20 @@ class URLRequestContext;
 DnsResourceRecord BuildTestAddressRecord(std::string name, const IPAddress& ip);
 
 // Builds a DNS response that includes address records.
-std::unique_ptr<DnsResponse> BuildTestDnsResponse(std::string name,
-                                                  const IPAddress& ip);
-std::unique_ptr<DnsResponse> BuildTestDnsResponseWithCname(
-    std::string name,
-    const IPAddress& ip,
-    std::string cannonname);
+DnsResponse BuildTestDnsAddressResponse(std::string name, const IPAddress& ip);
+DnsResponse BuildTestDnsAddressResponseWithCname(std::string name,
+                                                 const IPAddress& ip,
+                                                 std::string cannonname);
 
 // If |answer_name| is empty, |name| will be used for all answer records, as is
 // the normal behavior.
-std::unique_ptr<DnsResponse> BuildTestDnsTextResponse(
+DnsResponse BuildTestDnsTextResponse(
     std::string name,
     std::vector<std::vector<std::string>> text_records,
     std::string answer_name = "");
-std::unique_ptr<DnsResponse> BuildTestDnsPointerResponse(
-    std::string name,
-    std::vector<std::string> pointer_names,
-    std::string answer_name = "");
+DnsResponse BuildTestDnsPointerResponse(std::string name,
+                                        std::vector<std::string> pointer_names,
+                                        std::string answer_name = "");
 
 struct TestServiceRecord {
   uint16_t priority;
@@ -220,12 +218,12 @@ struct TestServiceRecord {
   std::string target;
 };
 
-std::unique_ptr<DnsResponse> BuildTestDnsServiceResponse(
+DnsResponse BuildTestDnsServiceResponse(
     std::string name,
     std::vector<TestServiceRecord> service_records,
     std::string answer_name = "");
 
-std::unique_ptr<DnsResponse> BuildTestDnsIntegrityResponse(
+DnsResponse BuildTestDnsIntegrityResponse(
     std::string hostname,
     const std::vector<uint8_t>& serialized_rdata);
 
@@ -254,15 +252,15 @@ struct MockDnsClientRule {
 
   struct Result {
     explicit Result(ResultType type,
-                    std::unique_ptr<DnsResponse> response = nullptr);
-    explicit Result(std::unique_ptr<DnsResponse> response);
+                    base::Optional<DnsResponse> response = base::nullopt);
+    explicit Result(DnsResponse response);
     Result(Result&& result);
     ~Result();
 
     Result& operator=(Result&& result);
 
     ResultType type;
-    std::unique_ptr<DnsResponse> response;
+    base::Optional<DnsResponse> response;
   };
 
   // If |delay| is true, matching transactions will be delayed until triggered

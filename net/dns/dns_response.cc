@@ -355,6 +355,9 @@ DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
   memcpy(io_buffer_->data(), data, length);
 }
 
+DnsResponse::DnsResponse(DnsResponse&& other) = default;
+DnsResponse& DnsResponse::operator=(DnsResponse&& other) = default;
+
 DnsResponse::~DnsResponse() = default;
 
 bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
