@@ -88,30 +88,27 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                       tab_strip_container_flex_spec);
   }
 
+  reserved_grab_handle_space_ = AddChildView(std::make_unique<views::View>());
+  // TODO(tbergquist): Give |reserved_grab_handle_space_| a minimum size. For
+  // now, this space is reserved by the tabstrip itself, and we're just using
+  // this view to eat up flex space so that |tab_search_button| can be end-
+  // aligned.
+  reserved_grab_handle_space_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded));
+
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
       base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint) &&
       !tab_strip_->controller()->GetProfile()->IsIncognitoProfile()) {
-    // TODO(tluk): |tab_search_container| is only needed here so the tab search
-    // button can be vertically centered. This can be removed if FlexLayout is
-    // updated to support per-child cross-axis alignment.
-    auto* tab_search_container = AddChildView(std::make_unique<views::View>());
-    tab_search_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                                 views::MaximumFlexSizeRule::kPreferred));
-    auto* container_layout_manager = tab_search_container->SetLayoutManager(
-        std::make_unique<views::FlexLayout>());
-    container_layout_manager
-        ->SetOrientation(views::LayoutOrientation::kVertical)
-        .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-
     auto tab_search_button = std::make_unique<TabSearchButton>(tab_strip_);
     tab_search_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));
     tab_search_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
-    tab_search_button_ =
-        tab_search_container->AddChildView(std::move(tab_search_button));
+    tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                   views::LayoutAlignment::kCenter);
+    tab_search_button_ = AddChildView(std::move(tab_search_button));
   }
 }
 
@@ -137,7 +134,7 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   // The child could have a non-rectangular shape, so if the rect is not in the
   // visual portions of the child view we treat it as a click to the caption.
   for (View* const child : children()) {
-    if (child != tab_strip_container_ &&
+    if (child != tab_strip_container_ && child != reserved_grab_handle_space_ &&
         child->GetLocalBounds().Intersects(get_target_rect(child))) {
       return !child->HitTestRect(get_target_rect(child));
     }
@@ -219,7 +216,7 @@ int TabStripRegionView::CalculateTabStripAvailableWidth() {
   int reserved_width = 0;
   for (View* const child : children()) {
     if (child != tab_strip_container_)
-      reserved_width += child->size().width();
+      reserved_width += child->GetMinimumSize().width();
   }
 
   return size().width() - reserved_width;

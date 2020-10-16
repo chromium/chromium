@@ -176,6 +176,15 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
+                       TestSearchButtonIsEndAligned) {
+  if (base::FeatureList::IsEnabled(features::kTabSearch) &&
+      base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)) {
+    EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right(),
+              tab_search_button()->bounds().right());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          TabStripRegionViewBrowserTest,
                          ::testing::Values(true, false));

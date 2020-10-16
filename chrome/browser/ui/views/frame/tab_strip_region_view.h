@@ -12,7 +12,6 @@ class TabSearchButton;
 class TabStrip;
 
 // Container for the tabstrip, new tab button, and reserved grab handle space.
-// TODO (https://crbug.com/949660) Under construction.
 class TabStripRegionView final : public views::AccessiblePaneView,
                                  views::ViewObserver {
  public:
@@ -59,6 +58,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   void ScrollTowardsTrailingTab();
 
   views::View* tab_strip_container_;
+  views::View* reserved_grab_handle_space_;
   TabStrip* tab_strip_;
   TabSearchButton* tab_search_button_ = nullptr;
   views::ImageButton* leading_scroll_button_;
