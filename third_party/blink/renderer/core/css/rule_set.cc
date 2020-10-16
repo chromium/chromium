@@ -431,11 +431,7 @@ void RuleSet::CompactRules() {
 
 bool RuleSet::DidMediaQueryResultsChange(
     const MediaQueryEvaluator& evaluator) const {
-  for (const auto& result : media_query_set_results_) {
-    if (result.Result() != evaluator.Eval(result.MediaQueries()))
-      return true;
-  }
-  return false;
+  return evaluator.DidResultsChange(media_query_set_results_);
 }
 
 void MinimalRuleData::Trace(Visitor* visitor) const {

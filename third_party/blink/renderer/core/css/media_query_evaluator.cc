@@ -159,8 +159,19 @@ bool MediaQueryEvaluator::Eval(
 
 bool MediaQueryEvaluator::DidResultsChange(
     const MediaQueryResultList& results) const {
+  base::AutoReset<bool> skip(&skip_ukm_reporting_, true);
   for (auto& result : results) {
     if (Eval(result.Expression()) != result.Result())
+      return true;
+  }
+  return false;
+}
+
+bool MediaQueryEvaluator::DidResultsChange(
+    const Vector<MediaQuerySetResult>& results) const {
+  base::AutoReset<bool> skip(&skip_ukm_reporting_, true);
+  for (const auto& result : results) {
+    if (result.Result() != Eval(result.MediaQueries()))
       return true;
   }
   return false;
