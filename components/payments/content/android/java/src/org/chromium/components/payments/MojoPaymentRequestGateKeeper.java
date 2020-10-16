@@ -17,11 +17,11 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
  * untrusted renderer, so PaymentRequestService does not have to.
  */
 /* package */ class MojoPaymentRequestGateKeeper implements PaymentRequest {
-    private final ComponentPaymentRequestImplCreator mComponentPaymentRequestImplCreator;
+    private final PaymentRequestServiceCreator mPaymentRequestServiceCreator;
     private PaymentRequestService mPaymentRequestService;
 
     /** The creator of PaymentRequestService. */
-    /* package */ interface ComponentPaymentRequestImplCreator {
+    /* package */ interface PaymentRequestServiceCreator {
         /**
          * Create an instance of PaymentRequestService if the parameters are valid.
          * @param client The client of the renderer PaymentRequest, need validation before usage.
@@ -38,17 +38,17 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
          *         just closed.
          * @return The created instance, if the parameters are valid; otherwise, null.
          */
-        PaymentRequestService createComponentPaymentRequestImplIfParamsValid(
-                PaymentRequestClient client, PaymentMethodData[] methodData, PaymentDetails details,
-                PaymentOptions options, boolean googlePayBridgeEligible, Runnable onClosedListener);
+        PaymentRequestService createPaymentRequestServiceIfParamsValid(PaymentRequestClient client,
+                PaymentMethodData[] methodData, PaymentDetails details, PaymentOptions options,
+                boolean googlePayBridgeEligible, Runnable onClosedListener);
     }
 
     /**
      * Create an instance of MojoPaymentRequestGateKeeper.
      * @param creator The creator of PaymentRequestService.
      */
-    /* package */ MojoPaymentRequestGateKeeper(ComponentPaymentRequestImplCreator creator) {
-        mComponentPaymentRequestImplCreator = creator;
+    /* package */ MojoPaymentRequestGateKeeper(PaymentRequestServiceCreator creator) {
+        mPaymentRequestServiceCreator = creator;
     }
 
     // Implement PaymentRequest:
@@ -64,12 +64,12 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
 
         // Note that a null value would be assigned when the params are invalid.
         mPaymentRequestService =
-                mComponentPaymentRequestImplCreator.createComponentPaymentRequestImplIfParamsValid(
-                        client, methodData, details, options, googlePayBridgeEligible,
-                        this::onComponentPaymentRequestImplClosed);
+                mPaymentRequestServiceCreator.createPaymentRequestServiceIfParamsValid(client,
+                        methodData, details, options, googlePayBridgeEligible,
+                        this::onPaymentRequestServiceClosed);
     }
 
-    private void onComponentPaymentRequestImplClosed() {
+    private void onPaymentRequestServiceClosed() {
         mPaymentRequestService = null;
     }
 
