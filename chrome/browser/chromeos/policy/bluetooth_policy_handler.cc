@@ -46,6 +46,7 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
 
   if (!allow_bluetooth) {
     adapter_ = adapter;
+    adapter_->SetPowered(false, base::DoNothing(), base::DoNothing());
     adapter_->Shutdown();
   }
 }

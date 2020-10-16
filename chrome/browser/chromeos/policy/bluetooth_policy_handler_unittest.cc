@@ -20,13 +20,19 @@ class BluetoothPolicyHandlerTest : public testing::Test {
     ~TestingBluetoothAdapter() override {}
 
    public:
-    TestingBluetoothAdapter() : is_shutdown_(false) {}
+    TestingBluetoothAdapter() : is_shutdown_(false), is_powered_(true) {}
 
     void Shutdown() override { is_shutdown_ = true; }
+    void SetPowered(bool powered, base::OnceClosure callack,
+                    ErrorCallback error_callback) override {
+        is_powered_ = powered;
+    }
     bool IsPresent() const override { return !is_shutdown_; }
+    bool IsPowered() const override { return is_powered_; }
 
    protected:
     bool is_shutdown_;
+    bool is_powered_;
   };
 
   BluetoothPolicyHandlerTest() : adapter_(new TestingBluetoothAdapter) {}
@@ -60,6 +66,7 @@ TEST_F(BluetoothPolicyHandlerTest, TestZeroOnOffOn) {
 
   SetAllowBluetooth(false);
   EXPECT_FALSE(adapter_->IsPresent());
+  EXPECT_FALSE(adapter_->IsPowered());
 
   // Once the Bluetooth stack goes down, it needs a reboot to come back up.
   SetAllowBluetooth(true);
@@ -70,6 +77,7 @@ TEST_F(BluetoothPolicyHandlerTest, OffDuringStartup) {
   SetAllowBluetooth(false);
   BluetoothPolicyHandler shutdown_policy_handler(chromeos::CrosSettings::Get());
   EXPECT_FALSE(adapter_->IsPresent());
+  EXPECT_FALSE(adapter_->IsPowered());
 }
 
 TEST_F(BluetoothPolicyHandlerTest, OnDuringStartup) {
