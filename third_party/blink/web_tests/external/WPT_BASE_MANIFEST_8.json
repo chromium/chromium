@@ -142597,8 +142597,21 @@
        {}
       ]
      ],
+     "is-where-visited.html": [
+      "5025b0a10a209092e54fd0e0ef9b07e296bb381a",
+      [
+       null,
+       [
+        [
+         "/css/selectors/is-where-visited-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "not-links.html": [
-      "d49a86fd0ea710d8fd36798e84034f3042e58e81",
+      "58cef1a282e8e5a2d7ce17d614e9c4b15ce1ccf6",
       [
        null,
        [
@@ -169137,7 +169150,47 @@
     "sec-ch-quotes.https.html.headers": [
      "1e99ac7203b350ea80c24f4737ede4363fa8efeb",
      []
-    ]
+    ],
+    "service-workers": {
+     "intercept-request.https.html.headers": [
+      "91ee40652f06508478bb776bf4068fd61277cef3",
+      []
+     ],
+     "new-request.https.html.headers": [
+      "91ee40652f06508478bb776bf4068fd61277cef3",
+      []
+     ],
+     "passthrough-request.https.html.headers": [
+      "91ee40652f06508478bb776bf4068fd61277cef3",
+      []
+     ],
+     "resources": {
+      "echo-hint-in-html.py": [
+       "c1d99cb5c5ed7638cdf8db104379295921a96f3f",
+       []
+      ],
+      "foo.html": [
+       "ba578e48b183662ddf9b38682cc52fb80066ce6d",
+       []
+      ],
+      "intercept-request.js": [
+       "b85e6e9c22800b855ed24f2f010c57a29a630ca5",
+       []
+      ],
+      "new-request.js": [
+       "395c77183e1925245b73c46e6f323c905d0b2370",
+       []
+      ],
+      "passthrough-request.js": [
+       "5541c5eb55673c2a07f826f4c575350b0ec0abc2",
+       []
+      ],
+      "util.js": [
+       "5692cd8918f9d3dac237f5b3c28d7d8baaf7ea08",
+       []
+      ]
+     }
+    }
    },
    "clipboard-apis": {
     "META.yml": [
@@ -207587,10 +207640,6 @@
       "e282c4fb98224c0827f24ed9ecdfe95abb1ffbcd",
       []
      ],
-     "aspect-ratio-serialization-expected.txt": [
-      "551aadd174919857cae83cc3b8e5803b271dda2f",
-      []
-     ],
      "forced-colors-expected.txt": [
       "8f3a9b998c5f0a3ffe1e095b731b39bbf42f49f9",
       []
@@ -207911,8 +207960,12 @@
       "3a17efedfbbaa0558ab73a16aef42ce626e27b7d",
       []
      ],
+     "is-where-visited-ref.html": [
+      "c8243ac73199435f3a7dc0da0bd839fed9a77a14",
+      []
+     ],
      "not-links-ref.html": [
-      "1efe5943f4e33eb0046fa89dfac8a97eeff3da85",
+      "1b2515a5cd1ec257fa8ebda2041699f5d4d09230",
       []
      ],
      "of-type-selectors-ref.xhtml": [
@@ -219279,7 +219332,7 @@
          []
         ],
         "drawing-text-to-the-canvas.yaml": [
-         "31e85a7ea98c55c767dbaccdeac03e7e33141734",
+         "550746bbc230f13ae55367751965370d1f42be21",
          []
         ],
         "fill-and-stroke-styles.yaml": [
@@ -219373,7 +219426,7 @@
          []
         ],
         "text.yaml": [
-         "7edd25e7cb04694a9c97d94ce6578724cd80b61c",
+         "d204a562c2fdc74bc37b2aaff8dd0799ff849521",
          []
         ],
         "the-canvas-state.yaml": [
@@ -231321,7 +231374,7 @@
      []
     ],
     "worklets.idl": [
-     "8f5154e8509e41ac4dbb761319555897aad8a8c8",
+     "9c12f6ff9251a67b46ad3050f04388ca3c3c2e61",
      []
     ],
     "xhr.idl": [
@@ -274040,7 +274093,30 @@
       null,
       {}
      ]
-    ]
+    ],
+    "service-workers": {
+     "intercept-request.https.html": [
+      "00e024b7b64ee312515da0f12bc7082be8d80617",
+      [
+       null,
+       {}
+      ]
+     ],
+     "new-request.https.html": [
+      "006ec24e8b54a53bbeb9e3a9db1a58a0a10a8d9a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "passthrough-request.https.html": [
+      "8dca4240985b5cb7d221467860202445482e27e2",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
    },
    "clipboard-apis": {
     "async-html-script-removal.https.html": [
@@ -309828,6 +309904,13 @@
        {}
       ]
      ],
+     "Element-setAttribute-crbug-1138487.html": [
+      "9aa9ed8139eedd1341950b4e986d16ab7d51437f",
+      [
+       null,
+       {}
+      ]
+     ],
      "Element-setAttribute.html": [
       "7609406815e5cab63a3fbb9f3a62ed386c80738a",
       [
@@ -334319,6 +334402,13 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.spacing.html": [
+        "a4ec083311ba0cdb32babf9b4e3351111c29ade5",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.actualBoundingBox.html": [
         "44cff25d1afa82ba5f960784548b81e50025e787",
         [
@@ -348715,6 +348805,20 @@
         "ff429ce56483fb87d266f5234e1af88a827249fc",
         [
          "html/canvas/offscreen/text/2d.text.draw.stroke.unaffected.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.spacing.html": [
+        "d3cf89ad7be91fda67b7f5e005533293b1581e0e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.spacing.worker.js": [
+        "0499b310b1eeaac3bd16b4c3dd957dcd7c0b5aad",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.spacing.worker.html",
          {}
         ]
        ],
@@ -407256,6 +407360,13 @@
         {}
        ]
       ],
+      "SVGElement.className-01.svg": [
+       "38121356a6682f9c184c5b0ed50839211361c515",
+       [
+        null,
+        {}
+       ]
+      ],
       "SVGGeometryElement.getPointAtLength-01.svg": [
        "e268386b64e256383b606aa02ac1497e380d8f3f",
        [
@@ -408046,7 +408157,7 @@
      ]
     ],
     "trusted-types-reporting.tentative.html": [
-     "5d9cd8b04eabbe7cf237bc0c25d0f3417d491c2a",
+     "1e9d20d308f0027febaa96b0c9f952af7adb3555",
      [
       null,
       {
