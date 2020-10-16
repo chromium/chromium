@@ -83,6 +83,7 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/system/input_device_settings.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -2405,8 +2406,9 @@ ExtensionFunction::ResponseAction AutotestPrivateUpdatePrinterFunction::Run() {
     else
       LOG(ERROR) << "Invalid ppd path: " << *js_printer.printer_ppd;
   }
-  auto printers_manager = chromeos::CupsPrintersManager::Create(
-      Profile::FromBrowserContext(browser_context()));
+  auto* printers_manager =
+      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(
+          browser_context());
   printers_manager->SavePrinter(printer);
   return RespondNow(NoArguments());
 }
@@ -2424,8 +2426,9 @@ ExtensionFunction::ResponseAction AutotestPrivateRemovePrinterFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   DVLOG(1) << "AutotestPrivateRemovePrinterFunction " << params->printer_id;
 
-  auto printers_manager = chromeos::CupsPrintersManager::Create(
-      Profile::FromBrowserContext(browser_context()));
+  auto* printers_manager =
+      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(
+          browser_context());
   printers_manager->RemoveSavedPrinter(params->printer_id);
   return RespondNow(NoArguments());
 }
