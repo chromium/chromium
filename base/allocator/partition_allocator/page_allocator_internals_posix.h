@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE)
@@ -135,8 +136,7 @@ void* SystemAllocPagesInternal(void* hint,
   }
 #endif
 
-  void* ret =
-      mmap(hint, length, access_flag, map_flags, fd, 0);
+  void* ret = mmap(hint, length, access_flag, map_flags, fd, 0);
   if (ret == MAP_FAILED) {
     s_allocPageErrorCode = errno;
     ret = nullptr;
@@ -159,14 +159,33 @@ bool TrySetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  return 0 == mprotect(address, length, GetAccessFlags(accessibility));
+  return 0 ==
+         HANDLE_EINTR(mprotect(address, length, GetAccessFlags(accessibility)));
 }
 
 void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  PCHECK(!mprotect(address, length, GetAccessFlags(accessibility)));
+  if (!HANDLE_EINTR(mprotect(address, length, GetAccessFlags(accessibility))))
+    return;
+
+  // mprotect() failed, let's get more data on errno in crash reports. Values
+  // taken from man mprotect(2) on Linux:
+  switch (errno) {
+    case EACCES:
+      PCHECK(false);
+      break;
+    case EINVAL:
+      PCHECK(false);
+      break;
+    case ENOMEM:
+      PCHECK(false);
+      break;
+    default:
+      PCHECK(false);
+      break;
+  }
 }
 
 void FreePagesInternal(void* address, size_t length) {
