@@ -50,9 +50,11 @@ struct BASE_EXPORT PostedTask {
 struct DelayedWakeUp {
   TimeTicks time;
   int sequence_num;
+  WakeUpResolution resolution;
 
   bool operator!=(const DelayedWakeUp& other) const {
-    return time != other.time || other.sequence_num != sequence_num;
+    return time != other.time || other.sequence_num != sequence_num ||
+           resolution != other.resolution;
   }
 
   bool operator==(const DelayedWakeUp& other) const {
@@ -61,11 +63,19 @@ struct DelayedWakeUp {
 
   bool operator<=(const DelayedWakeUp& other) const {
     if (time == other.time) {
-      // Debug gcc builds can compare an element against itself.
-      DCHECK(sequence_num != other.sequence_num || this == &other);
+      if (sequence_num == other.sequence_num) {
+        if (resolution == other.resolution) {
+          // Debug gcc builds can compare an element against itself.
+          DCHECK_EQ(this, &other);
+          return true;
+        }
+
+        return resolution < other.resolution;
+      }
+
       // |sequence_num| is int and might wrap around to a negative number when
       // casted from EnqueueOrder. This way of comparison handles that properly.
-      return (sequence_num - other.sequence_num) <= 0;
+      return (sequence_num - other.sequence_num) < 0;
     }
     return time < other.time;
   }
@@ -84,10 +94,6 @@ struct BASE_EXPORT Task : public PendingTask {
   Task(Task&& move_from);
   ~Task();
   Task& operator=(Task&& other);
-
-  internal::DelayedWakeUp delayed_wake_up() const {
-    return internal::DelayedWakeUp{delayed_run_time, sequence_num};
-  }
 
   // SequenceManager is particularly sensitive to enqueue order,
   // so we have accessors for safety.

@@ -345,45 +345,46 @@ TEST_F(TimeDomainTest, HighResolutionWakeUps) {
   // Add two high resolution wake-ups.
   EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
   time_domain_->SetNextWakeUpForQueue(
-      &q1, internal::DelayedWakeUp{run_time1, 0},
-      internal::WakeUpResolution::kHigh, &lazy_now);
+      &q1,
+      internal::DelayedWakeUp{run_time1, 0, internal::WakeUpResolution::kHigh},
+      &lazy_now);
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
   time_domain_->SetNextWakeUpForQueue(
-      &q2, internal::DelayedWakeUp{run_time2, 0},
-      internal::WakeUpResolution::kHigh, &lazy_now);
+      &q2,
+      internal::DelayedWakeUp{run_time2, 0, internal::WakeUpResolution::kHigh},
+      &lazy_now);
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Remove one of the wake-ups.
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, nullopt, internal::WakeUpResolution::kLow, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q1, nullopt, &lazy_now);
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Remove the second one too.
-  time_domain_->SetNextWakeUpForQueue(
-      &q2, nullopt, internal::WakeUpResolution::kLow, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q2, nullopt, &lazy_now);
   EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
 
   // Change a low resolution wake-up to a high resolution one.
   time_domain_->SetNextWakeUpForQueue(
-      &q1, internal::DelayedWakeUp{run_time1, 0},
-      internal::WakeUpResolution::kLow, &lazy_now);
+      &q1,
+      internal::DelayedWakeUp{run_time1, 0, internal::WakeUpResolution::kLow},
+      &lazy_now);
   EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
   time_domain_->SetNextWakeUpForQueue(
-      &q1, internal::DelayedWakeUp{run_time1, 0},
-      internal::WakeUpResolution::kHigh, &lazy_now);
+      &q1,
+      internal::DelayedWakeUp{run_time1, 0, internal::WakeUpResolution::kHigh},
+      &lazy_now);
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Move a high resolution wake-up in time.
   time_domain_->SetNextWakeUpForQueue(
-      &q1, internal::DelayedWakeUp{run_time2, 0},
-      internal::WakeUpResolution::kHigh, &lazy_now);
+      &q1,
+      internal::DelayedWakeUp{run_time2, 0, internal::WakeUpResolution::kHigh},
+      &lazy_now);
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Cancel the wake-up twice.
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, nullopt, internal::WakeUpResolution::kLow, &lazy_now);
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, nullopt, internal::WakeUpResolution::kLow, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q1, nullopt, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q1, nullopt, &lazy_now);
   EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
 
   // Tidy up.

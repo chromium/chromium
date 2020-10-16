@@ -50,14 +50,12 @@ void TimeDomain::UnregisterQueue(internal::TaskQueueImpl* queue) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
   LazyNow lazy_now(CreateLazyNow());
-  SetNextWakeUpForQueue(queue, nullopt, internal::WakeUpResolution::kLow,
-                        &lazy_now);
+  SetNextWakeUpForQueue(queue, nullopt, &lazy_now);
 }
 
 void TimeDomain::SetNextWakeUpForQueue(
     internal::TaskQueueImpl* queue,
     Optional<internal::DelayedWakeUp> wake_up,
-    internal::WakeUpResolution resolution,
     LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
@@ -69,7 +67,7 @@ void TimeDomain::SetNextWakeUpForQueue(
     previous_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
   if (queue->heap_handle().IsValid()) {
     previous_queue_resolution =
-        delayed_wake_up_queue_.at(queue->heap_handle()).resolution;
+        delayed_wake_up_queue_.at(queue->heap_handle()).wake_up.resolution;
   }
 
   if (wake_up) {
@@ -77,10 +75,10 @@ void TimeDomain::SetNextWakeUpForQueue(
     if (queue->heap_handle().IsValid()) {
       // O(log n)
       delayed_wake_up_queue_.ChangeKey(queue->heap_handle(),
-                                       {wake_up.value(), resolution, queue});
+                                       {wake_up.value(), queue});
     } else {
       // O(log n)
-      delayed_wake_up_queue_.insert({wake_up.value(), resolution, queue});
+      delayed_wake_up_queue_.insert({wake_up.value(), queue});
     }
   } else {
     // Remove a wake-up from heap if present.
@@ -96,7 +94,7 @@ void TimeDomain::SetNextWakeUpForQueue(
       *previous_queue_resolution == internal::WakeUpResolution::kHigh) {
     pending_high_res_wake_up_count_--;
   }
-  if (wake_up && resolution == internal::WakeUpResolution::kHigh)
+  if (wake_up && wake_up->resolution == internal::WakeUpResolution::kHigh)
     pending_high_res_wake_up_count_++;
   DCHECK_GE(pending_high_res_wake_up_count_, 0);
 

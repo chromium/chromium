@@ -112,7 +112,6 @@ class BASE_EXPORT TaskQueueImpl {
   size_t GetNumberOfPendingTasks() const;
   bool HasTaskToRunImmediately() const;
   Optional<TimeTicks> GetNextScheduledWakeUp();
-  Optional<DelayedWakeUp> GetNextScheduledWakeUpImpl();
   void SetQueuePriority(TaskQueue::QueuePriority priority);
   TaskQueue::QueuePriority GetQueuePriority() const;
   void AddTaskObserver(TaskObserver* task_observer);
@@ -413,6 +412,8 @@ class BASE_EXPORT TaskQueueImpl {
   // Push the task onto the |delayed_incoming_queue|.  Slow path from other
   // threads.
   void PushOntoDelayedIncomingQueue(Task pending_task);
+
+  Optional<DelayedWakeUp> GetNextScheduledWakeUpImpl();
 
   void ScheduleDelayedWorkTask(Task pending_task);
 

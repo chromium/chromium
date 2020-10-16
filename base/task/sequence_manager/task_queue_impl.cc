@@ -547,7 +547,18 @@ Optional<DelayedWakeUp> TaskQueueImpl::GetNextScheduledWakeUpImpl() {
   if (main_thread_only().delayed_incoming_queue.empty() || !IsQueueEnabled())
     return nullopt;
 
-  return main_thread_only().delayed_incoming_queue.top().delayed_wake_up();
+  // High resolution is needed if the queue contains high resolution tasks and
+  // has a priority index <= kNormalPriority (precise execution time is
+  // unnecessary for a low priority queue).
+  WakeUpResolution resolution =
+      has_pending_high_resolution_tasks() &&
+              GetQueuePriority() <= TaskQueue::QueuePriority::kNormalPriority
+          ? WakeUpResolution::kHigh
+          : WakeUpResolution::kLow;
+
+  const auto& top_task = main_thread_only().delayed_incoming_queue.top();
+  return DelayedWakeUp{top_task.delayed_run_time, top_task.sequence_num,
+                       resolution};
 }
 
 Optional<TimeTicks> TaskQueueImpl::GetNextScheduledWakeUp() {
@@ -620,6 +631,12 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
     return;
   sequence_manager_->main_thread_only().selector.SetQueuePriority(this,
                                                                   priority);
+
+#if defined(OS_WIN)
+  // Updating queue priority can change whether high resolution timer is needed.
+  LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
+  UpdateDelayedWakeUp(&lazy_now);
+#endif
 
   static_assert(TaskQueue::QueuePriority::kLowPriority >
                     TaskQueue::QueuePriority::kNormalPriority,
@@ -1118,11 +1135,8 @@ void TaskQueueImpl::UpdateDelayedWakeUpImpl(LazyNow* lazy_now,
         wake_up->time);
   }
 
-  WakeUpResolution resolution = has_pending_high_resolution_tasks()
-                                    ? WakeUpResolution::kHigh
-                                    : WakeUpResolution::kLow;
   main_thread_only().time_domain->SetNextWakeUpForQueue(this, wake_up,
-                                                        resolution, lazy_now);
+                                                        lazy_now);
 }
 
 void TaskQueueImpl::SetDelayedWakeUpForTesting(
