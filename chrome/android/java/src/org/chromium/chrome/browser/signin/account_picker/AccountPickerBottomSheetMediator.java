@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.account_picker;
 import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.Nullable;
 
@@ -50,8 +51,13 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mProfileDataCache = new ProfileDataCache(
                 context, context.getResources().getDimensionPixelSize(R.dimen.user_picture_size));
 
-        mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
-                this::onContinueAsClicked, dismissBottomSheetRunnable);
+        OnClickListener onDismissClicked = v -> {
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.DISMISSED_BUTTON);
+            dismissBottomSheetRunnable.run();
+        };
+        mModel = AccountPickerBottomSheetProperties.createModel(
+                this::onSelectedAccountClicked, this::onContinueAsClicked, onDismissClicked);
         mProfileDataCache.addObserver(mProfileDataSourceObserver);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();

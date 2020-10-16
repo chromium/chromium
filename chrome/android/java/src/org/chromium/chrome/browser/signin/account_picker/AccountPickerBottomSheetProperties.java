@@ -130,12 +130,12 @@ class AccountPickerBottomSheetProperties {
      * state {@link ViewState#NO_ACCOUNTS}.
      */
     static PropertyModel createModel(Runnable onSelectedAccountClicked,
-            Runnable onContinueAsClicked, Runnable onDismissClicked) {
+            Runnable onContinueAsClicked, OnClickListener onDismissClicked) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
-                .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
+                .with(ON_DISMISS_CLICKED, onDismissClicked)
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .build();
     }
