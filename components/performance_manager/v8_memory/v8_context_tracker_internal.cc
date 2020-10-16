@@ -5,6 +5,7 @@
 #include "components/performance_manager/v8_memory/v8_context_tracker_internal.h"
 
 #include "base/check.h"
+#include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
 
 namespace performance_manager {
 namespace v8_memory {
@@ -16,7 +17,7 @@ namespace internal {
 ExecutionContextData::ExecutionContextData(
     ProcessData* process_data,
     const blink::ExecutionContextToken& token,
-    const base::Optional<IframeAttributionData> iframe_attribution_data)
+    const base::Optional<IframeAttributionData>& iframe_attribution_data)
     : ExecutionContextState(token, iframe_attribution_data),
       process_data_(process_data) {}
 
@@ -67,6 +68,14 @@ bool ExecutionContextData::MarkDestroyed(util::PassKey<ProcessData>) {
   return true;
 }
 
+bool ExecutionContextData::MarkMainWorldSeen(
+    util::PassKey<V8ContextTrackerDataStore>) {
+  if (main_world_seen_)
+    return false;
+  main_world_seen_ = true;
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // RemoteFrameData implementation:
 
@@ -108,7 +117,12 @@ V8ContextData::V8ContextData(ProcessData* process_data,
     : V8ContextState(description, execution_context_data),
       process_data_(process_data) {
   DCHECK(process_data);
+  DCHECK_EQ(static_cast<bool>(execution_context_data),
+            static_cast<bool>(description.execution_context_token));
   if (execution_context_data) {
+    DCHECK_EQ(execution_context_data->GetToken(),
+              description.execution_context_token.value());
+
     // These must be same process.
     DCHECK_EQ(process_data, execution_context_data->process_data());
     execution_context_data->IncrementV8ContextCount(PassKey());
@@ -140,6 +154,25 @@ bool V8ContextData::MarkDetached(util::PassKey<ProcessData>) {
     return false;
   detached = true;
   return true;
+}
+
+bool V8ContextData::IsMainV8Context() const {
+  auto* ec_data = GetExecutionContextData();
+  if (!ec_data)
+    return false;
+  // ExecutionContexts hosting worklets have no main world (there can be many
+  // worklets sharing an ExecutionContext).
+  if (IsWorkletToken(ec_data->GetToken()))
+    return false;
+
+  // We've already checked sane combinations of ExecutionContextToken types and
+  // world types in ValidateV8ContextDescription, so don't need to be overly
+  // thorough here.
+
+  // Only main frames and workers can be "main" contexts.
+  auto world_type = description.world_type;
+  return world_type == V8ContextWorldType::kMain ||
+         world_type == V8ContextWorldType::kWorkerOrWorklet;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,11 +317,17 @@ void V8ContextTrackerDataStore::Pass(std::unique_ptr<RemoteFrameData> rf_data) {
   DCHECK(result.second);
 }
 
-void V8ContextTrackerDataStore::Pass(std::unique_ptr<V8ContextData> v8_data) {
+bool V8ContextTrackerDataStore::Pass(std::unique_ptr<V8ContextData> v8_data) {
   DCHECK(v8_data.get());
+  auto* ec_data = v8_data->GetExecutionContextData();
+  if (ec_data && v8_data->IsMainV8Context()) {
+    if (!ec_data->MarkMainWorldSeen(PassKey()))
+      return false;
+  }
   v8_data->process_data()->Add(PassKey(), v8_data.get());
   auto result = global_v8_context_datas_.insert(std::move(v8_data));
   DCHECK(result.second);
+  return true;
 }
 
 ExecutionContextData* V8ContextTrackerDataStore::Get(
@@ -324,12 +363,14 @@ void V8ContextTrackerDataStore::MarkDestroyed(ExecutionContextData* ec_data) {
   }
 }
 
-void V8ContextTrackerDataStore::MarkDetached(V8ContextData* v8_data) {
+bool V8ContextTrackerDataStore::MarkDetached(V8ContextData* v8_data) {
   DCHECK(v8_data);
   if (v8_data->process_data()->MarkDetached(PassKey(), v8_data)) {
     DCHECK_LT(detached_v8_context_count_, global_v8_context_datas_.size());
     ++detached_v8_context_count_;
+    return true;
   }
+  return false;
 }
 
 void V8ContextTrackerDataStore::Destroy(

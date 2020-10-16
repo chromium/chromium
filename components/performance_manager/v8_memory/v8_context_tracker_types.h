@@ -73,7 +73,7 @@ struct V8ContextDescription {
   // The unique token that names this world.
   blink::V8ContextToken token;
   // The type of this world.
-  V8ContextWorldType world_type;
+  V8ContextWorldType world_type = V8ContextWorldType::kMain;
   // Identifies this world. Only set for extension and isolated worlds. For
   // extension worlds this corresponds to the stable extension ID. For other
   // isolated worlds this is a human-readable description.
