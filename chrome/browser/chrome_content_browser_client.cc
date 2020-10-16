@@ -355,6 +355,7 @@
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -638,6 +639,10 @@
 
 #if BUILDFLAG(IS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
+#if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !defined(OS_ANDROID)
+#include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #endif
 
 using base::FileDescriptor;
@@ -5838,3 +5843,11 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
 }
 
 #endif  // defined(OS_MAC)
+
+void ChromeContentBrowserClient::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+#if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !defined(OS_ANDROID)
+  component_updater::HyphenationComponentInstallerPolicy::
+      GetHyphenationDictionary(std::move(callback));
+#endif
+}

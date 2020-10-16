@@ -705,6 +705,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       sandbox::SeatbeltExecClient* client) override;
 #endif  // defined(OS_MAC)
 
+  void GetHyphenationDictionary(
+      base::OnceCallback<void(const base::FilePath&)>) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

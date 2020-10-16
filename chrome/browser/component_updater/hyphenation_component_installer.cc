@@ -6,6 +6,8 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -24,6 +26,50 @@ constexpr char kHyphenationManifestName[] = "Hyphenation";
 
 constexpr base::FilePath::CharType kHyphenationRelativeInstallDir[] =
     FILE_PATH_LITERAL("hyphen-data");
+
+class HyphenationDirectory {
+ public:
+  static HyphenationDirectory* Get() {
+    static base::NoDestructor<HyphenationDirectory> hyphenation_directory;
+    return hyphenation_directory.get();
+  }
+
+  void Get(base::OnceCallback<void(const base::FilePath&)> callback) {
+    DVLOG(1) << __func__;
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    callbacks_.push_back(std::move(callback));
+    if (!dir_.empty())
+      FireCallbacks();
+  }
+
+  void Set(const base::FilePath& new_dir) {
+    DVLOG(1) << __func__ << "\"" << new_dir << "\"";
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK(!new_dir.empty());
+    if (new_dir == dir_)
+      return;
+    dir_ = new_dir;
+    FireCallbacks();
+  }
+
+ private:
+  void FireCallbacks() {
+    DVLOG(1) << __func__ << " \"" << dir_
+             << "\", callbacks=" << callbacks_.size();
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK(!dir_.empty());
+    std::vector<base::OnceCallback<void(const base::FilePath&)>> callbacks;
+    std::swap(callbacks, callbacks_);
+    for (base::OnceCallback<void(const base::FilePath&)>& callback :
+         callbacks) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), dir_));
+    }
+  }
+
+  base::FilePath dir_;
+  std::vector<base::OnceCallback<void(const base::FilePath&)>> callbacks_;
+};
 
 }  // namespace
 
@@ -62,7 +108,8 @@ void HyphenationComponentInstallerPolicy::ComponentReady(
     std::unique_ptr<base::DictionaryValue> manifest) {
   VLOG(1) << "Hyphenation Component ready, version " << version.GetString()
           << " in " << install_dir.value();
-  // TODO(kojii): Pass `install_dir` to `hyphenation_impl.cc`.
+  HyphenationDirectory* hyphenation_directory = HyphenationDirectory::Get();
+  hyphenation_directory->Set(install_dir);
 }
 
 // Called during startup and installation before ComponentReady().
@@ -96,6 +143,13 @@ HyphenationComponentInstallerPolicy::GetInstallerAttributes() const {
 std::vector<std::string> HyphenationComponentInstallerPolicy::GetMimeTypes()
     const {
   return {};
+}
+
+// static
+void HyphenationComponentInstallerPolicy::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+  HyphenationDirectory* hyphenation_directory = HyphenationDirectory::Get();
+  hyphenation_directory->Get(std::move(callback));
 }
 
 void RegisterHyphenationComponent(ComponentUpdateService* cus) {

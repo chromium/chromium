@@ -17,11 +17,36 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace {
 
-using DictionaryFileMap = std::unordered_map<std::string, base::File>;
+struct Dictionaries {
+  static Dictionaries* Get() {
+    static base::NoDestructor<Dictionaries> dictionaries;
+    return dictionaries.get();
+  }
+
+#if !defined(OS_ANDROID)
+  void SetDirectory(const base::FilePath& new_dir) {
+    DVLOG(1) << __func__ << " " << new_dir;
+    DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
+               ->RunsTasksInCurrentSequence());
+    if (new_dir == dir)
+      return;
+    dir = new_dir;
+    cache.clear();
+  }
+
+  base::FilePath dir;
+#endif
+
+  // Keep the files open in the cache for subsequent calls.
+  std::unordered_map<std::string, base::File> cache;
+};
 
 bool IsValidLocale(const std::string& locale) {
   return std::all_of(locale.cbegin(), locale.cend(), [](const char ch) {
@@ -30,10 +55,17 @@ bool IsValidLocale(const std::string& locale) {
 }
 
 base::File GetDictionaryFile(const std::string& locale) {
-  // Keep Files open in the cache for subsequent calls.
-  static base::NoDestructor<DictionaryFileMap> cache;
+  DCHECK(hyphenation::HyphenationImpl::GetTaskRunner()
+             ->RunsTasksInCurrentSequence());
+  Dictionaries* dictionaries = Dictionaries::Get();
+#if !defined(OS_ANDROID)
+  const base::FilePath& dir = dictionaries->dir;
+  if (dir.empty())
+    return base::File();
+#endif
 
-  const auto& inserted = cache->insert(std::make_pair(locale, base::File()));
+  const auto& inserted =
+      dictionaries->cache.insert(std::make_pair(locale, base::File()));
   base::File& file = inserted.first->second;
   // If the |locale| is already in the cache, duplicate the file and return it.
   if (!inserted.second)
@@ -42,8 +74,6 @@ base::File GetDictionaryFile(const std::string& locale) {
 
 #if defined(OS_ANDROID)
   base::FilePath dir("/system/usr/hyphen-data");
-#else
-#error "This configuration is not supported."
 #endif
   std::string filename = base::StringPrintf("hyph-%s.hyb", locale.c_str());
   base::FilePath path = dir.AppendASCII(filename);
@@ -76,6 +106,32 @@ scoped_refptr<base::SequencedTaskRunner> HyphenationImpl::GetTaskRunner() {
            base::TaskPriority::USER_BLOCKING}));
   return *runner;
 }
+
+#if !defined(OS_ANDROID)
+// static
+void HyphenationImpl::RegisterGetDictionary() {
+  content::ContentBrowserClient* content_browser_client =
+      content::GetContentClient()->browser();
+  DCHECK(content_browser_client);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  static bool registered = false;
+  if (registered)
+    return;
+  registered = true;
+  content_browser_client->GetHyphenationDictionary(
+      base::BindOnce(SetDirectory));
+}
+
+// static
+void HyphenationImpl::SetDirectory(const base::FilePath& dir) {
+  GetTaskRunner()->PostTask(FROM_HERE,
+                            base::BindOnce(
+                                [](const base::FilePath& dir) {
+                                  Dictionaries::Get()->SetDirectory(dir);
+                                },
+                                dir));
+}
+#endif
 
 void HyphenationImpl::OpenDictionary(const std::string& locale,
                                      OpenDictionaryCallback callback) {

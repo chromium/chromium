@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/hyphenation/hyphenation.mojom.h"
 
@@ -21,11 +22,19 @@ class HyphenationImpl : public blink::mojom::Hyphenation {
 
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
+#if !defined(OS_ANDROID)
+  static void RegisterGetDictionary();
+#endif
+
   // Hyphenation:
   void OpenDictionary(const std::string& locale,
                       OpenDictionaryCallback callback) override;
 
  private:
+#if !defined(OS_ANDROID)
+  static void SetDirectory(const base::FilePath& dir);
+#endif
+
   DISALLOW_COPY_AND_ASSIGN(HyphenationImpl);
 };
 

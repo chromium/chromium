@@ -1151,4 +1151,7 @@ bool ContentBrowserClient::SetupEmbedderSandboxParameters(
 }
 #endif  // defined(OS_MAC)
 
+void ContentBrowserClient::GetHyphenationDictionary(
+    base::OnceCallback<void(const base::FilePath&)>) {}
+
 }  // namespace content

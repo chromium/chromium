@@ -1909,6 +1909,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       sandbox::policy::SandboxType sandbox_type,
       sandbox::SeatbeltExecClient* client);
 #endif  // defined(OS_MAC)
+
+  virtual void GetHyphenationDictionary(
+      base::OnceCallback<void(const base::FilePath&)>);
 };
 
 }  // namespace content

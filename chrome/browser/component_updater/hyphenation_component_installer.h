@@ -31,6 +31,9 @@ class HyphenationComponentInstallerPolicy : public ComponentInstallerPolicy {
   HyphenationComponentInstallerPolicy operator=(
       const HyphenationComponentInstallerPolicy&) = delete;
 
+  static void GetHyphenationDictionary(
+      base::OnceCallback<void(const base::FilePath&)> callback);
+
  private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
