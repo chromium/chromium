@@ -352,6 +352,32 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    public void testSigninWithAddedAccount() {
+        MetricsUtils.HistogramDelta addAccountHistogram = new HistogramDelta(
+                "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.ADD_ACCOUNT);
+        MetricsUtils.HistogramDelta signedInWithAddedAccountHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
+        MetricsUtils.HistogramDelta signedInWithNonDefaultAccountHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+        buildAndShowExpandedBottomSheet();
+        onView(withText(R.string.signin_add_account_to_device)).perform(click());
+        verify(mAccountPickerDelegateMock).addAccount(callbackArgumentCaptor.capture());
+        ProfileDataSource.ProfileData profileDataAdded = new ProfileDataSource.ProfileData(
+                /* accountName= */ "test.account3@gmail.com", /* avatar= */ null,
+                /* fullName= */ null, /* givenName= */ null);
+        Callback<String> callback = callbackArgumentCaptor.getValue();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> callback.onResult(profileDataAdded.getAccountName()));
+        clickContinueButtonAndCheckSignInInProgressSheet();
+        Assert.assertEquals(1, addAccountHistogram.getDelta());
+        Assert.assertEquals(1, signedInWithAddedAccountHistogram.getDelta());
+        Assert.assertEquals(0, signedInWithNonDefaultAccountHistogram.getDelta());
+    }
+
+    @Test
+    @MediumTest
     public void testSignInGeneralError() {
         // Throws a connection error during the sign-in action
         doAnswer(invocation -> {
