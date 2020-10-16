@@ -106,8 +106,16 @@ String GetSamplePrefix(const ExceptionState& exception_state) {
   // If we don't have the required values being passed in, just leave the
   // sample empty.
   StringBuilder sample_prefix;
-  if (interface_name && strcmp("eval", interface_name) == 0) {
+  if (!interface_name) {
+    // No interface name? Then we have no prefix to use.
+  } else if (strcmp("eval", interface_name) == 0) {
     sample_prefix.Append("eval");
+  } else if ((strcmp("Worker", interface_name) == 0 ||
+              strcmp("SharedWorker", interface_name) == 0) &&
+             !property_name) {
+    // Worker/SharedWorker constructor has nullptr as property_name.
+    sample_prefix.Append(interface_name);
+    sample_prefix.Append(" constructor");
   } else if (interface_name && property_name) {
     sample_prefix.Append(interface_name);
     sample_prefix.Append(" ");
