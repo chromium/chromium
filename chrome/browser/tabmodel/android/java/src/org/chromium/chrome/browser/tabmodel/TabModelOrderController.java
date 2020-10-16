@@ -9,8 +9,11 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 /**
  * This class acts as a controller for determining where tabs should be inserted
  * into a tab strip model.
+ *
+ * TODO(crbug.com/1138005): Move to chrome/browser/tabmodel/internal when all usages are
+ * modularized.
  */
-public interface TabModelOrderController {
+interface TabModelOrderController {
     /**
      * Determine the insertion index of the next tab. If it's not the result of
      * a link being pressed, the provided index will be returned.

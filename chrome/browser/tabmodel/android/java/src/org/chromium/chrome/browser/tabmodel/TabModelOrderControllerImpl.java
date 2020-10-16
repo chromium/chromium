@@ -13,8 +13,11 @@ import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 /**
  * Implementation of the TabModelOrderController based off of tab_strip_model_order_controller.cc
  * and tab_strip_model.cc
+ *
+ * TODO(crbug.com/1138005): Move to chrome/browser/tabmodel/internal when all usages are
+ * modularized.
  */
-public class TabModelOrderControllerImpl implements TabModelOrderController {
+class TabModelOrderControllerImpl implements TabModelOrderController {
     private static final int NO_TAB = -1;
     private final TabModelSelector mTabModelSelector;
 

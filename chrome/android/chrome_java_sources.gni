@@ -1529,8 +1529,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
-  "java/src/org/chromium/chrome/browser/tabmodel/TabModelOrderController.java",
-  "java/src/org/chromium/chrome/browser/tabmodel/TabModelOrderControllerImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorBase.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImpl.java",
   "java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorProfileSupplier.java",
