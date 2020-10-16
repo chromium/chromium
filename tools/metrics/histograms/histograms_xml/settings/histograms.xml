@@ -162,7 +162,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="SafetyCheckChromeCleanerStatus" expires_after="M90">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
-  <summary>Resulting state of the safety check Chrome cleaner check.</summary>
+  <summary>
+    Resulting state of the safety check Chrome cleaner check. Value 4-9 got
+    added with M88.
+  </summary>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.ExtensionsResult"
@@ -179,7 +182,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>anaudrey@chromium.org</owner>
   <summary>
     Which user actions were taken in safety check. Recorded every time a user
-    does an interaction in safety check. Value 5 and 6 got added with M86.
+    does an interaction in safety check. Value 5 and 6 got added with M86, 7-9
+    with M87, and 10 with M88.
   </summary>
 </histogram>
 

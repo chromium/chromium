@@ -20830,6 +20830,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.SafetyCheck.ChromeCleanerCaretNavigation">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicks the safety check Chrome cleaner row to navigate to the Chrome
+    cleaner UI.
+  </description>
+</action>
+
 <action name="Settings.SafetyCheck.ChromeCleanerReboot">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>

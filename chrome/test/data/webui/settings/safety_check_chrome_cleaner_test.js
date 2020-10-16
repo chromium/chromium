@@ -196,7 +196,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     return chromeCleanupBrowserProxy.whenCalled('restartComputer');
   });
 
-  test('chromeCleanerScanningForUwsUiTest', function() {
+  test('chromeCleanerScanningForUwsUiTest', async function() {
     fireSafetyCheckChromeCleanerEvent(
         SafetyCheckChromeCleanerStatus.SCANNING_FOR_UWS);
     flush();
@@ -208,12 +208,15 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     });
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
-    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure UMA is logged.
+    await expectLogging(
+        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
   });
 
-  test('chromeCleanerRemovingUwsUiTest', function() {
+  test('chromeCleanerRemovingUwsUiTest', async function() {
     fireSafetyCheckChromeCleanerEvent(
         SafetyCheckChromeCleanerStatus.REMOVING_UWS);
     flush();
@@ -225,7 +228,10 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     });
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
-    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure UMA is logged.
+    await expectLogging(
+        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
   });
@@ -242,7 +248,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     });
   });
 
-  test('chromeCleanerErrorUiTest', function() {
+  test('chromeCleanerErrorUiTest', async function() {
     fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.ERROR);
     flush();
     assertSafetyCheckChild({
@@ -253,12 +259,15 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     });
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
-    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure UMA is logged.
+    await expectLogging(
+        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
   });
 
-  test('chromeCleanerNoUwsFoundWithTimestampUiTest', function() {
+  test('chromeCleanerNoUwsFoundWithTimestampUiTest', async function() {
     fireSafetyCheckChromeCleanerEvent(
         SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITH_TIMESTAMP);
     flush();
@@ -270,12 +279,15 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     });
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
-    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure UMA is logged.
+    await expectLogging(
+        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
   });
 
-  test('chromeCleanerNoUwsFoundWithoutTimestampUiTest', function() {
+  test('chromeCleanerNoUwsFoundWithoutTimestampUiTest', async function() {
     fireSafetyCheckChromeCleanerEvent(
         SafetyCheckChromeCleanerStatus.NO_UWS_FOUND_WITHOUT_TIMESTAMP);
     flush();
@@ -287,7 +299,10 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     });
     // User clicks the row.
     page.$$('#safetyCheckChild').click();
-    // TODO(crbug.com/1087263): Ensure UMA is logged.
+    // Ensure UMA is logged.
+    await expectLogging(
+        SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+        'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
     // Ensure the correct Settings page is shown.
     assertEquals(routes.CHROME_CLEANUP, Router.getInstance().getCurrentRoute());
   });

@@ -238,7 +238,9 @@ Polymer({
   /** @private */
   onRowClick_: function() {
     if (this.isRowClickable_()) {
-      // TODO(crbug.com/1087263): Log caret-based navigation.
+      this.logUserInteraction_(
+          SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+          'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
       this.navigateToFoilPage_();
     }
   },
