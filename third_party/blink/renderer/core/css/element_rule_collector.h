@@ -54,11 +54,13 @@ class MatchedRule {
  public:
   MatchedRule(const RuleData* rule_data,
               unsigned specificity,
+              unsigned link_match_type,
               ShadowV0CascadeOrder cascade_order,
               unsigned style_sheet_index,
               const CSSStyleSheet* parent_style_sheet)
       : rule_data_(rule_data),
         specificity_(specificity),
+        link_match_type_(link_match_type),
         parent_style_sheet_(parent_style_sheet) {
     DCHECK(rule_data_);
     static const unsigned kBitsForPositionInRuleData = 18;
@@ -74,6 +76,7 @@ class MatchedRule {
   unsigned Specificity() const {
     return GetRuleData()->Specificity() + specificity_;
   }
+  unsigned GetLinkMatchType() const { return link_match_type_; }
   const CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent_style_sheet_);
@@ -83,6 +86,7 @@ class MatchedRule {
  private:
   Member<const RuleData> rule_data_;
   unsigned specificity_;
+  unsigned link_match_type_;
   uint64_t position_;
   Member<const CSSStyleSheet> parent_style_sheet_;
 };
@@ -166,6 +170,9 @@ class CORE_EXPORT ElementRuleCollector {
                                    const MatchRequest&,
                                    PartNames* = nullptr);
 
+  bool Match(SelectorChecker&,
+             const SelectorChecker::SelectorCheckingContext&,
+             MatchResult&);
   void DidMatchRule(const RuleData*,
                     const SelectorChecker::MatchResult&,
                     ShadowV0CascadeOrder,

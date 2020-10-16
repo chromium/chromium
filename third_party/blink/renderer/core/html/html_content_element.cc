@@ -114,8 +114,7 @@ bool HTMLContentElement::MatchSelector(Element& element) const {
   SelectorChecker::Init init;
   init.mode = SelectorChecker::kQueryingRules;
   SelectorChecker checker(init);
-  SelectorChecker::SelectorCheckingContext context(
-      &element, SelectorChecker::kVisitedMatchDisabled);
+  SelectorChecker::SelectorCheckingContext context(&element);
   for (const CSSSelector* selector = SelectorList().First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     context.selector = selector;

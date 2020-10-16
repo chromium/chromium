@@ -376,7 +376,10 @@ class CORE_EXPORT CSSSelector {
     kMatchVisited = 2,
     kMatchAll = kMatchLink | kMatchVisited
   };
-  unsigned ComputeLinkMatchType(unsigned link_match_type) const;
+
+  // True if :link or :visited pseudo-classes are found anywhere in
+  // the selector.
+  bool HasLinkOrVisited() const;
 
   bool IsForPage() const { return is_for_page_; }
   void SetForPage() { is_for_page_ = true; }

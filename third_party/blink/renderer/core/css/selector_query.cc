@@ -100,8 +100,7 @@ inline bool SelectorMatches(const CSSSelector& selector,
   SelectorChecker::Init init;
   init.mode = SelectorChecker::kQueryingRules;
   SelectorChecker checker(init);
-  SelectorChecker::SelectorCheckingContext context(
-      &element, SelectorChecker::kVisitedMatchDisabled);
+  SelectorChecker::SelectorCheckingContext context(&element);
   context.selector = &selector;
   context.scope = &root_node;
   return checker.Match(context);

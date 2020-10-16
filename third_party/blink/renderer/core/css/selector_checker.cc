@@ -228,11 +228,18 @@ static bool IsLastOfType(Element& element, const QualifiedName& type) {
 bool SelectorChecker::Match(const SelectorCheckingContext& context,
                             MatchResult& result) const {
   DCHECK(context.selector);
+#if DCHECK_IS_ON()
+  DCHECK(!inside_match_) << "Do not re-enter Match: use MatchSelector instead";
+  base::AutoReset<bool> reset_inside_match(&inside_match_, true);
+#endif  // DCHECK_IS_ON()
+
   if (UNLIKELY(context.vtt_originating_element)) {
     // A kShadowPseudo combinator is required for VTT matching.
     if (context.selector->IsLastInTagHistory())
       return false;
   }
+  if (UNLIKELY(context.is_inside_visited_link))
+    return MatchForVisitedLink(context, result) == kSelectorMatches;
   return MatchSelector(context, result) == kSelectorMatches;
 }
 
@@ -332,6 +339,26 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForPseudoShadow(
   return MatchSelector(context, result);
 }
 
+SelectorChecker::MatchStatus SelectorChecker::MatchForVisitedLink(
+    const SelectorCheckingContext& context,
+    MatchResult& result) const {
+  DCHECK(context.is_inside_visited_link);
+
+  SelectorCheckingContext unvisited(context);
+  unvisited.is_inside_visited_link = false;
+
+  unsigned link_match_type = 0;
+
+  if (MatchSelector(unvisited, result) == kSelectorMatches)
+    link_match_type |= CSSSelector::kMatchLink;
+  if (MatchSelector(context, result) == kSelectorMatches)
+    link_match_type |= CSSSelector::kMatchVisited;
+
+  result.link_match_type = link_match_type;
+
+  return link_match_type ? kSelectorMatches : kSelectorFailsCompletely;
+}
+
 static inline Element* ParentOrV0ShadowHostElement(const Element& element) {
   if (auto* shadow_root = DynamicTo<ShadowRoot>(element.parentNode())) {
     if (shadow_root->GetType() != ShadowRootType::V0)
@@ -348,14 +375,11 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   CSSSelector::RelationType relation = context.selector->Relation();
 
   // Disable :visited matching when we see the first link or try to match
-  // anything else than an ancestors.
-  //
-  // FIXME(emilio): This is_sub_selector check is wrong if we allow sub
-  // selectors with combinators somewhere.
-  if (!context.is_sub_selector &&
+  // anything else than an ancestor.
+  if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
       (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
                                      relation != CSSSelector::kChild)))
-    next_context.visited_match_type = kVisitedMatchDisabled;
+    next_context.is_inside_visited_link = false;
 
   next_context.in_rightmost_compound = false;
   next_context.is_sub_selector = false;
@@ -398,7 +422,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         if (NextSelectorExceedsScope(next_context))
           return kSelectorFailsCompletely;
         if (next_context.element->IsLink())
-          next_context.visited_match_type = kVisitedMatchDisabled;
+          next_context.is_inside_visited_link = false;
       }
       return kSelectorFailsCompletely;
     case CSSSelector::kChild: {
@@ -569,7 +593,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForPseudoContent(
   SelectorCheckingContext next_context(context);
   for (const auto& insertion_point : insertion_points) {
     next_context.element = insertion_point;
-    if (Match(next_context, result))
+    if (MatchSelector(next_context, result) == kSelectorMatches)
       return kSelectorMatches;
   }
   return kSelectorFailsLocally;
@@ -769,12 +793,6 @@ bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
     // restriction in CSS3, but it is, so let's honor it.
     // the parser enforces that this never occurs
     DCHECK_NE(sub_context.selector->GetPseudoType(), CSSSelector::kPseudoNot);
-    // We select between :visited and :link when applying. We don't know which
-    // one applied (or not) yet.
-    if (sub_context.selector->GetPseudoType() == CSSSelector::kPseudoVisited ||
-        (sub_context.selector->GetPseudoType() == CSSSelector::kPseudoLink &&
-         sub_context.visited_match_type == kVisitedMatchEnabled))
-      return true;
     if (!CheckOne(sub_context, result))
       return true;
   }
@@ -958,11 +976,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoAnyLink:
     case CSSSelector::kPseudoWebkitAnyLink:
-    case CSSSelector::kPseudoLink:
       return element.IsLink();
+    case CSSSelector::kPseudoLink:
+      return element.IsLink() && !context.is_inside_visited_link;
     case CSSSelector::kPseudoVisited:
-      return element.IsLink() &&
-             context.visited_match_type == kVisitedMatchEnabled;
+      return element.IsLink() && context.is_inside_visited_link;
     case CSSSelector::kPseudoDrag:
       if (mode_ == kResolvingStyle) {
         if (context.in_rightmost_compound)
@@ -1251,7 +1269,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       DCHECK(!CSSSelectorList::Next(*selector.SelectorList()->First()));
       sub_context.selector = selector.SelectorList()->First();
       MatchResult sub_result;
-      if (!Match(sub_context, sub_result))
+      if (MatchSelector(sub_context, sub_result) != kSelectorMatches)
         return false;
       result.specificity += sub_context.selector->Specificity() +
                             sub_result.specificity +
@@ -1314,7 +1332,7 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
     do {
       MatchResult sub_result;
       host_context.element = next_element;
-      if (Match(host_context, sub_result)) {
+      if (MatchSelector(host_context, sub_result) == kSelectorMatches) {
         matched = true;
         // Consider div:host(div:host(div:host(div:host...))).
         max_specificity =

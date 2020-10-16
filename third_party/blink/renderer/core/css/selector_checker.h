@@ -43,15 +43,10 @@ class ComputedStyle;
 class Element;
 class PartNames;
 
-class SelectorChecker {
+class CORE_EXPORT SelectorChecker {
   STACK_ALLOCATED();
 
  public:
-  enum VisitedMatchType : uint8_t {
-    kVisitedMatchDisabled,
-    kVisitedMatchEnabled
-  };
-
   enum Mode {
     // Used when matching selectors inside style recalc. This mode will set
     // restyle flags across the tree during matching which impact how style
@@ -110,15 +105,12 @@ class SelectorChecker {
 
    public:
     // Initial selector constructor
-    SelectorCheckingContext(Element* element,
-                            VisitedMatchType visited_match_type)
-        : element(element), visited_match_type(visited_match_type) {}
+    explicit SelectorCheckingContext(Element* element) : element(element) {}
 
     const CSSSelector* selector = nullptr;
     Element* element = nullptr;
     Element* previous_element = nullptr;
     const ContainerNode* scope = nullptr;
-    VisitedMatchType visited_match_type;
     PseudoId pseudo_id = kPseudoIdNone;
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;
@@ -127,16 +119,16 @@ class SelectorChecker {
     bool treat_shadow_host_as_normal_scope = false;
     Element* vtt_originating_element = nullptr;
     bool in_nested_complex_selector = false;
+    bool is_inside_visited_link = false;
   };
 
   struct MatchResult {
     STACK_ALLOCATED();
 
    public:
-    MatchResult() : dynamic_pseudo(kPseudoIdNone), specificity(0) {}
-
-    PseudoId dynamic_pseudo;
-    unsigned specificity;
+    PseudoId dynamic_pseudo{kPseudoIdNone};
+    unsigned specificity{0};
+    unsigned link_match_type{CSSSelector::kMatchAll};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -191,6 +183,8 @@ class SelectorChecker {
   MatchStatus MatchForPseudoShadow(const SelectorCheckingContext&,
                                    const ContainerNode*,
                                    MatchResult&) const;
+  MatchStatus MatchForVisitedLink(const SelectorCheckingContext&,
+                                  MatchResult&) const;
   bool CheckPseudoClass(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
@@ -204,6 +198,7 @@ class SelectorChecker {
   ScrollbarPart scrollbar_part_;
   Mode mode_;
 #if DCHECK_IS_ON()
+  mutable bool inside_match_ = false;
   bool is_ua_rule_;
 #else
   static constexpr bool is_ua_rule_ = true;

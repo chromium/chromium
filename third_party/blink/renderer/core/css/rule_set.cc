@@ -86,7 +86,7 @@ RuleData::RuleData(StyleRule* rule,
       selector_index_(selector_index),
       position_(position),
       specificity_(Selector().Specificity()),
-      link_match_type_(Selector().ComputeLinkMatchType(CSSSelector::kMatchAll)),
+      has_link_or_visited_(Selector().HasLinkOrVisited()),
       has_document_security_origin_(add_rule_flags &
                                     kRuleHasDocumentSecurityOrigin),
       valid_property_filter_(

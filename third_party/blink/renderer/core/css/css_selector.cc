@@ -1037,53 +1037,23 @@ bool CSSSelector::IsCompound() const {
   return true;
 }
 
-unsigned CSSSelector::ComputeLinkMatchType(unsigned link_match_type) const {
-  // Determine if this selector will match a link in visited, unvisited or any
-  // state, or never.
-  // :visited never matches other elements than the innermost link element.
+bool CSSSelector::HasLinkOrVisited() const {
   for (const CSSSelector* current = this; current;
        current = current->TagHistory()) {
-    switch (current->GetPseudoType()) {
-      case kPseudoNot: {
-        // :not(:visited) is equivalent to :link. Parser enforces that :not
-        // can't nest.
-        DCHECK(current->SelectorList());
-        for (const CSSSelector* sub_selector = current->SelectorList()->First();
-             sub_selector; sub_selector = sub_selector->TagHistory()) {
-          PseudoType sub_type = sub_selector->GetPseudoType();
-          if (sub_type == kPseudoVisited)
-            link_match_type &= ~kMatchVisited;
-          else if (sub_type == kPseudoLink)
-            link_match_type &= ~kMatchLink;
-        }
-      } break;
-      case kPseudoLink:
-        link_match_type &= ~kMatchVisited;
-        break;
-      case kPseudoVisited:
-        link_match_type &= ~kMatchLink;
-        break;
-      case kPseudoSlotted:
-        DCHECK(current->SelectorList());
-        DCHECK(current->SelectorList()->First());
-        DCHECK(!CSSSelectorList::Next(*current->SelectorList()->First()));
-        link_match_type =
-            current->SelectorList()->First()->ComputeLinkMatchType(
-                link_match_type);
-        break;
-      default:
-        // We don't support :link and :visited inside :-webkit-any.
-        break;
+    CSSSelector::PseudoType pseudo = current->GetPseudoType();
+    if (pseudo == CSSSelector::kPseudoLink ||
+        pseudo == CSSSelector::kPseudoVisited) {
+      return true;
     }
-    RelationType relation = current->Relation();
-    if (relation == kSubSelector)
-      continue;
-    if (relation != kDescendant && relation != kChild)
-      return link_match_type;
-    if (link_match_type != kMatchAll)
-      return link_match_type;
+    if (const CSSSelectorList* list = current->SelectorList()) {
+      for (const CSSSelector* sub_selector = list->First(); sub_selector;
+           sub_selector = CSSSelectorList::Next(*sub_selector)) {
+        if (sub_selector->HasLinkOrVisited())
+          return true;
+      }
+    }
   }
-  return link_match_type;
+  return false;
 }
 
 void CSSSelector::SetNth(int a, int b) {

@@ -146,8 +146,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   init.scrollbar_part = pseudo_style_request_.scrollbar_part;
   init.part_names = part_names;
   SelectorChecker checker(init);
-  SelectorChecker::SelectorCheckingContext context(
-      &context_.GetElement(), SelectorChecker::kVisitedMatchEnabled);
+  SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
   context.scope = match_request.scope;
   context.pseudo_id = pseudo_style_request_.pseudo_id;
   context.vtt_originating_element = match_request.vtt_originating_element;
@@ -178,6 +177,11 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
     SelectorChecker::MatchResult result;
     context.selector = &rule_data->Selector();
+    // If the selector does not contain :link or :visited, we disable
+    // :visited matching as a performance optimization.
+    context.is_inside_visited_link =
+        (inside_link_ == EInsideLink::kInsideVisitedLink) &&
+        rule_data->HasLinkOrVisited();
     if (!checker.Match(context, result)) {
       rejected++;
       continue;
@@ -341,10 +345,11 @@ void ElementRuleCollector::SortAndTransferMatchedRules() {
 
   // Now transfer the set of matched rules over to our list of declarations.
   for (unsigned i = 0; i < matched_rules_.size(); i++) {
-    const RuleData* rule_data = matched_rules_[i].GetRuleData();
+    const MatchedRule& matched_rule = matched_rules_[i];
+    const RuleData* rule_data = matched_rule.GetRuleData();
     result_.AddMatchedProperties(
         &rule_data->Rule()->Properties(),
-        AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
+        AdjustLinkMatchType(inside_link_, matched_rule.GetLinkMatchType()),
         rule_data->GetValidPropertyFilter(matching_ua_rules_));
   }
 }
@@ -373,7 +378,7 @@ void ElementRuleCollector::DidMatchRule(
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
   } else {
     matched_rules_.push_back(MatchedRule(
-        rule_data, result.specificity, cascade_order,
+        rule_data, result.specificity, result.link_match_type, cascade_order,
         match_request.style_sheet_index, match_request.style_sheet));
   }
 }

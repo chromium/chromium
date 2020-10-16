@@ -110,7 +110,7 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
     return contains_uncommon_attribute_selector_;
   }
   unsigned Specificity() const { return specificity_; }
-  unsigned LinkMatchType() const { return link_match_type_; }
+  bool HasLinkOrVisited() const { return has_link_or_visited_; }
   bool HasDocumentSecurityOrigin() const {
     return has_document_security_origin_;
   }
@@ -146,10 +146,10 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned contains_uncommon_attribute_selector_ : 1;
   // 32 bits above
   unsigned specificity_ : 24;
-  unsigned link_match_type_ : 2;  //  CSSSelector::LinkMatchMask
+  unsigned has_link_or_visited_ : 1;
   unsigned has_document_security_origin_ : 1;
   unsigned valid_property_filter_ : 2;
-  // 29 bits above
+  // 28 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
 };
