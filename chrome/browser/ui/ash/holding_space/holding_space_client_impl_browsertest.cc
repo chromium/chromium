@@ -100,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, CopyImageToClipboard) {
 }
 
 // Verifies that `HoldingSpaceClient::OpenDownloads()` works as intended.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenDownloads) {
+// TODO(crbug.com/1139299): Flaky.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, DISABLED_OpenDownloads) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
