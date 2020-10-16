@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
@@ -90,9 +91,6 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
 }
 
 }  // namespace
-
-// static
-const base::TimeDelta ResolveContext::kMinTransactionTimeout;
 
 ResolveContext::ServerStats::ServerStats(
     std::unique_ptr<base::SampleVector> buckets)
@@ -274,8 +272,11 @@ base::TimeDelta ResolveContext::SecureTransactionTimeout(
   // only accounting for available DoH servers when not Secure mode.
   DCHECK_EQ(secure_dns_mode, SecureDnsMode::kSecure);
 
+  DCHECK_GE(features::kDnsMinTransactionTimeout.Get(), base::TimeDelta());
+  DCHECK_GE(features::kDnsTransactionTimeoutMultiplier.Get(), 0.0);
+
   if (!IsCurrentSession(session))
-    return kMinTransactionTimeout;
+    return features::kDnsMinTransactionTimeout.Get();
 
   // Should not need to call if there are no DoH servers configured.
   DCHECK(!doh_server_stats_.empty());
@@ -287,8 +288,13 @@ base::TimeDelta ResolveContext::SecureTransactionTimeout(
                  NextFallbackPeriodHelper(&stats, 0 /* num_backoffs */));
   }
 
-  return std::max(kMinTransactionTimeout,
-                  shortest_fallback_period * kTimeoutMultiplier);
+  DCHECK_GE(shortest_fallback_period, base::TimeDelta());
+  base::TimeDelta ratio_based_timeout =
+      shortest_fallback_period *
+      features::kDnsTransactionTimeoutMultiplier.Get();
+
+  return std::max(features::kDnsMinTransactionTimeout.Get(),
+                  ratio_based_timeout);
 }
 
 void ResolveContext::RegisterDohStatusObserver(DohStatusObserver* observer) {

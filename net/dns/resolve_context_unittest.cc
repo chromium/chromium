@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -1061,7 +1062,7 @@ TEST_F(ResolveContextTest, TransactionTimeout_SmallFallbackPeriod) {
 
   EXPECT_EQ(
       context.SecureTransactionTimeout(SecureDnsMode::kSecure, session.get()),
-      ResolveContext::kMinTransactionTimeout);
+      features::kDnsMinTransactionTimeout.Get());
 }
 
 // Expect multiplier on fallback period to be used when larger than minimum
@@ -1078,8 +1079,8 @@ TEST_F(ResolveContextTest, TransactionTimeout_LongFallbackPeriod) {
                                             false /* network_change */);
 
   base::TimeDelta expected =
-      kFallbackPeriod * ResolveContext::kTimeoutMultiplier;
-  ASSERT_GT(expected, ResolveContext::kMinTransactionTimeout);
+      kFallbackPeriod * features::kDnsTransactionTimeoutMultiplier.Get();
+  ASSERT_GT(expected, features::kDnsMinTransactionTimeout.Get());
 
   EXPECT_EQ(
       context.SecureTransactionTimeout(SecureDnsMode::kSecure, session.get()),
@@ -1106,7 +1107,7 @@ TEST_F(ResolveContextTest, TransactionTimeout_LongRtt) {
   // fallback period is used.
   EXPECT_EQ(
       context.SecureTransactionTimeout(SecureDnsMode::kSecure, session.get()),
-      ResolveContext::kMinTransactionTimeout);
+      features::kDnsMinTransactionTimeout.Get());
 
   // Record long RTTs for remaining server.
   for (int i = 0; i < 50; ++i) {
@@ -1117,7 +1118,7 @@ TEST_F(ResolveContextTest, TransactionTimeout_LongRtt) {
   // Expect longer timeouts.
   EXPECT_GT(
       context.SecureTransactionTimeout(SecureDnsMode::kSecure, session.get()),
-      ResolveContext::kMinTransactionTimeout);
+      features::kDnsMinTransactionTimeout.Get());
 }
 
 TEST_F(ResolveContextTest, TransactionTimeout_DifferentSession) {
@@ -1139,13 +1140,13 @@ TEST_F(ResolveContextTest, TransactionTimeout_DifferentSession) {
   // Confirm that if session data were used, the timeout would be higher than
   // the min.
   base::TimeDelta multiplier_expected =
-      kFallbackPeriod * ResolveContext::kTimeoutMultiplier;
-  ASSERT_GT(multiplier_expected, ResolveContext::kMinTransactionTimeout);
+      kFallbackPeriod * features::kDnsTransactionTimeoutMultiplier.Get();
+  ASSERT_GT(multiplier_expected, features::kDnsMinTransactionTimeout.Get());
 
   // Expect timeout always minimum with wrong session.
   EXPECT_EQ(
       context.SecureTransactionTimeout(SecureDnsMode::kSecure, session2.get()),
-      ResolveContext::kMinTransactionTimeout);
+      features::kDnsMinTransactionTimeout.Get());
 }
 
 // Ensures that reported negative RTT values don't cause a crash. Regression

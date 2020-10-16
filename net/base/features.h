@@ -28,6 +28,16 @@ NET_EXPORT extern const base::Feature kCapReferrerToOriginOnCrossOrigin;
 // Enables TLS 1.3 early data.
 NET_EXPORT extern const base::Feature kEnableTLS13EarlyData;
 
+// Support for altering the parameters used for DNS transaction timeout. See
+// ResolveContext::SecureTransactionTimeout().
+NET_EXPORT extern const base::Feature kDnsTransactionDynamicTimeouts;
+// Multiplier applied to current fallback periods in determining a transaction
+// timeout.
+NET_EXPORT extern const base::FeatureParam<double>
+    kDnsTransactionTimeoutMultiplier;
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kDnsMinTransactionTimeout;
+
 // Enables DNS queries for HTTPSSVC or INTEGRITY records, depending on feature
 // parameters. These queries will only be made over DoH. HTTPSSVC responses may
 // cause us to upgrade the URL to HTTPS and/or to attempt QUIC.

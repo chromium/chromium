@@ -17,6 +17,16 @@ const base::Feature kAcceptLanguageHeader{"AcceptLanguageHeader",
 const base::Feature kCapReferrerToOriginOnCrossOrigin{
     "CapReferrerToOriginOnCrossOrigin", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDnsTransactionDynamicTimeouts{
+    "DnsTransactionDynamicTimeouts", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<double> kDnsTransactionTimeoutMultiplier{
+    &kDnsTransactionDynamicTimeouts, "DnsTransactionTimeoutMultiplier", 7.5};
+
+const base::FeatureParam<base::TimeDelta> kDnsMinTransactionTimeout{
+    &kDnsTransactionDynamicTimeouts, "DnsMinTransactionTimeout",
+    base::TimeDelta::FromSeconds(12)};
+
 const base::Feature kDnsHttpssvc{"DnsHttpssvc",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -43,13 +43,6 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // failures, and the outcome of fallback queries is not taken into account.
   static const int kAutomaticModeFailureLimit = 10;
 
-  // Multiplier applied to current fallback periods in determining a transaction
-  // timeout.
-  static constexpr float kTimeoutMultiplier = 7.5;
-
-  static constexpr base::TimeDelta kMinTransactionTimeout =
-      base::TimeDelta::FromSeconds(12);
-
   class DohStatusObserver : public base::CheckedObserver {
    public:
     // Notification indicating that the current session for which DoH servers
