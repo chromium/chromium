@@ -382,6 +382,12 @@ void AppCacheDiskCache::OnCreateBackendComplete(int return_value) {
         return_value = DoomEntry(call.key, copyable_callback);
         break;
     }
+
+    // disk_cache::{Create,Open,Doom}Entry() call their callbacks iff they
+    // return net::ERR_IO_PENDING. In this case, the callback was not called.
+    // However, the corresponding ServiceWorkerDiskCache wrapper returned
+    // net::ERR_IO_PENDING as it queued up the pending call. To follow the
+    // disk_cache API contract, we need to call the callback ourselves here.
     if (return_value != net::ERR_IO_PENDING)
       copyable_callback.Run(return_value);
   }
