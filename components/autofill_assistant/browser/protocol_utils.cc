@@ -150,6 +150,7 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
     const std::string& global_payload,
     const std::string& script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
+    const RoundtripTimingStats& timing_stats,
     const ClientContextProto& client_context) {
   ScriptActionRequestProto request_proto;
   request_proto.set_global_payload(global_payload);
@@ -159,6 +160,7 @@ std::string ProtocolUtils::CreateNextScriptActionsRequest(
   for (const auto& processed_action : processed_actions) {
     next_request->add_processed_actions()->MergeFrom(processed_action);
   }
+  *next_request->mutable_timing_stats() = timing_stats;
   *request_proto.mutable_client_context() = client_context;
   std::string serialized_request_proto;
   bool success = request_proto.SerializeToString(&serialized_request_proto);

@@ -143,7 +143,7 @@ TEST_F(ProtocolUtilsTest, CreateNextScriptActionsRequest) {
   EXPECT_TRUE(
       request.ParseFromString(ProtocolUtils::CreateNextScriptActionsRequest(
           "global_payload", "script_payload", processed_actions,
-          client_context_proto_)));
+          RoundtripTimingStats(), client_context_proto_)));
 
   AssertClientContext(request.client_context());
   EXPECT_EQ(1, request.next_request().processed_actions().size());

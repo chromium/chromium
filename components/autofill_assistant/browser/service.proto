@@ -387,12 +387,22 @@ message InitialScriptActionsRequestProto {
   repeated ScriptParameterProto script_parameters = 2;
 }
 
+message RoundtripTimingStats {
+  // Reports how long it took for the previous roundtrip to the backend to
+  // complete.
+  optional int64 roundtrip_time_ms = 1;
+  // Reports the total client processing time for the executed batch of actions.
+  optional int64 client_time_ms = 2;
+}
+
 // Next request to get a script's actions.
 message NextScriptActionsRequestProto {
   // The result of processing each ActionProto from the previous response. This
   // field must be in the same order as the actions in the original response.
   // It may have less actions in case of failure.
   repeated ProcessedActionProto processed_actions = 1;
+  // Contains all roundtrip level (as opposed to action level) timing stats.
+  optional RoundtripTimingStats timing_stats = 2;
 }
 
 // Response of a script's actions.

@@ -50,6 +50,7 @@ class ProtocolUtils {
       const std::string& global_payload,
       const std::string& script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
+      const RoundtripTimingStats& timing_stats,
       const ClientContextProto& client_context);
 
   // Create an action from the |action|.

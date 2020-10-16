@@ -282,6 +282,7 @@ TEST_F(LiteServiceTest, GetActionsSplitsActionsResponseAtLastBrowse) {
 
   EXPECT_CALL(mock_script_running_callback_, Run(/*ui_shown =*/true)).Times(1);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -296,6 +297,7 @@ TEST_F(LiteServiceTest, GetNextActionsFirstPartStopsOnUserNavigateAway) {
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_BROWSE_FAILED_NAVIGATE);
   EXPECT_CALL(mock_script_running_callback_, Run(/*ui_shown =*/true)).Times(0);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -315,6 +317,7 @@ TEST_F(LiteServiceTest, GetNextActionsFirstPartSucceedsOnAutoSelectChoice) {
   EXPECT_CALL(mock_response_callback_, Run(true, ""));
   EXPECT_CALL(mock_script_running_callback_, Run(/*ui_shown =*/true)).Times(1);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -333,12 +336,14 @@ TEST_F(LiteServiceTest, GetNextActionsSecondPartOnlyServedOnce) {
 
   EXPECT_CALL(mock_response_callback_, Run(true, "")).Times(1);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::
           LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -357,6 +362,7 @@ TEST_F(LiteServiceTest, GetNextActionsSecondPartStopsWhenUserCancels) {
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -376,6 +382,7 @@ TEST_F(LiteServiceTest, GetNextActionsSecondPartStopsWhenUserNavigatesBack) {
       Metrics::LiteScriptFinishedState::
           LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -388,6 +395,7 @@ TEST_F(LiteServiceTest, GetNextActionsSecondPartStopsWhenUserNavigatesAway) {
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 
@@ -402,10 +410,10 @@ TEST_F(LiteServiceTest, GetNextActionsSecondPartStopsWhenUserAgrees) {
   processed_actions.back().set_status(ACTION_APPLIED);
   processed_actions.back().mutable_prompt_choice()->set_server_payload(
       "payload");
-
   ExpectStopWithFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
   lite_service_->GetNextActions(TriggerContextImpl(), "", "", processed_actions,
+                                RoundtripTimingStats(),
                                 mock_response_callback_.Get());
 }
 

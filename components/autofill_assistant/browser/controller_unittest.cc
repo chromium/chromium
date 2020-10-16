@@ -124,8 +124,8 @@ class ControllerTest : public content::RenderViewHostTestHarness {
     ON_CALL(*mock_service_, OnGetActions(_, _, _, _, _, _))
         .WillByDefault(RunOnceCallback<5>(true, ""));
 
-    ON_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _))
-        .WillByDefault(RunOnceCallback<4>(true, ""));
+    ON_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _, _))
+        .WillByDefault(RunOnceCallback<5>(true, ""));
 
     ON_CALL(*mock_service_, IsLiteService).WillByDefault(Return(false));
 
@@ -1098,9 +1098,9 @@ TEST_F(ControllerTest, WaitForNavigationActionTimesOut) {
   SetupActionsForScript("script", actions_response);
 
   std::vector<ProcessedActionProto> processed_actions_capture;
-  EXPECT_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _))
+  EXPECT_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
-                      RunOnceCallback<4>(true, "")));
+                      RunOnceCallback<5>(true, "")));
 
   Start("http://a.example.com/path");
   EXPECT_THAT(controller_->GetUserActions(), SizeIs(1));
@@ -1131,9 +1131,9 @@ TEST_F(ControllerTest, WaitForNavigationActionStartWithinTimeout) {
   SetupActionsForScript("script", actions_response);
 
   std::vector<ProcessedActionProto> processed_actions_capture;
-  EXPECT_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _))
+  EXPECT_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
-                      RunOnceCallback<4>(true, "")));
+                      RunOnceCallback<5>(true, "")));
 
   Start("http://a.example.com/path");
   EXPECT_THAT(controller_->GetUserActions(), SizeIs(1));
@@ -2656,9 +2656,9 @@ TEST_F(ControllerTest, EndPromptWithOnEndNavigation) {
   SetupActionsForScript("script", actions_response);
 
   std::vector<ProcessedActionProto> processed_actions_capture;
-  EXPECT_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _))
+  EXPECT_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
-                      RunOnceCallback<4>(true, "")));
+                      RunOnceCallback<5>(true, "")));
 
   Start("http://a.example.com/path");
 

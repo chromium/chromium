@@ -123,13 +123,15 @@ void ServiceImpl::GetNextActions(
     const std::string& previous_global_payload,
     const std::string& previous_script_payload,
     const std::vector<ProcessedActionProto>& processed_actions,
+    const RoundtripTimingStats& timing_stats,
     ResponseCallback callback) {
   client_context_->Update(trigger_context);
-  SendRequest(AddLoader(script_action_server_url_,
-                        ProtocolUtils::CreateNextScriptActionsRequest(
-                            previous_global_payload, previous_script_payload,
-                            processed_actions, client_context_->AsProto()),
-                        std::move(callback)));
+  SendRequest(AddLoader(
+      script_action_server_url_,
+      ProtocolUtils::CreateNextScriptActionsRequest(
+          previous_global_payload, previous_script_payload, processed_actions,
+          timing_stats, client_context_->AsProto()),
+      std::move(callback)));
 }
 
 void ServiceImpl::SendRequest(Loader* loader) {

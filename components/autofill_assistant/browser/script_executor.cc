@@ -120,7 +120,7 @@ void ScriptExecutor::Run(const UserData* user_data,
           {delegate_->GetTriggerContext(), additional_context_.get()}),
       last_global_payload_, last_script_payload_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 const UserData* ScriptExecutor::GetUserData() const {
@@ -808,7 +808,12 @@ base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void ScriptExecutor::OnGetActions(bool result, const std::string& response) {
+void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
+                                  bool result,
+                                  const std::string& response) {
+  batch_start_time_ = base::TimeTicks::Now();
+  roundtrip_timing_stats_.set_roundtrip_time_ms(
+      (batch_start_time_ - start_time).InMilliseconds());
   bool success = result && ProcessNextActionResponse(response);
   VLOG(2) << __func__ << " result=" << result;
   if (should_stop_script_) {
@@ -933,12 +938,20 @@ void ScriptExecutor::ProcessAction(Action* action) {
 }
 
 void ScriptExecutor::GetNextActions() {
+  base::TimeTicks get_next_actions_start = base::TimeTicks::Now();
+  roundtrip_timing_stats_.set_client_time_ms(
+      (get_next_actions_start - batch_start_time_).InMilliseconds());
+  VLOG(2) << "Batch timing stats";
+  VLOG(2) << "Roundtrip time: " << roundtrip_timing_stats_.roundtrip_time_ms();
+  VLOG(2) << "Client execution time: "
+          << roundtrip_timing_stats_.client_time_ms();
   delegate_->GetService()->GetNextActions(
       MergedTriggerContext(
           {delegate_->GetTriggerContext(), additional_context_.get()}),
       last_global_payload_, last_script_payload_, processed_actions_,
+      roundtrip_timing_stats_,
       base::BindOnce(&ScriptExecutor::OnGetActions,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), get_next_actions_start));
 }
 
 void ScriptExecutor::OnProcessedAction(

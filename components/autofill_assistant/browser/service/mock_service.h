@@ -55,15 +55,18 @@ class MockService : public ServiceImpl {
       const std::string& previous_global_payload,
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
+      const RoundtripTimingStats& timing_stats,
       ResponseCallback callback) override {
     OnGetNextActions(trigger_context, previous_global_payload,
-                     previous_script_payload, processed_actions, callback);
+                     previous_script_payload, processed_actions, timing_stats,
+                     callback);
   }
-  MOCK_METHOD5(OnGetNextActions,
+  MOCK_METHOD6(OnGetNextActions,
                void(const TriggerContext& trigger_contexts,
                     const std::string& previous_global_payload,
                     const std::string& previous_script_payload,
                     const std::vector<ProcessedActionProto>& processed_actions,
+                    const RoundtripTimingStats& timing_stats,
                     ResponseCallback& callback));
 
   MOCK_CONST_METHOD0(IsLiteService, bool());

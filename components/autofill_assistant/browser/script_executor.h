@@ -379,7 +379,9 @@ class ScriptExecutor : public ActionDelegate,
     DISALLOW_COPY_AND_ASSIGN(WaitForDomOperation);
   };
 
-  void OnGetActions(bool result, const std::string& response);
+  void OnGetActions(base::TimeTicks start_time,
+                    bool result,
+                    const std::string& response);
   bool ProcessNextActionResponse(const std::string& response);
   void ReportPayloadsToListener();
   void ReportScriptsUpdateToListener(
@@ -499,6 +501,9 @@ class ScriptExecutor : public ActionDelegate,
 
   bool is_paused_ = false;
   std::string last_status_message_;
+
+  base::TimeTicks batch_start_time_;
+  RoundtripTimingStats roundtrip_timing_stats_;
 
   base::WeakPtrFactory<ScriptExecutor> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ScriptExecutor);
