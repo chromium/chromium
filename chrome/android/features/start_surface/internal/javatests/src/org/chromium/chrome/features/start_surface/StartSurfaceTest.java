@@ -645,6 +645,7 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true" +
         "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
+    @DisabledTest(message = "https://crbug.com/1139467")
     public void testShow_SingleAsHomepage_V2() {
         // clang-format on
         if (!mImmediateReturn) {
