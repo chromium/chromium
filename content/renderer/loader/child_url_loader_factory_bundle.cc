@@ -303,9 +303,7 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
         std::move(client), traffic_annotation);
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kNoStatePrefetchUsingPrefetchLoader) &&
-      (request.load_flags & net::LOAD_PREFETCH) && prefetch_loader_factory_) {
+  if ((request.load_flags & net::LOAD_PREFETCH) && prefetch_loader_factory_) {
     // This is no-state prefetch (see
     // WebURLRequest::GetLoadFlagsForWebUrlRequest).
     prefetch_loader_factory_->CreateLoaderAndStart(

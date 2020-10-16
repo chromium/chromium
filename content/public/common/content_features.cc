@@ -409,12 +409,6 @@ const base::Feature kNetworkServiceInProcess {
 const base::Feature kNeverSlowMode{"NeverSlowMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// A kill switch for the change for more code sharing between usual prefetch
-// and no-state prefetch.
-// TODO(yhirano): Remove this if M86 stable looks good.
-const base::Feature kNoStatePrefetchUsingPrefetchLoader{
-    "NoStatePrefetchUsingPrefetchLoader", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Kill switch for Web Notification content images.
 const base::Feature kNotificationContentImage{"NotificationContentImage",
                                               base::FEATURE_ENABLED_BY_DEFAULT};

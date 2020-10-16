@@ -381,7 +381,6 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
   void Start(std::unique_ptr<network::ResourceRequest> request,
              scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
              int requestor_id,
-             bool download_to_network_cache_only,
              bool pass_response_pipe_to_client,
              bool no_mime_sniffing,
              base::TimeDelta timeout_interval,
@@ -478,74 +477,6 @@ class WebURLLoaderImpl::RequestPeerImpl : public RequestPeer {
   DISALLOW_COPY_AND_ASSIGN(RequestPeerImpl);
 };
 
-// A sink peer that doesn't forward the data.
-class WebURLLoaderImpl::SinkPeer : public RequestPeer {
- public:
-  explicit SinkPeer(Context* context)
-      : context_(context),
-        body_watcher_(FROM_HERE,
-                      mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-                      context->task_runner()) {}
-
-  // RequestPeer implementation:
-  void OnUploadProgress(uint64_t position, uint64_t size) override {}
-  bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
-                          network::mojom::URLResponseHeadPtr head,
-                          std::vector<std::string>*) override {
-    return true;
-  }
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    body_handle_ = std::move(body);
-    body_watcher_.Watch(
-        body_handle_.get(),
-        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-        MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-        base::BindRepeating(&SinkPeer::OnBodyAvailable,
-                            base::Unretained(this)));
-  }
-  void OnTransferSizeUpdated(int transfer_size_diff) override {}
-  void OnReceivedCachedMetadata(mojo_base::BigBuffer) override {}
-  void OnCompletedRequest(
-      const network::URLLoaderCompletionStatus& status) override {
-    body_handle_.reset();
-    body_watcher_.Cancel();
-    context_->resource_dispatcher()->Cancel(context_->request_id(),
-                                            context_->task_runner());
-  }
-  scoped_refptr<base::TaskRunner> GetTaskRunner() override {
-    return context_->task_runner();
-  }
-
- private:
-  void OnBodyAvailable(MojoResult, const mojo::HandleSignalsState&) {
-    while (true) {
-      const void* buffer = nullptr;
-      uint32_t available = 0;
-      MojoResult rv = body_handle_->BeginReadData(&buffer, &available,
-                                                  MOJO_READ_DATA_FLAG_NONE);
-      if (rv == MOJO_RESULT_SHOULD_WAIT) {
-        return;
-      }
-      if (rv != MOJO_RESULT_OK) {
-        break;
-      }
-      rv = body_handle_->EndReadData(available);
-      if (rv != MOJO_RESULT_OK) {
-        break;
-      }
-    }
-    body_handle_.reset();
-    body_watcher_.Cancel();
-  }
-
-  scoped_refptr<Context> context_;
-  mojo::ScopedDataPipeConsumerHandle body_handle_;
-  mojo::SimpleWatcher body_watcher_;
-  DISALLOW_COPY_AND_ASSIGN(SinkPeer);
-};
-
 // WebURLLoaderImpl::Context --------------------------------------------------
 
 // static
@@ -609,7 +540,6 @@ void WebURLLoaderImpl::Context::Start(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<blink::WebURLRequest::ExtraData> passed_extra_data,
     int requestor_id,
-    bool download_to_network_cache_only,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
@@ -655,14 +585,7 @@ void WebURLLoaderImpl::Context::Start(
   }
   extra_data->CopyToResourceRequest(request.get());
 
-  std::unique_ptr<RequestPeer> peer;
-  if (download_to_network_cache_only &&
-      !base::FeatureList::IsEnabled(
-          features::kNoStatePrefetchUsingPrefetchLoader)) {
-    peer = std::make_unique<SinkPeer>(this);
-  } else {
-    peer = std::make_unique<WebURLLoaderImpl::RequestPeerImpl>(this);
-  }
+  auto peer = std::make_unique<WebURLLoaderImpl::RequestPeerImpl>(this);
 
   if (resource_type == blink::mojom::ResourceType::kPrefetch) {
     request->corb_detachable = true;
@@ -1079,7 +1002,6 @@ void WebURLLoaderImpl::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
     int requestor_id,
-    bool download_to_network_cache_only,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
@@ -1100,8 +1022,7 @@ void WebURLLoaderImpl::LoadSynchronously(
 
   const bool report_raw_headers = request->report_raw_headers;
   context_->Start(std::move(request), std::move(request_extra_data),
-                  requestor_id, download_to_network_cache_only,
-                  pass_response_pipe_to_client, no_mime_sniffing,
+                  requestor_id, pass_response_pipe_to_client, no_mime_sniffing,
                   timeout_interval, &sync_load_response,
                   std::move(resource_load_info_notifier_wrapper));
 
@@ -1148,7 +1069,6 @@ void WebURLLoaderImpl::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<blink::WebURLRequest::ExtraData> request_extra_data,
     int requestor_id,
-    bool download_to_network_cache_only,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
@@ -1159,7 +1079,7 @@ void WebURLLoaderImpl::LoadAsynchronously(
 
   context_->set_client(client);
   context_->Start(std::move(request), std::move(request_extra_data),
-                  requestor_id, download_to_network_cache_only,
+                  requestor_id,
                   /*pass_response_pipe_to_client=*/false, no_mime_sniffing,
                   base::TimeDelta(), nullptr,
                   std::move(resource_load_info_notifier_wrapper));

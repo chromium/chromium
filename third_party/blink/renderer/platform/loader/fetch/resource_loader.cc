@@ -1235,10 +1235,9 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
         request.GetRequestContext() == blink::mojom::RequestContextType::FETCH;
     loader_->LoadSynchronously(
         std::move(network_resource_request), request.GetExtraData(),
-        request.RequestorID(), request.IsDownloadToNetworkCacheOnly(),
-        request.DownloadToBlob(), no_mime_sniffing, request.TimeoutInterval(),
-        this, response_out, error_out, data_out, encoded_data_length,
-        encoded_body_length, downloaded_blob,
+        request.RequestorID(), request.DownloadToBlob(), no_mime_sniffing,
+        request.TimeoutInterval(), this, response_out, error_out, data_out,
+        encoded_data_length, encoded_body_length, downloaded_blob,
         Context().CreateResourceLoadInfoNotifierWrapper());
   }
   // A message dispatched while synchronously fetching the resource
@@ -1300,9 +1299,8 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
     request_body_ = ResourceRequestBody(std::move(form_body));
   loader_->LoadAsynchronously(
       std::move(network_resource_request), request.GetExtraData(),
-      request.RequestorID(), request.IsDownloadToNetworkCacheOnly(),
-      no_mime_sniffing, Context().CreateResourceLoadInfoNotifierWrapper(),
-      this);
+      request.RequestorID(), no_mime_sniffing,
+      Context().CreateResourceLoadInfoNotifierWrapper(), this);
   if (code_cache_request_) {
     // Sets defers loading and initiates a fetch from code cache.
     code_cache_request_->FetchFromCodeCache(loader_.get(), this);

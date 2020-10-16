@@ -69,7 +69,6 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
       int requestor_id,
-      bool download_to_network_cache_only,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
@@ -88,7 +87,6 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequest::ExtraData> request_extra_data,
       int requestor_id,
-      bool download_to_network_cache_only,
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
@@ -96,8 +94,8 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     if (url_loader_) {
       url_loader_->LoadAsynchronously(
           std::move(request), std::move(request_extra_data), requestor_id,
-          download_to_network_cache_only, no_mime_sniffing,
-          std::move(resource_load_info_notifier_wrapper), client);
+          no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
+          client);
       return;
     }
     // It is safe to use Unretained(client), because |client| is a
@@ -106,8 +104,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     pending_method_calls_.push(WTF::Bind(
         &PrefetchedSignedExchangeLoader::LoadAsynchronously, GetWeakPtr(),
         std::move(request), std::move(request_extra_data), requestor_id,
-        download_to_network_cache_only, no_mime_sniffing,
-        std::move(resource_load_info_notifier_wrapper),
+        no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
         WTF::Unretained(client)));
   }
   void SetDefersLoading(bool value) override {
