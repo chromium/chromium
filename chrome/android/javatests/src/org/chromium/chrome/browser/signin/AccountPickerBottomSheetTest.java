@@ -144,8 +144,11 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testCollapsedSheetWithAccount() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram = new HistogramDelta(
+                "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.SHOWN);
         buildAndShowCollapsedBottomSheet();
         checkCollapsedAccountList(PROFILE_DATA1);
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     @Test
@@ -202,6 +205,9 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testDismissCollapsedSheet() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction",
+                        AccountConsistencyPromoAction.DISMISSED_BACK);
         buildAndShowCollapsedBottomSheet();
         onView(withText(PROFILE_DATA1.getAccountName())).check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
@@ -211,6 +217,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onDismiss();
         Assert.assertEquals(0, mFakeProfileDataSource.getNumberOfObservers());
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     @Test
@@ -485,6 +492,8 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testAddAccountOnExpandedSheet() {
+        MetricsUtils.HistogramDelta accountConsistencyHistogram = new HistogramDelta(
+                "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.ADD_ACCOUNT);
         buildAndShowExpandedBottomSheet();
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
         verify(mAccountPickerDelegateMock).addAccount(callbackArgumentCaptor.capture());
@@ -495,6 +504,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> callback.onResult(profileDataAdded.getAccountName()));
         checkCollapsedAccountList(profileDataAdded);
+        Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
     }
 
     @Test
