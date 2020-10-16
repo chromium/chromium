@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.view.View;
 
@@ -21,12 +20,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -74,7 +75,6 @@ public class RecentTabsPageTest {
     @After
     public void tearDown() {
         leaveRecentTabsPage();
-        RecentTabsManager.forcePromoStateForTests(null);
         RecentTabsManager.setRecentlyClosedTabManagerForTests(null);
     }
 
@@ -100,9 +100,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature("RenderTest")
     public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
-        Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        RecentTabsManager.forcePromoStateForTests(
-                RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED);
+        mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
+                AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
         mPage = loadRecentTabsPage();
         mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
     }
@@ -110,10 +109,9 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
     public void testPersonalizedSyncPromoInRecentTabsPage() throws Exception {
-        Account account = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        RecentTabsManager.forcePromoStateForTests(
-                RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED);
+        mAccountManagerTestRule.addTestAccountThenSignin();
         mPage = loadRecentTabsPage();
         mRenderTestRule.render(mPage.getView(), "personalized_sync_promo_recent_tabs_page");
     }
