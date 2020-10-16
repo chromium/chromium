@@ -1644,11 +1644,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-home-page-location-policy",
-    "owners": [ "wenyufu", "chrome-android-app@chromium.org" ],
-    "expiry_milestone": 83
-  },
-  {
     "name": "enable-horizontal-tab-switcher",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 77

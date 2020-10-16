@@ -11,8 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -48,14 +46,14 @@ public class HomepagePolicyManager implements PrefObserver {
 
     private boolean mIsInitializedWithNative;
     private PrefChangeRegistrar mPrefChangeRegistrar;
-    private SharedPreferencesManager mSharedPreferenceManager;
 
+    private final SharedPreferencesManager mSharedPreferenceManager;
     private final ObserverList<HomepagePolicyStateListener> mListeners = new ObserverList<>();
 
     /**
      * @return The singleton instance of {@link HomepagePolicyManager}.
      */
-    public static HomepagePolicyManager getInstance() {
+    static HomepagePolicyManager getInstance() {
         if (sInstance == null) {
             sInstance = new HomepagePolicyManager();
         }
@@ -68,7 +66,7 @@ public class HomepagePolicyManager implements PrefObserver {
      * @return True if the current home page is managed by enterprise policy.
      */
     public static boolean isHomepageManagedByPolicy() {
-        return isFeatureFlagEnabled() && getInstance().isHomepageLocationPolicyEnabled();
+        return getInstance().isHomepageLocationPolicyEnabled();
     }
 
     /**
@@ -113,10 +111,8 @@ public class HomepagePolicyManager implements PrefObserver {
                 ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, "");
         mIsHomepageLocationPolicyEnabled = !TextUtils.isEmpty(mHomepage);
 
-        if (isFeatureFlagEnabled()) {
-            ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(
-                    this::onFinishNativeInitialization);
-        }
+        ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(
+                this::onFinishNativeInitialization);
     }
 
     /**
@@ -133,7 +129,7 @@ public class HomepagePolicyManager implements PrefObserver {
         this();
 
         if (listener != null) addListener(listener);
-        if (isFeatureFlagEnabled()) initializeWithNative(prefChangeRegistrar);
+        initializeWithNative(prefChangeRegistrar);
     }
 
     /**
@@ -143,8 +139,6 @@ public class HomepagePolicyManager implements PrefObserver {
      */
     @VisibleForTesting
     void initializeWithNative(PrefChangeRegistrar prefChangeRegistrar) {
-        assert isFeatureFlagEnabled();
-
         mPrefChangeRegistrar = prefChangeRegistrar;
         mPrefChangeRegistrar.addObserver(Pref.HOME_PAGE, this);
 
@@ -154,7 +148,6 @@ public class HomepagePolicyManager implements PrefObserver {
 
     @Override
     public void onPreferenceChange() {
-        assert isFeatureFlagEnabled();
         refresh();
     }
 
@@ -194,10 +187,6 @@ public class HomepagePolicyManager implements PrefObserver {
      */
     private void onFinishNativeInitialization() {
         if (!mIsInitializedWithNative) initializeWithNative(new PrefChangeRegistrar());
-    }
-
-    private static boolean isFeatureFlagEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY);
     }
 
     private PrefService getPrefService() {

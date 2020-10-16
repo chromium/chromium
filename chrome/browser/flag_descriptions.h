@@ -1623,9 +1623,6 @@ extern const char kFillingPasswordsFromAnyOriginDescription[];
 extern const char kGamesHubName[];
 extern const char kGamesHubDescription[];
 
-extern const char kHomepageLocationName[];
-extern const char kHomepageLocationDescription[];
-
 extern const char kHomepagePromoCardName[];
 extern const char kHomepagePromoCardDescription[];
 

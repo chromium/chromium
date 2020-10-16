@@ -209,7 +209,6 @@ public class HomepageSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    @Features.EnableFeatures(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)
     public void testStartUp_Policies_Customized() {
         // Set mock policies
         mHomepageTestRule.setHomepagePolicyForTest(TEST_URL_BAR);
@@ -243,7 +242,6 @@ public class HomepageSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    @Features.EnableFeatures(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)
     public void testStartUp_Policies_NTP() {
         // Set mock policies
         mHomepageTestRule.setHomepagePolicyForTest(CHROME_NTP);

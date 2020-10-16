@@ -294,7 +294,6 @@ public abstract class ChromeFeatureList {
             "FocusOmniboxInIncognitoTabIntents";
     public static final String GRANT_NOTIFICATIONS_TO_DSE = "GrantNotificationsToDSE";
     public static final String HANDLE_MEDIA_INTENTS = "HandleMediaIntents";
-    public static final String HOMEPAGE_LOCATION_POLICY = "HomepageLocationPolicy";
     public static final String HOMEPAGE_PROMO_CARD = "HomepagePromoCard";
     public static final String HOMEPAGE_PROMO_SYNTHETIC_PROMO_SEEN_ENABLED =
             "HomepagePromoSyntheticPromoSeenEnabled";

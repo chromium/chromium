@@ -50,7 +50,6 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM, true);
             put(ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE, true);
             put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false);
-            put(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY, false);
             put(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID, false);
             put(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD, true);
             put(ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH, true);

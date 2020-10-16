@@ -157,7 +157,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
     &kHandleMediaIntents,
-    &kHomepageLocation,
     &kHomepagePromoCard,
     &kHomepagePromoSyntheticPromoSeenEnabled,
     &kHomepagePromoSyntheticPromoSeenTracking,
@@ -458,11 +457,6 @@ const base::Feature kExploreSites{"ExploreSites",
 
 const base::Feature kHandleMediaIntents{"HandleMediaIntents",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable the HomePage Location feature that allows enterprise policy set and
-// force the home page url for managed devices.
-const base::Feature kHomepageLocation{"HomepageLocationPolicy",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kHomepagePromoCard{"HomepagePromoCard",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
