@@ -15,9 +15,9 @@ import android.os.Build;
 
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.TwaDisclosureUi;
-import org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity.DisclosureInfobar;
-import org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity.DisclosureNotification;
-import org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity.DisclosureSnackbar;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;

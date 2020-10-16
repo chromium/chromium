@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity;
+package org.chromium.chrome.browser.browserservices.ui.view;
 
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE;
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel;
+import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;

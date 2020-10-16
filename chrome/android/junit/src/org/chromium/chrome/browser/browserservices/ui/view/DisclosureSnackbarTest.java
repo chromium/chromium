@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity;
+package org.chromium.chrome.browser.browserservices.ui.view;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE;
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
-import static org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_NOT_SHOWN;
+import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +21,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.FilledLazy;
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 

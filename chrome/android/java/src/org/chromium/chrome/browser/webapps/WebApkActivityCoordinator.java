@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
-import org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity.DisclosureInfobar;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;

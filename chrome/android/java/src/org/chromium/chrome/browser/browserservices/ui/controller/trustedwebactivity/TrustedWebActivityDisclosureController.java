@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.browserservices.ui.controller.trustedwebacti
 
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import javax.inject.Inject;

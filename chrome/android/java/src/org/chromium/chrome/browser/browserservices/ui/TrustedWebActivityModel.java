@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
+package org.chromium.chrome.browser.browserservices.ui;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.ui.modelutil.PropertyModel;

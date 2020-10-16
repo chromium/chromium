@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity;
+package org.chromium.chrome.browser.browserservices.ui.view;
 
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityModel;
+import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;

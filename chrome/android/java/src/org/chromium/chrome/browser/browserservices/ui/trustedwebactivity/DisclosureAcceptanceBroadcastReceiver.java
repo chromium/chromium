@@ -12,7 +12,7 @@ import android.content.Intent;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
-import org.chromium.chrome.browser.browserservices.ui.view.trustedwebactivity.DisclosureNotification;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
