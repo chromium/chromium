@@ -29,6 +29,8 @@ import java.lang.annotation.RetentionPolicy;
         AccountConsistencyPromoAction.DISMISSED_SCRIM,
         AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN,
         AccountConsistencyPromoAction.DISMISSED_OTHER,
+        AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
+        AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountConsistencyPromoAction {
@@ -97,5 +99,15 @@ public @interface AccountConsistencyPromoAction {
      */
     int DISMISSED_OTHER = 11;
 
-    int MAX = 12;
+    /**
+     * The auth error screen was shown to the user.
+     */
+    int AUTH_ERROR_SHOWN = 12;
+
+    /**
+     * The generic error screen was shown to the user.
+     */
+    int GENERIC_ERROR_SHOWN = 13;
+
+    int MAX = 14;
 }
