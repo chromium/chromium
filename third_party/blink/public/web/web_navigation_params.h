@@ -172,8 +172,8 @@ struct BLINK_EXPORT WebNavigationInfo {
       network::mojom::IPAddressSpace::kUnknown;
 
   // The frame policy specified by the frame owner element.
-  // Should be base::nullopt for top level navigations
-  base::Optional<FramePolicy> frame_policy;
+  // For top-level window with no opener, this is the default lax FramePolicy.
+  FramePolicy frame_policy;
 };
 
 // This structure holds all information provided by the embedder that is

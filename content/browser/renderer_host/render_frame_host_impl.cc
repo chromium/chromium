@@ -720,12 +720,12 @@ DetermineWhetherToForbidTrustTokenRedemption(
     const url::Origin& subframe_origin) {
   // For main frame loads, the frame's feature policy is determined entirely by
   // response headers, which are provided by the renderer.
-  if (!parent || !commit_params.frame_policy)
+  if (!parent)
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
   const blink::FeaturePolicy* parent_policy = parent->feature_policy();
   blink::ParsedFeaturePolicy container_policy =
-      commit_params.frame_policy->container_policy;
+      commit_params.frame_policy.container_policy;
 
   auto subframe_policy = blink::FeaturePolicy::CreateFromParentPolicy(
       parent_policy, container_policy, subframe_origin);

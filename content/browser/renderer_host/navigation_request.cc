@@ -1045,8 +1045,6 @@ NavigationRequest::NavigationRequest(
   DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
   DCHECK(!IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
-  DCHECK((IsInMainFrame() && browser_initiated) ||
-         commit_params_->frame_policy.has_value());
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "NavigationRequest",
                                     navigation_id_, "navigation_request",
@@ -5012,24 +5010,8 @@ NavigationRequest::ComputeSandboxFlagsToCommit() {
   DCHECK(!HasCommitted());
   DCHECK(!IsErrorPage());
 
-  network::mojom::WebSandboxFlags out;
-  if (commit_params_->frame_policy) {
-    // This corresponds to the sandbox policy of the frame embedding the
-    // document that were active when the navigation started.
-    out = commit_params_->frame_policy->sandbox_flags;
-  } else {
-    // The document doesn't have a sandbox policy. This case should in theory
-    // contains only the navigations that are:
-    // - main frame.
-    // - browser initiated.
-    // - non-history.
-    // - non-error.
-    //
-    // TODO(arthursonzogni): In practice, a few navigations not complying with
-    // one of the 4 items above are using this path. They must be identified
-    // and removed. A set of DCHECK must be added.
-    out = network::mojom::WebSandboxFlags::kNone;
-  }
+  network::mojom::WebSandboxFlags out =
+      commit_params_->frame_policy.sandbox_flags;
 
   // The response can also restrict the policy further.
   if (response_head_) {
