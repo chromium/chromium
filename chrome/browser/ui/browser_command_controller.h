@@ -63,6 +63,7 @@ class BrowserCommandController : public CommandUpdater,
   void FindBarVisibilityChanged();
   void ExtensionStateChanged();
   void TabKeyboardFocusChangedTo(base::Optional<int> index);
+  void WebContentsFocusChanged();
 
   // Overriden from CommandUpdater:
   bool SupportsCommand(int id) const override;
@@ -193,6 +194,9 @@ class BrowserCommandController : public CommandUpdater,
   // populated, it is the index of the tab with focus; if it is not populated,
   // no tab has keyboard focus.
   void UpdateCommandsForTabKeyboardFocus(base::Optional<int> target_index);
+
+  // Updates commands that depend on whether web contents is focused or not.
+  void UpdateCommandsForWebContentsFocus();
 
   inline BrowserWindow* window();
   inline Profile* profile();
