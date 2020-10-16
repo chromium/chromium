@@ -139,6 +139,9 @@ fun:*GetPCIDevicesWithLibPCI*
 fun:*GetTraceCategoryEnabledFlag*
 fun:*AddTraceEvent*
 
+# Dawn, calls to OpenGL and Vulkan function pointers from shared library.
+src:*third_part/dawn/src/dawn_native/*
+
 # PPAPI
 src:*ppapi/*
 src:*content/renderer/pepper*
