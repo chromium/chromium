@@ -635,15 +635,6 @@ bool AccountManager::IsTokenAvailable(const AccountKey& account_key) const {
          it->second.token != kActiveDirectoryDummyToken;
 }
 
-bool AccountManager::HasDummyGaiaTokenSync(
-    const AccountKey& account_key) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  auto it = accounts_.find(account_key);
-  return it != accounts_.end() && it->second.token == kInvalidToken;
-}
-
 void AccountManager::HasDummyGaiaToken(
     const AccountKey& account_key,
     base::OnceCallback<void(bool)> callback) const {
@@ -661,8 +652,8 @@ void AccountManager::CheckDummyGaiaTokenForAllAccounts(
     base::OnceCallback<void(const std::vector<std::pair<Account, bool>>&)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(anastasiian): Remove this DCHECK and call |RunOnInitialization|
-  // instead.
+  // TODO(https://crbug.com/1135980): Remove this DCHECK and call
+  // |RunOnInitialization| instead.
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
 
   std::vector<std::pair<Account, bool>> accounts_list;

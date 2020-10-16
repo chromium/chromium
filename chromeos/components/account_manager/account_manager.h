@@ -241,10 +241,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   // initialized yet.
   bool IsTokenAvailable(const AccountKey& account_key) const;
 
-  // Returns true if the token stored against |account_key| is a dummy Gaia
-  // token.
-  bool HasDummyGaiaTokenSync(const AccountKey& account_key) const;
-
   // Calls the |callback| with true if the token stored against |account_key| is
   // a dummy Gaia token.
   void HasDummyGaiaToken(const AccountKey& account_key,
