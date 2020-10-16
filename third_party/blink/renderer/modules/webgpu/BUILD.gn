@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("webgpu") {
   sources = [
-    "client_validation.cc",
-    "client_validation.h",
     "dawn_callback.h",
     "dawn_conversions.cc",
     "dawn_conversions.h",

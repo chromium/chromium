@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_copy_view.h"
-#include "third_party/blink/renderer/modules/webgpu/client_validation.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
@@ -254,11 +253,6 @@ void GPUCommandEncoder::copyBufferToTexture(
     GPUTextureCopyView* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
     ExceptionState& exception_state) {
-  if (!ValidateCopySize(copy_size, exception_state) ||
-      !ValidateTextureCopyView(destination, exception_state)) {
-    return;
-  }
-
   base::Optional<WGPUBufferCopyView> dawn_source = AsDawnType(source);
   if (!dawn_source) {
     return;
@@ -275,11 +269,6 @@ void GPUCommandEncoder::copyTextureToBuffer(
     GPUBufferCopyView* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
     ExceptionState& exception_state) {
-  if (!ValidateCopySize(copy_size, exception_state) ||
-      !ValidateTextureCopyView(source, exception_state)) {
-    return;
-  }
-
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   base::Optional<WGPUBufferCopyView> dawn_destination = AsDawnType(destination);
   if (!dawn_destination) {
@@ -296,12 +285,6 @@ void GPUCommandEncoder::copyTextureToTexture(
     GPUTextureCopyView* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size,
     ExceptionState& exception_state) {
-  if (!ValidateCopySize(copy_size, exception_state) ||
-      !ValidateTextureCopyView(source, exception_state) ||
-      !ValidateTextureCopyView(destination, exception_state)) {
-    return;
-  }
-
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);

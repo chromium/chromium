@@ -5,7 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUExtent3DDict {
-    required GPUIntegerCoordinate width;
-    required GPUIntegerCoordinate height;
-    required GPUIntegerCoordinate depth;
+    GPUIntegerCoordinate width = 1;
+    GPUIntegerCoordinate height = 1;
+    GPUIntegerCoordinate depth = 1;
 };

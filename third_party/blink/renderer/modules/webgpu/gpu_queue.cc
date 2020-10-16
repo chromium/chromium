@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_copy_view.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/modules/webgpu/client_validation.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
@@ -305,11 +304,6 @@ void GPUQueue::WriteTextureImpl(
     GPUTextureDataLayout* data_layout,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
     ExceptionState& exception_state) {
-  if (!ValidateCopySize(write_size, exception_state) ||
-      !ValidateTextureCopyView(destination, exception_state)) {
-    return;
-  }
-
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
   WGPUTextureDataLayout dawn_data_layout = AsDawnType(data_layout);
   WGPUExtent3D dawn_write_size = AsDawnType(&write_size);
@@ -327,13 +321,6 @@ void GPUQueue::copyImageBitmapToTexture(
     ExceptionState& exception_state) {
   if (!source->imageBitmap()) {
     exception_state.ThrowTypeError("No valid imageBitmap");
-    return;
-  }
-
-  // TODO(shaobo.yan@intel.com): only the same color format texture copy allowed
-  // now. Need to Explore compatible texture format copy.
-  if (!ValidateCopySize(copy_size, exception_state) ||
-      !ValidateTextureCopyView(destination, exception_state)) {
     return;
   }
 
