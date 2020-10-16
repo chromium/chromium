@@ -39,7 +39,6 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   if (optimize_webui) {
     deps = [ ":build" ]
-    resource_path_rewrites = [ "print_preview.rollup.js|print_preview.js" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
   } else {
     deps = [

@@ -27,7 +27,7 @@ class GenerateGrdTest(unittest.TestCase):
     return open(os.path.join(self._out_folder, file_name), 'rb').read()
 
   def _run_test_(self, grd_expected, manifest_files, input_files=None,
-                 input_files_base_dir=None, resource_path_rewrites=None):
+                 input_files_base_dir=None):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
     args = [
@@ -44,9 +44,6 @@ class GenerateGrdTest(unittest.TestCase):
         '--input-files',
       ]
       args += input_files
-
-    if (resource_path_rewrites):
-      args += [ '--resource-path-rewrites' ] + resource_path_rewrites
 
     generate_grd.main(args)
 
@@ -72,19 +69,6 @@ class GenerateGrdTest(unittest.TestCase):
       ],
       [ 'images/test_svg.svg', 'test_html_in_src.html' ],
       'test_src_dir')
-
-  def testSuccessWithRewrites(self):
-    self._run_test_(
-      'expected_grd_with_rewrites.grd',
-      [
-        os.path.join(pathToHere, 'tests', 'test_manifest_1.json'),
-        os.path.join(pathToHere, 'tests', 'test_manifest_2.json'),
-      ],
-      input_files=None, input_files_base_dir=None,
-      resource_path_rewrites=[
-        'test.rollup.js|test.js',
-        'dir/another_element_in_dir.js|dir2/another_element_in_dir_renamed.js',
-      ])
 
 
 if __name__ == '__main__':

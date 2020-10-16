@@ -13,7 +13,7 @@
   <release seq="1">
     <includes>
       <include name="IDR_TEST_TEST_HTML" file="${root_gen_dir}/preprocessed/test.html" resource_path="test.html" use_base_dir="false" type="chrome_html" />
-      <include name="IDR_TEST_TEST_ROLLUP_JS" file="${root_gen_dir}/preprocessed/test.rollup.js" resource_path="test.rollup.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_TEST_ROLLUP_JS" file="${root_gen_dir}/preprocessed/test.rollup.js" resource_path="test.js" use_base_dir="false" type="chrome_html" />
       <include name="IDR_TEST_SHARED_ROLLUP_JS" file="${root_gen_dir}/preprocessed/shared.rollup.js" resource_path="shared.rollup.js" use_base_dir="false" type="chrome_html" />
       <include name="IDR_TEST_DIR_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/element_in_dir.js" resource_path="dir/element_in_dir.js" use_base_dir="false" type="chrome_html" />
       <include name="IDR_TEST_DIR_TEST_SVG_SVG" file="${root_gen_dir}/preprocessed/dir/test_svg.svg" resource_path="dir/test_svg.svg" use_base_dir="false" type="BINDATA" />
