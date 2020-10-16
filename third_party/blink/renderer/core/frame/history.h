@@ -41,6 +41,7 @@ namespace blink {
 class LocalFrame;
 class KURL;
 class ExceptionState;
+class HistoryItem;
 class SecurityOrigin;
 class ScriptState;
 
@@ -97,6 +98,7 @@ class CORE_EXPORT History final : public ScriptWrappable,
                         ExceptionState&);
   SerializedScriptValue* StateInternal() const;
   mojom::blink::ScrollRestorationType ScrollRestorationInternal() const;
+  HistoryItem* GetHistoryItem() const;
 
   scoped_refptr<SerializedScriptValue> last_state_object_requested_;
 };
