@@ -389,9 +389,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
   [self reloadData];
-  [self popViewIfSignedOut];
-  if (![self authService] -> IsAuthenticated() &&
-                                 _dimissAccountDetailsViewControllerBlock) {
+  if (self.authService->IsAuthenticated() ||
+      _authenticationOperationInProgress) {
+    // The signed out state might be temporary (e.g. account switch, ...).
+    // Don't pop this view based on intermediary values.
+    return;
+  }
+
+  [self dismissSelfAnimated:NO];
+
+  if (_dimissAccountDetailsViewControllerBlock) {
     _dimissAccountDetailsViewControllerBlock(/*animated=*/YES);
     _dimissAccountDetailsViewControllerBlock = nil;
   }
@@ -418,8 +425,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)handleDidAddAccount:(BOOL)success {
+  if (!success) {
+    return;
+  }
+
   [self handleAuthenticationOperationDidFinish];
-  if (success && _closeSettingsOnAddAccount) {
+  if (_closeSettingsOnAddAccount) {
     [self.dispatcher closeSettingsUI];
   }
 }
@@ -569,23 +580,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-// Sets |_authenticationOperationInProgress| to NO and pops this accounts
-// table view controller if the user is signed out.
+// Finishes the authentication flow and dismisses the accounts view.
 - (void)handleAuthenticationOperationDidFinish {
   DCHECK(_authenticationOperationInProgress);
   _authenticationOperationInProgress = NO;
-  [self popViewIfSignedOut];
-}
-
-- (void)popViewIfSignedOut {
-  if ([self authService] -> IsAuthenticated()) {
-    return;
-  }
-  if (_authenticationOperationInProgress) {
-    // The signed out state might be temporary (e.g. account switch, ...).
-    // Don't pop this view based on intermediary values.
-    return;
-  }
   [self dismissSelfAnimated:NO];
 }
 

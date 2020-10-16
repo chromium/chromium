@@ -23,8 +23,8 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::AddAccountButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
@@ -151,6 +151,27 @@ id<GREYMatcher> NoBookmarksLabel() {
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests that the Settings screen is displayed after the user signs in through
+// the add account flow from the account list screen entrypoint.
+- (void)testSSOAddAccount {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [[EarlGrey selectElementWithMatcher:AddAccountButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ButtonWithAccessibilityLabel(@"Sign in"),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the Account Settings screen is popped and the user signed out
