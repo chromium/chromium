@@ -39,6 +39,7 @@ chrome.automation.EventType = {
   DOCUMENT_SELECTION_CHANGED: 'documentSelectionChanged',
   DOCUMENT_TITLE_CHANGED: 'documentTitleChanged',
   DROPEFFECT_CHANGED: 'dropeffectChanged',
+  EDITABLE_TEXT_CHANGED: 'editableTextChanged',
   ENABLED_CHANGED: 'enabledChanged',
   END_OF_TEST: 'endOfTest',
   EXPANDED: 'expanded',
