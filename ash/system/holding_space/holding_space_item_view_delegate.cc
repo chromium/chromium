@@ -12,12 +12,15 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/holding_space/holding_space_drag_util.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "net/base/mime_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -234,10 +237,18 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
   holding_space_metrics::RecordItemAction(
       GetItems(selection), holding_space_metrics::ItemAction::kDrag);
 
+  // Drag image.
+  gfx::ImageSkia drag_image = holding_space_util::CreateDragImage(selection);
+  data->provider().SetDragImage(std::move(drag_image),
+                                /*image_offset=*/base::i18n::IsRTL()
+                                    ? gfx::Vector2d(drag_image.width(), 0)
+                                    : gfx::Vector2d());
+
+  // Payload.
   std::vector<ui::FileInfo> filenames;
   for (const HoldingSpaceItemView* view : selection) {
-    filenames.push_back(ui::FileInfo(view->item()->file_path(),
-                                     view->item()->file_path().BaseName()));
+    const base::FilePath& file_path = view->item()->file_path();
+    filenames.push_back(ui::FileInfo(file_path, file_path.BaseName()));
   }
   data->SetFilenames(filenames);
 }
