@@ -13871,8 +13871,8 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Sqlite.OpenFailure" enum="SqliteErrorCode" expires_after="M88">
-  <owner>costan@google.com</owner>
+<histogram name="Sqlite.OpenFailure" enum="SqliteErrorCode" expires_after="M95">
+  <owner>pwnall@chromium.org</owner>
   <owner>src/storage/OWNERS</owner>
   <summary>Error which prevented database open.</summary>
 </histogram>
