@@ -25,6 +25,12 @@ class HistoryDeletionBridge : public history::HistoryServiceObserver {
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
+  // Sanitize the DeletionInfo of empty/invalid urls before passing to java.
+  // Fix for empty java strings being passed to the content capture service
+  // (crbug.com/1136486).
+  static history::DeletionInfo SanitizeDeletionInfo(
+      const history::DeletionInfo& deletion_info);
+
  private:
   ~HistoryDeletionBridge() override;
 
