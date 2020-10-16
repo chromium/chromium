@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
@@ -476,6 +477,9 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(
       js_calls_container_.get(), core_handler_, network_state_informer_));
+
+  AddScreenHandler(std::make_unique<SignInFatalErrorScreenHandler>(
+      js_calls_container_.get()));
 
   AddScreenHandler(std::move(password_change_handler));
 

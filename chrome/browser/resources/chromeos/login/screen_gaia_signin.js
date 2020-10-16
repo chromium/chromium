@@ -1080,8 +1080,7 @@ Polymer({
     } else {
       chrome.send('scrapedPasswordVerificationFailed');
       this.showFatalAuthError_(
-          loadTimeData.getString('fatalErrorMessageVerificationFailed'),
-          loadTimeData.getString('fatalErrorTryAgainButton'));
+          OobeTypes.FatalErrorCode.SCRAPED_PASSWORD_VERIFICATION_FAILURE);
     }
   },
 
@@ -1145,18 +1144,17 @@ Polymer({
    */
   onInsecureContentBlocked_(url) {
     this.showFatalAuthError_(
-        loadTimeData.getStringF('fatalErrorMessageInsecureURL', url),
-        loadTimeData.getString('fatalErrorDoneButton'));
+        OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED, {'url': url});
   },
 
   /**
    * Shows the fatal auth error.
-   * @param {string} message The error message to show.
-   * @param {string} buttonLabel The label to display on dismiss button.
+   * @param {OobeTypes.FatalErrorCode} error_code The error code
+   * @param {string} info Additional info
    * @private
    */
-  showFatalAuthError_(message, buttonLabel) {
-    login.FatalErrorScreen.show(message, buttonLabel, Oobe.showSigninUI);
+  showFatalAuthError_(error_code, info) {
+    chrome.send('onFatalError', [error_code, info || {}]);
   },
 
   /**
@@ -1164,9 +1162,7 @@ Polymer({
    * @private
    */
   missingGaiaInfo_() {
-    this.showFatalAuthError_(
-        loadTimeData.getString('fatalErrorMessageNoAccountDetails'),
-        loadTimeData.getString('fatalErrorTryAgainButton'));
+    this.showFatalAuthError_(OobeTypes.FatalErrorCode.MISSING_GAIA_INFO);
   },
 
   /**

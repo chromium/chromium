@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_challenge_key_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -682,23 +683,15 @@ class SamlTest : public OobeBaseTest {
     test::OobeJS().TapOnPath(kPasswordSubmit);
   }
 
-  std::string WaitForAndGetFatalErrorMessage() {
-    OobeScreenWaiter(OobeScreen::SCREEN_FATAL_ERROR).Wait();
+  void ExpectFatalErrorMessage(const std::string& error_message) {
+    OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
 
     EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
     EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
     EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
-    std::string message_element = "$('fatal-error-card')";
-    std::string error_message;
-    if (!content::ExecuteScriptAndExtractString(
-            GetLoginUI()->GetWebContents(),
-            "window.domAutomationController.send(" + message_element +
-                ".textContent);",
-            &error_message)) {
-      ADD_FAILURE();
-    }
-    return error_message;
+    test::OobeJS().ExpectElementText(error_message,
+                                     {"signin-fatal-error", "subtitle"});
   }
 
   FakeSamlIdp* fake_saml_idp() { return &fake_saml_idp_; }
@@ -1061,8 +1054,8 @@ IN_PROC_BROWSER_TEST_F(SamlTest, FailToRetrieveAutenticatedUserEmailAddress) {
   SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
   SigninFrameJS().TapOn("Submit");
 
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS),
-            WaitForAndGetFatalErrorMessage());
+  ExpectFatalErrorMessage(
+      l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS));
 }
 
 // Tests the password confirm flow when more than one password is scraped: show
@@ -1094,9 +1087,8 @@ IN_PROC_BROWSER_TEST_F(SamlTest, PasswordConfirmFlow) {
 
   // Enter an unknown password 2nd time should go back fatal error message.
   SendConfirmPassword("wrong_password");
-  EXPECT_EQ(
-      l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_PASSWORD_VERIFICATION),
-      WaitForAndGetFatalErrorMessage());
+  ExpectFatalErrorMessage(
+      l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_PASSWORD_VERIFICATION));
 }
 
 // Verifies that when the login flow redirects from one host to another, the
@@ -1163,9 +1155,8 @@ IN_PROC_BROWSER_TEST_F(SamlTest, HTTPRedirectDisallowed) {
                                 "", "[]");
 
   const GURL url = embedded_test_server()->base_url().Resolve("/SAML");
-  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL,
-                                      base::UTF8ToUTF16(url.spec())),
-            WaitForAndGetFatalErrorMessage());
+  ExpectFatalErrorMessage(l10n_util::GetStringFUTF8(
+      IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL, base::UTF8ToUTF16(url.spec())));
 }
 
 // Verifies that when GAIA attempts to redirect to a page served over http, not
@@ -1183,9 +1174,8 @@ IN_PROC_BROWSER_TEST_F(SamlTest, MetaRefreshToHTTPDisallowed) {
       ->ShowSigninScreenForTest(saml_test_users::kFirstUserCorpExampleComEmail,
                                 "", "[]");
 
-  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL,
-                                      base::UTF8ToUTF16(url.spec())),
-            WaitForAndGetFatalErrorMessage());
+  ExpectFatalErrorMessage(l10n_util::GetStringFUTF8(
+      IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL, base::UTF8ToUTF16(url.spec())));
 }
 
 class SAMLEnrollmentTest : public SamlTest {
@@ -1844,8 +1834,8 @@ IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginFailed) {
   SigninFrameJS().TapOn("Submit");
 
   // SAML login fails:
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS),
-            WaitForAndGetFatalErrorMessage());
+  ExpectFatalErrorMessage(
+      l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS));
 
   // Make sure no SAML password attributes are saved.
   // None are saved for the logged in user, since there is no logged in user:

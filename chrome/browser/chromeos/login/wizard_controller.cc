@@ -79,6 +79,7 @@
 #include "chrome/browser/chromeos/login/screens/packaged_license_screen.h"
 #include "chrome/browser/chromeos/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/chromeos/login/screens/reset_screen.h"
+#include "chrome/browser/chromeos/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/chromeos/login/screens/supervision_transition_screen.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/screens/tpm_error_screen.h"
@@ -138,6 +139,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
@@ -675,6 +677,11 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnEduCoexistenceLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<SignInFatalErrorScreen>(
+      oobe_ui->GetView<SignInFatalErrorScreenHandler>(),
+      base::BindRepeating(&WizardController::OnSignInFatalErrorScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
@@ -692,6 +699,18 @@ void WizardController::OnOwnershipStatusCheckDone(
     ShowPackagedLicenseScreen();
   else
     ShowLoginScreen();
+}
+
+void WizardController::ShowSignInFatalErrorScreen(
+    SignInFatalErrorScreen::Error error,
+    const base::Value* params) {
+  SignInFatalErrorScreen::Get(screen_manager())->SetErrorState(error, params);
+  AdvanceToScreen(SignInFatalErrorView::kScreenId);
+}
+
+void WizardController::OnSignInFatalErrorScreenExit() {
+  OnScreenExit(SignInFatalErrorView::kScreenId, kDefaultExitReason);
+  AdvanceToScreen(GaiaView::kScreenId);
 }
 
 void WizardController::ShowLoginScreen() {
@@ -1768,7 +1787,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||
              screen_id == UserCreationView::kScreenId ||
-             screen_id == ActiveDirectoryLoginView::kScreenId) {
+             screen_id == ActiveDirectoryLoginView::kScreenId ||
+             screen_id == SignInFatalErrorView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();
@@ -1924,7 +1944,8 @@ bool WizardController::UsingHandsOffEnrollment() {
 // static
 bool WizardController::IsSigninScreen(OobeScreenId screen_id) {
   return screen_id == UserCreationView::kScreenId ||
-         screen_id == GaiaView::kScreenId;
+         screen_id == GaiaView::kScreenId ||
+         screen_id == SignInFatalErrorView::kScreenId;
 }
 
 void WizardController::AddObserver(ScreenObserver* obs) {

@@ -485,6 +485,9 @@
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
     Your Hangouts Meet hardware is ready to be set up.
   </message>
+  <message name="IDS_OOBE_GENERIC_FATAL_ERROR_TITLE" desc="A generic title to be shown during OOBE to be used in error screens.">
+    Something went wrong
+  </message>
   <message name="IDS_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
     Welcome!
   </message>

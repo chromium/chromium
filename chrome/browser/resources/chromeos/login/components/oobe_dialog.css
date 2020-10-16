@@ -56,6 +56,7 @@
 #oobe-subtitle .fallback {
   color: var(--oobe-subheader-text-color);
   line-height: var(--subtitle-line-height);
+  overflow-wrap: break-word;
   margin: 0;
 }
 

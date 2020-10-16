@@ -250,6 +250,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Called to deliver the result of the security token PIN request. Called with
   // an empty string when the request is canceled.
   void HandleSecurityTokenPinEntered(const std::string& user_input);
+  void HandleOnFatalError(int error_code, const base::DictionaryValue* params);
 
   void OnShowAddUser();
 

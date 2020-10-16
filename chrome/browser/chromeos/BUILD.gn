@@ -1748,6 +1748,8 @@ source_set("chromeos") {
     "login/screens/recommend_apps_screen.h",
     "login/screens/reset_screen.cc",
     "login/screens/reset_screen.h",
+    "login/screens/signin_fatal_error_screen.cc",
+    "login/screens/signin_fatal_error_screen.h",
     "login/screens/supervision_transition_screen.cc",
     "login/screens/supervision_transition_screen.h",
     "login/screens/sync_consent_screen.cc",

@@ -153,3 +153,14 @@ OobeTypes.DialogPaddingMode = {
   NARROW: 'narrow',
   WIDE: 'wide',
 };
+
+/**
+ * Fatal Error Codes from SignInFatalErrorScreen
+ * @enum {number}
+ */
+OobeTypes.FatalErrorCode = {
+  UNKNOWN: 0,
+  SCRAPED_PASSWORD_VERIFICATION_FAILURE: 1,
+  INSECURE_CONTENT_BLOCKED: 2,
+  MISSING_GAIA_INFO: 3,
+};

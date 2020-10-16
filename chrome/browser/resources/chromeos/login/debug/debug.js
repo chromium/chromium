@@ -452,6 +452,31 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.ERROR,
     },
     {
+      id: 'signin-fatal-error',
+      kind: ScreenKind.ERROR,
+      states: [
+        {
+          id: 'SCRAPED_PASSWORD_VERIFICATION_FAILURE',
+          data: {
+            errorState: 1,
+          },
+        },
+        {
+          id: 'INSECURE_CONTENT_BLOCKED',
+          data: {
+            errorState: 2,
+            url: 'http://example.url/',
+          },
+        },
+        {
+          id: 'MISSING_GAIA_INFO',
+          data: {
+            errorState: 3,
+          },
+        },
+      ]
+    },
+    {
       id: 'reset',
       kind: ScreenKind.OTHER,
       states: [

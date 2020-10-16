@@ -39,6 +39,7 @@
 #include "chrome/browser/chromeos/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/chromeos/login/saml/saml_metric_utils.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
+#include "chrome/browser/chromeos/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/chromeos/login/signin_partition_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_webui.h"
@@ -55,6 +56,7 @@
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -647,19 +649,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
   builder->Add("learnMoreButton", IDS_LEARN_MORE);
   builder->Add("gaiaLoading", IDS_LOGIN_GAIA_LOADING_MESSAGE);
 
-  // Strings used by the SAML fatal error dialog.
-  builder->Add("fatalErrorMessageNoAccountDetails",
-               IDS_LOGIN_FATAL_ERROR_NO_ACCOUNT_DETAILS);
-  builder->Add("fatalErrorMessageNoPassword",
-               IDS_LOGIN_FATAL_ERROR_NO_PASSWORD);
-  builder->Add("fatalErrorMessageVerificationFailed",
-               IDS_LOGIN_FATAL_ERROR_PASSWORD_VERIFICATION);
-  builder->Add("fatalErrorMessageInsecureURL",
-               IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL);
-  builder->Add("fatalErrorDoneButton", IDS_DONE);
-  builder->Add("fatalErrorTryAgainButton",
-               IDS_LOGIN_FATAL_ERROR_TRY_AGAIN_BUTTON);
-
   builder->AddF("loginWelcomeMessage", IDS_LOGIN_WELCOME_MESSAGE,
                 ui::GetChromeOSDeviceTypeResourceId());
   builder->Add("offlineLoginEmail", IDS_OFFLINE_LOGIN_EMAIL);
@@ -752,6 +741,7 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("samlStateChanged", &GaiaScreenHandler::HandleSamlStateChanged);
   AddCallback("securityTokenPinEntered",
               &GaiaScreenHandler::HandleSecurityTokenPinEntered);
+  AddCallback("onFatalError", &GaiaScreenHandler::HandleOnFatalError);
 
   // Allow UMA metrics collection from JS.
   web_ui()->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -1118,6 +1108,15 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
     // Keep |security_token_pin_dialog_closed_callback_|, in order to be able to
     // notify about the dialog closing afterwards.
   }
+}
+
+void GaiaScreenHandler::HandleOnFatalError(
+    int error_code,
+    const base::DictionaryValue* params) {
+  LoginDisplayHost::default_host()
+      ->GetWizardController()
+      ->ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error(error_code),
+                                   params);
 }
 
 void GaiaScreenHandler::OnShowAddUser() {

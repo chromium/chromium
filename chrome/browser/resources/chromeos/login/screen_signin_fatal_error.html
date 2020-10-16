@@ -1,0 +1,22 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<dom-module id="signin-fatal-error">
+  <template>
+    <style include="oobe-dialog-host">
+    </style>
+    <oobe-dialog id="signinFatalErrorDialog" role="dialog" has-buttons
+        title-key="errorGenericFatalErrorTitle">
+      <hd-iron-icon slot="oobe-icon"
+          icon1x="oobe-32:alert" icon2x="oobe-64:alert">
+      </hd-iron-icon>
+      <div id="subtitle" slot="subtitle">[[errorSubtitle_]]</div>
+      <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <oobe-text-button id="actionButton" inverse
+            text-key="[[computeButtonKey_(errorState_)]]" on-tap="onClick_">
+        </oobe-text-button>
+      </div>
+    </oobe-dialog>
+  </template>
+</dom-module>

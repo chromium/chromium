@@ -43,6 +43,7 @@
 #include "chrome/browser/chromeos/login/screens/network_screen.h"
 #include "chrome/browser/chromeos/login/screens/packaged_license_screen.h"
 #include "chrome/browser/chromeos/login/screens/recommend_apps_screen.h"
+#include "chrome/browser/chromeos/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/chromeos/login/screens/sync_consent_screen.h"
 #include "chrome/browser/chromeos/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/chromeos/login/screens/update_screen.h"
@@ -198,6 +199,10 @@ class WizardController {
   // Configure and show active directory password change screen.
   void ShowActiveDirectoryPasswordChangeScreen(const std::string& username);
 
+  // Configure and show the signin fatal error screen.
+  void ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error error,
+                                  const base::Value* params);
+
   // Show Family Link notice screen.
   void ShowFamilyLinkNoticeScreen();
 
@@ -308,6 +313,7 @@ class WizardController {
   void OnUserCreationScreenExit(UserCreationScreen::Result result);
   void OnGaiaScreenExit(GaiaScreen::Result result);
   void OnActiveDirectoryLoginScreenExit();
+  void OnSignInFatalErrorScreenExit();
   void OnEduCoexistenceLoginScreenExit(
       EduCoexistenceLoginScreen::Result result);
 
