@@ -101,6 +101,7 @@ public class WebappDisclosureControllerTest {
 
         // Simulates the case that shows the disclosure when finish native initialization.
         storage.setShowDisclosure();
+        assertTrue(storage.shouldShowDisclosure());
         controller.onFinishNativeInitialization();
         assertSnackbarShown();
 

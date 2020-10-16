@@ -66,6 +66,15 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
 
     @Override
     @Nullable
+    public String getClientPackageName() {
+        if (mWebApkExtras != null) {
+            return mWebApkExtras.webApkPackageName;
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
     public String getUrlToLoad() {
         return mWebappExtras.url;
     }
