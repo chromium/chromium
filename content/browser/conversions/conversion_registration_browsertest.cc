@@ -313,6 +313,9 @@ IN_PROC_BROWSER_TEST_F(
     ConversionRegistrationBrowserTest,
     RegisterWithDifferentUrlTypes_ConversionReceivedOrIgnored) {
   const char kSecureHost[] = "a.test";
+  // TODO(crbug.com/1137113): Should include a test where an insecure request is
+  // blocked from conversion registration if it is made on a secure page. Note
+  // that this can't work for image requests due to image auto-upgrade.
   struct {
     std::string page_host;
     std::string redirect_host;
@@ -327,8 +330,6 @@ IN_PROC_BROWSER_TEST_F(
       {kSecureHost /* page_host */, kSecureHost /* redirect_host */,
        true /* conversion_expected */},
       {"insecure.com" /* page_host */, kSecureHost /* redirect_host */,
-       false /* conversion_expected */},
-      {kSecureHost /* page_host */, "insecure.com" /* redirect_host */,
        false /* conversion_expected */}};
 
   for (const auto& test_case : kTestCases) {

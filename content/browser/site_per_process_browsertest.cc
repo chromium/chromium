@@ -6978,6 +6978,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             EvalJs(foo_root, "self.origin;"));
 }
 
+// A subclass of SitePerProcessIgnoreCertErrorsBrowsertest that disables mixed
+// content autoupgrades.
+// TODO(carlosil): Since the flag will be cleaned up eventually, this should be
+// changed to proper plumbing that adds the relevant urls to the allowlist.
+class SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest
+    : public SitePerProcessIgnoreCertErrorsBrowserTest {
+ public:
+  SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest() {
+    feature_list.InitAndDisableFeature(
+        blink::features::kMixedContentAutoupgrade);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
 // Tests that the WebContents is notified when passive mixed content is
 // displayed in an OOPIF. The test ignores cert errors so that an HTTPS
 // iframe can be loaded from a site other than localhost (the
@@ -6988,8 +7004,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 #else
 #define MAYBE_PassiveMixedContentInIframe PassiveMixedContentInIframe
 #endif
-IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
-                       MAYBE_PassiveMixedContentInIframe) {
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest,
+    MAYBE_PassiveMixedContentInIframe) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   SetupCrossSiteRedirector(&https_server);
@@ -15965,6 +15982,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIgnoreCertErrorsBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SitePerProcessIgnoreCertErrorsAllowMixedContentBrowserTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessProgrammaticScrollTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

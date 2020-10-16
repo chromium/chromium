@@ -1415,10 +1415,6 @@ crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-featu
 crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-enabled-image-tentative.sub.html [ Skip ]
 crbug.com/869492 virtual/threaded/external/wpt/feature-policy/experimental-features/lazyload/lazyload-image-loading-lazy-tentative.sub.html [ Skip ]
 
-# Tests that only work when the mixed content autoupgrade feature is enabled.
-# Covered in virtual test suite.
-http/tests/mixed-autoupgrade/* [ Skip ]
-
 # Not expected to pass in default configuration, only virtual test suite.
 crbug.com/830901 fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html [ Skip ]
 virtual/webgl-extra-video-texture-metadata/fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html [ Pass ]

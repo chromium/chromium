@@ -14,7 +14,7 @@ Inspector issue: {
                     requestId : <string>
                     url : http://devtools.test:8000/inspector-protocol/resources/img.png
                 }
-                resolutionStatus : MixedContentWarning
+                resolutionStatus : MixedContentAutomaticallyUpgraded
                 resourceType : Image
             }
         }

@@ -428,11 +428,6 @@
              "--disable-blink-features=RestrictAutomaticLazyImageLoadingToDataSaver"]
   },
   {
-    "prefix" : "autoupgrade-optionally-blockable-mixed-content",
-    "bases": ["http/tests/mixed-autoupgrade/optionally"],
-    "args": ["--enable-features=AutoupgradeMixedContent"]
-  },
-  {
     "prefix": "webgl-extra-video-texture-metadata",
     "bases": ["fast/webgl/video-metadata"],
     "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata"]

@@ -5990,10 +5990,6 @@ crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/video-tag.https.html [ Failure ]
 crbug.com/1025274 http/tests/security/mixedContent/insecure-audio-video-in-main-frame.html [ Failure ]
 
-#Mixed content autoupgrade tests that can be re-enabled once image autoupgrades launch
-crbug.com/1042877 virtual/autoupgrade-optionally-blockable-mixed-content/http/tests/mixed-autoupgrade/optionally/image-upgrade-console-message.https.html [ Failure ]
-crbug.com/1042877 virtual/autoupgrade-optionally-blockable-mixed-content/http/tests/mixed-autoupgrade/optionally/image-upgrade.https.html [ Failure ]
-
 # DevTools roll
 crbug.com/1052111 http/tests/devtools/a11y-axe-core/audits-start-view-a11y-test.js [ Skip ]
 
@@ -6432,6 +6428,31 @@ crbug.com/1133901 virtual/threaded/external/wpt/css/css-transforms/animation/tra
 crbug.com/1131252 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-skew.html [ Failure ]
 
 crbug.com/1136163 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
+
+# Mixed content autoupgrades make these tests not applicable, since they check for mixed content images, the tests can be removed when cleaning up pre autoupgrades mixed content code.
+crbug.com/1042877 external/wpt/fetch/cross-origin-resource-policy/scheme-restriction.https.window.html [ Failure ]
+crbug.com/1042877 external/wpt/mixed-content/gen/top.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 external/wpt/mixed-content/imageset.https.sub.html [ Failure ]
+crbug.com/1042877 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 external/wpt/upgrade-insecure-requests/gen/top.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 virtual/omt-worker-fetch/external/wpt/fetch/cross-origin-resource-policy/scheme-restriction.https.window.html [ Failure ]
+crbug.com/1042877 virtual/omt-worker-fetch/external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 virtual/omt-worker-fetch/external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 virtual/omt-worker-fetch/external/wpt/upgrade-insecure-requests/gen/top.meta/unset/img-tag.https.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/insecure-css-image-with-reload.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/insecure-image-in-iframe.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/insecure-image-in-main-frame-allowed.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/insecure-image-in-main-frame-blocked.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/insecure-image-in-main-frame.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/preload-insecure-image-in-main-frame-blocked.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/strict-mode-image-blocked.https.html [ Timeout ]
+crbug.com/1042877 http/tests/security/mixedContent/strict-mode-image-in-frame-blocked.https.html [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/strict-mode-image-reportonly.https.php [ Failure ]
+crbug.com/1042877 http/tests/security/mixedContent/strict-mode-via-pref-image-blocked.https.html [ Failure ]
+
+# Mixed content autoupgrades cause test to fail because test relied on http subresources to test a different origin, needs to be changed to not rely on HTTP URLs.
+crbug.com/1042877 http/tests/security/img-crossorigin-redirect-credentials.https.html [ Failure ]
 
 # Sheriff 2020-09-30
 crbug.com/1133821 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation.https.html [ Pass Failure ]

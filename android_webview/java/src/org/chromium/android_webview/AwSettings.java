@@ -1838,14 +1838,11 @@ public class AwSettings {
 
     @CalledByNative
     private boolean getAllowMixedContentAutoupgradesLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        // We only allow mixed content autoupgrades (upgrading HTTP subresources to HTTPS in HTTPS
-        // sites) when the mixed content mode is set to MIXED_CONTENT_COMPATIBILITY, which keeps it
-        // in line with the behavior in Chrome. With MIXED_CONTENT_ALWAYS_ALLOW, we disable
-        // autoupgrades since the developer is explicitly allowing mixed content, whereas with
-        // MIXED_CONTENT_NEVER_ALLOW, there is no need to autoupgrade since the content will be
-        // blocked.
-        return mMixedContentMode == WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE;
+        // TODO(crbug.com/1139424): Mixed content autoupgrades are temporarily disabled completely
+        // on WebView. This should remain as is for MIXED_CONTENT_ALWAYS_ALLOW and
+        // MIXED_CONTENT_NEVER_ALLOW, but should be controlled via a variations flag for
+        // MIXED_CONTENT_COMPATIBILITY_MODE.
+        return false;
     }
 
     public boolean getOffscreenPreRaster() {

@@ -41,27 +41,6 @@
             ]
         }
     ],
-    "AllPassiveMixedContentAutoupgrade": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_10",
-                    "params": {
-                        "mode": "all-passive"
-                    },
-                    "enable_features": [
-                        "AutoupgradeMixedContent"
-                    ]
-                }
-            ]
-        }
-    ],
     "AmpBackgroundTab": [
         {
             "platforms": [
