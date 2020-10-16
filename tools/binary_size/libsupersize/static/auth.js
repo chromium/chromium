@@ -38,6 +38,9 @@ function setSigninStatus() {
 }
 
 function requiresAuthentication() {
-  let urlParams = new URLSearchParams(window.location.search);
-  return !!urlParams.get('authenticate');
+  // Assume everything requires auth except public trybot and one-offs.
+  const isPublicTrybot = window.location.search.indexOf(
+      'chromium-binary-size-trybot-results%2Fandroid-binary-size') != -1;
+  const isOneOff = window.location.search.indexOf('%2Foneoffs%2F') != -1;
+  return !isPublicTrybot && !isOneOff;
 }

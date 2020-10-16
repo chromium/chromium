@@ -30,7 +30,7 @@ function setSubmitListener(form, fetchDataUrl) {
     event.preventDefault();
     const dataUrl = fetchDataUrl();
     window.open(
-        `${FIREBASE_HOST}/viewer.html?load_url=${dataUrl}&authenticate=1`);
+        `${FIREBASE_HOST}/viewer.html?load_url=${dataUrl}`);
   });
 }
 
