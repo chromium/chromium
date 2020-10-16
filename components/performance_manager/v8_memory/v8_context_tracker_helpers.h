@@ -43,6 +43,10 @@ bool IsValidExtensionId(const std::string& s) WARN_UNUSED_RESULT;
 bool IsWorkletToken(const blink::ExecutionContextToken& token)
     WARN_UNUSED_RESULT;
 
+// Returns true if an ExecutionContextToken corresponds to a worklet.
+bool IsWorkerToken(const blink::ExecutionContextToken& token)
+    WARN_UNUSED_RESULT;
+
 // Looks up the execution context corresponding to the given token. Note that
 // the ExecutionContextRegistry must be installed on the graph.
 const execution_context::ExecutionContext* GetExecutionContext(

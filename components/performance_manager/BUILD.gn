@@ -234,6 +234,7 @@ source_set("unit_tests") {
     "render_process_host_id_unittest.cc",
     "v8_memory/v8_context_tracker_helpers_unittest.cc",
     "v8_memory/v8_context_tracker_internal_unittest.cc",
+    "v8_memory/v8_context_tracker_unittest.cc",
     "v8_memory/v8_detailed_memory_unittest.cc",
     "web_contents_proxy_unittest.cc",
     "worker_watcher_unittest.cc",

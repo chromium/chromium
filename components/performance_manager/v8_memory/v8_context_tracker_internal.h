@@ -36,6 +36,7 @@ class ExecutionContextData;
 class ProcessData;
 class RemoteFrameData;
 class V8ContextData;
+class V8ContextTrackerDataStore;
 
 // A comparator for "Data" objects that compares by token.
 template <typename DataType, typename TokenType>
@@ -68,7 +69,7 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   ExecutionContextData(
       ProcessData* process_data,
       const blink::ExecutionContextToken& token,
-      const base::Optional<IframeAttributionData> iframe_attribution_data);
+      const base::Optional<IframeAttributionData>& iframe_attribution_data);
   ExecutionContextData& operator=(const ExecutionContextData&) = delete;
   ~ExecutionContextData() override;
 
@@ -76,6 +77,7 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   ProcessData* process_data() const { return process_data_; }
   RemoteFrameData* remote_frame_data() { return remote_frame_data_; }
   size_t v8_context_count() const { return v8_context_count_; }
+  bool main_world_seen() const { return main_world_seen_; }
 
   // For consistency, all Data objects have a GetToken() function.
   const blink::ExecutionContextToken& GetToken() const { return token; }
@@ -105,6 +107,13 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   // if it was already destroyed.
   WARN_UNUSED_RESULT bool MarkDestroyed(util::PassKey<ProcessData>);
 
+  // Marks the main world as having been seen. Returns true if the state changed
+  // and false if this had already occurred. This is called when the
+  // V8ContextData is passed to the data store and can prevent it from
+  // succeeding.
+  WARN_UNUSED_RESULT bool MarkMainWorldSeen(
+      util::PassKey<V8ContextTrackerDataStore>);
+
  private:
   ProcessData* const process_data_;
 
@@ -112,6 +121,10 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
 
   // The count of V8ContextDatas keeping this object alive.
   size_t v8_context_count_ = 0;
+
+  // True if a main world V8Context has been seen for this EC. Can only ever
+  // toggle from false to true.
+  bool main_world_seen_ = false;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,6 +201,12 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
   // Marks this context as detached. Returns true if the state changed, false
   // if it was already detached.
   WARN_UNUSED_RESULT bool MarkDetached(util::PassKey<ProcessData>);
+
+  // Returns true if this is the "main" V8Context for an ExecutionContext.
+  // This will return true if |GetExecutionContextData()| is a frame and
+  // |description.world_type| is kMain, or if |GetExecutionContextData()| is a
+  // worker and |description.world_type| is a kWorkerOrWorklet.
+  bool IsMainV8Context() const;
 
  private:
   ProcessData* const process_data_;
@@ -290,16 +309,17 @@ class V8ContextTrackerDataStore {
   // |ec_data| to the impl that "ShouldDestroy" should return false.
   void Pass(std::unique_ptr<ExecutionContextData> ec_data);
   void Pass(std::unique_ptr<RemoteFrameData> rf_data);
-  void Pass(std::unique_ptr<V8ContextData> v8_data);
+  WARN_UNUSED_RESULT bool Pass(std::unique_ptr<V8ContextData> v8_data);
 
   // Looks up owned objects by token.
   ExecutionContextData* Get(const blink::ExecutionContextToken& token);
   RemoteFrameData* Get(const blink::RemoteFrameToken& token);
   V8ContextData* Get(const blink::V8ContextToken& token);
 
-  // For marking objects as detached/destroyed.
+  // For marking objects as detached/destroyed. "MarkDetached" returns true if
+  // the object was not previously detached, false otherwise.
   void MarkDestroyed(ExecutionContextData* ec_data);
-  void MarkDetached(V8ContextData* v8_data);
+  WARN_UNUSED_RESULT bool MarkDetached(V8ContextData* v8_data);
 
   // Destroys objects by token. They must exist ("Get" should return non
   // nullptr).

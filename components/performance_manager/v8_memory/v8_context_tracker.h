@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "base/util/type_safety/pass_key.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -17,6 +18,10 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
+
+class FrameNodeImpl;
+class ProcessNodeImpl;
+
 namespace v8_memory {
 
 // Forward declaration.
@@ -117,6 +122,87 @@ class V8ContextTracker
   const V8ContextState* GetV8ContextState(
       const blink::V8ContextToken& token) const;
 
+  //////////////////////////////////////////////////////////////////////////////
+  // The following functions handle inbound IPC, and are only meant to be
+  // called from ProcessNodeImpl and FrameNodeImpl (hence the use of PassKey).
+
+  // Notifies the context tracker of a V8Context being created in a renderer
+  // process. If the context is associated with an ExecutionContext (EC) then
+  // |description.execution_context_token| will be provided. If the EC is a
+  // frame, and the parent of that frame is also in the same process, then
+  // |iframe_attribution_data| will be provided, otherwise these will be empty.
+  // In the case where they are empty the iframe data will be provided by a
+  // separate call to OnIframeAttached() from the process hosting the
+  // parent frame. See the V8ContextWorldType enum for a description of the
+  // relationship between world types, world names and execution contexts.
+  void OnV8ContextCreated(
+      util::PassKey<ProcessNodeImpl> key,
+      ProcessNodeImpl* process_node,
+      const V8ContextDescription& description,
+      const base::Optional<IframeAttributionData>& iframe_attribution_data);
+
+  // Notifies the tracker that a V8Context is now detached from its associated
+  // ExecutionContext (if one was provided during OnV8ContextCreated). If the
+  // context stays detached for a long time this is indicative of a Javascript
+  // leak, with the context being kept alive by a stray reference from another
+  // context. All ExecutionContext-associated V8Contexts will have this method
+  // called before they are destroyed, and it will not be called for other
+  // V8Contexts (they are never considered detached).
+  void OnV8ContextDetached(util::PassKey<ProcessNodeImpl> key,
+                           ProcessNodeImpl* process_node,
+                           const blink::V8ContextToken& v8_context_token);
+
+  // Notifies the tracker that a V8Context has been garbage collected. This will
+  // only be called after OnV8ContextDetached if the OnV8ContextCreated had a
+  // non-empty |execution_context_token|.
+  void OnV8ContextDestroyed(util::PassKey<ProcessNodeImpl> key,
+                            ProcessNodeImpl* process_node,
+                            const blink::V8ContextToken& v8_context_token);
+
+  // Notifies the tracker that a RemoteFrame child with a LocalFrame parent was
+  // created in a renderer, providing the iframe.id and iframe.src from the
+  // parent point of view. This will decorate the ExecutionContextData of the
+  // appropriate child frame. We require the matching OnRemoteIframeDetached to
+  // be called for bookkeeping. This should only be called once for a given
+  // |remote_frame_token|.
+  void OnRemoteIframeAttached(
+      util::PassKey<FrameNodeImpl> key,
+      FrameNodeImpl* parent_frame_node,
+      const blink::RemoteFrameToken& remote_frame_token,
+      const IframeAttributionData& iframe_attribution_data);
+
+  // TODO(chrisha): Add OnRemoteIframeAttributesChanged support.
+
+  // Notifies the tracker that a RemoteFrame child with a LocalFrame parent was
+  // detached from an iframe element in a renderer. This is used to cleanup
+  // iframe data that is being tracked due to a previous call to
+  // OnIframeAttached, unless the data was adopted by a call to
+  // OnV8ContextCreated. Should only be called once for a given
+  // |remote_frame_token|, and only after a matching "OnRemoteIframeAttached"
+  // call.
+  void OnRemoteIframeDetached(
+      util::PassKey<FrameNodeImpl> key,
+      FrameNodeImpl* parent_frame_node,
+      const blink::RemoteFrameToken& remote_frame_token);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // The following functions are for testing only.
+
+  void OnRemoteIframeAttachedForTesting(
+      FrameNodeImpl* frame_node,
+      const blink::RemoteFrameToken& remote_frame_token,
+      const IframeAttributionData& iframe_attribution_data);
+
+  void OnRemoteIframeDetachedForTesting(
+      FrameNodeImpl* parent_frame_node,
+      const blink::RemoteFrameToken& remote_frame_token);
+
+  // System wide metrics.
+  size_t GetExecutionContextCountForTesting() const;
+  size_t GetV8ContextCountForTesting() const;
+  size_t GetDestroyedExecutionContextCountForTesting() const;
+  size_t GetDetachedV8ContextCountForTesting() const;
+
  private:
   // Implementation of execution_context::ExecutionContextObserverDefaultImpl.
   void OnBeforeExecutionContextRemoved(
@@ -137,6 +223,21 @@ class V8ContextTracker
 
   // Implementation of ProcessNode::ObserverDefaultImpl.
   void OnBeforeProcessNodeRemoved(const ProcessNode* node) final;
+
+  // OnIframeAttached bounces over to the UI thread to
+  // lookup the RenderFrameHost* associated with a given RemoteFrameToken,
+  // landing here.
+  void OnRemoteIframeAttachedImpl(
+      mojo::ReportBadMessageCallback bad_message_callback,
+      FrameNodeImpl* frame_node,
+      const blink::RemoteFrameToken& remote_frame_token,
+      const IframeAttributionData& iframe_attribution_data);
+
+  // To maintain strict ordering with OnRemoteIframeAttached events, detached
+  // events also detour through the UI thread to arrive here.
+  void OnRemoteIframeDetachedImpl(
+      FrameNodeImpl* parent_frame_node,
+      const blink::RemoteFrameToken& remote_frame_token);
 
   // Stores Chrome-wide data store used by the tracking.
   std::unique_ptr<DataStore> data_store_;
