@@ -6430,7 +6430,7 @@ crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-break
 crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Pass Failure ]
 
 # Sheriff 2020-09-02
-crbug.com/1115091 [ Linux ] external/wpt/payment-request/secure-payment-confirmation.https.html [ Pass Timeout ]
+crbug.com/1115091 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tenative.https.html [ Pass Timeout ]
 
 # Sheriff 2020-09-08
 crbug.com/1124978 [ Mac ] virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/same-origin-subframe.sub.html [ Pass Failure ]

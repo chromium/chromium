@@ -1786,7 +1786,6 @@ external/wpt/payment-request/payment-response/shippingAddress-attribute-manual.h
 external/wpt/payment-request/payment-response/shippingOption-attribute-manual.https.html [ Skip ]
 external/wpt/payment-request/rejects_if_not_active-manual.https.html [ Skip ]
 external/wpt/payment-request/shipping-address-changed-manual.https.html [ Skip ]
-external/wpt/payment-request/show-method-optional-promise-rejects-manual.https.html [ Skip ]
 external/wpt/payment-request/show-method-optional-promise-resolves-manual.https.html [ Skip ]
 external/wpt/payment-request/show-method-postmessage-manual.https.html [ Skip ]
 external/wpt/payment-request/updateWith-method-pmi-handling-manual.https.html [ Skip ]

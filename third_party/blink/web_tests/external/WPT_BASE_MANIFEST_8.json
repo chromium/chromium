@@ -9294,13 +9294,6 @@
       {}
      ]
     ],
-    "show-method-optional-promise-rejects-manual.https.html": [
-     "1a322452eb6114630b2f0d1d2a9762092ad5ebb9",
-     [
-      null,
-      {}
-     ]
-    ],
     "show-method-optional-promise-resolves-manual.https.html": [
      "5360a9704af459f30180f938d12828f6dbf1b570",
      [
@@ -73197,6 +73190,19 @@
         {}
        ]
       ],
+      "percentage-size-subitems-002.html": [
+       "17f57bf39d1910bdc02fd9fd4f1c9865c63cc109",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "remove-svg-grid-item-001.html": [
        "5e196c82c64bb52ee5b445b664eb5bc0dbd60573",
        [
@@ -74887,6 +74893,19 @@
        ]
       ]
      },
+     "relative-grandchild.html": [
+      "9c1b7d54e1f568e13e656a3bc57a840cdc93bcf2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "subgrid": {
       "abs-pos-001.html": [
        "e524ec2d767c043516546733411d7e25e6eff05b",
@@ -173071,11 +173090,11 @@
       []
      ],
      "otpcredential-helper.js": [
-      "0c6ce8b1f38ca321900efae35a53977da9370acb",
+      "e07e9f5be359e9173b6c916d91d8ce1f87260885",
       []
      ],
      "otpcredential-iframe.html": [
-      "83f25d573c8ecc967635bb9239a3d0c0c1544d37",
+      "4affc00ecde9951aa2911a7e818615600f324d8f",
       []
      ],
      "passwordcredential-get.html": [
@@ -181096,10 +181115,6 @@
      ],
      "dynamic-bsize-change-ref.html": [
       "b8db7ea2c7de6443075e04009ff5c979dbb7fed3",
-      []
-     ],
-     "dynamic-grid-flex-abspos-expected.txt": [
-      "e5f72e9b4b002a7823913e683370a3c4b8191682",
       []
      ],
      "flex-child-percent-basis-resize-1-ref.html": [
@@ -233166,6 +233181,10 @@
     "META.yml": [
      "20ab3ff9ef350d009bea344ccb05a454ecde5c21",
      []
+    ],
+    "onmerchantvalidation-attribute.https-expected.txt": [
+     "fcd48cac84c558fd2ae1d0b58927167625407aba",
+     []
     ]
    },
    "mimesniff": {
@@ -234774,7 +234793,7 @@
      []
     ],
     "payment-request-show-method.https-expected.txt": [
-     "228125c98cb8d85d7ae53e364ae6213ed21e45bf",
+     "58883acfd5a3eb12b4ef36cf471dab0de3322f63",
      []
     ],
     "payment-request-show-method.https.html.ini": [
@@ -234805,6 +234824,14 @@
       []
      ]
     },
+    "show-consume-activation.https-expected.txt": [
+     "6ce291242ae95fffa1a86775c2a1479651b2349b",
+     []
+    ],
+    "show-method-optional-promise-rejects.https-expected.txt": [
+     "5c59a10ca4585bf3da64d37ce95e88f8ed6bc1af",
+     []
+    ],
     "show-method-postmessage-iframe.html": [
      "b50f18ecce3ac62d3193a86d668f457c1e9629ab",
      []
@@ -237476,10 +237503,6 @@
       "6805c323df5a975231648b830e33ce183c3cbbd3",
       []
      ],
-     "mock-sms-receiver.js": [
-      "903456d6830481cfd8d977120105359d4fc43774",
-      []
-     ],
      "mock-textdetection.js": [
       "427ce38da21a9cd00e11aab313708f2719d8b094",
       []
@@ -237554,6 +237577,14 @@
      []
     ],
     "test-only-api.js.headers": [
+     "5e8f640c6659d176eaca4c71cc1798b7285540b7",
+     []
+    ],
+    "test-only-api.m.js": [
+     "984f635abac00272304c78f2f5bb99b397b27523",
+     []
+    ],
+    "test-only-api.m.js.headers": [
      "5e8f640c6659d176eaca4c71cc1798b7285540b7",
      []
     ],
@@ -280678,7 +280709,7 @@
      ]
     ],
     "otpcredential-get-basics.https.html": [
-     "edeb42a0f579209c1556d83c7fa98de08757f0dc",
+     "c0cac166de91c242a16bd4d6fc2edfa93aa37680",
      [
       null,
       {}
@@ -373654,6 +373685,13 @@
       null,
       {}
      ]
+    ],
+    "onmerchantvalidation-attribute.https.html": [
+     "d31ac2dd72abcf51a28ecec850400f5f0c6b9bb5",
+     [
+      null,
+      {}
+     ]
     ]
    },
    "mimesniff": {
@@ -380068,13 +380106,6 @@
       }
      ]
     ],
-    "onmerchantvalidation-attribute.https.html": [
-     "d31ac2dd72abcf51a28ecec850400f5f0c6b9bb5",
-     [
-      null,
-      {}
-     ]
-    ],
     "onpaymentmethodchange-attribute.https.html": [
      "f641bec4aa91d8be4f1801869eb699ca4bad03a0",
      [
@@ -380093,16 +380124,7 @@
      ]
     ],
     "payment-request-abort-method.https.html": [
-     "8230e2458aaa3e0364dc45985f596759f009547d",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "payment-request-canmakepayment-method-protection.https.html": [
-     "9c068dfe001e35d57783a0e99f3d6edd50cc5795",
+     "32b87970b4df49d2eef4945e3869f4abfcaa537a",
      [
       null,
       {
@@ -380224,7 +380246,7 @@
      ]
     ],
     "payment-request-show-method.https.html": [
-     "20d5bab0d14b79fb3dcf3e82e08dc495d038a33d",
+     "e5ee5eed01b26c872d01f801bb0739f791b5be58",
      [
       null,
       {
@@ -380250,11 +380272,22 @@
       }
      ]
     ],
-    "secure-payment-confirmation.https.html": [
-     "1cc12d49eba1369d57512a52de30eab4fa477da2",
+    "show-consume-activation.https.html": [
+     "0b92c4c15cf158457a9cfae6fab02171a49ca5f2",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "show-method-optional-promise-rejects.https.html": [
+     "3b42965503922d88213409dc814300c05b3a672f",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ]
    },
@@ -394875,6 +394908,15 @@
     ],
     "shared-worker-secure-first.https.html": [
      "ce97a628a0edc4cc59f48ce9447201fcbaeb4048",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
+   "secure-payment-confirmation": {
+    "secure-payment-confirmation.tenative.https.html": [
+     "1cc12d49eba1369d57512a52de30eab4fa477da2",
      [
       null,
       {}
