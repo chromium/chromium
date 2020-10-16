@@ -8,6 +8,3 @@ oysteine@chromium.org
 zhenw@chromium.org
 
 per-file BUILD.gn=file://services/resource_coordinator/memory_instrumentation/OWNERS
-
-# TEAM: catan-team@chromium.org
-# COMPONENT: Internals>ResourceCoordinator
