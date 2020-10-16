@@ -13,7 +13,8 @@ namespace shared_highlighting {
 namespace {
 
 TextFragmentLinkOpenSource GetLinkSource(const GURL& referrer) {
-  bool from_search_engine = SearchEngineUtils::GetEngineType(referrer) > 0;
+  bool from_search_engine =
+      referrer.is_valid() && SearchEngineUtils::GetEngineType(referrer) > 0;
   return from_search_engine ? TextFragmentLinkOpenSource::kSearchEngine
                             : TextFragmentLinkOpenSource::kUnknown;
 }
