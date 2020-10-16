@@ -18,7 +18,8 @@ TAG_HEADER = """\
 #         mac catalina lion highsierra mojave mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
+#             android-nexus-9 android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-qemu-x64 ]
 # Platform
@@ -33,10 +34,7 @@ TAG_HEADER = """\
 #         apple apple-apple-a12z
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         arm-mali-t860
-#         qualcomm qualcomm-adreno-(tm)-330 qualcomm-adreno-(tm)-418
-#             qualcomm-adreno-(tm)-420 qualcomm-adreno-(tm)-430
-#             qualcomm-adreno-(tm)-540
+#         qualcomm
 #         google-0xffff ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
@@ -62,9 +60,6 @@ TAG_HEADER = """\
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
-# Webview
-# NOTE: Don't actually use these, use android-webview-instrumentation instead.
-# tags: [ android-webview android-not-webview ]
 # results: [ Failure RetryOnFailure Skip ]
 """
 

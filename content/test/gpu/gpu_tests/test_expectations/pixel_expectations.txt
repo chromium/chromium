@@ -7,7 +7,8 @@
 #         mac catalina lion highsierra mojave mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
+#             android-nexus-9 android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-qemu-x64 ]
 # Platform
@@ -22,10 +23,7 @@
 #         apple apple-apple-a12z
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         arm-mali-t860
-#         qualcomm qualcomm-adreno-(tm)-330 qualcomm-adreno-(tm)-418
-#             qualcomm-adreno-(tm)-420 qualcomm-adreno-(tm)-430
-#             qualcomm-adreno-(tm)-540
+#         qualcomm
 #         google-0xffff ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
@@ -51,9 +49,6 @@
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
-# Webview
-# NOTE: Don't actually use these, use android-webview-instrumentation instead.
-# tags: [ android-webview android-not-webview ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
@@ -135,8 +130,8 @@ crbug.com/1136742 [ fuchsia ] Pixel_WebGLTransparentGreenTriangle_NoAlpha_Implic
 [ chromeos ] Pixel_CSS3DBlueBox_NoGpuProcess [ Skip ]
 
 # Fails on Android WebView due to requiring embedding viz clients. crbug.com/805739
-# Produces black images on Nexus 5Xs in Android Webview (qualcomm-adreno-(tm)-418) crbug.com/984352
-# Fails on Pixel 2 (qualcomm-adreno-(tm)-540) crbug.com/966069
+# Produces black images on Nexus 5Xs in Android Webview (android-nexus-5x) crbug.com/984352
+# Fails on Pixel 2 (android-pixel-2) crbug.com/966069
 crbug.com/805739 [ android ] Pixel_CanvasLowLatency2D [ Skip ]
 
 # Skip test that kills GPU process since Android Webview only supports
@@ -166,8 +161,8 @@ crbug.com/648369 [ linux debug intel ] * [ RetryOnFailure ]
 crbug.com/660461 [ mac ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
 
 # Failing on Nexus 5; haven't investigated why yet.
-crbug.com/773293 [ android qualcomm-adreno-(tm)-330 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
-crbug.com/773293 [ android qualcomm-adreno-(tm)-330 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Skip ]
+crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
+crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Skip ]
 
 crbug.com/774809 [ mac intel ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
@@ -193,24 +188,26 @@ crbug.com/872423 [ mac ] Pixel_WebGLSadCanvas [ Skip ]
 crbug.com/575305 [ android ] Pixel_WebGLSadCanvas [ Skip ]
 crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Skip ]
 
-crbug.com/868596 [ android android-chromium nvidia ] Pixel_CanvasLowLatencyWebGL [ Failure ]
+crbug.com/868596 [ android android-chromium android-nexus-9 ] Pixel_CanvasLowLatencyWebGL [ Failure ]
+crbug.com/868596 [ android android-chromium android-shield-android-tv ] Pixel_CanvasLowLatencyWebGL [ Failure ]
 
-crbug.com/868596 [ android android-chromium nvidia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
+crbug.com/868596 [ android android-chromium android-nexus-9 ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
+crbug.com/868596 [ android android-chromium android-shield-android-tv ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
 # float16 is not yet supported for accelerated canvases
 crbug.com/948141 Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
 
 # Fails on Nexus 5, 6 and 6P
-crbug.com/883500 [ android qualcomm-adreno-(tm)-330 ] Pixel_BackgroundImage [ Skip ]
-crbug.com/883500 [ android qualcomm-adreno-(tm)-420 ] Pixel_BackgroundImage [ Skip ]
-crbug.com/883500 [ android qualcomm-adreno-(tm)-430 ] Pixel_BackgroundImage [ Skip ]
-crbug.com/1029389 [ android qualcomm-adreno-(tm)-330 ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Skip ]
+crbug.com/883500 [ android android-nexus-6 ] Pixel_BackgroundImage [ Skip ]
+crbug.com/883500 [ android android-nexus-6p ] Pixel_BackgroundImage [ Skip ]
+crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Flakes on Nexus 5X.
-crbug.com/883500 [ android-chromium qualcomm-adreno-(tm)-418 ] Pixel_BackgroundImage [ RetryOnFailure ]
-crbug.com/1068620 [ android android-chromium qualcomm-adreno-(tm)-418 ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
-crbug.com/1065514 [ android android-chromium qualcomm-adreno-(tm)-418 ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
-crbug.com/1121476 [ android android-chromium qualcomm-adreno-(tm)-418 ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
+crbug.com/883500 [ android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
+crbug.com/1068620 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
+crbug.com/1065514 [ android android-chromium android-nexus-5x ] Pixel_WebGLReadPixelsTabSwitch [ RetryOnFailure ]
+crbug.com/1121476 [ android android-chromium android-nexus-5x ] Pixel_Canvas2DTabSwitch [ RetryOnFailure ]
 
 # We do not have software H.264 decoding on Android, so it can't survive a
 # context loss which results in hardware decoder loss.
@@ -227,17 +224,17 @@ crbug.com/927901 [ mac ] Pixel_Video_VP9_DXVA [ Skip ]
 crbug.com/927901 [ chromeos ] Pixel_Video_VP9_DXVA [ Skip ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
-crbug.com/950932 [ android-webview-instrumentation qualcomm-adreno-(tm)-418 ] * [ RetryOnFailure ]
+crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
 
 # Mark 1 webview test as Failure. This test is failing instead of flaking. It
 # might have the same Nexus 5x driver bug as crbug.com/950932 but that
 # should have made this test flaky instead of always failing. Need to
 # investigate later. Filed a bug to track the debug.
-# crbug.com/984734 [ android android-webview-instrumentation qualcomm-adreno-(tm)-418 ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+# crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # Flaking on Nexus 5X even outside WebView now. See commented-out
 # suppression above. Temporarily skipping it to stabilize the CQ.
-crbug.com/1061298 [ android qualcomm-adreno-(tm)-418 ] Pixel_Video_Context_Loss_VP9 [ Skip ]
+crbug.com/1061298 [ android android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Skip ]
 
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
 crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Skip ]
@@ -268,13 +265,20 @@ crbug.com/997313 [ win intel-0x3e92 skia-renderer-gl ] Pixel_WebGL_Premultiplied
 crbug.com/997313 [ win intel-0x3e92 skia-renderer-vulkan ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 # Flakes on Nexus 9 or NVIDIA Shield TV
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
-crbug.com/1019462 [ android nvidia skia-renderer-disabled ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-nexus-9 skia-renderer-disabled ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/1019462 [ android android-shield-android-tv skia-renderer-disabled ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
 
 # Skip dual gpu switching tests on Mac Nvidia because this
 # configuration has been forced to use only the low-power GPU due to
@@ -415,7 +419,7 @@ crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner
 crbug.com/1136875 [ fuchsia ] Pixel_PrecisionRoundedCorner [ Skip ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
-crbug.com/1097752 [ android qualcomm-adreno-(tm)-330 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]
+crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]
 
 # Produces blank images on gpu-fyi-try-chromeos-kevin, gpu-fyi-try-chromeos-amd64-generic.
 crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Skip ]

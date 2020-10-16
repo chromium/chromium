@@ -7,7 +7,8 @@
 #         mac catalina lion highsierra mojave mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
+#             android-nexus-9 android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-qemu-x64 ]
 # Platform
@@ -22,10 +23,7 @@
 #         apple apple-apple-a12z
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         arm-mali-t860
-#         qualcomm qualcomm-adreno-(tm)-330 qualcomm-adreno-(tm)-418
-#             qualcomm-adreno-(tm)-420 qualcomm-adreno-(tm)-430
-#             qualcomm-adreno-(tm)-540
+#         qualcomm
 #         google-0xffff ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
@@ -51,9 +49,6 @@
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
-# Webview
-# NOTE: Don't actually use these, use android-webview-instrumentation instead.
-# tags: [ android-webview android-not-webview ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
@@ -921,65 +916,65 @@ crbug.com/1000354 [ android no-passthrough ] conformance2/extensions/ext-texture
 # passthrough command decoder across many different WebGL conformance
 # tests. Limit this blanket suppression to Android P in case this is
 # caused by driver bugs.
-crbug.com/1132297 [ android-pie qualcomm-adreno-(tm)-540 passthrough ] * [ RetryOnFailure ]
+crbug.com/1132297 [ android-pie android-pixel-2 passthrough ] * [ RetryOnFailure ]
 
 crbug.com/906737 [ android qualcomm ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/906742 [ android qualcomm no-passthrough ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]
-crbug.com/1008535 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
-crbug.com/1000354 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
-crbug.com/951628 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/981216 [ android qualcomm-adreno-(tm)-540 ] deqp/functional/gles3/fbocolorbuffer/tex2d_01.html [ RetryOnFailure ]
+crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
+crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
+crbug.com/951628 [ android android-pixel-2 passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/981216 [ android android-pixel-2 ] deqp/functional/gles3/fbocolorbuffer/tex2d_01.html [ RetryOnFailure ]
 crbug.com/1022410 [ android qualcomm ] conformance2/transform_feedback/switching-objects.html [ RetryOnFailure ]
 crbug.com/1027125 [ android qualcomm ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
-crbug.com/1092734 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1092734 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1126631 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1126631 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/webgl_canvas/tex-3d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
-crbug.com/1126631 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
-crbug.com/1126631 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance2/textures/webgl_canvas/tex-2d-r11f_g11f_b10f-rgb-unsigned_int_10f_11f_11f_rev.html [ RetryOnFailure ]
-crbug.com/1126631 [ android qualcomm-adreno-(tm)-540 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-unsigned_int_10f_11f_11f_rev.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r16f-red-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r16f-red-half_float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r32f-red-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r8-red-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rg16f-rg-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rg16f-rg-half_float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rg32f-rg-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rg8ui-rg_integer-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb10_a2-rgba-unsigned_int_2_10_10_10_rev.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-half_float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb32f-rgb-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb8-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba16f-rgba-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba16f-rgba-half_float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba32f-rgba-float.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba4-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba4-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba8ui-rgba_integer-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-srgb8-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1095679 [ android qualcomm-adreno-(tm)-540 no-passthrough ] conformance2/textures/canvas/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-3d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
+crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
+crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-r11f_g11f_b10f-rgb-unsigned_int_10f_11f_11f_rev.html [ RetryOnFailure ]
+crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r11f_g11f_b10f-rgb-unsigned_int_10f_11f_11f_rev.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r16f-red-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r16f-red-half_float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r32f-red-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r8-red-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rg16f-rg-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rg16f-rg-half_float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rg32f-rg-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rg8ui-rg_integer-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb10_a2-rgba-unsigned_int_2_10_10_10_rev.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-half_float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb32f-rgb-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb8-rgb-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba16f-rgba-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba16f-rgba-half_float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba32f-rgba-float.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba4-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba4-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-rgba8ui-rgba_integer-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-srgb8-rgb-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1095679 [ android android-pixel-2 no-passthrough ] conformance2/textures/canvas/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
 
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.

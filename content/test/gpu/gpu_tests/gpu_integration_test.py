@@ -547,6 +547,24 @@ class GpuIntegrationTest(
   def GetJSONResultsDelimiter():
     return '/'
 
+  @classmethod
+  def IgnoredTags(cls):
+    return [
+        # We only ever use android-webview-instrumentation if we want to specify
+        # that an expectation applies to Webview.
+        'android-webview',
+        'android-not-webview',
+        # These GPUs are analogous to a particular device, and specifying the
+        # device name is clearer.
+        'arm-mali-t860',  # chromeos-board-kevin
+        'qualcomm-adreno-(tm)-330',  # android-nexus-5
+        'qualcomm-adreno-(tm)-418',  # android-nexus-5x
+        'qualcomm-adreno-(tm)-420',  # android-nexus-6
+        'qualcomm-adreno-(tm)-430',  # android-nexus-6p
+        'qualcomm-adreno-(tm)-540',  # android-pixel-2
+        'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
+    ]
+
 
 def LoadAllTestsInModule(module):
   # Just delegates to serially_executed_browser_test_case to reduce the

@@ -7,7 +7,8 @@
 #         mac catalina lion highsierra mojave mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-6p
+#             android-nexus-9 android-pixel-2 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-qemu-x64 ]
 # Platform
@@ -22,10 +23,7 @@
 #         apple apple-apple-a12z
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         arm-mali-t860
-#         qualcomm qualcomm-adreno-(tm)-330 qualcomm-adreno-(tm)-418
-#             qualcomm-adreno-(tm)-420 qualcomm-adreno-(tm)-430
-#             qualcomm-adreno-(tm)-540
+#         qualcomm
 #         google-0xffff ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
@@ -51,9 +49,6 @@
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
-# Webview
-# NOTE: Don't actually use these, use android-webview-instrumentation instead.
-# tags: [ android-webview android-not-webview ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
@@ -84,27 +79,27 @@ crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
 # Flaking on Nexus 5X
-crbug.com/965268 [ android qualcomm-adreno-(tm)-418 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
-crbug.com/965268 [ android qualcomm-adreno-(tm)-418 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
 crbug.com/880078 [ android ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
 crbug.com/880078 [ android ] ContextLost_WorkerRAFAfterGPUCrash_OOPD [ Failure ]
-crbug.com/1064853 [ android qualcomm-adreno-(tm)-418 ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
 # Nexus 6
 # The Nexus 6 times out on these tests while waiting for the JS to complete
-crbug.com/611906 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromLoseContextExtension [ Failure ]
-crbug.com/611906 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
-crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Skip ]
-crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
-crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
-crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
-crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/611906 [ android android-nexus-6 ] ContextLost_WebGLContextLostFromLoseContextExtension [ Failure ]
+crbug.com/611906 [ android android-nexus-6 ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
+crbug.com/609629 [ android android-nexus-6 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Skip ]
+crbug.com/609629 [ android android-nexus-6 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
+crbug.com/609629 [ android android-nexus-6 ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
+crbug.com/609629 [ android android-nexus-6 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/609629 [ android android-nexus-6 ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+crbug.com/609629 [ android android-nexus-6 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
 
 # Flaking on Nexus 9
-crbug.com/609629 [ android nvidia ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
-crbug.com/609629 [ android nvidia ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
-crbug.com/609629 [ android nvidia ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
+crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
 
 # Mac NVIDIA only uses the low-power GPU.
 crbug.com/681341 [ mac nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]

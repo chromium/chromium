@@ -396,10 +396,10 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
   def testConflictsBetweenAngleAndNonAngleConfigurations(self):
     test_expectations = '''
     # tags: [ android ]
-    # tags: [ qualcomm-adreno-(tm)-418 ]
+    # tags: [ android-nexus-5x ]
     # tags: [ opengles ]
     # results: [ RetryOnFailure Skip ]
-    [ android qualcomm-adreno-(tm)-418 ] a/b/c/d [ RetryOnFailure ]
+    [ android android-nexus-5x ] a/b/c/d [ RetryOnFailure ]
     [ android opengles ] a/b/c/d [ Skip ]
     '''
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
