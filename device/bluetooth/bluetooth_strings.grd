@@ -278,6 +278,9 @@ This file contains the strings for bluetooth.
       <message name="IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_UNKNOWN" desc="accessibility description for a device type that is not one of the known/supported device types for Chrome OS">
         <ph name="DEVICE_NAME">$1<ex>Device XYZ</ex></ph>, Unknown device type
       </message>
+      <message name="IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_AND_CONNECTION_STATUS" desc="accessibility description for a Bluetooth connectable device that includes its status. IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_* will be used as an input to DEVICE_NAME_AND_TYPE">
+        <ph name="DEVICE_NAME_AND_TYPE">$1<ex>Device XYZ, Audio Device</ex></ph> <ph name="CONNECTION_STATUS">$2<ex>Not connected</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

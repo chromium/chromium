@@ -159,6 +159,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothRemove", IDS_SETTINGS_BLUETOOTH_REMOVE},
       {"bluetoothPrimaryUserControlled",
        IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED},
+      {"bluetoothDeviceWithConnectionStatus",
+       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_AND_CONNECTION_STATUS},
       {"bluetoothDeviceType_computer",
        IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_COMPUTER},
       {"bluetoothDeviceType_phone",

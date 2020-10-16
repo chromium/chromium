@@ -126,16 +126,22 @@ Polymer({
    * @private
    */
   getAriaLabel_(device) {
-    // We need to turn the device name and type into a single localized string.
+    // We need to turn the device name, connection status and type into a single
+    // localized string.
     // The possible device type enum values can be seen here:
     // https://developer.chrome.com/apps/bluetooth#type-Device.
     // The localization id is computed dynamically to avoid maintaining a
     // mapping from the enum string value to the localization id.
     // if device.type is not defined, we fall back to an unknown device string.
     const deviceName = this.getDeviceName_(device);
-    return (device.type) ?
+    const deviceStatus = this.getConnectionStatusText_(device);
+
+    const a11ydeviceNameAndType = (device.type) ?
         this.i18n('bluetoothDeviceType_' + device.type, deviceName) :
         this.i18n('bluetoothDeviceType_unknown', deviceName);
+    return this.i18n(
+        'bluetoothDeviceWithConnectionStatus', a11ydeviceNameAndType,
+        deviceStatus);
   },
 
   /**
